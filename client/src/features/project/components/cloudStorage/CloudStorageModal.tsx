@@ -115,62 +115,67 @@ export default function CloudStorageModal({
   );
 
   // Enhanced setters
-  const setStateSafe = (newState: Partial<AddCloudStorageState>) => {
-    const fullNewState = {
-      ...state,
-      ...newState,
-    };
-    if (JSON.stringify(fullNewState) === JSON.stringify(state)) {
-      return;
-    }
+  const setStateSafe = useCallback(
+    (newState: Partial<AddCloudStorageState>) => {
+      const fullNewState = {
+        ...state,
+        ...newState,
+      };
+      if (JSON.stringify(fullNewState) === JSON.stringify(state)) {
+        return;
+      }
 
-    // Handle advanced mode changes
-    if (
-      fullNewState.advancedMode !== state.advancedMode &&
-      fullNewState.step !== 3
-    ) {
-      if (fullNewState.advancedMode) {
-        fullNewState.step = 0;
-      } else {
-        if (
-          // schema and provider (where necessary) must also exist in the list
-          !storageDetails.schema ||
-          !schema?.find((s) => s.prefix === storageDetails.schema) ||
-          (hasProviderShortlist(storageDetails.schema) &&
-            (!storageDetails.provider ||
-              !getSchemaProviders(schema, false, storageDetails.schema)?.find(
-                (p) => p.name === storageDetails.provider
-              )))
-        ) {
-          fullNewState.step = 1;
+      // Handle advanced mode changes
+      if (
+        fullNewState.advancedMode !== state.advancedMode &&
+        fullNewState.step !== 3
+      ) {
+        if (fullNewState.advancedMode) {
+          fullNewState.step = 0;
         } else {
-          fullNewState.step = 2;
+          if (
+            // schema and provider (where necessary) must also exist in the list
+            !storageDetails.schema ||
+            !schema?.find((s) => s.prefix === storageDetails.schema) ||
+            (hasProviderShortlist(storageDetails.schema) &&
+              (!storageDetails.provider ||
+                !getSchemaProviders(schema, false, storageDetails.schema)?.find(
+                  (p) => p.name === storageDetails.provider
+                )))
+          ) {
+            fullNewState.step = 1;
+          } else {
+            fullNewState.step = 2;
+          }
         }
       }
-    }
-    setState(fullNewState);
-  };
-  const setStorageDetailsSafe = (
-    newStorageDetails: Partial<CloudStorageDetails>
-  ) => {
-    const fullNewDetails = {
-      ...storageDetails,
-      ...newStorageDetails,
-    };
-    if (JSON.stringify(fullNewDetails) === JSON.stringify(storageDetails)) {
-      return;
-    }
-    // reset follow-up properties: schema > provider > options
-    if (fullNewDetails.schema !== storageDetails.schema) {
-      fullNewDetails.provider = undefined;
-      fullNewDetails.options = undefined;
-      fullNewDetails.sourcePath = undefined;
-    } else if (fullNewDetails.provider !== storageDetails.provider) {
-      fullNewDetails.options = undefined;
-      fullNewDetails.sourcePath = undefined;
-    }
-    setStorageDetails(() => fullNewDetails);
-  };
+      setState(fullNewState);
+    },
+    [state, storageDetails, schema]
+  );
+
+  const setStorageDetailsSafe = useCallback(
+    (newStorageDetails: Partial<CloudStorageDetails>) => {
+      const fullNewDetails = {
+        ...storageDetails,
+        ...newStorageDetails,
+      };
+      if (JSON.stringify(fullNewDetails) === JSON.stringify(storageDetails)) {
+        return;
+      }
+      // reset follow-up properties: schema > provider > options
+      if (fullNewDetails.schema !== storageDetails.schema) {
+        fullNewDetails.provider = undefined;
+        fullNewDetails.options = undefined;
+        fullNewDetails.sourcePath = undefined;
+      } else if (fullNewDetails.provider !== storageDetails.provider) {
+        fullNewDetails.options = undefined;
+        fullNewDetails.sourcePath = undefined;
+      }
+      setStorageDetails(fullNewDetails);
+    },
+    [storageDetails]
+  );
 
   // Reset
   const [redraw, setRedraw] = useState(false);
