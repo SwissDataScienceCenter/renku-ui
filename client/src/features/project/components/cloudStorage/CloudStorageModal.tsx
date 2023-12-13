@@ -81,10 +81,7 @@ export default function CloudStorageModal({
   toggle: originalToggle,
 }: CloudStorageModalProps) {
   const storageId = currentStorage?.storage.storage_id ?? null;
-  // Handle unmount
-  useEffect(() => {
-    return () => reset();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const toggle = () => {
     originalToggle();
     if (success) {
@@ -114,7 +111,7 @@ export default function CloudStorageModal({
       : EMPTY_CLOUD_STORAGE_STATE;
     setStorageDetails(cloudStorageDetails);
     setState(cloudStorageState);
-  }, [storageId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentStorage, storageId]);
   // ? storageId depends on the currentStorage
 
   const [success, setSuccess] = useState(false);
@@ -281,6 +278,16 @@ export default function CloudStorageModal({
     }
   };
 
+  // Handle unmount
+  useEffect(() => {
+    const cleanup = () => {
+      reset();
+    };
+
+    return cleanup;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Visual elements
   const disableContinueButton =
     state.step === 1 &&
     (!storageDetails.schema ||
@@ -427,10 +434,12 @@ export default function CloudStorageModal({
         {storageId ? "updated" : "added"}.
       </p>
     </SuccessAlert>
+  ) : schemaIsFetching || !schema ? (
+    <Loader />
+  ) : schemaError ? (
+    <RtkOrNotebooksError error={schemaError} />
   ) : (
     <AddCloudStorage
-      error={schemaError}
-      fetching={schemaIsFetching}
       schema={schema}
       setState={setStateSafe}
       setStorage={setStorageDetailsSafe}

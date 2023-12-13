@@ -24,7 +24,7 @@ import { CoreErrorAlert } from "./CoreErrorAlert";
 import { CoreErrorResponse } from "../../utils/types/coreService.types";
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";
 import { UpdateProjectResponse } from "../../features/project/Project";
-import { NotebooksErrorResponse } from "../../utils/types/notebooksService.types";
+import { NotebooksErrorResponse } from "../../features/session/sessions.types";
 
 export function extractRkErrorMessage(
   error: FetchBaseQueryError | SerializedError,
@@ -94,7 +94,10 @@ export function RtkErrorAlert({
   );
 }
 
-export function RtkOrCoreError({ error }: RtkErrorAlertProps) {
+export function RtkOrCoreError({
+  error,
+  dismissible = true,
+}: RtkErrorAlertProps) {
   if (!error) return null;
   return "status" in error &&
     typeof error.status === "number" &&
@@ -105,7 +108,7 @@ export function RtkOrCoreError({ error }: RtkErrorAlertProps) {
     (error.data as CoreErrorResponse).error ? (
     <CoreErrorAlert error={(error.data as CoreErrorResponse).error} />
   ) : (
-    <RtkErrorAlert dismissible={true} error={error} />
+    <RtkErrorAlert dismissible={dismissible} error={error} />
   );
 }
 
@@ -132,5 +135,5 @@ export function RtkOrNotebooksError({
       </RenkuAlert>
     );
   }
-  return <RtkErrorAlert dismissible={true} error={error} />;
+  return <RtkErrorAlert dismissible={dismissible} error={error} />;
 }

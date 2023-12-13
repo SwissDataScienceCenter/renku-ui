@@ -36,7 +36,7 @@ export default function useDefaultCloudStorageOption({
 }: UseDefaultCloudStorageOptionArgs): void {
   const dispatch = useAppDispatch();
 
-  const support = !!notebooksVersion?.cloudStorageEnabled;
+  const supported = !!notebooksVersion?.cloudStorageEnabled;
 
   // Populate session cloud storage from project's settings
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function useDefaultCloudStorageOption({
     }
 
     const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
-      getInitialCloudStorageItem(support)
+      getInitialCloudStorageItem()
     );
 
     const missingCredentialsStorage = initialCloudStorage
@@ -64,15 +64,14 @@ export default function useDefaultCloudStorageOption({
     }
 
     dispatch(setCloudStorage(initialCloudStorage));
-  }, [dispatch, storageForProject, support]);
+  }, [dispatch, storageForProject, supported]);
 }
 
-function getInitialCloudStorageItem(
-  support: boolean
-): (storageDefinition: CloudStorage) => SessionCloudStorage {
+function getInitialCloudStorageItem(): (
+  storageDefinition: CloudStorage
+) => SessionCloudStorage {
   return ({ storage, sensitive_fields }) => ({
-    active: support,
-    supported: support,
+    active: true,
     ...(sensitive_fields
       ? {
           sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({

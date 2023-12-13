@@ -115,3 +115,12 @@ export interface CloudStorageDefinitionForSessionApi {
   source_path: string;
   target_path: string;
 }
+
+export interface NotebooksErrorContent {
+  code: number;
+  message: string;
+}
+
+export interface NotebooksErrorResponse {
+  error: NotebooksErrorContent;
+}

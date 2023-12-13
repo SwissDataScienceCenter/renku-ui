@@ -40,10 +40,7 @@ import {
   UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { SerializedError } from "@reduxjs/toolkit";
 
-import { Loader } from "../../../../components/Loader";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_TOTAL_STEPS,
@@ -69,8 +66,6 @@ import { WarnAlert } from "../../../../components/Alert";
 import styles from "./CloudStorage.module.scss";
 
 interface AddCloudStorageProps {
-  error?: FetchBaseQueryError | SerializedError;
-  fetching: boolean;
   schema?: CloudStorageSchema[];
   setStorage: (newDetails: Partial<CloudStorageDetails>) => void;
   setState: (newState: Partial<AddCloudStorageState>) => void;
@@ -79,18 +74,12 @@ interface AddCloudStorageProps {
 }
 
 export default function AddCloudStorage({
-  error,
-  fetching,
   schema,
   setStorage,
   setState,
   state,
   storage,
 }: AddCloudStorageProps) {
-  if (error)
-    return <h2 className="text-bg-danger">Error - add proper Alert</h2>;
-  if (fetching || !schema) return <Loader />;
-
   const ContentByStep =
     state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
       ? mapStepToElement[state.step]

@@ -80,17 +80,15 @@ function SessionS3CloudStorageOption() {
     path,
   });
 
-  const storageSettingsRecommendation = devAccess ? (
-    <div className={cx("form-text", "my-1")}>
-      Cloud storage options can be adjusted from the{" "}
-      <Link to={settingsStorageUrl}>Project&apos;s settings</Link>.
-    </div>
-  ) : null;
-
   return (
     <div className="field-group">
       <div className="form-label">Cloud Storage</div>
-      {storageSettingsRecommendation}
+      {devAccess && (
+        <div className={cx("form-text", "my-1")}>
+          Cloud storage options can be adjusted from the{" "}
+          <Link to={settingsStorageUrl}>Project&apos;s settings</Link>.
+        </div>
+      )}
       <CloudStorageSection devAccess={devAccess} />
     </div>
   );
@@ -127,7 +125,6 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
     const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
       ({ storage, sensitive_fields }) => ({
         active: true,
-        supported: true,
         ...(sensitive_fields
           ? {
               sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({

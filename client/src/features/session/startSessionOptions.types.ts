@@ -35,7 +35,6 @@ export interface StartSessionOptions {
 export interface SessionCloudStorage extends CloudStorageConfiguration {
   active: boolean;
   sensitive_fields?: { name: string; help: string; value: string }[];
-  supported: boolean;
 }
 
 // ? See: ./components/options/SessionProjectDockerImage.md
