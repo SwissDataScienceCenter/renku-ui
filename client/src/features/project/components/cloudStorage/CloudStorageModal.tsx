@@ -88,22 +88,23 @@ export default function CloudStorageModal({
     isFetching: schemaIsFetching,
   } = useGetCloudStorageSchemaQuery(undefined, { skip: !isOpen });
 
-  // Save current state
+  // Reset state on props change
   useEffect(() => {
-    const cloudStorageDetails: CloudStorageDetails = storageId
-      ? getCurrentStorageDetails(currentStorage)
-      : EMPTY_CLOUD_STORAGE_DETAILS;
-    const cloudStorageState: AddCloudStorageState = storageId
-      ? {
-          ...EMPTY_CLOUD_STORAGE_STATE,
-          step: 2,
-          completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
-        }
-      : EMPTY_CLOUD_STORAGE_STATE;
+    const cloudStorageDetails: CloudStorageDetails =
+      currentStorage != null
+        ? getCurrentStorageDetails(currentStorage)
+        : EMPTY_CLOUD_STORAGE_DETAILS;
+    const cloudStorageState: AddCloudStorageState =
+      currentStorage != null
+        ? {
+            ...EMPTY_CLOUD_STORAGE_STATE,
+            step: 2,
+            completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
+          }
+        : EMPTY_CLOUD_STORAGE_STATE;
     setStorageDetails(cloudStorageDetails);
     setState(cloudStorageState);
-  }, [currentStorage, storageId]);
-  // ? storageId depends on the currentStorage
+  }, [currentStorage]);
 
   const [success, setSuccess] = useState(false);
   const [state, setState] = useState<AddCloudStorageState>(
@@ -147,7 +148,7 @@ export default function CloudStorageModal({
         }
       }
     }
-    setState(() => fullNewState);
+    setState(fullNewState);
   };
   const setStorageDetailsSafe = (
     newStorageDetails: Partial<CloudStorageDetails>

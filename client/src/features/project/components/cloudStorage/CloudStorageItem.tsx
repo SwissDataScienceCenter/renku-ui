@@ -88,7 +88,7 @@ export default function CloudStorageItem({
   const credentialId = `cloud-storage-${storage.storage_id}-credentials`;
   const requiresCredentials = anySensitiveField && (
     <>
-      <span id={credentialId} tabIndex={0} data-bs-title="Requires credential">
+      <span id={credentialId} tabIndex={0}>
         <KeyFill className={cx("bi", "me-1")} />
       </span>
       <UncontrolledTooltip target={credentialId}>
