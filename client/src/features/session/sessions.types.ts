@@ -106,7 +106,8 @@ export interface StartSessionParams {
 
 export interface PatchSessionParams {
   sessionName: string;
-  state: Extract<"running" | "hibernated", SessionStatusState>;
+  state?: Extract<"running" | "hibernated", SessionStatusState>;
+  sessionClass?: number;
 }
 
 export interface CloudStorageDefinitionForSessionApi {
