@@ -39,7 +39,7 @@ export default function AddOrEditCloudStorageButton({
 
   const isEdit = !!currentStorage?.storage.storage_id;
   const localId = isEdit
-    ? `edit-cloud-storage-${currentStorage?.storage.storage_id}`
+    ? `edit-cloud-storage-${currentStorage.storage.storage_id}`
     : "add-cloud-storage";
   const buttonContent = isEdit ? (
     <>
@@ -71,12 +71,7 @@ export default function AddOrEditCloudStorageButton({
     </>
   ) : (
     <>
-      <div
-        className="d-inline-block"
-        tabIndex={0}
-        data-bs-toggle="tooltip"
-        data-bs-title="Disabled tooltip"
-      >
+      <div className="d-inline-block" tabIndex={0}>
         <Button
           id={`${localId}-button`}
           color="outline-secondary"

@@ -67,7 +67,7 @@ import {
 import { SuccessAlert } from "../../../../components/Alert";
 
 import styles from "./CloudStorage.module.scss";
-import AddCloudStorage from "./AddCloudStorage";
+import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 
 interface CloudStorageModalProps {
@@ -439,7 +439,7 @@ export default function CloudStorageModal({
   ) : schemaError ? (
     <RtkOrNotebooksError error={schemaError} />
   ) : (
-    <AddCloudStorage
+    <AddOrEditCloudStorage
       schema={schema}
       setState={setStateSafe}
       setStorage={setStorageDetailsSafe}

@@ -65,7 +65,7 @@ import { WarnAlert } from "../../../../components/Alert";
 
 import styles from "./CloudStorage.module.scss";
 
-interface AddCloudStorageProps {
+interface AddOrEditCloudStorageProps {
   schema?: CloudStorageSchema[];
   setStorage: (newDetails: Partial<CloudStorageDetails>) => void;
   setState: (newState: Partial<AddCloudStorageState>) => void;
@@ -73,13 +73,13 @@ interface AddCloudStorageProps {
   storage: CloudStorageDetails;
 }
 
-export default function AddCloudStorage({
+export default function AddOrEditCloudStorage({
   schema,
   setStorage,
   setState,
   state,
   storage,
-}: AddCloudStorageProps) {
+}: AddOrEditCloudStorageProps) {
   const ContentByStep =
     state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
       ? mapStepToElement[state.step]

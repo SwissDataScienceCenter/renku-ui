@@ -206,20 +206,6 @@ function CloudStorageDetails({
     [credentialFieldDefinitions]
   );
 
-  const editButton = noEdit ? null : (
-    <AddOrEditCloudStorageButton
-      devAccess={devAccess}
-      currentStorage={storageDefinition}
-    />
-  );
-
-  const deleteButton = noEdit ? null : (
-    <DeleteCloudStorageButton
-      devAccess={devAccess}
-      storageDefinition={storageDefinition}
-    />
-  );
-
   return (
     <>
       <section>
@@ -287,10 +273,18 @@ function CloudStorageDetails({
         </div>
       </section>
 
-      <section className={cx("d-flex", "justify-content-end", "mt-3")}>
-        {editButton}
-        {deleteButton}
-      </section>
+      {!noEdit && (
+        <section className={cx("d-flex", "justify-content-end", "mt-3")}>
+          <AddOrEditCloudStorageButton
+            devAccess={devAccess}
+            currentStorage={storageDefinition}
+          />
+          <DeleteCloudStorageButton
+            devAccess={devAccess}
+            storageDefinition={storageDefinition}
+          />
+        </section>
+      )}
     </>
   );
 }
