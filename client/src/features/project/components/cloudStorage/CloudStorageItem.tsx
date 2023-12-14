@@ -102,7 +102,7 @@ export default function CloudStorageItem({
   );
   return (
     <Col>
-      <Card>
+      <Card data-cy="cloud-storage-item">
         <CardBody className="p-0">
           <h3 className={cx("fs-6", "m-0")}>
             <div
@@ -153,6 +153,7 @@ export default function CloudStorageItem({
               "bg-transparent",
               "border-0"
             )}
+            data-cy="cloud-storage-details-toggle"
             onClick={toggle}
             type="button"
           >
@@ -208,7 +209,7 @@ function CloudStorageDetails({
 
   return (
     <>
-      <section>
+      <section data-cy="cloud-storage-details-section">
         <div>
           <div className="text-rk-text-light">
             <small>Name</small>
@@ -274,7 +275,10 @@ function CloudStorageDetails({
       </section>
 
       {!noEdit && (
-        <section className={cx("d-flex", "justify-content-end", "mt-3")}>
+        <section
+          data-cy="cloud-storage-details-buttons"
+          className={cx("d-flex", "justify-content-end", "mt-3")}
+        >
           <AddOrEditCloudStorageButton
             devAccess={devAccess}
             currentStorage={storageDefinition}

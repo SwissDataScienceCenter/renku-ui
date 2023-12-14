@@ -145,7 +145,9 @@ function AddStorageBreadcrumbNavbar({
     return items;
   }, [completedSteps, setState, step, state.advancedMode]);
 
-  return <Breadcrumb>{items}</Breadcrumb>;
+  return (
+    <Breadcrumb data-cy="cloud-storage-edit-navigation">{items}</Breadcrumb>
+  );
 }
 
 interface AddStorageAdvancedToggleProps {
@@ -163,7 +165,10 @@ function AddStorageAdvancedToggle({
   return (
     <>
       <div className="form-rk-green">
-        <div className={cx("form-check", "form-switch", "mb-3", "d-flex")}>
+        <div
+          className={cx("form-check", "form-switch", "mb-3", "d-flex")}
+          data-cy="cloud-storage-edit-advanced-toggle"
+        >
           <Input
             className={cx(
               "form-check-input",
@@ -246,7 +251,7 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
   }, [storage.schema]);
 
   return (
-    <form className="form-rk-green">
+    <form className="form-rk-green" data-cy="cloud-storage-edit-advanced">
       <div className="mb-3">
         <Label className="form-label" for="add-storage-name">
           Source path
@@ -394,7 +399,7 @@ function AddStorageType({
     ) : null;
 
   const finalSchema = (
-    <div className="mt-3">
+    <div className="mt-3" data-cy="cloud-storage-edit-schema">
       <h5>Storage type</h5>
       <p>
         Pick a storage from this list to start our guided procedure. You can
@@ -488,7 +493,7 @@ function AddStorageType({
     ) : null;
 
   const finalProviders = providerItems ? (
-    <div className="mt-3">
+    <div className="mt-3" data-cy="cloud-storage-edit-providers">
       <h5>Provider</h5>
       <p>
         We support the following providers for this storage type. If you do not
@@ -820,7 +825,7 @@ function AddStorageOptions({
   );
 
   return (
-    <form className="form-rk-green">
+    <form className="form-rk-green" data-cy="cloud-storage-edit-options">
       <h5>Options</h5>
       <p>
         Please fill in all the options required to connect to your storage. Mind
@@ -860,7 +865,7 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
   };
 
   return (
-    <form className="form-rk-green">
+    <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
       <h5>Final details</h5>
       <p>We need a few more details to mount your storage properly.</p>
 

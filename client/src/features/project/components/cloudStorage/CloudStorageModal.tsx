@@ -347,6 +347,7 @@ export default function CloudStorageModal({
     state.completedSteps >= 2 ? (
     <div id={`${addButtonId}-div`} className="d-inline-block">
       <Button
+        data-cy="cloud-storage-edit-update-button"
         id={`${addButtonId}-button`}
         disabled={disableAddButton}
         onClick={() => addStorage()}
@@ -370,6 +371,7 @@ export default function CloudStorageModal({
     <div id={`${continueButtonId}-div`} className="d-inline-block">
       <Button
         id={`${continueButtonId}-button`}
+        data-cy="cloud-storage-edit-next-button"
         disabled={disableContinueButton}
         onClick={() => {
           setStateSafe({
@@ -397,13 +399,18 @@ export default function CloudStorageModal({
   const backButton =
     addResult.isLoading || modifyResult.isLoading ? null : state.step <= 1 ||
       success ? (
-      <Button className="btn-outline-rk-green" onClick={() => toggle()}>
+      <Button
+        className="btn-outline-rk-green"
+        data-cy="cloud-storage-edit-close-button"
+        onClick={() => toggle()}
+      >
         <XLg className={cx("bi", "me-1")} />
         {success ? "Close" : "Cancel"}
       </Button>
     ) : (
       <Button
         className="btn-outline-rk-green"
+        data-cy="cloud-storage-edit-back-button"
         onClick={() => {
           setStateSafe({
             step: state.advancedMode ? 0 : state.step - 1,
@@ -417,7 +424,11 @@ export default function CloudStorageModal({
 
   const resetButton =
     addResult.isLoading || modifyResult.isLoading || success ? null : (
-      <Button color="outline-danger" onClick={reset}>
+      <Button
+        color="outline-danger"
+        data-cy="cloud-storage-edit-rest-button"
+        onClick={reset}
+      >
         <ArrowCounterclockwise className={cx("bi", "me-1")} />
         Reset
       </Button>
@@ -458,6 +469,7 @@ export default function CloudStorageModal({
       backdrop="static"
       centered
       className={styles.modal}
+      data-cy="cloud-storage-edit-modal"
       fullscreen="lg"
       id={currentStorage?.storage.storage_id ?? "new-cloud-storage"}
       isOpen={isOpen}
@@ -466,14 +478,14 @@ export default function CloudStorageModal({
       unmountOnClose={false}
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader toggle={toggle} data-cy="cloud-storage-edit-header">
         <CloudFill className={cx("bi", "me-2")} />
         {storageId ? "Edit" : "Add"} Cloud Storage
       </ModalHeader>
 
-      <ModalBody>{bodyContent}</ModalBody>
+      <ModalBody data-cy="cloud-storage-edit-body">{bodyContent}</ModalBody>
 
-      <ModalFooter>
+      <ModalFooter data-cy="cloud-storage-edit-footer">
         {errorMessage}
         {resetButton}
         {backButton}

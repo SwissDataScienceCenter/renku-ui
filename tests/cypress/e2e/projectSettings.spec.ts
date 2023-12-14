@@ -275,81 +275,75 @@ describe("Cloud storage settings page", () => {
     cy.wait("@getNotebooksVersions");
     cy.wait("@getCloudStorage");
 
-    cy.getDataCy("settings-container")
+    cy.getDataCy("cloud-storage-section")
       .find(".card")
-      .contains("Example storage")
+      .contains("example-storage")
       .should("be.visible");
-    cy.getDataCy("settings-container")
-      .find(".card")
-      .contains("bucket/source")
+    cy.getDataCy("cloud-storage-item")
+      .contains("s3/Other")
       .should("be.visible");
-    cy.getDataCy("settings-container")
-      .find(".card")
+    cy.getDataCy("cloud-storage-item")
       .contains("mount/path")
       .should("be.visible");
   });
 
   it("can update an existing storage", () => {
-    fixtures.versions().cloudStorage();
+    fixtures.versions().cloudStorageStar();
     fixtures.patchCloudStorage();
     cy.visit("/projects/e2e/local-test-project/settings/storage");
     cy.wait("@getNotebooksVersions");
     cy.wait("@getCloudStorage");
 
-    cy.getDataCy("settings-container")
+    cy.getDataCy("cloud-storage-section")
       .find(".card")
-      .contains("Example storage")
+      .contains("example-storage")
       .should("be.visible")
       .click();
-    cy.getDataCy("settings-container")
-      .find(".card")
+    cy.getDataCy("cloud-storage-details-toggle").should("be.visible").click();
+    cy.getDataCy("cloud-storage-details-buttons")
       .find("button")
       .contains("Edit")
-      .should("be.visible")
       .click();
 
-    cy.get("label").contains("Name").click();
-    cy.get(":focused").type("{selectAll}My special storage");
-
-    cy.get("label").contains("Source path").click();
-    cy.get(":focused").type("/subfolder");
-
-    cy.get("label").contains("Mount point").click();
-    cy.get(":focused").type("{selectAll}/mnt/special");
-
-    cy.get("label")
-      .contains("Requires credentials")
-      .click()
-      .siblings("input")
-      .should("not.be.checked");
-
-    cy.get("label")
-      .contains("Read-only")
-      .click()
-      .siblings("input")
-      .should("not.be.checked");
-
-    cy.get("button[type='submit']")
-      .contains("Save changes")
+    cy.getDataCy("cloud-storage-edit-header")
+      .contains("Edit Cloud Storage")
+      .should("be.visible");
+    cy.get("#sourcePath")
+      .should("have.value", "bucket/source")
+      .type("{selectAll}bucket/new-target");
+    cy.getDataCy("cloud-storage-edit-next-button")
       .should("be.visible")
+      .contains("Next")
       .click();
 
-    cy.wait("@patchCloudStorage").then(({ request }) => {
-      const { body } = request;
-      const {
-        name,
-        private: isPrivate,
-        readonly,
-        source_path,
-        target_path,
-      } = body;
+    cy.get("#name")
+      .should("have.value", "example-storage")
+      .type("{selectAll}another-storage");
+    cy.get("#mountPoint")
+      .should("have.value", "mount/path")
+      .type("{selectAll}another/path");
 
-      expect(name).to.equal("My special storage");
-      expect(isPrivate).to.be.false;
-      expect(readonly).to.be.false;
-      expect(source_path).to.equal("bucket/source/subfolder");
-      expect(target_path).to.equal("/mnt/special");
-    });
+    cy.getDataCy("cloud-storage-edit-update-button")
+      .should("be.visible")
+      .contains("Update");
+    cy.getDataCy("cloud-storage-edit-back-button")
+      .should("be.visible")
+      .contains("Back")
+      .click();
+
+    cy.get("#sourcePath").should("have.value", "bucket/new-target");
+    cy.getDataCy("cloud-storage-edit-rest-button").should("be.visible").click();
+    cy.get("#sourcePath").should("have.value", "bucket/source");
+    cy.getDataCy("cloud-storage-edit-next-button")
+      .should("be.visible")
+      .contains("Next")
+      .click();
+    cy.get("#mountPoint").should("have.value", "mount/path");
+
+    cy.getDataCy("cloud-storage-edit-update-button")
+      .should("be.visible")
+      .contains("Update")
+      .click();
   });
 
   it("can remove an existing storage", () => {
@@ -359,17 +353,15 @@ describe("Cloud storage settings page", () => {
     cy.wait("@getNotebooksVersions");
     cy.wait("@getCloudStorage");
 
-    cy.getDataCy("settings-container")
+    cy.getDataCy("cloud-storage-section")
       .find(".card")
-      .contains("Example storage")
+      .contains("example-storage")
       .should("be.visible")
       .click();
-
-    cy.getDataCy("settings-container")
-      .find(".card")
+    cy.getDataCy("cloud-storage-details-toggle").should("be.visible").click();
+    cy.getDataCy("cloud-storage-details-buttons")
       .find("button")
       .contains("Delete")
-      .should("be.visible")
       .click();
 
     cy.get(".modal").contains("Are you sure?").should("be.visible");
@@ -383,6 +375,7 @@ describe("Cloud storage settings page", () => {
   });
 
   it("can add new storage (simple)", () => {
+    fixtures.getStorageSchema();
     fixtures
       .versions({
         notebooks: { fixture: "version-notebooks-s3.json" },
@@ -393,73 +386,47 @@ describe("Cloud storage settings page", () => {
     cy.wait("@getNotebooksVersions");
     cy.wait("@getCloudStorage");
 
-    cy.getDataCy("settings-container")
+    cy.getDataCy("cloud-storage-section")
       .find("button")
       .contains("Add Cloud Storage")
       .should("be.visible")
       .click();
 
-    cy.get(".modal").contains("Add Cloud Storage").should("be.visible");
-
-    cy.get("label").contains("Name").click();
-    cy.get(":focused").type("My new storage");
-
-    cy.get(".modal")
-      .contains("For AWS S3 buckets, supported URLs are of the form")
+    cy.getDataCy("cloud-storage-edit-header")
+      .contains("Add Cloud Storage")
       .should("be.visible");
-    cy.get("label").contains("Endpoint URL").click();
-    cy.get(":focused").type("s3://data.s3.eu-central-2.amazonaws.com/folder");
 
-    cy.get("label")
-      .contains("Requires credentials")
-      .siblings("input")
-      .should("be.checked");
-
-    cy.get("label")
-      .contains("Read-only")
-      .siblings("input")
-      .should("not.be.checked");
-
-    cy.get("button[type='submit']")
-      .contains("Add Storage")
+    cy.getDataCy("cloud-storage-edit-schema")
+      .contains("webdav")
       .should("be.visible")
+      .click();
+    cy.getDataCy("cloud-storage-edit-next-button").should("be.visible").click();
+
+    cy.get("#sourcePath").should("have.value", "").type("bucket/my-source");
+    cy.getDataCy("cloud-storage-edit-next-button").should("be.visible").click();
+
+    cy.get("#name").should("have.value", "").type("fake-storage");
+    cy.get("#mountPoint").should("have.value", "external_storage/webdav");
+
+    cy.getDataCy("cloud-storage-edit-update-button")
+      .should("be.visible")
+      .contains("Add")
       .click();
 
     cy.wait("@postCloudStorage").then(({ request }) => {
       const { body } = request;
-      const { name, private: isPrivate, readonly, target_path } = body;
+      const { name, readonly, target_path } = body;
 
-      expect(name).to.equal("My new storage");
-      expect(isPrivate).to.be.true;
+      expect(name).to.equal("fake-storage");
       expect(readonly).to.be.false;
-      expect(target_path).to.equal("My new storage");
+      expect(target_path).to.equal("external_storage/webdav");
     });
 
-    cy.get(".modal").contains("Please select which credentials are required");
-
-    cy.get("label")
-      .contains("first")
-      .click()
-      .siblings("input")
-      .should("be.checked");
-
-    cy.get("label")
-      .contains("second")
-      .siblings("input")
-      .should("not.be.checked");
-
-    cy.get("button[type='submit']")
-      .contains("Finish cloud storage setup")
+    cy.getDataCy("cloud-storage-edit-body").contains(
+      "storage fake-storage has been succesfully added"
+    );
+    cy.getDataCy("cloud-storage-edit-close-button")
       .should("be.visible")
       .click();
-
-    cy.wait("@patchCloudStorage").then(({ request }) => {
-      const { body } = request;
-      const { configuration } = body;
-
-      expect(configuration).to.haveOwnProperty("first");
-      expect(configuration["first"]).to.equal("<sensitive>");
-      expect(configuration).not.to.haveOwnProperty("second");
-    });
   });
 });

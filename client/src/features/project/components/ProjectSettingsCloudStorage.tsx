@@ -133,7 +133,7 @@ function CloudStorageSection({
   children?: ReactNode;
 }) {
   return (
-    <div className="mt-2">
+    <div className="mt-2" data-cy="cloud-storage-section">
       <h3>
         Cloud storage settings
         {isFetching && <Loader className="ms-1" inline size={20} />}
@@ -178,7 +178,7 @@ function CloudStorageList({
   }
 
   return (
-    <Container className={cx("p-0", "mt-2")} fluid>
+    <Container className={cx("p-0", "mt-2")} fluid data-cy="cloud-storage-rows">
       <Row className={cx("row-cols-1", "gy-2")}>
         {storageForProject.map((storageDefinition) => (
           <CloudStorageItem
