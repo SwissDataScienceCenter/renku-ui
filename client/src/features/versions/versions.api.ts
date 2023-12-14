@@ -87,7 +87,7 @@ export const versionsApi = createApi({
       transformResponse: (response: DataServicesVersionResponse) => {
         return {
           name: "data-services",
-          version: response.version,
+          version: `v${response.version}`,
         };
       },
       transformErrorResponse: () => {
