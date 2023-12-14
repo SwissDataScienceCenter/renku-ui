@@ -66,7 +66,7 @@ import { WarnAlert } from "../../../../components/Alert";
 import styles from "./CloudStorage.module.scss";
 
 interface AddOrEditCloudStorageProps {
-  schema?: CloudStorageSchema[];
+  schema: CloudStorageSchema[];
   setStorage: (newDetails: Partial<CloudStorageDetails>) => void;
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
@@ -91,7 +91,7 @@ export default function AddOrEditCloudStorage({
         <AddStorageAdvancedToggle state={state} setState={setState} />
         <AddStorageBreadcrumbNavbar state={state} setState={setState} />
         <ContentByStep
-          schema={schema as CloudStorageSchema[]} // ? the `loading` variable makes sure it's never undefined
+          schema={schema}
           state={state}
           storage={storage}
           setState={setState}
@@ -126,26 +126,34 @@ function AddStorageBreadcrumbNavbar({
       const disabled = stepNumber > completedSteps + 1;
       return (
         <BreadcrumbItem active={active} key={stepNumber}>
-          <Button
-            className={cx(
-              "p-0",
-              `${active || disabled ? "text-decoration-none" : ""}`
-            )}
-            color="link"
-            disabled={disabled}
-            onClick={() => {
-              setState({ step: stepNumber });
-            }}
-          >
-            {mapStepToName[stepNumber]}
-          </Button>
+          {active ? (
+            <>{mapStepToName[stepNumber]}</>
+          ) : (
+            <>
+              <Button
+                className={cx(
+                  "p-0",
+                  (active || disabled) && "text-decoration-none"
+                )}
+                color="link"
+                disabled={disabled}
+                onClick={() => {
+                  setState({ step: stepNumber });
+                }}
+              >
+                {mapStepToName[stepNumber]}
+              </Button>
+            </>
+          )}
         </BreadcrumbItem>
       );
     });
     return items;
   }, [completedSteps, setState, step, state.advancedMode]);
 
-  return <Breadcrumb>{items}</Breadcrumb>;
+  return (
+    <Breadcrumb data-cy="cloud-storage-edit-navigation">{items}</Breadcrumb>
+  );
 }
 
 interface AddStorageAdvancedToggleProps {
@@ -163,7 +171,10 @@ function AddStorageAdvancedToggle({
   return (
     <>
       <div className="form-rk-green">
-        <div className={cx("form-check", "form-switch", "mb-3", "d-flex")}>
+        <div
+          className={cx("form-check", "form-switch", "mb-3", "d-flex")}
+          data-cy="cloud-storage-edit-advanced-toggle"
+        >
           <Input
             className={cx(
               "form-check-input",
@@ -225,28 +236,38 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
   const {
     control,
     formState: { errors },
-  } = useForm<AddStorageAdvancedForm>();
+  } = useForm<AddStorageAdvancedForm>({
+    defaultValues: {
+      sourcePath: storage.sourcePath || "",
+    },
+  });
 
-  const onConfigurationChange = (value: string) => {
-    const config = parseCloudStorageConfiguration(value);
-    const { type, provider, ...options } = config;
-    setStorage({
-      schema: type,
-      provider,
-      options,
-    });
-  };
+  const onConfigurationChange = useCallback(
+    (value: string) => {
+      const config = parseCloudStorageConfiguration(value);
+      const { type, provider, ...options } = config;
+      setStorage({
+        schema: type,
+        provider,
+        options,
+      });
+    },
+    [setStorage]
+  );
 
-  const onSourcePathChange = (value: string) => {
-    setStorage({ sourcePath: value });
-  };
+  const onSourcePathChange = useCallback(
+    (value: string) => {
+      setStorage({ sourcePath: value });
+    },
+    [setStorage]
+  );
 
   const sourcePathHelp = useMemo(() => {
     return getSourcePathHint(storage.schema);
   }, [storage.schema]);
 
   return (
-    <form className="form-rk-green">
+    <form className="form-rk-green" data-cy="cloud-storage-edit-advanced">
       <div className="mb-3">
         <Label className="form-label" for="add-storage-name">
           Source path
@@ -255,7 +276,6 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
         <Controller
           name="sourcePath"
           control={control}
-          defaultValue={storage.sourcePath || ""}
           render={({ field }) => (
             <input
               id="sourcePath"
@@ -362,7 +382,7 @@ function AddStorageType({
         key={s.name}
         value={s.prefix}
         tag="div"
-        onClick={() => setFinalSchema(s.prefix as string)}
+        onClick={() => setFinalSchema(s.prefix)}
       >
         <p className="mb-0">
           <b>{s.name}</b>
@@ -394,7 +414,7 @@ function AddStorageType({
     ) : null;
 
   const finalSchema = (
-    <div className="mt-3">
+    <div className="mt-3" data-cy="cloud-storage-edit-schema">
       <h5>Storage type</h5>
       <p>
         Pick a storage from this list to start our guided procedure. You can
@@ -402,7 +422,9 @@ function AddStorageType({
         storage using an rclone configuration.
       </p>
       {missingSchema}
-      <ListGroup className={cx("bg-white", "rounded-3", styles.listGroup)}>
+      <ListGroup
+        className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
+      >
         {finalSchemaItems}
       </ListGroup>
     </div>
@@ -488,7 +510,7 @@ function AddStorageType({
     ) : null;
 
   const finalProviders = providerItems ? (
-    <div className="mt-3">
+    <div className="mt-3" data-cy="cloud-storage-edit-providers">
       <h5>Provider</h5>
       <p>
         We support the following providers for this storage type. If you do not
@@ -498,7 +520,9 @@ function AddStorageType({
       </p>
       {missingProvider}
       <div ref={providerRef}>
-        <ListGroup className={cx("bg-white", "rounded-3", styles.listGroup)}>
+        <ListGroup
+          className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
+        >
           {finalProviderItems}
         </ListGroup>
       </div>
@@ -820,7 +844,7 @@ function AddStorageOptions({
   );
 
   return (
-    <form className="form-rk-green">
+    <form className="form-rk-green" data-cy="cloud-storage-edit-options">
       <h5>Options</h5>
       <p>
         Please fill in all the options required to connect to your storage. Mind
@@ -844,23 +868,31 @@ type AddStorageMountFormFields = "name" | "mountPoint" | "readOnly";
 function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
   const {
     control,
-    formState: { errors },
+    formState: { errors, touchedFields },
     setValue,
     getValues,
-    trigger,
-  } = useForm<AddStorageMountForm>();
-
+  } = useForm<AddStorageMountForm>({
+    mode: "onChange",
+    defaultValues: {
+      name: storage.name || "",
+      mountPoint:
+        storage.mountPoint ||
+        `external_storage/${storage.schema?.toLowerCase()}`,
+      readOnly: storage.readOnly ?? false,
+    },
+  });
   const onFieldValueChange = (
     field: AddStorageMountFormFields,
     value: string | boolean
   ) => {
     setValue(field, value);
+    if (field === "name" && !touchedFields.mountPoint && !storage.storageId)
+      setValue("mountPoint", `external_storage/${value}`);
     setStorage({ ...getValues() });
-    trigger(field);
   };
 
   return (
-    <form className="form-rk-green">
+    <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
       <h5>Final details</h5>
       <p>We need a few more details to mount your storage properly.</p>
 
@@ -872,7 +904,6 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <Controller
           name="name"
           control={control}
-          defaultValue={storage.name || ""}
           render={({ field }) => (
             <input
               id="name"
@@ -911,10 +942,6 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <Controller
           name="mountPoint"
           control={control}
-          defaultValue={
-            storage.mountPoint ||
-            `external_storage/${storage.schema?.toLowerCase()}`
-          }
           render={({ field }) => (
             <input
               id="mountPoint"
@@ -946,7 +973,6 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <Controller
           name="readOnly"
           control={control}
-          defaultValue={storage.readOnly ?? false}
           render={({ field }) => (
             <input
               id="readOnly"

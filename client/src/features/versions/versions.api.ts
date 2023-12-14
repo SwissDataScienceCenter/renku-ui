@@ -122,7 +122,7 @@ export const versionsApi = createApi({
           sshEnabled: singleVersion?.data?.sshEnabled ?? false,
           cloudStorageEnabled:
             singleVersion?.data?.cloudstorageEnabled ?? false,
-        } as NotebooksVersion;
+        };
       },
       transformErrorResponse: () => {
         return {

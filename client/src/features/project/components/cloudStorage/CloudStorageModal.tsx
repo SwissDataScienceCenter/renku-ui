@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowCounterclockwise,
   ChevronLeft,
@@ -71,6 +71,7 @@ import { SuccessAlert } from "../../../../components/Alert";
 import styles from "./CloudStorage.module.scss";
 import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { isEqual } from "lodash";
 
 interface CloudStorageModalProps {
   currentStorage?: CloudStorage | null;
@@ -123,7 +124,7 @@ export default function CloudStorageModal({
         ...state,
         ...newState,
       };
-      if (JSON.stringify(fullNewState) === JSON.stringify(state)) {
+      if (isEqual(fullNewState, state)) {
         return;
       }
 
@@ -162,7 +163,7 @@ export default function CloudStorageModal({
         ...storageDetails,
         ...newStorageDetails,
       };
-      if (JSON.stringify(fullNewDetails) === JSON.stringify(storageDetails)) {
+      if (isEqual(fullNewDetails, storageDetails)) {
         return;
       }
       // reset follow-up properties: schema > provider > options
@@ -179,28 +180,6 @@ export default function CloudStorageModal({
     [storageDetails]
   );
 
-  // Reset
-  const [redraw, setRedraw] = useState(false);
-  useEffect(() => {
-    if (redraw) setRedraw(false);
-  }, [redraw]);
-  const reset = useCallback(() => {
-    const resetStatus = getCurrentStorageDetails(currentStorage);
-    setState(
-      storageId
-        ? {
-            ...EMPTY_CLOUD_STORAGE_STATE,
-            step: state.step,
-            completedSteps: state.completedSteps,
-          }
-        : { ...EMPTY_CLOUD_STORAGE_STATE }
-    );
-    setStorageDetails({ ...resetStatus });
-    if (success) setSuccess(false);
-    if (!validateResult.isUninitialized) validateResult.reset();
-    setRedraw(true); // This forces re-loading the useForm fields
-  }, [currentStorage, state, storageId, success]);
-
   // Mutations
   const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
     (state) => state.stateModel.project.metadata.id
@@ -211,6 +190,30 @@ export default function CloudStorageModal({
     useUpdateCloudStorageMutation();
   const [validateCloudStorageConnection, validateResult] =
     useTestCloudStorageConnectionMutation();
+
+  // Reset
+  const [redraw, setRedraw] = useState(false);
+  useEffect(() => {
+    if (redraw) setRedraw(false);
+  }, [redraw]);
+  const reset = useCallback(() => {
+    const resetStatus = getCurrentStorageDetails(currentStorage);
+    setState((prevState) =>
+      currentStorage != null
+        ? {
+            ...EMPTY_CLOUD_STORAGE_STATE,
+            step: prevState.step,
+            completedSteps: prevState.completedSteps,
+          }
+        : {
+            ...EMPTY_CLOUD_STORAGE_STATE,
+          }
+    );
+    setStorageDetails(resetStatus);
+    setSuccess(false);
+    if (!validateResult.isUninitialized) validateResult.reset();
+    setRedraw(true); // This forces re-loading the useForm fields
+  }, [currentStorage, validateResult]);
 
   const validateConnection = () => {
     const validateParameters: TestCloudStorageConnectionParams = {
@@ -240,7 +243,7 @@ export default function CloudStorageModal({
     validateCloudStorageConnection(validateParameters);
   };
 
-  const addStorage = () => {
+  const addOrEditStorage = useCallback(() => {
     storageDetails.options;
 
     const storageParameters: AddCloudStorageForProjectParams = {
@@ -306,7 +309,15 @@ export default function CloudStorageModal({
         }
       });
     }
-  };
+  }, [
+    projectId,
+    storageDetails,
+    storageId,
+    schema,
+    currentStorage,
+    addCloudStorageForProject,
+    modifyCloudStorageForProject,
+  ]);
 
   const toggle = useCallback(() => {
     originalToggle();
@@ -325,24 +336,16 @@ export default function CloudStorageModal({
     return cleanup;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const schemaRequiresProvider = useMemo(
+    () => hasProviderShortlist(storageDetails.schema),
+    [storageDetails.schema]
+  );
+
   // Visual elements
   const disableContinueButton =
     state.step === 1 &&
     (!storageDetails.schema ||
-      (!!storageDetails.schema &&
-        hasProviderShortlist(storageDetails.schema) &&
-        !storageDetails.provider));
-  const getContinueButtonDisableReason = () => {
-    if (!storageDetails.schema) {
-      return "Please select a storage type";
-    }
-    if (
-      hasProviderShortlist(storageDetails.schema) &&
-      !storageDetails.provider
-    ) {
-      return "Please select a provider or change storage type";
-    }
-  };
+      (schemaRequiresProvider && !storageDetails.provider));
   const continueButtonId = "add-cloud-storage-next";
 
   const disableAddButton =
@@ -352,37 +355,27 @@ export default function CloudStorageModal({
     !storageDetails.mountPoint ||
     !storageDetails.schema ||
     (hasProviderShortlist(storageDetails.schema) && !storageDetails.provider);
-  const getAddButtonDisableReason = () => {
-    if (addResult.isLoading || modifyResult.isLoading) {
-      return `Please wait, the storage is being ${
-        storageId ? "modified" : "added"
-      }`;
-    }
-    if (!storageDetails.name) {
-      return "Please provide a name";
-    }
-    if (!storageDetails.mountPoint) {
-      return "Please provide a mount point";
-    }
-    if (!storageDetails.schema) {
-      return "Please go back and select a storage type";
-    }
-    if (
-      hasProviderShortlist(storageDetails.schema) &&
-      !storageDetails.provider
-    ) {
-      return "Please go back and select a provider";
-    }
-  };
+  const addButtonDisableReason = addResult.isLoading
+    ? "Please wait, the storage is being added"
+    : modifyResult.isLoading
+    ? "Please wait, the storage is being modified"
+    : !storageDetails.name
+    ? "Please provide a name"
+    : !storageDetails.mountPoint
+    ? "Please provide a mount point"
+    : !storageDetails.schema
+    ? "Please go back and select a storage type"
+    : "Please go back and select a provider";
   const addButtonId = "add-cloud-storage-continue";
 
   const continueButton = success ? null : state.step === 3 &&
     state.completedSteps >= 2 ? (
     <div id={`${addButtonId}-div`} className="d-inline-block">
       <Button
+        data-cy="cloud-storage-edit-update-button"
         id={`${addButtonId}-button`}
         disabled={disableAddButton}
-        onClick={() => addStorage()}
+        onClick={() => addOrEditStorage()}
       >
         {addResult.isLoading || modifyResult.isLoading ? (
           <Loader className="me-1" inline size={16} />
@@ -395,7 +388,7 @@ export default function CloudStorageModal({
       </Button>
       {disableAddButton && (
         <UncontrolledTooltip placement="top" target={`${addButtonId}-div`}>
-          {getAddButtonDisableReason()}
+          {addButtonDisableReason}
         </UncontrolledTooltip>
       )}
     </div>
@@ -403,6 +396,7 @@ export default function CloudStorageModal({
     <div id={`${continueButtonId}-div`} className="d-inline-block">
       <Button
         id={`${continueButtonId}-button`}
+        data-cy="cloud-storage-edit-next-button"
         disabled={disableContinueButton}
         onClick={() => {
           setStateSafe({
@@ -421,7 +415,9 @@ export default function CloudStorageModal({
       </Button>
       {disableContinueButton && (
         <UncontrolledTooltip placement="top" target={`${continueButtonId}-div`}>
-          {getContinueButtonDisableReason()}
+          {!storageDetails.schema
+            ? "Please select a storage type"
+            : "Please select a provider or change storage type"}
         </UncontrolledTooltip>
       )}
     </div>
@@ -430,13 +426,18 @@ export default function CloudStorageModal({
   const backButton =
     addResult.isLoading || modifyResult.isLoading ? null : state.step <= 1 ||
       success ? (
-      <Button className="btn-outline-rk-green" onClick={() => toggle()}>
+      <Button
+        className="btn-outline-rk-green"
+        data-cy="cloud-storage-edit-close-button"
+        onClick={() => toggle()}
+      >
         <XLg className={cx("bi", "me-1")} />
         {success ? "Close" : "Cancel"}
       </Button>
     ) : (
       <Button
         className="btn-outline-rk-green"
+        data-cy="cloud-storage-edit-back-button"
         onClick={() => {
           setStateSafe({
             step: state.advancedMode ? 0 : state.step - 1,
@@ -448,9 +449,14 @@ export default function CloudStorageModal({
       </Button>
     );
 
-  const resetButton =
-    addResult.isLoading || modifyResult.isLoading || success ? null : (
-      <Button color="outline-danger" onClick={reset}>
+  const resetButton = !addResult.isLoading &&
+    !modifyResult.isLoading &&
+    !success && (
+      <Button
+        color="outline-danger"
+        data-cy="cloud-storage-edit-rest-button"
+        onClick={reset}
+      >
         <ArrowCounterclockwise className={cx("bi", "me-1")} />
         Reset
       </Button>
@@ -512,6 +518,7 @@ export default function CloudStorageModal({
       backdrop="static"
       centered
       className={styles.modal}
+      data-cy="cloud-storage-edit-modal"
       fullscreen="lg"
       id={currentStorage?.storage.storage_id ?? "new-cloud-storage"}
       isOpen={isOpen}
@@ -520,14 +527,14 @@ export default function CloudStorageModal({
       unmountOnClose={false}
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader toggle={toggle} data-cy="cloud-storage-edit-header">
         <CloudFill className={cx("bi", "me-2")} />
         {storageId ? "Edit" : "Add"} Cloud Storage
       </ModalHeader>
 
-      <ModalBody>{bodyContent}</ModalBody>
+      <ModalBody data-cy="cloud-storage-edit-body">{bodyContent}</ModalBody>
 
-      <ModalFooter>
+      <ModalFooter data-cy="cloud-storage-edit-footer">
         <div className="w-100">{connectionResult}</div>
         {testConnectionButton}
         {errorMessage}
