@@ -416,10 +416,9 @@ export default function CloudStorageModal({
       </Button>
     );
 
-  const resetButton =
-    addResult.isLoading ||
-    modifyResult.isLoading ||
-    (success && (
+  const resetButton = !addResult.isLoading &&
+    !modifyResult.isLoading &&
+    !success && (
       <Button
         color="outline-danger"
         data-cy="cloud-storage-edit-rest-button"
@@ -428,7 +427,7 @@ export default function CloudStorageModal({
         <ArrowCounterclockwise className={cx("bi", "me-1")} />
         Reset
       </Button>
-    ));
+    );
 
   const errorMessage =
     addResult.error || modifyResult.error ? (

@@ -236,7 +236,11 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
   const {
     control,
     formState: { errors },
-  } = useForm<AddStorageAdvancedForm>();
+  } = useForm<AddStorageAdvancedForm>({
+    defaultValues: {
+      sourcePath: storage.sourcePath || "",
+    },
+  });
 
   const onConfigurationChange = useCallback(
     (value: string) => {
@@ -251,9 +255,12 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
     [setStorage]
   );
 
-  const onSourcePathChange = (value: string) => {
-    setStorage({ sourcePath: value });
-  };
+  const onSourcePathChange = useCallback(
+    (value: string) => {
+      setStorage({ sourcePath: value });
+    },
+    [setStorage]
+  );
 
   const sourcePathHelp = useMemo(() => {
     return getSourcePathHint(storage.schema);
@@ -269,7 +276,6 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
         <Controller
           name="sourcePath"
           control={control}
-          defaultValue={storage.sourcePath || ""}
           render={({ field }) => (
             <input
               id="sourcePath"
@@ -376,7 +382,7 @@ function AddStorageType({
         key={s.name}
         value={s.prefix}
         tag="div"
-        onClick={() => setFinalSchema(s.prefix as string)}
+        onClick={() => setFinalSchema(s.prefix)}
       >
         <p className="mb-0">
           <b>{s.name}</b>
@@ -416,7 +422,9 @@ function AddStorageType({
         storage using an rclone configuration.
       </p>
       {missingSchema}
-      <ListGroup className={cx("bg-white", "rounded-3", styles.listGroup)}>
+      <ListGroup
+        className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
+      >
         {finalSchemaItems}
       </ListGroup>
     </div>
@@ -512,7 +520,9 @@ function AddStorageType({
       </p>
       {missingProvider}
       <div ref={providerRef}>
-        <ListGroup className={cx("bg-white", "rounded-3", styles.listGroup)}>
+        <ListGroup
+          className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
+        >
           {finalProviderItems}
         </ListGroup>
       </div>
@@ -858,19 +868,27 @@ type AddStorageMountFormFields = "name" | "mountPoint" | "readOnly";
 function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
   const {
     control,
-    formState: { errors },
+    formState: { errors, touchedFields },
     setValue,
     getValues,
-    trigger,
-  } = useForm<AddStorageMountForm>();
-
+  } = useForm<AddStorageMountForm>({
+    mode: "onChange",
+    defaultValues: {
+      name: storage.name || "",
+      mountPoint:
+        storage.mountPoint ||
+        `external_storage/${storage.schema?.toLowerCase()}`,
+      readOnly: storage.readOnly ?? false,
+    },
+  });
   const onFieldValueChange = (
     field: AddStorageMountFormFields,
     value: string | boolean
   ) => {
     setValue(field, value);
+    if (field === "name" && !touchedFields.mountPoint && !storage.storageId)
+      setValue("mountPoint", `external_storage/${value}`);
     setStorage({ ...getValues() });
-    trigger(field);
   };
 
   return (
@@ -886,7 +904,6 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <Controller
           name="name"
           control={control}
-          defaultValue={storage.name || ""}
           render={({ field }) => (
             <input
               id="name"
@@ -925,10 +942,6 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <Controller
           name="mountPoint"
           control={control}
-          defaultValue={
-            storage.mountPoint ||
-            `external_storage/${storage.schema?.toLowerCase()}`
-          }
           render={({ field }) => (
             <input
               id="mountPoint"
@@ -960,7 +973,6 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <Controller
           name="readOnly"
           control={control}
-          defaultValue={storage.readOnly ?? false}
           render={({ field }) => (
             <input
               id="readOnly"

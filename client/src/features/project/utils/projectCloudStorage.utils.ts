@@ -74,6 +74,7 @@ export function convertFromAdvancedConfig(
       if (value != undefined && value !== "") values.push(`${key} = ${value}`);
     });
   }
+  if (storage.name) values.unshift(`[${storage.name}]`);
   return values.length ? values.join("\n") + "\n" : "";
 }
 
@@ -104,8 +105,8 @@ export function getSchemaStorage(
   schema: CloudStorageSchema[],
   shortList = false,
   currentSchema?: string
-): Partial<CloudStorageSchema>[] {
-  const finalStorage = schema.reduce<Partial<CloudStorageSchema>[]>(
+): CloudStorageSchema[] {
+  const finalStorage = schema.reduce<CloudStorageSchema[]>(
     (current, element) => {
       if (
         shortList &&
@@ -118,24 +119,18 @@ export function getSchemaStorage(
       ) {
         const override = CLOUD_STORAGE_OVERRIDE.storage[element.prefix];
         current.push({
+          ...element,
           name: override.name ?? element.name,
           description: override.description ?? element.description,
-          prefix: element.prefix,
           position: override.position ?? element.position,
         });
       } else {
-        current.push({
-          name: element.name,
-          description: element.description,
-          prefix: element.prefix,
-          position: element.position,
-        });
+        current.push(element);
       }
       return current;
     },
     []
   );
-
   return finalStorage.sort(
     (a, b) => (a.position ?? LAST_POSITION) - (b.position ?? LAST_POSITION)
   );
