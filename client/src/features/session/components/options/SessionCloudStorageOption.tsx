@@ -214,7 +214,7 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
     const sensitiveFields =
       storage.sensitive_fields && storage.sensitive_fields.length
         ? storage.sensitive_fields.filter((f) => {
-            if (storage.configuration[f.name]) {
+            if (Object.keys(storage.configuration).find((c) => c === f.name)) {
               return true;
             }
           })

@@ -65,7 +65,7 @@ import { WarnAlert } from "../../../../components/Alert";
 
 import styles from "./CloudStorage.module.scss";
 
-interface AddCloudStorageProps {
+interface AddOrEditCloudStorageProps {
   schema?: CloudStorageSchema[];
   setStorage: (newDetails: Partial<CloudStorageDetails>) => void;
   setState: (newState: Partial<AddCloudStorageState>) => void;
@@ -73,13 +73,13 @@ interface AddCloudStorageProps {
   storage: CloudStorageDetails;
 }
 
-export default function AddCloudStorage({
+export default function AddOrEditCloudStorage({
   schema,
   setStorage,
   setState,
   state,
   storage,
-}: AddCloudStorageProps) {
+}: AddOrEditCloudStorageProps) {
   const ContentByStep =
     state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
       ? mapStepToElement[state.step]
@@ -217,11 +217,15 @@ const mapStepToName: { [key: number]: string } = {
   3: "Mount",
 };
 
+interface AddStorageAdvancedForm {
+  sourcePath: string;
+  configuration: string;
+}
 function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
   const {
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm<AddStorageAdvancedForm>();
 
   const onConfigurationChange = (value: string) => {
     const config = parseCloudStorageConfiguration(value);
@@ -824,6 +828,12 @@ function AddStorageOptions({
 
 // *** Add storage: page 3 of 3, with name and mount path *** //
 
+interface AddStorageMountForm {
+  name: string;
+  mountPoint: string;
+  readOnly: boolean;
+}
+type AddStorageMountFormFields = "name" | "mountPoint" | "readOnly";
 function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
   const {
     control,
@@ -831,9 +841,12 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
     setValue,
     getValues,
     trigger,
-  } = useForm();
+  } = useForm<AddStorageMountForm>();
 
-  const onFieldValueChange = (field: string, value: string | boolean) => {
+  const onFieldValueChange = (
+    field: AddStorageMountFormFields,
+    value: string | boolean
+  ) => {
     setValue(field, value);
     setStorage({ ...getValues() });
     trigger(field);
@@ -940,6 +953,7 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
                 field.onChange(e);
                 onFieldValueChange("readOnly", e.target.checked);
               }}
+              value=""
               checked={storage.readOnly ?? false}
             />
           )}

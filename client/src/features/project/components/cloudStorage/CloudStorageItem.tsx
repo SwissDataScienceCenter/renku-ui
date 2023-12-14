@@ -88,7 +88,7 @@ export default function CloudStorageItem({
   const credentialId = `cloud-storage-${storage.storage_id}-credentials`;
   const requiresCredentials = anySensitiveField && (
     <>
-      <span id={credentialId} tabIndex={0} data-bs-title="Requires credential">
+      <span id={credentialId} tabIndex={0}>
         <KeyFill className={cx("bi", "me-1")} />
       </span>
       <UncontrolledTooltip target={credentialId}>
@@ -206,20 +206,6 @@ function CloudStorageDetails({
     [credentialFieldDefinitions]
   );
 
-  const editButton = noEdit ? null : (
-    <AddOrEditCloudStorageButton
-      devAccess={devAccess}
-      currentStorage={storageDefinition}
-    />
-  );
-
-  const deleteButton = noEdit ? null : (
-    <DeleteCloudStorageButton
-      devAccess={devAccess}
-      storageDefinition={storageDefinition}
-    />
-  );
-
   return (
     <>
       <section>
@@ -287,10 +273,18 @@ function CloudStorageDetails({
         </div>
       </section>
 
-      <section className={cx("d-flex", "justify-content-end", "mt-3")}>
-        {editButton}
-        {deleteButton}
-      </section>
+      {!noEdit && (
+        <section className={cx("d-flex", "justify-content-end", "mt-3")}>
+          <AddOrEditCloudStorageButton
+            devAccess={devAccess}
+            currentStorage={storageDefinition}
+          />
+          <DeleteCloudStorageButton
+            devAccess={devAccess}
+            storageDefinition={storageDefinition}
+          />
+        </section>
+      )}
     </>
   );
 }

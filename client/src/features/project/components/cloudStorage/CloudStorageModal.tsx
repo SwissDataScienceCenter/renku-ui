@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ArrowCounterclockwise,
   ChevronLeft,
@@ -69,7 +69,7 @@ import {
 import { SuccessAlert } from "../../../../components/Alert";
 
 import styles from "./CloudStorage.module.scss";
-import AddCloudStorage from "./AddCloudStorage";
+import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 
 interface CloudStorageModalProps {
@@ -83,15 +83,6 @@ export default function CloudStorageModal({
   toggle: originalToggle,
 }: CloudStorageModalProps) {
   const storageId = currentStorage?.storage.storage_id ?? null;
-
-  const toggle = () => {
-    originalToggle();
-    if (success) {
-      setSuccess(false);
-      reset();
-    }
-  };
-
   // Fetch available schema when users open the modal
   const {
     data: schema,
@@ -99,22 +90,23 @@ export default function CloudStorageModal({
     isFetching: schemaIsFetching,
   } = useGetCloudStorageSchemaQuery(undefined, { skip: !isOpen });
 
-  // Save current state
+  // Reset state on props change
   useEffect(() => {
-    const cloudStorageDetails: CloudStorageDetails = storageId
-      ? getCurrentStorageDetails(currentStorage)
-      : EMPTY_CLOUD_STORAGE_DETAILS;
-    const cloudStorageState: AddCloudStorageState = storageId
-      ? {
-          ...EMPTY_CLOUD_STORAGE_STATE,
-          step: 2,
-          completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
-        }
-      : EMPTY_CLOUD_STORAGE_STATE;
+    const cloudStorageDetails: CloudStorageDetails =
+      currentStorage != null
+        ? getCurrentStorageDetails(currentStorage)
+        : EMPTY_CLOUD_STORAGE_DETAILS;
+    const cloudStorageState: AddCloudStorageState =
+      currentStorage != null
+        ? {
+            ...EMPTY_CLOUD_STORAGE_STATE,
+            step: 2,
+            completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
+          }
+        : EMPTY_CLOUD_STORAGE_STATE;
     setStorageDetails(cloudStorageDetails);
     setState(cloudStorageState);
-  }, [currentStorage, storageId]);
-  // ? storageId depends on the currentStorage
+  }, [currentStorage]);
 
   const [success, setSuccess] = useState(false);
   const [state, setState] = useState<AddCloudStorageState>(
@@ -125,69 +117,74 @@ export default function CloudStorageModal({
   );
 
   // Enhanced setters
-  const setStateSafe = (newState: Partial<AddCloudStorageState>) => {
-    const fullNewState = {
-      ...state,
-      ...newState,
-    };
-    if (JSON.stringify(fullNewState) === JSON.stringify(state)) {
-      return;
-    }
+  const setStateSafe = useCallback(
+    (newState: Partial<AddCloudStorageState>) => {
+      const fullNewState = {
+        ...state,
+        ...newState,
+      };
+      if (JSON.stringify(fullNewState) === JSON.stringify(state)) {
+        return;
+      }
 
-    // Handle advanced mode changes
-    if (
-      fullNewState.advancedMode !== state.advancedMode &&
-      fullNewState.step !== 3
-    ) {
-      if (fullNewState.advancedMode) {
-        fullNewState.step = 0;
-      } else {
-        if (
-          // schema and provider (where necessary) must also exist in the list
-          !storageDetails.schema ||
-          !schema?.find((s) => s.prefix === storageDetails.schema) ||
-          (hasProviderShortlist(storageDetails.schema) &&
-            (!storageDetails.provider ||
-              !getSchemaProviders(schema, false, storageDetails.schema)?.find(
-                (p) => p.name === storageDetails.provider
-              )))
-        ) {
-          fullNewState.step = 1;
+      // Handle advanced mode changes
+      if (
+        fullNewState.advancedMode !== state.advancedMode &&
+        fullNewState.step !== 3
+      ) {
+        if (fullNewState.advancedMode) {
+          fullNewState.step = 0;
         } else {
-          fullNewState.step = 2;
+          if (
+            // schema and provider (where necessary) must also exist in the list
+            !storageDetails.schema ||
+            !schema?.find((s) => s.prefix === storageDetails.schema) ||
+            (hasProviderShortlist(storageDetails.schema) &&
+              (!storageDetails.provider ||
+                !getSchemaProviders(schema, false, storageDetails.schema)?.find(
+                  (p) => p.name === storageDetails.provider
+                )))
+          ) {
+            fullNewState.step = 1;
+          } else {
+            fullNewState.step = 2;
+          }
         }
       }
-    }
-    setState(() => fullNewState);
-  };
-  const setStorageDetailsSafe = (
-    newStorageDetails: Partial<CloudStorageDetails>
-  ) => {
-    const fullNewDetails = {
-      ...storageDetails,
-      ...newStorageDetails,
-    };
-    if (JSON.stringify(fullNewDetails) === JSON.stringify(storageDetails)) {
-      return;
-    }
-    // reset follow-up properties: schema > provider > options
-    if (fullNewDetails.schema !== storageDetails.schema) {
-      fullNewDetails.provider = undefined;
-      fullNewDetails.options = undefined;
-      fullNewDetails.sourcePath = undefined;
-    } else if (fullNewDetails.provider !== storageDetails.provider) {
-      fullNewDetails.options = undefined;
-      fullNewDetails.sourcePath = undefined;
-    }
-    setStorageDetails(() => fullNewDetails);
-  };
+      setState(fullNewState);
+    },
+    [state, storageDetails, schema]
+  );
+
+  const setStorageDetailsSafe = useCallback(
+    (newStorageDetails: Partial<CloudStorageDetails>) => {
+      const fullNewDetails = {
+        ...storageDetails,
+        ...newStorageDetails,
+      };
+      if (JSON.stringify(fullNewDetails) === JSON.stringify(storageDetails)) {
+        return;
+      }
+      // reset follow-up properties: schema > provider > options
+      if (fullNewDetails.schema !== storageDetails.schema) {
+        fullNewDetails.provider = undefined;
+        fullNewDetails.options = undefined;
+        fullNewDetails.sourcePath = undefined;
+      } else if (fullNewDetails.provider !== storageDetails.provider) {
+        fullNewDetails.options = undefined;
+        fullNewDetails.sourcePath = undefined;
+      }
+      setStorageDetails(fullNewDetails);
+    },
+    [storageDetails]
+  );
 
   // Reset
   const [redraw, setRedraw] = useState(false);
   useEffect(() => {
     if (redraw) setRedraw(false);
   }, [redraw]);
-  const reset = () => {
+  const reset = useCallback(() => {
     const resetStatus = getCurrentStorageDetails(currentStorage);
     setState(
       storageId
@@ -202,7 +199,7 @@ export default function CloudStorageModal({
     if (success) setSuccess(false);
     if (!validateResult.isUninitialized) validateResult.reset();
     setRedraw(true); // This forces re-loading the useForm fields
-  };
+  }, [currentStorage, state, storageId, success]);
 
   // Mutations
   const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
@@ -310,6 +307,14 @@ export default function CloudStorageModal({
       });
     }
   };
+
+  const toggle = useCallback(() => {
+    originalToggle();
+    if (success) {
+      setSuccess(false);
+      reset();
+    }
+  }, [originalToggle, reset, success]);
 
   // Handle unmount
   useEffect(() => {
@@ -493,7 +498,7 @@ export default function CloudStorageModal({
   ) : schemaError ? (
     <RtkOrNotebooksError error={schemaError} />
   ) : (
-    <AddCloudStorage
+    <AddOrEditCloudStorage
       schema={schema}
       setState={setStateSafe}
       setStorage={setStorageDetailsSafe}
