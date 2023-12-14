@@ -331,13 +331,18 @@ export function getSchemaOptions(
   return convertedOptions;
 }
 
-// TODO: add placeholder logic
-export function getSourcePathHint(targetSchema = "") {
+export function getSourcePathHint(
+  targetSchema = ""
+): Record<"help" | "placeholder", string> {
   const initialText = "Source path to mount. ";
-  const finalText =
+  const helpData =
     CLOUD_STORAGE_MOUNT_PATH_HELP[targetSchema] ??
     CLOUD_STORAGE_MOUNT_PATH_HELP["generic"];
-  return initialText + finalText;
+  const finalText = initialText + helpData.help;
+  return {
+    help: finalText,
+    placeholder: helpData.placeholder,
+  };
 }
 
 export function getCurrentStorageDetails(

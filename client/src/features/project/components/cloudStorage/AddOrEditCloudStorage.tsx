@@ -238,9 +238,12 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
   };
 
   const onSourcePathChange = (value: string) => {
-    // setValue("sourcePath", value);
     setStorage({ sourcePath: value });
   };
+
+  const sourcePathHelp = useMemo(() => {
+    return getSourcePathHint(storage.schema);
+  }, [storage.schema]);
 
   return (
     <form className="form-rk-green">
@@ -263,11 +266,12 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
                 field.onChange(e);
                 onSourcePathChange(e.target.value);
               }}
+              placeholder={sourcePathHelp.placeholder}
             />
           )}
         />
         <div className={cx("form-text", "text-muted")}>
-          {getSourcePathHint(storage.schema)}
+          {sourcePathHelp.help}
         </div>
       </div>
 
@@ -621,68 +625,109 @@ function AddStorageOptions({
     setStorage({ options: validOptions });
   };
 
-  if (!options) return null;
+  const optionItems =
+    options &&
+    options.map((o) => {
+      const inputType = !o.convertedType
+        ? "text"
+        : o.convertedType === "secret"
+        ? "password"
+        : o.convertedType === "boolean"
+        ? "checkbox"
+        : o.convertedType === "number"
+        ? "number"
+        : "text";
 
-  const optionItems = options.map((o) => {
-    const inputType = !o.convertedType
-      ? "text"
-      : o.convertedType === "secret"
-      ? "password"
-      : o.convertedType === "boolean"
-      ? "checkbox"
-      : o.convertedType === "number"
-      ? "number"
-      : "text";
-
-    const placeholder = o.examples?.length
-      ? o.examples[0].value
+      const placeholder = o.examples?.length
         ? o.examples[0].value
-        : undefined
-      : undefined;
+          ? o.examples[0].value
+          : undefined
+        : undefined;
 
-    const examples = (
-      <AddStorageOptionsExamples
-        examples={o.examples}
-        name={o.name}
-        provider={storage.provider}
-      />
-    );
+      const examples = (
+        <AddStorageOptionsExamples
+          examples={o.examples}
+          name={o.name}
+          provider={storage.provider}
+        />
+      );
 
-    const warning =
-      o.convertedType === "secret" ? (
-        <SecretOptionWarning name={o.name} />
-      ) : null;
+      const warning =
+        o.convertedType === "secret" ? (
+          <SecretOptionWarning name={o.name} />
+        ) : null;
 
-    return (
-      <div className="mb-3" key={o.name}>
-        <label htmlFor={o.name}>
-          {o.friendlyName ?? o.name} {examples} {warning}
-        </label>
+      return (
+        <div className="mb-3" key={o.name}>
+          <label htmlFor={o.name}>
+            {o.friendlyName ?? o.name} {examples} {warning}
+          </label>
 
-        {inputType === "checkbox" ? (
-          <Controller
-            name={o.name}
-            control={control}
-            defaultValue={
-              storage.options && storage.options[o.name]
-                ? storage.options[o.name]
-                : o.convertedDefault ?? false
-            }
-            render={({ field }) => (
-              <input
-                id={o.name}
-                type={inputType}
-                {...field}
-                className={cx("form-check-input", "ms-1")}
-                onChange={(e) => {
-                  field.onChange(e);
-                  onFieldValueChange(o.name, e.target.checked);
-                }}
+          {inputType === "checkbox" ? (
+            <Controller
+              name={o.name}
+              control={control}
+              defaultValue={
+                storage.options && storage.options[o.name]
+                  ? storage.options[o.name]
+                  : o.convertedDefault ?? false
+              }
+              render={({ field }) => (
+                <input
+                  id={o.name}
+                  type={inputType}
+                  {...field}
+                  className={cx("form-check-input", "ms-1")}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    onFieldValueChange(o.name, e.target.checked);
+                  }}
+                />
+              )}
+            />
+          ) : inputType === "password" ? (
+            <InputGroup>
+              <Controller
+                name={o.name}
+                control={control}
+                defaultValue={
+                  storage.options && storage.options[o.name]
+                    ? storage.options[o.name]
+                    : o.convertedDefault ?? ""
+                }
+                render={({ field }) => (
+                  <input
+                    id={o.name}
+                    type={getPasswordType(o.name)}
+                    {...field}
+                    className={cx("form-control", "rounded-0", "rounded-start")}
+                    placeholder={placeholder}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      onFieldValueChange(o.name, e.target.value);
+                    }}
+                  />
+                )}
               />
-            )}
-          />
-        ) : inputType === "password" ? (
-          <InputGroup>
+              <Button
+                className="rounded-end"
+                id={`show-password-${o.name}`}
+                onClick={() => swapShowPassword(o.name)}
+              >
+                {getPasswordType(o.name) === "password" ? (
+                  <EyeSlashFill className="bi" />
+                ) : (
+                  <EyeFill className="bi" />
+                )}
+                <UncontrolledTooltip
+                  placement="top"
+                  target={`show-password-${o.name}`}
+                >
+                  Hide/show sensistive data
+                </UncontrolledTooltip>
+              </Button>
+            </InputGroup>
+          ) : (
             <Controller
               name={o.name}
               control={control}
@@ -694,70 +739,29 @@ function AddStorageOptions({
               render={({ field }) => (
                 <input
                   id={o.name}
-                  type={getPasswordType(o.name)}
+                  type={inputType}
                   {...field}
-                  className={cx("form-control", "rounded-0", "rounded-start")}
+                  className="form-control"
                   placeholder={placeholder}
                   onChange={(e) => {
                     field.onChange(e);
-                    onFieldValueChange(o.name, e.target.value);
+                    onFieldValueChange(
+                      o.name,
+                      inputType === "number"
+                        ? parseFloat(e.target.value)
+                        : e.target.value
+                    );
                   }}
                 />
               )}
             />
-            <Button
-              className="rounded-end"
-              id={`show-password-${o.name}`}
-              onClick={() => swapShowPassword(o.name)}
-            >
-              {getPasswordType(o.name) === "password" ? (
-                <EyeSlashFill className="bi" />
-              ) : (
-                <EyeFill className="bi" />
-              )}
-              <UncontrolledTooltip
-                placement="top"
-                target={`show-password-${o.name}`}
-              >
-                Hide/show sensistive data
-              </UncontrolledTooltip>
-            </Button>
-          </InputGroup>
-        ) : (
-          <Controller
-            name={o.name}
-            control={control}
-            defaultValue={
-              storage.options && storage.options[o.name]
-                ? storage.options[o.name]
-                : o.convertedDefault ?? ""
-            }
-            render={({ field }) => (
-              <input
-                id={o.name}
-                type={inputType}
-                {...field}
-                className="form-control"
-                placeholder={placeholder}
-                onChange={(e) => {
-                  field.onChange(e);
-                  onFieldValueChange(
-                    o.name,
-                    inputType === "number"
-                      ? parseFloat(e.target.value)
-                      : e.target.value
-                  );
-                }}
-              />
-            )}
-          />
-        )}
-        <div className={cx("form-text", "text-muted")}>{o.help}</div>
-      </div>
-    );
-  });
+          )}
+          <div className={cx("form-text", "text-muted")}>{o.help}</div>
+        </div>
+      );
+    });
 
-  const advancedOptions = (
+  const advancedOptions = options && (
     <>
       <div className={cx("form-check", "form-switch", "mb-3", "d-flex")}>
         <Input
@@ -783,6 +787,10 @@ function AddStorageOptions({
     setStorage({ sourcePath: value });
   };
 
+  const sourcePathHelp = useMemo(() => {
+    return getSourcePathHint(storage.schema);
+  }, [storage.schema]);
+
   const sourcePath = (
     <div className="mb-3">
       <Label className="form-label" for="add-storage-name">
@@ -803,12 +811,11 @@ function AddStorageOptions({
               field.onChange(e);
               onSourcePathChange(e.target.value);
             }}
+            placeholder={sourcePathHelp.placeholder}
           />
         )}
       />
-      <div className={cx("form-text", "text-muted")}>
-        {getSourcePathHint(storage.schema)}
-      </div>
+      <div className={cx("form-text", "text-muted")}>{sourcePathHelp.help}</div>
     </div>
   );
 
@@ -926,7 +933,8 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <div className={cx("form-text", "text-muted")}>
           This is the name of the folder where you will find your external
           storage in the sessions. You should pick something different from the
-          folders used in the projects repository.
+          folders used in the projects repository, and from folder mounted by
+          other storage services.
         </div>
       </div>
 
