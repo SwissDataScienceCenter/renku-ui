@@ -71,12 +71,19 @@ export const CLOUD_OPTIONS_OVERRIDE = {
 } as Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>;
 
 export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
-  s3:
-    "For S3, this is usually your bucket name. You can also mount a sub-folder by appending it to the bucket" +
-    " name with a slash, e.g. `my-bucket/sub-folder`.",
-  generic:
-    "Depending on the provider, you can leave this blank to mount the default root or specify a folder.",
-} as Record<string, string>;
+  s3: {
+    help:
+      "For S3, this is usually your remote bucket name as specified in the cloud service you are using. " +
+      "You can also mount a sub-folder by appending it to the bucket name with a slash, e.g. `my-bucket/sub-folder`.",
+    placeholder: "remote-bucket-name/optional-sub-folder(s)",
+  },
+  generic: {
+    help:
+      "You can leave this blank to mount the default root or specify a folder. Depending on the cloud storage " +
+      "provider, you should be able to specify stub-folder if you wish.",
+    placeholder: "'/' or 'optional-sub-folder(s)/'",
+  },
+} as Record<string, Record<"help" | "placeholder", string>>;
 
 export const CLOUD_STORAGE_SCHEMA_SHORTLIST = ["s3", "webdav", "azureblob"];
 
