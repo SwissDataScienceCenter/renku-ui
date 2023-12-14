@@ -23,7 +23,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Badge, Button, UncontrolledTooltip } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../../api-client";
@@ -180,12 +180,19 @@ function BuildAgainButton() {
       return;
     }
 
+    let reset: (() => void) | null = () => {
+      dispatch(setDockerImageBuildStatus("unknown"));
+      dispatch(setDockerImageStatus("unknown"));
+    };
     retryPipeline({
       pipelineId: pipelineJob.pipeline.id,
       projectId: gitLabProjectId,
+    }).finally(() => {
+      reset?.();
     });
-    dispatch(setDockerImageBuildStatus("unknown"));
-    dispatch(setDockerImageStatus("unknown"));
+    return () => {
+      reset = null;
+    };
   }, [dispatch, gitLabProjectId, pipelineJob, retryPipeline]);
 
   if (!hasDevAccess) {
@@ -331,6 +338,7 @@ function useDockerImageStatusStateMachine() {
       currentData: registry,
       error: renkuRegistryError,
       isFetching: renkuRegistryIsFetching,
+      requestId: renkuRegistryRequestId,
     },
   ] = projectGitLabApi.useLazyGetRenkuRegistryQuery();
 
@@ -340,6 +348,7 @@ function useDockerImageStatusStateMachine() {
       currentData: registryTag,
       error: registryTagError,
       isFetching: registryTagIsFetching,
+      requestId: registryTagRequestId,
     },
   ] = projectGitLabApi.useLazyGetRegistryTagQuery();
 
@@ -349,6 +358,7 @@ function useDockerImageStatusStateMachine() {
       currentData: pipelines,
       error: pipelinesError,
       isFetching: pipelinesIsFetching,
+      requestId: pipelinesRequestId,
     },
   ] = projectGitLabApi.useLazyGetPipelinesQuery();
 
@@ -359,8 +369,11 @@ function useDockerImageStatusStateMachine() {
       error: pipelineJobError,
       isFetching: pipelineJobIsFetching,
       isSuccess: pipelineJobIsSuccess,
+      requestId: pipelineJobRequestId,
     },
   ] = projectGitLabApi.useLazyGetPipelineJobByNameQuery();
+
+  const [currentRequestId, setCurrentRequestId] = useState("");
 
   // Start checking for Docker images in CI/CD
   useEffect(() => {
@@ -382,15 +395,17 @@ function useDockerImageStatusStateMachine() {
     if (status !== "checking-ci-registry" || !gitLabProjectId) {
       return;
     }
-    getRenkuRegistry({
+    const action = getRenkuRegistry({
       projectId: `${gitLabProjectId}`,
     });
+    setCurrentRequestId(action.requestId);
   }, [getRenkuRegistry, gitLabProjectId, status]);
 
   // Handle checking the registry
   useEffect(() => {
     if (
       status !== "checking-ci-registry" ||
+      renkuRegistryRequestId !== currentRequestId ||
       renkuRegistryIsFetching ||
       (registry == null && renkuRegistryError == null)
     ) {
@@ -401,7 +416,15 @@ function useDockerImageStatusStateMachine() {
       return;
     }
     dispatch(setDockerImageBuildStatus("checking-ci-image"));
-  }, [dispatch, registry, renkuRegistryError, renkuRegistryIsFetching, status]);
+  }, [
+    currentRequestId,
+    dispatch,
+    registry,
+    renkuRegistryError,
+    renkuRegistryIsFetching,
+    renkuRegistryRequestId,
+    status,
+  ]);
 
   // Check the Docker image
   useEffect(() => {
@@ -409,17 +432,19 @@ function useDockerImageStatusStateMachine() {
       return;
     }
     const tag = commit.slice(0, 7);
-    getRegistryTag({
+    const action = getRegistryTag({
       projectId: gitLabProjectId,
       registryId: registry.id,
       tag,
     });
+    setCurrentRequestId(action.requestId);
   }, [commit, getRegistryTag, gitLabProjectId, registry, status]);
 
   // Handle checking the Docker image
   useEffect(() => {
     if (
       status !== "checking-ci-image" ||
+      registryTagRequestId !== currentRequestId ||
       registryTagIsFetching ||
       (registryTag == null && registryTagError == null)
     ) {
@@ -431,23 +456,33 @@ function useDockerImageStatusStateMachine() {
     }
     dispatch(setDockerImageBuildStatus("available"));
     dispatch(setDockerImageStatus("available"));
-  }, [dispatch, registryTag, registryTagError, registryTagIsFetching, status]);
+  }, [
+    currentRequestId,
+    dispatch,
+    registryTag,
+    registryTagError,
+    registryTagIsFetching,
+    registryTagRequestId,
+    status,
+  ]);
 
   // Check the CI/CD pipelines
   useEffect(() => {
     if (status !== "checking-ci-pipelines" || !gitLabProjectId) {
       return;
     }
-    getPipelines({
+    const action = getPipelines({
       commit,
       projectId: gitLabProjectId,
     });
+    setCurrentRequestId(action.requestId);
   }, [commit, getPipelines, gitLabProjectId, status]);
 
   // Handle checking the CI/CD pipelines
   useEffect(() => {
     if (
       status !== "checking-ci-pipelines" ||
+      pipelinesRequestId !== currentRequestId ||
       pipelinesIsFetching ||
       (pipelines == null && pipelinesError == null)
     ) {
@@ -468,24 +503,34 @@ function useDockerImageStatusStateMachine() {
       };
     }
     dispatch(setDockerImageBuildStatus("checking-ci-jobs"));
-  }, [dispatch, pipelines, pipelinesError, pipelinesIsFetching, status]);
+  }, [
+    currentRequestId,
+    dispatch,
+    pipelines,
+    pipelinesError,
+    pipelinesIsFetching,
+    pipelinesRequestId,
+    status,
+  ]);
 
   // Check the CI/CD pipeline job
   useEffect(() => {
     if (status !== "checking-ci-jobs" || !gitLabProjectId || !pipelines) {
       return;
     }
-    getPipelineJobByName({
+    const action = getPipelineJobByName({
       jobName: SESSION_CI_IMAGE_BUILD_JOB,
       pipelineIds: pipelines.map(({ id }) => id),
       projectId: gitLabProjectId,
     });
+    setCurrentRequestId(action.requestId);
   }, [getPipelineJobByName, gitLabProjectId, pipelines, status]);
 
   // Handle checking the CI/CD pipeline job
   useEffect(() => {
     if (
       status !== "checking-ci-jobs" ||
+      pipelineJobRequestId !== currentRequestId ||
       pipelineJobIsFetching ||
       (!pipelineJobIsSuccess && pipelineJobError == null)
     ) {
@@ -512,7 +557,12 @@ function useDockerImageStatusStateMachine() {
     }
     if (
       (
-        ["running", "pending", "stopping"] as GitLabPipelineJob["status"][]
+        [
+          "running",
+          "created",
+          "pending",
+          "stopping",
+        ] as GitLabPipelineJob["status"][]
       ).includes(pipelineJob.status)
     ) {
       dispatch(setDockerImageBuildStatus("ci-job-running"));
@@ -522,11 +572,13 @@ function useDockerImageStatusStateMachine() {
     dispatch(setDockerImageBuildStatus("error"));
     dispatch(setDockerImageStatus("not-available"));
   }, [
+    currentRequestId,
     dispatch,
     pipelineJob,
     pipelineJobError,
     pipelineJobIsFetching,
     pipelineJobIsSuccess,
+    pipelineJobRequestId,
     status,
   ]);
 
@@ -548,15 +600,17 @@ function useDockerImageStatusStateMachine() {
     if (status !== "checking-ci-done-registry" || !gitLabProjectId) {
       return;
     }
-    getRenkuRegistry({
+    const action = getRenkuRegistry({
       projectId: `${gitLabProjectId}`,
     });
+    setCurrentRequestId(action.requestId);
   }, [getRenkuRegistry, gitLabProjectId, status]);
 
   // Handle checking the registry
   useEffect(() => {
     if (
       status !== "checking-ci-done-registry" ||
+      renkuRegistryRequestId !== currentRequestId ||
       renkuRegistryIsFetching ||
       (registry == null && renkuRegistryError == null)
     ) {
@@ -568,7 +622,15 @@ function useDockerImageStatusStateMachine() {
       return;
     }
     dispatch(setDockerImageBuildStatus("checking-ci-done-image"));
-  }, [dispatch, registry, renkuRegistryError, renkuRegistryIsFetching, status]);
+  }, [
+    currentRequestId,
+    dispatch,
+    registry,
+    renkuRegistryError,
+    renkuRegistryIsFetching,
+    renkuRegistryRequestId,
+    status,
+  ]);
 
   // Check the Docker image, the CI/CD job is done, so it is supposed to exist
   useEffect(() => {
@@ -576,17 +638,22 @@ function useDockerImageStatusStateMachine() {
       return;
     }
     const tag = commit.slice(0, 7);
-    getRegistryTag({
-      projectId: gitLabProjectId,
-      registryId: registry.id,
-      tag,
-    });
+    const action = getRegistryTag(
+      {
+        projectId: gitLabProjectId,
+        registryId: registry.id,
+        tag,
+      },
+      /*preferCacheValue=*/ false
+    );
+    setCurrentRequestId(action.requestId);
   }, [commit, getRegistryTag, gitLabProjectId, registry, status]);
 
   // Handle checking the Docker image
   useEffect(() => {
     if (
       status !== "checking-ci-done-image" ||
+      registryTagRequestId !== currentRequestId ||
       registryTagIsFetching ||
       (registryTag == null && registryTagError == null)
     ) {
@@ -599,7 +666,15 @@ function useDockerImageStatusStateMachine() {
     }
     dispatch(setDockerImageBuildStatus("available"));
     dispatch(setDockerImageStatus("available"));
-  }, [dispatch, registryTag, registryTagError, registryTagIsFetching, status]);
+  }, [
+    currentRequestId,
+    dispatch,
+    registryTag,
+    registryTagError,
+    registryTagIsFetching,
+    registryTagRequestId,
+    status,
+  ]);
 
   // Periodically check the registry for the Docker image
   useEffect(() => {
