@@ -406,7 +406,7 @@ describe("Cloud storage settings page", () => {
     cy.getDataCy("cloud-storage-edit-next-button").should("be.visible").click();
 
     cy.get("#name").should("have.value", "").type("fake-storage");
-    cy.get("#mountPoint").should("have.value", "external_storage/webdav");
+    cy.get("#mountPoint").should("have.value", "external_storage/fake-storage");
 
     cy.getDataCy("cloud-storage-edit-update-button")
       .should("be.visible")
@@ -419,7 +419,7 @@ describe("Cloud storage settings page", () => {
 
       expect(name).to.equal("fake-storage");
       expect(readonly).to.be.false;
-      expect(target_path).to.equal("external_storage/webdav");
+      expect(target_path).to.equal("external_storage/fake-storage");
     });
 
     cy.getDataCy("cloud-storage-edit-body").contains(
