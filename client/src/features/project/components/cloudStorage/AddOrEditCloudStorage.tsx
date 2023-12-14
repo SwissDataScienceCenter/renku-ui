@@ -66,7 +66,7 @@ import { WarnAlert } from "../../../../components/Alert";
 import styles from "./CloudStorage.module.scss";
 
 interface AddOrEditCloudStorageProps {
-  schema?: CloudStorageSchema[];
+  schema: CloudStorageSchema[];
   setStorage: (newDetails: Partial<CloudStorageDetails>) => void;
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
@@ -91,7 +91,7 @@ export default function AddOrEditCloudStorage({
         <AddStorageAdvancedToggle state={state} setState={setState} />
         <AddStorageBreadcrumbNavbar state={state} setState={setState} />
         <ContentByStep
-          schema={schema as CloudStorageSchema[]} // ? the `loading` variable makes sure it's never undefined
+          schema={schema}
           state={state}
           storage={storage}
           setState={setState}
@@ -126,19 +126,25 @@ function AddStorageBreadcrumbNavbar({
       const disabled = stepNumber > completedSteps + 1;
       return (
         <BreadcrumbItem active={active} key={stepNumber}>
-          <Button
-            className={cx(
-              "p-0",
-              `${active || disabled ? "text-decoration-none" : ""}`
-            )}
-            color="link"
-            disabled={disabled}
-            onClick={() => {
-              setState({ step: stepNumber });
-            }}
-          >
-            {mapStepToName[stepNumber]}
-          </Button>
+          {active ? (
+            <>{mapStepToName[stepNumber]}</>
+          ) : (
+            <>
+              <Button
+                className={cx(
+                  "p-0",
+                  (active || disabled) && "text-decoration-none"
+                )}
+                color="link"
+                disabled={disabled}
+                onClick={() => {
+                  setState({ step: stepNumber });
+                }}
+              >
+                {mapStepToName[stepNumber]}
+              </Button>
+            </>
+          )}
         </BreadcrumbItem>
       );
     });
@@ -232,15 +238,18 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
     formState: { errors },
   } = useForm<AddStorageAdvancedForm>();
 
-  const onConfigurationChange = (value: string) => {
-    const config = parseCloudStorageConfiguration(value);
-    const { type, provider, ...options } = config;
-    setStorage({
-      schema: type,
-      provider,
-      options,
-    });
-  };
+  const onConfigurationChange = useCallback(
+    (value: string) => {
+      const config = parseCloudStorageConfiguration(value);
+      const { type, provider, ...options } = config;
+      setStorage({
+        schema: type,
+        provider,
+        options,
+      });
+    },
+    [setStorage]
+  );
 
   const onSourcePathChange = (value: string) => {
     setStorage({ sourcePath: value });
