@@ -147,7 +147,7 @@ function useAutostartSessionOptions(): void {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
-      branch: commit,
+      branchOrCommit: commit,
     },
     {
       skip: !backendAvailable || !coreSupportComputed || !commit,

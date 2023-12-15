@@ -77,7 +77,7 @@ export const SessionClassOption = () => {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
-      branch: commit,
+      branchOrCommit: commit,
     },
     {
       skip: !backendAvailable || !coreSupportComputed || !commit,

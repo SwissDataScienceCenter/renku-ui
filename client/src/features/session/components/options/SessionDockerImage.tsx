@@ -51,7 +51,7 @@ export default function SessionDockerImage() {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
-        branch: commit,
+        branchOrCommit: commit,
       },
       {
         skip: !coreSupportComputed || !commit,
