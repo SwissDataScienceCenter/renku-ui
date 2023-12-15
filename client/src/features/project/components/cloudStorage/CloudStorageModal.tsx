@@ -220,7 +220,7 @@ export default function CloudStorageModal({
       configuration: {
         type: storageDetails.schema,
       },
-      source_path: storageDetails.sourcePath ?? "/",
+      source_path: storageDetails.sourcePath || "/",
     };
     // Add provider when required
     if (storageDetails.provider) {
@@ -251,7 +251,7 @@ export default function CloudStorageModal({
       private: false,
       readonly: storageDetails.readOnly ?? true,
       project_id: `${projectId}`,
-      source_path: storageDetails.sourcePath ?? "/",
+      source_path: storageDetails.sourcePath || "/",
       target_path: storageDetails.mountPoint as string,
       configuration: { type: storageDetails.schema },
     };
