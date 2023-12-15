@@ -46,6 +46,7 @@ export default function usePatchedProjectConfig({
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch: commit,
     },
     { skip: skip || !commit }
   );
@@ -86,6 +87,49 @@ export default function usePatchedProjectConfig({
       getConfigFromRepositoryResult.data.config.sessions?.legacyConfig
         ?.memoryRequest ??
       getConfigResult.data.config.sessions?.legacyConfig?.memoryRequest;
+
+    const diffs = {
+      ...(defaultUrl !== getConfigResult.data.config.sessions?.defaultUrl
+        ? {
+            defaultUrl: `${defaultUrl} != ${getConfigResult.data.config.sessions?.defaultUrl}`,
+          }
+        : {}),
+      ...(dockerImage !== getConfigResult.data.config.sessions?.dockerImage
+        ? {
+            dockerImage: `${dockerImage} != ${getConfigResult.data.config.sessions?.dockerImage}`,
+          }
+        : {}),
+      ...(lfsAutoFetch !== getConfigResult.data.config.sessions?.lfsAutoFetch
+        ? {
+            lfsAutoFetch: `${lfsAutoFetch} != ${getConfigResult.data.config.sessions?.lfsAutoFetch}`,
+          }
+        : {}),
+      ...(storage !== getConfigResult.data.config.sessions?.storage
+        ? {
+            storage: `${storage} != ${getConfigResult.data.config.sessions?.storage}`,
+          }
+        : {}),
+
+      ...(cpuRequest !==
+      getConfigResult.data.config.sessions?.legacyConfig?.cpuRequest
+        ? {
+            cpuRequest: `${cpuRequest} != ${getConfigResult.data.config.sessions?.legacyConfig?.cpuRequest}`,
+          }
+        : {}),
+      ...(gpuRequest !==
+      getConfigResult.data.config.sessions?.legacyConfig?.gpuRequest
+        ? {
+            gpuRequest: `${gpuRequest} != ${getConfigResult.data.config.sessions?.legacyConfig?.gpuRequest}`,
+          }
+        : {}),
+      ...(memoryRequest !==
+      getConfigResult.data.config.sessions?.legacyConfig?.memoryRequest
+        ? {
+            memoryRequest: `${memoryRequest} != ${getConfigResult.data.config.sessions?.legacyConfig?.memoryRequest}`,
+          }
+        : {}),
+    };
+    console.log(diffs);
 
     const patchedData: ProjectConfig = {
       ...getConfigResult.data,
