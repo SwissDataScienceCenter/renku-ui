@@ -44,7 +44,6 @@ function Overview() {
         The style guide explains the different elements of the RenkuLab UI, how
         they should look and when to use what element.
       </p>
-      <CommandCopy command="sudo rm -rf / --no-preserve-root" />
     </Fragment>
   );
 }
