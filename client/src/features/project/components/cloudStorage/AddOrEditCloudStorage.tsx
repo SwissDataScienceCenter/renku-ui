@@ -269,10 +269,6 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-advanced">
       <div className="mb-3">
-        <Label className="form-label" for="add-storage-name">
-          Source path
-        </Label>
-
         <Controller
           name="sourcePath"
           control={control}
@@ -290,6 +286,9 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
             />
           )}
         />
+        <Label className="form-label" for="add-storage-name">
+          Source path
+        </Label>
         <div className={cx("form-text", "text-muted")}>
           {sourcePathHelp.help}
         </div>
@@ -817,10 +816,6 @@ function AddStorageOptions({
 
   const sourcePath = (
     <div className="mb-3">
-      <Label className="form-label" for="add-storage-name">
-        Source path
-      </Label>
-
       <Controller
         name="sourcePath"
         control={control}
@@ -839,6 +834,9 @@ function AddStorageOptions({
           />
         )}
       />
+      <Label className="form-label" for="add-storage-name">
+        Source path
+      </Label>
       <div className={cx("form-text", "text-muted")}>{sourcePathHelp.help}</div>
     </div>
   );
@@ -965,8 +963,8 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         </div>
       </div>
 
-      <div className="mb-3">
-        <Label className="form-label" for="add-storage-name">
+      <div>
+        <Label className="form-label" for="readOnly">
           Read-only
         </Label>
 
@@ -995,7 +993,7 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         />
         {!storage.readOnly && (
           <div className="mt-1">
-            <WarnAlert>
+            <WarnAlert dismissible={false}>
               <p className="mb-0">
                 You are mounting this storage in read-write mode. If you have
                 read-only access, please check the box to prevent errors with
