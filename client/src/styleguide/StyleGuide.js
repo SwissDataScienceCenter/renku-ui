@@ -34,7 +34,6 @@ import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
 import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
-import { CommandCopy } from "../components/commandCopy/CommandCopy";
 
 function Overview() {
   return (
