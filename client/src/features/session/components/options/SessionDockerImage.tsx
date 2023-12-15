@@ -21,7 +21,6 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
-// import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import SessionPinnedDockerImage from "./SessionPinnedDockerImage";
 import SessionProjectDockerImage from "./SessionProjectDockerImage";
 
@@ -31,9 +30,6 @@ export default function SessionDockerImage() {
   );
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
-  );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
@@ -53,7 +49,6 @@ export default function SessionDockerImage() {
     useGetConfigQuery(
       {
         apiVersion,
-        // gitLabProjectId: gitLabProjectId ?? 0,
         metadataVersion,
         projectRepositoryUrl,
         branch: commit,

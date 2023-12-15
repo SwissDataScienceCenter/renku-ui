@@ -36,10 +36,10 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { ProjectConfig } from "../../../project/Project";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
-// import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { useServerOptionsQuery } from "../../sessions.api";
 import { ServerOptions } from "../../sessions.types";
 import { setDefaultUrl, setLfsAutoFetch } from "../../startSessionOptionsSlice";
@@ -47,7 +47,6 @@ import { SessionClassOption } from "./SessionClassOption";
 import { SessionStorageOption } from "./SessionStorageOption";
 
 import styles from "./StartNotebookServerOptions.module.scss";
-import { useGetConfigQuery } from "../../../project/projectCoreApi";
 
 export const StartNotebookServerOptions = () => {
   // Wait for options to load
@@ -62,9 +61,6 @@ export const StartNotebookServerOptions = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
@@ -78,15 +74,6 @@ export const StartNotebookServerOptions = () => {
   const commit = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.commit
   );
-  // const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
-  //   usePatchedProjectConfig({
-  //     apiVersion,
-  //     commit,
-  //     gitLabProjectId: gitLabProjectId ?? 0,
-  //     metadataVersion,
-  //     projectRepositoryUrl,
-  //     skip: !backendAvailable || !coreSupportComputed || !commit,
-  //   });
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
     useGetConfigQuery(
       {
@@ -158,9 +145,6 @@ const DefaultUrlOption = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
@@ -178,7 +162,6 @@ const DefaultUrlOption = () => {
     useGetConfigQuery(
       {
         apiVersion,
-        // gitLabProjectId: gitLabProjectId ?? 0,
         metadataVersion,
         projectRepositoryUrl,
         branch: commit,
@@ -279,9 +262,6 @@ const AutoFetchLfsOption = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
@@ -297,7 +277,6 @@ const AutoFetchLfsOption = () => {
   const { data: projectConfig } = useGetConfigQuery(
     {
       apiVersion,
-      // gitLabProjectId: gitLabProjectId ?? 0,
       metadataVersion,
       projectRepositoryUrl,
       branch: commit,

@@ -24,6 +24,7 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { useGetCloudStorageForProjectQuery } from "../../../project/projectCloudStorage.api";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import {
   useGetAllRepositoryBranchesQuery,
   useGetRepositoryCommitsQuery,
@@ -37,7 +38,6 @@ import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.h
 import useDefaultSessionClassOption from "../../hooks/options/useDefaultSessionClassOption.hook";
 import useDefaultStorageOption from "../../hooks/options/useDefaultStorageOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
-// import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { useStartSessionMutation } from "../../sessions.api";
 import {
   setError,
@@ -48,7 +48,6 @@ import {
 import { startSessionOptionsSlice } from "../../startSessionOptionsSlice";
 import { useProjectSessions } from "../ProjectSessionsList";
 import SessionDockerImage from "./SessionDockerImage";
-import { useGetConfigQuery } from "../../../project/projectCoreApi";
 
 export default function AutostartSessionOptions() {
   useAutostartSessionOptions();
@@ -146,7 +145,6 @@ function useAutostartSessionOptions(): void {
   } = useGetConfigQuery(
     {
       apiVersion,
-      // gitLabProjectId: gitLabProjectId ?? 0,
       metadataVersion,
       projectRepositoryUrl,
       branch: commit,
