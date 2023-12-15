@@ -37,7 +37,7 @@ import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.h
 import useDefaultSessionClassOption from "../../hooks/options/useDefaultSessionClassOption.hook";
 import useDefaultStorageOption from "../../hooks/options/useDefaultStorageOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
-import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
+// import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { useStartSessionMutation } from "../../sessions.api";
 import {
   setError,
@@ -48,6 +48,7 @@ import {
 import { startSessionOptionsSlice } from "../../startSessionOptionsSlice";
 import { useProjectSessions } from "../ProjectSessionsList";
 import SessionDockerImage from "./SessionDockerImage";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 
 export default function AutostartSessionOptions() {
   useAutostartSessionOptions();
@@ -142,14 +143,18 @@ function useAutostartSessionOptions(): void {
     data: projectConfig,
     error: errorProjectConfig,
     isFetching: projectConfigIsFetching,
-  } = usePatchedProjectConfig({
-    apiVersion,
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    metadataVersion,
-    projectRepositoryUrl,
-    skip: !backendAvailable || !coreSupportComputed || !commit,
-  });
+  } = useGetConfigQuery(
+    {
+      apiVersion,
+      // gitLabProjectId: gitLabProjectId ?? 0,
+      metadataVersion,
+      projectRepositoryUrl,
+      branch: commit,
+    },
+    {
+      skip: !backendAvailable || !coreSupportComputed || !commit,
+    }
+  );
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
     useGetResourcePoolsQuery(
       {

@@ -39,7 +39,7 @@ import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
-import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
+// import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { useServerOptionsQuery } from "../../sessions.api";
 import { ServerOptions } from "../../sessions.types";
 import { setDefaultUrl, setLfsAutoFetch } from "../../startSessionOptionsSlice";
@@ -47,6 +47,7 @@ import { SessionClassOption } from "./SessionClassOption";
 import { SessionStorageOption } from "./SessionStorageOption";
 
 import styles from "./StartNotebookServerOptions.module.scss";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 
 export const StartNotebookServerOptions = () => {
   // Wait for options to load
@@ -77,15 +78,25 @@ export const StartNotebookServerOptions = () => {
   const commit = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.commit
   );
+  // const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
+  //   usePatchedProjectConfig({
+  //     apiVersion,
+  //     commit,
+  //     gitLabProjectId: gitLabProjectId ?? 0,
+  //     metadataVersion,
+  //     projectRepositoryUrl,
+  //     skip: !backendAvailable || !coreSupportComputed || !commit,
+  //   });
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
-    usePatchedProjectConfig({
-      apiVersion,
-      commit,
-      gitLabProjectId: gitLabProjectId ?? 0,
-      metadataVersion,
-      projectRepositoryUrl,
-      skip: !backendAvailable || !coreSupportComputed || !commit,
-    });
+    useGetConfigQuery(
+      {
+        apiVersion,
+        metadataVersion,
+        projectRepositoryUrl,
+        branch: commit,
+      },
+      { skip: !backendAvailable || !coreSupportComputed || !commit }
+    );
 
   if (
     serverOptionsIsLoading ||
@@ -164,14 +175,18 @@ const DefaultUrlOption = () => {
     ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
-    usePatchedProjectConfig({
-      apiVersion,
-      commit,
-      gitLabProjectId: gitLabProjectId ?? 0,
-      metadataVersion,
-      projectRepositoryUrl,
-      skip: !backendAvailable || !coreSupportComputed || !commit,
-    });
+    useGetConfigQuery(
+      {
+        apiVersion,
+        // gitLabProjectId: gitLabProjectId ?? 0,
+        metadataVersion,
+        projectRepositoryUrl,
+        branch: commit,
+      },
+      {
+        skip: !backendAvailable || !coreSupportComputed || !commit,
+      }
+    );
 
   const defaultUrlOptions = mergeDefaultUrlOptions({
     serverOptions,
@@ -279,14 +294,18 @@ const AutoFetchLfsOption = () => {
   const commit = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.commit
   );
-  const { data: projectConfig } = usePatchedProjectConfig({
-    apiVersion,
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    metadataVersion,
-    projectRepositoryUrl,
-    skip: !coreSupportComputed || !commit,
-  });
+  const { data: projectConfig } = useGetConfigQuery(
+    {
+      apiVersion,
+      // gitLabProjectId: gitLabProjectId ?? 0,
+      metadataVersion,
+      projectRepositoryUrl,
+      branch: commit,
+    },
+    {
+      skip: !coreSupportComputed || !commit,
+    }
+  );
 
   const lfsAutoFetch = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.lfsAutoFetch

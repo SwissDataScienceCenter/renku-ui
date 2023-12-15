@@ -46,10 +46,11 @@ import {
 } from "../../../dataServices/dataServices.types";
 import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
-import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
+// import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { setSessionClass } from "../../startSessionOptionsSlice";
 
 import styles from "./SessionClassOption.module.scss";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 
 export const SessionClassOption = () => {
   // Project options
@@ -75,14 +76,18 @@ export const SessionClassOption = () => {
   const commit = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.commit
   );
-  const { data: projectConfig } = usePatchedProjectConfig({
-    apiVersion,
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    metadataVersion,
-    projectRepositoryUrl,
-    skip: !backendAvailable || !coreSupportComputed || !commit,
-  });
+  const { data: projectConfig } = useGetConfigQuery(
+    {
+      apiVersion,
+      // gitLabProjectId: gitLabProjectId ?? 0,
+      metadataVersion,
+      projectRepositoryUrl,
+      branch: commit,
+    },
+    {
+      skip: !backendAvailable || !coreSupportComputed || !commit,
+    }
+  );
 
   // Resource pools
   const {

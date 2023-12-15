@@ -19,8 +19,9 @@
 import { Loader } from "../../../../components/Loader";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
-import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
+// import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import SessionPinnedDockerImage from "./SessionPinnedDockerImage";
 import SessionProjectDockerImage from "./SessionProjectDockerImage";
 
@@ -49,14 +50,18 @@ export default function SessionDockerImage() {
   );
 
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
-    usePatchedProjectConfig({
-      apiVersion,
-      commit,
-      gitLabProjectId: gitLabProjectId ?? 0,
-      metadataVersion,
-      projectRepositoryUrl,
-      skip: !coreSupportComputed || !commit,
-    });
+    useGetConfigQuery(
+      {
+        apiVersion,
+        // gitLabProjectId: gitLabProjectId ?? 0,
+        metadataVersion,
+        projectRepositoryUrl,
+        branch: commit,
+      },
+      {
+        skip: !coreSupportComputed || !commit,
+      }
+    );
 
   if (!coreSupportComputed || !commit || projectConfigIsFetching) {
     return (

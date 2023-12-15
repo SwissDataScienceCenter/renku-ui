@@ -27,7 +27,7 @@ import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.h
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
-import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
+// import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
@@ -36,6 +36,7 @@ import { setStorage } from "../../startSessionOptionsSlice";
 import { validateStorageAmount } from "../../utils/sessionOptions.utils";
 
 import styles from "./SessionStorageOption.module.scss";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 
 export const SessionStorageOption = () => {
   // Project options
@@ -60,14 +61,18 @@ export const SessionStorageOption = () => {
   const commit = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.commit
   );
-  const { data: projectConfig } = usePatchedProjectConfig({
-    apiVersion,
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    metadataVersion,
-    projectRepositoryUrl,
-    skip: !coreSupportComputed || !commit,
-  });
+  const { data: projectConfig } = useGetConfigQuery(
+    {
+      apiVersion,
+      // gitLabProjectId: gitLabProjectId ?? 0,
+      metadataVersion,
+      projectRepositoryUrl,
+      branch: commit,
+    },
+    {
+      skip: !coreSupportComputed || !commit,
+    }
+  );
 
   // Resource pools
   const {
