@@ -67,9 +67,9 @@ type GetConfigRawResponseSection = {
   [Key in GetConfigRawResponseSectionKey]?: string;
 };
 
-interface UpdateConfigParams extends GetConfigParams {
+interface UpdateConfigParams extends Omit<GetConfigParams, "branchOrCommit"> {
   projectRepositoryUrl: string;
-  branchOrCommit?: string;
+  branch?: string;
   update: {
     [key: string]: string | null;
   };
@@ -240,13 +240,13 @@ export const projectCoreApi = createApi({
     getConfig: builder.query<ProjectConfig, GetConfigParams>({
       query: ({
         apiVersion,
-        branchOrCommit: branch,
+        branchOrCommit,
         projectRepositoryUrl,
         metadataVersion,
       }) => {
         const params = {
           git_url: projectRepositoryUrl,
-          ...(branch ? { branch } : {}),
+          ...(branchOrCommit ? { branch: branchOrCommit } : {}),
         };
         return {
           url: versionedPathForEndpoint({
@@ -269,7 +269,7 @@ export const projectCoreApi = createApi({
     updateConfig: builder.mutation<UpdateConfigResponse, UpdateConfigParams>({
       query: ({
         apiVersion,
-        branchOrCommit: branch,
+        branch,
         metadataVersion,
         projectRepositoryUrl,
         update,
