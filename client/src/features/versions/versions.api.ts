@@ -85,9 +85,12 @@ export const versionsApi = createApi({
         return { url: "data/version" };
       },
       transformResponse: (response: DataServicesVersionResponse) => {
+        const version = response.version.startsWith("v")
+          ? response.version
+          : `v${response.version}`;
         return {
           name: "data-services",
-          version: `v${response.version}`,
+          version,
         };
       },
       transformErrorResponse: () => {
