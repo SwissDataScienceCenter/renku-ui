@@ -99,7 +99,9 @@ export const Clipboard = ({
         ) : (
           <BootstrapCopyIcon className="bi" />
         )}
-        <span className="visually-hidden">Copy to clipboard: </span>
+        <span className="visually-hidden">
+          Copy to clipboard{children && ": "}
+        </span>
         {children}
       </Wrap>
     </button>

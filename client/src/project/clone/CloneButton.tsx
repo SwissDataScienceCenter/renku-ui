@@ -17,8 +17,7 @@
  */
 
 import { useCallback, useState } from "react";
-import { faCopy } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { ChevronDown } from "react-bootstrap-icons";
 import {
   Col,
@@ -29,6 +28,7 @@ import {
   Row,
 } from "reactstrap";
 import { CloneSettings } from "./CloneSettings";
+import BootstrapCopyIcon from "../../components/icons/BootstrapCopyIcon";
 
 interface CloneButtonProps {
   size?: string;
@@ -63,8 +63,9 @@ export const CloneButton = ({
       direction="down"
     >
       <DropdownToggle className="btn-outline-rk-green rounded-pill">
-        <FontAwesomeIcon icon={faCopy} size="1x" fixedWidth /> Clone{" "}
-        <ChevronDown size="20" className="btn-with-menu-icon" />
+        <BootstrapCopyIcon className={cx("bi", "me-1")} />
+        Clone
+        <ChevronDown size="20" className={cx("ms-1", "btn-with-menu-icon")} />
       </DropdownToggle>
       <DropdownMenu className="btn-with-menu-options" end>
         <Container
