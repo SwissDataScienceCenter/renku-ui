@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { useCallback, useState } from "react";
 import cx from "classnames";
+import { useCallback, useState } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import {
   Col,
@@ -27,8 +27,9 @@ import {
   DropdownToggle,
   Row,
 } from "reactstrap";
-import { CloneSettings } from "./CloneSettings";
+
 import BootstrapCopyIcon from "../../components/icons/BootstrapCopyIcon";
+import { CloneSettings } from "./CloneSettings";
 
 interface CloneButtonProps {
   size?: string;
