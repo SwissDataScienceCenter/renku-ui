@@ -266,10 +266,13 @@ function SessionStartError() {
     return null;
   }
 
+  // Handle `docker-image-building` as a special case
+  if (error === "docker-image-building") {
+    return <SessionStartErrorImageBuilding />;
+  }
+
   const color =
-    error === "docker-image-building" ||
-    error === "session-class" ||
-    error === "cloud-storage-credentials"
+    error === "session-class" || error === "cloud-storage-credentials"
       ? "warning"
       : "danger";
 
@@ -282,11 +285,6 @@ function SessionStartError() {
     ) : error === "no-commit" ? (
       <>
         Starting a session is not possible because this project has no commit.
-      </>
-    ) : error === "docker-image-building" ? (
-      <>
-        The session could not start because the image is still building. Please
-        wait for the build to finish, or start the session with the base image.
       </>
     ) : error === "docker-image-not-available" ? (
       <>
@@ -324,6 +322,47 @@ function SessionStartError() {
   return (
     <RenkuAlert color={color} timeout={0}>
       <p className="mb-0">{content}</p>
+    </RenkuAlert>
+  );
+}
+
+function SessionStartErrorImageBuilding() {
+  const dockerImageStatus = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.dockerImageStatus
+  );
+
+  const color = dockerImageStatus === "not-available" ? "danger" : "warning";
+  const content =
+    dockerImageStatus === "available" ? (
+      <>
+        <p>
+          The session could not start because the image was still building when
+          the session was requested.
+        </p>
+        <p className="mb-0">You can now try to start the session:</p>
+        <StartSessionButton />
+      </>
+    ) : dockerImageStatus === "not-available" ? (
+      <p className="mb-0">
+        The session could not start because the image was building when the
+        session was requested. The image build failed and the image is not
+        available. Please select a different commit or start the session with
+        the base image.
+      </p>
+    ) : (
+      <p className="mb-0">
+        The session could not start because the image is still building. Please
+        wait for the build to finish, or start the session with the base image.
+      </p>
+    );
+
+  return (
+    <RenkuAlert
+      className={dockerImageStatus === "available" && "pb-1"}
+      color={color}
+      timeout={0}
+    >
+      {content}
     </RenkuAlert>
   );
 }
