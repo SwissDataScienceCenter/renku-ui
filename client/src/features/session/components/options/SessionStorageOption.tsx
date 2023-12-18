@@ -62,7 +62,7 @@ export const SessionStorageOption = () => {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
-      branchOrCommit: commit,
+      commit,
     },
     {
       skip: !coreSupportComputed || !commit,

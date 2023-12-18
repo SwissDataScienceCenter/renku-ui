@@ -40,7 +40,8 @@ import { CoreVersionUrl } from "../../utils/types/coreService.types";
 
 interface GetConfigParams extends CoreVersionUrl {
   projectRepositoryUrl: string;
-  branchOrCommit?: string;
+  branch?: string;
+  commit?: string;
 }
 
 interface GetConfigRawResponse {
@@ -67,7 +68,7 @@ type GetConfigRawResponseSection = {
   [Key in GetConfigRawResponseSectionKey]?: string;
 };
 
-interface UpdateConfigParams extends Omit<GetConfigParams, "branchOrCommit"> {
+interface UpdateConfigParams extends Omit<GetConfigParams, "commit"> {
   projectRepositoryUrl: string;
   branch?: string;
   update: {
@@ -240,13 +241,15 @@ export const projectCoreApi = createApi({
     getConfig: builder.query<ProjectConfig, GetConfigParams>({
       query: ({
         apiVersion,
-        branchOrCommit,
+        branch,
+        commit,
         projectRepositoryUrl,
         metadataVersion,
       }) => {
         const params = {
           git_url: projectRepositoryUrl,
-          ...(branchOrCommit ? { branch: branchOrCommit } : {}),
+          ...(branch ? { branch } : {}),
+          ...(commit ? { commit_sha: commit } : {}),
         };
         return {
           url: versionedPathForEndpoint({

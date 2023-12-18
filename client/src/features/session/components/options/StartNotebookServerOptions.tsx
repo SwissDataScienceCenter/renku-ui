@@ -80,7 +80,7 @@ export const StartNotebookServerOptions = () => {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
-        branchOrCommit: commit,
+        commit,
       },
       { skip: !backendAvailable || !coreSupportComputed || !commit }
     );
@@ -164,7 +164,7 @@ const DefaultUrlOption = () => {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
-        branchOrCommit: commit,
+        commit,
       },
       {
         skip: !backendAvailable || !coreSupportComputed || !commit,
@@ -279,7 +279,7 @@ const AutoFetchLfsOption = () => {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
-      branchOrCommit: commit,
+      commit,
     },
     {
       skip: !coreSupportComputed || !commit,
