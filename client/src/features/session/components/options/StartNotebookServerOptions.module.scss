@@ -1,3 +1,7 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+
 .dropdown {
   :global(.btn.dropdown-toggle) {
     border-radius: 8px;
@@ -27,9 +31,8 @@
     background: transparent;
 
     :global(.btn) {
-      border: 1px solid var(--bs-btn-active-border-color);
+      border: 1px solid var(--#{$prefix}btn-active-border-color);
       border-radius: unset;
-      // background: white;
       text-align: center;
 
       &.active {
