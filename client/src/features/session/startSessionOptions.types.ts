@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { CloudStorageConfiguration } from "../project/components/cloudStorage/projectCloudStorage.types";
+
 export interface StartSessionOptions {
   branch: string;
   cloudStorage: SessionCloudStorage[];
@@ -30,18 +32,9 @@ export interface StartSessionOptions {
   storage: number;
 }
 
-export interface SessionCloudStorage {
+export interface SessionCloudStorage extends CloudStorageConfiguration {
   active: boolean;
-  configuration: Record<string, string | undefined>;
-  name: string;
-  private: boolean;
-  readonly: boolean;
-  source_path: string;
   sensitive_fields?: { name: string; help: string; value: string }[];
-  storage_id: string | null;
-  storage_type: string;
-  supported: boolean;
-  target_path: string;
 }
 
 // ? See: ./components/options/SessionProjectDockerImage.md

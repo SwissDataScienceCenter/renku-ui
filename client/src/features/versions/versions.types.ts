@@ -59,10 +59,7 @@ export interface KgVersion {
 interface NotebookComponent extends BaseVersion {
   data: {
     anonymousSessionsEnabled: boolean;
-    cloudstorageEnabled: {
-      s3: boolean;
-      azure_blob: boolean;
-    };
+    cloudstorageEnabled: boolean;
     sshEnabled: boolean;
   };
 }
@@ -73,12 +70,9 @@ export interface NotebooksVersionResponse extends BaseVersionResponse {
 }
 
 export interface NotebooksVersion {
-  name: string;
-  version: string;
   anonymousSessionsEnabled: boolean;
+  cloudStorageEnabled: boolean;
+  name: string;
   sshEnabled: boolean;
-  cloudStorageEnabled: {
-    s3: boolean;
-    azureBlob: boolean;
-  };
+  version: string;
 }
