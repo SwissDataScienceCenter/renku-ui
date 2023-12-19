@@ -18,25 +18,29 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { CheckLg, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   Button,
   Form,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import {
+  NodeAffinity,
   ResourceClass,
   ResourcePool,
 } from "../dataServices/dataServices.types";
 import { useUpdateResourceClassMutation } from "./adminComputeResources.api";
-import { CheckLg, XLg } from "react-bootstrap-icons";
-import { Loader } from "../../components/Loader";
+
+import styles from "./UpdateResourceClassButton.module.scss";
 
 interface UpdateResourceClassButtonProps {
   resourceClass: ResourceClass;
@@ -89,6 +93,7 @@ function UpdateResourceClassModal({
     control,
     formState: { errors, isDirty },
     handleSubmit,
+    reset,
   } = useForm<UpdateResourceClassForm>({
     defaultValues: {
       cpu: resourceClass.cpu,
@@ -98,31 +103,77 @@ function UpdateResourceClassModal({
       max_storage: resourceClass.max_storage,
       memory: resourceClass.memory,
       name: resourceClass.name,
+      tolerations: (resourceClass.tolerations ?? []).map((label) => ({
+        label,
+      })),
+      node_affinities: resourceClass.node_affinities ?? [],
     },
   });
+  const {
+    fields: tolerationsFields,
+    append: tolerationsAppend,
+    remove: tolerationsRemove,
+  } = useFieldArray({
+    control,
+    name: "tolerations",
+  });
+  const {
+    fields: affinitiesFields,
+    append: affinitiesAppend,
+    remove: affinitiesRemove,
+  } = useFieldArray({ control, name: "node_affinities" });
   const onSubmit = useCallback(
     (data: UpdateResourceClassForm) => {
+      const tolerations = data.tolerations.map(({ label }) => label);
       updateResourceClass({
         resourcePoolId: resourcePool.id,
         resourceClassId: resourceClass.id,
         ...data,
+        tolerations,
       });
     },
     [resourceClass.id, resourcePool.id, updateResourceClass]
   );
 
+  const onAddTolerationLabel = useCallback(() => {
+    tolerationsAppend({ label: "" });
+  }, [tolerationsAppend]);
+
+  const onAddNodeAffinity = useCallback(() => {
+    affinitiesAppend({ key: "", required_during_scheduling: false });
+  }, [affinitiesAppend]);
+
   useEffect(() => {
     if (result.isSuccess) {
       toggle();
+      reset();
     }
-  }, [result.isSuccess, toggle]);
+  }, [reset, result.isSuccess, toggle]);
+
+  useEffect(() => {
+    reset({
+      cpu: resourceClass.cpu,
+      default: resourceClass.default,
+      default_storage: resourceClass.default_storage,
+      gpu: resourceClass.gpu,
+      max_storage: resourceClass.max_storage,
+      memory: resourceClass.memory,
+      name: resourceClass.name,
+      tolerations: (resourceClass.tolerations ?? []).map((label) => ({
+        label,
+      })),
+      node_affinities: resourceClass.node_affinities ?? [],
+    });
+  }, [reset, resourceClass]);
 
   return (
     <Modal
       backdrop="static"
       centered
+      className={styles.modal}
       fullscreen="lg"
       isOpen={isOpen}
+      scrollable
       size="lg"
       toggle={toggle}
     >
@@ -246,7 +297,7 @@ function UpdateResourceClassModal({
             />
           </div>
 
-          <div>
+          <div className="mb-3">
             <Label
               className="form-label"
               for={`updateResourceClassMaxStorage-${id}`}
@@ -266,6 +317,131 @@ function UpdateResourceClassModal({
                 />
               )}
             />
+          </div>
+
+          <div className="mb-3">
+            <div className="form-label">Tolerations</div>
+            <Button
+              className="btn-outline-rk-green"
+              onClick={onAddTolerationLabel}
+              type="button"
+            >
+              <PlusLg className={cx("bi", "me-1")} />
+              Add label
+            </Button>
+            {tolerationsFields.map((item, index) => (
+              <InputGroup className="my-1" key={item.id}>
+                <Controller
+                  control={control}
+                  name={`tolerations.${index}.label`}
+                  render={({ field }) => (
+                    <Input
+                      className={cx(
+                        "form-control",
+                        "rounded-0",
+                        "rounded-start",
+                        errors.tolerations?.at?.(index) && "is-invalid"
+                      )}
+                      id={`updateResourceClassTolerations-${item.id}-${id}`}
+                      type="text"
+                      {...field}
+                    />
+                  )}
+                  rules={{ required: true }}
+                />
+                <Button
+                  className="rounded-end"
+                  onClick={() => tolerationsRemove(index)}
+                  type="button"
+                >
+                  <TrashFill className="bi" />
+                  <span className="visually-hidden">Remove</span>
+                </Button>
+                <div className="invalid-feedback">Please provide a label</div>
+              </InputGroup>
+            ))}
+          </div>
+
+          <div>
+            <div className="form-label">Node affinities</div>
+            <Button
+              className="btn-outline-rk-green"
+              onClick={onAddNodeAffinity}
+              type="button"
+            >
+              <PlusLg className={cx("bi", "me-1")} />
+              Add node affinity
+            </Button>
+            {affinitiesFields.map((item, index) => (
+              <div
+                className={cx(
+                  "d-flex",
+                  "flew-row",
+                  "flex-wrap",
+                  "align-items-center",
+                  "my-3"
+                )}
+                key={item.id}
+              >
+                <div className={cx("flex-grow-1", "me-2")}>
+                  <InputGroup>
+                    <span className={cx("input-group-text", "rounded-start")}>
+                      Key
+                    </span>
+                    <Controller
+                      control={control}
+                      name={`node_affinities.${index}.key`}
+                      render={({ field }) => (
+                        <Input
+                          className={cx(
+                            "form-control",
+                            "rounded-0",
+                            errors.node_affinities?.at?.(index) && "is-invalid"
+                          )}
+                          id={`updateResourceClassNodeAffinitiesKey-${item.id}-${id}`}
+                          type="text"
+                          {...field}
+                        />
+                      )}
+                      rules={{ required: true }}
+                    />
+                    <Button
+                      className="rounded-end"
+                      onClick={() => affinitiesRemove(index)}
+                      type="button"
+                    >
+                      <TrashFill className="bi" />
+                      <span className="visually-hidden">Remove</span>
+                    </Button>
+                    <div className="invalid-feedback">Please provide a key</div>
+                  </InputGroup>
+                </div>
+
+                <div>
+                  <Controller
+                    control={control}
+                    name={`node_affinities.${index}.required_during_scheduling`}
+                    render={({ field }) => (
+                      <Input
+                        className="form-check-input"
+                        id={`updateResourceClassNodeAffinitiesRequired-${item.id}-${id}`}
+                        type="checkbox"
+                        checked={field.value}
+                        innerRef={field.ref}
+                        onBlur={field.onBlur}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <Label
+                    className={cx("form-check-label", "ms-2")}
+                    for={`updateResourceClassNodeAffinitiesRequired-${item.id}-${id}`}
+                  >
+                    Required during scheduling
+                  </Label>
+                </div>
+              </div>
+            ))}
           </div>
         </Form>
       </ModalBody>
@@ -299,4 +475,10 @@ interface UpdateResourceClassForm {
   default_storage: number;
   max_storage: number;
   default: boolean;
+  tolerations: TolerationField[];
+  node_affinities: NodeAffinity[];
+}
+
+interface TolerationField {
+  label: string;
 }

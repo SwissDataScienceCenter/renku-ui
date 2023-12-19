@@ -48,6 +48,7 @@ export interface GitLabPipelineJob {
   status:
     | "success"
     | "running"
+    | "created"
     | "pending"
     | "stopping"
     | "failed"
