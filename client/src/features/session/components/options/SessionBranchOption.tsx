@@ -19,15 +19,15 @@
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import type {
+  GroupBase,
+  Options,
+  OptionsOrGroups,
+  SingleValue,
+} from "react-select";
+import { AsyncPaginate, Response } from "react-select-async-paginate";
 import {
   Button,
   FormGroup,
@@ -46,10 +46,8 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
-import {
-  useGetAllRepositoryBranchesQuery,
-  useGetRepositoryBranchesQuery,
-} from "../../../project/projectGitLab.api";
+import type { GitLabRepositoryBranch } from "../../../project/GitLab.types";
+import { useGetRepositoryBranchesQuery } from "../../../project/projectGitLab.api";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import { setBranch } from "../../startSessionOptionsSlice";
 
@@ -78,6 +76,8 @@ export default function SessionBranchOption() {
   //   { skip: !gitLabProjectId }
   // );
 
+  const [page, setPage] = useState(1);
+
   const {
     data: branchesList,
     isError,
@@ -86,6 +86,8 @@ export default function SessionBranchOption() {
   } = useGetRepositoryBranchesQuery(
     {
       projectId: `${gitLabProjectId ?? 0}`,
+      page,
+      perPage: 2,
     },
     { skip: !gitLabProjectId }
   );
@@ -110,6 +112,36 @@ export default function SessionBranchOption() {
       }
     },
     [branches, dispatch]
+  );
+  const onChange2 = useCallback(
+    (newValue: SingleValue<string>) => {
+      if (newValue) {
+        dispatch(setBranch(newValue));
+      }
+    },
+    [dispatch]
+  );
+
+  // (inputValue: string, options: OptionsOrGroups<OptionType, Group>, additional?: Additional)
+  const loadOptions = useCallback(
+    (
+      _search: string,
+      loadedOptions: OptionsOrGroups<string, GroupBase<string>>,
+      additional?: any
+    ) => {
+      console.log({ _search, loadedOptions, additional });
+      const result: Response<string, GroupBase<string>, any> = {
+        options: branchesList?.data.map((branch) => branch.name) ?? [],
+        hasMore:
+          branchesList == null || branchesList.page !== branchesList.totalPages,
+      };
+      if (branchesList != null && branchesList.page < branchesList.totalPages) {
+        setPage((page) => page + 1);
+      }
+      console.log({ result });
+      return result;
+    },
+    [branchesList]
   );
 
   useDefaultBranchOption({ branches, defaultBranch });
@@ -230,6 +262,17 @@ export default function SessionBranchOption() {
           </option>
         ))}
       </Input>
+
+      <div>
+        <AsyncPaginate
+          loadOptions={loadOptions}
+          value={currentBranch}
+          defaultValue={defaultBranch}
+          onChange={onChange2}
+          isClearable={false}
+          isSearchable={false}
+        />
+      </div>
     </div>
   );
 }

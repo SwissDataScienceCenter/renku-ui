@@ -213,9 +213,9 @@ const projectGitLabApi = createApi({
         }
 
         const page = parseInt(pageStr, 10);
-        const perPage = parseInt(pageStr, 10);
-        const total = parseInt(pageStr, 10);
-        const totalPages = parseInt(pageStr, 10);
+        const perPage = parseInt(perPageStr, 10);
+        const total = parseInt(totalStr, 10);
+        const totalPages = parseInt(totalPagesStr, 10);
 
         if (
           isNaN(page) ||
