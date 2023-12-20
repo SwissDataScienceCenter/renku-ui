@@ -31,6 +31,7 @@ import {
   GetPipelinesParams,
   GetRegistryTagParams,
   GetRenkuRegistryParams,
+  GetRepositoryBranchesParams,
   GetRepositoryCommitParams,
   GetRepositoryCommitsParams,
   GitLabPipeline,
@@ -38,6 +39,7 @@ import {
   GitLabRegistry,
   GitLabRegistryTag,
   GitLabRepositoryBranch,
+  GitLabRepositoryBranchList,
   GitLabRepositoryCommit,
   GitlabProjectResponse,
   Pagination,
@@ -187,6 +189,61 @@ const projectGitLabApi = createApi({
     }),
 
     // Project Repository API
+    getRepositoryBranches: builder.query<
+      GitLabRepositoryBranchList,
+      GetRepositoryBranchesParams
+    >({
+      query: ({ page, perPage, projectId }) => {
+        return {
+          url: `${projectId}/repository/branches`,
+          params: {
+            ...(page ? { page } : {}),
+            ...(perPage ? { per_page: perPage } : {}),
+          },
+        };
+      },
+      transformResponse: (response: GitLabRepositoryBranch[], meta) => {
+        const pageStr = meta?.response?.headers.get("X-Page");
+        const perPageStr = meta?.response?.headers.get("X-Per-Page");
+        const totalStr = meta?.response?.headers.get("X-Total");
+        const totalPagesStr = meta?.response?.headers.get("X-Total-Pages");
+
+        if (!pageStr || !perPageStr || !totalStr || !totalPagesStr) {
+          throw new Error("Missing pagination headers");
+        }
+
+        const page = parseInt(pageStr, 10);
+        const perPage = parseInt(pageStr, 10);
+        const total = parseInt(pageStr, 10);
+        const totalPages = parseInt(pageStr, 10);
+
+        if (
+          isNaN(page) ||
+          isNaN(perPage) ||
+          isNaN(total) ||
+          isNaN(totalPages)
+        ) {
+          throw new Error("Invalid pagination headers");
+        }
+
+        return {
+          page,
+          perPage,
+          total,
+          totalPages,
+          data: response,
+        };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(
+                ({ name }) => ({ type: "Branch", id: name } as const)
+              ),
+              "Branch",
+            ]
+          : ["Branch"],
+    }),
     getAllRepositoryBranches: builder.query<
       GitLabRepositoryBranch[],
       GetAllRepositoryBranchesParams
@@ -371,6 +428,7 @@ export const {
   useGetPipelinesQuery,
   useRetryPipelineMutation,
   useRunPipelineMutation,
+  useGetRepositoryBranchesQuery,
   useGetAllRepositoryBranchesQuery,
   useGetConfigFromRepositoryQuery,
   useGetRepositoryCommitQuery,

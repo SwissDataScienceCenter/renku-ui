@@ -19,7 +19,14 @@
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { ChangeEvent, useCallback, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -39,7 +46,10 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
-import { useGetAllRepositoryBranchesQuery } from "../../../project/projectGitLab.api";
+import {
+  useGetAllRepositoryBranchesQuery,
+  useGetRepositoryBranchesQuery,
+} from "../../../project/projectGitLab.api";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import { setBranch } from "../../startSessionOptionsSlice";
 
@@ -56,17 +66,35 @@ export default function SessionBranchOption() {
     (state) => state.stateModel.project.metadata.externalUrl
   );
 
+  // const {
+  //   data: branches,
+  //   isError,
+  //   isFetching,
+  //   refetch,
+  // } = useGetAllRepositoryBranchesQuery(
+  //   {
+  //     projectId: `${gitLabProjectId ?? 0}`,
+  //   },
+  //   { skip: !gitLabProjectId }
+  // );
+
   const {
-    data: branches,
+    data: branchesList,
     isError,
     isFetching,
     refetch,
-  } = useGetAllRepositoryBranchesQuery(
+  } = useGetRepositoryBranchesQuery(
     {
       projectId: `${gitLabProjectId ?? 0}`,
     },
     { skip: !gitLabProjectId }
   );
+
+  const branches = branchesList?.data;
+
+  useEffect(() => {
+    console.log({ branchesList });
+  }, [branchesList]);
 
   const currentBranch = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.branch
