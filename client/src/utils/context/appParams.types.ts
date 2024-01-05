@@ -78,7 +78,7 @@ export interface TemplatesParams {
   repositories: TemplatesRepositories[];
 }
 
-interface TemplatesRepositories {
+export interface TemplatesRepositories {
   name: string;
   ref: string;
   url: string;
