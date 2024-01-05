@@ -50,7 +50,6 @@ import Description from "./components/Description";
 import Namespaces from "./components/Namespaces";
 import ProjectIdentifier from "./components/ProjectIdentifier";
 import Visibility from "./components/Visibility";
-import TemplateSource from "./components/TemplateSource";
 import UserTemplate, { ErrorTemplateFeedback } from "./components/UserTemplate";
 import { Template } from "./components/Template";
 import TemplateVariables from "./components/TemplateVariables";
@@ -257,6 +256,7 @@ const isFormProcessingOrFinished = (meta) => {
   return meta.creation.projectError || meta.creation.kgError;
 };
 
+// TODO: Remove this when finish refactor
 const NewProjectForm = ({
   automated,
   config,
@@ -265,7 +265,7 @@ const NewProjectForm = ({
   isFetchingProjects,
   meta,
   namespaces,
-  namespace,
+  // namespace,
   user,
   importingDataset,
   userRepo,
@@ -291,16 +291,15 @@ const NewProjectForm = ({
         handlers={handlers}
         automated={automated}
         input={input}
-        namespace={namespace}
         user={user}
       />
       <ProjectIdentifier input={input} isRequired={true} />
       <Description handlers={handlers} meta={meta} input={input} />
       <Visibility handlers={handlers} meta={meta} input={input} />
       <NewProjectAvatar onAvatarChange={handlers.onAvatarChange} />
-      {config.custom ? (
-        <TemplateSource handlers={handlers} input={input} isRequired={true} />
-      ) : null}
+      {/*{config.custom ? (*/}
+      {/*  <TemplateSource handlers={handlers} input={input} isRequired={true} />*/}
+      {/*) : null}*/}
       {userRepo ? (
         <UserTemplate
           meta={meta}
@@ -339,6 +338,7 @@ const NewProjectForm = ({
   );
 };
 
+// TODO: remove when finish refactor
 class NewProject extends Component {
   static contextType = AppContext;
 

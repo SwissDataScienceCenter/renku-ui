@@ -23,76 +23,16 @@
  *  New project controller code.
  */
 
+import {
+  checkTitleDuplicates,
+  validateTitle,
+} from "../../features/project/editNew/NewProject.utils";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { newProjectSchema } from "../../model/RenkuModels";
-import {
-  sleep,
-  slugFromTitle,
-  verifyTitleCharacters,
-} from "../../utils/helpers/HelperFunctions";
+import { sleep, slugFromTitle } from "../../utils/helpers/HelperFunctions";
 import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 
-// ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names
-const RESERVED_TITLE_NAMES = [
-  "badges",
-  "blame",
-  "blob",
-  "builds",
-  "commits",
-  "create",
-  "create_dir",
-  "edit",
-  "sessions/folders",
-  "files",
-  "find_file",
-  "gitlab-lfs/objects",
-  "info/lfs/objects",
-  "new",
-  "preview",
-  "raw",
-  "refs",
-  "tree",
-  "update",
-  "wikis",
-];
-
-/**
- * Verify whether the title is valid.
- *
- * @param {string} title - title to validate.
- * @returns {string} error description or null if the string is valid.
- */
-function validateTitle(title) {
-  if (!title || !title.length) return "Title is missing.";
-  else if (RESERVED_TITLE_NAMES.includes(title)) return "Reserved title name.";
-  else if (title.length && ["_", "-", " ", "."].includes(title[0]))
-    return "Title must start with a letter or a number.";
-  else if (!verifyTitleCharacters(title))
-    return "Title can contain only letters, digits, '_', '.', '-' or spaces.";
-  else if (title && !slugFromTitle(title, true))
-    return "Title must contain at least one letter (without any accents) or a number.";
-  return null;
-}
-
-/**
- * Verify whether the title and namespace will produce a duplicate.
- *
- * @param {string} title - current title.
- * @param {string} namespace - current namespace.
- * @param {string[]} projectsPaths - list of current own projects paths.
- * @returns {boolean} whether the title would create a duplicate or not.
- */
-function checkTitleDuplicates(title, namespace, projectsPaths) {
-  if (!title || !namespace || !projectsPaths || !projectsPaths.length)
-    return false;
-
-  const expectedTitle = slugFromTitle(title, true);
-  const expectedSlug = `${namespace}/${expectedTitle}`;
-  if (projectsPaths.includes(expectedSlug)) return true;
-
-  return false;
-}
-
+// TODO: Remove this when finish refactor
 class NewProjectCoordinator {
   constructor(client, model, projectsModel) {
     this.client = client;
@@ -872,7 +812,4 @@ class NewProjectCoordinator {
   }
 }
 
-export { NewProjectCoordinator, checkTitleDuplicates, validateTitle };
-
-// test only
-export { RESERVED_TITLE_NAMES };
+export { NewProjectCoordinator };

@@ -36,7 +36,7 @@ interface MemberProjectResponse {
   hasNextPage: boolean;
 }
 
-type Namespace = {
+export type Namespace = {
   id: number;
   name: string;
   path: string;

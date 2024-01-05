@@ -17,8 +17,9 @@
  */
 
 import { Meta, StoryObj } from "@storybook/react";
-import { NewProjectTemplate, Repository } from "../../model/RenkuModels";
+import { Repository } from "../../model/RenkuModels";
 import TemplateSelector from "./TemplateSelector";
+import { Templates } from "../../features/templates/templates.api";
 
 const meta: Meta<typeof TemplateSelector> = {
   title: "Components/Forms/Template Selector",
@@ -75,7 +76,7 @@ const repositories: Repository[] = [
     url: "https://github.com/SwissDataScienceCenter/renku-project-template",
   },
 ];
-const templates: NewProjectTemplate[] = [
+const templates: Templates[] = [
   {
     description:
       "The simplest Python-3.9-based renku " +
@@ -87,50 +88,55 @@ const templates: NewProjectTemplate[] = [
     parentRepo: "Renku",
     parentTemplate: "python-minimal",
     variables: {},
+    isSSHSupported: true,
   },
   {
     description:
       "The simplest R-4.1.2-based renku project with a basic directory structure " +
       "and necessary supporting files.",
-    icon: undefined,
+    icon: "",
     id: "Renku/R-minimal",
     name: "Basic R (4.1.2) Project",
     parentRepo: "Renku",
     parentTemplate: "R-minimal",
     variables: {},
+    isSSHSupported: true,
   },
   {
     description:
       "The simplest R bioconductor-3.14-based renku project with a " +
       "basic directory structure and necessary supporting files.",
-    icon: undefined,
+    icon: "",
     id: "Renku/bioc-minimal",
     name: "R-Bioconductor (3.14) Project",
     parentRepo: "Renku",
     parentTemplate: "bioc-minimal", // eslint-disable-line spellcheck/spell-checker
     variables: {},
+    isSSHSupported: true,
   },
   {
     description:
       "The simplest Julia 1.7.1-based renku project with a basic " +
       "directory structure and necessary supporting files.",
-    icon: undefined,
+    icon: "",
     id: "Renku/julia-minimal",
     name: "Basic Julia (1.7.1) Project",
     parentRepo: "Renku",
     parentTemplate: "julia-minimal", // eslint-disable-line spellcheck/spell-checker
     variables: {},
+    isSSHSupported: true,
   },
   {
     description:
       "The simplest renku project template with files for renku CLI and " +
       "launching projects on renkulab.",
-    icon: undefined,
+    icon: "",
     id: "Renku/minimal",
     name: "Minimal Renku",
     parentRepo: "Renku",
     parentTemplate: "minimal",
     variables: {},
+    isSSHSupported: true,
   },
 ];
 
@@ -170,7 +176,7 @@ export const Selected: Story = {
   args: {
     repositories,
     templates,
-    selected: "Renku/python-minimal",
+    selected: templates[0],
     isRequired: true,
     isInvalid: false,
     isDisabled: false,

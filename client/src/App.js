@@ -39,6 +39,7 @@ import { Dashboard } from "./features/dashboard/Dashboard";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
 import SearchPage from "./features/kgSearch/KgSearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
+import { NewProject } from "./features/project/editNew/NewProject";
 import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
 import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
 import Help from "./help";
@@ -48,7 +49,6 @@ import { NotificationsManager, NotificationsPage } from "./notifications";
 import { Cookie, Privacy } from "./privacy";
 import { Project } from "./project";
 import { ProjectList } from "./project/list";
-import { NewProject } from "./project/new";
 import { StyleGuide } from "./styleguide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
@@ -187,15 +187,9 @@ function CentralContentContainer(props) {
           <Route
             exact
             path={Url.get(Url.pages.project.new)}
-            render={(p) => (
+            render={() => (
               <ContainerWrap>
-                <NewProject
-                  key="newProject"
-                  model={props.model}
-                  user={props.user}
-                  client={props.client}
-                  {...p}
-                />
+                <NewProject />
               </ContainerWrap>
             )}
           />

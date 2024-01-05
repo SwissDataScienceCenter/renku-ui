@@ -53,6 +53,8 @@ import userPreferencesApi from "../../features/user/userPreferences.api";
 import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
+import { templatesApi } from "../../features/templates/templates.api";
+import { newProjectFormSlide } from "../../features/project/editNew/projectForm.slice";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -64,6 +66,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     // Slices
     [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
     [datasetFormSlice.name]: datasetFormSlice.reducer,
+    [newProjectFormSlide.name]: newProjectFormSlide.reducer,
     [displaySlice.name]: displaySlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [startSessionSlice.name]: startSessionSlice.reducer,
@@ -88,6 +91,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
+    [templatesApi.reducerPath]: templatesApi.reducer,
   };
 
   // For the moment, disable the custom middleware, since it causes problems for our app.
@@ -116,6 +120,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionSidecarApi.middleware)
         .concat(userPreferencesApi.middleware)
         .concat(versionsApi.middleware)
+        .concat(templatesApi.middleware)
         .concat(workflowsApi.middleware),
     enhancers,
   });

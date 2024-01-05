@@ -24,6 +24,7 @@
  */
 import FieldGroup from "../../../components/FieldGroups";
 import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 interface DescriptionProps {
   handlers: {
@@ -31,6 +32,7 @@ interface DescriptionProps {
   };
   meta: NewProjectMeta;
   input: NewProjectInputs;
+  register: UseFormRegisterReturn;
 }
 
 function Description({ handlers, meta, input }: DescriptionProps) {

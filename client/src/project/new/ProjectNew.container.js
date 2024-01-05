@@ -35,6 +35,10 @@ import { useHistory } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import { Loader } from "../../components/Loader";
+import {
+  checkTitleDuplicates,
+  validateTitle,
+} from "../../features/project/editNew/NewProject.utils";
 import { newProjectSchema } from "../../model/RenkuModels";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
@@ -53,11 +57,7 @@ import {
   ForkProject as ForkProjectPresent,
   NewProject as NewProjectPresent,
 } from "./ProjectNew.present";
-import {
-  NewProjectCoordinator,
-  checkTitleDuplicates,
-  validateTitle,
-} from "./ProjectNew.state";
+import { NewProjectCoordinator } from "./ProjectNew.state";
 
 const CUSTOM_REPO_NAME = "Custom";
 
@@ -347,7 +347,7 @@ function getDataFromParams(params) {
   return data;
 }
 
-// temporal solution to include coordinator
+// TODO: Remove this when finish refactot
 class NewProjectWrapper extends Component {
   constructor(props) {
     super(props);

@@ -18,7 +18,8 @@
 
 import { useEffect, useState } from "react";
 import { useGetGroupByPathQuery } from "../../features/projects/projects.api";
-import { computeVisibilities } from "../helpers/HelperFunctions";
+import { getComputeVisibilities } from "../helpers/VisibilitiesUtils";
+import { Visibilities } from "../../components/visibility/Visibility";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -28,7 +29,7 @@ import { computeVisibilities } from "../helpers/HelperFunctions";
  *  UseGetVisibilities.ts
  *  hook to get visibilities and fetch groups if the namespace is of type group
  */
-function useGetVisibilities(namespace: any, bound: string | undefined) {
+function useGetVisibilities(namespace: any, bound: Visibilities | undefined) {
   const { data, isFetching, isLoading } = useGetGroupByPathQuery(
     namespace?.full_path,
     {
@@ -40,15 +41,15 @@ function useGetVisibilities(namespace: any, bound: string | undefined) {
   useEffect(() => {
     if (isFetching || isLoading || !namespace) return;
 
-    const options: string[] = [];
+    const options: Visibilities[] = [];
     if (bound) options.push(bound);
 
     if (namespace?.kind === "user") {
-      options.push("public");
-      setAvailableVisibilities(computeVisibilities(options));
+      options.push(Visibilities.Public);
+      setAvailableVisibilities(getComputeVisibilities(options));
     } else if (namespace?.kind === "group") {
       options.push(data.visibility);
-      setAvailableVisibilities(computeVisibilities(options));
+      setAvailableVisibilities(getComputeVisibilities(options));
     }
   }, [bound, isFetching, isLoading, data, namespace]);
 

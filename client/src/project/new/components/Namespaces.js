@@ -77,8 +77,13 @@ class NamespacesAutosuggest extends Component {
 
   componentDidMount() {
     // set first user namespace as default (at least one should always available)
-    const { namespaces, namespace, user } = this.props;
-    if (namespaces.fetched && namespaces.list.length && !namespace) {
+    const { namespaces, user, setNamespace, namespaceValue } = this.props;
+    const { value } = this.state;
+    if (
+      namespaces.fetched &&
+      namespaces.list.length &&
+      (!namespaceValue || !value)
+    ) {
       let defaultNamespace = null,
         personalNs = null;
       if (user.logged)
@@ -88,32 +93,32 @@ class NamespacesAutosuggest extends Component {
       if (personalNs) defaultNamespace = personalNs;
       else defaultNamespace = namespaces.list.find((ns) => ns.kind === "user");
 
-      this.props.handlers.setNamespace(defaultNamespace);
+      setNamespace(defaultNamespace);
       this.setState({ value: defaultNamespace.full_path });
     }
   }
 
   // Fix the inconsistent state when automated content modifies the namespace
   componentDidUpdate() {
-    const { automated, input } = this.props;
+    const { automated, namespaceValue } = this.props;
     const { value, preloadUpdated } = this.state;
     if (
       automated &&
       automated.received &&
       automated.finished &&
-      input.namespace !== value &&
+      namespaceValue !== value &&
       !preloadUpdated
     )
-      this.setState({ value: input.namespace, preloadUpdated: true });
+      this.setState({ value: namespaceValue, preloadUpdated: true });
   }
 
   getSuggestions(value) {
     const { namespaces } = this.props;
-    const inputValue = value.trim().toLowerCase();
+    const inputValue = value?.trim().toLowerCase();
 
     // filter namespaces
     const filtered =
-      inputValue.length === 0
+      inputValue?.length === 0
         ? namespaces.list
         : namespaces.list.filter(
             (namespace) =>
@@ -162,9 +167,10 @@ class NamespacesAutosuggest extends Component {
   }
 
   onBlur = (event, { newValue }) => {
-    if (newValue) this.props.handlers.setNamespace(newValue);
-    else if (this.props.input.namespace)
-      this.setState({ value: this.props.input.namespace });
+    const { setNamespace, namespaceValue } = this.props;
+    if (newValue) setNamespace(newValue);
+    else if (namespaceValue)
+      this.setState({ value: namespaceValue?.full_path });
   };
 
   onChange = (event, { newValue, method }) => {
@@ -182,11 +188,12 @@ class NamespacesAutosuggest extends Component {
   };
 
   onSuggestionSelected = (event, { suggestionValue }) => {
+    const { setNamespace, namespaces } = this.props;
     this.setState({ value: suggestionValue });
-    const namespace = this.props.namespaces.list.filter(
+    const namespace = namespaces.list.filter(
       (ns) => ns.full_path === suggestionValue
     )[0];
-    this.props.handlers.setNamespace(namespace);
+    setNamespace(namespace);
   };
 
   getTheme() {
@@ -246,14 +253,15 @@ class NamespacesAutosuggest extends Component {
 class Namespaces extends Component {
   async componentDidMount() {
     // fetch namespaces if not available yet
-    const { namespaces, handlers } = this.props;
-    if (!namespaces.fetched && !namespaces.fetching) handlers.getNamespaces();
+    const { namespaces } = this.props;
+    if (!namespaces.fetched && !namespaces.fetching)
+      namespaces.refetchNamespaces();
   }
 
   render() {
-    const { namespaces, handlers } = this.props;
+    const { namespaces, setNamespace } = this.props;
     const refreshButton = makeRefreshButton(
-      handlers.getNamespaces,
+      namespaces.refetchNamespaces,
       "Refresh namespaces",
       namespaces.fetching
     );
@@ -272,7 +280,10 @@ class Namespaces extends Component {
       </div>
     ) : (
       <>
-        <NamespacesAutosuggest {...this.props} />
+        <NamespacesAutosuggest
+          {...this.props}
+          setNamespace={(namespace) => setNamespace(namespace)}
+        />
         {info}
       </>
     );

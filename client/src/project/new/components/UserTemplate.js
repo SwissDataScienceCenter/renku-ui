@@ -34,16 +34,13 @@ import {
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 
-const ErrorTemplateFeedback = ({ templates, meta, input }) => {
-  if (input.userRepo) templates = meta.userTemplates;
+const ErrorTemplateFeedback = ({ templates, isCustomTemplate, error }) => {
   // check template errors and provide adequate feedback
   let alert = null;
-  let error =
-    templates.errors && templates.errors.length ? templates.errors[0] : null;
 
-  if (templates.fetched != null && !templates.fetching && error) {
-    const fatal = !(templates.all && templates.all.length);
-    const suggestion = input.userRepo ? null : (
+  if (error) {
+    const fatal = !templates.length;
+    const suggestion = isCustomTemplate ? null : (
       <span>
         You can try refreshing the page. If the error persists, you should
         contact the development team on&nbsp;
@@ -72,7 +69,7 @@ const ErrorTemplateFeedback = ({ templates, meta, input }) => {
       } else {
         details = first.userMessage ? first.userMessage : first.reason;
         errorObject = first;
-        if (fatal && !input.userRepo) errorObject.code = 10000;
+        if (fatal && !isCustomTemplate) errorObject.code = 10000;
       }
     }
     const message = fatal
@@ -101,16 +98,15 @@ class UserTemplate extends Component {
   }
 
   fetchTemplates() {
-    const { meta } = this.props;
-
     // check if url or ref are missing
     const { missingUrl, missingRef } = this.state;
+    const { userTemplate } = this.props;
     let newState = {
       missingUrl: false,
       missingRef: false,
     };
-    if (!meta.userTemplates.url) newState.missingUrl = true;
-    if (!meta.userTemplates.ref) newState.missingRef = true;
+    if (!userTemplate?.url) newState.missingUrl = true;
+    if (!userTemplate?.reference) newState.missingRef = true;
     if (
       missingUrl !== newState.missingUrl ||
       missingRef !== newState.missingRef
@@ -119,11 +115,11 @@ class UserTemplate extends Component {
 
     // try to get user templates if repository data are available
     if (newState.missingUrl || newState.missingRef) return;
-    return this.props.handlers.getUserTemplates();
+    return this.props.getUserTemplates();
   }
 
   render() {
-    const { meta, handlers, config } = this.props;
+    const { setTemplateProperty, config, userTemplate } = this.props;
 
     // placeholders and links
     let urlExample =
@@ -146,10 +142,8 @@ class UserTemplate extends Component {
           <InputLabel isRequired="true" text="Repository URL" />
           <Input
             type="text"
-            value={meta.userTemplates.url}
-            onChange={(e) =>
-              handlers.setTemplateProperty("url", e.target.value)
-            }
+            value={userTemplate?.url || ""}
+            onChange={(e) => setTemplateProperty("url", e.target.value)}
             data-cy="url-repository"
             invalid={this.state.missingUrl}
           />
@@ -165,10 +159,8 @@ class UserTemplate extends Component {
           <InputLabel isRequired="true" text="Repository Reference" />
           <Input
             type="text"
-            value={meta.userTemplates.ref}
-            onChange={(e) =>
-              handlers.setTemplateProperty("ref", e.target.value)
-            }
+            value={userTemplate?.reference || ""}
+            onChange={(e) => setTemplateProperty("ref", e.target.value)}
             data-cy="ref-repository"
             invalid={this.state.missingRef}
           />

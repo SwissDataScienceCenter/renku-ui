@@ -47,38 +47,60 @@ import {
   useProjectMetadataQuery,
   useUpdateProjectMutation,
 } from "../../../features/project/projectKg.api";
-import { useGetGroupByPathQuery } from "../../../features/projects/projects.api";
+import {
+  Namespace,
+  useGetGroupByPathQuery,
+} from "../../../features/projects/projects.api";
 import { GitlabLinks } from "../../../utils/constants/Docs";
 import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
-import {
-  NewProjectHandlers,
-  NewProjectInputs,
-  NewProjectMeta,
-} from "./newProject.d";
+import useGetVisibilities from "../../../utils/customHooks/UseGetVisibilities";
+import useGetNamespaces from "../../../utils/customHooks/UseGetNamespaces";
+import { Control, Controller, UseFormRegisterReturn } from "react-hook-form";
+import { NewProjectFormFields } from "../../../features/project/projectKg.types";
 
 interface VisibilityProps {
-  handlers: NewProjectHandlers;
-  meta: NewProjectMeta;
-  input: NewProjectInputs;
+  namespace?: Namespace;
+  isInvalid: boolean;
+  customVisibility?: Visibilities;
+  control: Control<NewProjectFormFields>;
+  visibilityValue: Visibilities | null;
+  register: UseFormRegisterReturn;
 }
 
-export default function Visibility({ handlers, meta, input }: VisibilityProps) {
-  const error = meta.validation.errors["visibility"];
+export default function Visibility({
+  namespace,
+  isInvalid,
+  control,
+  visibilityValue,
+}: VisibilityProps) {
+  const { fetching: fetchingNamespaces } = useGetNamespaces(true);
+  const { availableVisibilities, isFetchingVisibilities } = useGetVisibilities(
+    namespace,
+    undefined
+  );
+  const namespaceVisibility = !isFetchingVisibilities
+    ? availableVisibilities?.visibilities.includes(visibilityValue)
+      ? visibilityValue
+      : availableVisibilities?.default
+    : undefined;
 
   return (
     <FormGroup className="field-group">
-      <VisibilitiesInput
-        isLoadingData={
-          meta.namespace.fetching ||
-          !meta.namespace.visibilities ||
-          !input.visibility
-        }
-        namespaceVisibility={meta.namespace.visibility}
-        isInvalid={!!error && !input.visibilityPristine}
-        data-cy="visibility-select"
-        isRequired={true}
-        onChange={(value: string) => handlers.setProperty("visibility", value)}
-        value={input.visibility ?? null}
+      <Controller
+        control={control}
+        name="visibility"
+        render={({ field }) => (
+          <VisibilitiesInput
+            isLoadingData={fetchingNamespaces || isFetchingVisibilities}
+            namespaceVisibility={namespaceVisibility}
+            isInvalid={isInvalid}
+            data-cy="visibility-select"
+            isRequired={true}
+            onChange={field.onChange}
+            value={namespaceVisibility ?? null}
+          />
+        )}
+        rules={{ required: true }}
       />
     </FormGroup>
   );

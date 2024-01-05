@@ -39,7 +39,7 @@ import {
   UncontrolledTooltip,
 } from "../../utils/ts-wrappers";
 
-import { NewProjectTemplate, Repository } from "../../model/RenkuModels";
+import { Repository } from "../../model/RenkuModels";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { ExternalLink } from "../ExternalLinks";
 import {
@@ -49,6 +49,7 @@ import {
   LoadingLabel,
 } from "../formlabels/FormLabels";
 import "./TemplateSelector.css";
+import { Templates } from "../../features/templates/templates.api";
 
 const defaultTemplateIcon = "/stockimages/templatePlaceholder.svg";
 
@@ -58,9 +59,9 @@ export interface TemplateSelectorProps {
   /** To be executed when a template is selected  */
   select: Function; // eslint-disable-line @typescript-eslint/ban-types
 
-  selected: string;
+  selected?: Templates;
 
-  templates: NewProjectTemplate[];
+  templates?: Templates[];
 
   /** when the data(templates) is loading */
   isFetching: boolean;
@@ -75,15 +76,13 @@ export interface TemplateSelectorProps {
   isInvalid?: boolean;
 
   isDisabled?: boolean;
-
-  error?: string;
 }
 
 interface TemplateGalleryRowProps {
   repository: Repository;
   select: Function; // eslint-disable-line @typescript-eslint/ban-types
-  selected: string;
-  templates: NewProjectTemplate[];
+  selected?: Templates;
+  templates: Templates[];
   isInvalid?: boolean;
   isDisabled?: boolean;
 }
@@ -102,7 +101,6 @@ function TemplateSelector({
   isDisabled,
   isFetching,
   noFetchedUserRepo,
-  error,
 }: TemplateSelectorProps) {
   let content;
   let totalTemplates = 0;
@@ -116,7 +114,9 @@ function TemplateSelector({
   } else {
     content = repositories.map((repository: Repository) => {
       const repoTitle = repository.name;
-      const repoTemplates = templates.filter((t) => t.parentRepo === repoTitle);
+      const repoTemplates = templates
+        ? templates?.filter((t) => t.parentRepo === repoTitle)
+        : [];
       totalTemplates += repoTemplates.length;
       const repoKey = simpleHash(repository.url + repository.ref);
       return (
@@ -135,9 +135,7 @@ function TemplateSelector({
 
   let errorFeedback;
   if (isInvalid && totalTemplates > 0)
-    errorFeedback = (
-      <ErrorLabel text={error ?? "Please select a valid template"} />
-    );
+    errorFeedback = <ErrorLabel text={"Please select a valid template"} />;
   else if (isInvalid && totalTemplates === 0 && !noFetchedUserRepo)
     errorFeedback = <ErrorLabel text={"Error no templates available"} />;
 
@@ -170,12 +168,14 @@ function TemplateGalleryRow({
   isInvalid,
   isDisabled,
 }: TemplateGalleryRowProps) {
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-  useEffect(() => setSelectedTemplate(selected), [selected]);
-  const handleSelectedTemplate = (id: string) => {
-    setSelectedTemplate(id);
+  const [selectedTemplate, setSelectedTemplate] = useState<Templates | null>(
+    null
+  );
+  useEffect(() => setSelectedTemplate(selected || null), [selected]);
+  const handleSelectedTemplate = (t: Templates) => {
+    setSelectedTemplate(t);
 
-    if (select && !isDisabled) select(id);
+    if (select && !isDisabled) select(t);
   };
 
   // Don't render anything if there are no templates for the repository
@@ -187,7 +187,7 @@ function TemplateGalleryRow({
       ? `data:image/png;base64,${t.icon}`
       : defaultTemplateIcon;
     const id = "id" + simpleHash(repository.name) + simpleHash(t.id);
-    const selectedClass = selectedTemplate === t.id ? "selected" : "";
+    const selectedClass = selectedTemplate?.id === t.id ? "selected" : "";
     const invalidTemplate = isInvalid ? "template--invalid" : "";
     const statusTemplate = isDisabled
       ? "template--disabled cursor-not-allowed"
@@ -199,7 +199,7 @@ function TemplateGalleryRow({
           id={id}
           className={`template-card mb-2 text-center box-shadow-cards ${selectedClass} ${invalidTemplate} ${statusTemplate}`}
           onClick={() => {
-            handleSelectedTemplate(t.id);
+            handleSelectedTemplate(t);
           }}
           data-cy="project-template-card"
         >

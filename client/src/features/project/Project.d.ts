@@ -357,6 +357,20 @@ export interface EditProjectParams {
   projectId: number;
 }
 
+export interface NewProject {
+  avatar?: File;
+  description?: string;
+  keywords?: string[];
+  namespaceId?: number;
+  templateId: string;
+  templateRepositoryUrl: string;
+  name: string;
+  visibility: "public" | "internal" | "private";
+}
+export interface CreateProjectParams {
+  project: NewProject;
+}
+
 export interface EditAvatarProjectParams {
   projectPathWithNamespace: string;
   avatar: File;
@@ -367,6 +381,12 @@ interface UpdateProjectResponse {
   message: string;
   severity: string;
   branch?: string;
+}
+
+interface CreateProjectResponse {
+  message: string;
+  severity: string;
+  slug?: string;
 }
 
 export interface GitlabProjectResponse {

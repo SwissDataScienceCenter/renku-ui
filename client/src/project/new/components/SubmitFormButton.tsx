@@ -22,28 +22,26 @@
  *  SubmitFormButton.tsx
  *  Submit Button create new project
  */
-import { MouseEventHandler, useState } from "react";
+import { useState } from "react";
 import ShareLinkModal from "./ShareLinkModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import { Button, DropdownItem } from "../../../utils/ts-wrappers";
-import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
+import { SubmitHandler, UseFormGetValues } from "react-hook-form";
+import { NewProjectFormFields } from "../../../features/project/projectKg.types";
+import { createEncodedNewProjectUrl } from "../../../features/project/editNew/NewProject.utils";
 
 interface SubmitFormButtonProps {
   createDataAvailable: boolean;
-  handlers: {
-    createEncodedUrl: Function; // eslint-disable-line @typescript-eslint/ban-types
-    onSubmit: MouseEventHandler<HTMLButtonElement>;
-  };
+  onSubmit: SubmitHandler<NewProjectFormFields>;
   importingDataset: boolean;
-  input: NewProjectInputs;
-  meta: NewProjectMeta;
+  getValues: UseFormGetValues<NewProjectFormFields>;
 }
 
 function ImportSubmitFormButton({
-  handlers,
-}: Pick<SubmitFormButtonProps, "handlers">) {
+  onSubmit,
+}: Pick<SubmitFormButtonProps, "onSubmit">) {
   return (
     <>
       <div className="mt-4 d-flex justify-content-end">
@@ -51,7 +49,7 @@ function ImportSubmitFormButton({
           data-cy="add-dataset-submit-button"
           id="create-new-project"
           color="rk-pink"
-          onClick={handlers.onSubmit}
+          onClick={onSubmit}
         >
           Add Dataset New Project
         </Button>
@@ -62,21 +60,23 @@ function ImportSubmitFormButton({
 
 function StandardSubmitFormButton({
   createDataAvailable,
-  handlers,
-  input,
-  meta,
+  onSubmit,
+  getValues,
 }: Omit<SubmitFormButtonProps, "importingDataset">) {
   const [showModal, setShotModal] = useState(false);
   const toggleModal = () => {
     setShotModal((showModal) => !showModal);
   };
+
+  const input = getValues();
+  // TODO: Set all values needed for ShareLinkModal
+
   const shareLinkModal = (
     <ShareLinkModal
       show={showModal}
       toggle={toggleModal}
       input={input}
-      meta={meta}
-      createUrl={handlers.createEncodedUrl}
+      createUrl={createEncodedNewProjectUrl}
     />
   );
 
@@ -86,7 +86,7 @@ function StandardSubmitFormButton({
       color="secondary"
       data-cy="create-project-button"
       disabled={!createDataAvailable}
-      onClick={handlers.onSubmit}
+      onClick={onSubmit}
     >
       {" "}
       Create project
@@ -117,17 +117,16 @@ function StandardSubmitFormButton({
 
 function SubmitFormButton({
   createDataAvailable,
-  handlers,
-  input,
+  onSubmit,
   importingDataset,
-  meta,
+  getValues,
 }: SubmitFormButtonProps) {
   if (importingDataset) {
-    return <ImportSubmitFormButton handlers={handlers} />;
+    return <ImportSubmitFormButton onSubmit={onSubmit} />;
   }
   return (
     <StandardSubmitFormButton
-      {...{ createDataAvailable, handlers, input, meta }}
+      {...{ createDataAvailable, onSubmit, getValues }}
     />
   );
 }

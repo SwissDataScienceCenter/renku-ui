@@ -30,6 +30,7 @@ import {
 } from "../../../components/formlabels/FormLabels";
 import { NewProjectInputs } from "./newProject.d";
 
+// TODO: REMOVE THIS COMPONENT WHEN FINISH REFACTOR
 interface ProjectIdentifierProps {
   input: NewProjectInputs;
   isRequired: boolean;

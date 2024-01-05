@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { faUndo } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 /**
  *  renku-ui
  *
@@ -22,7 +24,6 @@
  *  Template Variables field group component
  */
 import { Component } from "react";
-import { toCapitalized as capitalize } from "../../../utils/helpers/HelperFunctions";
 import {
   Button,
   FormGroup,
@@ -30,12 +31,11 @@ import {
   Label,
   UncontrolledTooltip,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUndo } from "@fortawesome/free-solid-svg-icons";
 import {
   InputHintLabel,
   InputLabel,
 } from "../../../components/formlabels/FormLabels";
+import { toCapitalized as capitalize } from "../../../utils/helpers/HelperFunctions";
 
 /**
  * Create a "restore default" button.
@@ -71,21 +71,22 @@ function RestoreButton({ restore, name, disabled }) {
 
 class TemplateVariables extends Component {
   render() {
-    const { input, handlers } = this.props;
-    if (!input.template) return null;
+    const { template, templateVariables, setVariable } = this.props;
+    if (!template) return null;
 
-    const templates = input.userRepo
-      ? this.props.meta.userTemplates
-      : this.props.templates;
-
-    const template = templates.all.filter((t) => t.id === input.template)[0];
+    const setTemplateVariable = (variableKey, value) => {
+      setVariable({
+        ...templateVariables,
+        [variableKey]: value,
+      });
+    };
     if (
       !template ||
       !template.variables ||
       !Object.keys(template.variables).length
     )
       return null;
-    const variables = Object.keys(template.variables).map((variable) => {
+    return Object.keys(template.variables).map((variable) => {
       const data = template.variables[variable];
 
       // fallback to avoid breaking old variable structure
@@ -96,8 +97,8 @@ class TemplateVariables extends Component {
             <Input
               id={"parameter-" + variable}
               type="text"
-              value={input.variables[variable]}
-              onChange={(e) => handlers.setVariable(variable, e.target.value)}
+              value={templateVariables[variable]}
+              onChange={(e) => setTemplateVariable(variable, e.target.value)}
             />
             <InputHintLabel text={capitalize(template.variables[variable])} />
           </FormGroup>
@@ -109,16 +110,14 @@ class TemplateVariables extends Component {
       return (
         <Variable
           enumValues={data["enum"]}
-          handlers={handlers}
           key={variable}
-          input={input}
+          variables={templateVariables}
           name={variable}
+          setVariable={setTemplateVariable}
           {...data}
         />
       );
     });
-
-    return variables;
   }
 }
 
@@ -127,8 +126,8 @@ function Variable(props) {
     default_value,
     description,
     enumValues,
-    handlers,
-    input,
+    setVariable,
+    variables,
     name,
     type,
   } = props;
@@ -144,9 +143,9 @@ function Variable(props) {
   const restoreButton =
     default_value != null ? (
       <RestoreButton
-        disabled={input.variables[name] === default_value}
+        disabled={variables && variables[name] === default_value}
         name={name}
-        restore={() => handlers.setVariable(name, default_value)}
+        restore={() => setVariable(name, default_value)}
       />
     ) : null;
 
@@ -158,8 +157,8 @@ function Variable(props) {
           type="switch"
           id={id}
           label={name}
-          checked={input.variables[name]}
-          onChange={(e) => handlers.setVariable(name, e.target.checked)}
+          checked={variables && variables[name]}
+          onChange={(e) => setVariable(name, e.target.checked)}
           className="form-check-input rounded-pill"
         />
         <Label check htmlFor={"parameter-" + name}>
@@ -185,8 +184,8 @@ function Variable(props) {
         <Input
           id={id}
           type="select"
-          value={input.variables[name]}
-          onChange={(e) => handlers.setVariable(name, e.target.value)}
+          value={variables ? variables[name] : default_value}
+          onChange={(e) => setVariable(name, e.target.value)}
         >
           {enumObjects}
         </Input>
@@ -202,8 +201,8 @@ function Variable(props) {
         <Input
           id={id}
           type={inputType}
-          value={input.variables[name]}
-          onChange={(e) => handlers.setVariable(name, e.target.value)}
+          value={variables ? variables[name] : undefined}
+          onChange={(e) => setVariable(name, e.target.value)}
           placeholder={defaultOutput}
         />
         {descriptionOutput}

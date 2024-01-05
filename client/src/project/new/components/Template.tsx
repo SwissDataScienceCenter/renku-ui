@@ -19,68 +19,88 @@
 import { FormGroup } from "reactstrap";
 import TemplateSelector from "../../../components/templateSelector/TemplateSelector";
 import {
-  NewProjectConfig,
-  NewProjectInput,
-  NewProjectMeta,
-  NewProjectTemplate,
-  NewProjectTemplates,
-} from "../../../model/RenkuModels";
+  Templates,
+  useGetTemplatesRepositoriesQuery,
+} from "../../../features/templates/templates.api";
+import { RepositoriesParams } from "../../../features/templates/templates.types";
+import { ErrorTemplateFeedback } from "./UserTemplate";
+import { Control, Controller, UseFormRegisterReturn } from "react-hook-form";
+import { NewProjectFormFields } from "../../../features/project/projectKg.types";
 
 interface TemplateProps {
-  config: NewProjectConfig;
-  handlers: {
-    setProperty: (target: string, value: unknown) => void;
-  };
-  input: NewProjectInput;
-  templates: NewProjectTemplates;
-  meta: NewProjectMeta;
+  control: Control<NewProjectFormFields>;
+  template?: Templates; // TODO:  when is already selected a templates by custom url
+  register: UseFormRegisterReturn;
+  userRepositories: RepositoriesParams[] | null;
+  isCustomTemplate: boolean;
+  renkuLabRepositories: RepositoriesParams[];
 }
 
 /** Template field group component */
 export const Template = ({
-  config,
-  handlers,
-  input,
-  templates,
-  meta,
+  control,
+  template,
+  isCustomTemplate,
+  userRepositories,
+  renkuLabRepositories,
 }: TemplateProps) => {
-  const error = meta.validation.errors["template"];
-  const invalid = !!error && !input.templatePristine;
+  const {
+    data: renkuLabTemplates,
+    isFetching: renkuLabTemplatesFetching,
+    isError: renkuLabTemplatesIsError,
+    error: renkuLabTemplatesError,
+  } = useGetTemplatesRepositoriesQuery({ repositories: renkuLabRepositories });
+  const {
+    data: customTemplates,
+    isFetching: customTemplatesFetching,
+    isError: customTemplatesIsError,
+    error: customTemplatesError,
+  } = useGetTemplatesRepositoriesQuery(
+    { repositories: userRepositories !== null ? userRepositories : [] },
+    { skip: userRepositories === null }
+  );
 
+  const noFetchedUserRepo = isCustomTemplate && userRepositories === null;
   const isFetching =
-    (!input.userRepo && !!templates.fetching) ||
-    (input.userRepo && !!meta.userTemplates.fetching);
-  const noFetchedUserRepo = input.userRepo && !meta.userTemplates.fetched;
-  // Pass down templates and repository with the same format to the gallery component
-  const [listedTemplates, repositories] = input.userRepo
-    ? [
-        meta.userTemplates.all,
-        [
-          {
-            url: meta.userTemplates.url,
-            ref: meta.userTemplates.ref,
-            name: "Custom",
-          },
-        ],
-      ]
-    : [templates.all, config.repositories];
-
-  const select = (template: NewProjectTemplate) =>
-    handlers.setProperty("template", template);
+    (!isCustomTemplate && renkuLabTemplatesFetching) ||
+    (isCustomTemplate && customTemplatesFetching);
+  const invalid = renkuLabTemplatesIsError || customTemplatesIsError;
+  const error = isCustomTemplate
+    ? customTemplatesError
+    : renkuLabTemplatesError;
 
   return (
-    <FormGroup className="field-group">
-      <TemplateSelector
-        repositories={repositories}
-        select={select}
-        selected={input.template}
-        templates={listedTemplates}
-        isRequired
-        isInvalid={invalid}
-        isFetching={isFetching}
-        noFetchedUserRepo={noFetchedUserRepo}
+    <>
+      <FormGroup className="field-group">
+        <Controller
+          control={control}
+          name="template"
+          render={({ field }) => (
+            <TemplateSelector
+              repositories={
+                isCustomTemplate
+                  ? userRepositories !== null
+                    ? userRepositories
+                    : []
+                  : renkuLabRepositories
+              }
+              select={(t: Templates) => field.onChange(t)}
+              selected={template}
+              templates={isCustomTemplate ? customTemplates : renkuLabTemplates}
+              isRequired
+              isInvalid={invalid}
+              isFetching={isFetching}
+              noFetchedUserRepo={noFetchedUserRepo}
+            />
+          )}
+          rules={{ required: true }}
+        />
+      </FormGroup>
+      <ErrorTemplateFeedback
+        templates={isCustomTemplate ? customTemplates : renkuLabTemplates}
+        isCustomTemplate={isCustomTemplate}
         error={error}
       />
-    </FormGroup>
+    </>
   );
 };

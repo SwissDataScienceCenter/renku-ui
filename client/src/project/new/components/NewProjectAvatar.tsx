@@ -43,7 +43,7 @@ type ArtificialEvent = {
 };
 
 type NewProjectAvatarProps = {
-  onAvatarChange: (arg: File) => void;
+  onAvatarChange: (file: File) => void;
 };
 function NewProjectAvatar({ onAvatarChange }: NewProjectAvatarProps) {
   const initial: ArtificialEventTargetValue = { options: [], selected: -1 };

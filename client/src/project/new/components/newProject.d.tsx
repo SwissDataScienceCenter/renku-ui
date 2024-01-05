@@ -24,6 +24,7 @@
  */
 
 import { Visibilities } from "../../../components/visibility/Visibility";
+import { Namespace } from "../../../features/projects/projects.api";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
@@ -52,10 +53,10 @@ interface NewProjectMeta {
 interface NewProjectInputs {
   descriptionPristine?: boolean;
   description?: string;
-  namespace?: string;
+  namespace?: Namespace;
   title?: string;
   titlePristine?: boolean;
-  userRepo?: string;
+  userRepo?: boolean;
   visibility?: Visibilities;
   visibilityPristine?: boolean;
 }

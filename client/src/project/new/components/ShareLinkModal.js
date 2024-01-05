@@ -38,7 +38,6 @@ import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 
 function ShareLinkModal(props) {
   const { createUrl, input } = props;
-  const { userTemplates } = props.meta;
 
   const defaultObj = {
     title: false,
@@ -77,15 +76,15 @@ function ShareLinkModal(props) {
       visibility: true,
       templateRepo:
         input.userRepo &&
-        userTemplates.fetched &&
-        userTemplates.url &&
-        userTemplates.ref
+        input.userRepositories !== null &&
+        input.userTemplate.url &&
+        input.userTemplates.reference
           ? true
           : false,
       template: input.template ? true : false,
       variables: variablesAvailable,
     });
-  }, [input, userTemplates]);
+  }, [input]);
 
   // Update selected params
   useEffect(() => {
@@ -108,8 +107,8 @@ function ShareLinkModal(props) {
     if (include.namespace) dataObject.namespace = input.namespace;
     if (include.visibility) dataObject.visibility = input.visibility;
     if (include.templateRepo) {
-      dataObject.url = userTemplates.url;
-      dataObject.ref = userTemplates.ref;
+      dataObject.url = input.userTemplates.url;
+      dataObject.ref = input.userTemplates.reference;
     }
     if (include.template) dataObject.template = input.template;
     if (include.variables) {
@@ -122,7 +121,7 @@ function ShareLinkModal(props) {
     }
 
     setUrl(createUrl(dataObject));
-  }, [createUrl, include, input, userTemplates]);
+  }, [createUrl, include, input]);
 
   const handleCheckbox = (target, event) => {
     // select the template source if is selected a custom template

@@ -23,6 +23,8 @@ import {
 } from "@reduxjs/toolkit/query/react";
 
 import {
+  CreateProjectParams,
+  CreateProjectResponse,
   DatasetKg,
   DeleteProjectParams,
   DeleteProjectResponse,
@@ -180,6 +182,19 @@ export const projectKgApi = createApi({
         { type: "project-kg-metadata", id: args.projectId },
       ],
     }),
+    createProject: builder.mutation<CreateProjectResponse, CreateProjectParams>(
+      {
+        query: ({ project }) => {
+          return {
+            method: "POST",
+            url: `projects`,
+            body: {
+              ...project,
+            },
+          };
+        },
+      }
+    ),
     updateAvatarProject: builder.mutation<
       UpdateProjectResponse,
       EditAvatarProjectParams
@@ -210,4 +225,5 @@ export const {
   useProjectMetadataQuery,
   useUpdateProjectMutation,
   useUpdateAvatarProjectMutation,
+  useCreateProjectMutation,
 } = projectKgApi;

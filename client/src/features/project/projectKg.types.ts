@@ -1,4 +1,5 @@
 import { ProjectKgParams } from "./Project";
+import { NewProjectFormState } from "./editNew/NewProject.types";
 
 export interface JsonLdValue<T> {
   "@value": T;
@@ -9,6 +10,7 @@ export interface JsonLdDate {
   "@value": string;
 }
 
+export type NewProjectFormFields = NewProjectFormState["form"];
 export interface KgJsonLdResponse {
   "@id": string;
   "@type": string[];

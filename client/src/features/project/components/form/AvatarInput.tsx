@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,13 +16,23 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  project/new
- *  Components for the new project page
- */
+import { Control, Controller, UseFormRegisterReturn } from "react-hook-form";
+import { NewProjectFormFields } from "../../projectKg.types";
+import NewProjectAvatar from "../../../../project/new/components/NewProjectAvatar";
 
-import { NewProject, ForkProject } from "./ProjectNew.container";
+interface AvatarInputProps {
+  register: UseFormRegisterReturn;
+  control: Control<NewProjectFormFields>;
+}
 
-export { NewProject, ForkProject };
+export default function AvatarInput({ control }: AvatarInputProps) {
+  return (
+    <Controller
+      control={control}
+      name="avatar"
+      render={({ field }) => (
+        <NewProjectAvatar onAvatarChange={field.onChange} />
+      )}
+    />
+  );
+}

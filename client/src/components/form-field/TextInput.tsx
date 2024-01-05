@@ -30,6 +30,7 @@ type TextInputProps = {
   name: string;
   register: UseFormRegisterReturn;
   required: boolean;
+  readOnly?: boolean;
 };
 
 function TextInput(props: TextInputProps) {
@@ -44,6 +45,7 @@ function TextInput(props: TextInputProps) {
         className="form-control"
         data-cy={props.dataCy}
         id={props.name}
+        readOnly={props.readOnly}
         {...props.register}
       />
       {props.help && <FormText color="muted">{props.help}</FormText>}

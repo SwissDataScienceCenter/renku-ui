@@ -24,40 +24,54 @@
  */
 import { Button, ButtonGroup, FormGroup } from "../../../utils/ts-wrappers";
 import { InputLabel } from "../../../components/formlabels/FormLabels";
-import { NewProjectInputs } from "./newProject.d";
+import { Control, Controller, UseFormRegisterReturn } from "react-hook-form";
+import { NewProjectFormFields } from "../../../features/project/projectKg.types";
 
 interface TemplateSourceProps {
-  handlers: {
-    setProperty: Function; // eslint-disable-line @typescript-eslint/ban-types
-  };
-  input: NewProjectInputs;
+  value: boolean;
   isRequired: boolean;
+  register: UseFormRegisterReturn;
+  control: Control<NewProjectFormFields>;
 }
 
 const TemplateSource = ({
-  handlers,
-  input,
+  value,
   isRequired,
+  control,
 }: TemplateSourceProps) => {
   return (
     <FormGroup className="field-group">
       <InputLabel text="Template source" isRequired={isRequired} />
       <br />
       <ButtonGroup size="sm">
-        <Button
-          active={!input.userRepo}
-          data-cy="renkulab-source-button"
-          onClick={() => handlers.setProperty("userRepo", false)}
-        >
-          RenkuLab
-        </Button>
-        <Button
-          active={!!input.userRepo}
-          data-cy="custom-source-button"
-          onClick={() => handlers.setProperty("userRepo", true)}
-        >
-          Custom
-        </Button>
+        <Controller
+          control={control}
+          name="isCustomTemplate"
+          render={({ field }) => (
+            <Button
+              active={!value}
+              data-cy="renkulab-source-button"
+              onClick={() => field.onChange(false)}
+            >
+              RenkuLab
+            </Button>
+          )}
+          rules={{ required: true }}
+        />
+        <Controller
+          control={control}
+          name="isCustomTemplate"
+          render={({ field }) => (
+            <Button
+              active={value}
+              data-cy="custom-source-button"
+              onClick={() => field.onChange(true)}
+            >
+              Custom
+            </Button>
+          )}
+          rules={{ required: true }}
+        />
       </ButtonGroup>
     </FormGroup>
   );
