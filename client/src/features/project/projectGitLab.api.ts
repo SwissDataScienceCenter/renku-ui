@@ -31,6 +31,7 @@ import {
   GetPipelinesParams,
   GetRegistryTagParams,
   GetRenkuRegistryParams,
+  GetRepositoryBranchParams,
   GetRepositoryBranchesParams,
   GetRepositoryCommitParams,
   GetRepositoryCommitsParams,
@@ -189,6 +190,16 @@ const projectGitLabApi = createApi({
     }),
 
     // Project Repository API
+    getRepositoryBranch: builder.query<
+      GitLabRepositoryBranch,
+      GetRepositoryBranchParams
+    >({
+      query: ({ branch, projectId }) => {
+        return {
+          url: `${projectId}/repository/branches/${encodeURIComponent(branch)}`,
+        };
+      },
+    }),
     getRepositoryBranches: builder.query<
       GitLabRepositoryBranchList,
       GetRepositoryBranchesParams
@@ -428,6 +439,7 @@ export const {
   useGetPipelinesQuery,
   useRetryPipelineMutation,
   useRunPipelineMutation,
+  useGetRepositoryBranchQuery,
   useGetRepositoryBranchesQuery,
   useGetAllRepositoryBranchesQuery,
   useGetConfigFromRepositoryQuery,
