@@ -76,7 +76,11 @@ export default function SessionBranchOption() {
   //   { skip: !gitLabProjectId }
   // );
 
-  const [page, setPage] = useState(1);
+  // const [page, setPage] = useState(1);
+
+  const [{ data: allBranches, fetchedPages, hasMore }, setState] = useState<
+    PaginatedState<GitLabRepositoryBranch>
+  >({ data: [], fetchedPages: 0, hasMore: true });
 
   const {
     data: branchesList,
@@ -86,10 +90,10 @@ export default function SessionBranchOption() {
   } = useGetRepositoryBranchesQuery(
     {
       projectId: `${gitLabProjectId ?? 0}`,
-      page,
+      page: fetchedPages + 1,
       perPage: 2,
     },
-    { skip: !gitLabProjectId }
+    { skip: !gitLabProjectId || !hasMore }
   );
 
   const branches = branchesList?.data;
@@ -97,6 +101,23 @@ export default function SessionBranchOption() {
   useEffect(() => {
     console.log({ branchesList });
   }, [branchesList]);
+
+  useEffect(() => {
+    console.log({ allBranches });
+  }, [allBranches]);
+
+  useEffect(() => {
+    if (branchesList == null) {
+      return;
+    }
+    if (branchesList.page > fetchedPages) {
+      setState(({ data }) => ({
+        data: [...data, ...branchesList.data],
+        fetchedPages: branchesList.page,
+        hasMore: branchesList.page !== branchesList.totalPages,
+      }));
+    }
+  }, [branchesList, fetchedPages]);
 
   const currentBranch = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.branch
@@ -113,36 +134,36 @@ export default function SessionBranchOption() {
     },
     [branches, dispatch]
   );
-  const onChange2 = useCallback(
-    (newValue: SingleValue<string>) => {
-      if (newValue) {
-        dispatch(setBranch(newValue));
-      }
-    },
-    [dispatch]
-  );
+  // const onChange2 = useCallback(
+  //   (newValue: SingleValue<string>) => {
+  //     if (newValue) {
+  //       dispatch(setBranch(newValue));
+  //     }
+  //   },
+  //   [dispatch]
+  // );
 
   // (inputValue: string, options: OptionsOrGroups<OptionType, Group>, additional?: Additional)
-  const loadOptions = useCallback(
-    (
-      _search: string,
-      loadedOptions: OptionsOrGroups<string, GroupBase<string>>,
-      additional?: any
-    ) => {
-      console.log({ _search, loadedOptions, additional });
-      const result: Response<string, GroupBase<string>, any> = {
-        options: branchesList?.data.map((branch) => branch.name) ?? [],
-        hasMore:
-          branchesList == null || branchesList.page !== branchesList.totalPages,
-      };
-      if (branchesList != null && branchesList.page < branchesList.totalPages) {
-        setPage((page) => page + 1);
-      }
-      console.log({ result });
-      return result;
-    },
-    [branchesList]
-  );
+  // const loadOptions = useCallback(
+  //   (
+  //     _search: string,
+  //     loadedOptions: OptionsOrGroups<string, GroupBase<string>>,
+  //     additional?: any
+  //   ) => {
+  //     console.log({ _search, loadedOptions, additional });
+  //     const result: Response<string, GroupBase<string>, any> = {
+  //       options: branchesList?.data.map((branch) => branch.name) ?? [],
+  //       hasMore:
+  //         branchesList == null || branchesList.page !== branchesList.totalPages,
+  //     };
+  //     if (branchesList != null && branchesList.page < branchesList.totalPages) {
+  //       setPage((page) => page + 1);
+  //     }
+  //     console.log({ result });
+  //     return result;
+  //   },
+  //   [branchesList]
+  // );
 
   useDefaultBranchOption({ branches, defaultBranch });
 
@@ -264,17 +285,23 @@ export default function SessionBranchOption() {
       </Input>
 
       <div>
-        <AsyncPaginate
+        {/* <AsyncPaginate
           loadOptions={loadOptions}
           value={currentBranch}
           defaultValue={defaultBranch}
           onChange={onChange2}
           isClearable={false}
           isSearchable={false}
-        />
+        /> */}
       </div>
     </div>
   );
+}
+
+interface PaginatedState<T = unknown> {
+  data: T[];
+  fetchedPages: number;
+  hasMore: boolean;
 }
 
 interface RefreshBranchesButtonProps {
