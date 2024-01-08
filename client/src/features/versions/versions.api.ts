@@ -22,6 +22,8 @@ import {
   CoreVersionDetails,
   CoreVersionResponse,
   CoreVersions,
+  DataServicesVersion,
+  DataServicesVersionResponse,
   KgVersion,
   KgVersionResponse,
   NotebooksVersion,
@@ -77,6 +79,28 @@ export const versionsApi = createApi({
       },
       providesTags: (result) =>
         result ? [{ type: "Version", id: "core" }] : [],
+    }),
+    getDataServicesVersion: builder.query<DataServicesVersion, void>({
+      query: () => {
+        return { url: "data/version" };
+      },
+      transformResponse: (response: DataServicesVersionResponse) => {
+        const version = response.version.startsWith("v")
+          ? response.version
+          : `v${response.version}`;
+        return {
+          name: "data-services",
+          version,
+        };
+      },
+      transformErrorResponse: () => {
+        return {
+          name: "error",
+          version: "unavailable",
+        } as DataServicesVersion;
+      },
+      providesTags: (result) =>
+        result ? [{ type: "Version", id: "data-services" }] : [],
     }),
     getKgVersion: builder.query<KgVersion, void>({
       query: () => {
@@ -141,6 +165,7 @@ export const versionsApi = createApi({
 
 export const {
   useGetCoreVersionsQuery,
+  useGetDataServicesVersionQuery,
   useGetKgVersionQuery,
   useGetNotebooksVersionQuery,
 } = versionsApi;
