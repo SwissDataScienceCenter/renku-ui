@@ -29,6 +29,7 @@ import {
   ModalBody,
   ModalFooter,
 } from "reactstrap";
+
 import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
@@ -38,6 +39,7 @@ import {
   ResourceClass,
   ResourcePool,
 } from "../dataServices/dataServices.types";
+import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
@@ -274,6 +276,8 @@ function ResourceClassItem({
     max_storage,
     memory,
     name,
+    node_affinities,
+    tolerations,
   } = resourceClass;
 
   const columnClasses = ["col-12", "col-sm-4", "col-md-3", "col-xl-2"];
@@ -292,17 +296,43 @@ function ResourceClassItem({
           {default_storage}&nbsp;GB default disk
         </div>
         <div className={cx(columnClasses)}>{max_storage}&nbsp;GB max disk</div>
-        <div className={cx(columnClasses, "ms-auto")}>
+        <div className={cx(columnClasses)}>
+          tolerations: {tolerations?.length ?? 0}
+        </div>
+        <div className={cx(columnClasses)}>
+          node affinities: {node_affinities?.length ?? 0}
+        </div>
+        <div
+          className={cx(
+            "col-12",
+            "col-sm-8",
+            "col-md-6",
+            "col-xl-4",
+            "ms-auto",
+            "d-flex",
+            "flex-column",
+            "flex-sm-row",
+            "flex-wrap",
+            "justify-content-end"
+          )}
+        >
           {isDefault ? (
             <UpdateResourceClassButton
               resourceClass={resourceClass}
               resourcePool={resourcePool}
             />
           ) : (
-            <DeleteResourceClassButton
-              resourceClass={resourceClass}
-              resourcePool={resourcePool}
-            />
+            <>
+              <UpdateResourceClassButton
+                resourceClass={resourceClass}
+                resourcePool={resourcePool}
+              />
+              <span className={cx("me-2", "py-1")} />
+              <DeleteResourceClassButton
+                resourceClass={resourceClass}
+                resourcePool={resourcePool}
+              />
+            </>
           )}
         </div>
       </div>
@@ -338,7 +368,11 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
   return (
     <div>
       <p className="mb-0">Users: {resourcePoolUsers.length}</p>
-      <AddUserToResourcePoolButton resourcePool={resourcePool} />
+      <div className={cx("d-flex", "flex-column", "flex-sm-row", "flex-wrap")}>
+        <AddUserToResourcePoolButton resourcePool={resourcePool} />
+        <span className={cx("me-2", "py-1")} />
+        <AddManyUsersToResourcePoolButton resourcePool={resourcePool} />
+      </div>
       <ResourcePoolUsersList
         resourcePool={resourcePool}
         resourcePoolUsers={resourcePoolUsers}

@@ -36,13 +36,6 @@ $borderRadius: 1000px;
   border-left: 1px solid;
 }
 
-.btn-with-menu-options {
-  svg,
-  .btn-with-menu-margin {
-    margin-right: 12px;
-  }
-}
-
 .input-group .btn {
   border-radius: 0;
   padding: 5px 10px;
@@ -110,11 +103,18 @@ $borderRadius: 1000px;
   }
 }
 
+.btn-secondary {
+  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
+  &:focus {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+}
+
 .btn-secondary,
 .btn-info,
 .btn-warning {
   color: $rk-white;
-  --bs-btn-active-color: #{$rk-white};
+  --#{$prefix}btn-active-color: #{$rk-white};
   &:hover,
   &:focus,
   &:active,
@@ -124,9 +124,6 @@ $borderRadius: 1000px;
   &.disabled {
     color: $rk-white;
   }
-}
-.btn-secondary:focus {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .btn-outline-secondary:hover {
@@ -242,6 +239,26 @@ $borderRadius: 1000px;
   &.active {
     background-color: transparent;
     color: $rk-blue;
+  }
+}
+.btn-outline-secondary {
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
+  --#{$prefix}btn-active-border-color: #{$rk-green-highlight};
+  background-color: transparent;
+  color: #{$rk-green};
+
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    background-color: #{$rk-green-highlight};
+    color: white;
+    border-color: #{$rk-green-highlight};
+  }
+  &:disabled {
+    color: $rk-green;
+    opacity: 0.6;
   }
 }
 .btn-outline-rk-green {
@@ -478,4 +495,19 @@ $borderRadius: 1000px;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+}
+
+.btn-animation-pulse {
+  animation: pulse 2s infinite ease-in-out;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1);
+  }
 }

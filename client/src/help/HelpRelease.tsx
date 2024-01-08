@@ -16,16 +16,21 @@
  * limitations under the License.
  */
 
-import { Row, Col } from "reactstrap";
+import { useContext } from "react";
+import { Col, Row } from "reactstrap";
 
-import type { Params } from "../App.types";
-import { Loader } from "../components/Loader";
 import { ExternalLink } from "../components/ExternalLinks";
+import { Loader } from "../components/Loader";
 import {
   useGetCoreVersionsQuery,
-  useGetNotebooksVersionsQuery,
-} from "../features/versions/versionsApi";
+  useGetDataServicesVersionQuery,
+  useGetKgVersionQuery,
+  useGetNotebooksVersionQuery,
+} from "../features/versions/versions.api";
 import { RenkuRepositories } from "../utils/constants/Repositories";
+import AppContext from "../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
+import { parseChartVersion } from "./release.utils";
 
 function componentDocsUrl(
   componentUrl: string,
@@ -38,46 +43,6 @@ function componentDocsUrl(
     : devHash == null
     ? `${componentUrl}/releases/tag/${taggedVersion}`
     : releasesUrl;
-}
-
-/**
- * Parse the chart version into components according to https://github.com/jupyterhub/chartpress/tree/1.3.0
- * NB This may need to change if chartpress is updated.
- * @param version the chart version
- * @returns the version components
- */
-function parseChartVersion(version: string | undefined) {
-  if (version == null) {
-    return {
-      taggedVersion: "unknown",
-      devHash: "unknown",
-    };
-  }
-  const versionComponents = version.split("-");
-  if (versionComponents.length === 1) {
-    return {
-      taggedVersion: version,
-      devHash: null,
-    };
-  }
-  const taggedVersion = versionComponents[0];
-  const versionMetadata = versionComponents[1];
-  const metadataComponents = versionMetadata.split(".");
-  const lastComponent = metadataComponents[metadataComponents.length - 1];
-  if (lastComponent.match(/^h.+$/)) {
-    // This is non-tagged version, e.g. [tag].n[number of commits].h[commit hash]
-    const devHash = lastComponent.slice(1);
-    return {
-      taggedVersion,
-      devHash,
-    };
-  }
-  // This is a tagged dev version, e.g. [tag]-[build info]
-  const devHash = lastComponent;
-  return {
-    taggedVersion,
-    devHash,
-  };
 }
 
 type ComponentAndDevVersionProps = {
@@ -122,8 +87,40 @@ function CoreRelease() {
   );
 }
 
+function DataServicesRelease() {
+  const { data, isFetching } = useGetDataServicesVersionQuery();
+  if (isFetching) {
+    return <Loader inline size={16} />;
+  }
+  const dataServicesVersion = data?.version;
+  const { taggedVersion, devHash } = parseChartVersion(dataServicesVersion);
+  return (
+    <ComponentAndDevVersion
+      componentUrl={RenkuRepositories.DataServices}
+      devHash={devHash}
+      taggedVersion={taggedVersion}
+    />
+  );
+}
+
+function KgRelease() {
+  const { data, isFetching } = useGetKgVersionQuery();
+  if (isFetching) {
+    return <Loader inline size={16} />;
+  }
+  const kgVersion = data?.version;
+  const { taggedVersion, devHash } = parseChartVersion(kgVersion);
+  return (
+    <ComponentAndDevVersion
+      componentUrl={RenkuRepositories.KnowledgeGraph}
+      devHash={devHash}
+      taggedVersion={taggedVersion}
+    />
+  );
+}
+
 function NotebookRelease() {
-  const { data, isFetching } = useGetNotebooksVersionsQuery();
+  const { data, isFetching } = useGetNotebooksVersionQuery();
   if (isFetching) {
     return <Loader inline size={16} />;
   }
@@ -138,7 +135,11 @@ function NotebookRelease() {
   );
 }
 
-function RenkuRelease({ chartVersion }: { chartVersion: string }) {
+function RenkuRelease() {
+  const { params } = useContext(AppContext);
+  const chartVersion =
+    params?.RENKU_CHART_VERSION ?? DEFAULT_APP_PARAMS.RENKU_CHART_VERSION;
+
   const { taggedVersion, devHash } = parseChartVersion(chartVersion);
   return (
     <ComponentAndDevVersion
@@ -149,7 +150,10 @@ function RenkuRelease({ chartVersion }: { chartVersion: string }) {
   );
 }
 
-function UiRelease({ uiVersion }: { uiVersion: string }) {
+function UiRelease() {
+  const { params } = useContext(AppContext);
+  const uiVersion = params?.UI_VERSION ?? DEFAULT_APP_PARAMS.UI_VERSION;
+
   const { taggedVersion, devHash } = parseChartVersion(uiVersion);
   return (
     <ComponentAndDevVersion
@@ -160,16 +164,22 @@ function UiRelease({ uiVersion }: { uiVersion: string }) {
   );
 }
 
-function ComponentDetails({ uiVersion }: { uiVersion: string }) {
+function ComponentDetails() {
   return (
     <>
       <div className="fw-bold">Renku component versions</div>
       <ul>
         <li>
-          UI: <UiRelease uiVersion={uiVersion} />
+          UI: <UiRelease />
         </li>
         <li>
           Core: <CoreRelease />
+        </li>
+        <li>
+          Data Services: <DataServicesRelease />
+        </li>
+        <li>
+          Knowledge Graph: <KgRelease />
         </li>
         <li>
           Notebooks: <NotebookRelease />
@@ -179,10 +189,7 @@ function ComponentDetails({ uiVersion }: { uiVersion: string }) {
   );
 }
 
-type HelpProps = {
-  params: Params;
-};
-function HelpRelease({ params }: HelpProps) {
+export default function HelpRelease() {
   return (
     <>
       <Row>
@@ -193,21 +200,15 @@ function HelpRelease({ params }: HelpProps) {
             links.
           </p>
           <p>
-            <span className="fw-bold">Renku version</span>{" "}
-            <RenkuRelease chartVersion={params.RENKU_CHART_VERSION} />
+            <span className="fw-bold">Renku version</span> <RenkuRelease />
           </p>
         </Col>
       </Row>
       <Row>
         <Col>
-          <ComponentDetails uiVersion={params.UI_VERSION} />
+          <ComponentDetails />
         </Col>
       </Row>
     </>
   );
 }
-
-export default HelpRelease;
-
-// For testing
-export { parseChartVersion };

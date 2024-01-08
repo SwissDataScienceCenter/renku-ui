@@ -20,6 +20,7 @@ import { UserCoordinator } from "./user";
 import { Sentry } from "./utils/helpers/sentry";
 import { Url, createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
+import { validatedAppParams } from "./utils/context/appParams.utils";
 
 const configFetch = fetch("/config.json");
 const privacyFetch = fetch("/privacy-statement.md");
@@ -32,33 +33,29 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
   Promise.all([configRead, privacyRead]).then((values) => {
     const container = document.getElementById("root");
     const root = createRoot(container);
-    const [params, privacy] = values;
-
-    // adjust boolean param values
-    for (const val of Object.keys(params)) {
-      if (params[val] === "false") params[val] = false;
-      else if (params[val] === "true") params[val] = true;
-    }
+    const [params_, privacy] = values;
 
     // map privacy statement to parameters
     // ? checking DOCTYPE prevents setting content from bad answers on valid 2xx responses
-    if (!privacy || !privacy.length || privacy.startsWith("<!DOCTYPE html>"))
-      params["PRIVACY_STATEMENT"] = null;
-    else params["PRIVACY_STATEMENT"] = privacy;
+    if (!privacy || !privacy.length || privacy.startsWith("<!DOCTYPE html>")) {
+      params_["PRIVACY_STATEMENT"] = null;
+    } else {
+      params_["PRIVACY_STATEMENT"] = privacy;
+    }
+
+    const params = validatedAppParams(params_);
 
     // configure core api versioned url helper
-    const coreApiVersionConfig = params["CORE_API_VERSION_CONFIG"] ?? {
-      coreApiVersion: "/",
-    };
-    const coreApiVersionedUrlConfig =
-      createCoreApiVersionedUrlConfig(coreApiVersionConfig);
+    const coreApiVersionedUrlConfig = createCoreApiVersionedUrlConfig(
+      params.CORE_API_VERSION_CONFIG
+    );
 
     // configure base url
-    Url.setBaseUrl(params["BASE_URL"]);
+    Url.setBaseUrl(params.BASE_URL);
 
     // create client to be passed to coordinators
     const client = new APIClient(
-      params.UISERVER_URL + "/api",
+      `${params.UISERVER_URL}/api`,
       params.UISERVER_URL,
       coreApiVersionedUrlConfig
     );
@@ -67,7 +64,7 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     const model = new StateModel(globalSchema);
 
     // show maintenance page when necessary
-    const maintenance = params["MAINTENANCE"];
+    const maintenance = params.MAINTENANCE;
     if (maintenance) {
       root.render(
         <Provider store={model.reduxStore}>
@@ -98,7 +95,7 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     }
 
     // Set up polling
-    const statuspageId = params["STATUSPAGE_ID"];
+    const statuspageId = params.STATUSPAGE_ID;
     pollStatuspage(statuspageId, model);
 
     // Map redux user data to the initial react application
@@ -111,7 +108,7 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     root.render(
       <Provider store={model.reduxStore}>
         <Router>
-          <AppErrorBoundary client={client} model={model} params={params}>
+          <AppErrorBoundary>
             <Route
               render={(props) => {
                 LoginHelper.handleLoginParams(props.history);

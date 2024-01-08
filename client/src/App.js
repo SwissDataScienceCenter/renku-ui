@@ -25,7 +25,6 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { useSelector } from "react-redux";
 import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -52,6 +51,7 @@ import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
 import { StyleGuide } from "./styleguide";
 import AppContext from "./utils/context/appContext";
+import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { Url } from "./utils/helpers/url";
 import { setupWebSocket } from "./websocket";
 
@@ -72,25 +72,6 @@ function CentralContentContainer(props) {
     skip: !props.user.logged,
   });
 
-  if (
-    !props.user.logged &&
-    props.location.pathname === Url.get(Url.pages.landing)
-  ) {
-    return (
-      <AnonymousHome
-        client={props.client}
-        homeCustomized={props.params["HOMEPAGE"]}
-        user={props.user}
-        model={props.model}
-        location={props.location}
-        params={props.params}
-      />
-    );
-  }
-
-  // check anonymous sessions settings
-  const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
-
   const appContext = {
     client: props.client,
     coreApiVersionedUrlConfig,
@@ -99,6 +80,27 @@ function CentralContentContainer(props) {
     notifications,
     params: props.params,
   };
+
+  if (
+    !props.user.logged &&
+    props.location.pathname === Url.get(Url.pages.landing)
+  ) {
+    return (
+      <AppContext.Provider value={appContext}>
+        <AnonymousHome
+          client={props.client}
+          homeCustomized={props.params["HOMEPAGE"]}
+          user={props.user}
+          model={props.model}
+          location={props.location}
+          params={props.params}
+        />
+      </AppContext.Provider>
+    );
+  }
+
+  // check anonymous sessions settings
+  const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
 
   return (
     <div className="d-flex flex-grow-1">
@@ -331,7 +333,7 @@ function App(props) {
   }, []); // eslint-disable-line
 
   // Avoid rendering the application while authenticating the user
-  const user = useSelector((state) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   if (!user?.fetched && user?.fetching) {
     return (
       <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">

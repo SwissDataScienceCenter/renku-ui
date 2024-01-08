@@ -44,6 +44,15 @@ export interface ResourceClass {
   default: boolean;
 
   matching: boolean;
+
+  tolerations?: string[];
+
+  node_affinities?: NodeAffinity[];
+}
+
+export interface NodeAffinity {
+  key: string;
+  required_during_scheduling?: boolean;
 }
 
 export interface Resources {
@@ -57,4 +66,12 @@ export interface ResourcePoolsQueryParams {
   gpuRequest?: number;
   memoryRequest?: number;
   storageRequest?: number;
+}
+
+export interface DataServicesError {
+  error: {
+    code: number;
+    detail?: string;
+    message: string;
+  };
 }

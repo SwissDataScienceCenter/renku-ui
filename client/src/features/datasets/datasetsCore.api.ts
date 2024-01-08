@@ -36,9 +36,9 @@ export const datasetsCoreApi = createApi({
   tagTypes: ["datasets"],
   endpoints: (builder) => ({
     addFiles: builder.mutation<AddFiles, AddFilesParams>({
-      query: ({ apiVersion, branch, files, gitUrl, metadataVersion, name }) => {
+      query: ({ apiVersion, branch, files, gitUrl, metadataVersion, slug }) => {
         return {
-          body: { branch, files, git_url: gitUrl, name },
+          body: { branch, files, git_url: gitUrl, slug },
           method: "POST",
           url: versionedPathForEndpoint({
             endpoint: "datasets.add",
@@ -54,14 +54,14 @@ export const datasetsCoreApi = createApi({
         if (!response.result) throw new Error("Unexpected response");
         return {
           files: response.result.files,
-          name: response.result.name,
+          slug: response.result.slug,
           remoteBranch: response.result.remote_branch,
         };
       },
     }),
     deleteDataset: builder.mutation<DeleteDataset, DeleteDatasetParams>({
-      query: ({ apiVersion, gitUrl, metadataVersion, name }) => {
-        const body = { git_url: gitUrl, name };
+      query: ({ apiVersion, gitUrl, metadataVersion, slug }) => {
+        const body = { git_url: gitUrl, slug };
         return {
           body,
           method: "POST",
@@ -77,7 +77,7 @@ export const datasetsCoreApi = createApi({
       transformResponse: (response: DeleteDatasetResponse) => {
         if (!response.result) throw new Error("Unexpected response");
         return {
-          name: response.result.name,
+          slug: response.result.slug,
           remoteBranch: response.result.remote_branch,
         };
       },
@@ -114,7 +114,7 @@ export const datasetsCoreApi = createApi({
       transformResponse: (response: PostDatasetResponse) => {
         if (!response.result) throw new Error("Unexpected response");
         return {
-          name: response.result.name,
+          slug: response.result.slug,
           remoteBranch: response.result.remote_branch,
         };
       },

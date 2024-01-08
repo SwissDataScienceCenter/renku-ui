@@ -17,11 +17,11 @@
  */
 
 import React from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import DatasetView from "../../../dataset/Dataset.present";
 import AppContext from "../../../utils/context/appContext";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import type {
   DatasetCore,
@@ -76,19 +76,19 @@ type ProjectDatasetViewProps = {
 };
 
 function findDataset(
-  name: string | undefined,
+  slug: string | undefined,
   datasets: DatasetCore[] | undefined
 ) {
-  if (name == null || datasets == null) return undefined;
-  return datasets.find((d) => d.name === name);
+  if (slug == null || datasets == null) return undefined;
+  return datasets.find((d) => d.slug === slug);
 }
 
 function findDatasetId(
-  name: string | undefined,
+  slug: string | undefined,
   datasets: DatasetCore[] | undefined
 ) {
-  if (name == null || datasets == null) return undefined;
-  const dataset = findDataset(name, datasets);
+  if (slug == null || datasets == null) return undefined;
+  const dataset = findDataset(slug, datasets);
   return dataset?.identifier;
 }
 
@@ -112,6 +112,8 @@ function mergeCoreAndKgDatasets(
     creator: coreDataset.creators,
   };
   if (kgDataset) {
+    dataset.name = kgDataset.name;
+    dataset.slug = kgDataset.slug;
     dataset.url = kgDataset.url;
     dataset.sameAs = kgDataset.sameAs;
     dataset.usedIn = kgDataset.usedIn;
@@ -128,8 +130,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
   const coreDataset = findDataset(props.datasetId, props.datasets);
   const datasetId = findDatasetId(props.datasetId, props.datasets);
 
-  const { defaultBranch, externalUrl } = useSelector<
-    RootStateOrAny,
+  const { defaultBranch, externalUrl } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
   const { coreSupport } = useCoreSupport({
@@ -144,7 +145,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     isFetching: isKgFetching,
   } = useGetDatasetKgQuery({ id: datasetId ?? "" }, { skip: !datasetId });
   const currentDataset = mergeCoreAndKgDatasets(coreDataset, kgDataset);
-  const datasetName = currentDataset?.name;
+  const datasetSlug = currentDataset?.slug;
   const {
     data: datasetFiles,
     error: filesFetchError,
@@ -153,10 +154,10 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     {
       apiVersion,
       git_url: props.externalUrl,
-      name: datasetName ?? "",
+      slug: datasetSlug ?? "",
       metadataVersion,
     },
-    { skip: !datasetName }
+    { skip: !datasetSlug }
   );
 
   const loadingDatasets =
@@ -198,10 +199,10 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
 }
 
 function ProjectDatasetShow(props: ProjectDatasetShowProps) {
-  const project = useSelector(
-    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project
   );
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
   const datasets = project.datasets.core.datasets;

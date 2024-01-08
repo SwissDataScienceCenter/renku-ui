@@ -24,39 +24,40 @@
  */
 
 import {
-  useCallback,
-  useEffect,
-  useState,
-  useRef,
-  useContext,
   Component,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
-import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 import { useHistory } from "react-router";
+import { useLocation } from "react-router-dom";
 
-import {
-  NewProject as NewProjectPresent,
-  ForkProject as ForkProjectPresent,
-} from "./ProjectNew.present";
-import {
-  validateTitle,
-  checkTitleDuplicates,
-  NewProjectCoordinator,
-} from "./ProjectNew.state";
+import { Loader } from "../../components/Loader";
+import { newProjectSchema } from "../../model/RenkuModels";
+import AppContext from "../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
+import useGetNamespaces from "../../utils/customHooks/UseGetNamespaces";
+import useGetUserProjects from "../../utils/customHooks/UseGetProjects";
+import useGetVisibilities from "../../utils/customHooks/UseGetVisibilities";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { arrayStringEquals } from "../../utils/helpers/ArrayUtils";
+import { atobUTF8, btoaUTF8 } from "../../utils/helpers/Encoding";
 import {
   gitLabUrlFromProfileUrl,
   slugFromTitle,
 } from "../../utils/helpers/HelperFunctions";
-import { arrayStringEquals } from "../../utils/helpers/ArrayUtils";
-import { atobUTF8, btoaUTF8 } from "../../utils/helpers/Encoding";
 import { Url, getSearchParams } from "../../utils/helpers/url";
-import { newProjectSchema } from "../../model/RenkuModels";
-import AppContext from "../../utils/context/appContext";
-import useGetNamespaces from "../../utils/customHooks/UseGetNamespaces";
-import useGetUserProjects from "../../utils/customHooks/UseGetProjects";
-import useGetVisibilities from "../../utils/customHooks/UseGetVisibilities";
-import { Loader } from "../../components/Loader";
+import {
+  ForkProject as ForkProjectPresent,
+  NewProject as NewProjectPresent,
+} from "./ProjectNew.present";
+import {
+  NewProjectCoordinator,
+  checkTitleDuplicates,
+  validateTitle,
+} from "./ProjectNew.state";
 
 const CUSTOM_REPO_NAME = "Custom";
 
@@ -83,7 +84,7 @@ function ForkProject(props) {
     fullNamespace,
     projectVisibility
   );
-  const { logged, data: { username } = null } = useSelector(
+  const { logged, data: { username } = null } = useLegacySelector(
     (state) => state.stateModel.user
   );
 
@@ -368,8 +369,8 @@ function NewProject(props) {
   const { model, importingDataset, startImportDataset, coordinator } = props;
   const { params } = useContext(AppContext);
   const history = useHistory();
-  const user = useSelector((state) => state.stateModel.user);
-  const newProject = useSelector((state) => state.stateModel.newProject);
+  const user = useLegacySelector((state) => state.stateModel.user);
+  const newProject = useLegacySelector((state) => state.stateModel.newProject);
   const [namespace, setNamespace] = useState(null);
   const [automatedData, setAutomatedData] = useState(null);
   const namespaces = useGetNamespaces(true);
@@ -460,10 +461,8 @@ function NewProject(props) {
   useEffect(() => {
     removeAutomated();
     if (!coordinator || !user.logged) return;
-    coordinator.setConfig(
-      params["TEMPLATES"].custom,
-      params["TEMPLATES"].repositories
-    );
+    const templates = params?.TEMPLATES ?? DEFAULT_APP_PARAMS.TEMPLATES;
+    coordinator.setConfig(templates.custom, templates.repositories);
     coordinator.resetInput();
     coordinator.getTemplates();
     extractAutomatedData();
@@ -683,6 +682,6 @@ function NewProject(props) {
   return <NewProjectPresent {...newProps} />;
 }
 
-export { NewProjectWrapper as NewProject, CUSTOM_REPO_NAME, ForkProject };
+export { CUSTOM_REPO_NAME, ForkProject, NewProjectWrapper as NewProject };
 // test only
 export { getDataFromParams };

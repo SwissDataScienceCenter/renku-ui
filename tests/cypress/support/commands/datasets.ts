@@ -42,7 +42,7 @@ function selectProjectFromAutosuggestionList(
 }
 
 export interface Dataset {
-  title: string;
+  name: string;
   creators?: {
     name: string;
     email: string;
@@ -55,7 +55,7 @@ export interface Dataset {
 }
 
 function newDataset(newDataset: Dataset) {
-  cy.getDataCy("input-title").type(newDataset.title);
+  cy.getDataCy("input-title").type(newDataset.name);
   if (newDataset.creators) {
     cy.getDataCy("addCreatorButton").click();
     cy.getDataCy("creator-name").type(newDataset.creators.name);

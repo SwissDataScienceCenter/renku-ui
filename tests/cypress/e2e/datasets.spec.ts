@@ -52,7 +52,7 @@ describe("display a dataset", () => {
             "abcd • Dataset • Dataset for testing purposes"
           );
         // the dataset title is displayed
-        cy.getDataCy("dataset-title").should("contain.text", dataset?.title);
+        cy.getDataCy("dataset-title").should("contain.text", dataset?.name);
         // files are displayed
         const totalFiles = dataset?.hasPart?.length;
         cy.getDataCy("dataset-file-title").should(

@@ -17,7 +17,6 @@
  */
 
 import { createSlice } from "@reduxjs/toolkit";
-import { createSliceSelector } from "../../../utils/customHooks/UseSliceSelector";
 
 interface DashboardMessageState {
   dismissed: boolean;
@@ -36,7 +35,3 @@ export const dashboardMessageSlice = createSlice({
     },
   },
 });
-
-export const useDashboardMessageSelector = createSliceSelector(
-  dashboardMessageSlice
-);

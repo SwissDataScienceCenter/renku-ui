@@ -1,0 +1,114 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+#teachingContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 780px;
+  text-align: center;
+  padding: 5em 1em;
+
+  h2 {
+    font-size: 40px;
+    text-align: center;
+  }
+
+  p {
+    font-size: 32px;
+    line-height: normal;
+    padding: 0;
+    margin: 0;
+
+    span {
+      display: block;
+    }
+  }
+
+  .teachingTitle {
+    margin-bottom: 40px;
+  }
+
+  .teachingGraph {
+    max-width: 375px;
+  }
+
+  .btnLearnMore {
+    min-width: 200px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .teachingContent {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+    h2 {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    p {
+      font-size: 20px;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+
+    h2 {
+      font-size: 32px;
+    }
+    .btnLearnMore {
+      min-width: 141px;
+      height: 40px;
+    }
+    p {
+      font-size: 20px;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 5em 4em;
+
+    h2 {
+      font-size: 40px;
+    }
+    p {
+      font-size: 24px;
+    }
+    .btnLearnMore {
+      min-width: 200px;
+    }
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding: 5em 8em;
+
+    h2 {
+      font-size: 40px;
+    }
+    p {
+      font-size: 24px;
+    }
+    .btnLearnMore {
+      min-width: 200px;
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    .teachingContent {
+      flex-direction: column;
+      justify-content: center;
+      gap: 40px;
+      text-align: center;
+    }
+  }
+}

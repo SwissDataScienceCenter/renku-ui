@@ -79,7 +79,7 @@ function ListDisplay(props) {
     </div>
   ) : (
     <div>
-      <div className="my-sm-2 my-md-4 d-flex flex-column gap-3">{rows}</div>
+      <div className="mb-sm-2 mb-md-4 d-flex flex-column gap-3">{rows}</div>
       <Pagination
         currentPage={currentPage}
         perPage={perPage}

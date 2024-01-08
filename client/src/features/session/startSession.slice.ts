@@ -17,7 +17,6 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { StartSession } from "./startSession.types";
 import { StepsProgressBar } from "../../components/progress/ProgressSteps";
 
@@ -63,5 +62,3 @@ type SetErrorPayload = Pick<StartSession, "error"> &
 export default startSessionSlice;
 export const { setError, setStarting, setSteps, updateStepStatus, reset } =
   startSessionSlice.actions;
-
-export const useStartSessionSelector = createSliceSelector(startSessionSlice);

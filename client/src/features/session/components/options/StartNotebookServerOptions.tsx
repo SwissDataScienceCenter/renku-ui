@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import {
   Badge,
   Button,
@@ -30,8 +29,12 @@ import {
   Label,
   UncontrolledDropdown,
 } from "reactstrap";
+
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
@@ -39,13 +42,10 @@ import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { useServerOptionsQuery } from "../../sessions.api";
 import { ServerOptions } from "../../sessions.types";
-import {
-  setDefaultUrl,
-  setLfsAutoFetch,
-  useStartSessionOptionsSelector,
-} from "../../startSessionOptionsSlice";
+import { setDefaultUrl, setLfsAutoFetch } from "../../startSessionOptionsSlice";
 import { SessionClassOption } from "./SessionClassOption";
 import { SessionStorageOption } from "./SessionStorageOption";
+
 import styles from "./StartNotebookServerOptions.module.scss";
 
 export const StartNotebookServerOptions = () => {
@@ -55,13 +55,13 @@ export const StartNotebookServerOptions = () => {
   const { isLoading: serverOptionsIsLoading } = useServerOptionsQuery();
 
   // Project options
-  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
@@ -74,7 +74,9 @@ export const StartNotebookServerOptions = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
     usePatchedProjectConfig({
       apiVersion,
@@ -139,13 +141,13 @@ const DefaultUrlOption = () => {
     useServerOptionsQuery();
 
   // Project options
-  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
@@ -158,8 +160,9 @@ const DefaultUrlOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const { commit, defaultUrl: selectedDefaultUrl } =
-    useStartSessionOptionsSelector();
+  const { commit, defaultUrl: selectedDefaultUrl } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
+  );
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     usePatchedProjectConfig({
       apiVersion,
@@ -175,7 +178,7 @@ const DefaultUrlOption = () => {
     projectConfig,
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onChange = useCallback(
     (_event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
@@ -255,13 +258,13 @@ export const mergeDefaultUrlOptions = ({
 
 const AutoFetchLfsOption = () => {
   // Project options
-  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
@@ -273,7 +276,9 @@ const AutoFetchLfsOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
   const { data: projectConfig } = usePatchedProjectConfig({
     apiVersion,
     commit,
@@ -283,11 +288,11 @@ const AutoFetchLfsOption = () => {
     skip: !coreSupportComputed || !commit,
   });
 
-  const lfsAutoFetch = useStartSessionOptionsSelector(
-    (state) => state.lfsAutoFetch
+  const lfsAutoFetch = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.lfsAutoFetch
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onChange = useCallback(() => {
     dispatch(setLfsAutoFetch(!lfsAutoFetch));

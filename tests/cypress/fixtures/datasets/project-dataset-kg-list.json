@@ -15,8 +15,8 @@
     "versions": {
       "initial": "c8c01080845c4d9e9f1f2930d4892627"
     },
-    "title": "abcd",
     "name": "abcd",
+    "slug": "abcd",
     "images": []
   },
   {
@@ -35,8 +35,8 @@
     "versions": {
       "initial": "83f12182178b45ddb1e689990d9b4fa2"
     },
-    "title": "efgh",
     "name": "efgh",
+    "slug": "efgh",
     "images": []
   }
 ]

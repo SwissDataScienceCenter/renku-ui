@@ -25,9 +25,9 @@
 
 import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { DateTime } from "luxon";
 import {
-  Button,
   ButtonGroup,
   Col,
   ListGroup,
@@ -35,12 +35,14 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Clipboard } from "../clipboard/Clipboard";
+
+import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import { ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { TimeCaption } from "../TimeCaption";
+import { Clipboard } from "../clipboard/Clipboard";
+
 import "./Commits.css";
-import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 
 // Constants
 const CommitElement = {
@@ -153,16 +155,25 @@ function SingleCommit(props) {
               className="text-monospace m-auto commit-buttons"
               size="sm"
             >
-              <Button
-                color="rk-background"
-                className="border rounded-0 rounded-start"
-                id={idCopyButton}
-              >
-                <Clipboard clipboardText={props.commit.id}>
+              <span id={idCopyButton}>
+                <Clipboard
+                  className={cx(
+                    "btn",
+                    "btn-rk-background",
+                    "border",
+                    "rounded-0",
+                    "rounded-start"
+                  )}
+                  clipboardText={props.commit.id}
+                >
                   <code>{props.commit.short_id}</code>
                 </Clipboard>
-              </Button>
-              <UncontrolledTooltip placement="top" target={idCopyButton}>
+              </span>
+              <UncontrolledTooltip
+                placement="top"
+                target={idCopyButton}
+                offset={[0, 5]} // offset the tooltip a bit higher
+              >
                 Copy commit SHA
               </UncontrolledTooltip>
               <ExternalLink
@@ -199,4 +210,4 @@ const CommitsUtils = {
   createCommitsObjects,
 };
 
-export { CommitsView, CommitsUtils };
+export { CommitsUtils, CommitsView };
