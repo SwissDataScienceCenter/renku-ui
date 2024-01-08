@@ -23,6 +23,7 @@ import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import {
   useGetCoreVersionsQuery,
+  useGetDataServicesVersionQuery,
   useGetKgVersionQuery,
   useGetNotebooksVersionQuery,
 } from "../features/versions/versions.api";
@@ -80,6 +81,22 @@ function CoreRelease() {
   return (
     <ComponentAndDevVersion
       componentUrl={RenkuRepositories.Python}
+      devHash={devHash}
+      taggedVersion={taggedVersion}
+    />
+  );
+}
+
+function DataServicesRelease() {
+  const { data, isFetching } = useGetDataServicesVersionQuery();
+  if (isFetching) {
+    return <Loader inline size={16} />;
+  }
+  const dataServicesVersion = data?.version;
+  const { taggedVersion, devHash } = parseChartVersion(dataServicesVersion);
+  return (
+    <ComponentAndDevVersion
+      componentUrl={RenkuRepositories.DataServices}
       devHash={devHash}
       taggedVersion={taggedVersion}
     />
@@ -157,6 +174,9 @@ function ComponentDetails() {
         </li>
         <li>
           Core: <CoreRelease />
+        </li>
+        <li>
+          Data Services: <DataServicesRelease />
         </li>
         <li>
           Knowledge Graph: <KgRelease />

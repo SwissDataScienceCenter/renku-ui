@@ -23,9 +23,6 @@
  *  Clipboard code and presentation.
  */
 
-import { faCopy } from "@fortawesome/free-regular-svg-icons";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import React, {
   Fragment,
@@ -35,6 +32,9 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { CheckLg } from "react-bootstrap-icons";
+
+import BootstrapCopyIcon from "../icons/BootstrapCopyIcon";
 
 const COPY_TIMEOUT_MS = 3_000;
 
@@ -45,7 +45,7 @@ interface ClipboardProps {
 }
 
 export const Clipboard = ({
-  className,
+  className: className_,
   clipboardText,
   children,
 }: ClipboardProps) => {
@@ -61,7 +61,7 @@ export const Clipboard = ({
   }, []);
 
   const onCopyToClipboard = useCallback(
-    (event: React.MouseEvent<HTMLAnchorElement>) => {
+    (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       window.navigator.clipboard.writeText(clipboardText).then(() => {
         onSuccess();
@@ -78,6 +78,8 @@ export const Clipboard = ({
     };
   }, []);
 
+  const className = className_ ?? cx("btn", "p-0", "border-0");
+
   const Wrap = children
     ? ({ children }: { children?: ReactNode }) => (
         <span className="btn-icon-text">{children}</span>
@@ -85,18 +87,23 @@ export const Clipboard = ({
     : Fragment;
 
   return (
-    <a
-      className={cx(className, "text-decoration-none")}
+    <button
+      className={className}
       onClick={onCopyToClipboard}
+      role="button"
+      type="button"
     >
       <Wrap>
-        <FontAwesomeIcon
-          icon={copied ? faCheck : faCopy}
-          size="1x"
-          fixedWidth
-        />
+        {copied ? (
+          <CheckLg className="bi" />
+        ) : (
+          <BootstrapCopyIcon className="bi" />
+        )}
+        <span className="visually-hidden">
+          Copy to clipboard{children && ": "}
+        </span>
         {children}
       </Wrap>
-    </a>
+    </button>
   );
 };
