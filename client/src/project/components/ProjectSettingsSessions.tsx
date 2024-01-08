@@ -360,12 +360,14 @@ const SessionsDiv = ({
   children,
 }: SessionsDivProps) => (
   <div className="mt-2">
-    <h3 className="d-flex align-items-center">
-      Session settings
+    <div className={cx("d-flex", "align-items-center", "gap-1")}>
+      <h3>Session settings</h3>
       {enableSavingBadge && (
-        <SavingBadge projectConfigIsFetching={projectConfigIsFetching} />
+        <div>
+          <SavingBadge projectConfigIsFetching={projectConfigIsFetching} />
+        </div>
       )}
-    </h3>
+    </div>
     <div className="row form-rk-green">{children}</div>
   </div>
 );
