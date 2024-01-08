@@ -49,6 +49,15 @@ export interface CoreVersions {
   details?: CoreComponent[];
 }
 
+export interface DataServicesVersionResponse {
+  version: string;
+}
+
+export interface DataServicesVersion {
+  name: string;
+  version: string;
+}
+
 export type KgVersionResponse = BaseVersionResponse;
 
 export interface KgVersion {
