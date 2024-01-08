@@ -17,6 +17,7 @@
  */
 
 export const RenkuRepositories = {
+  DataServices: "https://github.com/SwissDataScienceCenter/renku-data-services",
   KnowledgeGraph: "https://github.com/SwissDataScienceCenter/renku-graph",
   Notebooks: "https://github.com/SwissDataScienceCenter/renku-notebooks",
   Python: "https://github.com/SwissDataScienceCenter/renku-python",
