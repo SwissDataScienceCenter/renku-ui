@@ -257,6 +257,7 @@ function setBaseUrl(url) {
  * @param {object} [data] - the context data you need to provide, if any
  *   (e.g. for project, you need to provide a `namespace` and a `path`).
  * @param {boolean} [full] - switch between full or relative path. The default is `false`.
+ * @returns {string}
  */
 function get(target, data, full = false) {
   // One can always omit the final `base` node. In that case, add it automatically.

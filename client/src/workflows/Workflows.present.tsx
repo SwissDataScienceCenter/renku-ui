@@ -261,7 +261,7 @@ function WorkflowsListFilters({
                   iconSup={true}
                   iconAfter={true}
                   title="check our documentation"
-                  url={Docs.rtdTopicGuide("workflows.html")}
+                  url={Docs.rtdTopicGuide("workflows")}
                 />{" "}
                 for more details
               </p>

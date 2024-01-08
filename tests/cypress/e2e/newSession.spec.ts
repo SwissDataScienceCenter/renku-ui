@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
-import "../support/utils";
-import "../support/sessions/gui_commands";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("launch sessions", () => {
-  const fixtures = new Fixtures(cy);
   beforeEach(() => {
     fixtures.config().versions().projects().landingUserProjects();
     fixtures.projectTest().projectMigrationUpToDate();
@@ -64,7 +61,9 @@ describe("launch sessions", () => {
 
   it("new session page - logged - missing pipeline", () => {
     fixtures.userTest();
-    fixtures.newSessionPipelines(true).newSessionImages(true);
+    fixtures
+      .newSessionPipelines({ empty: true })
+      .newSessionImages({ image: { missing: true } });
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionPipelines", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
@@ -79,7 +78,10 @@ describe("launch sessions", () => {
 
   it("new session page - anonymous - missing image", () => {
     fixtures.userNone();
-    fixtures.newSessionPipelines().newSessionJobs().newSessionImages(true);
+    fixtures
+      .newSessionPipelines()
+      .newSessionJobs()
+      .newSessionImages({ image: { missing: true } });
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
@@ -92,7 +94,10 @@ describe("launch sessions", () => {
 
   it("new session page - logged - missing image", () => {
     fixtures.userTest();
-    fixtures.newSessionPipelines().newSessionJobs().newSessionImages(true);
+    fixtures
+      .newSessionPipelines()
+      .newSessionJobs()
+      .newSessionImages({ image: { missing: true } });
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
@@ -105,7 +110,10 @@ describe("launch sessions", () => {
 
   it("new session page - logged - missing job", () => {
     fixtures.userTest();
-    fixtures.newSessionPipelines().newSessionJobs(true).newSessionImages(true);
+    fixtures
+      .newSessionPipelines()
+      .newSessionJobs({ missing: true })
+      .newSessionImages({ image: { missing: true } });
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
@@ -123,8 +131,8 @@ describe("launch sessions", () => {
     fixtures.userTest();
     fixtures
       .newSessionPipelines()
-      .newSessionJobs(false, true)
-      .newSessionImages(true);
+      .newSessionJobs({ running: true })
+      .newSessionImages({ image: { missing: true } });
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 15000 });
     cy.get("form").contains("Start with base image").should("be.visible");
@@ -142,8 +150,8 @@ describe("launch sessions", () => {
     fixtures.userTest();
     fixtures
       .newSessionPipelines()
-      .newSessionJobs(false, false, true)
-      .newSessionImages(true);
+      .newSessionJobs({ failed: true })
+      .newSessionImages({ image: { missing: true } });
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
@@ -158,7 +166,7 @@ describe("launch sessions", () => {
   });
 
   it("new session page - show cloud storage options", () => {
-    fixtures.sessionServerOptions(true);
+    fixtures.sessionServerOptions({ cloudStorage: true });
     fixtures.userTest();
     fixtures.newSessionPipelines().newSessionJobs().newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");
@@ -197,10 +205,12 @@ describe("launch sessions", () => {
       .should("have.value", "mount/path")
       .should("be.visible");
 
-    cy.contains("Read-only").siblings("input").should("be.checked");
-    cy.get("label")
-      .contains("Read/Write")
-      .siblings("input")
-      .should("not.be.checked");
+    if (Cypress.env("CLOUD_STORAGE_READWRITE_ENABLED")) {
+      cy.contains("Read-only").siblings("input").should("be.checked");
+      cy.get("label")
+        .contains("Read/Write")
+        .siblings("input")
+        .should("not.be.checked");
+    }
   });
 });

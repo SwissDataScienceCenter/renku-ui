@@ -1,0 +1,45 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.templateSlideContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.templateSliderImages {
+  img {
+    width: 544px;
+    height: 313px;
+    @include media-breakpoint-down(lg) {
+      width: 100%;
+      height: auto;
+    }
+  }
+}
+
+.templateSliderBtn {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: space-between;
+  position: absolute;
+  bottom: -30px;
+}
+
+.templateSliderProgress {
+  margin: 2px;
+  margin-right: 6px;
+  margin-top: 2px;
+  margin-bottom: 6px;
+  border-end-start-radius: 8px;
+  border-end-end-radius: 8px;
+}
+
+.templateSliderProgressBar {
+  height: 8px;
+  --#{$prefix}progress-bar-transition: "none";
+}

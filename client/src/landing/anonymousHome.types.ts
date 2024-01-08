@@ -16,21 +16,9 @@
  * limitations under the License.
  */
 
-export type AnonymousHomeConfig = {
+export interface AnonymousHomeConfig {
   client: unknown;
-  homeCustomized: {
-    custom: {
-      enabled: boolean;
-      main: {
-        backgroundImage: {
-          url: string;
-        };
-        contentMd: string;
-      };
-    };
-    projects: unknown[];
-    tutorialLink: string;
-  };
+  homeCustomized: HomepageParams;
   model: unknown;
   params: {
     UI_SHORT_SHA: string;
@@ -38,4 +26,30 @@ export type AnonymousHomeConfig = {
   urlMap: {
     siteStatusUrl: string;
   };
-};
+}
+
+export interface HomepageParams {
+  custom: {
+    enabled: boolean;
+    main: {
+      backgroundImage: {
+        url: string;
+      };
+      contentMd: string;
+    };
+  };
+  datasetSlug: string;
+  projectPath: string;
+  showcase: {
+    enabled: boolean;
+    title: string;
+    description: string;
+    projects: {
+      identifier: string;
+      overrideDescription?: string;
+      overrideImageUrl?: string;
+      overrideTitle?: string;
+    }[];
+  };
+  tutorialLink: string;
+}

@@ -1,3 +1,12 @@
+.rk-anon-home {
+  padding: 0;
+  position: relative;
+}
+@include media-breakpoint-down(md) {
+  .rk-anon-home {
+    padding: 0 12px;
+  }
+}
 header.rk-anon-home .nav-link {
   color: $rk-green;
   border: 1px solid;
@@ -95,21 +104,95 @@ nav.rk-anon-home .nav-link,
   min-height: 600px;
 }
 
-#rk-anon-home-section1 {
+#rk-anon-home-hero {
   @extend .section-content;
-  min-height: 800px;
+  min-height: 594px;
+  position: relative;
+}
 
-  h1 {
-    font-size: 40px;
+#rk-anon-home-hero::before {
+  content: "";
+  background-image: url("../../landing/Graphics/Visual_Head.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position-y: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0.4;
+
+  @include media-breakpoint-down(lg) {
+    background-image: none;
+    opacity: 1;
   }
 }
 
 @include media-breakpoint-up(md) {
-  #rk-anon-home-section1 {
+  #rk-anon-home-hero {
     h1 {
-      font-size: 50px;
+      font-size: 40px;
+      font-weight: bold;
     }
   }
+}
+
+#rk-anon-home-get-started {
+  background-color: var(--bs-rk-background-0);
+  color: black;
+
+  .card-entity {
+    box-shadow: 2px 2px 8px 2px rgba(197, 197, 197);
+    -webkit-box-shadow: 2px 2px 8px 2px rgba(197, 197, 197);
+    -moz-box-shadow: 2px 2px 8px 2px rgba(197, 197, 197);
+
+    p {
+      font-size: 16px;
+    }
+
+    .card-title {
+      margin-top: 10px;
+    }
+  }
+
+  .start-session-button {
+    width: 149px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 16px;
+  }
+}
+#rk-anon-home-what-is-renku {
+  .card-entity {
+    box-shadow: 2px 2px 8px 2px rgba(197, 197, 197);
+    -webkit-box-shadow: 2px 2px 8px 2px rgba(197, 197, 197);
+    -moz-box-shadow: 2px 2px 8px 2px rgba(197, 197, 197);
+
+    p {
+      font-size: 16px;
+      display: inline;
+      text-align: left;
+    }
+  }
+  .search-box .quick-nav {
+    max-width: 100%;
+    border: 1px solid var(--bs-rk-green);
+
+    input {
+      margin: 5px;
+    }
+  }
+}
+
+#rk-anon-home-who-we-are,
+#rk-anon-home-teaching,
+#rk-anon-home-what-is-renku {
+  background-color: white;
+  color: black;
 }
 
 #rk-anon-home-bottom-nav {
@@ -132,16 +215,22 @@ nav.rk-anon-home .nav-link,
   min-height: 800px;
 }
 
-#rk-anon-home-section5 {
+#rk-anon-home-section-showcase {
   @extend .section-content;
-  background-color: $rk-white;
+  background-color: var(--bs-rk-background-0);
   color: $rk-dark;
   min-height: 600px;
+
+  h3 {
+    font-size: 40px;
+    font-weight: bold;
+    margin: 20px 0;
+  }
 }
 
-#rk-anon-home-section5-empty {
+#rk-anon-home-section-showcase-empty {
   @extend .section-content;
-  background-color: $rk-white;
+  background-color: var(--bs-rk-background-0);
   color: $rk-dark;
   height: 200px;
 }

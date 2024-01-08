@@ -23,21 +23,11 @@
  *  Tests for file components.
  */
 
-import { createRoot } from "react-dom/client";
-import { MemoryRouter } from "react-router-dom";
-import { act } from "react-test-renderer";
-
-import { testClient as client } from "../api-client";
-import { StateModel, globalSchema } from "../model";
-import { generateFakeUser } from "../user/User.test";
 import {
   NotebookSourceDisplayMode,
   sanitizeNotebook,
   tweakCellMetadata,
 } from "./File.present";
-import { JupyterButton, ShowFile } from "./index";
-
-const model = new StateModel(globalSchema);
 
 function notebookCellOutputsMatch(modified, original, shouldNotMatch) {
   modified.outputs?.forEach((o, j) => {
@@ -47,57 +37,6 @@ function notebookCellOutputsMatch(modified, original, shouldNotMatch) {
     else expectation.toEqual(oo.data["text/html"]);
   });
 }
-
-describe("rendering", () => {
-  const users = [
-    { type: "anonymous", data: generateFakeUser(true) },
-    { type: "logged", data: generateFakeUser() },
-  ];
-
-  const props = {
-    client,
-    model,
-    filePath: "/projects/1/files/blob/myFolder/myNotebook.ipynb",
-    match: { url: "/projects/1", params: { id: "1" } },
-    launchNotebookUrl: "/projects/1/launchNotebook",
-    params: { PREVIEW_THRESHOLD: { soft: 1048576, hard: 10485760 } },
-  };
-
-  for (let user of users) {
-    it(`renders JupyterButton for ${user.type} user`, async () => {
-      const div = document.createElement("div");
-      // * fix for tooltips https://github.com/reactstrap/reactstrap/issues/773#issuecomment-357409863
-      document.body.appendChild(div);
-      const root = createRoot(div);
-      const branches = {
-        all: { standard: [] },
-        fetch: () => {
-          // eslint-disable-line @typescript-eslint/no-empty-function
-        },
-      };
-      await act(async () => {
-        root.render(
-          <MemoryRouter>
-            <JupyterButton user={user.data} branches={branches} {...props} />
-          </MemoryRouter>
-        );
-      });
-    });
-
-    it(`renders ShowFile for ${user.type} user`, async () => {
-      const div = document.createElement("div");
-      document.body.appendChild(div);
-      const root = createRoot(div);
-      await act(async () => {
-        root.render(
-          <MemoryRouter>
-            <ShowFile user={user.data} {...props} />
-          </MemoryRouter>
-        );
-      });
-    });
-  }
-});
 
 describe("cell metadata messaging", () => {
   it("leaves cell metadata unmodified if not necessary", () => {

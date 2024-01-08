@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -16,12 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "../support/utils";
-import Fixtures from "../support/renkulab-fixtures";
+
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display kg search", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.entitySearch().getLastSearch();
@@ -34,9 +31,9 @@ describe("display kg search", () => {
     cy.wait("@getEntities");
     cy.wait("@getLastSearch");
     cy.contains("Hide Filters").should("be.visible");
-    cy.get_cy("filter-button-hide").click();
+    cy.getDataCy("filter-button-hide").click();
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(100);
-    cy.get_cy("filter-button-show").should("be.visible");
+    cy.getDataCy("filter-button-show").should("be.visible");
   });
 });

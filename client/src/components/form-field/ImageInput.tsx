@@ -37,6 +37,7 @@ type ImageInputProps = {
   register: UseFormRegisterReturn;
   required?: boolean;
   value: ImageInputImage;
+  color: "green" | "pink";
 };
 
 function ImageInput(props: ImageInputProps) {
@@ -54,6 +55,7 @@ function ImageInput(props: ImageInputProps) {
   return (
     <FormGeneratorImageInput
       alert={props.error?.message}
+      color={props.color}
       edit={true}
       format="image/png,image/jpeg,image/gif,image/tiff"
       help={props.help}

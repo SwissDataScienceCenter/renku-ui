@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
-import "../support/utils";
-import "../support/sessions/gui_commands";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("launch autostart sessions", () => {
-  const fixtures = new Fixtures(cy);
   const projectUrl = "/projects/e2e/local-test-project";
   beforeEach(() => {
     fixtures.config().versions().projects().landingUserProjects();

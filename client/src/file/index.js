@@ -23,7 +23,7 @@
  *  Module for file rendering in Renku.
  */
 
-import { JupyterButton, ShowFile } from "./File.container";
+import { ShowFile } from "./File.container";
 import FilePreview from "./FilePreview";
 
-export { FilePreview, JupyterButton, ShowFile };
+export { FilePreview, ShowFile };

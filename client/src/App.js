@@ -25,7 +25,6 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { useSelector } from "react-redux";
 import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -35,11 +34,13 @@ import { Loader } from "./components/Loader";
 import ShowDataset from "./dataset/Dataset.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
+import AdminPage from "./features/admin/AdminPage";
 import { Dashboard } from "./features/dashboard/Dashboard";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
 import SearchPage from "./features/kgSearch/KgSearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
+import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
 import Help from "./help";
 import { AnonymousHome, FooterNavbar, RenkuNavBar } from "./landing";
 import { NotFound } from "./not-found";
@@ -50,6 +51,7 @@ import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
 import { StyleGuide } from "./styleguide";
 import AppContext from "./utils/context/appContext";
+import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { Url } from "./utils/helpers/url";
 import { setupWebSocket } from "./websocket";
 
@@ -66,24 +68,9 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 function CentralContentContainer(props) {
   const { coreApiVersionedUrlConfig, notifications, socket, user } = props;
 
-  if (
-    !props.user.logged &&
-    props.location.pathname === Url.get(Url.pages.landing)
-  ) {
-    return (
-      <AnonymousHome
-        client={props.client}
-        homeCustomized={props.params["HOMEPAGE"]}
-        user={props.user}
-        model={props.model}
-        location={props.location}
-        params={props.params}
-      />
-    );
-  }
-
-  // check anonymous sessions settings
-  const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
+  const { data: userInfo } = useGetUserInfoQuery(undefined, {
+    skip: !props.user.logged,
+  });
 
   const appContext = {
     client: props.client,
@@ -93,6 +80,27 @@ function CentralContentContainer(props) {
     notifications,
     params: props.params,
   };
+
+  if (
+    !props.user.logged &&
+    props.location.pathname === Url.get(Url.pages.landing)
+  ) {
+    return (
+      <AppContext.Provider value={appContext}>
+        <AnonymousHome
+          client={props.client}
+          homeCustomized={props.params["HOMEPAGE"]}
+          user={props.user}
+          model={props.model}
+          location={props.location}
+          params={props.params}
+        />
+      </AppContext.Provider>
+    );
+  }
+
+  // check anonymous sessions settings
+  const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
 
   return (
     <div className="d-flex flex-grow-1">
@@ -116,11 +124,7 @@ function CentralContentContainer(props) {
             render={() =>
               props.user.logged ? (
                 <ContainerWrap>
-                  <Dashboard
-                    model={props.model}
-                    user={props.user}
-                    client={props.client}
-                  />
+                  <Dashboard />
                 </ContainerWrap>
               ) : null
             }
@@ -281,6 +285,13 @@ function CentralContentContainer(props) {
               </ContainerWrap>
             )}
           />
+          {userInfo?.isAdmin && (
+            <Route path="/admin">
+              <ContainerWrap>
+                <AdminPage />
+              </ContainerWrap>
+            </Route>
+          )}
           <Route path="*" render={(p) => <NotFound {...p} />} />
         </Switch>
       </AppContext.Provider>
@@ -322,7 +333,7 @@ function App(props) {
   }, []); // eslint-disable-line
 
   // Avoid rendering the application while authenticating the user
-  const user = useSelector((state) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   if (!user?.fetched && user?.fetching) {
     return (
       <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">

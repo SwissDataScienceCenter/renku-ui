@@ -17,36 +17,98 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { DeepRequired, NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for User
  */
 
-function User<T extends FixturesConstructor>(Parent: T) {
+export function User<T extends FixturesConstructor>(Parent: T) {
   return class UserFixtures extends Parent {
-    userTest(name = "getUser") {
-      cy.intercept("/ui-server/api/user", {
-        fixture: "user.json",
-      }).as(name);
+    userTest(args?: UserTestArgs) {
+      const { user, keycloakUser } = Cypress._.defaultsDeep({}, args, {
+        user: {
+          fixture: "user.json",
+          name: "getUser",
+        },
+        keycloakUser: {
+          fixture: "keycloak-user.json",
+          name: "getKeycloakUser",
+        },
+      }) as DeepRequired<UserTestArgs>;
+
+      const userResponse = { fixture: user.fixture };
+      cy.intercept("GET", "/ui-server/api/user", userResponse).as(user.name);
+
+      const keycloakUserResponse = { fixture: keycloakUser.fixture };
+      cy.intercept(
+        "GET",
+        "/ui-server/api/kc/realms/Renku/protocol/openid-connect/userinfo",
+        keycloakUserResponse
+      ).as(keycloakUser.name);
+
       return this;
     }
 
-    userNone(name = "getUser") {
-      cy.intercept("/ui-server/api/user", {
+    userNone(args?: UserNoneArgs) {
+      const { user, keycloakUser, delay } = Cypress._.defaultsDeep({}, args, {
+        user: {
+          name: "getUser",
+        },
+        keycloakUser: {
+          name: "getKeycloakUser",
+        },
+        delay: null,
+      }) as DeepRequired<UserNoneArgs>;
+
+      const response = {
+        body: {},
         statusCode: 401,
-        body: {},
-      }).as(name);
+        ...(delay != null ? { delay } : {}),
+      };
+
+      cy.intercept("GET", "/ui-server/api/user", response).as(user.name);
+
+      cy.intercept(
+        "GET",
+        "/ui-server/api/kc/realms/Renku/protocol/openid-connect/userinfo",
+        response
+      ).as(keycloakUser.name);
+
       return this;
     }
 
-    renkuDown(name = "getUser") {
-      cy.intercept("/ui-server/api/user", {
-        statusCode: 500,
-        body: {},
-      }).as(name);
+    renkuDown(args?: NameOnlyFixture) {
+      const { name = "getUser" } = args ?? {};
+      const response = { body: {}, statusCode: 500 };
+      cy.intercept("GET", "/ui-server/api/user", response).as(name);
+      return this;
+    }
+
+    userAdmin(args?: UserTestArgs) {
+      const { user, keycloakUser } = Cypress._.defaultsDeep({}, args, {
+        user: {
+          fixture: "user.json",
+          name: "getUser",
+        },
+        keycloakUser: {
+          fixture: "keycloak-admin-user.json",
+          name: "getKeycloakUser",
+        },
+      }) as DeepRequired<UserTestArgs>;
+      this.userTest({ user, keycloakUser });
       return this;
     }
   };
 }
 
-export { User };
+interface UserTestArgs {
+  user?: SimpleFixture;
+  keycloakUser?: SimpleFixture;
+}
+
+interface UserNoneArgs {
+  user?: NameOnlyFixture;
+  keycloakUser?: NameOnlyFixture;
+  delay?: number | null;
+}

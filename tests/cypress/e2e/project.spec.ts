@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -16,33 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "../support/utils";
-import Fixtures from "../support/renkulab-fixtures";
+
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display a project - not found", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions();
   });
 
   it("displays the project not found page when the name is incorrect - logged user", () => {
-    fixtures.userTest().errorProject("e2e/not-found-test-project");
+    fixtures
+      .userTest()
+      .errorProject({ project: { projectPath: "e2e/not-found-test-project" } });
     cy.visit("/projects/e2e/not-found-test-project");
 
-    cy.get_cy("not-found-title")
+    cy.getDataCy("not-found-title")
       .should("be.visible")
       .should("contain.text", "404");
-    cy.get_cy("not-found-subtitle")
+    cy.getDataCy("not-found-subtitle")
       .should("be.visible")
       .should("contain.text", "Project not found");
-    cy.get_cy("not-found-description")
+    cy.getDataCy("not-found-description")
       .should("be.visible")
       .should(
         "contain.text",
         "We could not find project with path e2e/not-found-test-project."
       );
-    cy.get_cy("not-found-children")
+    cy.getDataCy("not-found-children")
       .should("be.visible")
       .should(
         "contain.text",
@@ -51,22 +50,24 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the name is incorrect - anon user", () => {
-    fixtures.userNone().errorProject("e2e/not-found-test-project");
+    fixtures
+      .userNone()
+      .errorProject({ project: { projectPath: "e2e/not-found-test-project" } });
     cy.visit("/projects/e2e/not-found-test-project");
 
-    cy.get_cy("not-found-title")
+    cy.getDataCy("not-found-title")
       .should("be.visible")
       .should("contain.text", "404");
-    cy.get_cy("not-found-subtitle")
+    cy.getDataCy("not-found-subtitle")
       .should("be.visible")
       .should("contain.text", "Project not found");
-    cy.get_cy("not-found-description")
+    cy.getDataCy("not-found-description")
       .should("be.visible")
       .should(
         "contain.text",
         "We could not find project with path e2e/not-found-test-project."
       );
-    cy.get_cy("not-found-children")
+    cy.getDataCy("not-found-children")
       .should("be.visible")
       .should(
         "contain.text",
@@ -75,22 +76,22 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the numeric id is incorrect - logged user", () => {
-    fixtures.userTest().errorProject("12345");
+    fixtures.userTest().errorProject({ project: { projectPath: "12345" } });
     cy.visit("/projects/12345");
 
-    cy.get_cy("not-found-title")
+    cy.getDataCy("not-found-title")
       .should("be.visible")
       .should("contain.text", "404");
-    cy.get_cy("not-found-subtitle")
+    cy.getDataCy("not-found-subtitle")
       .should("be.visible")
       .should("contain.text", "Project not found");
-    cy.get_cy("not-found-description")
+    cy.getDataCy("not-found-description")
       .should("be.visible")
       .should(
         "contain.text",
         "We could not find project with numeric id 12345."
       );
-    cy.get_cy("not-found-children")
+    cy.getDataCy("not-found-children")
       .should("be.visible")
       .should(
         "contain.text",
@@ -99,22 +100,22 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the numeric id is incorrect - anon user", () => {
-    fixtures.userNone().errorProject("12345");
+    fixtures.userNone().errorProject({ project: { projectPath: "12345" } });
     cy.visit("/projects/12345");
 
-    cy.get_cy("not-found-title")
+    cy.getDataCy("not-found-title")
       .should("be.visible")
       .should("contain.text", "404");
-    cy.get_cy("not-found-subtitle")
+    cy.getDataCy("not-found-subtitle")
       .should("be.visible")
       .should("contain.text", "Project not found");
-    cy.get_cy("not-found-description")
+    cy.getDataCy("not-found-description")
       .should("be.visible")
       .should(
         "contain.text",
         "We could not find project with numeric id 12345."
       );
-    cy.get_cy("not-found-children")
+    cy.getDataCy("not-found-children")
       .should("be.visible")
       .should(
         "contain.text",
@@ -124,15 +125,9 @@ describe("display a project - not found", () => {
 });
 
 describe("display a project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    fixtures
-      .projects()
-      .landingUserProjects()
-      .projectTest()
-      .projectById("getProjectsById", 39646);
+    fixtures.projects().landingUserProjects().projectTest().projectById();
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });
@@ -140,11 +135,11 @@ describe("display a project", () => {
   it("displays the project overview page", () => {
     cy.wait("@getProject");
     cy.wait("@getReadme");
-    cy.get_cy("header-project").should("be.visible");
-    cy.get_cy("project-readme")
+    cy.getDataCy("header-project").should("be.visible");
+    cy.getDataCy("project-readme")
       .should("be.visible")
       .should("contain.text", "local test project");
-    cy.get_cy("project-title")
+    cy.getDataCy("project-title")
       .should("be.visible")
       .should("contain.text", "local-test-project");
   });
@@ -152,11 +147,13 @@ describe("display a project", () => {
   it("displays lock correctly", () => {
     fixtures.projectLockStatus({ locked: true });
     cy.visit("/projects/e2e/local-test-project/settings");
-    cy.get_cy("settings-navbar")
+    cy.wait("@getMigration");
+    cy.wait("@getProjectLockStatus");
+    cy.getDataCy("settings-navbar")
       .contains("a", "Sessions")
       .should("exist")
       .click();
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .contains("project is currently being modified")
       .should("exist");
   });
@@ -255,7 +252,7 @@ describe("display a project", () => {
     cy.contains("01-CountFlights.ipynb").should("be.visible");
     cy.contains("01-CountFlights.ipynb").click();
     cy.wait("@getCountFlights");
-    cy.get_cy("check-notebook-icon")
+    cy.getDataCy("check-notebook-icon")
       .should("be.visible")
       .children("a")
       .should(($a) => {
@@ -267,8 +264,6 @@ describe("display a project", () => {
 });
 
 describe("fork a project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
@@ -278,12 +273,12 @@ describe("fork a project", () => {
   });
 
   it("displays fork modal correctly", () => {
-    fixtures.projectTest(undefined, { visibility: "private" });
+    fixtures.projectTest({ overrides: { visibility: "private" } });
     cy.wait("@getProject");
     cy.get("#fork-project").click();
     cy.wait("@getNamespaces");
-    cy.get_cy("visibility-private").should("be.enabled");
-    cy.get_cy("visibility-internal").should("be.disabled");
-    cy.get_cy("visibility-public").should("be.disabled");
+    cy.getDataCy("visibility-private").should("be.enabled");
+    cy.getDataCy("visibility-internal").should("be.disabled");
+    cy.getDataCy("visibility-public").should("be.disabled");
   });
 });

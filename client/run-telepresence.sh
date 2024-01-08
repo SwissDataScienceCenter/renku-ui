@@ -18,6 +18,8 @@
 
 set -e
 
+# script directory
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 CURRENT_CONTEXT=`kubectl config current-context`
 WELCOME_MESSAGE="## Welcome to Renku through telepresence
@@ -31,6 +33,10 @@ PREVIEW_THRESHOLD='{"soft":"1048576","hard":"10485760"}'
 UPLOAD_THRESHOLD='{"soft":"104857600"}'
 CURRENT_CHART=`grep -oE "(^version: )[.0-9a-f\-]*" ../helm-chart/renku-ui/Chart.yaml | cut -d" " -f2`
 CURRENT_COMMIT=`git rev-parse --short HEAD`
+# Set HOMEPAGE_PROJECT_PATH with the project's path with namespace to display the project on the landing page.
+# E.g.,
+#HOMEPAGE_PROJECT_PATH='elisabet.capon/renku-demo-project-machine-learning'
+#HOMEPAGE_DATASET_SLUG='f838eb3c50c44be182f5ae5ac36babc2'
 if [[ "$OSTYPE" == "linux-gnu" ]]
 then
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64 -w 0`
@@ -68,11 +74,11 @@ fi
 
 if [ -z "$HOMEPAGE_SHOW_PROJECTS" ]
 then
-  HOMEPAGE_PROJECTS="[]"
-  echo "HOMEPAGE_SHOW_PROJECTS is set to '${HOMEPAGE_PROJECTS}'"
+  HOMEPAGE_SHOWCASE='{"enabled": false}'
+  echo "HOMEPAGE_SHOWCASE is set to '${HOMEPAGE_SHOWCASE}'"
 else
-  HOMEPAGE_PROJECTS='[{"projectPath": "julia/flights-tutorial-julia"}, {"projectPath": "cramakri/covid-19-dashboard"}]'
-  echo "HOMEPAGE_SHOW_PROJECTS is set to '${HOMEPAGE_PROJECTS}'"
+  HOMEPAGE_SHOWCASE=`cat $SCRIPT_DIR/../dev/telepresence-showcase-projects.json`
+  echo "HOMEPAGE_SHOWCASE is set to content of '$SCRIPT_DIR/../dev/telepresence-showcase-projects.json'"
 fi
 
 if [[ -n $PR ]]
@@ -145,6 +151,7 @@ tee > ./public/config.json << EOF
   "BASE_URL": "${BASE_URL}",
   "GATEWAY_URL": "${BASE_URL}/api",
   "UISERVER_URL": "${BASE_URL}/ui-server",
+  "KEYCLOAK_REALM": "${KEYCLOAK_REALM:-Renku}",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
   "DASHBOARD_MESSAGE": {
     "enabled": true,
@@ -172,8 +179,11 @@ tee > ./public/config.json << EOF
       }
     },
     "tutorialLink": "${HOMEPAGE_TUTORIAL_LINK}",
-    "projects": ${HOMEPAGE_PROJECTS}
-  }
+    "showcase": ${HOMEPAGE_SHOWCASE},
+    "projectPath": "${HOMEPAGE_PROJECT_PATH}",
+    "datasetSlug": "${HOMEPAGE_DATASET_SLUG}"
+  },
+  "USER_PREFERENCES_MAX_PINNED_PROJECTS": ${USER_PREFERENCES_MAX_PINNED_PROJECTS:-5}
 }
 EOF
 

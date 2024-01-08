@@ -1,3 +1,10 @@
+// Swap "Inter" for "Inter var" if supported (reduced network payload)
+@supports (font-variation-settings: normal) {
+  :root {
+    --#{$prefix}body-font-family: "Inter var", sans-serif !important;
+  }
+}
+
 a:focus-visible,
 svg:focus,
 svg:focus-visible {
@@ -112,4 +119,8 @@ svg:focus-visible {
     width: 30px;
     height: auto;
   }
+}
+
+.text-muted {
+  --#{$prefix}secondary-color: var(--bs-rk-text-light);
 }

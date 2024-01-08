@@ -31,17 +31,25 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { EntityType } from "./Entities";
+import cx from "classnames";
 
 export interface EntityButtonProps {
   type: EntityType;
   slug: string;
+  animated?: boolean;
+  fromLanding?: boolean;
 }
-function EntityButton({ type, slug }: EntityButtonProps) {
+function EntityButton({
+  type,
+  slug,
+  animated = false,
+  fromLanding = false,
+}: EntityButtonProps) {
   switch (type) {
     case "project":
       return (
-        <div className="card-button">
-          <SimpleSessionButton fullPath={slug} />
+        <div className={cx("card-button", animated && "btn-animation-pulse")}>
+          <SimpleSessionButton fullPath={slug} fromLanding={fromLanding} />
         </div>
       );
     case "dataset":
@@ -59,17 +67,20 @@ function EntityDeleteButtonButton({
   itemType,
   action,
 }: EntityDeleteButtonProps) {
-  const styles = stylesByItemType(itemType);
   return (
     <>
       <Button
         id="deleteButton"
         data-cy="delete-dataset-button"
         onClick={action}
-        className="icon-button btn-rk-white"
+        className={
+          itemType == "dataset"
+            ? "icon-button btn-outline-rk-pink"
+            : "icon-button"
+        }
         size="sm"
       >
-        <FontAwesomeIcon icon={faTrash} className={styles.colorText} />
+        <FontAwesomeIcon icon={faTrash} />
       </Button>
       <UncontrolledTooltip
         key="tooltip-delete-entity"
@@ -97,7 +108,7 @@ function EntityModifyButton({ url, itemType }: EntityModifyButtonProps) {
             id="modifyButton"
             key="modify-button"
             to={`${url}/settings`}
-            className="link-rk-dark text-decoration-none"
+            className="btn-outline-rk-green text-decoration-none"
           >
             <FontAwesomeIcon icon={faCog} className={styles.colorText} />
           </Link>
@@ -117,7 +128,7 @@ function EntityModifyButton({ url, itemType }: EntityModifyButtonProps) {
             id="modifyButton"
             key="modify-button"
             to={`${url}/settings`}
-            className="link-rk-dark text-decoration-none"
+            className="btn-outline-rk-pink text-decoration-none"
           >
             <FontAwesomeIcon icon={faPen} className={styles.colorText} />
           </Link>

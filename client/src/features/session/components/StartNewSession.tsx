@@ -25,10 +25,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Redirect, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../api-client";
 import { InfoAlert, RenkuAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
@@ -48,6 +48,10 @@ import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
 import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
@@ -56,12 +60,8 @@ import startSessionSlice, {
   setError,
   setStarting,
   setSteps,
-  useStartSessionSelector,
 } from "../startSession.slice";
-import {
-  startSessionOptionsSlice,
-  useStartSessionOptionsSelector,
-} from "../startSessionOptionsSlice";
+import { startSessionOptionsSlice } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 import AutostartSessionOptions from "./options/AutostartSessionOptions";
@@ -74,9 +74,8 @@ import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
-  const anonymousSessionsEnabled = !!(
-    params as { ANONYMOUS_SESSIONS?: boolean }
-  ).ANONYMOUS_SESSIONS;
+  const anonymousSessionsEnabled =
+    params?.ANONYMOUS_SESSIONS ?? DEFAULT_APP_PARAMS.ANONYMOUS_SESSIONS;
 
   const location = useLocation();
   const searchParams = useMemo(
@@ -85,13 +84,15 @@ export default function StartNewSession() {
   );
   const autostart = !!searchParams.get("autostart");
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
-  const { starting, error } = useStartSessionSelector();
+  const { starting, error } = useAppSelector(
+    ({ startSession }) => startSession
+  );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Reset start session slice when we navigate away
   useEffect(() => {
@@ -147,7 +148,7 @@ export default function StartNewSession() {
 }
 
 function BackButton() {
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const projectUrlData = {
@@ -157,38 +158,56 @@ function BackButton() {
   const projectUrl = Url.get(Url.pages.project, projectUrlData);
 
   const location = useLocation<LocationState | undefined>();
+
   const { from, filePath } = location.state ?? {};
-  const backUrl = from ?? projectUrl;
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const fromLandingParam = !!searchParams.get("fromLanding");
+  const fromLanding = location.state?.fromLanding || fromLandingParam;
+
+  const backUrl = from ? from : fromLanding ? "/" : projectUrl;
   const backLabel =
     from && filePath
       ? `Back to ${filePath}`
       : from
       ? "Back to notebook file"
+      : fromLanding
+      ? "Back to home"
       : `Back to ${pathWithNamespace}`;
-
   return <GoBackButton label={backLabel} url={backUrl} />;
 }
 
 interface LocationState {
   from?: string;
   filePath?: string;
+  fromLanding?: boolean;
 }
 
 function SessionStarting() {
-  const namespace = useSelector<RootStateOrAny, string>(
+  const namespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const path = useSelector<RootStateOrAny, string>(
+  const path = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
 
-  const steps = useStartSessionSelector(({ steps }) => steps);
+  const location = useLocation<LocationState | undefined>();
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const fromLandingParam = !!searchParams.get("fromLanding");
+  const fromLanding = location.state?.fromLanding || fromLandingParam;
+
+  const steps = useAppSelector(({ startSession }) => startSession.steps);
 
   const [, { data: session, error }] = useStartSessionMutation({
     fixedCacheKey: "start-session",
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (error) {
@@ -214,7 +233,7 @@ function SessionStarting() {
             path,
             server: session.name,
           }),
-          state: { redirectFromStartServer: true },
+          state: { redirectFromStartServer: true, fromLanding: fromLanding },
         }}
       />
     );
@@ -234,8 +253,8 @@ function SessionStarting() {
 }
 
 function SessionStartError() {
-  const { error, errorMessage } = useStartSessionSelector(
-    ({ error, errorMessage }) => ({ error, errorMessage })
+  const { error, errorMessage } = useAppSelector(
+    ({ startSession }) => startSession
   );
 
   if (!error) {
@@ -247,10 +266,13 @@ function SessionStartError() {
     return null;
   }
 
+  // Handle `docker-image-building` as a special case
+  if (error === "docker-image-building") {
+    return <SessionStartErrorImageBuilding />;
+  }
+
   const color =
-    error === "docker-image-building" ||
-    error === "session-class" ||
-    error === "cloud-storage-credentials"
+    error === "session-class" || error === "cloud-storage-credentials"
       ? "warning"
       : "danger";
 
@@ -263,11 +285,6 @@ function SessionStartError() {
     ) : error === "no-commit" ? (
       <>
         Starting a session is not possible because this project has no commit.
-      </>
-    ) : error === "docker-image-building" ? (
-      <>
-        The session could not start because the image is still building. Please
-        wait for the build to finish, or start the session with the base image.
       </>
     ) : error === "docker-image-not-available" ? (
       <>
@@ -309,8 +326,49 @@ function SessionStartError() {
   );
 }
 
+function SessionStartErrorImageBuilding() {
+  const dockerImageStatus = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.dockerImageStatus
+  );
+
+  const color = dockerImageStatus === "not-available" ? "danger" : "warning";
+  const content =
+    dockerImageStatus === "available" ? (
+      <>
+        <p>
+          The session could not start because the image was still building when
+          the session was requested.
+        </p>
+        <p className="mb-0">You can now try to start the session:</p>
+        <StartSessionButton />
+      </>
+    ) : dockerImageStatus === "not-available" ? (
+      <p className="mb-0">
+        The session could not start because the image was building when the
+        session was requested. The image build failed and the image is not
+        available. Please select a different commit or start the session with
+        the base image.
+      </p>
+    ) : (
+      <p className="mb-0">
+        The session could not start because the image is still building. Please
+        wait for the build to finish, or start the session with the base image.
+      </p>
+    );
+
+  return (
+    <RenkuAlert
+      className={dockerImageStatus === "available" && "pb-1"}
+      color={color}
+      timeout={0}
+    >
+      {content}
+    </RenkuAlert>
+  );
+}
+
 function SessionStartSidebar() {
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
 
@@ -340,7 +398,7 @@ function SessionStartSidebar() {
 }
 
 function ProjectSessionLockAlert() {
-  const lockStatus = useSelector<RootStateOrAny, LockStatus>(
+  const lockStatus = useLegacySelector<LockStatus>(
     (state) => state.stateModel.project.lockStatus
   );
 
@@ -367,7 +425,7 @@ function StartNewSessionContent() {
   );
   const showCreateLink = !!searchParams.get("showCreateLink");
 
-  const projectPathWithNamespace = useSelector<RootStateOrAny, string>(
+  const projectPathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const projectSessions = useProjectSessions({ projectPathWithNamespace });
@@ -433,15 +491,16 @@ function SessionCreateLink() {
   );
   const filePath = searchParams.get("filePath") ?? "";
 
-  const namespace = useSelector<RootStateOrAny, string>(
+  const namespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const project = useSelector<RootStateOrAny, string>(
+  const project = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
 
-  const { branch, commit, environmentVariables } =
-    useStartSessionOptionsSelector();
+  const { branch, commit, environmentVariables } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
+  );
 
   const [createLinkIsOpen, setCreateLinkIsOpen] = useState(true);
   const toggleCreateLink = useCallback(() => {
@@ -483,13 +542,12 @@ function SessionCreateLink() {
 function SessionSaveWarning() {
   const location = useLocation();
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
-  const { accessLevel, externalUrl } = useSelector<
-    RootStateOrAny,
-    ProjectMetadata
-  >((state) => state.stateModel.project.metadata);
+  const { accessLevel, externalUrl } = useLegacySelector<ProjectMetadata>(
+    (state) => state.stateModel.project.metadata
+  );
 
   if (!logged) {
     const loginUrl = Url.get(Url.pages.login.link, {
@@ -559,8 +617,7 @@ function ForkProjectModal() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleIsOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
-  const { id, title, visibility } = useSelector<
-    RootStateOrAny,
+  const { id, title, visibility } = useLegacySelector<
     ProjectMetadata & { id?: number }
   >((state) => state.stateModel.project.metadata);
 
@@ -589,7 +646,7 @@ function ForkProjectModal() {
 }
 
 function StartNewSessionOptions() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Reset start session options slice when we navigate away
   useEffect(() => {
@@ -619,10 +676,10 @@ function StartSessionButton() {
   const showCreateLink = !!searchParams.get("showCreateLink");
   const filePath = searchParams.get("filePath") ?? "";
 
-  const namespace = useSelector<RootStateOrAny, string>(
+  const namespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const project = useSelector<RootStateOrAny, string>(
+  const project = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
 
@@ -637,7 +694,7 @@ function StartSessionButton() {
     pinnedDockerImage,
     sessionClass,
     storage,
-  } = useStartSessionOptionsSelector();
+  } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
 
   const missingCredentialsStorage = useMemo(
     () =>
@@ -657,7 +714,7 @@ function StartSessionButton() {
   const enabled =
     dockerImageStatus === "available" && missingCredentialsStorage.length == 0;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [startSession] = useStartSessionMutation({
     fixedCacheKey: "start-session",

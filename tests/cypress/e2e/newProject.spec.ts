@@ -16,21 +16,16 @@
  * limitations under the License.
  */
 
-import "../support/utils";
-import Fixtures from "../support/renkulab-fixtures";
-import "../support/datasets/gui_commands";
-import "../support/projects/gui_commands";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("Add new project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const newProjectTitle = "new project";
   const slug = "new-project";
   const newProjectPath = `e2e/${slug}`;
 
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects("getLandingUserProjects");
+    fixtures.projects().landingUserProjects();
     cy.visit("projects/new");
   });
 
@@ -38,9 +33,13 @@ describe("Add new project", () => {
     fixtures
       .templates()
       .createProject()
-      .project(newProjectPath, "getNewProject", "projects/project.json", false)
-      .updateProject(newProjectPath);
-    cy.gui_create_project(newProjectTitle);
+      .project({
+        name: "getNewProject",
+        projectPath: newProjectPath,
+        statistics: false,
+      })
+      .updateProject({ projectPath: newProjectPath });
+    cy.createProject(newProjectTitle);
     cy.wait("@getTemplates");
     cy.wait("@createProject");
     cy.wait("@getNewProject");
@@ -52,15 +51,16 @@ describe("Add new project", () => {
   });
 
   it("error on getting templates", () => {
-    fixtures.templates(true);
+    fixtures.templates({ error: true });
     cy.wait("@getTemplates");
     cy.contains("Unable to fetch templates").should("be.visible");
   });
 
   it("error on creating a new project", () => {
-    const error = "errors/core-error-1102.json";
-    fixtures.templates().createProject(error);
-    cy.gui_create_project(newProjectTitle);
+    fixtures
+      .templates()
+      .createProject({ fixture: "errors/core-error-1102.json" });
+    cy.createProject(newProjectTitle);
     cy.wait("@getTemplates");
     cy.wait("@createProject");
     cy.contains("error occurred while creating the project").should(
@@ -70,87 +70,89 @@ describe("Add new project", () => {
 
   it("form validations", () => {
     fixtures
-      .templates(
-        false,
-        "url=https%3A%2F%2Fgithub.com%2FSwissDataScienceCenter%2Frenku-project-template&ref=master"
-      )
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      )
-      .getNamespace(
-        "private-space",
-        "getPrivateNamespace",
-        "projects/namespace-129.json"
-      );
+      .templates({
+        urlSource:
+          "url=https%3A%2F%2Fgithub.com%2FSwissDataScienceCenter%2Frenku-project-template&ref=master",
+      })
+      .getNamespace({
+        namespace: "internal-space",
+        name: "getInternalNamespace",
+      })
+      .getNamespace({
+        namespace: "private-space",
+        name: "getPrivateNamespace",
+        fixture: "projects/namespace-129.json",
+      });
     cy.wait("@getTemplates");
 
     // validate public visibility is disabled when namespace selected has internal visibility
     cy.get("#namespace-input").click();
     cy.get("div").contains("internal-space").click();
-    cy.get_cy("visibility-public").should("be.disabled");
+    cy.getDataCy("visibility-public").should("be.disabled");
 
-    cy.get_cy("refresh-namespace-list").click();
+    cy.getDataCy("refresh-namespace-list").click();
     // validate public and internal visibility are disabled when namespace selected has private visibility
     cy.get("#namespace-input").click();
     cy.get("div").contains("private-space").click();
-    cy.get_cy("visibility-public").should("be.disabled");
-    cy.get_cy("visibility-internal").should("be.disabled");
+    cy.getDataCy("visibility-public").should("be.disabled");
+    cy.getDataCy("visibility-internal").should("be.disabled");
 
     // validate fetch custom templates
-    fixtures.templates(
-      true,
-      "url=invalid-url&ref=master",
-      "getCustomTemplates"
-    );
-    cy.get_cy("custom-source-button").click();
-    cy.get_cy("url-repository").type("invalid-url");
-    cy.get_cy("ref-repository").type("master");
-    cy.get_cy("fetch-templates-button").click();
+    fixtures.templates({
+      error: true,
+      urlSource: "url=invalid-url&ref=master",
+      name: "getCustomTemplates",
+    });
+    cy.getDataCy("custom-source-button").click();
+    cy.getDataCy("url-repository").type("invalid-url");
+    cy.getDataCy("ref-repository").type("master");
+    cy.getDataCy("fetch-templates-button").click();
     cy.wait("@getCustomTemplates");
 
     // when invalid source info
     cy.contains("Unable to fetch templates").should("be.visible");
 
     //when valid source info
-    fixtures.templates(
-      false,
-      "url=valid-url&ref=master",
-      "getCustomTemplatesValid"
-    );
-    cy.get_cy("url-repository").clear().type("valid-url");
-    cy.get_cy("fetch-templates-button").click();
+    fixtures.templates({
+      urlSource: "url=valid-url&ref=master",
+      name: "getCustomTemplatesValid",
+    });
+    cy.getDataCy("url-repository").clear().type("valid-url");
+    cy.getDataCy("fetch-templates-button").click();
     cy.wait("@getCustomTemplatesValid");
-    cy.get_cy("project-template-card").should("have.length", 6);
+    cy.getDataCy("project-template-card").should("have.length", 6);
 
     // cannot submit the form if the title and template are missing
-    cy.get_cy("create-project-button").click();
+    cy.getDataCy("create-project-button").click();
     cy.contains("Title is missing.").should("be.visible");
     cy.contains("Please select a template.").should("be.visible");
 
     // after send to create project should show progress indicator and hide form
-    cy.gui_create_project(newProjectTitle);
+    cy.createProject(newProjectTitle);
     cy.contains("Creating Project...").should("be.visible");
     cy.contains(
       "You'll be redirected to the new project page when the creation is completed."
     ).should("be.visible");
-    cy.get_cy("create-project-form").should("not.exist");
+    cy.getDataCy("create-project-form").should("not.exist");
   });
 
   it("create a new project with an avatar", () => {
     fixtures
       .templates()
       .createProject()
-      .project(newProjectPath, "getNewProject", "projects/project.json", false)
-      .updateProject(newProjectPath)
+      .project({
+        name: "getNewProject",
+        projectPath: newProjectPath,
+        statistics: false,
+      })
+      .updateProject({ projectPath: newProjectPath })
       .updateAvatar();
     cy.wait("@getTemplates");
     cy.get("#project-avatar-file-input-hidden").selectFile(
       "cypress/fixtures/avatars/avatar.png",
       { force: true }
     );
-    cy.gui_create_project(newProjectTitle);
+    cy.createProject(newProjectTitle);
     cy.wait("@createProject");
     cy.wait("@getNewProject");
     cy.wait("@updateProject").should((result) => {
@@ -166,12 +168,9 @@ describe("Add new project", () => {
 });
 
 describe("Add new project shared link", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
-
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects("getLandingUserProjects");
+    fixtures.projects().landingUserProjects();
   });
 
   it("prefill values all values (custom template)", () => {
@@ -180,38 +179,35 @@ describe("Add new project shared link", () => {
       "wdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8v" +
       "Z2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiO" +
       "iJtYXN0ZXIiLCJ0ZW1wbGF0ZSI6IkN1c3RvbS9SLW1pbmltYWwifQ%3D%3D";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates().getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
-    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
-    cy.get_cy("project-creation-embedded-info").should("be.visible", {
+    cy.getDataCy("project-creation-embedded-fetching").should("be.visible");
+    cy.getDataCy("project-creation-embedded-info").should("be.visible", {
       timeout: 20_000,
     });
 
     // Check the prefill values
-    cy.get_cy("field-group-title").should("contain.value", "new project");
-    cy.get_cy("field-group-description").should(
+    cy.getDataCy("field-group-title").should("contain.value", "new project");
+    cy.getDataCy("field-group-description").should(
       "contain.text",
       "this a custom description"
     );
-    cy.get_cy("project-slug").should("contain.value", "e2e/new-project");
-    cy.get_cy("visibility-public").should("not.be.checked");
-    cy.get_cy("visibility-internal").should("be.checked");
-    cy.get_cy("visibility-private").should("not.be.checked");
-    cy.get_cy("url-repository").should(
+    cy.getDataCy("project-slug").should("contain.value", "e2e/new-project");
+    cy.getDataCy("visibility-public").should("not.be.checked");
+    cy.getDataCy("visibility-internal").should("be.checked");
+    cy.getDataCy("visibility-private").should("not.be.checked");
+    cy.getDataCy("url-repository").should(
       "contain.value",
       "https://github.com/SwissDataScienceCenter/renku-project-template"
     );
-    cy.get_cy("ref-repository").should("contain.value", "master");
-    cy.get_cy("project-template-card")
+    cy.getDataCy("ref-repository").should("contain.value", "master");
+    cy.getDataCy("project-template-card")
       .get(".selected")
       .should("contain.text", "Basic R (4.1.2) Project");
   });
@@ -225,48 +221,42 @@ describe("Add new project shared link", () => {
     const templateUrl =
       "https://github.com/SwissDataScienceCenter/renku-project-template";
     const templateRef = "master";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates().getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
-    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
-    cy.get_cy("project-creation-embedded-info").should("be.visible", {
+    cy.getDataCy("project-creation-embedded-fetching").should("be.visible");
+    cy.getDataCy("project-creation-embedded-info").should("be.visible", {
       timeout: 20_000,
     });
 
     // Check custom templates
-    cy.get_cy("url-repository").should("contain.value", templateUrl);
-    cy.get_cy("ref-repository").should("contain.value", templateRef);
+    cy.getDataCy("url-repository").should("contain.value", templateUrl);
+    cy.getDataCy("ref-repository").should("contain.value", templateRef);
   });
 
   it("prefill values renkuLab template", () => {
     const customValues =
       "?data=eyJ0ZW1wbGF0ZSI6IlJlbmt1L2p1bGlhLW1pbmltYWwifQ%3D%3D";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates().getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
-    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
-    cy.get_cy("project-creation-embedded-info").should("be.visible", {
+    cy.getDataCy("project-creation-embedded-fetching").should("be.visible");
+    cy.getDataCy("project-creation-embedded-info").should("be.visible", {
       timeout: 20_000,
     });
 
     // Check selected template
-    cy.get_cy("project-template-card")
+    cy.getDataCy("project-template-card")
       .get(".selected")
       .should("contain.text", "Basic Julia (1.7.1) Project");
   });
@@ -278,24 +268,21 @@ describe("Add new project shared link", () => {
       "YWJsZXMiOnsiYmVuY2htYXJrX25hbWUiOiJvbW5pX2NsdXN0ZXJpbmciLCJkYXRhc2V0X2tleXdvcmQiOiJ0Z" +
       "XN0IHZhbHVlIiwibWV0YWRhdGFfZGVzY3JpcHRpb24iOiIiLCJwcm9qZWN0X3RpdGxlIjoiYW5vdGhlciByYW" +
       "5kb20gdmFsdWUiLCJzdHVkeV9saW5rIjoiIiwic3R1ZHlfbm90ZSI6IiIsInN0dWR5X3Rpc3N1ZSI6IiJ9fQ";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates().getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
-    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
-    cy.get_cy("project-creation-embedded-info").should("be.visible", {
+    cy.getDataCy("project-creation-embedded-fetching").should("be.visible");
+    cy.getDataCy("project-creation-embedded-info").should("be.visible", {
       timeout: 20_000,
     });
 
     // Check selected template
-    cy.get_cy("project-template-card")
+    cy.getDataCy("project-template-card")
       .get(".selected")
       .should("contain.text", "Omnibenchmark dataset");
     cy.get("#parameter-benchmark_name").should("have.value", "omni_clustering");
@@ -309,60 +296,54 @@ describe("Add new project shared link", () => {
   it("display warning on non-essential fields", () => {
     const customValues =
       "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwibmFtZXNwYWNlIjoiZmFrZSJ9";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates().getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
-    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
-    cy.get_cy("project-creation-embedded-warning")
+    cy.getDataCy("project-creation-embedded-fetching").should("be.visible");
+    cy.getDataCy("project-creation-embedded-warning")
       .should("be.visible", {
         timeout: 20_000,
       })
       .contains("button", "Show warnings")
       .click();
-    cy.get_cy("project-creation-embedded-warning")
+    cy.getDataCy("project-creation-embedded-warning")
       .contains(`The namespace "fake" is not available.`)
       .should("be.visible");
-    cy.get_cy("project-creation-embedded-info").should("not.exist");
+    cy.getDataCy("project-creation-embedded-info").should("not.exist");
 
     // Other valid fields should be filled in correctly
-    cy.get_cy("field-group-title").should("contain.value", "new project");
+    cy.getDataCy("field-group-title").should("contain.value", "new project");
   });
 
   it("display errors on essential fields", () => {
     const customValues =
       "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwidGVtcGxhdGUiOiJmYWtlIn0=";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates().getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
-    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
-    cy.get_cy("project-creation-embedded-error")
+    cy.getDataCy("project-creation-embedded-fetching").should("be.visible");
+    cy.getDataCy("project-creation-embedded-error")
       .should("be.visible", {
         timeout: 20_000,
       })
       .contains("button", "Show error")
       .click();
-    cy.get_cy("project-creation-embedded-error")
+    cy.getDataCy("project-creation-embedded-error")
       .contains(`The template "fake" is not available.`)
       .should("be.visible");
-    cy.get_cy("project-creation-embedded-info").should("not.exist");
+    cy.getDataCy("project-creation-embedded-info").should("not.exist");
 
     // Other valid fields should be filled in correctly
-    cy.get_cy("field-group-title").should("contain.value", "new project");
+    cy.getDataCy("field-group-title").should("contain.value", "new project");
   });
 });

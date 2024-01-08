@@ -119,7 +119,7 @@ function FormGeneratorKeywordsInput({
   const tagsList = (
     <div className={`input-tag ${disabledClass} ${activeClass}`}>
       <ul className="input-tag__tags">
-        {tags.map((tag, i) => (
+        {tags?.map((tag, i) => (
           <li key={tag}>
             {tag}
             <FontAwesomeIcon

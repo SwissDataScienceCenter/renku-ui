@@ -23,11 +23,13 @@
  *  Entity Header component
  */
 
-import { RootStateOrAny, useSelector } from "react-redux";
-import { useDisplaySelector } from "../../features/display";
+import cx from "classnames";
+
 import SessionButton from "../../features/session/components/SessionButton";
+import { useGetSessionsQuery } from "../../features/session/sessions.api";
+import { getRunningSession } from "../../features/session/sessions.utils";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { getSessionRunning } from "../../utils/helpers/SessionFunctions";
 import { Url } from "../../utils/helpers/url";
 import { EnvironmentLogs } from "../Logs";
 import { TimeCaption } from "../TimeCaption";
@@ -41,6 +43,8 @@ import LinkedEntitiesByItemType, {
 import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
+import PinnedBadge from "../list/PinnedBadge";
+
 import "./EntityHeader.scss";
 
 export interface EntityHeaderProps {
@@ -89,19 +93,17 @@ function EntityHeader({
   visibility,
 }: EntityHeaderProps) {
   // Find sessions
-  const sessions = useSelector(
-    (state: RootStateOrAny) => state.stateModel.notebooks?.notebooks
-  );
+  const { data: sessions } = useGetSessionsQuery();
+
   const projectData = { namespace: "", path: fullPath };
   const sessionAutostartUrl = Url.get(
     Url.pages.project.session.autostart,
     projectData
   );
-  const notebook =
-    sessions.fetched && sessions.all
-      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (getSessionRunning(sessions.all, sessionAutostartUrl) as any)
-      : false;
+
+  const runningSession = sessions
+    ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
+    : null;
 
   // Set the main button based on running sessions
   const mainButton =
@@ -110,12 +112,14 @@ function EntityHeader({
     ) : null;
 
   // Set up support for logs modal
-  const displayModal = useDisplaySelector((state) => state.modals.sessionLogs);
+  const displayModal = useAppSelector(
+    ({ display }) => display.modals.sessionLogs
+  );
   const envLogs =
     itemType === "project" ? (
       <EnvironmentLogs
         name={displayModal.targetServer}
-        annotations={notebook?.annotations ?? {}}
+        annotations={runningSession?.annotations ?? {}}
       />
     ) : null;
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
@@ -124,12 +128,14 @@ function EntityHeader({
   return (
     <>
       <div
-        className={`container-entity-header ${
-          !showFullHeader ? "container-entity-header-incomplete" : ""
-        }`}
+        className={cx(
+          "container-entity-header",
+          !showFullHeader && "container-entity-header-incomplete"
+        )}
         data-cy={`header-${itemType}`}
       >
-        <div className="entity-image">
+        <div className={cx("entity-image", "position-relative")}>
+          {fullPath && <PinnedBadge entityType={itemType} slug={fullPath} />}
           <div
             style={imageStyles}
             className={`header-entity-image ${
@@ -156,10 +162,12 @@ function EntityHeader({
             hideEmptyTags={hideEmptyTags}
           />
         </div>
-        <div className="entity-action d-flex align-items-baseline gap-1">
-          {mainButton}
-          {otherButtons}
-        </div>
+        {showFullHeader ? (
+          <div className="entity-action d-flex align-items-baseline gap-1">
+            {mainButton}
+            {otherButtons}
+          </div>
+        ) : null}
         <div className="entity-type-visibility align-items-baseline">
           <EntityLabel type={itemType} workflowType={null} />
           {visibility ? (

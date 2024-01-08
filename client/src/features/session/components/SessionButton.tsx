@@ -28,7 +28,6 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import {
   Button,
@@ -39,7 +38,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { WarnAlert } from "../../../components/Alert";
+
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
@@ -51,6 +50,9 @@ import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.consta
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import AppContext from "../../../utils/context/appContext";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
@@ -62,6 +64,7 @@ import { Session, SessionStatusState } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
 import SimpleSessionButton from "./SimpleSessionButton";
+import UnsavedWorkWarning from "./UnsavedWorkWarning";
 
 interface SessionButtonProps {
   className?: string;
@@ -85,7 +88,14 @@ export default function SessionButton({
     path: fullPath,
   });
 
-  const { data: sessions, isLoading, isError } = useGetSessionsQuery();
+  const { getSessions } = useContext(RtkQueryErrorsContext);
+  const {
+    data: sessions,
+    isLoading,
+    isError,
+  } = useGetSessionsQuery(undefined, {
+    skip: getSessions?.isError,
+  });
 
   const runningSession =
     sessions && runningSessionName && runningSessionName in sessions
@@ -107,7 +117,7 @@ export default function SessionButton({
       <SimpleSessionButton
         className="session-link-group"
         fullPath={fullPath}
-        skip={isError}
+        skip={isError || getSessions?.isError}
       />
     );
     return (
@@ -118,20 +128,20 @@ export default function SessionButton({
         isPrincipal
         size="sm"
       >
-        <DropdownItem>
-          <Link className="text-decoration-none" to={sessionStartUrl}>
+        <li>
+          <Link className="dropdown-item" to={sessionStartUrl}>
             <img
               src={rkIconStartWithOptions}
-              className="rk-icon rk-icon-md btn-with-menu-margin"
+              className="rk-icon rk-icon-md me-2"
             />
             Start with options
           </Link>
-        </DropdownItem>
+        </li>
         {gitUrl && <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />}
         <DropdownItem divider />
-        <DropdownItem>
+        <li>
           <Link
-            className="text-decoration-none"
+            className="dropdown-item"
             to={{
               pathname: sessionStartUrl,
               search: new URLSearchParams({
@@ -146,7 +156,7 @@ export default function SessionButton({
             />
             Create session link
           </Link>
-        </DropdownItem>
+        </li>
       </ButtonWithMenu>
     );
   }
@@ -164,11 +174,11 @@ function SessionActions({ className, session }: SessionActionsProps) {
 
   const { notifications } = useContext(AppContext);
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const onToggleLogs = useCallback(() => {
     dispatch(toggleSessionLogsModal({ targetServer: session.name }));
   }, [dispatch, session.name]);
@@ -399,9 +409,9 @@ function SessionActions({ className, session }: SessionActionsProps) {
   );
 
   const createSessionLinkAction = (
-    <DropdownItem>
+    <li>
       <Link
-        className="text-decoration-none"
+        className="dropdown-item"
         to={{
           pathname: sessionStartUrl,
           search: new URLSearchParams({
@@ -416,7 +426,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
         />
         Create session link
       </Link>
-    </DropdownItem>
+    </li>
   );
 
   const logsAction = status !== "hibernated" && (
@@ -453,6 +463,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
         isOpen={showModalStopSession}
         isStopping={isStopping}
         onStopSession={onStopSession}
+        sessionName={session.name}
         status={status}
         toggleModal={toggleStopSession}
       />
@@ -465,6 +476,7 @@ interface ConfirmDeleteModalProps {
   isOpen: boolean;
   isStopping: boolean;
   onStopSession: () => void;
+  sessionName: string;
   status: SessionStatusState;
   toggleModal: () => void;
 }
@@ -474,6 +486,7 @@ function ConfirmDeleteModal({
   isOpen,
   isStopping,
   onStopSession,
+  sessionName,
   status,
   toggleModal,
 }: ConfirmDeleteModalProps) {
@@ -494,7 +507,11 @@ function ConfirmDeleteModal({
             <p className="fw-bold">
               Deleting a session will permanently remove any unsaved work.
             </p>
-            <UnsavedWorkWarning annotations={annotations} status={status} />
+            <UnsavedWorkWarning
+              annotations={annotations}
+              sessionName={sessionName}
+              status={status}
+            />
             <div className="d-flex justify-content-end">
               <Button
                 className={cx("float-right", "mt-1", "btn-outline-rk-green")}
@@ -517,39 +534,6 @@ function ConfirmDeleteModal({
         </Row>
       </ModalBody>
     </Modal>
-  );
-}
-
-interface UnsavedWorkWarningProps {
-  annotations: NotebookAnnotations;
-  status: SessionStatusState;
-}
-
-function UnsavedWorkWarning({ annotations, status }: UnsavedWorkWarningProps) {
-  const hasHibernationInfo = !!annotations["hibernationDate"];
-  const hasUnsavedWork =
-    !hasHibernationInfo ||
-    annotations["hibernationDirty"] ||
-    !annotations["hibernationSynchronized"];
-
-  if (!hasUnsavedWork) {
-    return null;
-  }
-
-  const explanation = !hasHibernationInfo
-    ? "uncommitted files and/or unsynced commits"
-    : annotations["hibernationDirty"] && !annotations["hibernationSynchronized"]
-    ? "uncommitted files and unsynced commits"
-    : annotations["hibernationDirty"]
-    ? "uncommitted files"
-    : "unsynced commits";
-
-  return (
-    <WarnAlert dismissible={false}>
-      You {status !== "hibernated" && <>may </>} have unsaved work {"("}
-      {explanation}
-      {")"} in this session
-    </WarnAlert>
   );
 }
 

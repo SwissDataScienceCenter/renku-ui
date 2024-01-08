@@ -28,28 +28,31 @@ import {
   configureStore,
 } from "@reduxjs/toolkit";
 
+import adminComputeResourcesApi from "../../features/admin/adminComputeResources.api";
+import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
-import { dataServicesApi } from "../../features/dataServices/dataServicesApi";
+import { dataServicesApi } from "../../features/dataServices/dataServices.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
 import { datasetFormSlice } from "../../features/project/dataset";
+import projectCloudStorageApi from "../../features/project/projectCloudStorage.api";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
-import { projectKgApi } from "../../features/project/projectKgApi";
-import { projectsApi } from "../../features/projects/projectsApi";
-import { projectsKgApi } from "../../features/projects/projectsKgApi";
+import { projectKgApi } from "../../features/project/projectKg.api";
+import { projectsApi } from "../../features/projects/projects.api";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
-import { versionsApi } from "../../features/versions/versionsApi";
+import keycloakUserApi from "../../features/user/keycloakUser.api";
+import userPreferencesApi from "../../features/user/userPreferences.api";
+import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
-import projectCloudStorageApi from "../../features/project/projectCloudStorage.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -67,19 +70,22 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
+    [adminComputeResourcesApi.reducerPath]: adminComputeResourcesApi.reducer,
+    [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
     [dataServicesApi.reducerPath]: dataServicesApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
+    [keycloakUserApi.reducerPath]: keycloakUserApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
-    [projectsKgApi.reducerPath]: projectsKgApi.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
+    [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
   };
@@ -92,26 +98,42 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         immutableCheck: false,
         serializableCheck: false,
       })
+        .concat(adminComputeResourcesApi.middleware)
+        .concat(adminKeycloakApi.middleware)
         .concat(dataServicesApi.middleware)
         .concat(datasetsCoreApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
+        .concat(keycloakUserApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(projectCloudStorageApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectGitLabApi.middleware)
         .concat(projectKgApi.middleware)
         .concat(projectsApi.middleware)
-        .concat(projectsKgApi.middleware)
         .concat(recentUserActivityApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
+        .concat(userPreferencesApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),
     enhancers,
   });
   return store;
 };
+
+type StoreType = ReturnType<typeof createStore>;
+
+export type StrictRootState = ReturnType<StoreType["getState"]>;
+
+export type LegacyRootState = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  stateModel: any;
+};
+
+export type RootState = StrictRootState & LegacyRootState;
+
+export type AppDispatch = StoreType["dispatch"];
 
 // TODO: Introduce a mock store for testing
 // import configureMockStore from 'redux-mock-store'

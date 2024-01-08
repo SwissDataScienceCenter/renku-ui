@@ -86,7 +86,6 @@ function ImagePreview({
   const imageStyle = { ...imageSize, objectFit: "cover" };
   const imagePreviewStyle = {
     ...imageStyle,
-    backgroundColor: "#C4C4C4",
     borderRadius: "8px",
   };
   const displayValue = selected[Prop.NAME] ?? "Current Image";
@@ -106,7 +105,7 @@ function ImagePreview({
   ) : (
     <div
       style={imagePreviewStyle}
-      className="d-flex justify-content-center align-items-center text-white"
+      className="d-flex justify-content-center align-items-center text-white bg-dark"
     >
       <div>No Image Yet</div>
     </div>
@@ -235,7 +234,7 @@ function ImageContentInputMode({ name, modes, mode, setMode, onClick, color }) {
 
   if (modes.length < 2)
     return (
-      <Button className={`btn-outline-${color}`} onClick={onClick}>
+      <Button className={`btn-outline-rk-${color}`} onClick={onClick}>
         {mode}
       </Button>
     );
@@ -408,6 +407,7 @@ function ImageContentInput({
 function ImageInput(props) {
   const {
     alert,
+    color,
     disabled = false,
     expectedFinalSize,
     format = "image/*",
@@ -439,6 +439,7 @@ function ImageInput(props) {
     <div className="flex-grow-1">
       <ImageContentInput
         disabled={disabled}
+        color={color}
         expectedFinalSize={expectedFinalSize}
         format={format}
         help={help}

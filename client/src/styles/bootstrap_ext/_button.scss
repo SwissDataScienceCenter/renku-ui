@@ -12,6 +12,7 @@ $borderRadius: 1000px;
 }
 
 .btn-group .btn {
+  --#{$prefix}btn-active-color: white;
   border-radius: 0;
   padding: 5px 10px;
 }
@@ -33,13 +34,6 @@ $borderRadius: 1000px;
   box-shadow: none;
   border-radius: 0 1000px 1000px 0;
   border-left: 1px solid;
-}
-
-.btn-with-menu-options {
-  svg,
-  .btn-with-menu-margin {
-    margin-right: 12px;
-  }
 }
 
 .input-group .btn {
@@ -69,9 +63,10 @@ $borderRadius: 1000px;
 .form-rk {
   --accent-color: var(--bs-rk-green);
   .input-group button {
+    --#{$prefix}btn-color: #{$rk-white};
+    --#{$prefix}btn-bg: #{$rk-green};
+    --#{$prefix}btn-border-color: #{$rk-green};
     border: 1px solid var(--accent-color);
-    color: var(--accent-color);
-    background-color: white;
   }
   .btn-group:not(.btn-with-menu) button {
     border-color: var(--accent-color);
@@ -82,22 +77,44 @@ $borderRadius: 1000px;
 .form-rk-pink {
   @extend .form-rk;
   --accent-color: var(--bs-rk-pink);
+  --#{$prefix}btn-active-color: #{$rk-white};
+
+  .input-group button {
+    --#{$prefix}btn-color: #{$rk-white};
+    --#{$prefix}btn-bg: #{$rk-pink};
+    --#{$prefix}btn-border-color: #{$rk-pink};
+    --#{$prefix}btn-hover-color: white;
+    --#{$prefix}btn-hover-bg: #{$rk-pink-highlight};
+    --#{$prefix}btn-hover-border-color: #{$rk-pink-highlight};
+  }
 }
 
 .form-rk-green {
   @extend .form-rk;
   --accent-color: var(--bs-rk-green);
+
+  .input-group button {
+    --#{$prefix}btn-color: #{$rk-white};
+    --#{$prefix}btn-bg: #{$rk-green};
+    --#{$prefix}btn-border-color: #{$rk-green};
+    --#{$prefix}btn-hover-color: white;
+    --#{$prefix}btn-hover-bg: #{$rk-green-highlight};
+    --#{$prefix}btn-hover-border-color: #{$rk-green-highlight};
+  }
 }
 
-.input-group button:hover {
-  background-color: transparent;
+.btn-secondary {
+  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
+  &:focus {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .btn-secondary,
 .btn-info,
 .btn-warning {
   color: $rk-white;
-  --bs-btn-active-color: #{$rk-white};
+  --#{$prefix}btn-active-color: #{$rk-white};
   &:hover,
   &:focus,
   &:active,
@@ -107,9 +124,6 @@ $borderRadius: 1000px;
   &.disabled {
     color: $rk-white;
   }
-}
-.btn-secondary:focus {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .btn-outline-secondary:hover {
@@ -157,11 +171,25 @@ $borderRadius: 1000px;
 
 .btn-rk-pink {
   @extend .btn-rk;
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-hover-color: white;
+  --#{$prefix}btn-hover-bg: #{$rk-pink-highlight};
+  --#{$prefix}btn-hover-border-color: #{$rk-pink-highlight};
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-active-bg: #{$rk-pink-highlight};
+  --#{$prefix}btn-active-border-color: #{$rk-pink-highlight};
 }
 
-.btn-rk-green {
+.btn-rk-green,
+.btn-secondary {
   @extend .btn-rk;
-  --bs-btn-active-color: white;
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-hover-color: white;
+  --#{$prefix}btn-hover-bg: #{$rk-green-highlight};
+  --#{$prefix}btn-hover-border-color: #{$rk-green-highlight};
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
+  --#{$prefix}btn-active-border-color: #{$rk-green-highlight};
 }
 
 .btn-rk-over-green {
@@ -213,20 +241,40 @@ $borderRadius: 1000px;
     color: $rk-blue;
   }
 }
-.btn-outline-rk-green {
-  background-color: white;
-  color: $rk-green;
-  --bs-btn-active-color: #{$rk-green-highlight};
-  --bs-btn-active-bg: transparent;
-  --bs-btn-active-border-color: #{$rk-green};
+.btn-outline-secondary {
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
+  --#{$prefix}btn-active-border-color: #{$rk-green-highlight};
+  background-color: transparent;
+  color: #{$rk-green};
 
   &:hover,
   &:focus,
   &:active,
   &.active {
-    background-color: transparent;
-    color: $rk-green-highlight;
-    border-color: $rk-green;
+    background-color: #{$rk-green-highlight};
+    color: white;
+    border-color: #{$rk-green-highlight};
+  }
+  &:disabled {
+    color: $rk-green;
+    opacity: 0.6;
+  }
+}
+.btn-outline-rk-green {
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
+  --#{$prefix}btn-active-border-color: #{$rk-green-highlight};
+  background-color: white;
+  color: #{$rk-green};
+
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    background-color: #{$rk-green-highlight};
+    color: white;
+    border-color: #{$rk-green-highlight};
   }
   &:disabled {
     color: $rk-green;
@@ -234,17 +282,20 @@ $borderRadius: 1000px;
   }
 }
 .btn-outline-rk-pink {
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-active-bg: #{$rk-pink-highlight};
+  --#{$prefix}btn-active-border-color: #{$rk-pink-highlight};
   background-color: white;
-  color: $rk-pink;
-  border-color: $rk-pink;
+  color: #{$rk-pink};
+  border-color: #{$rk-pink};
 
   &:hover,
   &:focus,
   &:active,
   &.active {
-    background-color: transparent;
-    color: $rk-pink-highlight;
-    border-color: $rk-pink;
+    background-color: #{$rk-pink-highlight};
+    color: white;
+    border-color: #{$rk-pink-highlight};
   }
   &.disabled {
     background-color: transparent;
@@ -330,10 +381,6 @@ $borderRadius: 1000px;
     border-radius: 0 8px 8px 0;
   }
 
-  button:hover {
-    background-color: transparent;
-  }
-
   > .btn {
     background-color: white;
   }
@@ -342,7 +389,6 @@ $borderRadius: 1000px;
     border-width: 2.5px;
     font-weight: bold;
     box-shadow: 1px 0 10px rgb(0 0 0 / 10%);
-    background-color: white;
   }
 
   .btn-outline-primary {
@@ -449,4 +495,19 @@ $borderRadius: 1000px;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+}
+
+.btn-animation-pulse {
+  animation: pulse 2s infinite ease-in-out;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1);
+  }
 }

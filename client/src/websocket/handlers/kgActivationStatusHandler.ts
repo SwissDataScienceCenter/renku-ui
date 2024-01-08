@@ -16,25 +16,74 @@
  * limitations under the License.
  */
 
-import { updateProgress } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
+import {
+  ActivationStatusProgressError,
+  filterProgressingProjects,
+} from "../../features/inactiveKgProjects/";
+import {
+  setActivationSlow,
+  updateProgress,
+} from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
+import type { KgInactiveProjectsState } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
+
+type ActivationStatus = {
+  [key: string]: number;
+};
+
+const SLOW_ACTIVATION_CUTOFF_MS = 60 * 1000;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 function handleKgActivationStatus(
   data: Record<string, unknown>,
-  webSocket: WebSocket,
+  _webSocket: WebSocket,
   model: any,
   notifications: any
 ) {
   if (data.message) {
-    const statuses = JSON.parse(data.message as string);
+    const statuses = JSON.parse(data.message as string) as ActivationStatus;
     updateStatus(statuses, model.reduxStore);
     processStatusForNotifications(statuses, notifications);
   }
   return null;
 }
 
-function updateStatus(kgActivation: any, store: any) {
+function handleWebSocketErrorForKgActivationStatus(model: any) {
+  // Set the status of any pending KG indexing to an error state
+  const state = model?.reduxStore?.getState();
+  // kgInactiveProjects
+  const kgInactiveProjects: KgInactiveProjectsState = state?.kgInactiveProjects;
+  if (kgInactiveProjects == null) return;
+  const progressingProjects = filterProgressingProjects(
+    kgInactiveProjects.inactiveProjects
+  );
+  if (progressingProjects.length === 0) return;
+
+  const kgActivation: Record<string, number> = {};
+  progressingProjects.forEach((project) => {
+    kgActivation[`${project.id}`] =
+      ActivationStatusProgressError.WEB_SOCKET_ERROR;
+  });
+  updateStatus(kgActivation, model.reduxStore);
+}
+
+function handleWebSocketPing(model: any) {
+  // Set the status of any pending KG indexing to an error state
+  const state = model?.reduxStore?.getState();
+  // kgInactiveProjects
+  const kgInactiveProjects: KgInactiveProjectsState = state?.kgInactiveProjects;
+  if (kgInactiveProjects?.activationStatus?.lastUpdateAt == null) return;
+  // Already set to slow
+  if (kgInactiveProjects?.activationStatus?.isActivationSlow === true) return;
+
+  const now = Date.now();
+  const lastUpdateAt = kgInactiveProjects.activationStatus.lastUpdateAt;
+  if (now - lastUpdateAt > SLOW_ACTIVATION_CUTOFF_MS) {
+    model.reduxStore.dispatch(setActivationSlow(true));
+  }
+}
+
+function updateStatus(kgActivation: ActivationStatus, store: any) {
   Object.keys(kgActivation).forEach((projectId: string) => {
     const id = parseInt(projectId);
     if (id > 0) {
@@ -45,7 +94,7 @@ function updateStatus(kgActivation: any, store: any) {
 }
 
 function processStatusForNotifications(
-  statuses: Record<number, number>,
+  statuses: ActivationStatus,
   notifications: any
 ) {
   Object.keys(statuses).forEach((projectId: string) => {
@@ -76,4 +125,9 @@ function processStatusForNotifications(
   });
 }
 
-export { handleKgActivationStatus };
+export {
+  handleKgActivationStatus,
+  handleWebSocketErrorForKgActivationStatus,
+  handleWebSocketPing,
+  updateStatus,
+};

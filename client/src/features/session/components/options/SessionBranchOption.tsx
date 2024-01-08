@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -32,25 +31,28 @@ import {
   UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
 import { useGetAllRepositoryBranchesQuery } from "../../../project/projectGitLab.api";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
-import {
-  setBranch,
-  useStartSessionOptionsSelector,
-} from "../../startSessionOptionsSlice";
+import { setBranch } from "../../startSessionOptionsSlice";
+
+import styles from "./SessionBranchOption.module.scss";
 
 export default function SessionBranchOption() {
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
-  const externalUrl = useSelector<RootStateOrAny, string>(
+  const externalUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
 
@@ -66,9 +68,11 @@ export default function SessionBranchOption() {
     { skip: !gitLabProjectId }
   );
 
-  const currentBranch = useStartSessionOptionsSelector(({ branch }) => branch);
+  const currentBranch = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.branch
+  );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const onChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const branchName = event.target.value;
@@ -190,6 +194,7 @@ export default function SessionBranchOption() {
         onChange={onChange}
         type="select"
         value={currentBranch}
+        className={cx(styles.formSelect)}
       >
         {filteredBranches.map(({ name }) => (
           <option key={name} value={name}>

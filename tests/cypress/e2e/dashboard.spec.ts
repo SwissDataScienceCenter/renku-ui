@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -17,12 +16,11 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 import {
   DISMISSIBLE_SIMPLE_INFO_MESSAGE_FIXTURE,
   NON_DISMISSIBLE_READ_MORE_SUCCESS_MESSAGE_FIXTURE,
 } from "../support/renkulab-fixtures/dashboard";
-import "../support/utils";
 
 const findProject = (path, projects) => {
   return projects.find(
@@ -31,48 +29,48 @@ const findProject = (path, projects) => {
 };
 
 describe("dashboard", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
-    fixtures.config().versions().userTest();
+    fixtures.config().versions().userTest().userPreferences();
   });
 
   it("user does has not own projects and no projects recently visited", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/empty-last-visited-projects.json"
-      )
-      .noActiveProjects("getNoActiveProjects");
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
+      .noActiveProjects()
+      .sessionServersEmpty();
 
     cy.visit("/");
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
 
-    cy.get_cy("dashboard-title").should(
+    cy.getDataCy("dashboard-title").should(
       "have.text",
       "Renku Dashboard - E2E User"
     );
-    cy.get_cy("project-alert").should(
+    cy.getDataCy("project-alert").should(
       "contain.text",
       "You do not have any projects yet"
     );
-    cy.get_cy("projects-container").should(
+    cy.getDataCy("projects-container").should(
       "contain.text",
       "You do not have any recently-visited projects"
     );
-    cy.get_cy("explore-other-projects-btn").should("be.visible");
-    cy.get_cy("inactive-kg-project-alert").should("exist");
+    cy.getDataCy("explore-other-projects-btn").should("be.visible");
+    cy.getDataCy("inactive-kg-project-alert").should("exist");
   });
 
   it("user does not have own project but has visited projects", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
+      .sessionServersEmpty()
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
       .getLastVisitedProjects();
     const files = {
       "lorenzo.cavazzi.tech/readme-file-dev": 30929,
@@ -81,49 +79,48 @@ describe("dashboard", () => {
       "e2e/local-test-project": 39646,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
-        filesKey,
-        "projectLanding",
-        `projects/project_${files[filesKey]}.json`,
-        false
-      );
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        name: `projectLanding-${filesKey}`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
 
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
-    cy.wait([
-      "@projectLanding",
-      "@projectLanding",
-      "@projectLanding",
-      "@projectLanding",
-    ]).then((results) => {
+    cy.wait(
+      Object.keys(files).map((filesKey) => `@projectLanding-${filesKey}`)
+    ).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;
-      cy.get_cy("projects-container")
+      cy.getDataCy("projects-container")
         .find('[data-cy="list-card-title"]')
         .first()
         .should("have.text", projectData.name);
-      cy.get_cy("explore-other-projects-btn").should("be.visible");
-      cy.get_cy("project-alert").should(
+      cy.getDataCy("explore-other-projects-btn").should("be.visible");
+      cy.getDataCy("project-alert").should(
         "contain.text",
         "You do not have any projects yet"
       );
-      cy.get_cy("inactive-kg-project-alert").should("not.exist");
+      cy.getDataCy("inactive-kg-project-alert").should("not.exist");
     });
   });
 
   it("user has own projects and recently visited projects", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/search.json", "7")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/last-visited-projects-5.json"
-      );
+      .sessionServersEmpty()
+      .entitySearch()
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      });
     const files = {
       "lorenzo.cavazzi.tech/readme-file-dev": 30929,
       "e2e/testing-datasets": 43781,
@@ -132,48 +129,45 @@ describe("dashboard", () => {
       "e2e/local-test-project-2": 44967,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
-        filesKey,
-        "getProject",
-        `projects/project_${files[filesKey]}.json`,
-        false
-      );
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        name: `getProject-${filesKey}`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
 
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
-    cy.wait([
-      "@getProject",
-      "@getProject",
-      "@getProject",
-      "@getProject",
-      "@getProject",
-    ]).then((results) => {
+    cy.wait(
+      Object.keys(files).map((filesKey) => `@getProject-${filesKey}`)
+    ).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;
-      cy.get_cy("projects-container")
+      cy.getDataCy("projects-container")
         .find('[data-cy="list-card-title"]')
         .first()
         .should("have.text", projectData.name);
-      cy.get_cy("project-alert").should("not.exist");
-      cy.get_cy("explore-other-projects-btn").should("not.exist");
-      cy.get_cy("view-my-projects-btn").should("be.visible");
+      cy.getDataCy("project-alert").should("not.exist");
+      cy.getDataCy("explore-other-projects-btn").should("not.exist");
+      cy.getDataCy("view-my-projects-btn").should("be.visible");
     });
   });
 
   it("user has sessions to display in dashboard", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/search.json", "7")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/last-visited-projects-5.json"
-      )
-      .getSessions("getSessions", "sessions/sessionsWithError.json")
+      .entitySearch()
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      })
+      .getSessions({ fixture: "sessions/sessionsWithError.json" })
       .getProjectCommits();
     const files = {
       "dalatinrofrau/flights-usa": 55402,
@@ -185,52 +179,51 @@ describe("dashboard", () => {
       "e2e/local-test-project-2": 44967,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
-        filesKey,
-        "getProject",
-        `projects/project_${files[filesKey]}.json`,
-        false
-      );
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
 
     fixtures
-      .project(
-        "lorenzo.cavazzi.tech/readme-file-dev",
-        "getFirstProject",
-        "projects/project_30929.json",
-        true
-      )
+      .project({
+        fixture: "projects/project_30929.json",
+        name: "getFirstProject",
+        projectPath: "lorenzo.cavazzi.tech/readme-file-dev",
+      })
       .projectLockStatus()
       .projectMigrationUpToDate({
         queryUrl:
           "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Florenzo.cavazzi.tech%2Freadme-file-dev&branch=master",
-        fixtureName: "getMigration",
       });
     cy.visit("projects/lorenzo.cavazzi.tech/readme-file-dev/sessions");
     cy.wait("@getFirstProject");
 
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getSessions");
-    cy.get_cy("session-container").should("be.visible");
-    cy.get_cy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
+    cy.getDataCy("session-container").should("be.visible");
+    cy.getDataCy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
     cy.wait("@getLastVisitedProjects");
-    cy.get_cy("container-session").should("have.length", 3);
-    cy.get_cy("container-session")
+    cy.getDataCy("container-session").should("have.length", 3);
+    cy.getDataCy("container-session")
       .first()
       .find(".session-time")
       .should("contain.text", "Error");
-    cy.get_cy("container-session")
+    cy.getDataCy("container-session")
       .first()
       .find(".session-icon")
       .should("have.text", "Error");
-    cy.get_cy("container-session")
+    cy.getDataCy("container-session")
       .first()
       .find(".entity-action")
       .find("button")
       .first()
       .contains("Loading")
       .should("not.exist");
-    cy.get_cy("container-session")
+    cy.getDataCy("container-session")
       .first()
       .find(".entity-action")
       .find("button")
@@ -240,24 +233,24 @@ describe("dashboard", () => {
 });
 
 describe("dashboard message", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures
       .versions()
       .userTest()
       .projects()
-      .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/empty-last-visited-projects.json"
-      )
-      .noActiveProjects("getNoActiveProjects");
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
+      .noActiveProjects()
+      .sessionServersEmpty()
+      .userPreferences();
   });
 
   const visitDashboardPage = () => {
     cy.visit("/");
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
@@ -267,7 +260,7 @@ describe("dashboard message", () => {
     fixtures.config();
     visitDashboardPage();
 
-    cy.get_cy("dashboard-message").should("not.exist");
+    cy.getDataCy("dashboard-message").should("not.exist");
   });
 
   it("displays a dissmissible simple info message", () => {
@@ -276,7 +269,7 @@ describe("dashboard message", () => {
     });
     visitDashboardPage();
 
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .should("be.visible")
       .and("have.class", "alert")
       .and("have.class", "alert-info")
@@ -284,23 +277,23 @@ describe("dashboard message", () => {
       .and("include.text", "Welcome to Renku!")
       .and("include.text", "This is an example welcome message");
 
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .find(".alert-icon")
       .find('img[alt="info icon"]')
       .should("be.visible");
 
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .find("button.btn-close")
       .should("be.visible")
       .click();
 
     // The message is removed on dismissal
-    cy.get_cy("dashboard-message").should("not.exist");
+    cy.getDataCy("dashboard-message").should("not.exist");
 
     // The message stays removed after dismissal
     cy.get("#link-search").click();
     cy.get("#link-dashboard").click();
-    cy.get_cy("dashboard-message").should("not.exist");
+    cy.getDataCy("dashboard-message").should("not.exist");
   });
 
   it("displays a non-dissmissible success message with a read more section", () => {
@@ -309,7 +302,7 @@ describe("dashboard message", () => {
     });
     visitDashboardPage();
 
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .should("be.visible")
       .and("have.class", "alert")
       .and("have.class", "alert-success")
@@ -317,29 +310,31 @@ describe("dashboard message", () => {
       .and("include.text", "Welcome to Renku!")
       .and("include.text", "This is an example welcome message");
 
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .find(".alert-icon")
       .find('img[alt="success icon"]')
       .should("be.visible");
 
-    cy.get_cy("dashboard-message").find("button.btn-close").should("not.exist");
+    cy.getDataCy("dashboard-message")
+      .find("button.btn-close")
+      .should("not.exist");
 
     // Expand and collapse the "Read more" section
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .find("a")
       .contains("Read more")
       .should("be.visible")
       .click();
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .contains("This is some more text")
       .should("exist")
       .and("be.visible");
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .find("a")
       .contains("Read more")
       .should("be.visible")
       .click();
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .contains("This is some more text")
       .should("exist")
       .and("not.be.visible");
@@ -347,6 +342,209 @@ describe("dashboard message", () => {
     // The message stays visible
     cy.get("#link-search").click();
     cy.get("#link-dashboard").click();
-    cy.get_cy("dashboard-message").should("be.visible");
+    cy.getDataCy("dashboard-message").should("be.visible");
+  });
+});
+
+describe("Dashboard pins", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userTest().projects().noActiveProjects();
+  });
+
+  it("shows no pinned project by default", () => {
+    fixtures
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
+      .sessionServersEmpty()
+      .userPreferences();
+    cy.visit("/");
+    cy.wait("@getUserPreferences");
+
+    cy.getDataCy("projects-container").should("be.visible");
+    cy.getDataCy("projects-container").find(".bouncer").should("not.exist");
+    cy.contains("Pinned projects").should("not.exist");
+  });
+
+  it("let the user pin a project", () => {
+    fixtures
+      .entitySearch()
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      })
+      .sessionServersEmpty()
+      .userPreferences()
+      .postPinnedProject();
+    const files = {
+      "lorenzo.cavazzi.tech/readme-file-dev": 30929,
+      "e2e/testing-datasets": 43781,
+      "e2e/local-test-project": 39646,
+      "e2e/nuevo-project": 44966,
+      "e2e/local-test-project-2": 44967,
+    };
+    // fixture landing page project data
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        name: `getProject-${filesKey}`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
+
+    cy.visit("/");
+    cy.wait("@getUserPreferences");
+    cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
+
+    cy.getDataCy("projects-container").should("be.visible");
+    cy.getDataCy("projects-container").find(".bouncer").should("not.exist");
+    cy.contains("Recently visited projects").should("be.visible");
+    cy.contains("Pinned projects").should("not.exist");
+
+    fixtures.userPreferences({
+      fixture: "user-preferences/user-preferences-1-pin.json",
+      name: "getUserPreferencesNew",
+    });
+
+    cy.contains(".container-entity-listBar", "e2e/nuevo-project")
+      .should("be.visible")
+      .as("pickedProject");
+    cy.get("@pickedProject")
+      .find("[data-cy=pin-badge]")
+      .should("be.visible")
+      .contains("Pin project to the dashboard")
+      .parent()
+      .click();
+
+    cy.wait("@getUserPreferencesNew");
+    cy.contains("Pinned projects").should("be.visible");
+    cy.contains(".container-entity-listBar", "e2e/nuevo-project")
+      .should("be.visible")
+      .as("pickedProjectPinned");
+    cy.get("@pickedProjectPinned")
+      .find("[data-cy=pin-badge]")
+      .should("be.visible")
+      .contains("Unpin project from the dashboard");
+  });
+
+  it("let the user unpin a project", () => {
+    fixtures
+      .entitySearch()
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      })
+      .sessionServersEmpty()
+      .userPreferences({
+        fixture: "user-preferences/user-preferences-1-pin.json",
+      })
+      .deletePinnedProject();
+    const files = {
+      "lorenzo.cavazzi.tech/readme-file-dev": 30929,
+      "e2e/testing-datasets": 43781,
+      "e2e/local-test-project": 39646,
+      "e2e/nuevo-project": 44966,
+      "e2e/local-test-project-2": 44967,
+    };
+    // fixture landing page project data
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        name: `getProject-${filesKey}`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
+
+    cy.visit("/");
+    cy.wait("@getUserPreferences");
+    cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
+
+    cy.getDataCy("projects-container").should("be.visible");
+    cy.getDataCy("projects-container").find(".bouncer").should("not.exist");
+    cy.contains("Recently visited projects").should("be.visible");
+    cy.contains("Pinned projects").should("be.visible");
+
+    fixtures.userPreferences({
+      fixture: "user-preferences/user-preferences-default.json",
+      name: "getUserPreferencesNew",
+    });
+
+    cy.contains(".container-entity-listBar", "e2e/nuevo-project")
+      .should("be.visible")
+      .as("pickedProject");
+    cy.get("@pickedProject")
+      .find("[data-cy=pin-badge]")
+      .should("be.visible")
+      .contains("Unpin project from the dashboard")
+      .parent()
+      .click();
+
+    cy.wait("@getUserPreferencesNew");
+    cy.getDataCy("projects-container").should("be.visible");
+    cy.getDataCy("projects-container").find(".bouncer").should("not.exist");
+    cy.contains("Recently visited projects").should("be.visible");
+    cy.contains("Pinned projects").should("not.exist");
+    cy.contains(".container-entity-listBar", "e2e/nuevo-project")
+      .should("be.visible")
+      .as("pickedProjectPinned");
+    cy.get("@pickedProjectPinned")
+      .find("[data-cy=pin-badge]")
+      .should("be.visible")
+      .contains("Pin project to the dashboard");
+  });
+
+  it("has a maximum number of pins", () => {
+    fixtures
+      .config({
+        overrides: {
+          USER_PREFERENCES_MAX_PINNED_PROJECTS: 3,
+        },
+      })
+      .entitySearch()
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      })
+      .sessionServersEmpty()
+      .userPreferences({
+        fixture: "user-preferences/user-preferences-3-pins.json",
+      })
+      .postPinnedProject();
+    const files = {
+      "lorenzo.cavazzi.tech/readme-file-dev": 30929,
+      "e2e/testing-datasets": 43781,
+      "e2e/local-test-project": 39646,
+      "e2e/nuevo-project": 44966,
+      "e2e/local-test-project-2": 44967,
+    };
+    // fixture landing page project data
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        name: `getProject-${filesKey}`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
+
+    cy.visit("/");
+    cy.wait("@getUserPreferences");
+    cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
+
+    cy.getDataCy("projects-container").should("be.visible");
+    cy.getDataCy("projects-container").find(".bouncer").should("not.exist");
+    cy.contains("Recently visited projects").should("be.visible");
+    cy.contains("Pinned projects").should("be.visible");
+
+    cy.contains(".container-entity-listBar", "e2e/local-test-project")
+      .should("be.visible")
+      .as("pickedProject");
+    cy.get("@pickedProject")
+      .find("[data-cy=pin-badge]")
+      .should("be.visible")
+      .and("be.disabled")
+      .contains(
+        "There are already 3 pinned projects. Unpin one if you want to pin this project."
+      );
   });
 });

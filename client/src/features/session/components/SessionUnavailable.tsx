@@ -19,13 +19,14 @@
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { RootStateOrAny, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Alert } from "reactstrap";
+
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 
 export default function SessionUnavailable() {
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
 

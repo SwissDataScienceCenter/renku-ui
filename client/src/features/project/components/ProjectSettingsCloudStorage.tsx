@@ -33,7 +33,6 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
   Card,
@@ -52,6 +51,7 @@ import {
   Row,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
@@ -59,8 +59,9 @@ import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { User } from "../../../model/RenkuModels";
-import { NotebooksVersion } from "../../versions/versions";
-import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import { useGetNotebooksVersionQuery } from "../../versions/versions.api";
+import { NotebooksVersion } from "../../versions/versions.types";
 import { StateModelProject } from "../Project";
 import {
   useDeleteCloudStorageMutation,
@@ -69,6 +70,7 @@ import {
 } from "../projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
+  CLOUD_STORAGE_READWRITE_ENABLED,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
 } from "../projectCloudStorage.constants";
 import {
@@ -84,13 +86,12 @@ import {
 import AddCloudStorageButton from "./AddCloudStorageButton";
 
 export default function ProjectSettingsCloudStorage() {
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
   // Project options
-  const { accessLevel, id: projectId } = useSelector<
-    RootStateOrAny,
+  const { accessLevel, id: projectId } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
 
@@ -109,7 +110,7 @@ export default function ProjectSettingsCloudStorage() {
     error: versionError,
     isFetching: versionIsFetching,
     isLoading: versionIsLoading,
-  } = useGetNotebooksVersionsQuery();
+  } = useGetNotebooksVersionQuery();
 
   const error = storageError || versionError;
   const isFetching = storageIsFetching || versionIsFetching;
@@ -381,10 +382,9 @@ function EditCloudStorage({
     [storageDefinition]
   );
 
-  const projectId = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]["id"]
-  >((state) => state.stateModel.project.metadata.id);
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
+    (state) => state.stateModel.project.metadata.id
+  );
 
   const [updateCloudStorage, result] = useUpdateCloudStorageMutation();
 
@@ -645,54 +645,55 @@ function EditCloudStorage({
           </div>
         )}
 
-        <div className="mb-3">
-          <div className="form-label">Mode</div>
-          <Controller
-            control={control}
-            name="readonly"
-            render={({ field }) => (
-              <>
-                <div className="form-check">
-                  <Input
-                    type="radio"
-                    className="form-check-input"
-                    name={`updateCloudStorageReadOnlyRadio-${name}`}
-                    id={`updateCloudStorageReadOnly-${name}`}
-                    autoComplete="off"
-                    checked={field.value}
-                    onBlur={field.onBlur}
-                    onChange={() => field.onChange(true)}
-                  />
-                  <Label
-                    className={cx("form-check-label", "ms-2")}
-                    for={`updateCloudStorageReadOnly-${name}`}
-                  >
-                    Read-only
-                  </Label>
-                </div>
-                <div className="form-check">
-                  <Input
-                    type="radio"
-                    className="form-check-input"
-                    name={`updateCloudStorageReadOnlyRadio-${name}`}
-                    id={`updateCloudStorageReadWrite-${name}`}
-                    autoComplete="off"
-                    checked={!field.value}
-                    onBlur={field.onBlur}
-                    onChange={() => field.onChange(false)}
-                  />
-                  <Label
-                    className={cx("form-check-label", "ms-2")}
-                    for={`updateCloudStorageReadWrite-${name}`}
-                  >
-                    Read/Write
-                  </Label>
-                </div>
-              </>
-            )}
-          />
-        </div>
-
+        {!CLOUD_STORAGE_READWRITE_ENABLED ? null : (
+          <div className="mb-3">
+            <div className="form-label">Mode</div>
+            <Controller
+              control={control}
+              name="readonly"
+              render={({ field }) => (
+                <>
+                  <div className="form-check">
+                    <Input
+                      type="radio"
+                      className="form-check-input"
+                      name={`updateCloudStorageReadOnlyRadio-${name}`}
+                      id={`updateCloudStorageReadOnly-${name}`}
+                      autoComplete="off"
+                      checked={field.value}
+                      onBlur={field.onBlur}
+                      onChange={() => field.onChange(true)}
+                    />
+                    <Label
+                      className={cx("form-check-label", "ms-2")}
+                      for={`updateCloudStorageReadOnly-${name}`}
+                    >
+                      Read-only
+                    </Label>
+                  </div>
+                  <div className="form-check">
+                    <Input
+                      type="radio"
+                      className="form-check-input"
+                      name={`updateCloudStorageReadOnlyRadio-${name}`}
+                      id={`updateCloudStorageReadWrite-${name}`}
+                      autoComplete="off"
+                      checked={!field.value}
+                      onBlur={field.onBlur}
+                      onChange={() => field.onChange(false)}
+                    />
+                    <Label
+                      className={cx("form-check-label", "ms-2")}
+                      for={`updateCloudStorageReadWrite-${name}`}
+                    >
+                      Read/Write
+                    </Label>
+                  </div>
+                </>
+              )}
+            />
+          </div>
+        )}
         <div className="mb-3">
           <Label
             className="form-label"
@@ -939,10 +940,9 @@ function DeleteCloudStorageModal({
 }: DeleteCloudStorageModalProps) {
   const { name, storage_id } = storage;
 
-  const projectId = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]["id"]
-  >((state) => state.stateModel.project.metadata.id);
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
+    (state) => state.stateModel.project.metadata.id
+  );
 
   const [deleteCloudStorage, result] = useDeleteCloudStorageMutation();
   const onDelete = useCallback(() => {

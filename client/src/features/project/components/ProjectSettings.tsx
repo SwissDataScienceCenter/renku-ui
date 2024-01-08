@@ -16,153 +16,85 @@
  * limitations under the License.
  */
 
-import { Card, CardBody, Col, Row } from "reactstrap";
-import { ACCESS_LEVELS } from "../../../api-client";
-import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
-import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
-import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
-import { NotificationsManager } from "../../../notifications/notifications.types";
-import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
-import { EditVisibility } from "../../../project/new/components/Visibility";
-import { Visibilities } from "../../../components/visibility/Visibility";
-import ProjectKeywordsInput from "../../../project/shared/ProjectKeywords";
-import { ProjectSettingsAvatar } from "./ProjectSettingAvatar";
-import { InfoAlert } from "../../../components/Alert";
-import LoginAlert from "../../../components/loginAlert/LoginAlert";
+import { Route, Switch } from "react-router";
+import { Col, Nav, NavItem, Row } from "reactstrap";
+import { RenkuNavLink } from "../../../components/RenkuNavLink";
+import ProjectSettingsSessions from "../../../project/components/ProjectSettingsSessions";
+import ProjectSettingsCloudStorage from "./ProjectSettingsCloudStorage";
+import { ProjectSettingsGeneral } from "./ProjectSettingsGeneral";
 
-// ****** SETTINGS COMPONENTS ****** //
+type ProjectSettingsGeneralProps = Parameters<typeof ProjectSettingsGeneral>[0];
 
-interface ProjectSettingsGeneralProps {
-  apiVersion?: string;
-  client: unknown;
-  forkedFromProject?: {
-    id: number;
-    [key: string]: unknown;
-  };
-  metadata: {
-    accessLevel: number;
-    defaultBranch: string;
-    externalUrl: string;
-    id: number;
-    namespace: string;
-    namespaceKind: string;
-    visibility: Visibilities;
-    [key: string]: unknown;
-  };
-  metadataVersion?: number;
-  notifications: NotificationsManager;
-  projectPathWithNamespace: string;
-  user: {
-    logged: boolean;
-  };
-  [key: string]: unknown;
-  settingsReadOnly: boolean;
+interface ProjectSettingsProps extends ProjectSettingsGeneralProps {
+  settingsUrl: string;
+  settingsSessionsUrl: string;
+  settingsCloudStorageUrl: string;
 }
-export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
-  const isMaintainer = props.metadata?.accessLevel >= ACCESS_LEVELS.MAINTAINER;
-  let loginElement = null;
-  if (!props.user.logged) {
-    const textPre = "You can";
-    const textPost = "here.";
-    loginElement = (
-      <p className="mt-3 mb-0">
-        <LoginAlert
-          logged={false}
-          noWrapper={true}
-          textPre={textPre}
-          textPost={textPost}
-        />
-      </p>
-    );
-  }
+
+export default function ProjectSettings({
+  settingsUrl,
+  settingsSessionsUrl,
+  settingsCloudStorageUrl,
+  ...rest
+}: ProjectSettingsProps) {
   return (
-    <>
-      <ProjectSettingsGeneralWrapped
-        branch={props.metadata?.defaultBranch}
-        gitUrl={props.metadata?.externalUrl}
-        isMaintainer={isMaintainer}
-        projectId={props.metadata?.id}
-      />
-      <EditVisibility
-        namespace={props.metadata.namespace}
-        namespaceKind={props.metadata.namespaceKind}
-        forkedProjectId={props.forkedFromProject?.id}
-        isMaintainer={isMaintainer}
-        pathWithNamespace={props.projectPathWithNamespace}
-        projectId={props.metadata?.id}
-      />
-      <ProjectSettingsDescription
-        branch={props.metadata?.defaultBranch}
-        gitUrl={props.metadata?.externalUrl}
-        isMaintainer={isMaintainer}
-        projectId={props.metadata?.id}
-        projectFullPath={props.projectPathWithNamespace}
-      />
-      <ProjectKeywordsInput
-        branch={props.metadata?.defaultBranch}
-        gitUrl={props.metadata?.externalUrl}
-        isMaintainer={isMaintainer}
-        projectId={props.metadata?.id}
-        projectFullPath={props.projectPathWithNamespace}
-      />
-      <ProjectSettingsAvatar
-        branch={props.metadata?.defaultBranch}
-        gitUrl={props.metadata?.externalUrl}
-        isMaintainer={isMaintainer}
-        projectId={props.metadata?.id}
-        projectFullPath={props.projectPathWithNamespace}
-      />
-      <ProjectSettingsGeneralDeleteProject
-        isMaintainer={isMaintainer}
-        notifications={props.notifications}
-        projectPathWithNamespace={props.projectPathWithNamespace}
-        userLogged={props.user.logged}
-      />
-      {props.settingsReadOnly ? (
-        <InfoAlert dismissible={false} timeout={0}>
-          <p className="mb-0">
-            Project settings can be changed only by maintainers.
-          </p>
-          {loginElement}
-        </InfoAlert>
-      ) : null}
-    </>
+    <Col key="settings">
+      <Row>
+        <Col key="nav" sm={12} md={2}>
+          <ProjectSettingsNav
+            settingsUrl={settingsUrl}
+            settingsSessionsUrl={settingsSessionsUrl}
+            settingsCloudStorageUrl={settingsCloudStorageUrl}
+          />
+        </Col>
+        <Col key="content" sm={12} md={10} data-cy="settings-container">
+          <Switch>
+            <Route exact path={settingsUrl}>
+              <ProjectSettingsGeneral
+                settingsUrl={settingsUrl}
+                settingsSessionsUrl={settingsSessionsUrl}
+                settingsCloudStorageUrl={settingsCloudStorageUrl}
+                {...rest}
+              />
+            </Route>
+            <Route exact path={settingsSessionsUrl}>
+              <ProjectSettingsSessions />
+            </Route>
+            <Route exact path={settingsCloudStorageUrl}>
+              <ProjectSettingsCloudStorage />
+            </Route>
+          </Switch>
+        </Col>
+      </Row>
+    </Col>
   );
 }
 
-interface ProjectSettingsGeneralWrappedProps {
-  branch?: string;
-  gitUrl: string;
-  projectId: number;
-  isMaintainer: boolean;
+interface ProjectSettingsNavProps {
+  settingsUrl: string;
+  settingsSessionsUrl: string;
+  settingsCloudStorageUrl: string;
 }
-function ProjectSettingsGeneralWrapped({
-  branch,
-  gitUrl,
-  isMaintainer,
-  projectId,
-}: ProjectSettingsGeneralWrappedProps) {
+
+export function ProjectSettingsNav({
+  settingsUrl,
+  settingsSessionsUrl,
+  settingsCloudStorageUrl,
+}: ProjectSettingsNavProps) {
   return (
-    <Card className="mb-4" data-cy="project-settings-general">
-      <CardBody className="py-2">
-        <Row>
-          <Col>
-            <div data-cy="project-settings-migration-status">
-              <ProjectMigrationStatus
-                branch={branch}
-                gitUrl={gitUrl}
-                isMaintainer={isMaintainer}
-              />
-            </div>
-            <div data-cy="project-settings-knowledge-graph">
-              <ProjectKnowledgeGraph
-                projectId={projectId}
-                isMaintainer={isMaintainer}
-              />
-            </div>
-          </Col>
-        </Row>
-      </CardBody>
-    </Card>
+    <Nav
+      className="flex-column nav-light nav-pills-underline"
+      data-cy="settings-navbar"
+    >
+      <NavItem>
+        <RenkuNavLink to={settingsUrl} title="General" />
+      </NavItem>
+      <NavItem>
+        <RenkuNavLink to={settingsSessionsUrl} title="Sessions" />
+      </NavItem>
+      <NavItem>
+        <RenkuNavLink to={settingsCloudStorageUrl} title="Cloud Storage" />
+      </NavItem>
+    </Nav>
   );
 }

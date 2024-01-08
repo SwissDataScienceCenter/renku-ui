@@ -1,0 +1,164 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.whoWeAreContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.whoWeAreText {
+  display: flex;
+  justify-content: space-around;
+  gap: 30px;
+  flex-direction: column;
+  max-width: 660px;
+}
+
+.whoWeAreLogos {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  margin-top: 20px;
+  font-size: 20px;
+  min-width: 250px;
+}
+
+.whoWeAreLinks {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+#whoWeAreContainer {
+  min-height: 780px;
+  padding: 5em 1em;
+
+  h2 {
+    font-size: 40px;
+    text-align: center;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: normal;
+    padding: 0;
+    margin: 0;
+  }
+
+  .whoWeAreTitle {
+    margin-bottom: 40px;
+  }
+
+  .btnContactUs {
+    min-width: 200px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+    h2 {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    p {
+      font-size: 20px;
+    }
+    h3 {
+      font-size: 20px;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+
+    h2 {
+      font-size: 32px;
+    }
+    h3 {
+      font-size: 30px;
+    }
+    .btnContactUs {
+      min-width: 141px;
+      height: 40px;
+    }
+    p {
+      font-size: 20px;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 5em 4em;
+
+    h2 {
+      font-size: 40px;
+    }
+    h3 {
+      font-size: 30px;
+    }
+    p {
+      font-size: 24px;
+    }
+    .btnContactUs {
+      min-width: 200px;
+    }
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding: 5em 8em;
+
+    h2 {
+      font-size: 40px;
+    }
+    h3 {
+      font-size: 30px;
+    }
+    p {
+      font-size: 24px;
+    }
+    .btnContactUs {
+      min-width: 200px;
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: flex;
+    flex-direction: column;
+    padding: 5em 1em;
+
+    h3 {
+      padding-top: 0;
+    }
+    .whoWeAreContent {
+      flex-direction: column;
+      justify-content: center;
+      gap: 60px;
+      text-align: center;
+    }
+
+    .whoWeAreText {
+      max-width: none;
+      gap: 40px;
+    }
+
+    .whoWeAreLinks {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .whoWeAreLogos {
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}

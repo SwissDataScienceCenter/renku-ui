@@ -20,7 +20,7 @@ export interface ResourcePool {
   id: number;
   name: string;
   classes: ResourceClass[];
-  quota: Resources;
+  quota?: Resources;
   default: boolean;
   public: boolean;
 }
@@ -44,13 +44,21 @@ export interface ResourceClass {
   default: boolean;
 
   matching: boolean;
+
+  tolerations?: string[];
+
+  node_affinities?: NodeAffinity[];
+}
+
+export interface NodeAffinity {
+  key: string;
+  required_during_scheduling?: boolean;
 }
 
 export interface Resources {
   cpu: number;
   memory: number;
   gpu: number;
-  storage: number;
 }
 
 export interface ResourcePoolsQueryParams {
@@ -58,4 +66,12 @@ export interface ResourcePoolsQueryParams {
   gpuRequest?: number;
   memoryRequest?: number;
   storageRequest?: number;
+}
+
+export interface DataServicesError {
+  error: {
+    code: number;
+    detail?: string;
+    message: string;
+  };
 }

@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -17,27 +16,20 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
-import "../support/datasets/gui_commands";
-import "cypress-file-upload";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("Project new dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath).cacheProjectList();
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.project({ projectPath }).cacheProjectList();
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.addFileDataset();
-    fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
     cy.visit(`projects/${projectPath}/datasets/new`);
     cy.wait("@getProject");
@@ -48,8 +40,8 @@ describe("Project new dataset", () => {
   it("complete new dataset", () => {
     fixtures.createDataset();
     fixtures.uploadDatasetFile();
-    cy.gui_new_dataset({
-      title: "New dataset completed",
+    cy.newDataset({
+      name: "New dataset completed",
       keywords: ["test key 1", "key 2"],
       description: "This is a dataset description",
       file: "count_flights.txt",
@@ -60,7 +52,7 @@ describe("Project new dataset", () => {
     cy.get("input[name=default-creator]")
       .should("be.disabled")
       .should("have.value", "E2E User (e2e@renku.ch)");
-    cy.get_cy("submit-button").click();
+    cy.getDataCy("submit-button").click();
     cy.wait("@createDataset", { timeout: 20_000 });
     cy.wait("@addFile");
     cy.url().should(
@@ -72,8 +64,8 @@ describe("Project new dataset", () => {
   it("complete new dataset with non-default creator", () => {
     fixtures.createDataset();
     fixtures.uploadDatasetFile();
-    cy.gui_new_dataset({
-      title: "New dataset completed",
+    cy.newDataset({
+      name: "New dataset completed",
       creators: {
         name: "Name Creator",
         email: "email@creator.com",
@@ -89,8 +81,8 @@ describe("Project new dataset", () => {
     cy.get("input[name=default-creator]")
       .should("be.disabled")
       .should("have.value", "E2E User (e2e@renku.ch)");
-    cy.get_cy("creator-email").should("have.value", "email@creator.com");
-    cy.get_cy("submit-button").click();
+    cy.getDataCy("creator-email").should("have.value", "email@creator.com");
+    cy.getDataCy("submit-button").click();
     cy.wait("@createDataset", { timeout: 20_000 });
     cy.wait("@addFile");
     cy.url().should(
@@ -101,11 +93,11 @@ describe("Project new dataset", () => {
 
   it("resets form when going to a new project", () => {
     const secondProjectPath = "e2e/random-project";
-    fixtures.project(secondProjectPath);
+    fixtures.project({ projectPath: secondProjectPath });
     fixtures.createDataset();
     fixtures.uploadDatasetFile();
-    cy.gui_new_dataset({
-      title: "New dataset completed",
+    cy.newDataset({
+      name: "New dataset completed",
       creators: {
         name: "Name Creator",
         email: "email@creator.com",
@@ -120,44 +112,41 @@ describe("Project new dataset", () => {
     cy.get("input[name=default-creator]")
       .should("be.disabled")
       .should("have.value", "E2E User (e2e@renku.ch)");
-    cy.get_cy("creator-email").should("have.value", "email@creator.com");
+    cy.getDataCy("creator-email").should("have.value", "email@creator.com");
 
     // Visit a new project and check that the form was cleared
     cy.visit(`projects/${secondProjectPath}/datasets/new`);
     cy.wait("@getProject");
     cy.wait("@getMigration");
     cy.wait("@datasetList");
-    cy.get_cy("input-title").should("have.value", "");
+    cy.getDataCy("input-title").should("have.value", "");
     cy.get("input[name=default-creator]")
       .should("be.disabled")
       .should("have.value", "E2E User (e2e@renku.ch)");
-    cy.get_cy("creator-email").should("not.exist");
+    cy.getDataCy("creator-email").should("not.exist");
   });
 
   it("upload dataset file", () => {
-    fixtures.uploadDatasetFile(
-      "multipleFilesUpload",
-      "datasets/upload-dataset-multiple-files.json",
-      {
-        override_existing: true,
-        unpack_archive: true,
-        statusCode: 200,
-      }
-    );
-    cy.gui_new_dataset({
-      title: "New dataset completed",
+    fixtures.uploadDatasetFile({
+      fixture: "datasets/upload-dataset-multiple-files.json",
+      name: "multipleFilesUpload",
+      overrideExisting: true,
+      unpackArchive: true,
+    });
+    cy.newDataset({
+      name: "New dataset completed",
     });
     cy.get('[data-cy="dropzone"]').attachFile(
       "/datasets/files/datasetFiles.zip",
       { subjectType: "drag-n-drop" }
     );
-    cy.get_cy("upload-compressed-yes").click();
+    cy.getDataCy("upload-compressed-yes").click();
     cy.wait("@multipleFilesUpload");
-    cy.get_cy("file-name-column").contains("Show unzipped files");
-    cy.get_cy("display-zip-files-link").click();
-    cy.get_cy("file-name-column").contains("New Folder With Items");
-    cy.get_cy("delete-file-button").click();
-    cy.get_cy("file-name-column").should("not.exist");
+    cy.getDataCy("file-name-column").contains("Show unzipped files");
+    cy.getDataCy("display-zip-files-link").click();
+    cy.getDataCy("file-name-column").contains("New Folder With Items");
+    cy.getDataCy("delete-file-button").click();
+    cy.getDataCy("file-name-column").should("not.exist");
 
     // load multiple files
     fixtures.uploadDatasetFile();
@@ -177,51 +166,52 @@ describe("Project new dataset", () => {
     // ? Needed for tests running through GitHub actions
     cy.wait(5000, { log: false }); // eslint-disable-line cypress/no-unnecessary-waiting
     cy.wait("@uploadDatasetFile");
-    cy.get_cy("file-name-column").should("have.length", 3);
+    cy.getDataCy("file-name-column").should("have.length", 3);
   });
 
   it("error upload dataset file", () => {
-    const options = {
-      override_existing: true,
+    fixtures.uploadDatasetFile({
+      fixture: "",
+      name: "errorUploadFile",
+      overrideExisting: true,
       statusCode: 500,
-    };
-    fixtures.uploadDatasetFile("errorUploadFile", "", options);
-    cy.gui_new_dataset({
-      title: "New dataset fail",
+    });
+    cy.newDataset({
+      name: "New dataset fail",
     });
     cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
       subjectType: "drag-n-drop",
     });
     cy.wait("@errorUploadFile", { timeout: 10_000 });
-    cy.get_cy("upload-error-message").contains(
+    cy.getDataCy("upload-error-message").contains(
       "Server responded with 500 code."
     );
-    cy.get_cy("submit-button").click();
+    cy.getDataCy("submit-button").click();
     cy.get("div.error-feedback")
       .contains("Please fix problems in the following field: Files")
       .should("exist");
   });
 
   it("shows error on empty title", () => {
-    fixtures.createDataset(
-      "createDatasetError",
-      "datasets/create-dataset-title-error.json"
-    );
-    cy.get_cy("submit-button").click();
+    fixtures.createDataset({
+      fixture: "datasets/create-dataset-title-error.json",
+      name: "createDatasetError",
+    });
+    cy.getDataCy("submit-button").click();
     cy.get("div.error-feedback")
       .contains("Please fix problems")
       .should("exist");
   });
 
   it("shows error on invalid title", () => {
-    fixtures.createDataset(
-      "createDatasetError",
-      "datasets/create-dataset-title-error.json"
-    );
-    cy.gui_new_dataset({
-      title: "test@",
+    fixtures.createDataset({
+      fixture: "datasets/create-dataset-title-error.json",
+      name: "createDatasetError",
     });
-    cy.get_cy("submit-button").click();
+    cy.newDataset({
+      name: "test@",
+    });
+    cy.getDataCy("submit-button").click();
     cy.wait("@createDatasetError");
     cy.get("div.alert-danger")
       .contains("Errors occurred while performing this operation.")
@@ -230,8 +220,6 @@ describe("Project new dataset", () => {
 });
 
 describe("Project new dataset without access", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   const projectPath = "e2e/local-test-project";
 
   beforeEach(() => {
@@ -239,14 +227,11 @@ describe("Project new dataset without access", () => {
     fixtures.projects().landingUserProjects().projectTestObserver();
     fixtures.projectLockStatus();
     fixtures.cacheProjectList();
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.createDataset();
-    fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
 
@@ -258,21 +243,16 @@ describe("Project new dataset without access", () => {
 });
 
 describe("Project import dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath).cacheProjectList();
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.project({ projectPath }).cacheProjectList();
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
-    fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
     fixtures.importToProject();
   });
@@ -284,10 +264,10 @@ describe("Project import dataset", () => {
     cy.wait("@getMigration");
     cy.wait("@datasetList");
     cy.contains("Import").click();
-    cy.get_cy("input-uri")
+    cy.getDataCy("input-uri")
       .click()
       .type("https://www.doi.org/10.7910/DVN/WTZS4K");
-    cy.get_cy("submit-button").click();
+    cy.getDataCy("submit-button").click();
     cy.wait("@importToProject");
     cy.contains("Creating Dataset...").should("be.visible");
     cy.wait("@importJobCompleted", { timeout: 20000 });
@@ -302,10 +282,10 @@ describe("Project import dataset", () => {
     cy.wait("@getMigration");
     cy.wait("@datasetList");
     cy.contains("Import").click();
-    cy.get_cy("input-uri")
+    cy.getDataCy("input-uri")
       .click()
       .type("https://www.doi.org/10.7910/DVN/WTZS4K");
-    cy.get_cy("submit-button").click();
+    cy.getDataCy("submit-button").click();
     cy.wait("@importToProject");
     cy.contains("Creating Dataset...").should("be.visible");
     cy.wait("@importJobError", { timeout: 20000 });

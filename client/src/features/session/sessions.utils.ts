@@ -26,7 +26,6 @@ interface GetRunningSessionArgs {
   sessions: Sessions;
 }
 
-// TODO: remove duplicate `getSessionRunning()`
 export function getRunningSession({
   autostartUrl,
   sessions,
@@ -39,7 +38,7 @@ export function getRunningSession({
       namespace: annotations.namespace,
       path: annotations.projectName,
     });
-    return thisAutostartUrl === autostartUrl;
+    return thisAutostartUrl.toLowerCase() === autostartUrl.toLowerCase();
   });
   const sorted = runningSessions.sort((a, b) =>
     DateTime.fromISO(b.started).diff(DateTime.fromISO(a.started)).valueOf()

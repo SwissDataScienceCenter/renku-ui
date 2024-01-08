@@ -16,20 +16,15 @@
  * limitations under the License.
  */
 
-import React from "react";
 import type { CSSProperties } from "react";
-import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
+import React from "react";
+import { List } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-
+import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
 import { ExternalLink } from "../components/ExternalLinks";
-import { Url } from "../utils/helpers/url";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
-
+import { Url } from "../utils/helpers/url";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
-import { RenkuToolbarNotifications } from "./NavBar";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -156,12 +151,12 @@ function TopNavLink({ title, to }: BottomNavLinkProps) {
   );
 }
 
-function TopNav(props: AnonymousHomeConfig) {
+function TopNav() {
   const [isOpen, setIsOpen] = React.useState(false);
   const toggleOpen = () => setIsOpen(!isOpen);
   return (
     <>
-      <header className="px-0 pt-2 pb-4 d-flex rk-anon-home">
+      <header className="pt-2 pb-4 d-flex rk-anon-home">
         <div className="align-self-center flex-grow-1">
           <img src={logo} alt="Renku" height="68" className="d-block my-1" />
         </div>
@@ -183,8 +178,13 @@ function TopNav(props: AnonymousHomeConfig) {
           >
             Login
           </Link>
-          <Button onClick={toggleOpen} id="nav-hamburger" className="border-0">
-            <FontAwesomeIcon className="m-0" icon={faBars} id="userIcon" />
+          <Button
+            onClick={toggleOpen}
+            id="nav-hamburger"
+            className="border-0"
+            title="Navigation Toggle"
+          >
+            <List className="m-0 bi" />
           </Button>
         </div>
       </header>
@@ -193,7 +193,7 @@ function TopNav(props: AnonymousHomeConfig) {
           <Navbar className="navbar rk-anon-home px-0">
             <Nav
               className="ms-auto flex-column rk-bg-shaded-dark text-end"
-              style={{ "--rk-bg-opacity": 0.8 } as CSSProperties}
+              style={{ "--rk-bg-opacity": 0.9, zIndex: 100 } as CSSProperties}
             >
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink
@@ -224,9 +224,6 @@ function TopNav(props: AnonymousHomeConfig) {
               </NavItem>
               <NavItem className="d-block d-md-none nav-item">
                 <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
-              </NavItem>
-              <NavItem className="nav-item mb-2">
-                <RenkuToolbarNotifications {...props} />
               </NavItem>
             </Nav>
           </Navbar>

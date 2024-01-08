@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -20,8 +19,7 @@
 /**
  * Fix the core service version to specific values and test a few calls
  */
-import "../support/utils";
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 const config = {
   overrides: {
@@ -35,15 +33,9 @@ const config = {
 };
 
 describe("display a project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config(config).versions().userTest();
-    fixtures
-      .projects()
-      .landingUserProjects()
-      .projectTest()
-      .projectById("getProjectsById", 39646);
+    fixtures.projects().landingUserProjects().projectTest().projectById();
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });
@@ -51,11 +43,11 @@ describe("display a project", () => {
   it("displays the project overview page", () => {
     cy.wait("@getProject");
     cy.wait("@getReadme");
-    cy.get_cy("header-project").should("be.visible");
-    cy.get_cy("project-readme")
+    cy.getDataCy("header-project").should("be.visible");
+    cy.getDataCy("project-readme")
       .should("be.visible")
       .should("contain.text", "local test project");
-    cy.get_cy("project-title")
+    cy.getDataCy("project-title")
       .should("be.visible")
       .should("contain.text", "local-test-project");
   });
@@ -63,32 +55,28 @@ describe("display a project", () => {
   it("displays lock correctly", () => {
     fixtures.projectLockStatus({ locked: true });
     cy.visit("/projects/e2e/local-test-project/settings");
-    cy.get_cy("settings-navbar")
+    cy.wait("@getProjectLockStatus");
+    cy.getDataCy("settings-navbar")
       .contains("a", "Sessions")
       .should("exist")
       .click();
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .contains("project is currently being modified")
       .should("exist");
   });
 });
 
 describe("Project dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
     fixtures.config(config).versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath);
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.project({ projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
-    fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
 
@@ -101,7 +89,7 @@ describe("Project dataset", () => {
         const datasets = data.result.datasets;
         // all datasets are displayed
         const totalDatasets = datasets?.length;
-        cy.get_cy("list-card").should("have.length", totalDatasets);
+        cy.getDataCy("list-card").should("have.length", totalDatasets);
       });
   });
 });

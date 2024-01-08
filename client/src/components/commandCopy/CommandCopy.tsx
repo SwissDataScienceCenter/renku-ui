@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 
-import { useState } from "react";
 import cx from "classnames";
-import { Clipboard } from "../Clipboard";
-import { ThrottledTooltip } from "../Tooltip";
+import { useRef } from "react";
+import { UncontrolledTooltip } from "reactstrap";
+
+import { Clipboard } from "../clipboard/Clipboard";
+
 import styles from "./CommandCopy.module.scss";
 
 interface CommandCopyProps {
@@ -28,14 +30,7 @@ interface CommandCopyProps {
 }
 
 export const CommandCopy = ({ command, noMargin }: CommandCopyProps) => {
-  const [randomIdForTooltip] = useState<string>(() => {
-    const rand = `${Math.random()}`.slice(2);
-    return `command-copy-${rand}`;
-  });
-
-  const tooltipContent = (
-    <code className="text-white user-select-all">{command}</code>
-  );
+  const ref = useRef<HTMLSpanElement>(null);
 
   return (
     <div
@@ -51,26 +46,28 @@ export const CommandCopy = ({ command, noMargin }: CommandCopyProps) => {
           "d-inline-flex align-middle align-items-center flex-grow-1 px-2"
         )}
       >
-        <code
-          id={randomIdForTooltip}
-          className="text-truncate user-select-all mt-1"
-        >
+        <code className="text-truncate user-select-all mt-1" ref={ref}>
           {command}
         </code>
       </span>
       <Clipboard
         className={cx(
           styles.clipboardBtn,
-          "rounded-end border d-inline-block align-middle cursor-pointer",
-          "px-2 py-1"
+          "btn",
+          "rounded-0",
+          "rounded-end",
+          "border",
+          "d-inline-block",
+          "align-middle",
+          "cursor-pointer",
+          "px-2",
+          "py-1"
         )}
         clipboardText={command}
       />
-      <ThrottledTooltip
-        target={randomIdForTooltip}
-        tooltip={tooltipContent}
-        autoHide={false}
-      />
+      <UncontrolledTooltip autohide={false} target={ref}>
+        <code className="text-white user-select-all">{command}</code>
+      </UncontrolledTooltip>
     </div>
   );
 };

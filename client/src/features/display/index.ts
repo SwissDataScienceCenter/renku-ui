@@ -3,17 +3,9 @@ import {
   showSshModal,
   hideSshModal,
   toggleSshModal,
-  useDisplaySelector,
   reset,
 } from "./displaySlice";
 import { Display, ProjectConfig } from "./display";
 
-export {
-  displaySlice,
-  showSshModal,
-  hideSshModal,
-  toggleSshModal,
-  useDisplaySelector,
-  reset,
-};
+export { displaySlice, showSshModal, hideSshModal, toggleSshModal, reset };
 export type { Display, ProjectConfig };

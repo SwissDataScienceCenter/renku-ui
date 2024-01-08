@@ -16,15 +16,14 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo } from "react";
 import {
   faCheckCircle,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { useCallback, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import Select, {
   ClassNamesConfig,
   GroupBase,
@@ -34,31 +33,33 @@ import Select, {
   SingleValueProps,
   components,
 } from "react-select";
+
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import {
   ResourceClass,
   ResourcePool,
 } from "../../../dataServices/dataServices.types";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
 import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
-import {
-  setSessionClass,
-  useStartSessionOptionsSelector,
-} from "../../startSessionOptionsSlice";
+import { setSessionClass } from "../../startSessionOptionsSlice";
+
 import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {
   // Project options
-  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
@@ -71,7 +72,9 @@ export const SessionClassOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
   const { data: projectConfig } = usePatchedProjectConfig({
     apiVersion,
     commit,
@@ -105,8 +108,9 @@ export const SessionClassOption = () => {
     [resourcePools]
   );
 
-  const { sessionClass: currentSessionClassId } =
-    useStartSessionOptionsSelector();
+  const { sessionClass: currentSessionClassId } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
+  );
   const currentSessionClass = useMemo(
     () =>
       resourcePools
@@ -115,7 +119,7 @@ export const SessionClassOption = () => {
     [currentSessionClassId, resourcePools]
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const onChange = useCallback(
     (newValue: SingleValue<ResourceClass>) => {
       if (newValue?.id) {

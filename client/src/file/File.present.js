@@ -18,8 +18,10 @@
 
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 import DOMPurify from "dompurify";
 import { isEqual } from "lodash";
+import styles from "./File.module.scss";
 
 import React, { memo, useState } from "react";
 import {
@@ -34,15 +36,13 @@ import {
   ListGroup,
   ListGroupItem,
 } from "reactstrap";
-import { Clipboard } from "../components/Clipboard";
+import { Clipboard } from "../components/clipboard/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
 import LazyNotebookPreview from "../components/notebook/LazyNotebookRender";
-import { CheckNotebookStatus } from "../notebooks";
-import { CheckNotebookIcon } from "../notebooks/NotebookStart.present";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
-import { FileAndLineageSwitch } from "./FileAndLineageComponents";
+import FileAndLineageSwitch from "./FileAndLineageComponents";
 import { FilePreview } from "./index";
 
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
@@ -72,7 +72,7 @@ class FileCard extends React.Component {
           : this.props.commit.title;
       commitHeader = (
         <ListGroup flush>
-          <ListGroupItem>
+          <ListGroupItem className="border-bottom">
             <div className="d-flex justify-content-between flex-wrap">
               <div>
                 <a
@@ -113,14 +113,19 @@ class FileCard extends React.Component {
                 <small> {formatBytes(this.props.fileSize)}</small>
               </div>
             ) : null}
-            {/* <span className="fileBarIconButton"> */}
             <Clipboard
               clipboardText={this.props.filePath}
               className="icon-link d-flex"
             />
-            {/* </span> */}
           </div>
-          <div className="d-flex align-items-center">
+          <div
+            className={cx(
+              styles.fileIconLinks,
+              "d-flex",
+              "align-items-center",
+              "gap-3"
+            )}
+          >
             {this.props.buttonShareLinkSession}
             {this.props.buttonDownload}
             {this.props.buttonJupyter}
@@ -462,7 +467,7 @@ function NotebookDisplayForm(props) {
     );
 
   return (
-    <ListGroup key="controls" flush className="border-top-0">
+    <ListGroup key="controls" flush className="border-bottom">
       <ListGroupItem>
         <div className="form-check form-switch">
           <Input
@@ -512,41 +517,8 @@ const StyledNotebook = memo((props) => {
 }, isEqual);
 StyledNotebook.displayName = "StyledNotebook";
 
-const JupyterButtonPresent = (props) => {
-  if (!props.access) {
-    return (
-      <CheckNotebookIcon
-        fetched={true}
-        location={props.location}
-        launchNotebookUrl={props.launchNotebookUrl}
-        filePath={props.filePath}
-      />
-    );
-  }
-
-  if (props.updating) {
-    return (
-      <span className="ms-2 pb-1">
-        <Loader inline size={19} />
-      </span>
-    );
-  }
-
-  return (
-    <CheckNotebookStatus
-      client={props.client}
-      model={props.model}
-      scope={props.scope}
-      location={props.location}
-      launchNotebookUrl={props.launchNotebookUrl}
-      filePath={props.filePath}
-    />
-  );
-};
-
 export {
   FileNoPreview,
-  JupyterButtonPresent,
   NotebookSourceDisplayMode,
   ShowFile,
   StyledNotebook,

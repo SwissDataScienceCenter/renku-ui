@@ -10,8 +10,8 @@
     }
   ],
   "identifier": "4577b68957b7478bba1f07d6513b43d2",
+  "slug": "abcd",
   "name": "abcd",
-  "title": "abcd",
   "url": "https://dev.renku.ch/datasets/4577b68957b7478bba1f07d6513b43d2",
   "derivedFrom": "https://dev.renku.ch/datasets/c8c01080845c4d9e9f1f2930d4892627",
   "versions": {

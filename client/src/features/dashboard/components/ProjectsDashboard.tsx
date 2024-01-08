@@ -15,38 +15,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Fragment, useContext, useEffect, useState } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import { Search } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
+
+import { InfoAlert, WarnAlert } from "../../../components/Alert";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import ListDisplay from "../../../components/List";
+import { Loader } from "../../../components/Loader";
+import { EnvironmentLogs } from "../../../components/Logs";
+import { extractRkErrorMessage } from "../../../components/errors/RtkErrorAlert";
+import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
+import ListBarSession from "../../../components/list/ListBarSessions";
+import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
+import { Notebook } from "../../../notebooks/components/session.types";
+import { urlMap } from "../../../project/list/ProjectList.container";
+import { Docs } from "../../../utils/constants/Docs";
+import AppContext from "../../../utils/context/appContext";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import useGetRecentlyVisitedProjects from "../../../utils/customHooks/useGetRecentlyVisitedProjects";
+import {
+  cleanGitUrl,
+  formatProjectMetadata,
+} from "../../../utils/helpers/ProjectFunctions";
+import {
+  PropagateRtkQueryError,
+  RtkQuery,
+} from "../../../utils/helpers/RtkQueryErrorsContext";
+import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
+import { Url } from "../../../utils/helpers/url";
+import { displaySlice } from "../../display";
 import { EntityType } from "../../kgSearch";
 import { KgAuthor } from "../../kgSearch/KgSearch";
 import {
   SearchEntitiesQueryParams,
   useSearchEntitiesQuery,
 } from "../../kgSearch/KgSearchApi";
-import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
-import { InfoAlert } from "../../../components/Alert";
-import { Docs } from "../../../utils/constants/Docs";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { urlMap } from "../../../project/list/ProjectList.container";
-import { Url } from "../../../utils/helpers/url";
-import ListDisplay from "../../../components/List";
-import { Loader } from "../../../components/Loader";
-import useGetRecentlyVisitedProjects from "../../../utils/customHooks/useGetRecentlyVisitedProjects";
-import AppContext from "../../../utils/context/appContext";
-import {
-  cleanGitUrl,
-  formatProjectMetadata,
-} from "../../../utils/helpers/ProjectFunctions";
-import ListBarSession from "../../../components/list/ListBarSessions";
-import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
-import { Notebook } from "../../../notebooks/components/session.types";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
-import { displaySlice, useDisplaySelector } from "../../display";
-import { EnvironmentLogs } from "../../../components/Logs";
+import { useGetProjectsFromSlugsQuery } from "../../projects/projects.api";
+import { useGetSessionsQuery } from "../../session/sessions.api";
+import { useGetUserPreferencesQuery } from "../../user/userPreferences.api";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -121,12 +134,15 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
       <Link
         to={`${Url.get(Url.pages.searchEntities)}?${paramsUrlStrMyProjects}`}
         data-cy="view-my-projects-btn"
-        className="btn btn-outline-rk-green"
+        className={cx(
+          "btn",
+          "btn-outline-rk-green",
+          "d-flex",
+          "align-items-center"
+        )}
       >
-        <div className="d-flex gap-2 text-rk-green">
-          <img src="/frame.svg" className="rk-icon rk-icon-md" />
-          View all my Projects
-        </div>
+        <SearchEntityIcon className="me-2" width={20} height={22} />
+        View all my Projects
       </Link>
     </div>
   ) : (
@@ -136,12 +152,15 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
           Url.pages.searchEntities
         )}?${paramsUrlStrExploreProjects}`}
         data-cy="explore-other-projects-btn"
-        className="btn btn-outline-rk-green"
+        className={cx(
+          "btn",
+          "btn-outline-rk-green",
+          "d-flex",
+          "align-items-center"
+        )}
       >
-        <div className="d-flex gap-2 text-rk-green">
-          <img src="/explore.svg" className="rk-icon rk-icon-md" />
-          Explore other Projects
-        </div>
+        <Search className="me-2" size={20} />
+        Explore other Projects
       </Link>
     </div>
   );
@@ -178,24 +197,22 @@ function ProjectListRows({ projects, gridDisplay }: ProjectListProps) {
   const projectItems = projects?.map((project) => getProjectFormatted(project));
 
   return (
-    <Fragment>
-      <ListDisplay
-        key="list-projects"
-        itemsType="project"
-        search={null}
-        currentPage={null}
-        gridDisplay={gridDisplay}
-        totalItems={projectItems.length}
-        perPage={projectItems.length}
-        items={projectItems}
-        gridColumnsBreakPoint={{
-          default: 2,
-          1100: 2,
-          700: 2,
-          500: 1,
-        }}
-      />
-    </Fragment>
+    <ListDisplay
+      key="list-projects"
+      itemsType="project"
+      search={null}
+      currentPage={null}
+      gridDisplay={gridDisplay}
+      totalItems={projectItems.length}
+      perPage={projectItems.length}
+      items={projectItems}
+      gridColumnsBreakPoint={{
+        default: 2,
+        1100: 2,
+        700: 2,
+        500: 1,
+      }}
+    />
   );
 }
 
@@ -216,45 +233,106 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     },
     userName,
   };
-  const { data, isFetching, isLoading, error } =
-    useSearchEntitiesQuery(searchRequest);
-  const currentSessions = useSelector(
-    (state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all
-  );
-  const sessionsFormatted = getFormattedSessionsAnnotations(currentSessions);
-  const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects(
-    TOTAL_RECENTLY_VISITED_PROJECT,
-    sessionsFormatted
-  );
+  const {
+    data: searchProjects,
+    isLoading: isLoadingSearchProjects,
+    error: searchProjectsError,
+  } = useSearchEntitiesQuery(searchRequest);
+
   const totalUserProjects =
-    isFetching || isLoading || !data || error ? undefined : data.total;
-  let projectsToShow;
-  if (isFetchingProjects) {
-    projectsToShow = <Loader />;
-  } else {
-    projectsToShow =
-      projects?.length > 0 ? (
-        <ProjectListRows projects={projects} gridDisplay={false} />
-      ) : sessionsFormatted.length === 0 ? (
-        <p className="rk-dashboard-section-header">
-          You do not have any recently-visited projects
-        </p>
-      ) : null;
-  }
+    isLoadingSearchProjects || !searchProjects || searchProjectsError
+      ? undefined
+      : searchProjects.total;
+
+  const {
+    data: userPreferences,
+    isLoading: isLoadingUserPreferences,
+    isError: isErrorUserPreferences,
+  } = useGetUserPreferencesQuery();
+
+  const {
+    data: sessions,
+    isLoading: isLoadingSessions,
+    isError: isErrorSessions,
+    error: sessionsError,
+  } = useGetSessionsQuery();
+
+  const pinnedProjectSlugs = useMemo(() => {
+    if (isLoadingUserPreferences || isErrorUserPreferences) {
+      return undefined;
+    }
+    return userPreferences?.pinned_projects.project_slugs ?? [];
+  }, [
+    isErrorUserPreferences,
+    isLoadingUserPreferences,
+    userPreferences?.pinned_projects.project_slugs,
+  ]);
+
+  const sessionsFormatted = useMemo(() => {
+    if (sessions == null) {
+      return undefined;
+    }
+    return getFormattedSessionsAnnotations(sessions);
+  }, [sessions]);
+
+  const { data: projects, isLoading: isFetchingProjects } =
+    useGetRecentlyVisitedProjects({
+      currentSessions: sessionsFormatted ?? [],
+      pinnedProjectSlugs: pinnedProjectSlugs ?? [],
+      projectsCount: TOTAL_RECENTLY_VISITED_PROJECT,
+      skip: sessionsFormatted == null || pinnedProjectSlugs == null,
+    });
+
+  const content =
+    isLoadingSessions || isLoadingUserPreferences || isFetchingProjects ? (
+      <Loader />
+    ) : (
+      <>
+        {(sessionsFormatted?.length ?? 0) > 0 && (
+          <h4 className="fs-5">Projects with sessions</h4>
+        )}
+        <SessionsToShow currentSessions={sessionsFormatted ?? []} />
+        {pinnedProjectSlugs != null && (
+          <PinnedProjects pinnedProjectSlugs={pinnedProjectSlugs} />
+        )}
+        {(projects?.length ?? 0) > 0 ? (
+          <>
+            <h4 className="fs-5">Recently visited projects</h4>
+            <ProjectListRows projects={projects} gridDisplay={false} />
+          </>
+        ) : sessionsFormatted?.length == 0 ? (
+          <p className="rk-dashboard-section-header">
+            You do not have any recently-visited projects
+          </p>
+        ) : null}
+      </>
+    );
+
   const otherProjectsBtn =
-    totalUserProjects === undefined ? null : (
+    totalUserProjects == null ? null : (
       <OtherProjectsButton totalOwnProjects={totalUserProjects} />
     );
+
   return (
-    <>
+    <PropagateRtkQueryError
+      query={RtkQuery.getSessions}
+      isError={isErrorSessions}
+      error={sessionsError}
+    >
       <ProjectAlert total={totalUserProjects} />
+      {sessionsError != null && (
+        <WarnAlert>
+          <h5>Sessions are currently unavailable</h5>
+          <p className="mb-0">{extractRkErrorMessage(sessionsError)}</p>
+        </WarnAlert>
+      )}
       <div className="rk-dashboard-project" data-cy="projects-container">
         <div className="rk-dashboard-section-header d-flex justify-content-between align-items-center flex-wrap">
           <h3 className="rk-dashboard-title" key="project-header">
             Projects
           </h3>
           <Link
-            className="btn btn-secondary btn-icon-text rk-dashboard-link"
+            className="btn btn-rk-green btn-icon-text rk-dashboard-link"
             role="button"
             to={urlMap.projectNewUrl}
           >
@@ -264,11 +342,12 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
             </span>
           </Link>
         </div>
-        {<SessionsToShow currentSessions={sessionsFormatted} />}
-        {projectsToShow}
+
+        {content}
+
         {otherProjectsBtn}
       </div>
-    </>
+    </PropagateRtkQueryError>
   );
 }
 
@@ -279,11 +358,13 @@ interface SessionsToShowProps {
   currentSessions: Notebook["data"][];
 }
 function SessionsToShow({ currentSessions }: SessionsToShowProps) {
-  const displayModal = useDisplaySelector((state) => state.modals.sessionLogs);
+  const displayModal = useAppSelector(
+    ({ display }) => display.modals.sessionLogs
+  );
   const [items, setItems] = useState<any[]>([]);
   const { client } = useContext(AppContext);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const showLogs = (target: string) => {
     dispatch(
       displaySlice.actions.showSessionLogsModal({ targetServer: target })
@@ -291,6 +372,10 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
   };
 
   useEffect(() => {
+    // ? Using `async` inside `useEffect()` requires keeping track of the latest
+    // ? promise and only letting that one commit to the component state.
+    let ignoreUpdate = false;
+
     const getProjectCurrentSessions = async () => {
       const sessionProject: SessionProject[] = [];
       for (const session of currentSessions) {
@@ -302,10 +387,17 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
         );
         sessionProject.push({ ...project, notebook: session });
       }
-      setItems(sessionProject);
+      // Commit the update only if this is the latest `useEffect()` call
+      if (!ignoreUpdate) {
+        setItems(sessionProject);
+      }
     };
     getProjectCurrentSessions();
-  }, [currentSessions]); // eslint-disable-line
+
+    return () => {
+      ignoreUpdate = true;
+    };
+  }, [client, currentSessions]);
 
   if (items?.length) {
     const element = items.map((item: SessionProject) => {
@@ -337,9 +429,38 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
         </Fragment>
       );
     });
-    return <div className="session-list">{element}</div>;
+    return (
+      <div className={cx("session-list", "mb-sm-2", "mb-md-4")}>{element}</div>
+    );
   }
   return null;
+}
+
+interface PinnedProjectsProps {
+  pinnedProjectSlugs: string[];
+}
+
+function PinnedProjects({ pinnedProjectSlugs }: PinnedProjectsProps) {
+  const {
+    data: projects,
+    isLoading,
+    isError,
+  } = useGetProjectsFromSlugsQuery({ projectSlugs: pinnedProjectSlugs });
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (isError || projects == null || projects.length == 0) {
+    return null;
+  }
+
+  return (
+    <>
+      <h4 className="fs-5">Pinned projects</h4>
+      <ProjectListRows projects={projects} gridDisplay={false} />
+    </>
+  );
 }
 
 export { ProjectsDashboard };

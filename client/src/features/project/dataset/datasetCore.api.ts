@@ -46,7 +46,7 @@ export type PostDataset = {
   images?: DatasetImage[];
   keywords: string[];
   name: string;
-  title: string;
+  slug: string;
 };
 
 export type PostDatasetErrorResponse = {
@@ -90,7 +90,7 @@ export async function createSubmitDataset(
     images,
     keywords: datasetInput.keywords,
     name: datasetInput.name,
-    title: datasetInput.title,
+    slug: datasetInput.slug,
   };
   return dataset;
 }

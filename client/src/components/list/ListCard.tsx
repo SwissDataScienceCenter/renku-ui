@@ -16,18 +16,21 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
+import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 
+import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { TimeCaption } from "../TimeCaption";
-import { ListElementProps } from "./List.d";
-import EntityLabel from "../entities/Label";
-import Slug from "../entities/Slug";
+import { EntityButton } from "../entities/Buttons";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
+import EntityLabel from "../entities/Label";
+import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
-import { EntityButton } from "../entities/Buttons";
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
+import PinnedBadge from "./PinnedBadge";
+import { ListElementProps } from "./list.types";
 
 import "./ListCard.css";
 
@@ -44,28 +47,53 @@ function ListCard({
   title,
   url,
   visibility,
+  animated = false,
+  fromLanding = false,
 }: ListElementProps) {
-  const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
+  const imageStyles: CSSProperties = imageUrl
+    ? { backgroundImage: `url("${imageUrl}")` }
+    : {};
   const colorByType = stylesByItemType(itemType);
+
   return (
     <div
       data-cy="list-card"
       className="col text-decoration-none p-2 rk-search-result-card"
     >
-      <Link to={url} className="col text-decoration-none">
-        <div className="card card-entity">
-          <div
+      <div className="col text-decoration-none">
+        <div className={cx("card", "card-entity", "position-relative")}>
+          <PinnedBadge
+            entityType={itemType}
+            //! This really should be `slug` but we do not get the real slug
+            //! in search cards.
+            slug={path ?? ""}
+          />
+          <Link
+            className={cx(
+              "card-header-entity",
+              !imageUrl && `card-header-entity--${itemType}`,
+              "d-block",
+              "text-decoration-none"
+            )}
             style={imageStyles}
-            className={`card-header-entity ${
-              !imageUrl ? `card-header-entity--${itemType}` : ""
-            }`}
+            to={url}
           >
-            {!imageUrl ? (
-              <div className="card-bg-title user-select-none">{title}</div>
-            ) : null}
-          </div>
-          <EntityButton type={itemType} slug={path as string} />
-          <div className="card-body">
+            {!imageUrl && (
+              <div className={cx("card-bg-title", "user-select-none")}>
+                {title}
+              </div>
+            )}
+          </Link>
+          <EntityButton
+            type={itemType}
+            slug={path ?? ""}
+            animated={animated}
+            fromLanding={fromLanding}
+          />
+          <Link
+            className={cx("card-body", "d-block", "text-decoration-none")}
+            to={url}
+          >
             <div
               className="card-title text-truncate lh-sm"
               data-cy="list-card-title"
@@ -103,9 +131,9 @@ function ListCard({
                 prefix={labelCaption || "Updated"}
               />
             </p>
-          </div>
+          </Link>
         </div>
-      </Link>
+      </div>
     </div>
   );
 }
