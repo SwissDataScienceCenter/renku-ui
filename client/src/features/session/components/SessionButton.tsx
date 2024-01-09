@@ -289,6 +289,18 @@ function SessionActions({ className, session }: SessionActionsProps) {
     []
   );
 
+  // Handle modifying session
+  // const [
+  //   modifySession,
+  //   { isSuccess: isSuccessModifySession, error: errorModifySession },
+  // ] = usePatchSessionMutation();
+  // Modal for modifying a session (change the session class)
+  const [showModalModifySession, setShowModalModifySession] = useState(false);
+  const toggleModifySession = useCallback(
+    () => setShowModalModifySession((show) => !show),
+    []
+  );
+
   const status = session.status.state;
 
   const buttonClassName = cx(
@@ -400,7 +412,10 @@ function SessionActions({ className, session }: SessionActionsProps) {
   const modifyAction = status === "hibernated" &&
     !isStopping &&
     !isHibernating && (
-      <DropdownItem data-cy="modify-session-button">
+      <DropdownItem
+        data-cy="modify-session-button"
+        onClick={toggleModifySession}
+      >
         <Tools className={cx("bi", "text-rk-green", "me-2")} />
         Modify session
       </DropdownItem>
@@ -480,6 +495,10 @@ function SessionActions({ className, session }: SessionActionsProps) {
         status={status}
         toggleModal={toggleStopSession}
       />
+      <ModifySessionModal
+        isOpen={showModalModifySession}
+        toggleModal={toggleModifySession}
+      />
     </ButtonWithMenu>
   );
 }
@@ -544,6 +563,24 @@ function ConfirmDeleteModal({
               </Button>
             </div>
           </Col>
+        </Row>
+      </ModalBody>
+    </Modal>
+  );
+}
+
+interface ModifySessionModalProps {
+  isOpen: boolean;
+  toggleModal: () => void;
+}
+
+function ModifySessionModal({ isOpen, toggleModal }: ModifySessionModalProps) {
+  return (
+    <Modal isOpen={isOpen} toggle={toggleModal}>
+      <ModalHeader toggle={toggleModal}>Modify Session</ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>MODIFY SESSION HERE</Col>
         </Row>
       </ModalBody>
     </Modal>
