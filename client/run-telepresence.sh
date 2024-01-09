@@ -193,5 +193,5 @@ if [[ $SERVICE_CONSOLE_MODE == 1 ]]
 then
   BROWSER=none telepresence intercept ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --port 3000:http -- bash
 else
-  BROWSER=none telepresence intercept ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --port 3000:http -- npm run start:strict-port
+  BROWSER=none telepresence intercept ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --port 3000:http -- npm run start:strict-port -- --host
 fi
