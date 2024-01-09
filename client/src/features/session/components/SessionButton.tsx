@@ -734,8 +734,9 @@ function ModifySessionModalContent({
       <div>
         <Button
           disabled={
-            currentSessionClassId != null &&
-            currentSessionClassId === currentSessionClass?.id
+            currentSessionClass == null ||
+            (currentSessionClassId != null &&
+              currentSessionClassId === currentSessionClass?.id)
           }
           onClick={onClick}
           type="submit"
