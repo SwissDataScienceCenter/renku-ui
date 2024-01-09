@@ -360,7 +360,7 @@ const SessionsDiv = ({
   children,
 }: SessionsDivProps) => (
   <div className="mt-2">
-    <h3 className="d-flex align-items-center">
+    <h3 className={cx("d-flex", "align-items-center", "gap-1")}>
       Session settings
       {enableSavingBadge && (
         <SavingBadge projectConfigIsFetching={projectConfigIsFetching} />
@@ -408,7 +408,9 @@ const SavingBadge = ({ projectConfigIsFetching }: SavingBadgeProps) => {
   }, [saved, updating]);
 
   return (
-    <div className={cx("d-flex", "fade", (updating || saved) && "show")}>
+    <div
+      className={cx("d-flex", "fs-6", "fade", (updating || saved) && "show")}
+    >
       <Badge className="btn-outline-rk-green text-white ms-1">{content}</Badge>
     </div>
   );
