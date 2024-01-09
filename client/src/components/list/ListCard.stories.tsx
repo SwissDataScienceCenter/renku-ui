@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 
+// eslint-disable-next-line spellcheck/spell-checker
 // TODO: investigate if "addon-redux" can be replaced or made to work with @storybook/react-vite
 // import { ARG_REDUX_PATH, PARAM_REDUX_MERGE_STATE } from "addon-redux";
 
