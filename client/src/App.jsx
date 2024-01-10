@@ -51,7 +51,8 @@ import { Cookie, Privacy } from "./privacy";
 import { Project } from "./project";
 import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
-import { StyleGuide } from "./styleguide";
+// import { StyleGuide } from "./styleguide";
+import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { Url } from "./utils/helpers/url";
@@ -283,7 +284,11 @@ function CentralContentContainer(props) {
             path="/style-guide"
             render={(p) => (
               <ContainerWrap>
-                <StyleGuide key="style-guide" baseUrl="/style-guide" {...p} />
+                <LazyStyleGuide
+                  key="style-guide"
+                  baseUrl="/style-guide"
+                  {...p}
+                />
               </ContainerWrap>
             )}
           />

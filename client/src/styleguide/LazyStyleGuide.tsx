@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,15 +16,17 @@
  * limitations under the License.
  */
 
-import { Suspense, lazy } from "react";
-import { Loader } from "../../components/Loader";
+import { ComponentProps, Suspense, lazy } from "react";
+import { Loader } from "../components/Loader";
 
-const AdminPage = lazy(() => import("./AdminPage"));
+const StyleGuide = lazy(() => import("./StyleGuide"));
 
-export default function LazyAdminPage() {
+export default function LazyStyleGuide(
+  props: ComponentProps<typeof StyleGuide>
+) {
   return (
     <Suspense fallback={<Loader />}>
-      <AdminPage />
+      <StyleGuide {...props} />
     </Suspense>
   );
 }
