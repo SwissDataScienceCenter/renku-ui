@@ -34,14 +34,16 @@ import { Loader } from "./components/Loader";
 import ShowDataset from "./dataset/Dataset.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
-import AdminPage from "./features/admin/AdminPage";
+// import AdminPage from "./features/admin/AdminPage";
+import LazyAdminPage from "./features/admin/LazyAdminPage";
 import { Dashboard } from "./features/dashboard/Dashboard";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
 import SearchPage from "./features/kgSearch/KgSearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
 import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
-import Help from "./help";
+// import Help from "./help";
+import LazyHelp from "./help/LazyHelp";
 import { AnonymousHome, FooterNavbar, RenkuNavBar } from "./landing";
 import { NotFound } from "./not-found";
 import { NotificationsManager, NotificationsPage } from "./notifications";
@@ -133,7 +135,7 @@ function CentralContentContainer(props) {
             path={Url.get(Url.pages.help)}
             render={(p) => (
               <ContainerWrap>
-                <Help key="help" {...p} {...props} />
+                <LazyHelp key="help" {...p} {...props} />
               </ContainerWrap>
             )}
           />
@@ -288,7 +290,7 @@ function CentralContentContainer(props) {
           {userInfo?.isAdmin && (
             <Route path="/admin">
               <ContainerWrap>
-                <AdminPage />
+                <LazyAdminPage />
               </ContainerWrap>
             </Route>
           )}
