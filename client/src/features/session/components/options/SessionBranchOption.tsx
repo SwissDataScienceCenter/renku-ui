@@ -28,11 +28,13 @@ import {
   useMemo,
 } from "react";
 import { Link } from "react-router-dom";
-import type {
+import Select, {
+  ClassNamesConfig,
   GroupBase,
-  Options,
-  OptionsOrGroups,
+  MenuListProps,
+  SelectComponentsConfig,
   SingleValue,
+  components,
 } from "react-select";
 import {
   Button,
@@ -123,6 +125,26 @@ export default function SessionBranchOption() {
 
   const currentBranch = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.branch
+  );
+
+  const dispatch = useAppDispatch();
+  const onChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const branchName = event.target.value;
+      const branch = allBranches?.find((branch) => branch.name === branchName);
+      if (branch != null) {
+        dispatch(setBranch(branch.name));
+      }
+    },
+    [allBranches, dispatch]
+  );
+  const onChange2 = useCallback(
+    (newValue: SingleValue<GitLabRepositoryBranch>) => {
+      if (newValue?.name) {
+        dispatch(setBranch(newValue.name));
+      }
+    },
+    [dispatch]
   );
 
   // Branch filter
@@ -269,9 +291,16 @@ export default function SessionBranchOption() {
           toggleIncludeMergedBranches={toggleIncludeMergedBranches}
         />
       </Label>
+
+      <BranchSelector
+        currentBranch={currentBranch}
+        branches={filteredBranches}
+        onChange={onChange2}
+      />
+
       <Input
         id="session-branch-option"
-        // onChange={onChange}
+        onChange={onChange}
         type="select"
         value={currentBranch}
         className={cx(styles.formSelect)}
@@ -600,3 +629,100 @@ function BranchOptionsButton({
     </>
   );
 }
+
+interface BranchSelectorProps {
+  branches: GitLabRepositoryBranch[];
+  currentBranch?: string;
+  onChange?: (newValue: SingleValue<GitLabRepositoryBranch>) => void;
+}
+
+function BranchSelector({
+  currentBranch,
+  branches,
+  onChange,
+}: BranchSelectorProps) {
+  const currentValue = useMemo(
+    () => branches.find(({ name }) => name === currentBranch),
+    [currentBranch]
+  );
+
+  return (
+    <Select
+      options={branches}
+      value={currentValue}
+      unstyled
+      getOptionValue={(option) => option.name}
+      getOptionLabel={(option) => option.name}
+      onChange={onChange}
+      classNames={selectClassNames}
+      components={selectComponents}
+      // menuIsOpen
+
+      // options={options}
+      // value={currentSessionClass}
+      // defaultValue={defaultSessionClass}
+      // getOptionValue={(option) => `${option.id}`}
+      // getOptionLabel={(option) => option.name}
+      // onChange={onChange}
+      // isDisabled={disabled}
+      isClearable={false}
+      isSearchable={false}
+      // unstyled
+      // classNames={selectClassNames}
+      // components={selectComponents}
+    />
+  );
+}
+
+const selectClassNames: ClassNamesConfig<GitLabRepositoryBranch, false> = {
+  control: ({ menuIsOpen }) =>
+    cx(
+      menuIsOpen ? "rounded-top" : "rounded",
+      "border",
+      "py-2",
+      styles.control,
+      menuIsOpen && styles.controlIsOpen
+    ),
+  dropdownIndicator: () => cx("pe-3"),
+  // groupHeading: () => cx("pt-1", "px-3", "text-uppercase", styles.groupHeading),
+  menu: () =>
+    cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
+  menuList: () =>
+    cx(
+      "d-grid"
+      //  "gap-2"
+    ),
+  option: ({ isFocused, isSelected }) =>
+    cx(
+      "d-grid",
+      "gap-1",
+      "px-3",
+      "py-1",
+      styles.option,
+      isFocused && styles.optionIsFocused,
+      !isFocused && isSelected && styles.optionIsSelected
+    ),
+  placeholder: () => cx("px-3"),
+  singleValue: () =>
+    cx(
+      "d-grid",
+      "gap-1",
+      "px-3"
+      // styles.singleValue
+    ),
+};
+
+const selectComponents: SelectComponentsConfig<
+  GitLabRepositoryBranch,
+  false,
+  GroupBase<GitLabRepositoryBranch>
+> = {
+  MenuList: (props: MenuListProps<GitLabRepositoryBranch, false>) => {
+    return (
+      <components.MenuList {...props}>
+        {props.children}
+        Fetch more
+      </components.MenuList>
+    );
+  },
+};
