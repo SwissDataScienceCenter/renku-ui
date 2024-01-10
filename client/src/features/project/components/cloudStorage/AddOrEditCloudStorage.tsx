@@ -583,9 +583,14 @@ function OptionDataList({ examples, listId }: OptionDataListProps) {
 
 interface TruncatedTextProps {
   collapsedLines?: number;
+  linesTolerance?: number;
   text: string;
 }
-function TruncatedText({ collapsedLines = 3, text }: TruncatedTextProps) {
+function TruncatedText({
+  collapsedLines = 2,
+  linesTolerance = 1,
+  text,
+}: TruncatedTextProps) {
   const [isTruncated, setIsTruncated] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -599,9 +604,12 @@ function TruncatedText({ collapsedLines = 3, text }: TruncatedTextProps) {
       const containerHeight = contentRef.current.clientHeight;
       const contentHeight = contentRef.current.scrollHeight;
 
-      setIsTruncated(contentHeight > containerHeight);
+      const lineHeight = containerHeight / collapsedLines;
+      const tolerance = lineHeight * (linesTolerance + 0.5);
+
+      setIsTruncated(contentHeight > containerHeight + tolerance);
     }
-  }, [collapsedLines, text]);
+  }, [collapsedLines, linesTolerance, text]);
 
   const textStyle = {
     maxHeight: isTruncated ? `${collapsedLines * 1.5}em` : "none",
