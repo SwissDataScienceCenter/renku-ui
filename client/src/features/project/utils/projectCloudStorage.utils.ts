@@ -292,7 +292,6 @@ export function getSchemaOptions(
         }
 
         // type conversion is scary; for the default and value, we _try_ to convert it
-        // TODO: we should consider using "example" as enum, but that might turn out to be a bad idea
         try {
           if (option.default != undefined && option.default !== "") {
             if (convertedOption.convertedType === "number")
@@ -301,7 +300,9 @@ export function getSchemaOptions(
               );
             else if (convertedOption.convertedType === "boolean")
               convertedOption.convertedDefault =
-                option.default.toString().toLowerCase() === "true";
+                option.default.toString().toLowerCase() === "true"
+                  ? true
+                  : undefined;
             else if (option.default.toString() !== "[object Object]")
               convertedOption.convertedDefault = option.default.toString();
           } else if (option.value != undefined && option.value !== "") {
@@ -311,12 +312,30 @@ export function getSchemaOptions(
               );
             else if (convertedOption.convertedType === "boolean")
               convertedOption.convertedDefault =
-                option.value.toString().toLowerCase() === "true";
+                option.value.toString().toLowerCase() === "true"
+                  ? true
+                  : undefined;
             else if (option.value.toString() !== "[object Object]")
               convertedOption.convertedDefault = option.value.toString();
           }
         } catch (e) {
           convertedOption.convertedDefault = undefined;
+        }
+
+        // examples should be filtered by the provider
+        if (option.examples) {
+          const filteredExamples = option.examples.filter((e) => {
+            if (!targetProvider || !e.provider) return true;
+            if (e.provider.startsWith("!")) {
+              const providers = e.provider.slice(1).split(",");
+              return !providers.includes(targetProvider);
+            }
+            const providers = e.provider.split(",");
+            return providers.includes(targetProvider);
+          });
+          if (filteredExamples.length) {
+            convertedOption.filteredExamples = filteredExamples;
+          }
         }
 
         return convertedOption;

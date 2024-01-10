@@ -230,7 +230,7 @@ function CloudStorageDetails({
             <div className="text-rk-text-light">
               <small className="text-capitalize">{key}</small>
             </div>
-            <div>{configuration[key]}</div>
+            <div>{configuration[key]?.toString()}</div>
           </div>
         ))}
         <div className="mt-2">

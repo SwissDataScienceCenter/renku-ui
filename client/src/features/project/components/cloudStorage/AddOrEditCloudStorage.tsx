@@ -17,7 +17,14 @@
  */
 
 import cx from "classnames";
-import { RefObject, useCallback, useMemo, useRef, useState } from "react";
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ExclamationTriangleFill,
   EyeFill,
@@ -35,9 +42,6 @@ import {
   Label,
   ListGroup,
   ListGroupItem,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
 
@@ -49,7 +53,7 @@ import {
   AddCloudStorageState,
   CloudStorageDetails,
   CloudStorageSchema,
-  CloudStorageSchemaOptions,
+  CloudStorageSchemaOptionExample,
 } from "./projectCloudStorage.types";
 import {
   convertFromAdvancedConfig,
@@ -203,8 +207,8 @@ function AddStorageAdvancedToggle({
     </>
   );
 }
-// *** Add storage: helpers *** //
 
+// *** Add storage: helpers *** //
 interface AddStorageStepProps {
   schema: CloudStorageSchema[];
   setStorage: (newDetails: Partial<CloudStorageDetails>) => void;
@@ -537,53 +541,6 @@ function AddStorageType({
 }
 
 // *** Add storage: page 2 of 3, with storage options *** //
-
-interface AddStorageOptionsExamplesProps {
-  examples: CloudStorageSchemaOptions["examples"];
-  name: string;
-  provider?: string;
-}
-function AddStorageOptionsExamples({
-  examples,
-  name,
-  provider,
-}: AddStorageOptionsExamplesProps) {
-  // TODO: We should use examples as enum, or items in an autocomplete. But sometimes we get just "None" 🥴
-  if (!examples?.length) return null;
-  const filterExamples = provider
-    ? examples.filter((e) => !e.provider || e.provider === provider)
-    : examples;
-  if (!filterExamples?.length) return null;
-
-  const popoverId = `popover-${name}`;
-  const exampleItems = filterExamples.map((e) => {
-    return (
-      <li className="mb-1" key={e.value}>
-        <code>{e.value}</code>
-        <br />
-        <small>{e.help}</small>
-      </li>
-    );
-  });
-
-  return (
-    <>
-      <QuestionCircle id={popoverId} className={cx("bi", "ms-1")} />
-      <UncontrolledPopover
-        target={popoverId}
-        placement="right"
-        style={{ maxHeight: "98vh", overflow: "auto" }} // eslint-disable-line spellcheck/spell-checker
-        trigger="hover focus"
-      >
-        <PopoverHeader>Examples</PopoverHeader>
-        <PopoverBody>
-          <ul>{exampleItems}</ul>
-        </PopoverBody>
-      </UncontrolledPopover>
-    </>
-  );
-}
-
 interface SecretOptionWarningProps {
   isSecret?: boolean;
   name: string;
@@ -606,6 +563,73 @@ function SecretOptionWarning({
         again when starting a session.
       </UncontrolledTooltip>
     </>
+  );
+}
+interface OptionDataListProps {
+  examples: CloudStorageSchemaOptionExample[];
+  listId: string;
+}
+function OptionDataList({ examples, listId }: OptionDataListProps) {
+  if (!examples?.length) return null;
+
+  return (
+    <datalist id={listId}>
+      {examples?.map((e) => (
+        <option key={`${listId}__${e.value}`} value={e.value} />
+      ))}
+    </datalist>
+  );
+}
+
+interface TruncatedTextProps {
+  collapsedLines?: number;
+  text: string;
+}
+function TruncatedText({ collapsedLines = 3, text }: TruncatedTextProps) {
+  const [isTruncated, setIsTruncated] = useState(true);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const toggleTruncate = () => {
+    setIsTruncated(!isTruncated);
+  };
+
+  useEffect(() => {
+    // Check if the content overflows its container
+    if (contentRef.current) {
+      const containerHeight = contentRef.current.clientHeight;
+      const contentHeight = contentRef.current.scrollHeight;
+
+      setIsTruncated(contentHeight > containerHeight);
+    }
+  }, [collapsedLines, text]);
+
+  const textStyle = {
+    maxHeight: isTruncated ? `${collapsedLines * 1.5}em` : "none",
+  };
+
+  return (
+    <div>
+      <div
+        className={cx("overflow-hidden", "local-style")}
+        ref={contentRef}
+        style={textStyle}
+      >
+        {text}
+      </div>
+      {isTruncated && (
+        <>
+          <span> [...]</span>{" "}
+          <Button
+            className={cx("p-0", "align-baseline")}
+            color="link"
+            onClick={toggleTruncate}
+            size="sm"
+          >
+            Show all
+          </Button>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -648,6 +672,7 @@ function AddStorageOptions({
     setStorage({ options: validOptions });
   };
 
+  // ? We treat checkbox and password separately, while the rest is an input
   const optionItems =
     options &&
     options.map((o) => {
@@ -659,21 +684,9 @@ function AddStorageOptions({
         ? "checkbox"
         : o.convertedType === "number"
         ? "number"
+        : o.filteredExamples?.length
+        ? "dropdown"
         : "text";
-
-      const placeholder = o.examples?.length
-        ? o.examples[0].value
-          ? o.examples[0].value
-          : undefined
-        : undefined;
-
-      const examples = (
-        <AddStorageOptionsExamples
-          examples={o.examples}
-          name={o.name}
-          provider={storage.provider}
-        />
-      );
 
       const warning =
         o.convertedType === "secret" ? (
@@ -683,7 +696,7 @@ function AddStorageOptions({
       return (
         <div className="mb-3" key={o.name}>
           <label htmlFor={o.name}>
-            {o.friendlyName ?? o.name} {examples} {warning}
+            {o.friendlyName ?? o.name} {warning}
           </label>
 
           {inputType === "checkbox" ? (
@@ -693,7 +706,7 @@ function AddStorageOptions({
               defaultValue={
                 storage.options && storage.options[o.name]
                   ? storage.options[o.name]
-                  : o.convertedDefault ?? false
+                  : o.convertedDefault ?? undefined
               }
               render={({ field }) => (
                 <input
@@ -716,7 +729,7 @@ function AddStorageOptions({
                 defaultValue={
                   storage.options && storage.options[o.name]
                     ? storage.options[o.name]
-                    : o.convertedDefault ?? ""
+                    : ""
                 }
                 render={({ field }) => (
                   <input
@@ -724,7 +737,7 @@ function AddStorageOptions({
                     type={getPasswordType(o.name)}
                     {...field}
                     className={cx("form-control", "rounded-0", "rounded-start")}
-                    placeholder={placeholder}
+                    placeholder={o.convertedDefault?.toString() ?? ""}
                     onChange={(e) => {
                       field.onChange(e);
                       onFieldValueChange(o.name, e.target.value);
@@ -751,35 +764,64 @@ function AddStorageOptions({
               </Button>
             </InputGroup>
           ) : (
-            <Controller
-              name={o.name}
-              control={control}
-              defaultValue={
-                storage.options && storage.options[o.name]
-                  ? storage.options[o.name]
-                  : o.convertedDefault ?? ""
-              }
-              render={({ field }) => (
-                <input
-                  id={o.name}
-                  type={inputType}
-                  {...field}
-                  className="form-control"
-                  placeholder={placeholder}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    onFieldValueChange(
-                      o.name,
-                      inputType === "number"
-                        ? parseFloat(e.target.value)
-                        : e.target.value
-                    );
-                  }}
-                />
-              )}
-            />
+            <>
+              <Controller
+                name={o.name}
+                control={control}
+                defaultValue={
+                  storage.options && storage.options[o.name]
+                    ? storage.options[o.name]
+                    : ""
+                }
+                render={({ field }) => {
+                  const listId = `${o.name}__list`;
+                  const additionalProps =
+                    inputType === "dropdown"
+                      ? {
+                          list: listId,
+                        }
+                      : {};
+                  return (
+                    <>
+                      <input
+                        id={o.name}
+                        type={inputType}
+                        {...field}
+                        {...additionalProps}
+                        className="form-control"
+                        placeholder={
+                          o.convertedDefault
+                            ? o.convertedDefault?.toString()
+                            : inputType === "dropdown"
+                            ? o.filteredExamples[0].value
+                            : ""
+                        }
+                        onChange={(e) => {
+                          field.onChange(e);
+                          onFieldValueChange(
+                            o.name,
+                            inputType === "number"
+                              ? parseFloat(e.target.value)
+                              : e.target.value
+                          );
+                        }}
+                      />
+                      {inputType === "dropdown" && (
+                        <OptionDataList
+                          examples={o.filteredExamples}
+                          listId={listId}
+                        />
+                      )}
+                    </>
+                  );
+                }}
+              />
+            </>
           )}
-          <div className={cx("form-text", "text-muted")}>{o.help}</div>
+          <div className={cx("form-text", "text-muted")}>
+            {/* {o.help} */}
+            <TruncatedText text={o.help} />
+          </div>
         </div>
       );
     });
@@ -816,6 +858,10 @@ function AddStorageOptions({
 
   const sourcePath = (
     <div className="mb-3">
+      <Label className="form-label" for="add-storage-name">
+        Source path
+      </Label>
+
       <Controller
         name="sourcePath"
         control={control}
@@ -834,9 +880,6 @@ function AddStorageOptions({
           />
         )}
       />
-      <Label className="form-label" for="add-storage-name">
-        Source path
-      </Label>
       <div className={cx("form-text", "text-muted")}>{sourcePathHelp.help}</div>
     </div>
   );

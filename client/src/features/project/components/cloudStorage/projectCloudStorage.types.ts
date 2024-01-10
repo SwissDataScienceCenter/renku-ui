@@ -82,6 +82,12 @@ export type CloudStorageOptionTypes =
   | "number"
   | "secret";
 
+export type CloudStorageSchemaOptionExample = {
+  value: string; // ? Potential value for the option
+  help: string; // ? Help text for the _value_
+  provider: string; // ? empty for "all providers"
+};
+
 export interface CloudStorageSchemaOptions {
   name: string;
   help: string;
@@ -89,16 +95,10 @@ export interface CloudStorageSchemaOptions {
   default: number | string | boolean;
   default_str: string;
   value: null | number | string | boolean;
-  examples: [
-    {
-      value: string; // ? Potential value for the option
-      help: string; // ? Help text for the _value_
-      provider: string; // ? empty for "all providers"
-    }
-  ];
+  examples: CloudStorageSchemaOptionExample[];
   required: boolean;
   ispassword: boolean; // eslint-disable-line spellcheck/spell-checker
-  sensitive: boolean; // ? The service doesn't store it -- "more" sensitive? 😁
+  sensitive: boolean;
   advanced: boolean; // ? Only shown when advanced options are enabled
   exclusive: boolean; // ? Only one of the examples can be used when this is true
   datatype: string;
@@ -107,6 +107,7 @@ export interface CloudStorageSchemaOptions {
   convertedType?: CloudStorageOptionTypes;
   convertedDefault?: number | string | boolean;
   convertedHide?: boolean;
+  filteredExamples: CloudStorageSchemaOptionExample[];
   friendlyName?: string;
 }
 
