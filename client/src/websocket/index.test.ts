@@ -17,18 +17,19 @@
  */
 
 import WS from "jest-websocket-mock";
+import { describe, expect, it } from "vitest";
 
+import APIClient, { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
+import { NotificationsManager } from "../notifications";
+import { sleep } from "../utils/helpers/HelperFunctions";
+import { WsServerMessage } from "./WsMessages";
 import {
+  MessageData,
   getWsServerMessageHandler,
   retryConnection,
   setupWebSocket,
-  MessageData,
 } from "./index";
-import { WsServerMessage } from "./WsMessages";
-import { sleep } from "../utils/helpers/HelperFunctions";
-import { NotificationsManager } from "../notifications";
-import APIClient, { testClient as client } from "../api-client";
 
 const fakeLocation = () => {
   return { pathname: "" };
@@ -149,18 +150,27 @@ describe("Test WebSocket functions", () => {
 });
 
 describe("Test WebSocket server", () => {
+  const webSocketURL = "wss://localhost:1234";
+  let fakeServer: WS;
+  let localWebSocket: WebSocket;
+  // Setup and clean both the model and the WebSocket fake server
+  beforeEach(async () => {
+    fakeServer = new WS(webSocketURL, { jsonProtocol: true });
+    localWebSocket = new WebSocket(webSocketURL);
+    await fakeServer.connected;
+  });
+  afterEach(() => {
+    localWebSocket.close();
+    WS.clean();
+  });
+
   it("Test setupWebSocket", async () => {
     const fullModel = new StateModel(globalSchema);
-    const webSocketURL = "wss://localhost:1234";
-    const fakeServer = new WS(webSocketURL, { jsonProtocol: true });
     const notifications = new NotificationsManager(
       fullModel,
       client,
       fakeLocation
     );
-    // ? We need to create a client before we invoke `fakeServer.connected` -- limitations of the mock library
-    new WebSocket(webSocketURL);
-    await fakeServer.connected;
 
     // the mocked WebSocket server is up and running
     const localModel = fullModel.subModel("webSocket");

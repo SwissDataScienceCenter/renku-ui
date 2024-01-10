@@ -1,5 +1,8 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { ARG_REDUX_PATH, PARAM_REDUX_MERGE_STATE } from "addon-redux";
+
+// eslint-disable-next-line spellcheck/spell-checker
+// TODO: investigate if "addon-redux" can be replaced or made to work with @storybook/react-vite
+// import { ARG_REDUX_PATH, PARAM_REDUX_MERGE_STATE } from "addon-redux";
 
 import { EntityType } from "../../features/kgSearch";
 import { Visibilities } from "../visibility/Visibility";
@@ -12,14 +15,14 @@ const meta: Meta = {
   argTypes: {
     notebooks: {
       control: { type: "text" },
-      [ARG_REDUX_PATH]: "stateModel.notebooks.notebooks.all",
+      // [ARG_REDUX_PATH]: "stateModel.notebooks.notebooks.all",
       table: {
         disable: true,
       },
     },
     updatingTagList: {
       control: { type: "boolean" },
-      [ARG_REDUX_PATH]: "stateModel.project.metadata.tagList.updating",
+      // [ARG_REDUX_PATH]: "stateModel.project.metadata.tagList.updating",
       table: {
         disable: true,
       },
@@ -44,7 +47,7 @@ const meta: Meta = {
     timeCaption: { control: "date" },
   },
   parameters: {
-    [PARAM_REDUX_MERGE_STATE]: { stateModel: { user: { logged: false } } },
+    // [PARAM_REDUX_MERGE_STATE]: { stateModel: { user: { logged: false } } },
   },
 };
 export default meta;

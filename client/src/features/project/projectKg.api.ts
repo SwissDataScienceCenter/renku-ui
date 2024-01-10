@@ -63,7 +63,7 @@ export const projectKgApi = createApi({
             method: "POST",
           };
         },
-        invalidatesTags: (result, error, projectId) => [
+        invalidatesTags: (_result, _error, projectId) => [
           { type: "project-indexing", id: projectId },
         ],
       }
@@ -121,7 +121,7 @@ export const projectKgApi = createApi({
             response.status < 400 || response.status === 404,
         };
       },
-      providesTags: (result, error, projectId) => [
+      providesTags: (_result, _error, projectId) => [
         { type: "project-indexing", id: projectId },
       ],
       transformErrorResponse: (errorData) => {
@@ -162,7 +162,7 @@ export const projectKgApi = createApi({
         url: `projects/${params.projectPath}`,
         headers: kgProjectRequestHeaders("json"),
       }),
-      providesTags: (result, error, params) => [
+      providesTags: (_result, _error, params) => [
         { type: "project-kg-metadata", id: params.projectId },
       ],
     }),
@@ -176,7 +176,7 @@ export const projectKgApi = createApi({
           },
         };
       },
-      invalidatesTags: (result, err, args) => [
+      invalidatesTags: (_result, _err, args) => [
         { type: "project-kg-metadata", id: args.projectId },
       ],
     }),
@@ -194,7 +194,7 @@ export const projectKgApi = createApi({
           formData: true,
         };
       },
-      invalidatesTags: (result, err, args) => [
+      invalidatesTags: (_result, _err, args) => [
         { type: "project-kg-metadata", id: args.projectId },
       ],
     }),
