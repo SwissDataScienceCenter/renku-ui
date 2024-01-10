@@ -23,15 +23,15 @@
  *  Schema for all Components.
  */
 
-import { Schema, PropertyName as Prop } from "./index";
+import { PropertyName as Prop, Schema } from "./Model";
 import {
   datasetSchema,
   environmentSchema,
   formGeneratorSchema,
   newProjectSchema,
   notificationsSchema,
-  projectsSchema,
   projectSchema,
+  projectsSchema,
   statuspageSchema,
   userSchema,
   webSocketSchema,

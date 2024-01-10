@@ -19,64 +19,61 @@
 /**
  *  renku-ui
  *
- *  ProjectDatasets.test.js
- *  Tests for datasets inside projects.
+ *  ProjectNew.test.js
+ *  New project test code.
  */
 
-import { Provider } from "react-redux";
-import { createRoot } from "react-dom/client";
 import { createMemoryHistory } from "history";
-import { act } from "react-test-renderer";
+import { createRoot } from "react-dom/client";
+import { act } from "react-dom/test-utils";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
+import { describe, it } from "vitest";
 
-import { ACCESS_LEVELS, testClient as client } from "../../api-client";
+import { testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
-import DatasetImport from "./import/index";
 import { generateFakeUser } from "../../user/User.test";
+import AppContext from "../../utils/context/appContext";
+import { ForkProject } from "./index";
+
+const fakeHistory = createMemoryHistory({
+  initialEntries: ["/"],
+  initialIndex: 0,
+});
+fakeHistory.push({
+  pathname: "/projects",
+  search: "?page=1",
+});
+const fakeLocation = { pathname: "" };
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
-  let spy = null;
+  const templates = { custom: false, repositories: [{}] };
 
   const loggedUser = generateFakeUser();
-  const fakeHistory = createMemoryHistory({
-    initialEntries: ["/"],
-    initialIndex: 0,
-  });
-  const migration = { core: { versionUrl: "" } };
+  const appContext = {
+    client: client,
+    params: { TEMPLATES: templates },
+    location: fakeLocation,
+  };
 
-  fakeHistory.push({
-    pathname: "/projects/namespace/project-name/datasets/new",
-  });
-
-  beforeEach(() => {
-    // ckeditor dumps some junk to the console.error. Ignore it.
-    spy = jest.spyOn(console, "error").mockImplementation(() => {
-      // eslint-disable-line @typescript-eslint/ban-types
-    });
-  });
-
-  afterEach(() => {
-    spy.mockRestore();
-  });
-
-  it("renders DatasetImport form without crashing", async () => {
+  it("renders ForkProject without crashing for logged user", async () => {
     const div = document.createElement("div");
+    // Fix UncontrolledTooltip error. https://github.com/reactstrap/reactstrap/issues/773
     document.body.appendChild(div);
     const root = createRoot(div);
     await act(async () => {
       root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <DatasetImport
-              client={client}
-              edit={false}
-              location={fakeHistory}
-              maintainer={ACCESS_LEVELS.maintainer}
-              migration={migration}
-              model={model}
-              user={loggedUser}
-            />
+            <AppContext.Provider value={appContext}>
+              <ForkProject
+                client={client}
+                model={model}
+                history={fakeHistory}
+                user={loggedUser}
+              />
+            </AppContext.Provider>
           </MemoryRouter>
         </Provider>
       );

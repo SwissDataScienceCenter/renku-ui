@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
+import { describe, it } from "vitest";
 
 import App from "./App";
 import { testClient as client } from "./api-client";

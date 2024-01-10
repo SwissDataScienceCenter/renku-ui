@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { describe, expect, it } from "vitest";
+
 import { MigrationStatus, RenkuMigrationLevel } from "../Project";
 import { ProjectMigrationLevel } from "../projectEnums";
 import {

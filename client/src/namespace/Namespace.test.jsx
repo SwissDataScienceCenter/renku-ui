@@ -26,9 +26,10 @@
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
+import { describe, it } from "vitest";
 
-import { NamespaceProjects } from "./index";
 import { testClient as client } from "../api-client";
+import { NamespaceProjects } from "./index";
 
 describe("rendering", () => {
   it("renders NamespaceProjects", async () => {

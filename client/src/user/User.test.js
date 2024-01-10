@@ -23,9 +23,11 @@
  *  Tests for user code.
  */
 
+import { describe, expect, it } from "vitest";
+
+import { user as fakeUser } from "../api-client/test-samples";
 import { Schema } from "../model";
 import { userSchema } from "../model/RenkuModels";
-import { user as fakeUser } from "../api-client/test-samples";
 
 /**
  * Generate a fake user to be injected in the other tests

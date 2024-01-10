@@ -27,12 +27,14 @@ import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
+import { describe, it, vi } from "vitest";
+
 import LoginRedirect from "./LoginRedirect";
 
 // Mock relevant react objects
 const location = { pathname: "", state: "", previous: "", search: "" };
 delete window.location;
-window.location = { reload: jest.fn(), replace: jest.fn() };
+window.location = { reload: vi.fn(), replace: vi.fn() };
 
 // Mock localStorage event generator
 

@@ -23,14 +23,15 @@
  *  Tests for project overview.
  */
 
+import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { createMemoryHistory } from "history";
 import { act } from "react-test-renderer";
+import { describe, it } from "vitest";
 
-import { StateModel, globalSchema } from "../../model";
 import { testClient as client } from "../../api-client";
+import { StateModel, globalSchema } from "../../model";
 import { ProjectCoordinator } from "../index";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./index";
 
