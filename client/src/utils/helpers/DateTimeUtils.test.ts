@@ -17,6 +17,8 @@
  */
 
 import { DateTime, Settings } from "luxon";
+import { describe, expect, it } from "vitest";
+
 import { ensureDateTime, toHumanDateTime } from "./DateTimeUtils";
 
 Settings.defaultZone = "Europe/Zurich";

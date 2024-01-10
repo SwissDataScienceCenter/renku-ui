@@ -19,60 +19,65 @@
 /**
  *  renku-ui
  *
- *  ProjectNew.test.js
- *  New project test code.
+ *  ProjectDatasets.test.js
+ *  Tests for datasets inside projects.
  */
 
-import { createRoot } from "react-dom/client";
-import { act } from "react-dom/test-utils";
-import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
+import { act } from "react-test-renderer";
+import { afterEach, beforeEach, describe, it, vi } from "vitest";
 
+import { ACCESS_LEVELS, testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
-import { ForkProject } from "./index";
-import { testClient as client } from "../../api-client";
 import { generateFakeUser } from "../../user/User.test";
-import AppContext from "../../utils/context/appContext";
-
-const fakeHistory = createMemoryHistory({
-  initialEntries: ["/"],
-  initialIndex: 0,
-});
-fakeHistory.push({
-  pathname: "/projects",
-  search: "?page=1",
-});
-const fakeLocation = { pathname: "" };
+import DatasetImport from "./import/index";
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
-  const templates = { custom: false, repositories: [{}] };
+  let spy = null;
 
   const loggedUser = generateFakeUser();
-  const appContext = {
-    client: client,
-    params: { TEMPLATES: templates },
-    location: fakeLocation,
-  };
+  const fakeHistory = createMemoryHistory({
+    initialEntries: ["/"],
+    initialIndex: 0,
+  });
+  const migration = { core: { versionUrl: "" } };
 
-  it("renders ForkProject without crashing for logged user", async () => {
+  fakeHistory.push({
+    pathname: "/projects/namespace/project-name/datasets/new",
+  });
+
+  beforeEach(() => {
+    // ckeditor dumps some junk to the console.error. Ignore it.
+    spy = vi.spyOn(console, "error").mockImplementation(() => {
+      // eslint-disable-line @typescript-eslint/ban-types
+    });
+  });
+
+  afterEach(() => {
+    spy.mockRestore();
+  });
+
+  it("renders DatasetImport form without crashing", async () => {
     const div = document.createElement("div");
-    // Fix UncontrolledTooltip error. https://github.com/reactstrap/reactstrap/issues/773
     document.body.appendChild(div);
     const root = createRoot(div);
     await act(async () => {
       root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <AppContext.Provider value={appContext}>
-              <ForkProject
-                client={client}
-                model={model}
-                history={fakeHistory}
-                user={loggedUser}
-              />
-            </AppContext.Provider>
+            <DatasetImport
+              client={client}
+              edit={false}
+              location={fakeHistory}
+              maintainer={ACCESS_LEVELS.maintainer}
+              migration={migration}
+              model={model}
+              user={loggedUser}
+            />
           </MemoryRouter>
         </Provider>
       );

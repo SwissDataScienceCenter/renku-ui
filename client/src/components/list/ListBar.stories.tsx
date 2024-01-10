@@ -16,11 +16,15 @@
  * limitations under the License.
  */
 
-import ListBar from "./ListBar";
+import { Meta, StoryObj } from "@storybook/react";
+
+// eslint-disable-next-line spellcheck/spell-checker
+// TODO: investigate if "addon-redux" can be replaced or made to work with @storybook/react-vite
+// import { ARG_REDUX_PATH } from "addon-redux";
+
 import { EntityType } from "../../features/kgSearch";
 import { Visibilities } from "../visibility/Visibility";
-import { ARG_REDUX_PATH } from "addon-redux";
-import { Meta, StoryObj } from "@storybook/react";
+import ListBar from "./ListBar";
 
 const exampleCreators = [
   {
@@ -60,7 +64,7 @@ const meta: Meta = {
     timeCaption: { control: "date" },
     updatingDescription: {
       control: { type: "boolean" },
-      [ARG_REDUX_PATH]: "stateModel.project.metadata.description.updating",
+      // [ARG_REDUX_PATH]: "stateModel.project.metadata.description.updating",
       defaultValue: false,
     },
   },

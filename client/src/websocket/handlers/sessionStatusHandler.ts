@@ -21,7 +21,7 @@ import { StateModel } from "../../model";
 
 function handleSessionsStatus(
   data: Record<string, unknown>,
-  webSocket: WebSocket,
+  _webSocket: WebSocket,
   model: StateModel
 ) {
   if ((data.message as boolean) && model) {

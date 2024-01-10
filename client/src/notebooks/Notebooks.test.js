@@ -22,6 +22,8 @@
  * Tests for the session components
  */
 
+import { describe, expect, it } from "vitest";
+
 import { ExpectedAnnotations } from "./Notebooks.state";
 import { NotebooksHelper } from "./index";
 

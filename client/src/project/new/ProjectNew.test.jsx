@@ -23,20 +23,21 @@
  *  New project test code.
  */
 
+import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
-import { MemoryRouter } from "react-router-dom";
-import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
+import { describe, expect, it } from "vitest";
 
-import { StateModel, globalSchema } from "../../model";
-import { validateTitle, checkTitleDuplicates, NewProject } from "./index";
-import { getDataFromParams } from "./ProjectNew.container";
-import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
 import { testClient as client } from "../../api-client";
-import { btoaUTF8 } from "../../utils/helpers/Encoding";
+import { StateModel, globalSchema } from "../../model";
 import { generateFakeUser } from "../../user/User.test";
 import AppContext from "../../utils/context/appContext";
+import { btoaUTF8 } from "../../utils/helpers/Encoding";
+import { getDataFromParams } from "./ProjectNew.container";
+import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
+import { NewProject, checkTitleDuplicates, validateTitle } from "./index";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],

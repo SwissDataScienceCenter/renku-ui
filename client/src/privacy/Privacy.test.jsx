@@ -23,12 +23,13 @@
  *  Tests for privacy
  */
 
+import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
-import { createMemoryHistory } from "history";
 import { act } from "react-test-renderer";
+import { describe, it } from "vitest";
 
-import { RoutedContent, Cookie, Privacy } from "./index";
+import { Cookie, Privacy, RoutedContent } from "./index";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],

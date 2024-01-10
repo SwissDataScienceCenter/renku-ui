@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { describe, expect, it } from "vitest";
 import { sanitizedHTMLFromMarkdown } from "./markdown.utils";
 
 describe("html sanitization", () => {
