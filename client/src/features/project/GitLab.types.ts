@@ -102,6 +102,7 @@ export interface GetRenkuRegistryParams {
 // GitLab Repository API
 
 export interface GitLabRepositoryBranch {
+  default: boolean;
   merged: boolean;
   name: string;
 }

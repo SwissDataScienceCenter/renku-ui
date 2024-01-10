@@ -34,7 +34,6 @@ import type {
   OptionsOrGroups,
   SingleValue,
 } from "react-select";
-import { AsyncPaginate, Response } from "react-select-async-paginate";
 import {
   Button,
   FormGroup,
@@ -54,7 +53,7 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
 import type { GitLabRepositoryBranch } from "../../../project/GitLab.types";
-import {
+import projectGitLabApi, {
   useGetRepositoryBranchQuery,
   useGetRepositoryBranchesQuery,
 } from "../../../project/projectGitLab.api";
@@ -74,7 +73,12 @@ export default function SessionBranchOption() {
     (state) => state.stateModel.project.metadata.externalUrl
   );
 
-  const { data: defaultBranchData } = useGetRepositoryBranchQuery(
+  const {
+    data: defaultBranchData,
+    isError: defaultBranchDataIsError,
+    isFetching: defaultBranchDataIsFetching,
+    refetch: refetchDefaultBranchData,
+  } = useGetRepositoryBranchQuery(
     {
       projectId: `${gitLabProjectId ?? 0}`,
       branch: defaultBranch,
@@ -82,10 +86,10 @@ export default function SessionBranchOption() {
     { skip: !gitLabProjectId }
   );
   const {
-    data: initialBranchList,
-    isError,
-    isFetching,
-    refetch,
+    data: branchesFirstPage,
+    isError: branchesFirstPageIsError,
+    isFetching: branchesFirstPageIsFetching,
+    refetch: refetchBranchesFirstPage,
   } = useGetRepositoryBranchesQuery(
     {
       projectId: `${gitLabProjectId ?? 0}`,
@@ -94,20 +98,208 @@ export default function SessionBranchOption() {
     { skip: !gitLabProjectId }
   );
 
+  const initialBranchList = useMemo(() => {
+    if (defaultBranchData == null || branchesFirstPage == null) {
+      return undefined;
+    }
+    return [
+      defaultBranchData,
+      ...branchesFirstPage.data.filter(({ default: isDefault }) => !isDefault),
+    ];
+  }, [branchesFirstPage, defaultBranchData]);
+  const isError = defaultBranchDataIsError || branchesFirstPageIsError;
+  const isFetching = defaultBranchDataIsFetching || branchesFirstPageIsFetching;
+  const refetch = useCallback(() => {
+    refetchDefaultBranchData();
+    refetchBranchesFirstPage();
+  }, [refetchBranchesFirstPage, refetchDefaultBranchData]);
+
+  const [{ data: allBranches, fetchedPages, hasMore }, setState] = useState<
+    PaginatedState<GitLabRepositoryBranch>
+  >({ data: undefined, fetchedPages: 0, hasMore: true });
+
+  const [fetchBranchesPage, branchesPageResult] =
+    projectGitLabApi.useLazyGetRepositoryBranchesQuery();
+
+  const currentBranch = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.branch
+  );
+
+  // Branch filter
+  const [includeMergedBranches, setIncludeMergedBranches] =
+    useState<boolean>(false);
+  const toggleIncludeMergedBranches = useCallback(() => {
+    setIncludeMergedBranches((value) => {
+      return !value;
+    });
+  }, []);
+  const filteredBranches = useMemo(
+    () =>
+      includeMergedBranches
+        ? allBranches
+        : allBranches?.filter(
+            (branch) => !branch.merged || branch.name === currentBranch
+          ),
+    [allBranches, currentBranch, includeMergedBranches]
+  );
+
   useDefaultBranchOption({
-    branches: useMemo(
-      () =>
-        initialBranchList != null && defaultBranchData != null
-          ? [...initialBranchList.data, defaultBranchData]
-          : undefined,
-      [initialBranchList, defaultBranchData]
-    ),
+    branches: initialBranchList,
     defaultBranch,
   });
 
+  useEffect(() => {
+    if (initialBranchList == null || branchesFirstPage == null) {
+      return;
+    }
+    setState({
+      data: initialBranchList,
+      fetchedPages: branchesFirstPage.page,
+      hasMore: branchesFirstPage.page < branchesFirstPage.totalPages,
+    });
+  }, [branchesFirstPage, initialBranchList]);
+
+  useEffect(() => {
+    if (
+      allBranches == null ||
+      branchesPageResult.data == null ||
+      branchesPageResult.data.page <= fetchedPages
+    ) {
+      return;
+    }
+    setState({
+      data: [
+        ...allBranches,
+        ...branchesPageResult.data.data.filter(
+          ({ default: isDefault }) => !isDefault
+        ),
+      ],
+      fetchedPages: branchesPageResult.data.page,
+      hasMore:
+        branchesPageResult.data.page < branchesPageResult.data.totalPages,
+    });
+  }, [allBranches, branchesPageResult.data, fetchedPages]);
+
+  if (isFetching) {
+    return (
+      <div className="field-group">
+        <div className="form-label">
+          <Loader className="me-1" inline size={16} />
+          Loading branches...
+        </div>
+      </div>
+    );
+  }
+
+  if (!initialBranchList || !filteredBranches || isError) {
+    return (
+      <div className="field-group">
+        <div className="form-label">
+          Branches <RefreshBranchesButton refresh={refetch} />
+        </div>
+        <ErrorAlert>
+          <p className="mb-0">Error: could not fetch project branches.</p>
+        </ErrorAlert>
+      </div>
+    );
+  }
+
+  if (initialBranchList.length == 0) {
+    return (
+      <div className="field-group">
+        <div className="form-label">
+          A commit is necessary to start a session.
+          <RefreshBranchesButton refresh={refetch} />
+        </div>
+        <InfoAlert timeout={0}>
+          <p>You can still do one of the following:</p>
+          <ul className="mb-0">
+            <li>
+              <ExternalLink
+                size="sm"
+                title="Clone the repository"
+                url={externalUrl}
+              />{" "}
+              locally and add a first commit.
+            </li>
+            <li className="pt-1">
+              <Link
+                className={cx("btn", "btn-primary", "btn-sm")}
+                role="button"
+                to={Url.get(Url.pages.project.new)}
+              >
+                Create a new project
+              </Link>{" "}
+              from a non-empty template.
+            </li>
+          </ul>
+        </InfoAlert>
+      </div>
+    );
+  }
+
+  if (initialBranchList.length == 1) {
+    return (
+      <div className="field-group">
+        <Label for="session-branch-option">
+          Branch (only 1 available)
+          <RefreshBranchesButton refresh={refetch} />
+          <BranchOptionsButton
+            includeMergedBranches={includeMergedBranches}
+            toggleIncludeMergedBranches={toggleIncludeMergedBranches}
+          />
+        </Label>
+        <Input
+          disabled
+          id="session-branch-option"
+          type="text"
+          value={currentBranch}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <pre>{JSON.stringify(defaultBranchData)}</pre>
+    <div className="field-group">
+      <Label for="session-branch-option">
+        Branches
+        <RefreshBranchesButton refresh={refetch} />
+        <BranchOptionsButton
+          includeMergedBranches={includeMergedBranches}
+          toggleIncludeMergedBranches={toggleIncludeMergedBranches}
+        />
+      </Label>
+      <Input
+        id="session-branch-option"
+        // onChange={onChange}
+        type="select"
+        value={currentBranch}
+        className={cx(styles.formSelect)}
+      >
+        {filteredBranches.map(({ name }) => (
+          <option key={name} value={name}>
+            {name}
+          </option>
+        ))}
+      </Input>
+
+      <div>
+        {hasMore && (
+          <button
+            type="button"
+            role="button"
+            onClick={() =>
+              fetchBranchesPage({
+                projectId: `${gitLabProjectId}`,
+                page: fetchedPages + 1,
+                perPage: branchesFirstPage?.perPage,
+              })
+            }
+          >
+            Fetch more
+          </button>
+        )}
+      </div>
     </div>
   );
 
@@ -333,7 +525,7 @@ export default function SessionBranchOption() {
 }
 
 interface PaginatedState<T = unknown> {
-  data: T[];
+  data: T[] | undefined;
   fetchedPages: number;
   hasMore: boolean;
 }
