@@ -22,16 +22,18 @@
  *  ProjectSuggestionActions.test.js
  *  Tests for project Suggestion Actions.
  */
-import { globalSchema, projectSchema, StateModel } from "../model";
-import { ProjectCoordinator } from "./Project.state";
-import { ACCESS_LEVELS, testClient as client } from "../api-client";
+import { MemoryRouter } from "react-router-dom";
 import TestRenderer, { act } from "react-test-renderer";
+import { describe, expect, it } from "vitest";
+
+import { ACCESS_LEVELS, testClient as client } from "../api-client";
+import { StateModel, globalSchema, projectSchema } from "../model";
 import {
   ProjectSuggestActions,
   ProjectSuggestionDataset,
   ProjectSuggestionReadme,
 } from "./Project.present";
-import { MemoryRouter } from "react-router-dom";
+import { ProjectCoordinator } from "./Project.state";
 
 const getProjectSuggestionProps = (
   props,

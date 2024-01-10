@@ -6,15 +6,17 @@
   "scripts": {
     "cypress": "cypress open --e2e --browser=chrome --config-file cypress.config.ts",
     "cypress:headless": "cypress run --e2e --headless --config-file cypress.config.ts --spec '**/*'",
-    "e2e": "start-server-and-test start 3000 cypress",
-    "e2e:headless": "start-server-and-test start 3000 cypress:headless",
+    "e2e": "start-server-and-test start http://localhost:3000 cypress",
+    "e2e:headless": "start-server-and-test start http://localhost:3000 cypress:headless",
     "lint": "eslint --max-warnings=0 cypress/",
     "format": "prettier -w .",
     "format-check": "prettier -c .",
     "format-changed": "pretty-quick --pattern \"tests/**/*.*\"",
     "format-commit": "pretty-quick --staged --pattern \"tests/**/*.*\"",
-    "start": "npm --prefix ../client run start-js",
-    "install-client": "npm --prefix ../client install"
+    "start": "npm --prefix ../client run start:strict-port",
+    "client:install": "npm --prefix ../client clean-install",
+    "client:build": "npm --prefix ../client run build",
+    "client:preview": "npm --prefix ../client run preview"
   },
   "author": "Swiss Data Science Center",
   "devDependencies": {
@@ -28,7 +30,7 @@
     "eslint-plugin-no-only-tests": "^3.1.0",
     "prettier": "^2.8.8",
     "pretty-quick": "^3.1.3",
-    "start-server-and-test": "^2.0.0",
+    "start-server-and-test": "^2.0.3",
     "typescript": "^4.5.2"
   }
 }

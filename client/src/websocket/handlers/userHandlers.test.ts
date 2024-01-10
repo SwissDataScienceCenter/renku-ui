@@ -17,13 +17,14 @@
  */
 
 import WS from "jest-websocket-mock";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { StateModel, globalSchema } from "../../model";
 import { sleep } from "../../utils/helpers/HelperFunctions";
 import {
+  handleUserError,
   handleUserInit,
   handleUserUiVersion,
-  handleUserError,
 } from "./userHandlers";
 
 describe("Test userHandlers functions", () => {

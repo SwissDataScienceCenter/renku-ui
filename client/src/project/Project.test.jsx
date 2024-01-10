@@ -23,19 +23,20 @@
  *  Tests for project.
  */
 
-import { act } from "react-dom/test-utils";
+import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
+import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { createMemoryHistory } from "history";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
+import { generateFakeUser } from "../user/User.test";
 import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
 import { filterPaths } from "./Project.present";
-import { OverviewCommitsBody } from "./overview/ProjectOverview.present";
 import { ProjectCoordinator } from "./Project.state";
-import { testClient as client } from "../api-client";
-import { generateFakeUser } from "../user/User.test";
+import { OverviewCommitsBody } from "./overview/ProjectOverview.present";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],

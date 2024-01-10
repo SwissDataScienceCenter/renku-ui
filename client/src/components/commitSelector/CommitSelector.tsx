@@ -75,7 +75,7 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
   }, [commits]);
 
   const onSuggestionSelected = (
-    event: React.FormEvent<any>,
+    _event: React.FormEvent<any>,
     data: SuggestionSelectedEventData<Commit>
   ) => {
     setSelectedCommit(data.suggestion);
@@ -83,7 +83,7 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
   };
 
   const handleChange = (
-    event: React.FormEvent<HTMLElement>,
+    _event: React.FormEvent<HTMLElement>,
     { newValue }: ChangeEvent
   ) => {
     setSelectedCommitId(newValue);
@@ -125,7 +125,7 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
   };
 
   const shouldRenderSuggestions = (
-    value: string,
+    _value: string,
     reason: ShouldRenderReasons
   ) => {
     return reason === "input-focused" || isSelectorOpened;

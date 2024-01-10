@@ -17,7 +17,8 @@
  */
 
 import { useState } from "react";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import { Document, Page } from "react-pdf";
+// import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 
 interface PdfViewerProps {
   file: string;
@@ -36,7 +37,7 @@ export default function PDFViewer(props: PdfViewerProps) {
       onLoadSuccess={onDocumentLoadSuccess}
       renderMode="svg"
     >
-      {Array.from(new Array(numPages), (el, index) => (
+      {Array.from(new Array(numPages), (_el, index) => (
         <Page
           className="rk-pdf-page"
           key={`page_${index + 1}`}

@@ -28,10 +28,10 @@ import { formatBytes } from "../utils/helpers/HelperFunctions";
 import FileAndLineageSwitch from "./FileAndLineageComponents";
 import { ExternalIconLink } from "../components/ExternalLinks";
 import { Clipboard } from "../components/clipboard/Clipboard";
-import { KgStatusWrapper } from "../components/kgStatus/KgStatus.tsx";
+import { KgStatusWrapper } from "../components/kgStatus/KgStatus";
+import SessionFileButton from "../features/session/components/SessionFileButton";
 
 import "./Lineage.css";
-import SessionFileButton from "../features/session/components/SessionFileButton";
 
 function cropLabelStart(limit, label) {
   if (label.length > limit) return "<...>" + label.substr(label.length - limit);
