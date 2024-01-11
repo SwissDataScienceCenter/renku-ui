@@ -51,6 +51,7 @@ import {
 } from "./GitLab.types";
 import { ProjectConfig } from "./Project";
 import { transformGetConfigRawResponse } from "./projectCoreApi";
+import { PaginationMetadata } from "../../utils/types/pagination.types";
 
 const projectGitLabApi = createApi({
   reducerPath: "projectGitLab",
@@ -216,35 +217,10 @@ const projectGitLabApi = createApi({
         };
       },
       transformResponse: (response: GitLabRepositoryBranch[], meta) => {
-        const pageStr = meta?.response?.headers.get("X-Page");
-        const perPageStr = meta?.response?.headers.get("X-Per-Page");
-        const totalStr = meta?.response?.headers.get("X-Total");
-        const totalPagesStr = meta?.response?.headers.get("X-Total-Pages");
-
-        if (!pageStr || !perPageStr || !totalStr || !totalPagesStr) {
-          throw new Error("Missing pagination headers");
-        }
-
-        const page = parseInt(pageStr, 10);
-        const perPage = parseInt(perPageStr, 10);
-        const total = parseInt(totalStr, 10);
-        const totalPages = parseInt(totalPagesStr, 10);
-
-        if (
-          isNaN(page) ||
-          isNaN(perPage) ||
-          isNaN(total) ||
-          isNaN(totalPages)
-        ) {
-          throw new Error("Invalid pagination headers");
-        }
-
+        const pagination = extractPaginationMetadata(meta?.response?.headers);
         return {
-          page,
-          perPage,
-          total,
-          totalPages,
           data: response,
+          pagination,
         };
       },
       providesTags: (result) =>
@@ -392,35 +368,11 @@ const projectGitLabApi = createApi({
         };
       },
       transformResponse: (response: GitLabRepositoryCommit[], meta) => {
-        const pageStr = meta?.response?.headers.get("X-Page");
-        const perPageStr = meta?.response?.headers.get("X-Per-Page");
-        const totalStr = meta?.response?.headers.get("X-Total");
-        const totalPagesStr = meta?.response?.headers.get("X-Total-Pages");
-
-        if (!pageStr || !perPageStr || !totalStr || !totalPagesStr) {
-          throw new Error("Missing pagination headers");
-        }
-
-        const page = parseInt(pageStr, 10);
-        const perPage = parseInt(perPageStr, 10);
-        const total = parseInt(totalStr, 10);
-        const totalPages = parseInt(totalPagesStr, 10);
-
-        if (
-          isNaN(page) ||
-          isNaN(perPage) ||
-          isNaN(total) ||
-          isNaN(totalPages)
-        ) {
-          throw new Error("Invalid pagination headers");
-        }
-
+        const pagination = extractPaginationMetadata(meta?.response?.headers);
+        console.log({ pagination });
         return {
-          page,
-          perPage,
-          total,
-          totalPages,
           data: response,
+          pagination,
         };
       },
       providesTags: (result) =>
@@ -487,6 +439,43 @@ const projectGitLabApi = createApi({
     }),
   }),
 });
+
+function extractPaginationMetadata(
+  headers: Headers | undefined | null
+): PaginationMetadata {
+  const pageStr = headers?.get("X-Page");
+  const perPageStr = headers?.get("X-Per-Page");
+  const nextPageStr = headers?.get("X-Next-Page");
+  const totalStr = headers?.get("X-Total");
+  const totalPagesStr = headers?.get("X-Total-Pages");
+
+  if (!pageStr || !perPageStr) {
+    throw new Error("Missing pagination headers");
+  }
+
+  const page = parseInt(pageStr, 10);
+  const perPage = parseInt(perPageStr, 10);
+  const hasMore = !!nextPageStr && nextPageStr.trim() !== "";
+  const total = totalStr ? parseInt(totalStr, 10) : undefined;
+  const totalPages = totalPagesStr ? parseInt(totalPagesStr, 10) : undefined;
+
+  if (
+    isNaN(page) ||
+    isNaN(perPage) ||
+    (total && isNaN(total)) ||
+    (totalPages && isNaN(totalPages))
+  ) {
+    throw new Error("Invalid pagination headers");
+  }
+
+  return {
+    hasMore,
+    page,
+    perPage,
+    total,
+    totalPages,
+  };
+}
 
 export default projectGitLabApi;
 export const {

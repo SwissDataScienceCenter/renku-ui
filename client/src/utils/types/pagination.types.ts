@@ -16,10 +16,15 @@
  * limitations under the License.
  */
 
-export interface ListResponse<T> {
+export interface PaginationMetadata {
+  hasMore: boolean;
   page: number;
   perPage: number;
-  total: number;
-  totalPages: number;
+  total?: number;
+  totalPages?: number;
+}
+
+export interface ListResponse<T> {
   data: T[];
+  pagination: PaginationMetadata;
 }

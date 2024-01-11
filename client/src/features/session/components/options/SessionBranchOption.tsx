@@ -176,8 +176,8 @@ export default function SessionBranchOption() {
     }
     setState({
       data: initialBranchList,
-      fetchedPages: branchesFirstPage.page,
-      hasMore: branchesFirstPage.page < branchesFirstPage.totalPages,
+      fetchedPages: branchesFirstPage.pagination.page,
+      hasMore: branchesFirstPage.pagination.hasMore,
     });
   }, [branchesFirstPage, initialBranchList]);
 
@@ -185,7 +185,7 @@ export default function SessionBranchOption() {
     if (
       allBranches == null ||
       branchesPageResult.data == null ||
-      branchesPageResult.data.page <= fetchedPages
+      branchesPageResult.data.pagination.page <= fetchedPages
     ) {
       return;
     }
@@ -196,9 +196,8 @@ export default function SessionBranchOption() {
           ({ default: isDefault }) => !isDefault
         ),
       ],
-      fetchedPages: branchesPageResult.data.page,
-      hasMore:
-        branchesPageResult.data.page < branchesPageResult.data.totalPages,
+      fetchedPages: branchesPageResult.data.pagination.page,
+      hasMore: branchesPageResult.data.pagination.hasMore,
     });
   }, [allBranches, branchesPageResult.data, fetchedPages]);
 
@@ -321,7 +320,7 @@ export default function SessionBranchOption() {
               fetchBranchesPage({
                 projectId: `${gitLabProjectId}`,
                 page: fetchedPages + 1,
-                perPage: branchesFirstPage?.perPage,
+                perPage: branchesFirstPage?.pagination.perPage,
               })
             }
           >
@@ -643,7 +642,7 @@ function BranchSelector({
 }: BranchSelectorProps) {
   const currentValue = useMemo(
     () => branches.find(({ name }) => name === currentBranch),
-    [currentBranch]
+    [branches, currentBranch]
   );
 
   return (
