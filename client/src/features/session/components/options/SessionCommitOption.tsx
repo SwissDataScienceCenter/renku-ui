@@ -19,7 +19,6 @@
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { clamp } from "lodash";
 import {
   ChangeEvent,
   useCallback,
@@ -28,6 +27,14 @@ import {
   useRef,
   useState,
 } from "react";
+import Select, {
+  ClassNamesConfig,
+  GroupBase,
+  MenuListProps,
+  SelectComponentsConfig,
+  SingleValue,
+  components,
+} from "react-select";
 import {
   Button,
   FormGroup,
@@ -41,26 +48,16 @@ import {
 
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
-// import CommitSelector from "../../../../components/commitSelector/CommitSelector";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
+import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
 import projectGitLabApi, {
   useGetRepositoryCommits2Query,
-  useGetRepositoryCommitsQuery,
 } from "../../../project/projectGitLab.api";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 import { setCommit } from "../../startSessionOptionsSlice";
-import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
-import Select, {
-  ClassNamesConfig,
-  GroupBase,
-  MenuListProps,
-  SelectComponentsConfig,
-  SingleValue,
-  components,
-} from "react-select";
 
 import styles from "./SessionCommitOption.module.scss";
 
