@@ -217,64 +217,6 @@ function RefreshCommitsButton({ refresh }: RefreshCommitsButtonProps) {
   );
 }
 
-interface CommitOptionsButtonProps {
-  limit: number;
-  onChangeLimit: (newLimit: number) => void;
-}
-
-function CommitOptionsButton({
-  limit,
-  onChangeLimit,
-}: CommitOptionsButtonProps) {
-  const ref = useRef<HTMLButtonElement>(null);
-
-  const onChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      onChangeLimit(event.target.valueAsNumber);
-    },
-    [onChangeLimit]
-  );
-
-  return (
-    <>
-      <Button
-        className={cx("ms-2", "p-0")}
-        color="link"
-        innerRef={ref}
-        onClick={(event) => {
-          event.preventDefault();
-        }}
-        size="sm"
-      >
-        <FontAwesomeIcon icon={faCogs} />
-      </Button>
-      <UncontrolledTooltip placement="top" target={ref}>
-        Commit options
-      </UncontrolledTooltip>
-      <UncontrolledPopover placement="top" trigger="legacy" target={ref}>
-        <PopoverHeader>Commit options</PopoverHeader>
-        <PopoverBody>
-          <FormGroup>
-            <Label for="session-commit-option-limit">
-              Number of commits to display
-            </Label>
-            <Input
-              id="session-commit-option-limit"
-              min={0}
-              max={100}
-              onChange={onChange}
-              step={1}
-              type="number"
-              value={limit}
-            />
-            <FormText>1-100, 0 for unlimited</FormText>
-          </FormGroup>
-        </PopoverBody>
-      </UncontrolledPopover>
-    </>
-  );
-}
-
 interface CommitSelectorProps {
   commits: GitLabRepositoryCommit[];
   currentCommit?: string;
