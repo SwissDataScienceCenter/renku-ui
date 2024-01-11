@@ -97,6 +97,7 @@
     "xregexp": "^4.4.0"
   },
   "devDependencies": {
+    "@nabla/vite-plugin-eslint": "^2.0.2",
     "@storybook/addon-actions": "^7.6.0",
     "@storybook/addon-essentials": "^7.6.0",
     "@storybook/addon-interactions": "^7.6.0",
