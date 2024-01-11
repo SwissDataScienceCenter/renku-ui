@@ -429,17 +429,17 @@ function SessionActions({ className, session }: SessionActionsProps) {
     </DropdownItem>
   );
 
-  const modifyAction = status === "hibernated" &&
+  const modifyAction = (
+    /*status === "hibernated" && // allow modifying at any time (just for testing)
     !isStopping &&
-    !isHibernating && (
-      <DropdownItem
-        data-cy="modify-session-button"
-        onClick={toggleModifySession}
-      >
-        <Tools className={cx("bi", "text-rk-green", "me-2")} />
-        Modify session
-      </DropdownItem>
-    );
+    !isHibernating &&*/ <DropdownItem
+      data-cy="modify-session-button"
+      onClick={toggleModifySession}
+    >
+      <Tools className={cx("bi", "text-rk-green", "me-2")} />
+      Modify session
+    </DropdownItem>
+  );
 
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
