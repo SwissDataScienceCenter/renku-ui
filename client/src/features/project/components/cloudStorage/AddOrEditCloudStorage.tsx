@@ -559,8 +559,8 @@ function SecretOptionWarning({
       </div>
       <UncontrolledTooltip placement="top" target={id}>
         This field contains sensitive data (E.G. password, access token, ...).
-        We currently cannot store it safely, so you might be asked this value
-        again when starting a session.
+        RenkuLab does not store passwords, so you will be asked this value again
+        when starting a session.
       </UncontrolledTooltip>
     </>
   );
@@ -979,7 +979,7 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         </div>
         <div className={cx("form-text", "text-muted")}>
           This name will help you identify the storage. It should be unique for
-          this project and it can only contains letter, numbers, $, _.
+          this project and can only contain letters, numbers, _, -.
         </div>
       </div>
 
@@ -1008,8 +1008,8 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <div className="invalid-feedback">Please provide a mount point.</div>
         <div className={cx("form-text", "text-muted")}>
           This is the name of the folder where you will find your external
-          storage in the sessions. You should pick something different from the
-          folders used in the projects repository, and from folder mounted by
+          storage in sessions. You should pick something different from the
+          folders used in the projects repository, and from folders mounted by
           other storage services.
         </div>
       </div>
