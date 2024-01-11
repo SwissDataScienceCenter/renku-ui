@@ -27,6 +27,7 @@
     }
   },
   "overrides": [
+    { "files": ["**/*.js", "**/*.jsx"] },
     {
       "files": ["**/*.ts", "**/*.tsx"],
       "plugins": [
