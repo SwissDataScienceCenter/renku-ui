@@ -117,6 +117,7 @@ export interface GitLabRepositoryCommit {
 }
 
 export type GitLabRepositoryBranchList = ListResponse<GitLabRepositoryBranch>;
+export type GitLabRepositoryCommitList = ListResponse<GitLabRepositoryCommit>;
 
 export interface GetRepositoryBranchParams {
   branch: string;
@@ -168,6 +169,13 @@ export interface GetRepositoryCommitParams {
 
 export interface GetRepositoryCommitsParams {
   branch: string;
+  perPage?: number;
+  projectId: string;
+}
+
+export interface GetRepositoryCommits2Params {
+  branch: string;
+  page?: number;
   perPage?: number;
   projectId: string;
 }

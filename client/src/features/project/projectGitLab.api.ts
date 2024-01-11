@@ -34,6 +34,7 @@ import {
   GetRepositoryBranchParams,
   GetRepositoryBranchesParams,
   GetRepositoryCommitParams,
+  GetRepositoryCommits2Params,
   GetRepositoryCommitsParams,
   GitLabPipeline,
   GitLabPipelineJob,
@@ -42,6 +43,7 @@ import {
   GitLabRepositoryBranch,
   GitLabRepositoryBranchList,
   GitLabRepositoryCommit,
+  GitLabRepositoryCommitList,
   GitlabProjectResponse,
   Pagination,
   RetryPipelineParams,
@@ -375,6 +377,60 @@ const projectGitLabApi = createApi({
       providesTags: (result) =>
         result ? [{ id: result.id, type: "Commit" }, "Commit"] : ["Commit"],
     }),
+    getRepositoryCommits2: builder.query<
+      GitLabRepositoryCommitList,
+      GetRepositoryCommits2Params
+    >({
+      query: ({ branch, page, perPage, projectId }) => {
+        return {
+          url: `${projectId}/repository/commits`,
+          params: {
+            ref_name: branch,
+            ...(page ? { page } : {}),
+            ...(perPage ? { per_page: perPage } : {}),
+          },
+        };
+      },
+      transformResponse: (response: GitLabRepositoryCommit[], meta) => {
+        const pageStr = meta?.response?.headers.get("X-Page");
+        const perPageStr = meta?.response?.headers.get("X-Per-Page");
+        const totalStr = meta?.response?.headers.get("X-Total");
+        const totalPagesStr = meta?.response?.headers.get("X-Total-Pages");
+
+        if (!pageStr || !perPageStr || !totalStr || !totalPagesStr) {
+          throw new Error("Missing pagination headers");
+        }
+
+        const page = parseInt(pageStr, 10);
+        const perPage = parseInt(perPageStr, 10);
+        const total = parseInt(totalStr, 10);
+        const totalPages = parseInt(totalPagesStr, 10);
+
+        if (
+          isNaN(page) ||
+          isNaN(perPage) ||
+          isNaN(total) ||
+          isNaN(totalPages)
+        ) {
+          throw new Error("Invalid pagination headers");
+        }
+
+        return {
+          page,
+          perPage,
+          total,
+          totalPages,
+          data: response,
+        };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ id }) => ({ type: "Commit", id } as const)),
+              "Commit",
+            ]
+          : ["Commit"],
+    }),
     getRepositoryCommits: builder.query<
       GitLabRepositoryCommit[],
       GetRepositoryCommitsParams
@@ -445,4 +501,5 @@ export const {
   useGetConfigFromRepositoryQuery,
   useGetRepositoryCommitQuery,
   useGetRepositoryCommitsQuery,
+  useGetRepositoryCommits2Query,
 } = projectGitLabApi;
