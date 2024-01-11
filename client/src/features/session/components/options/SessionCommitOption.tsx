@@ -16,17 +16,10 @@
  * limitations under the License.
  */
 
-import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Select, {
   ClassNamesConfig,
   GroupBase,
@@ -35,23 +28,13 @@ import Select, {
   SingleValue,
   components,
 } from "react-select";
-import {
-  Button,
-  FormGroup,
-  FormText,
-  Input,
-  Label,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
 import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
 import projectGitLabApi, {
   useGetRepositoryCommits2Query,
