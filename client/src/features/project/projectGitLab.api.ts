@@ -285,6 +285,10 @@ const projectGitLabApi = createApi({
             ]
           : ["Branch"],
     }),
+    refetchBranches: builder.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["Branch"],
+    }),
     getConfigFromRepository: builder.query<
       ProjectConfig,
       GetConfigFromRepositoryParams
@@ -450,6 +454,7 @@ export const {
   useGetRepositoryBranchQuery,
   useGetRepositoryBranchesQuery,
   useGetAllRepositoryBranchesQuery,
+  useRefetchBranchesMutation,
   useGetConfigFromRepositoryQuery,
   useGetRepositoryCommitQuery,
   useGetRepositoryCommitsQuery,

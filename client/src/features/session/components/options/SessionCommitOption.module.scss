@@ -4,10 +4,6 @@
 @import "~bootstrap/scss/maps";
 @import "~bootstrap/scss/mixins";
 
-.formSelect {
-  --bs-border-color: var(--bs-rk-border-input);
-}
-
 .control {
   background: var(--bs-rk-white);
   --bs-border-color: var(--bs-rk-border-input);

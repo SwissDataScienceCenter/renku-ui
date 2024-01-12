@@ -48,6 +48,7 @@ import { setCommit } from "../../startSessionOptionsSlice";
 import styles from "./SessionCommitOption.module.scss";
 import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
 import { TimeCaption } from "../../../../components/TimeCaption";
+import { PaginatedState } from "./fetchMore.types";
 
 export default function SessionCommitOption() {
   const gitLabProjectId = useLegacySelector<number | null>(
@@ -67,7 +68,6 @@ export default function SessionCommitOption() {
     {
       branch: currentBranch,
       projectId: `${gitLabProjectId ?? 0}`,
-      perPage: 100,
     },
     { skip: !gitLabProjectId || !currentBranch }
   );
@@ -181,7 +181,6 @@ export default function SessionCommitOption() {
         Commits
         <RefreshCommitsButton refresh={refetch} />
       </div>
-
       <CommitSelector
         commits={allCommits}
         currentCommit={currentCommit}
@@ -192,13 +191,6 @@ export default function SessionCommitOption() {
       />
     </div>
   );
-}
-
-interface PaginatedState<T = unknown> {
-  data: T[] | undefined;
-  fetchedPages: number;
-  hasMore: boolean;
-  currentRequestId: string;
 }
 
 interface RefreshCommitsButtonProps {
