@@ -58,6 +58,8 @@ export const CLOUD_STORAGE_OVERRIDE = {
       },
     },
     webdav: {
+      description:
+        "WebDAV compatible services, including PolyBox and SwitchDrive",
       position: 2,
     },
   } as Record<string, Partial<CloudStorageOverride>>,
