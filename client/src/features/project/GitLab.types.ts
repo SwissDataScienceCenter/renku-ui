@@ -169,7 +169,7 @@ export interface GetRepositoryCommitParams {
   projectId: string;
 }
 
-export interface GetRepositoryCommits2Params {
+export interface GetRepositoryCommitsParams {
   branch: string;
   page?: number;
   perPage?: number;

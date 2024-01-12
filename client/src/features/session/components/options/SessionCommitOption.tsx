@@ -24,8 +24,10 @@ import Select, {
   ClassNamesConfig,
   GroupBase,
   MenuListProps,
+  OptionProps,
   SelectComponentsConfig,
   SingleValue,
+  SingleValueProps,
   components,
 } from "react-select";
 import { Button, UncontrolledTooltip } from "reactstrap";
@@ -43,6 +45,8 @@ import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.h
 import { setCommit } from "../../startSessionOptionsSlice";
 
 import styles from "./SessionCommitOption.module.scss";
+import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
+import { TimeCaption } from "../../../../components/TimeCaption";
 
 export default function SessionCommitOption() {
   const gitLabProjectId = useLegacySelector<number | null>(
@@ -162,6 +166,7 @@ export default function SessionCommitOption() {
         commits={allCommits}
         currentCommit={currentCommit}
         hasMore={hasMore}
+        isFetchingMore={commitsPageResult.isFetching}
         onChange={onChange}
         onFetchMore={onFetchMore}
       />
@@ -204,6 +209,7 @@ interface CommitSelectorProps {
   commits: GitLabRepositoryCommit[];
   currentCommit?: string;
   hasMore?: boolean;
+  isFetchingMore?: boolean;
   onChange?: (newValue: SingleValue<GitLabRepositoryCommit>) => void;
   onFetchMore?: () => void;
 }
@@ -212,6 +218,7 @@ function CommitSelector({
   currentCommit,
   commits,
   hasMore,
+  isFetchingMore,
   onChange,
   onFetchMore,
 }: CommitSelectorProps) {
@@ -223,7 +230,7 @@ function CommitSelector({
   const components = useMemo(
     () => ({
       ...selectComponents,
-      MenuList: CustomMenuList({ hasMore, onFetchMore }),
+      MenuList: CustomMenuList({ hasMore, isFetchingMore, onFetchMore }),
     }),
     [hasMore, onFetchMore]
   );
@@ -242,6 +249,7 @@ function CommitSelector({
       components={components}
       isClearable={false}
       isSearchable={false}
+      menuIsOpen
     />
   );
 }
@@ -261,8 +269,12 @@ const selectClassNames: ClassNamesConfig<GitLabRepositoryCommit, false> = {
   menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected }) =>
     cx(
-      "d-grid",
-      "gap-1",
+      "d-flex",
+      "flex-column",
+      "flex-sm-row",
+      "align-items-start",
+      "align-items-sm-center",
+      "column-gap-3",
       "px-3",
       "py-1",
       styles.option,
@@ -272,10 +284,14 @@ const selectClassNames: ClassNamesConfig<GitLabRepositoryCommit, false> = {
   placeholder: () => cx("px-3"),
   singleValue: () =>
     cx(
-      "d-grid",
-      "gap-1",
-      "px-3"
-      // styles.singleValue
+      "d-flex",
+      "flex-column",
+      "flex-sm-row",
+      "align-items-start",
+      "align-items-sm-center",
+      "column-gap-3",
+      "px-3",
+      styles.singleValue
     ),
 };
 
@@ -283,14 +299,55 @@ const selectComponents: SelectComponentsConfig<
   GitLabRepositoryCommit,
   false,
   GroupBase<GitLabRepositoryCommit>
-> = {};
+> = {
+  DropdownIndicator: (props) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        <ChevronDown size="20" />
+      </components.DropdownIndicator>
+    );
+  },
+  Option: (
+    props: OptionProps<
+      GitLabRepositoryCommit,
+      false,
+      GroupBase<GitLabRepositoryCommit>
+    >
+  ) => {
+    const { data: commit } = props;
+    return (
+      <components.Option {...props}>
+        <OptionOrSingleValueContent commit={commit} />
+      </components.Option>
+    );
+  },
+  SingleValue: (
+    props: SingleValueProps<
+      GitLabRepositoryCommit,
+      false,
+      GroupBase<GitLabRepositoryCommit>
+    >
+  ) => {
+    const { data: commit } = props;
+    return (
+      <components.SingleValue {...props}>
+        <OptionOrSingleValueContent commit={commit} />
+      </components.SingleValue>
+    );
+  },
+};
 
 interface CustomMenuListProps {
   hasMore?: boolean;
+  isFetchingMore?: boolean;
   onFetchMore?: () => void;
 }
 
-function CustomMenuList({ hasMore, onFetchMore }: CustomMenuListProps) {
+function CustomMenuList({
+  hasMore,
+  isFetchingMore,
+  onFetchMore,
+}: CustomMenuListProps) {
   return function CustomMenuListInner(
     props: MenuListProps<GitLabRepositoryCommit, false>
   ) {
@@ -298,16 +355,46 @@ function CustomMenuList({ hasMore, onFetchMore }: CustomMenuListProps) {
       <components.MenuList {...props}>
         {props.children}
         {hasMore && (
-          <Button
-            className={cx("ms-2", "p-0")}
-            color="link"
-            onClick={onFetchMore}
-            size="sm"
-          >
-            Fetch more
-          </Button>
+          <div className={cx("d-flex", "px-3", "pt-1")}>
+            <Button
+              className={cx("btn-outline-rk-green")}
+              disabled={isFetchingMore}
+              onClick={onFetchMore}
+              size="sm"
+            >
+              {isFetchingMore ? (
+                <Loader className="me-2" inline size={16} />
+              ) : (
+                <ThreeDots className={cx("bi", "me-2")} />
+              )}
+              Fetch more
+            </Button>
+          </div>
         )}
       </components.MenuList>
     );
   };
+}
+
+interface OptionOrSingleValueContentProps {
+  commit: GitLabRepositoryCommit;
+}
+
+function OptionOrSingleValueContent({
+  commit,
+}: OptionOrSingleValueContentProps) {
+  return (
+    <>
+      <span className={cx("fw-bold", styles.id)}>{commit.short_id}</span>
+      <span className={cx("text-truncate", styles.author)}>
+        {commit.author_name}
+      </span>
+      <span className={cx("text-truncate", styles.datetime)}>
+        <TimeCaption datetime={commit.committed_date} prefix="authored" />
+      </span>
+      <span className={cx("text-truncate", styles.message)}>
+        {commit.message}
+      </span>
+    </>
+  );
 }

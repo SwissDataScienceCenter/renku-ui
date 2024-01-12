@@ -32,11 +32,6 @@
 .option {
   cursor: pointer !important;
 
-  // border-bottom: 1px dotted #a3a3a3;
-  // &:last-of-type {
-  //   border-bottom: none;
-  // }
-
   &:hover,
   &IsFocused {
     background-color: #e4e7ea;
@@ -44,5 +39,35 @@
 
   &IsSelected {
     background-color: #e4e7ea80;
+  }
+}
+
+.option,
+.singleValue {
+  font-size: 0.875rem !important;
+
+  @include media-breakpoint-up(lg) {
+    font-size: 1rem !important;
+  }
+
+  & .id {
+    @include media-breakpoint-up(sm) {
+      min-width: 80px;
+      width: 80px;
+    }
+  }
+
+  & .author {
+    @include media-breakpoint-up(sm) {
+      min-width: 100px;
+      width: 150px;
+    }
+  }
+
+  & .datetime {
+    @include media-breakpoint-up(sm) {
+      min-width: 150px;
+      width: 200px;
+    }
   }
 }

@@ -33,7 +33,7 @@ import {
   GetRepositoryBranchParams,
   GetRepositoryBranchesParams,
   GetRepositoryCommitParams,
-  GetRepositoryCommits2Params,
+  GetRepositoryCommitsParams,
   GetAllRepositoryCommitsParams,
   GitLabPipeline,
   GitLabPipelineJob,
@@ -352,7 +352,7 @@ const projectGitLabApi = createApi({
     }),
     getRepositoryCommits: builder.query<
       GitLabRepositoryCommitList,
-      GetRepositoryCommits2Params
+      GetRepositoryCommitsParams
     >({
       query: ({ branch, page, perPage, projectId }) => {
         return {
