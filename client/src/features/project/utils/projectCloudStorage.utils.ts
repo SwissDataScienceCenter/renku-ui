@@ -118,12 +118,14 @@ export function getSchemaStorage(
         Object.keys(CLOUD_STORAGE_OVERRIDE.storage).includes(element.prefix)
       ) {
         const override = CLOUD_STORAGE_OVERRIDE.storage[element.prefix];
-        current.push({
-          ...element,
-          name: override.name ?? element.name,
-          description: override.description ?? element.description,
-          position: override.position ?? element.position,
-        });
+        if (!override.hide) {
+          current.push({
+            ...element,
+            name: override.name ?? element.name,
+            description: override.description ?? element.description,
+            position: override.position ?? element.position,
+          });
+        }
       } else {
         current.push(element);
       }

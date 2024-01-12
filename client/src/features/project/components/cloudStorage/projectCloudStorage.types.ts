@@ -114,6 +114,7 @@ export interface CloudStorageSchemaOptions {
 export interface CloudStorageSchema {
   name: string;
   description: string;
+  hide?: boolean;
   prefix: string; // ? weird naming; it's the machine readable name
   position?: number;
   options: CloudStorageSchemaOptions[];

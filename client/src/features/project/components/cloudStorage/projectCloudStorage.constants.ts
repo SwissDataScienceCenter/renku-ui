@@ -30,6 +30,23 @@ export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
 
 export const CLOUD_STORAGE_OVERRIDE = {
   storage: {
+    azureblob: {
+      position: 3,
+    },
+    drive: {
+      hide: true,
+    },
+    gcs: {
+      hide: true,
+    },
+    // eslint-disable-next-line spellcheck/spell-checker
+    dropbox: {
+      hide: true,
+    },
+    // eslint-disable-next-line spellcheck/spell-checker
+    onedrive: {
+      hide: true,
+    },
     s3: {
       description:
         "Amazon S3 Compliant Storage Providers including AWS, CloudFlare, DigitalOcean and many others",
@@ -40,14 +57,8 @@ export const CLOUD_STORAGE_OVERRIDE = {
         },
       },
     },
-    drive: {
-      position: 2,
-    },
     webdav: {
-      position: 3,
-    },
-    azureblob: {
-      position: 4,
+      position: 2,
     },
   } as Record<string, Partial<CloudStorageOverride>>,
 };
