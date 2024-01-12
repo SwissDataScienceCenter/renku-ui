@@ -40,6 +40,7 @@ import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.h
 import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
 import projectGitLabApi, {
   useGetRepositoryCommitsQuery,
+  useRefetchCommitsMutation,
 } from "../../../project/projectGitLab.api";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 import { setCommit } from "../../startSessionOptionsSlice";
@@ -61,7 +62,6 @@ export default function SessionCommitOption() {
     data: commitsFirstPage,
     isError,
     isFetching,
-    refetch,
     requestId,
   } = useGetRepositoryCommitsQuery(
     {
@@ -72,19 +72,29 @@ export default function SessionCommitOption() {
     { skip: !gitLabProjectId || !currentBranch }
   );
 
-  const [{ data: allCommits, fetchedPages, hasMore }, setState] = useState<
-    PaginatedState<GitLabRepositoryCommit>
-  >({ data: undefined, fetchedPages: 0, hasMore: true });
+  const [
+    { data: allCommits, fetchedPages, hasMore, currentRequestId },
+    setState,
+  ] = useState<PaginatedState<GitLabRepositoryCommit>>({
+    data: undefined,
+    fetchedPages: 0,
+    hasMore: true,
+    currentRequestId: "",
+  });
 
   const [fetchCommitsPage, commitsPageResult] =
     projectGitLabApi.useLazyGetRepositoryCommitsQuery();
   const onFetchMore = useCallback(() => {
-    fetchCommitsPage({
+    const request = fetchCommitsPage({
       branch: currentBranch,
       projectId: `${gitLabProjectId ?? 0}`,
       page: fetchedPages + 1,
       perPage: commitsFirstPage?.pagination.perPage,
     });
+    setState((prevState) => ({
+      ...prevState,
+      currentRequestId: request.requestId,
+    }));
   }, [
     commitsFirstPage?.pagination.perPage,
     currentBranch,
@@ -92,6 +102,9 @@ export default function SessionCommitOption() {
     fetchedPages,
     gitLabProjectId,
   ]);
+
+  // Handle forced refresh
+  const [refetch] = useRefetchCommitsMutation();
 
   const dispatch = useAppDispatch();
   const onChange = useCallback(
@@ -113,6 +126,7 @@ export default function SessionCommitOption() {
       data: commitsFirstPage.data,
       fetchedPages: commitsFirstPage.pagination.currentPage ?? 0,
       hasMore: !!commitsFirstPage.pagination.nextPage,
+      currentRequestId: "",
     });
   }, [commitsFirstPage, requestId]);
 
@@ -120,7 +134,7 @@ export default function SessionCommitOption() {
     if (
       allCommits == null ||
       commitsPageResult.data == null ||
-      (commitsPageResult.data.pagination.currentPage ?? 0) <= fetchedPages
+      currentRequestId !== commitsPageResult.requestId
     ) {
       return;
     }
@@ -128,6 +142,7 @@ export default function SessionCommitOption() {
       data: [...allCommits, ...commitsPageResult.data.data],
       fetchedPages: commitsPageResult.data.pagination.currentPage ?? 0,
       hasMore: !!commitsPageResult.data.pagination.nextPage,
+      currentRequestId: "",
     });
   }, [allCommits, commitsPageResult.data, fetchedPages]);
 
@@ -178,6 +193,7 @@ interface PaginatedState<T = unknown> {
   data: T[] | undefined;
   fetchedPages: number;
   hasMore: boolean;
+  currentRequestId: string;
 }
 
 interface RefreshCommitsButtonProps {
@@ -249,7 +265,6 @@ function CommitSelector({
       components={components}
       isClearable={false}
       isSearchable={false}
-      menuIsOpen
     />
   );
 }

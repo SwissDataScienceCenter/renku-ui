@@ -433,6 +433,10 @@ const projectGitLabApi = createApi({
             ]
           : ["Commit"],
     }),
+    refetchCommits: builder.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["Commit"],
+    }),
   }),
 });
 
@@ -450,4 +454,5 @@ export const {
   useGetRepositoryCommitQuery,
   useGetRepositoryCommitsQuery,
   useGetAllRepositoryCommitsQuery,
+  useRefetchCommitsMutation,
 } = projectGitLabApi;
