@@ -5,8 +5,8 @@
   "scripts": {
     "start": "vite --port 3000",
     "start:strict-port": "vite --port 3000 --strictPort",
-    "build": "tsc && vite build",
-    "build:analyze": "vite-bundle-visualizer",
+    "build": "tsc && NODE_OPTIONS=--max-old-space-size=4096 vite build",
+    "build:analyze": "NODE_OPTIONS=--max-old-space-size=4096 vite-bundle-visualizer",
     "preview": "vite preview --port 3000 --strictPort",
     "optimize": "vite optimize",
     "test": "vitest",
@@ -97,6 +97,7 @@
     "xregexp": "^4.4.0"
   },
   "devDependencies": {
+    "@nabla/vite-plugin-eslint": "^2.0.2",
     "@storybook/addon-actions": "^7.6.0",
     "@storybook/addon-essentials": "^7.6.0",
     "@storybook/addon-interactions": "^7.6.0",
