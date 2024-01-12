@@ -37,7 +37,7 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
 import projectGitLabApi, {
-  useGetRepositoryCommits2Query,
+  useGetRepositoryCommitsQuery,
 } from "../../../project/projectGitLab.api";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 import { setCommit } from "../../startSessionOptionsSlice";
@@ -59,7 +59,7 @@ export default function SessionCommitOption() {
     isFetching,
     refetch,
     requestId,
-  } = useGetRepositoryCommits2Query(
+  } = useGetRepositoryCommitsQuery(
     {
       branch: currentBranch,
       projectId: `${gitLabProjectId ?? 0}`,
@@ -73,7 +73,7 @@ export default function SessionCommitOption() {
   >({ data: undefined, fetchedPages: 0, hasMore: true });
 
   const [fetchCommitsPage, commitsPageResult] =
-    projectGitLabApi.useLazyGetRepositoryCommits2Query();
+    projectGitLabApi.useLazyGetRepositoryCommitsQuery();
   const onFetchMore = useCallback(() => {
     fetchCommitsPage({
       branch: currentBranch,
@@ -256,14 +256,9 @@ const selectClassNames: ClassNamesConfig<GitLabRepositoryCommit, false> = {
       menuIsOpen && styles.controlIsOpen
     ),
   dropdownIndicator: () => cx("pe-3"),
-  // groupHeading: () => cx("pt-1", "px-3", "text-uppercase", styles.groupHeading),
   menu: () =>
     cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
-  menuList: () =>
-    cx(
-      "d-grid"
-      //  "gap-2"
-    ),
+  menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected }) =>
     cx(
       "d-grid",

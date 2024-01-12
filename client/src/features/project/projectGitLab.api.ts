@@ -34,7 +34,7 @@ import {
   GetRepositoryBranchesParams,
   GetRepositoryCommitParams,
   GetRepositoryCommits2Params,
-  GetRepositoryCommitsParams,
+  GetAllRepositoryCommitsParams,
   GitLabPipeline,
   GitLabPipelineJob,
   GitLabRegistry,
@@ -350,7 +350,7 @@ const projectGitLabApi = createApi({
       providesTags: (result) =>
         result ? [{ id: result.id, type: "Commit" }, "Commit"] : ["Commit"],
     }),
-    getRepositoryCommits2: builder.query<
+    getRepositoryCommits: builder.query<
       GitLabRepositoryCommitList,
       GetRepositoryCommits2Params
     >({
@@ -366,7 +366,6 @@ const projectGitLabApi = createApi({
       },
       transformResponse: (response: GitLabRepositoryCommit[], meta) => {
         const pagination = processPaginationHeaders(meta?.response?.headers);
-        console.log({ pagination });
         return {
           data: response,
           pagination,
@@ -380,9 +379,9 @@ const projectGitLabApi = createApi({
             ]
           : ["Commit"],
     }),
-    getRepositoryCommits: builder.query<
+    getAllRepositoryCommits: builder.query<
       GitLabRepositoryCommit[],
-      GetRepositoryCommitsParams
+      GetAllRepositoryCommitsParams
     >({
       queryFn: async (
         { branch, perPage, projectId },
@@ -437,43 +436,6 @@ const projectGitLabApi = createApi({
   }),
 });
 
-// function extractPaginationMetadata(
-//   headers: Headers | undefined | null
-// ): PaginationMetadata {
-//   const pageStr = headers?.get("X-Page");
-//   const perPageStr = headers?.get("X-Per-Page");
-//   const nextPageStr = headers?.get("X-Next-Page");
-//   const totalStr = headers?.get("X-Total");
-//   const totalPagesStr = headers?.get("X-Total-Pages");
-
-//   if (!pageStr || !perPageStr) {
-//     throw new Error("Missing pagination headers");
-//   }
-
-//   const page = parseInt(pageStr, 10);
-//   const perPage = parseInt(perPageStr, 10);
-//   const hasMore = !!nextPageStr && nextPageStr.trim() !== "";
-//   const total = totalStr ? parseInt(totalStr, 10) : undefined;
-//   const totalPages = totalPagesStr ? parseInt(totalPagesStr, 10) : undefined;
-
-//   if (
-//     isNaN(page) ||
-//     isNaN(perPage) ||
-//     (total && isNaN(total)) ||
-//     (totalPages && isNaN(totalPages))
-//   ) {
-//     throw new Error("Invalid pagination headers");
-//   }
-
-//   return {
-//     hasMore,
-//     page,
-//     perPage,
-//     total,
-//     totalPages,
-//   };
-// }
-
 export default projectGitLabApi;
 export const {
   useGetProjectByIdQuery,
@@ -487,5 +449,5 @@ export const {
   useGetConfigFromRepositoryQuery,
   useGetRepositoryCommitQuery,
   useGetRepositoryCommitsQuery,
-  useGetRepositoryCommits2Query,
+  useGetAllRepositoryCommitsQuery,
 } = projectGitLabApi;
