@@ -133,18 +133,23 @@ export default function SessionCommitOption() {
   useEffect(() => {
     if (
       allCommits == null ||
-      commitsPageResult.data == null ||
+      commitsPageResult.currentData == null ||
       currentRequestId !== commitsPageResult.requestId
     ) {
       return;
     }
     setState({
-      data: [...allCommits, ...commitsPageResult.data.data],
-      fetchedPages: commitsPageResult.data.pagination.currentPage ?? 0,
-      hasMore: !!commitsPageResult.data.pagination.nextPage,
+      data: [...allCommits, ...commitsPageResult.currentData.data],
+      fetchedPages: commitsPageResult.currentData.pagination.currentPage ?? 0,
+      hasMore: !!commitsPageResult.currentData.pagination.nextPage,
       currentRequestId: "",
     });
-  }, [allCommits, commitsPageResult.data, fetchedPages]);
+  }, [
+    allCommits,
+    commitsPageResult.currentData,
+    commitsPageResult.requestId,
+    currentRequestId,
+  ]);
 
   if (isFetching || !gitLabProjectId || !currentBranch) {
     return (
@@ -248,10 +253,8 @@ function CommitSelector({
       ...selectComponents,
       MenuList: CustomMenuList({ hasMore, isFetchingMore, onFetchMore }),
     }),
-    [hasMore, onFetchMore]
+    [hasMore, isFetchingMore, onFetchMore]
   );
-
-  console.log(commits.length);
 
   return (
     <Select
@@ -265,6 +268,7 @@ function CommitSelector({
       components={components}
       isClearable={false}
       isSearchable={false}
+      isLoading={isFetchingMore}
     />
   );
 }
