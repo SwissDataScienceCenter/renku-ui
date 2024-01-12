@@ -17,7 +17,6 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import processPaginationHeaders from "../../api-client/pagination";
 import { parseINIString } from "../../utils/helpers/HelperFunctions";
 import {
   MAX_GITLAB_REPOSITORY_BRANCH_PAGES,
@@ -51,7 +50,7 @@ import {
 } from "./GitLab.types";
 import { ProjectConfig } from "./Project";
 import { transformGetConfigRawResponse } from "./projectCoreApi";
-import { PaginationMetadata } from "../../utils/types/pagination.types";
+import processPaginationHeaders from "../../utils/helpers/pagination.utils";
 
 const projectGitLabApi = createApi({
   reducerPath: "projectGitLab",
@@ -217,7 +216,7 @@ const projectGitLabApi = createApi({
         };
       },
       transformResponse: (response: GitLabRepositoryBranch[], meta) => {
-        const pagination = extractPaginationMetadata(meta?.response?.headers);
+        const pagination = processPaginationHeaders(meta?.response?.headers);
         return {
           data: response,
           pagination,
@@ -267,9 +266,7 @@ const projectGitLabApi = createApi({
           allBranches.push(...branches);
 
           const responseHeaders = result.meta?.response?.headers;
-          const pagination = processPaginationHeaders(
-            responseHeaders
-          ) as Pagination;
+          const pagination = processPaginationHeaders(responseHeaders);
 
           if (pagination.nextPage == null) {
             break;
@@ -368,7 +365,7 @@ const projectGitLabApi = createApi({
         };
       },
       transformResponse: (response: GitLabRepositoryCommit[], meta) => {
-        const pagination = extractPaginationMetadata(meta?.response?.headers);
+        const pagination = processPaginationHeaders(meta?.response?.headers);
         console.log({ pagination });
         return {
           data: response,
@@ -440,42 +437,42 @@ const projectGitLabApi = createApi({
   }),
 });
 
-function extractPaginationMetadata(
-  headers: Headers | undefined | null
-): PaginationMetadata {
-  const pageStr = headers?.get("X-Page");
-  const perPageStr = headers?.get("X-Per-Page");
-  const nextPageStr = headers?.get("X-Next-Page");
-  const totalStr = headers?.get("X-Total");
-  const totalPagesStr = headers?.get("X-Total-Pages");
+// function extractPaginationMetadata(
+//   headers: Headers | undefined | null
+// ): PaginationMetadata {
+//   const pageStr = headers?.get("X-Page");
+//   const perPageStr = headers?.get("X-Per-Page");
+//   const nextPageStr = headers?.get("X-Next-Page");
+//   const totalStr = headers?.get("X-Total");
+//   const totalPagesStr = headers?.get("X-Total-Pages");
 
-  if (!pageStr || !perPageStr) {
-    throw new Error("Missing pagination headers");
-  }
+//   if (!pageStr || !perPageStr) {
+//     throw new Error("Missing pagination headers");
+//   }
 
-  const page = parseInt(pageStr, 10);
-  const perPage = parseInt(perPageStr, 10);
-  const hasMore = !!nextPageStr && nextPageStr.trim() !== "";
-  const total = totalStr ? parseInt(totalStr, 10) : undefined;
-  const totalPages = totalPagesStr ? parseInt(totalPagesStr, 10) : undefined;
+//   const page = parseInt(pageStr, 10);
+//   const perPage = parseInt(perPageStr, 10);
+//   const hasMore = !!nextPageStr && nextPageStr.trim() !== "";
+//   const total = totalStr ? parseInt(totalStr, 10) : undefined;
+//   const totalPages = totalPagesStr ? parseInt(totalPagesStr, 10) : undefined;
 
-  if (
-    isNaN(page) ||
-    isNaN(perPage) ||
-    (total && isNaN(total)) ||
-    (totalPages && isNaN(totalPages))
-  ) {
-    throw new Error("Invalid pagination headers");
-  }
+//   if (
+//     isNaN(page) ||
+//     isNaN(perPage) ||
+//     (total && isNaN(total)) ||
+//     (totalPages && isNaN(totalPages))
+//   ) {
+//     throw new Error("Invalid pagination headers");
+//   }
 
-  return {
-    hasMore,
-    page,
-    perPage,
-    total,
-    totalPages,
-  };
-}
+//   return {
+//     hasMore,
+//     page,
+//     perPage,
+//     total,
+//     totalPages,
+//   };
+// }
 
 export default projectGitLabApi;
 export const {

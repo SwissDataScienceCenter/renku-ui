@@ -107,8 +107,8 @@ export default function SessionCommitOption() {
     }
     setState({
       data: commitsFirstPage.data,
-      fetchedPages: commitsFirstPage.pagination.page,
-      hasMore: commitsFirstPage.pagination.hasMore,
+      fetchedPages: commitsFirstPage.pagination.currentPage ?? 0,
+      hasMore: !!commitsFirstPage.pagination.nextPage,
     });
   }, [commitsFirstPage, requestId]);
 
@@ -116,14 +116,14 @@ export default function SessionCommitOption() {
     if (
       allCommits == null ||
       commitsPageResult.data == null ||
-      commitsPageResult.data.pagination.page <= fetchedPages
+      (commitsPageResult.data.pagination.currentPage ?? 0) <= fetchedPages
     ) {
       return;
     }
     setState({
       data: [...allCommits, ...commitsPageResult.data.data],
-      fetchedPages: commitsPageResult.data.pagination.page,
-      hasMore: commitsPageResult.data.pagination.hasMore,
+      fetchedPages: commitsPageResult.data.pagination.currentPage ?? 0,
+      hasMore: !!commitsPageResult.data.pagination.nextPage,
     });
   }, [allCommits, commitsPageResult.data, fetchedPages]);
 
@@ -240,19 +240,8 @@ function CommitSelector({
       onChange={onChange}
       classNames={selectClassNames}
       components={components}
-      // menuIsOpen
-      // options={options}
-      // value={currentSessionClass}
-      // defaultValue={defaultSessionClass}
-      // getOptionValue={(option) => `${option.id}`}
-      // getOptionLabel={(option) => option.name}
-      // onChange={onChange}
-      // isDisabled={disabled}
       isClearable={false}
       isSearchable={false}
-      // unstyled
-      // classNames={selectClassNames}
-      // components={selectComponents}
     />
   );
 }

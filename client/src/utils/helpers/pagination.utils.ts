@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,19 +16,11 @@
  * limitations under the License.
  */
 
-export interface Pagination {
-  currentPage?: number;
-  firstPageLink?: string;
-  lastPageLink?: string;
-  nextPage?: number;
-  nextPageLink?: string;
-  perPage?: number;
-  previousPage?: number;
-  totalItems?: number;
-  totalPages?: number;
-}
+import processPaginationHeadersJs from "../../api-client/pagination";
+import { Pagination } from "../types/pagination.types";
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: Pagination;
-}
+const processPaginationHeaders = processPaginationHeadersJs as (
+  headers: Headers | undefined | null
+) => Pagination;
+
+export default processPaginationHeaders;

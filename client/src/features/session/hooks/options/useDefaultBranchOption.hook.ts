@@ -43,7 +43,6 @@ export default function useDefaultBranchOption({
 
   // Select the default branch
   useEffect(() => {
-    console.log({ branchFromUrl, branches, defaultBranch });
     if (branches == null) {
       return;
     }

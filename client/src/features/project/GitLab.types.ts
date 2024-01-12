@@ -17,7 +17,7 @@
  */
 
 import { Visibilities } from "../../components/visibility/Visibility";
-import { ListResponse } from "../../utils/types/pagination.types";
+import { PaginatedResponse } from "../../utils/types/pagination.types";
 
 export interface Pagination {
   currentPage?: number;
@@ -116,8 +116,10 @@ export interface GitLabRepositoryCommit {
   web_url: string;
 }
 
-export type GitLabRepositoryBranchList = ListResponse<GitLabRepositoryBranch>;
-export type GitLabRepositoryCommitList = ListResponse<GitLabRepositoryCommit>;
+export type GitLabRepositoryBranchList =
+  PaginatedResponse<GitLabRepositoryBranch>;
+export type GitLabRepositoryCommitList =
+  PaginatedResponse<GitLabRepositoryCommit>;
 
 export interface GetRepositoryBranchParams {
   branch: string;

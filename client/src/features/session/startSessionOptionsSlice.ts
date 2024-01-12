@@ -66,7 +66,6 @@ export const startSessionOptionsSlice = createSlice({
       state.environmentVariables.splice(action.payload.index, 1);
     },
     setBranch: (state, action: PayloadAction<string>) => {
-      console.log(`setBranch(${action.payload})`);
       state.branch = action.payload;
       // Also reset the commit when a branch is set
       state.commit = "";
