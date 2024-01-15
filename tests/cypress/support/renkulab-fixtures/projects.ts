@@ -415,7 +415,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       ).as(projectBranches.name);
       // The session start screen also requests the data for the default branch
       cy.fixture(projectBranches.fixture)
-        .then((branches: any[]) => {
+        .then((branches: unknown[]) => {
           cy.intercept(
             "GET",
             "/ui-server/api/projects/*/repository/branches/master",
