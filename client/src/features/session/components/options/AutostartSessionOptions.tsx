@@ -23,7 +23,7 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
-import { useGetCloudStorageForProjectQuery } from "../../../project/projectCloudStorage.api";
+import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import {
   useGetAllRepositoryBranchesQuery,
   useGetRepositoryCommitsQuery,
@@ -170,10 +170,7 @@ function useAutostartSessionOptions(): void {
         skip:
           !gitLabProjectId ||
           !notebooksVersion ||
-          !(
-            notebooksVersion.cloudStorageEnabled.s3 ||
-            notebooksVersion.cloudStorageEnabled.azureBlob
-          ),
+          !notebooksVersion.cloudStorageEnabled,
       }
     );
 
