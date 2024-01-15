@@ -74,3 +74,9 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
 };
 
 export { AuthorFilter };
+
+export function stringToUserRoleFilter(str: string) {
+  return Object.values(SortingOptions).includes(str as SortingOptions)
+    ? (str as SortingOptions)
+    : undefined;
+}
