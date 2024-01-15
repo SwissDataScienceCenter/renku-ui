@@ -172,45 +172,25 @@ describe("launch sessions", () => {
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
     cy.get(".form-label").contains("Cloud Storage").should("be.visible");
-    cy.get("button")
-      .contains("Add Temporary Cloud Storage")
-      .should("be.visible")
-      .and("not.be.disabled");
 
-    cy.get(".card").contains("Example storage").should("be.visible");
-    cy.get(".card")
-      .contains("Mount point")
-      .should("be.visible")
-      .siblings()
+    cy.getDataCy("cloud-storage-item")
+      .contains("example-storage")
+      .should("be.visible");
+    cy.getDataCy("cloud-storage-item")
+      .contains("mount/path")
+      .should("be.visible");
+    cy.getDataCy("cloud-storage-item")
+      .contains("s3/Other")
+      .should("be.visible");
+    cy.getDataCy("cloud-storage-item")
       .contains("mount/path")
       .should("be.visible");
 
-    cy.get(".card")
-      .find("button")
-      .contains("More details")
-      .should("be.visible")
-      .click();
-
-    cy.get("label")
-      .contains("Source Path")
-      .should("be.visible")
-      .siblings("input")
-      .should("have.value", "bucket/source")
+    cy.getDataCy("cloud-storage-details-toggle").should("be.visible").click();
+    cy.getDataCy("cloud-storage-details-section")
+      .contains("https://s3.example.com")
       .should("be.visible");
 
-    cy.get("label")
-      .contains("Mount Point")
-      .should("be.visible")
-      .siblings("input")
-      .should("have.value", "mount/path")
-      .should("be.visible");
-
-    if (Cypress.env("CLOUD_STORAGE_READWRITE_ENABLED")) {
-      cy.contains("Read-only").siblings("input").should("be.checked");
-      cy.get("label")
-        .contains("Read/Write")
-        .siblings("input")
-        .should("not.be.checked");
-    }
+    cy.get("#cloud-storage-example-storage-active").should("be.checked");
   });
 });
