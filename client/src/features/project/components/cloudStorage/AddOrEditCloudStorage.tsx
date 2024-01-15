@@ -406,7 +406,7 @@ function OptionTruncatedText({
 }
 
 interface CheckboxOptionItemProps {
-  control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  control: Control<FieldValues, void>;
   defaultValue: boolean | undefined;
   onFieldValueChange: (option: string, value: boolean) => void;
   option: CloudStorageSchemaOptions;
@@ -454,7 +454,7 @@ function PasswordOptionItem({
   option,
 }: PasswordOptionItemProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const swapShowPassword = useCallback(() => {
+  const toggleShowPassword = useCallback(() => {
     setShowPassword((showPassword) => !showPassword);
   }, []);
 
@@ -498,7 +498,7 @@ function PasswordOptionItem({
         <Button
           className="rounded-end"
           id={`show-password-${option.name}`}
-          onClick={() => swapShowPassword()}
+          onClick={() => toggleShowPassword()}
         >
           {showPassword ? (
             <EyeFill className="bi" />
@@ -531,10 +531,9 @@ function InputOptionItem({
   onFieldValueChange,
   option,
 }: InputOptionItemProps) {
-  const additionalProps: Record<string, string> = {};
-  if (inputType === "dropdown") {
-    additionalProps.list = `${option.name}__list`;
-  }
+  const additionalProps: Record<string, string> = {
+    ...(inputType === "dropdown" ? { list: `${option.name}__list` } : {}),
+  };
   return (
     <>
       <label htmlFor={option.name}>{option.friendlyName ?? option.name}</label>
