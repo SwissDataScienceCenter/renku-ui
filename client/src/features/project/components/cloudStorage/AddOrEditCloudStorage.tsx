@@ -17,7 +17,14 @@
  */
 
 import cx from "classnames";
-import { RefObject, useCallback, useMemo, useRef, useState } from "react";
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ExclamationTriangleFill,
   EyeFill,
@@ -25,7 +32,7 @@ import {
   KeyFill,
   QuestionCircle,
 } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -35,9 +42,6 @@ import {
   Label,
   ListGroup,
   ListGroupItem,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
 
@@ -203,8 +207,8 @@ function AddStorageAdvancedToggle({
     </>
   );
 }
-// *** Add storage: helpers *** //
 
+// *** Add storage: helpers *** //
 interface AddStorageStepProps {
   schema: CloudStorageSchema[];
   setStorage: (newDetails: Partial<CloudStorageDetails>) => void;
@@ -286,7 +290,7 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
             />
           )}
         />
-        <Label className="form-label" for="add-storage-name">
+        <Label className="form-label" for="sourcePath">
           Source path
         </Label>
         <div className={cx("form-text", "text-muted")}>
@@ -340,6 +344,245 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
         </div>
       </div>
     </form>
+  );
+}
+
+// *** Options helpers *** //
+
+interface OptionTruncatedTextProps {
+  collapsedLines?: number;
+  linesTolerance?: number;
+  text: string;
+}
+function OptionTruncatedText({
+  collapsedLines = 2,
+  linesTolerance = 1,
+  text,
+}: OptionTruncatedTextProps) {
+  const [isTruncated, setIsTruncated] = useState(true);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const toggleTruncate = useCallback(() => {
+    setIsTruncated((isTruncated) => !isTruncated);
+  }, []);
+
+  useEffect(() => {
+    // Check if the content overflows its container
+    if (contentRef.current) {
+      const containerHeight = contentRef.current.clientHeight;
+      const contentHeight = contentRef.current.scrollHeight;
+
+      const lineHeight = containerHeight / collapsedLines;
+      const tolerance = lineHeight * (linesTolerance + 0.5);
+
+      setIsTruncated(contentHeight > containerHeight + tolerance);
+    }
+  }, [collapsedLines, linesTolerance, text]);
+
+  const textStyle = {
+    maxHeight: isTruncated ? `${collapsedLines * 1.5}em` : "none",
+  };
+
+  return (
+    <div>
+      <div className="overflow-hidden" ref={contentRef} style={textStyle}>
+        {text}
+      </div>
+      {isTruncated && (
+        <>
+          <span> [...]</span>{" "}
+          <Button
+            className={cx("p-0", "align-baseline")}
+            color="link"
+            onClick={toggleTruncate}
+            size="sm"
+          >
+            Show all
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}
+
+interface CheckboxOptionItemProps {
+  control: Control<FieldValues, void>;
+  defaultValue: boolean | undefined;
+  onFieldValueChange: (option: string, value: boolean) => void;
+  option: CloudStorageSchemaOptions;
+}
+function CheckboxOptionItem({
+  control,
+  defaultValue,
+  onFieldValueChange,
+  option,
+}: CheckboxOptionItemProps) {
+  return (
+    <>
+      <Controller
+        name={option.name}
+        control={control}
+        defaultValue={defaultValue}
+        render={({ field }) => (
+          <input
+            {...field}
+            id={option.name}
+            type="checkbox"
+            className={cx("form-check-input", "me-1")}
+            onChange={(e) => {
+              field.onChange(e);
+              onFieldValueChange(option.name, e.target.checked);
+            }}
+          />
+        )}
+      />
+      <label htmlFor={option.name}>{option.friendlyName ?? option.name}</label>
+    </>
+  );
+}
+
+interface PasswordOptionItemProps {
+  control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  defaultValue: string | undefined;
+  onFieldValueChange: (option: string, value: string) => void;
+  option: CloudStorageSchemaOptions;
+}
+function PasswordOptionItem({
+  control,
+  defaultValue,
+  onFieldValueChange,
+  option,
+}: PasswordOptionItemProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPassword = useCallback(() => {
+    setShowPassword((showPassword) => !showPassword);
+  }, []);
+
+  const tooltipContainerId = `option-is-secret-${option.name}`;
+  return (
+    <>
+      <label htmlFor={option.name}>
+        {option.friendlyName ?? option.name}{" "}
+        <div id={tooltipContainerId} className="d-inline">
+          <KeyFill className={cx("bi", "ms-1")} />
+          <ExclamationTriangleFill
+            className={cx("bi", "ms-1", "text-warning")}
+          />
+        </div>
+        <UncontrolledTooltip placement="top" target={tooltipContainerId}>
+          This field contains sensitive data (E.G. password, access token, ...).
+          RenkuLab does not store passwords, so you will be asked this value
+          again when starting a session.
+        </UncontrolledTooltip>
+      </label>
+
+      <InputGroup>
+        <Controller
+          name={option.name}
+          control={control}
+          defaultValue={defaultValue}
+          render={({ field }) => (
+            <input
+              {...field}
+              id={option.name}
+              type={showPassword ? "text" : "password"}
+              className={cx("form-control", "rounded-0", "rounded-start")}
+              placeholder={option.convertedDefault?.toString() ?? ""}
+              onChange={(e) => {
+                field.onChange(e);
+                onFieldValueChange(option.name, e.target.value);
+              }}
+            />
+          )}
+        />
+        <Button
+          className="rounded-end"
+          id={`show-password-${option.name}`}
+          onClick={() => toggleShowPassword()}
+        >
+          {showPassword ? (
+            <EyeFill className="bi" />
+          ) : (
+            <EyeSlashFill className="bi" />
+          )}
+          <UncontrolledTooltip
+            placement="top"
+            target={`show-password-${option.name}`}
+          >
+            Hide/show sensistive data
+          </UncontrolledTooltip>
+        </Button>
+      </InputGroup>
+    </>
+  );
+}
+
+interface InputOptionItemProps {
+  control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  defaultValue: string | number | undefined;
+  inputType: "dropdown" | "number" | "text";
+  onFieldValueChange: (option: string, value: string | number) => void;
+  option: CloudStorageSchemaOptions;
+}
+function InputOptionItem({
+  control,
+  defaultValue,
+  inputType,
+  onFieldValueChange,
+  option,
+}: InputOptionItemProps) {
+  const additionalProps: Record<string, string> = {
+    ...(inputType === "dropdown" ? { list: `${option.name}__list` } : {}),
+  };
+  return (
+    <>
+      <label htmlFor={option.name}>{option.friendlyName ?? option.name}</label>
+
+      <Controller
+        name={option.name}
+        control={control}
+        defaultValue={defaultValue}
+        render={({ field }) => {
+          return (
+            <>
+              <input
+                {...field}
+                id={option.name}
+                type={inputType}
+                className="form-control"
+                placeholder={
+                  option.convertedDefault
+                    ? option.convertedDefault?.toString()
+                    : inputType === "dropdown"
+                    ? option.filteredExamples[0].value
+                    : ""
+                }
+                onChange={(e) => {
+                  field.onChange(e);
+                  onFieldValueChange(
+                    option.name,
+                    inputType === "number"
+                      ? parseFloat(e.target.value)
+                      : e.target.value
+                  );
+                }}
+                {...additionalProps}
+              />
+              {inputType === "dropdown" && option.filteredExamples.length && (
+                <datalist id={`${option.name}__list`}>
+                  {option.filteredExamples?.map((e) => (
+                    <option
+                      key={`${option.name}__list__${e.value}`}
+                      value={e.value}
+                    />
+                  ))}
+                </datalist>
+              )}
+            </>
+          );
+        }}
+      />
+    </>
   );
 }
 
@@ -537,78 +780,6 @@ function AddStorageType({
 }
 
 // *** Add storage: page 2 of 3, with storage options *** //
-
-interface AddStorageOptionsExamplesProps {
-  examples: CloudStorageSchemaOptions["examples"];
-  name: string;
-  provider?: string;
-}
-function AddStorageOptionsExamples({
-  examples,
-  name,
-  provider,
-}: AddStorageOptionsExamplesProps) {
-  // TODO: We should use examples as enum, or items in an autocomplete. But sometimes we get just "None" 🥴
-  if (!examples?.length) return null;
-  const filterExamples = provider
-    ? examples.filter((e) => !e.provider || e.provider === provider)
-    : examples;
-  if (!filterExamples?.length) return null;
-
-  const popoverId = `popover-${name}`;
-  const exampleItems = filterExamples.map((e) => {
-    return (
-      <li className="mb-1" key={e.value}>
-        <code>{e.value}</code>
-        <br />
-        <small>{e.help}</small>
-      </li>
-    );
-  });
-
-  return (
-    <>
-      <QuestionCircle id={popoverId} className={cx("bi", "ms-1")} />
-      <UncontrolledPopover
-        target={popoverId}
-        placement="right"
-        style={{ maxHeight: "98vh", overflow: "auto" }} // eslint-disable-line spellcheck/spell-checker
-        trigger="hover focus"
-      >
-        <PopoverHeader>Examples</PopoverHeader>
-        <PopoverBody>
-          <ul>{exampleItems}</ul>
-        </PopoverBody>
-      </UncontrolledPopover>
-    </>
-  );
-}
-
-interface SecretOptionWarningProps {
-  isSecret?: boolean;
-  name: string;
-}
-function SecretOptionWarning({
-  isSecret = true,
-  name,
-}: SecretOptionWarningProps) {
-  if (!isSecret) return null;
-  const id = `option-is-secret-${name}`;
-  return (
-    <>
-      <div id={id} className="d-inline">
-        <KeyFill className={cx("bi", "ms-1")} />
-        <ExclamationTriangleFill className={cx("bi", "ms-1", "text-warning")} />
-      </div>
-      <UncontrolledTooltip placement="top" target={id}>
-        This field contains sensitive data (E.G. password, access token, ...).
-        We currently cannot store it safely, so you might be asked this value
-        again when starting a session.
-      </UncontrolledTooltip>
-    </>
-  );
-}
-
 function AddStorageOptions({
   schema,
   setState,
@@ -622,20 +793,6 @@ function AddStorageOptions({
     storage.schema,
     storage.provider
   );
-
-  const [showPassword, setShowPassword] = useState<string[]>([]);
-  const getPasswordType = (name: string) => {
-    return showPassword.includes(name) ? "text" : "password";
-  };
-  const swapShowPassword = (name: string) => {
-    setShowPassword((prev) => {
-      if (prev.includes(name)) {
-        return prev.filter((n) => n !== name);
-      }
-      return [...prev, name];
-    });
-  };
-
   const { control, setValue, getValues } = useForm();
 
   const onFieldValueChange = (
@@ -659,127 +816,50 @@ function AddStorageOptions({
         ? "checkbox"
         : o.convertedType === "number"
         ? "number"
+        : o.filteredExamples?.length
+        ? "dropdown"
         : "text";
-
-      const placeholder = o.examples?.length
-        ? o.examples[0].value
-          ? o.examples[0].value
-          : undefined
-        : undefined;
-
-      const examples = (
-        <AddStorageOptionsExamples
-          examples={o.examples}
-          name={o.name}
-          provider={storage.provider}
-        />
-      );
-
-      const warning =
-        o.convertedType === "secret" ? (
-          <SecretOptionWarning name={o.name} />
-        ) : null;
 
       return (
         <div className="mb-3" key={o.name}>
-          <label htmlFor={o.name}>
-            {o.friendlyName ?? o.name} {examples} {warning}
-          </label>
-
           {inputType === "checkbox" ? (
-            <Controller
-              name={o.name}
+            <CheckboxOptionItem
               control={control}
               defaultValue={
                 storage.options && storage.options[o.name]
-                  ? storage.options[o.name]
-                  : o.convertedDefault ?? false
+                  ? (storage.options[o.name] as boolean)
+                  : (o.convertedDefault as boolean) ?? undefined
               }
-              render={({ field }) => (
-                <input
-                  id={o.name}
-                  type={inputType}
-                  {...field}
-                  className={cx("form-check-input", "ms-1")}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    onFieldValueChange(o.name, e.target.checked);
-                  }}
-                />
-              )}
+              onFieldValueChange={onFieldValueChange}
+              option={o}
             />
           ) : inputType === "password" ? (
-            <InputGroup>
-              <Controller
-                name={o.name}
-                control={control}
-                defaultValue={
-                  storage.options && storage.options[o.name]
-                    ? storage.options[o.name]
-                    : o.convertedDefault ?? ""
-                }
-                render={({ field }) => (
-                  <input
-                    id={o.name}
-                    type={getPasswordType(o.name)}
-                    {...field}
-                    className={cx("form-control", "rounded-0", "rounded-start")}
-                    placeholder={placeholder}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      onFieldValueChange(o.name, e.target.value);
-                    }}
-                  />
-                )}
-              />
-              <Button
-                className="rounded-end"
-                id={`show-password-${o.name}`}
-                onClick={() => swapShowPassword(o.name)}
-              >
-                {getPasswordType(o.name) === "password" ? (
-                  <EyeSlashFill className="bi" />
-                ) : (
-                  <EyeFill className="bi" />
-                )}
-                <UncontrolledTooltip
-                  placement="top"
-                  target={`show-password-${o.name}`}
-                >
-                  Hide/show sensistive data
-                </UncontrolledTooltip>
-              </Button>
-            </InputGroup>
-          ) : (
-            <Controller
-              name={o.name}
+            <PasswordOptionItem
               control={control}
               defaultValue={
                 storage.options && storage.options[o.name]
-                  ? storage.options[o.name]
-                  : o.convertedDefault ?? ""
+                  ? (storage.options[o.name] as string)
+                  : ""
               }
-              render={({ field }) => (
-                <input
-                  id={o.name}
-                  type={inputType}
-                  {...field}
-                  className="form-control"
-                  placeholder={placeholder}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    onFieldValueChange(
-                      o.name,
-                      inputType === "number"
-                        ? parseFloat(e.target.value)
-                        : e.target.value
-                    );
-                  }}
-                />
-              )}
+              onFieldValueChange={onFieldValueChange}
+              option={o}
+            />
+          ) : (
+            <InputOptionItem
+              control={control}
+              defaultValue={
+                storage.options && storage.options[o.name]
+                  ? (storage.options[o.name] as string | number | undefined)
+                  : ""
+              }
+              inputType={inputType}
+              onFieldValueChange={onFieldValueChange}
+              option={o}
             />
           )}
-          <div className={cx("form-text", "text-muted")}>{o.help}</div>
+          <div className={cx("form-text", "text-muted")}>
+            <OptionTruncatedText text={o.help} />
+          </div>
         </div>
       );
     });
@@ -816,6 +896,10 @@ function AddStorageOptions({
 
   const sourcePath = (
     <div className="mb-3">
+      <Label className="form-label" for="sourcePath">
+        Source path
+      </Label>
+
       <Controller
         name="sourcePath"
         control={control}
@@ -834,9 +918,6 @@ function AddStorageOptions({
           />
         )}
       />
-      <Label className="form-label" for="add-storage-name">
-        Source path
-      </Label>
       <div className={cx("form-text", "text-muted")}>{sourcePathHelp.help}</div>
     </div>
   );
@@ -895,7 +976,7 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
       <p>We need a few more details to mount your storage properly.</p>
 
       <div className="mb-3">
-        <Label className="form-label" for="add-storage-name">
+        <Label className="form-label" for="name">
           Name
         </Label>
 
@@ -928,12 +1009,12 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         </div>
         <div className={cx("form-text", "text-muted")}>
           This name will help you identify the storage. It should be unique for
-          this project and it can only contains letter, numbers, $, _.
+          this project and can only contain letters, numbers, _, -.
         </div>
       </div>
 
       <div className="mb-3">
-        <Label className="form-label" for="add-storage-name">
+        <Label className="form-label" for="mountPoint">
           Mount point
         </Label>
 
@@ -957,8 +1038,8 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <div className="invalid-feedback">Please provide a mount point.</div>
         <div className={cx("form-text", "text-muted")}>
           This is the name of the folder where you will find your external
-          storage in the sessions. You should pick something different from the
-          folders used in the projects repository, and from folder mounted by
+          storage in sessions. You should pick something different from the
+          folders used in the projects repository, and from folders mounted by
           other storage services.
         </div>
       </div>

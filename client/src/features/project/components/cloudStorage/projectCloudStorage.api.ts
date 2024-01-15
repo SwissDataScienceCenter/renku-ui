@@ -77,7 +77,7 @@ const projectCloudStorageApi = createApi({
     >({
       query: ({ storage_id, ...params }) => {
         return {
-          method: "PATCH",
+          method: "PUT",
           url: `storage/${storage_id}`,
           body: { ...params },
         };

@@ -30,6 +30,23 @@ export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
 
 export const CLOUD_STORAGE_OVERRIDE = {
   storage: {
+    azureblob: {
+      position: 3,
+    },
+    drive: {
+      hide: true,
+    },
+    gcs: {
+      hide: true,
+    },
+    // eslint-disable-next-line spellcheck/spell-checker
+    dropbox: {
+      hide: true,
+    },
+    // eslint-disable-next-line spellcheck/spell-checker
+    onedrive: {
+      hide: true,
+    },
     s3: {
       description:
         "Amazon S3 Compliant Storage Providers including AWS, CloudFlare, DigitalOcean and many others",
@@ -40,19 +57,29 @@ export const CLOUD_STORAGE_OVERRIDE = {
         },
       },
     },
-    drive: {
-      position: 2,
-    },
     webdav: {
-      position: 3,
-    },
-    azureblob: {
-      position: 4,
+      description:
+        "WebDAV compatible services, including PolyBox and SwitchDrive",
+      position: 2,
     },
   } as Record<string, Partial<CloudStorageOverride>>,
 };
 
 export const CLOUD_OPTIONS_OVERRIDE = {
+  azureblob: {
+    account: {
+      friendlyName: "Account Name",
+      help: "Set this to the Azure Storage Account Name in use. Leave blank to use SAS URL or Emulator, otherwise it needs to be set.",
+    },
+    client_certificate_path: { advanced: true },
+    client_certificate_password: { advanced: true },
+    env_auth: { hide: true },
+    key: { friendlyName: "Shared Key" },
+    sas_url: { advanced: true },
+    tenant: { friendlyName: "Tenant ID", advanced: true },
+    client_id: { friendlyName: "Client ID", advanced: true },
+    client_secret: { friendlyName: "Client Secret", advanced: true },
+  },
   s3: {
     env_auth: { hide: true }, // ? uses the ENV variables
     location_constraint: { hide: true }, // ? only for creating buckets
@@ -67,6 +94,16 @@ export const CLOUD_OPTIONS_OVERRIDE = {
       friendlyName: "Endpoint",
       help: "Endpoint for S3 API. You should leave this blank if you entered the region already.",
     },
+  },
+  webdav: {
+    pass: {
+      friendlyName: "Token (or password)",
+      help: "This is the token to access the WebDAV service. Mind that providing the user's password directly here won't usually work.",
+    },
+    bearer_token: { friendlyName: "Bearer Token" },
+    url: { friendlyName: "URL" },
+    user: { friendlyName: "Username" },
+    vendor: { advanced: true },
   },
 } as Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>;
 
