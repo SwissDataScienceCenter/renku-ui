@@ -322,6 +322,16 @@ function SessionActions({ className, session }: SessionActionsProps) {
   );
 
   const status = session.status.state;
+  const failedScheduling =
+    status === "failed" &&
+    (!!session.status.message?.includes(
+      "The resource quota has been exceeded."
+    ) ||
+      !!session.status.message?.includes(
+        // TODO: fix spelling in notebooks
+        // eslint-disable-next-line spellcheck/spell-checker
+        "Your session cannot be scheduled due to insufficent resources."
+      ));
 
   const buttonClassName = cx(
     "btn",
@@ -377,6 +387,15 @@ function SessionActions({ className, session }: SessionActionsProps) {
           </>
         )}
       </Button>
+    ) : failedScheduling ? (
+      <Button
+        className={buttonClassName}
+        data-cy="modify-session-button"
+        onClick={toggleModifySession}
+      >
+        <Tools className={cx("bi", "flex-shrink-0", "me-2")} />
+        Modify
+      </Button>
     ) : (
       <Button
         className={buttonClassName}
@@ -429,17 +448,18 @@ function SessionActions({ className, session }: SessionActionsProps) {
     </DropdownItem>
   );
 
-  const modifyAction = (
-    /*status === "hibernated" && // allow modifying at any time (just for testing)
+  const modifyAction = (status === "hibernated" || status === "failed") &&
     !isStopping &&
-    !isHibernating &&*/ <DropdownItem
-      data-cy="modify-session-button"
-      onClick={toggleModifySession}
-    >
-      <Tools className={cx("bi", "text-rk-green", "me-2")} />
-      Modify session
-    </DropdownItem>
-  );
+    !isHibernating &&
+    !failedScheduling && (
+      <DropdownItem
+        data-cy="modify-session-button"
+        onClick={toggleModifySession}
+      >
+        <Tools className={cx("bi", "text-rk-green", "me-2")} />
+        Modify session
+      </DropdownItem>
+    );
 
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
