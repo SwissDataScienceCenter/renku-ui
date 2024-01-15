@@ -4,7 +4,7 @@
 
 ### Features
 
-- Enable storage RW and support more storage services ([#2915](https://github.com/SwissDataScienceCenter/renku-ui/issues/2915), [#2901](https://github.com/SwissDataScienceCenter/renku-ui/issues/2901) [#2899](https://github.com/SwissDataScienceCenter/renku-ui/issues/2899) [#2908](https://github.com/SwissDataScienceCenter/renku-ui/issues/2908) [#2962](https://github.com/SwissDataScienceCenter/renku-ui/issues/2962) [#2900](https://github.com/SwissDataScienceCenter/renku-ui/issues/2900))
+- Enable storage RW and support more storage services ([#2915](https://github.com/SwissDataScienceCenter/renku-ui/issues/2915), [#2901](https://github.com/SwissDataScienceCenter/renku-ui/issues/2901), [#2899](https://github.com/SwissDataScienceCenter/renku-ui/issues/2899), [#2908](https://github.com/SwissDataScienceCenter/renku-ui/issues/2908), [#2962](https://github.com/SwissDataScienceCenter/renku-ui/issues/2962), [#2900](https://github.com/SwissDataScienceCenter/renku-ui/issues/2900))
 - Add auto-carousel on the landing page ([#2927](https://github.com/SwissDataScienceCenter/renku-ui/issues/2927))
 - Add `/version` endpoint to the UI server ([#2928](https://github.com/SwissDataScienceCenter/renku-ui/issues/2928))
 - Add KG to the release information page ([#2933](https://github.com/SwissDataScienceCenter/renku-ui/issues/2933))
