@@ -209,7 +209,7 @@ export default function SectionShowcase({
         className={cx("rk-anon-home-section-content", styles.sectionShowcase)}
       >
         <Row className="rk-pt-m">
-          <Col md={10}>
+          <Col id={styles.sectionShowcaseHeader} md={10}>
             <h3 className="text-rk-green">{title}</h3>
             <LazyRenkuMarkdown markdownText={description} />
           </Col>

@@ -1,3 +1,7 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
 .sectionShowcase {
   --swiper-pagination-bullet-size: 16px;
   --swiper-pagination-bottom: 1px;
@@ -30,4 +34,52 @@
 .sectionShowcaseSwiper {
   --swiper-navigation-sides-offset: 0px;
   --swiper-theme-color: #01192d;
+}
+
+#sectionShowcaseHeader {
+  // Match WhatIsRenku/WhatIsRenku.module.scss #featContainer
+  h3 {
+    font-size: 40px;
+    margin: 40px 0;
+    line-height: normal;
+  }
+
+  p {
+    line-height: normal;
+  }
+
+  @include media-breakpoint-up(xs) {
+    h3 {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    p {
+      font-size: 20px;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    h3 {
+      font-size: 32px;
+    }
+
+    p {
+      font-size: 20px;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    h3 {
+      font-size: 40px;
+    }
+    p {
+      font-size: 24px;
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    h3 {
+      padding-top: 0;
+    }
+  }
 }
