@@ -32,11 +32,6 @@
 .option {
   cursor: pointer !important;
 
-  // border-bottom: 1px dotted #a3a3a3;
-  // &:last-of-type {
-  //   border-bottom: none;
-  // }
-
   &:hover,
   &IsFocused {
     background-color: #e4e7ea;
