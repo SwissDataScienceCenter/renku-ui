@@ -66,6 +66,11 @@ export const CLOUD_STORAGE_OVERRIDE = {
 };
 
 export const CLOUD_OPTIONS_OVERRIDE = {
+  azureblob: {
+    client_certificate_path: { advanced: true },
+    client_certificate_password: { advanced: true },
+    env_auth: { hide: true },
+  },
   s3: {
     env_auth: { hide: true }, // ? uses the ENV variables
     location_constraint: { hide: true }, // ? only for creating buckets
@@ -80,6 +85,15 @@ export const CLOUD_OPTIONS_OVERRIDE = {
       friendlyName: "Endpoint",
       help: "Endpoint for S3 API. You should leave this blank if you entered the region already.",
     },
+  },
+  webdav: {
+    pass: {
+      friendlyName: "Token (or password)",
+      help: "This is the token to access the WebDAV service. Mind that providing the user's password directly here won't usually work.",
+    },
+    bearer_token: { friendlyName: "Bearer Token" },
+    url: { friendlyName: "URL" },
+    user: { friendlyName: "Username" },
   },
 } as Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>;
 
