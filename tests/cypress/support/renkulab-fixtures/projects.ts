@@ -413,6 +413,11 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         "/ui-server/api/projects/*/repository/branches?",
         projectBranchesResponse
       ).as(projectBranches.name);
+      cy.intercept(
+        "GET",
+        "/ui-server/api/projects/*/repository/branches?page=1&per_page=100",
+        projectBranchesResponse
+      ).as(projectBranches.name);
       // The session start screen also requests the data for the default branch
       cy.fixture(projectBranches.fixture)
         .then((branches: unknown[]) => {
@@ -434,6 +439,11 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/commits?ref_name=master",
+        projectCommitsResponse
+      ).as(projectCommits.name);
+      cy.intercept(
+        "GET",
+        "/ui-server/api/projects/*/repository/commits?ref_name=master&page=1&per_page=100",
         projectCommitsResponse
       ).as(projectCommits.name);
 
