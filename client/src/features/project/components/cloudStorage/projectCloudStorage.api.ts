@@ -21,6 +21,7 @@ import { sortBy } from "lodash";
 import {
   AddCloudStorageForProjectParams,
   CloudStorage,
+  CloudStorageSchema,
   DeleteCloudStorageParams,
   GetCloudStorageForProjectParams,
   UpdateCloudStorageParams,
@@ -76,7 +77,7 @@ const projectCloudStorageApi = createApi({
     >({
       query: ({ storage_id, ...params }) => {
         return {
-          method: "PATCH",
+          method: "PUT",
           url: `storage/${storage_id}`,
           body: { ...params },
         };
@@ -107,6 +108,14 @@ const projectCloudStorageApi = createApi({
         };
       },
     }),
+    getCloudStorageSchema: builder.query<CloudStorageSchema[], void>({
+      query: () => {
+        return {
+          method: "GET",
+          url: "storage_schema",
+        };
+      },
+    }),
   }),
 });
 export default projectCloudStorageApi;
@@ -117,4 +126,5 @@ export const {
   useUpdateCloudStorageMutation,
   useDeleteCloudStorageMutation,
   useValidateCloudStorageConfigurationMutation,
+  useGetCloudStorageSchemaQuery,
 } = projectCloudStorageApi;

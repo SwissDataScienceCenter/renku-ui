@@ -22,56 +22,15 @@ import { SessionCloudStorage } from "./startSessionOptions.types";
 export function convertCloudStorageForSessionApi(
   cloudStorage: SessionCloudStorage
 ): CloudStorageDefinitionForSessionApi | null {
-  const {
-    configuration,
+  const { configuration, readonly, source_path, storage_type, target_path } =
+    cloudStorage;
+
+  return {
+    configuration: configuration.type
+      ? configuration
+      : { ...configuration, type: storage_type },
     readonly,
-    sensitive_fields,
     source_path,
-    storage_type,
     target_path,
-  } = cloudStorage;
-
-  if (storage_type === "s3" || configuration["type"] === "s3") {
-    const endpoint =
-      configuration["endpoint"] && configuration["endpoint"].startsWith("http")
-        ? configuration["endpoint"]
-        : configuration["endpoint"]
-        ? `https://${configuration["endpoint"]}`
-        : configuration["region"]
-        ? `https://s3.${configuration["region"]}.amazonaws.com`
-        : "https://s3.amazonaws.com";
-
-    return {
-      configuration: {
-        type: "s3",
-        endpoint,
-        access_key_id: sensitive_fields?.find(
-          ({ name }) => name === "access_key_id"
-        )?.value,
-        secret_access_key: sensitive_fields?.find(
-          ({ name }) => name === "secret_access_key"
-        )?.value,
-      },
-      readonly,
-      source_path,
-      target_path,
-    };
-  }
-
-  if (storage_type === "azureblob" || configuration["type"] === "azureblob") {
-    return {
-      configuration: {
-        type: "azureblob",
-        endpoint: configuration["account"] ?? "",
-        secret_access_key:
-          sensitive_fields?.find(({ name }) => name === "secret_access_key")
-            ?.value ?? "",
-      },
-      readonly,
-      source_path,
-      target_path,
-    };
-  }
-
-  return null;
+  };
 }
