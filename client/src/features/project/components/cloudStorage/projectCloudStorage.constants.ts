@@ -67,9 +67,18 @@ export const CLOUD_STORAGE_OVERRIDE = {
 
 export const CLOUD_OPTIONS_OVERRIDE = {
   azureblob: {
+    account: {
+      friendlyName: "Account Name",
+      help: "Set this to the Azure Storage Account Name in use. Leave blank to use SAS URL or Emulator, otherwise it needs to be set.",
+    },
     client_certificate_path: { advanced: true },
     client_certificate_password: { advanced: true },
     env_auth: { hide: true },
+    key: { friendlyName: "Shared Key" },
+    sas_url: { advanced: true },
+    tenant: { friendlyName: "Tenant ID", advanced: true },
+    client_id: { friendlyName: "Client ID", advanced: true },
+    client_secret: { friendlyName: "Client Secret", advanced: true },
   },
   s3: {
     env_auth: { hide: true }, // ? uses the ENV variables
@@ -94,6 +103,7 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     bearer_token: { friendlyName: "Bearer Token" },
     url: { friendlyName: "URL" },
     user: { friendlyName: "Username" },
+    vendor: { advanced: true },
   },
 } as Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>;
 
