@@ -27,7 +27,7 @@ export interface KgSearchResultLink {
   href: string;
 }
 
-export type KgAuthor = "user" | "all";
+export type KgUserRole = "any" | "owner" | "maintainer" | "reader";
 
 export enum EntityType {
   Project = "project",
