@@ -17,7 +17,11 @@
  */
 import { FetchBaseQueryMeta } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { KgAuthor, KgSearchResult, ListResponse } from "./KgSearch";
+import type {
+  KgUserRole,
+  KgSearchResult,
+  ListResponse,
+} from "./KgSearch.types";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
@@ -28,9 +32,8 @@ export type SearchEntitiesQueryParams = {
   page: number;
   perPage: number;
   type: TypeEntitySelection;
-  author: KgAuthor;
+  role: KgUserRole;
   visibility?: VisibilitiesFilter;
-  userName?: string;
   since?: string;
   until?: string;
 };
@@ -39,8 +42,8 @@ function getHeaderFieldNumeric(headers: Headers, field: string): number {
   return +(headers.get(field) ?? 0);
 }
 
-function setAuthorInQuery(query: string, author: KgAuthor, userName?: string) {
-  if (author === "user" && userName) query = `${query}&creator=${userName}`;
+function setAuthorInQuery(query: string, role: KgUserRole) {
+  if (role) query = `${query}&role=${role}`;
 
   return query;
 }
@@ -105,9 +108,8 @@ export const kgSearchApi = createApi({
         page,
         perPage,
         type,
+        role,
         visibility,
-        author,
-        userName,
         since,
         until,
       }) => {
@@ -118,8 +120,7 @@ export const kgSearchApi = createApi({
           setDates(
             setAuthorInQuery(
               setVisibilityInQuery(setTypeInQuery(url, type), visibility),
-              author,
-              userName
+              role
             ),
             since,
             until

@@ -38,7 +38,7 @@ import {
   Row,
 } from "../../utils/ts-wrappers";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
-import { KgAuthor } from "./KgSearch";
+import { KgAuthor } from "./KgSearch.types";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
 import { KgSearchContextProvider, useKgSearchContext } from "./KgSearchContext";
 

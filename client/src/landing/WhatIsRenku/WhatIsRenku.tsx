@@ -24,7 +24,7 @@ import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import EntityCardSkeleton from "../../components/list/EntityCardSkeleton";
 import ListCard from "../../components/list/ListCard";
 import { stateToSearchString } from "../../features/kgSearch";
-import { KgAuthor } from "../../features/kgSearch/KgSearch";
+import { KgAuthor } from "../../features/kgSearch/KgSearch.types";
 import { useGetDatasetKgQuery } from "../../features/project/projectKg.api";
 import { Docs, RenkuContactEmail } from "../../utils/constants/Docs";
 import { mapDatasetKgResultToEntity } from "../../utils/helpers/KgSearchFunctions";

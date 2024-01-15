@@ -51,7 +51,7 @@ import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionF
 import { Url } from "../../../utils/helpers/url";
 import { displaySlice } from "../../display";
 import { EntityType } from "../../kgSearch";
-import { KgAuthor } from "../../kgSearch/KgSearch";
+import { KgAuthor } from "../../kgSearch/KgSearch.types";
 import {
   SearchEntitiesQueryParams,
   useSearchEntitiesQuery,

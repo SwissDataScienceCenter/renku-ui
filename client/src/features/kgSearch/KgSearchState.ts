@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { stringToUserRoleFilter } from "../../components/authorFilter/AuthorFilter";
 import {
   DateFilterTypes,
   dateFilterTypeToSinceAndUntil,
@@ -33,9 +34,8 @@ import {
   VisibilitiesFilter,
   arrayToVisibilitiesFilter,
 } from "../../components/visibilityFilter/VisibilityFilter";
-import { KgAuthor, KgSearchState } from "./KgSearch";
+import { KgUserRole, KgSearchState } from "./KgSearch.types";
 
-type KgStateAuthorKey = "author";
 const numKeys = ["page", "perPage"] as const;
 type KgStateNumKey = (typeof numKeys)[number];
 type KgStateSortKey = "sort";
@@ -43,16 +43,17 @@ const stringKeys = ["phrase"] as const;
 type KgStateStrKey = (typeof stringKeys)[number];
 const dateBoundsKey = ["since", "until"] as const;
 type KgStateDateBoundsKey = (typeof dateBoundsKey)[number];
+type KgStateUserRoleKey = "role";
 type KgStateTypeDateFilterKey = "typeDate";
 type KgStateTypeKey = "type";
 type KgStateVisibilityKey = "visibility";
 type KgStateKey =
-  | KgStateAuthorKey
   | KgStateNumKey
   | KgStateStrKey
   | KgStateSortKey
   | KgStateTypeDateFilterKey
   | KgStateDateBoundsKey
+  | KgStateUserRoleKey
   | KgStateTypeKey
   | KgStateVisibilityKey;
 
@@ -62,8 +63,8 @@ type KgStateSimpleKey = Exclude<
   KgStateTypeDateFilterKey | KgStateDateBoundsKey
 >;
 
-type KgStateVal<T extends KgStateSimpleKey> = T extends KgStateAuthorKey
-  ? KgAuthor
+type KgStateVal<T extends KgStateSimpleKey> = T extends KgUserRole
+  ? KgUserRole
   : T extends KgStateSortKey
   ? SortingOptions
   : T extends KgStateTypeKey
@@ -75,10 +76,10 @@ type KgStateVal<T extends KgStateSimpleKey> = T extends KgStateAuthorKey
   : string;
 
 export const defaultSearchState: KgSearchState = {
-  author: "all",
   page: 1,
   perPage: 24,
   phrase: "",
+  role: "any",
   since: "",
   sort: SortingOptions.DescMatchingScore,
   type: { project: true, dataset: false },
@@ -89,10 +90,10 @@ export const defaultSearchState: KgSearchState = {
 
 export const searchStringToState = (searchString: string): KgSearchState => {
   const queryParams = new URLSearchParams(searchString);
-  const author = queryParameterStateValue(queryParams, "author");
   const page = queryParameterStateValue(queryParams, "page");
   const perPage = queryParameterStateValue(queryParams, "perPage");
   const phrase = queryParameterStateValue(queryParams, "phrase");
+  const role = queryParameterStateValue(queryParams, "role");
   const sort = queryParameterStateValue(queryParams, "sort");
   const type = queryParameterStateValue(queryParams, "type");
   const visibility = queryParameterStateValue(queryParams, "visibility");
@@ -103,7 +104,7 @@ export const searchStringToState = (searchString: string): KgSearchState => {
     page,
     perPage,
     type,
-    author,
+    role,
     visibility,
     since,
     until,
@@ -116,7 +117,6 @@ const queryParameterStateValue = <T extends KgStateSimpleKey>(
   key: T
 ): KgStateVal<T> => {
   const result = qp.get(key) ?? defaultSearchState[key];
-  if (isAuthorKey(key)) return result as KgStateVal<T>;
   if (isSortKey(key)) {
     const value = qp.get(key);
     if (value == null) return defaultSearchState.sort as KgStateVal<T>;
@@ -131,6 +131,11 @@ const queryParameterStateValue = <T extends KgStateSimpleKey>(
     const value = qp.get(key);
     if (value == null) return defaultSearchState.typeDate as KgStateVal<T>;
     return stringToDateFilter(value) as KgStateVal<T>;
+  }
+  if (isUserRoleKey(key)) {
+    const value = qp.get(key);
+    if (value == null) return defaultSearchState.role as KgStateVal<T>;
+    return stringToUserRoleFilter(value) as KgStateVal<T>;
   }
   if (isVisibilityKey(key)) {
     const value = qp.getAll(key);
@@ -159,10 +164,6 @@ const queryParameterDateStateValue = (
   return { since: sinceStr, typeDate, until: untilStr };
 };
 
-const isAuthorKey = (key: unknown): key is KgStateAuthorKey => {
-  return key === "author";
-};
-
 const isNumKey = (key: unknown): key is KgStateNumKey => {
   return (numKeys as readonly unknown[]).includes(key);
 };
@@ -177,6 +178,10 @@ const isTypeKey = (key: unknown): key is KgStateTypeKey => {
 
 const isTypeDateKey = (key: unknown): key is KgStateTypeDateFilterKey => {
   return key === "typeDate";
+};
+
+const isUserRoleKey = (key: unknown): key is KgStateUserRoleKey => {
+  return key === "role";
 };
 
 const isVisibilityKey = (key: unknown): key is KgStateVisibilityKey => {
@@ -202,7 +207,7 @@ export const stateToSearchString = (state: Partial<KgSearchState>): string => {
       stateMap.push([key, val.toString()]);
   }
   {
-    const key = "author";
+    const key = "role";
     const val = state[key];
     if (val != null && val !== defaultSearchState[key])
       stateMap.push([key, val.toString()]);

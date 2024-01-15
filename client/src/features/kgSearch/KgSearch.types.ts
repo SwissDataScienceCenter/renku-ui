@@ -60,10 +60,10 @@ export interface ListResponse<T> {
 }
 
 export interface KgSearchState {
-  author: KgAuthor;
   page: number;
   perPage: number;
   phrase: string;
+  role: KgUserRole;
   since: string;
   sort: SortingOptions;
   type: TypeEntitySelection;

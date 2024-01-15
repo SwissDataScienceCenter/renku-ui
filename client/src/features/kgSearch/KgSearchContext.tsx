@@ -31,7 +31,7 @@ import {
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
-import { KgSearchState, KgUserRole } from "./KgSearch";
+import { KgSearchState, KgUserRole } from "./KgSearch.types";
 import {
   defaultSearchState,
   searchStringToState,
@@ -99,7 +99,7 @@ export const KgSearchContextProvider = ({
     const search = stateToSearchString({
       ...kgSearchState,
       type: { project: true, dataset: false },
-      author: "user",
+      role: "owner",
       phrase: "",
       page: 1,
     });
@@ -109,7 +109,7 @@ export const KgSearchContextProvider = ({
     const search = stateToSearchString({
       ...kgSearchState,
       type: { project: false, dataset: true },
-      author: "user",
+      role: "owner",
       phrase: "",
       page: 1,
     });
@@ -147,7 +147,17 @@ export const KgSearchContextProvider = ({
     },
     [history, kgSearchState]
   );
-  const setUserRole = useCallback(() => {}, []);
+  const setUserRole = useCallback(
+    (role: KgUserRole) => {
+      const search = stateToSearchString({
+        ...kgSearchState,
+        role,
+        page: 1,
+      });
+      history.push({ search });
+    },
+    [history, kgSearchState]
+  );
   const setVisibility = useCallback(
     (visibility: VisibilitiesFilter) => {
       const search = stateToSearchString({

@@ -30,7 +30,7 @@ import { Loader } from "../../../components/Loader";
 import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
 import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
 import { Url } from "../../../utils/helpers/url";
-import { KgAuthor } from "../../kgSearch/KgSearch";
+import { KgAuthor } from "../../kgSearch/KgSearch.types";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
 
 interface OtherDatasetsButtonProps {

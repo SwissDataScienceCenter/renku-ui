@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { KgAuthor } from "../../features/kgSearch/KgSearch";
+import { KgAuthor } from "../../features/kgSearch/KgSearch.types";
 import {
   TypeEntityFilter,
   TypeEntitySelection,
