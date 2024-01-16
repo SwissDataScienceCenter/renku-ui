@@ -36,50 +36,50 @@
   --swiper-theme-color: #01192d;
 }
 
-#sectionShowcaseHeader {
+.sectionShowcaseHeader {
   // Match WhatIsRenku/WhatIsRenku.module.scss #featContainer
   h3 {
-    font-size: 40px;
-    margin: 40px 0;
-    line-height: normal;
+    font-size: 40px !important;
+    margin: 40px 0 !important;
+    line-height: normal !important;
   }
 
   p {
-    line-height: normal;
+    line-height: normal !important;
   }
 
   @include media-breakpoint-up(xs) {
     h3 {
-      font-size: 24px;
-      font-weight: bold;
+      font-size: 24px !important;
+      font-weight: bold !important;
     }
     p {
-      font-size: 20px;
+      font-size: 20px !important;
     }
   }
 
   @include media-breakpoint-up(md) {
     h3 {
-      font-size: 32px;
+      font-size: 32px !important;
     }
 
     p {
-      font-size: 20px;
+      font-size: 20px !important;
     }
   }
 
   @include media-breakpoint-up(lg) {
     h3 {
-      font-size: 40px;
+      font-size: 40px !important;
     }
     p {
-      font-size: 24px;
+      font-size: 24px !important;
     }
   }
 
   @include media-breakpoint-down(lg) {
     h3 {
-      padding-top: 0;
+      padding-top: 0 !important;
     }
   }
 }
