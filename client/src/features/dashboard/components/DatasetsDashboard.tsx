@@ -39,12 +39,10 @@ function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
   const projectFilters = { type: { project: false, dataset: true } };
   const paramsUrlStrMyDatasets = stateToSearchString({
     ...projectFilters,
-    // author: "user" as KgAuthor,
     role: { owner: true, maintainer: false, reader: false },
   });
   const paramsUrlStrExploreDatasets = stateToSearchString({
     ...projectFilters,
-    // author: "all" as KgAuthor,
   });
   return totalDatasets > MAX_DATASETS_TO_SHOW ? (
     <div className="d-flex justify-content-center">
@@ -119,13 +117,11 @@ function DatasetDashboard() {
     sort: SortingOptions.DescDate,
     page: 1,
     perPage: 3,
-    // author: "user",
     type: {
       project: false,
       dataset: true,
     },
     role: { owner: true, maintainer: false, reader: false },
-    // userName,
   };
   const { data, isFetching, isLoading, error } =
     useSearchEntitiesQuery(searchRequest);

@@ -59,7 +59,6 @@ const EmptyResult = ({ onRemoveFilters, error }: EmptyResultProps) => {
 
   const currentFilters: FiltersProperties = {
     type,
-    // author,
     role,
     visibility,
     since,

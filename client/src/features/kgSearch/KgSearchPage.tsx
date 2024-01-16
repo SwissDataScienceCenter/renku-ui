@@ -51,7 +51,6 @@ interface SearchPageProps {
 }
 
 interface ModalFilterProps {
-  // author: KgAuthor;
   type: TypeEntitySelection;
   role: UserRoles;
   visibility: VisibilitiesFilter;
@@ -64,7 +63,6 @@ interface ModalFilterProps {
 }
 
 const ModalFilter = ({
-  // author,
   type,
   role,
   visibility,
@@ -84,7 +82,6 @@ const ModalFilter = ({
         <div className="pb-4 w-100">
           <FilterEntitySearch
             valuesDate={valuesDate}
-            // author={author}
             type={type}
             role={role}
             visibility={visibility}
@@ -150,7 +147,6 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
           <div className="d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block filter-container">
             <FilterEntitySearch
               valuesDate={valuesDate}
-              // author={author}
               type={type}
               role={role}
               visibility={visibility}
@@ -200,7 +196,6 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
           />
           <div className="d-sm-block d-md-none">
             <ModalFilter
-              // author={author}
               type={type}
               role={role}
               visibility={visibility}

@@ -38,7 +38,6 @@ import "./EntitySearchFilter.css";
  */
 
 export interface FilterProps {
-  // author: KgAuthor;
   type: TypeEntitySelection;
   role: UserRoles;
   visibility: VisibilitiesFilter;
@@ -47,7 +46,6 @@ export interface FilterProps {
 }
 
 const FilterEntitySearch = ({
-  // author,
   type,
   role,
   visibility,

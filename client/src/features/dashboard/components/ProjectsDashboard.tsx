@@ -122,12 +122,10 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
   const projectFilters = { type: { project: true, dataset: false } };
   const paramsUrlStrMyProjects = stateToSearchString({
     ...projectFilters,
-    // author: "user" as KgAuthor,
     role: { owner: true, maintainer: false, reader: false },
   });
   const paramsUrlStrExploreProjects = stateToSearchString({
     ...projectFilters,
-    // author: "all" as KgAuthor,
   });
   return totalOwnProjects > 0 ? (
     <div className="d-flex justify-content-center mt-2">
@@ -223,13 +221,11 @@ function ProjectsDashboard() {
     sort: SortingOptions.DescMatchingScore,
     page: 1,
     perPage: 50,
-    // author: "user",
     type: {
       project: true,
       dataset: false,
     },
     role: { owner: true, maintainer: false, reader: false },
-    // userName,
   };
   const {
     data: searchProjects,
