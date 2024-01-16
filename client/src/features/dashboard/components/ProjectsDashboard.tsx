@@ -217,10 +217,7 @@ function ProjectListRows({ projects, gridDisplay }: ProjectListProps) {
 }
 
 const TOTAL_RECENTLY_VISITED_PROJECT = 5;
-interface ProjectsDashboardProps {
-  userName: string;
-}
-function ProjectsDashboard({}: ProjectsDashboardProps) {
+function ProjectsDashboard() {
   const searchRequest: SearchEntitiesQueryParams = {
     phrase: "",
     sort: SortingOptions.DescMatchingScore,

@@ -16,15 +16,65 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
+import { ChangeEvent, useCallback } from "react";
+
+import { Input, Label } from "reactstrap";
 import type { UserRoles } from "./userRolesFilter.types";
+
+type UserRoleKey = keyof UserRoles;
 
 interface UserRolesFilterProps {
   role: UserRoles;
   setUserRole: (role: UserRoles) => void;
 }
 
-export default function UserRolesFilter({}: //   role,
-//   setUserRole,
-UserRolesFilterProps) {
-  return null;
+export default function UserRolesFilter({
+  role,
+  setUserRole,
+}: UserRolesFilterProps) {
+  const onChangeUserRoleFilter = useCallback(
+    (roleKey: UserRoleKey) => {
+      return function onChangeValue(event: ChangeEvent<HTMLInputElement>) {
+        setUserRole({
+          ...role,
+          [roleKey]: event.target.checked,
+        });
+      };
+    },
+    [role, setUserRole]
+  );
+
+  const items = [
+    { title: "Owner", key: "owner" as const },
+    { title: "Maintainer", key: "maintainer" as const },
+    { title: "Reader", key: "reader" as const },
+  ];
+
+  return (
+    <div className="input-filter-box">
+      <h3 className="filter-label">User Role</h3>
+      {items.map(({ key, title }) => (
+        <div
+          className={cx("form-rk-green", "d-flex", "align-items-center")}
+          key={key}
+        >
+          <Input
+            className="form-check-input"
+            id={`user-role-${key}`}
+            type="checkbox"
+            checked={role[key]}
+            onChange={onChangeUserRoleFilter(key)}
+            data-cy={`user-role-${key}`}
+          />
+          <Label
+            className={cx("form-check-label", "ms-2", "mt-1")}
+            for={`user-role-${key}`}
+          >
+            {title}
+          </Label>
+        </div>
+      ))}
+    </div>
+  );
 }

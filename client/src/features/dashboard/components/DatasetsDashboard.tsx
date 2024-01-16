@@ -113,10 +113,7 @@ function DatasetListRows({ datasets, gridDisplay }: DatasetListProps) {
 }
 
 const MAX_DATASETS_TO_SHOW = 3;
-interface DatasetDashboardProps {
-  userName: string;
-}
-function DatasetDashboard({}: DatasetDashboardProps) {
+function DatasetDashboard() {
   const searchRequest: SearchEntitiesQueryParams = {
     phrase: "",
     sort: SortingOptions.DescDate,

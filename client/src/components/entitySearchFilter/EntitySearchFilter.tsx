@@ -58,15 +58,6 @@ const FilterEntitySearch = ({
     reducers: { setDates, setType, setUserRole, setVisibility },
   } = useKgSearchContext();
 
-  // const authorComponent = isLoggedUser ? (
-  //   <div>
-  //     <AuthorFilter
-  //       handler={(value: KgAuthor) => setAuthor(value)}
-  //       value={author}
-  //     />
-  //   </div>
-  // ) : null;
-
   const userRoleComponent = isLoggedUser && (
     <div>
       <UserRolesFilter role={role} setUserRole={setUserRole} />
