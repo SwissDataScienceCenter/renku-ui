@@ -120,6 +120,9 @@ export default function SessionBranchOption() {
   const [fetchBranchesPage, branchesPageResult] =
     projectGitLabApi.useLazyGetRepositoryBranchesQuery();
   const onFetchMore = useCallback(() => {
+    if (!gitLabProjectId) {
+      return;
+    }
     const request = fetchBranchesPage({
       projectId: `${gitLabProjectId}`,
       page: fetchedPages + 1,

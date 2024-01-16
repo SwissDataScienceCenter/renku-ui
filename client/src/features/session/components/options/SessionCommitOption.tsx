@@ -85,6 +85,9 @@ export default function SessionCommitOption() {
   const [fetchCommitsPage, commitsPageResult] =
     projectGitLabApi.useLazyGetRepositoryCommitsQuery();
   const onFetchMore = useCallback(() => {
+    if (!gitLabProjectId) {
+      return;
+    }
     const request = fetchCommitsPage({
       branch: currentBranch,
       projectId: `${gitLabProjectId}`,
