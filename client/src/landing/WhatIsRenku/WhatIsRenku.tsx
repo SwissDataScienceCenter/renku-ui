@@ -270,7 +270,6 @@ interface DatasetsFeatSection {
 const DatasetsFeatSection = ({ datasetSlug }: DatasetsFeatSection) => {
   const paramsUrlStrExploreDatasets = stateToSearchString({
     type: { project: false, dataset: true },
-    // author: "all" as KgAuthor,
   });
   const {
     data: kgDataset,
