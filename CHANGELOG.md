@@ -1,7 +1,24 @@
 # Changes
 
-## [3.17.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.17.0...3.17.1) (2023-11-30)
+## [3.18.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.17.1...3.18.0) (2024-01-15)
 
+### Features
+
+- Enable storage RW and support more storage services ([#2915](https://github.com/SwissDataScienceCenter/renku-ui/issues/2915), [#2901](https://github.com/SwissDataScienceCenter/renku-ui/issues/2901), [#2899](https://github.com/SwissDataScienceCenter/renku-ui/issues/2899), [#2908](https://github.com/SwissDataScienceCenter/renku-ui/issues/2908), [#2962](https://github.com/SwissDataScienceCenter/renku-ui/issues/2962), [#2900](https://github.com/SwissDataScienceCenter/renku-ui/issues/2900))
+- Add auto-carousel on the landing page ([#2927](https://github.com/SwissDataScienceCenter/renku-ui/issues/2927))
+- Add `/version` endpoint to the UI server ([#2928](https://github.com/SwissDataScienceCenter/renku-ui/issues/2928))
+- Add KG to the release information page ([#2933](https://github.com/SwissDataScienceCenter/renku-ui/issues/2933))
+- Add tolerations and node affinities to resource classes ([#2916](https://github.com/SwissDataScienceCenter/renku-ui/issues/2916))
+- Let admin add many users at once to a resource pool ([#2910](https://github.com/SwissDataScienceCenter/renku-ui/issues/2910))
+- Update empty cards animation ([#2937](https://github.com/SwissDataScienceCenter/renku-ui/issues/2937))
+
+### Bug Fixes
+
+- Fix the environment dropdown on the Start session page ([#2949](https://github.com/SwissDataScienceCenter/renku-ui/issues/2949), [#2948](https://github.com/SwissDataScienceCenter/renku-ui/issues/2948))
+- Resize the feedback badge on the session settings page ([#2953](https://github.com/SwissDataScienceCenter/renku-ui/issues/2953))
+- Use password fields for credentials ([#2920](https://github.com/SwissDataScienceCenter/renku-ui/issues/2920))
+
+## [3.17.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.17.0...3.17.1) (2023-11-30)
 
 ### Bug Fixes
 
@@ -14,13 +31,11 @@ This update aligns the dataset slug and name properties with the updated renku-c
 - Requires renku-core version 2.8.0 or later
 - Requires renku-graph version 2.48.0 or later
 
-
-## [3.17.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.16.0...3.17.0)   (2023-11-29)
+## [3.17.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.16.0...3.17.0) (2023-11-29)
 
 ### Features
 
 - Redesign landing page ([#2885](https://github.com/SwissDataScienceCenter/renku-ui/issues/2885), [#2890](https://github.com/SwissDataScienceCenter/renku-ui/issues/2890), [#2891](https://github.com/SwissDataScienceCenter/renku-ui/issues/2891), [#2895](https://github.com/SwissDataScienceCenter/renku-ui/issues/2895), [#2896](https://github.com/SwissDataScienceCenter/renku-ui/issues/2896), [#2897](https://github.com/SwissDataScienceCenter/renku-ui/issues/2897), [#2911](https://github.com/SwissDataScienceCenter/renku-ui/issues/2911), [#2912](https://github.com/SwissDataScienceCenter/renku-ui/issues/2912), [#2913](https://github.com/SwissDataScienceCenter/renku-ui/issues/2913), [#2925](https://github.com/SwissDataScienceCenter/renku-ui/issues/2925))
-
 
 ## [3.16.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.15.1...3.16.0) (2023-11-24)
 
