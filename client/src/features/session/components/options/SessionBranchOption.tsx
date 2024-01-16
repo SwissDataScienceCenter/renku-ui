@@ -78,7 +78,7 @@ export default function SessionBranchOption() {
     requestId: defaultBranchRequestId,
   } = useGetRepositoryBranchQuery(
     {
-      projectId: `${gitLabProjectId ?? 0}`,
+      projectId: `${gitLabProjectId}`,
       branch: defaultBranch,
     },
     { skip: !gitLabProjectId }
@@ -90,7 +90,7 @@ export default function SessionBranchOption() {
     requestId: branchesFirstPageRequestId,
   } = useGetRepositoryBranchesQuery(
     {
-      projectId: `${gitLabProjectId ?? 0}`,
+      projectId: `${gitLabProjectId}`,
     },
     { skip: !gitLabProjectId }
   );
@@ -121,7 +121,7 @@ export default function SessionBranchOption() {
     projectGitLabApi.useLazyGetRepositoryBranchesQuery();
   const onFetchMore = useCallback(() => {
     const request = fetchBranchesPage({
-      projectId: `${gitLabProjectId ?? 0}`,
+      projectId: `${gitLabProjectId}`,
       page: fetchedPages + 1,
       perPage: branchesFirstPage?.pagination.perPage,
     });

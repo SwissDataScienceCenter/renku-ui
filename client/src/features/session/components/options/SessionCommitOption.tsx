@@ -67,7 +67,7 @@ export default function SessionCommitOption() {
   } = useGetRepositoryCommitsQuery(
     {
       branch: currentBranch,
-      projectId: `${gitLabProjectId ?? 0}`,
+      projectId: `${gitLabProjectId}`,
     },
     { skip: !gitLabProjectId || !currentBranch }
   );
@@ -87,7 +87,7 @@ export default function SessionCommitOption() {
   const onFetchMore = useCallback(() => {
     const request = fetchCommitsPage({
       branch: currentBranch,
-      projectId: `${gitLabProjectId ?? 0}`,
+      projectId: `${gitLabProjectId}`,
       page: fetchedPages + 1,
       perPage: commitsFirstPage?.pagination.perPage,
     });
