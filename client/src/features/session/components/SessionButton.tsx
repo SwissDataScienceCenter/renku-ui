@@ -417,7 +417,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
     );
 
   const hibernateAction = status !== "stopping" &&
-    status !== "failed" &&
+    (status !== "failed" || failedScheduling) &&
     status !== "hibernated" &&
     !isStopping &&
     !isHibernating &&
