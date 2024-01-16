@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { stringToUserRoleFilter } from "../../components/authorFilter/AuthorFilter";
 import {
   DateFilterTypes,
   dateFilterTypeToSinceAndUntil,
@@ -30,11 +29,13 @@ import {
   TypeEntitySelection,
   arrayToTypeEntitySelection,
 } from "../../components/typeEntityFilter/TypeEntityFilter";
+import { arrayToUserRolesFilter } from "../../components/userRolesFilter/userRoles.utils";
+import { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import {
   VisibilitiesFilter,
   arrayToVisibilitiesFilter,
 } from "../../components/visibilityFilter/VisibilityFilter";
-import { KgUserRole, KgSearchState } from "./KgSearch.types";
+import { KgSearchState } from "./KgSearch.types";
 
 const numKeys = ["page", "perPage"] as const;
 type KgStateNumKey = (typeof numKeys)[number];
@@ -63,8 +64,8 @@ type KgStateSimpleKey = Exclude<
   KgStateTypeDateFilterKey | KgStateDateBoundsKey
 >;
 
-type KgStateVal<T extends KgStateSimpleKey> = T extends KgUserRole
-  ? KgUserRole
+type KgStateVal<T extends KgStateSimpleKey> = T extends KgStateUserRoleKey
+  ? UserRoles
   : T extends KgStateSortKey
   ? SortingOptions
   : T extends KgStateTypeKey
@@ -79,7 +80,7 @@ export const defaultSearchState: KgSearchState = {
   page: 1,
   perPage: 24,
   phrase: "",
-  role: "any",
+  role: { owner: false, maintainer: false, reader: false },
   since: "",
   sort: SortingOptions.DescMatchingScore,
   type: { project: true, dataset: false },
@@ -133,9 +134,9 @@ const queryParameterStateValue = <T extends KgStateSimpleKey>(
     return stringToDateFilter(value) as KgStateVal<T>;
   }
   if (isUserRoleKey(key)) {
-    const value = qp.get(key);
-    if (value == null) return defaultSearchState.role as KgStateVal<T>;
-    return stringToUserRoleFilter(value) as KgStateVal<T>;
+    const value = qp.getAll(key);
+    if (value.length < 1) return defaultSearchState.role as KgStateVal<T>;
+    return arrayToUserRolesFilter(value) as KgStateVal<T>;
   }
   if (isVisibilityKey(key)) {
     const value = qp.getAll(key);
@@ -209,8 +210,11 @@ export const stateToSearchString = (state: Partial<KgSearchState>): string => {
   {
     const key = "role";
     const val = state[key];
-    if (val != null && val !== defaultSearchState[key])
-      stateMap.push([key, val.toString()]);
+    if (val != null && !isInitialEqualToObject(key, val)) {
+      Object.keys(val).forEach((k) => {
+        if (val[k as keyof typeof val] === true) stateMap.push([key, k]);
+      });
+    }
   }
   {
     const key = "typeDate";
@@ -248,8 +252,8 @@ export const stateToSearchString = (state: Partial<KgSearchState>): string => {
 };
 
 function isInitialEqualToObject(
-  key: KgStateTypeKey | KgStateVisibilityKey,
-  value?: TypeEntitySelection | VisibilitiesFilter | null
+  key: KgStateTypeKey | KgStateUserRoleKey | KgStateVisibilityKey,
+  value?: TypeEntitySelection | UserRoles | VisibilitiesFilter | null
 ) {
   // treat an missing value as same as initial
   if (value == null) return true;

@@ -16,19 +16,19 @@
  * limitations under the License.
  */
 
-import { KgAuthor } from "../../features/kgSearch/KgSearch.types";
+import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
+import { DateFilter, DatesFilter } from "../dateFilter/DateFilter";
 import {
   TypeEntityFilter,
   TypeEntitySelection,
 } from "../typeEntityFilter/TypeEntityFilter";
-import { AuthorFilter } from "../authorFilter/AuthorFilter";
+import UserRolesFilter from "../userRolesFilter/UserRolesFilter";
+import type { UserRoles } from "../userRolesFilter/userRolesFilter.types";
 import {
   VisibilitiesFilter,
   VisibilityFilter,
 } from "../visibilityFilter/VisibilityFilter";
 import "./EntitySearchFilter.css";
-import { DateFilter, DatesFilter } from "../dateFilter/DateFilter";
-import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 
 /**
  *  renku-ui
@@ -38,32 +38,40 @@ import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
  */
 
 export interface FilterProps {
-  author: KgAuthor;
+  // author: KgAuthor;
   type: TypeEntitySelection;
+  role: UserRoles;
   visibility: VisibilitiesFilter;
   isLoggedUser: boolean;
   valuesDate: DatesFilter;
 }
 
 const FilterEntitySearch = ({
-  author,
+  // author,
   type,
+  role,
   visibility,
   isLoggedUser,
   valuesDate,
 }: FilterProps) => {
   const {
-    reducers: { setAuthor, setDates, setType, setVisibility },
+    reducers: { setDates, setType, setUserRole, setVisibility },
   } = useKgSearchContext();
 
-  const authorComponent = isLoggedUser ? (
+  // const authorComponent = isLoggedUser ? (
+  //   <div>
+  //     <AuthorFilter
+  //       handler={(value: KgAuthor) => setAuthor(value)}
+  //       value={author}
+  //     />
+  //   </div>
+  // ) : null;
+
+  const userRoleComponent = isLoggedUser && (
     <div>
-      <AuthorFilter
-        handler={(value: KgAuthor) => setAuthor(value)}
-        value={author}
-      />
+      <UserRolesFilter role={role} setUserRole={setUserRole} />
     </div>
-  ) : null;
+  );
 
   const visibilityComponent = isLoggedUser ? (
     <div>
@@ -83,7 +91,7 @@ const FilterEntitySearch = ({
             value={type}
           />
         </div>
-        {authorComponent}
+        {userRoleComponent}
         {visibilityComponent}
         <div>
           <DateFilter dates={valuesDate} onDatesChange={setDates} />

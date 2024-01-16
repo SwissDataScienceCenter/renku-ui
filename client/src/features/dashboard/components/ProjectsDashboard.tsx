@@ -51,7 +51,6 @@ import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionF
 import { Url } from "../../../utils/helpers/url";
 import { displaySlice } from "../../display";
 import { EntityType } from "../../kgSearch";
-import { KgAuthor } from "../../kgSearch/KgSearch.types";
 import {
   SearchEntitiesQueryParams,
   useSearchEntitiesQuery,
@@ -123,11 +122,12 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
   const projectFilters = { type: { project: true, dataset: false } };
   const paramsUrlStrMyProjects = stateToSearchString({
     ...projectFilters,
-    author: "user" as KgAuthor,
+    // author: "user" as KgAuthor,
+    role: { owner: true, maintainer: false, reader: false },
   });
   const paramsUrlStrExploreProjects = stateToSearchString({
     ...projectFilters,
-    author: "all" as KgAuthor,
+    // author: "all" as KgAuthor,
   });
   return totalOwnProjects > 0 ? (
     <div className="d-flex justify-content-center mt-2">
@@ -220,18 +220,19 @@ const TOTAL_RECENTLY_VISITED_PROJECT = 5;
 interface ProjectsDashboardProps {
   userName: string;
 }
-function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
+function ProjectsDashboard({}: ProjectsDashboardProps) {
   const searchRequest: SearchEntitiesQueryParams = {
     phrase: "",
     sort: SortingOptions.DescMatchingScore,
     page: 1,
     perPage: 50,
-    author: "user",
+    // author: "user",
     type: {
       project: true,
       dataset: false,
     },
-    userName,
+    role: { owner: true, maintainer: false, reader: false },
+    // userName,
   };
   const {
     data: searchProjects,

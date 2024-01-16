@@ -19,6 +19,7 @@
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import { Visibilities } from "../../components/visibility/Visibility";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 
@@ -27,7 +28,7 @@ export interface KgSearchResultLink {
   href: string;
 }
 
-export type KgUserRole = "any" | "owner" | "maintainer" | "reader";
+export type KgUserRole = "owner" | "maintainer" | "reader";
 
 export enum EntityType {
   Project = "project",
@@ -63,7 +64,7 @@ export interface KgSearchState {
   page: number;
   perPage: number;
   phrase: string;
-  role: KgUserRole;
+  role: UserRoles;
   since: string;
   sort: SortingOptions;
   type: TypeEntitySelection;

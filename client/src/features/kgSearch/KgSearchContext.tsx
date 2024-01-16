@@ -30,8 +30,9 @@ import {
 } from "../../components/dateFilter/DateFilter";
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
-import { KgSearchState, KgUserRole } from "./KgSearch.types";
+import { KgSearchState } from "./KgSearch.types";
 import {
   defaultSearchState,
   searchStringToState,
@@ -48,7 +49,7 @@ interface KgSearchContextType {
     setPage: (page: number) => void;
     setSort: (sort: SortingOptions) => void;
     setType: (type: TypeEntitySelection) => void;
-    setUserRole: (role: KgUserRole) => void;
+    setUserRole: (role: UserRoles) => void;
     setVisibility: (visibility: VisibilitiesFilter) => void;
     reset: () => void;
   };
@@ -71,17 +72,6 @@ export const KgSearchContextProvider = ({
     return state;
   }, [location.search]);
 
-  // const setAuthor = useCallback(
-  //   (author: KgAuthor) => {
-  //     const search = stateToSearchString({
-  //       ...kgSearchState,
-  //       author,
-  //       page: 1,
-  //     });
-  //     history.push({ search });
-  //   },
-  //   [history, kgSearchState]
-  // );
   const setDates = useCallback(
     (dates: DatesFilter) => {
       const search = stateToSearchString({
@@ -99,7 +89,7 @@ export const KgSearchContextProvider = ({
     const search = stateToSearchString({
       ...kgSearchState,
       type: { project: true, dataset: false },
-      role: "owner",
+      role: { owner: true, maintainer: false, reader: false },
       phrase: "",
       page: 1,
     });
@@ -109,7 +99,7 @@ export const KgSearchContextProvider = ({
     const search = stateToSearchString({
       ...kgSearchState,
       type: { project: false, dataset: true },
-      role: "owner",
+      role: { owner: true, maintainer: false, reader: false },
       phrase: "",
       page: 1,
     });
@@ -148,7 +138,7 @@ export const KgSearchContextProvider = ({
     [history, kgSearchState]
   );
   const setUserRole = useCallback(
-    (role: KgUserRole) => {
+    (role: UserRoles) => {
       const search = stateToSearchString({
         ...kgSearchState,
         role,

@@ -28,6 +28,7 @@ import { isEqual } from "lodash";
 import { getEntityImageUrl } from "./HelperFunctions";
 import { DatasetKg, KgMetadataResponse } from "../../features/project/Project";
 import { Visibilities } from "../../components/visibility/Visibility";
+import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 
 const getDatasetIdentifier = (links: KgSearchResultLink[]): string => {
   try {
@@ -138,7 +139,8 @@ export interface FiltersProperties {
     project: boolean;
     dataset: boolean;
   };
-  author: string;
+  // author: string;
+  role: UserRoles;
   visibility: {
     private: boolean;
     public: boolean;
@@ -155,7 +157,8 @@ export function hasInitialFilterValues(filters: FiltersProperties) {
       project: true,
       dataset: true,
     },
-    author: "all",
+    // author: "all",
+    role: { owner: false, maintainer: false, reader: false },
     visibility: {
       private: false,
       public: false,

@@ -51,7 +51,7 @@ interface EmptyResultProps {
 }
 const EmptyResult = ({ onRemoveFilters, error }: EmptyResultProps) => {
   const { kgSearchState } = useKgSearchContext();
-  const { phrase, type, author, visibility, since, until, typeDate } =
+  const { phrase, type, role, visibility, since, until, typeDate } =
     kgSearchState;
   const removeFilters = () => {
     if (onRemoveFilters) onRemoveFilters();
@@ -59,7 +59,8 @@ const EmptyResult = ({ onRemoveFilters, error }: EmptyResultProps) => {
 
   const currentFilters: FiltersProperties = {
     type,
-    author,
+    // author,
+    role,
     visibility,
     since,
     until,
