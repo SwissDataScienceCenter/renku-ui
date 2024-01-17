@@ -34,6 +34,7 @@ type DatasetImage = {
 export interface GetDatasetFilesParams extends CoreVersionUrl {
   git_url: string;
   slug: string;
+  branch: string;
 }
 
 export interface GetDatasetFilesResponse {
@@ -103,6 +104,7 @@ interface IDataset extends DatasetAbstract {
   sameAs?: string;
   url?: string;
   usedIn?: UsedIn;
+  branch?: string;
 }
 
 export type IDatasetFiles = {
