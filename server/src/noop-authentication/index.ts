@@ -28,16 +28,15 @@ class NoOpAuthenticator {
   ready = true;
   storage = new RedisStorage();
 
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getTokens(sessionId: string, autoRefresh: boolean): Promise<TokenSet> {
     return new TokenSet({ access_token: "do-not-inject" });
   }
 
-  // eslint-disable-next-line no-unused-vars
   async refreshTokens(
-    sessionId: string,
-    tokens?: TokenSet,
-    removeIfFailed?: boolean
+    sessionId: string, // eslint-disable-line @typescript-eslint/no-unused-vars
+    tokens?: TokenSet, // eslint-disable-line @typescript-eslint/no-unused-vars
+    removeIfFailed?: boolean // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<TokenSet> {
     return new TokenSet({ access_token: "do-not-inject" });
   }
