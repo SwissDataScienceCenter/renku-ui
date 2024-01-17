@@ -5,6 +5,7 @@
 ### Bug Fixes
 
 - Use the default branch on all the core datasets APIs ([#2972](https://github.com/SwissDataScienceCenter/renku-ui/issues/2972))
+- Align font sizes and text colors on the home page ([#2963](https://github.com/SwissDataScienceCenter/renku-ui/issues/2963), [#2968](https://github.com/SwissDataScienceCenter/renku-ui/issues/2968))
 
 ## [3.18.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.17.1...3.18.0) (2024-01-15)
 
