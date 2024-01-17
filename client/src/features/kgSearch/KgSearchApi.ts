@@ -17,10 +17,11 @@
  */
 import { FetchBaseQueryMeta } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { KgAuthor, KgSearchResult, ListResponse } from "./KgSearch";
-import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
-import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
-import { SortingOptions } from "../../utils/components/sortingEntities/SortingEntities";
+import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
+import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
+import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
+import type { KgSearchResult, ListResponse } from "./KgSearch.types";
 
 export type SearchEntitiesQueryParams = {
   phrase: string;
@@ -28,22 +29,21 @@ export type SearchEntitiesQueryParams = {
   page: number;
   perPage: number;
   type: TypeEntitySelection;
-  author: KgAuthor;
+  role: UserRoles;
   visibility?: VisibilitiesFilter;
-  userName?: string;
   since?: string;
-  until?: string
+  until?: string;
 };
 
 function getHeaderFieldNumeric(headers: Headers, field: string): number {
   return +(headers.get(field) ?? 0);
 }
 
-function setAuthorInQuery(query: string, author: KgAuthor, userName?: string) {
-  if (author === "user" && userName) query = `${query}&creator=${userName}`;
+// function setAuthorInQuery(query: string, role: KgUserRole) {
+//   if (role) query = `${query}&role=${role}`;
 
-  return query;
-}
+//   return query;
+// }
 
 function setTypeInQuery(query: string, types: TypeEntitySelection) {
   if (!types.project && !types.dataset)
@@ -53,6 +53,22 @@ function setTypeInQuery(query: string, types: TypeEntitySelection) {
 
   if (types.dataset) query = `${query}&type=dataset`;
 
+  return query;
+}
+
+function setUserRoleInQuery(query: string, role?: UserRoles): string {
+  if (!role) {
+    return query;
+  }
+  if (role.owner) {
+    query = `${query}&role=owner`;
+  }
+  if (role.maintainer) {
+    query = `${query}&role=maintainer`;
+  }
+  if (role.reader) {
+    query = `${query}&role=reader`;
+  }
   return query;
 }
 
@@ -77,12 +93,18 @@ const getPhrase = (phrase?: string) => {
 };
 
 const setDates = (query: string, since?: string, until?: string) => {
-  if (since)
-    query = `${query}&since=${since}`;
-  if (until)
-    query = `${query}&until=${until}`;
+  if (since) query = `${query}&since=${since}`;
+  if (until) query = `${query}&until=${until}`;
   return query;
 };
+
+const setSort = (query: string, sort: SortingOptions) => {
+  if (sort === SortingOptions.DescDate || sort === SortingOptions.AscDate)
+    return `${query}&sort=${sort}`;
+  return `${query}&sort=${sort}&sort=${SortingOptions.DescDate}`;
+};
+
+const KG_SEARCH_API_REFETCH_AFTER_DURATION_S = 30;
 
 // Define a service using a base URL and expected endpoints
 export const kgSearchApi = createApi({
@@ -99,26 +121,29 @@ export const kgSearchApi = createApi({
         page,
         perPage,
         type,
+        role,
         visibility,
-        author,
-        userName,
         since,
-        until
+        until,
       }) => {
         const url = `entities?${getPhrase(
           phrase
-        )}&sort=${sort}&page=${page}&per_page=${perPage}`;
-        return setDates(
-          setAuthorInQuery(
-            setVisibilityInQuery(setTypeInQuery(url, type), visibility),
-            author,
-            userName
-          ), since, until);
+        )}&page=${page}&per_page=${perPage}`;
+        return setSort(
+          setDates(
+            setUserRoleInQuery(
+              setVisibilityInQuery(setTypeInQuery(url, type), visibility),
+              role
+            ),
+            since,
+            until
+          ),
+          sort
+        );
       },
       transformResponse: (
         response: KgSearchResult[],
-        meta: FetchBaseQueryMeta,
-        arg: SearchEntitiesQueryParams
+        meta: FetchBaseQueryMeta
       ) => {
         // Left here temporarily in case we want to use headers
         const headers = meta.response?.headers;
@@ -128,7 +153,7 @@ export const kgSearchApi = createApi({
             perPage: 0,
             total: 0,
             totalPages: 0,
-            results: []
+            results: [],
           };
         }
         const page = getHeaderFieldNumeric(headers, "page");
@@ -140,12 +165,12 @@ export const kgSearchApi = createApi({
           perPage,
           total,
           totalPages,
-          results: response
+          results: response,
         };
-      }
-    })
+      },
+    }),
   }),
-  refetchOnMountOrArgChange: 3,
+  refetchOnMountOrArgChange: KG_SEARCH_API_REFETCH_AFTER_DURATION_S,
 });
 
 // Export hooks for usage in function components, which are

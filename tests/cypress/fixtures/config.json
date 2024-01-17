@@ -1,5 +1,6 @@
 {
-  "UI_VERSION": "1.2.2-7bae0472",
+  "UI_VERSION": "3.10.0-7bae0472",
+  "RENKU_CHART_VERSION": "3.10.0-cypress",
   "UI_SHORT_SHA": "development",
   "TELEPRESENCE": "false",
   "BASE_URL": "http://localhost:3000",
@@ -40,6 +41,30 @@
       }
     },
     "tutorialLink": "https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html",
-    "projects": []
-  }
+    "showcase": {
+      "enabled": true,
+      "title": "Real-world use cases: Conducted by SDSC and ETH Domain",
+      "description": "The case studies presented here **bridge the gap** from domain to data science and provide experts from both sides with the means to examine, confirm, and extend the datasets and their analysis, without extensive investments of time and infrastructure.",
+      "projects": [
+        {
+          "identifier": "lorenzo.cavazzi.tech/readme-file-dev"
+        },
+        {
+          "overrideDescription": "### Lorem ipsum\n\nDolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "identifier": "e2e/nuevo-projecto"
+        },
+        {
+          "overrideDescription": "### Lorem ipsum\n\nDolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "overrideImageUrl": "../stockimages/dataset2.svg",
+          "identifier": "e2e/testing-datasets",
+          "overrideTitle": "Override Everything"
+        },
+        {
+          "identifier": "e2e/local-test-project",
+          "overrideTitle": "Override Title"
+        }
+      ]
+    }
+  },
+  "USER_PREFERENCES_MAX_PINNED_PROJECTS": 5
 }

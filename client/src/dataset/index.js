@@ -23,7 +23,6 @@
  *  Module for file rendering in Renku.
  */
 
-
 import ShowDataset from "./Dataset.container";
 import { mapDataset } from "./DatasetFunctions";
 

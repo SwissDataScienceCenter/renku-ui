@@ -24,14 +24,13 @@ import winston from "winston";
 
 import config from "./config";
 
-
 const logger = winston.createLogger({
   level: config.server.logLevel,
   format: winston.format.json(),
   defaultMeta: { service: "renku-ui-server" },
   transports: [
     new winston.transports.Console({ format: winston.format.simple() }),
-  ]
+  ],
 });
 
 export default logger;

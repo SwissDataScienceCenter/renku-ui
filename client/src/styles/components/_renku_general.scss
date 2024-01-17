@@ -1,9 +1,18 @@
-a:focus-visible, svg:focus, svg:focus-visible {
+// Swap "Inter" for "Inter var" if supported (reduced network payload)
+@supports (font-variation-settings: normal) {
+  :root {
+    --#{$prefix}body-font-family: "Inter var", sans-serif !important;
+  }
+}
+
+a:focus-visible,
+svg:focus,
+svg:focus-visible {
   outline: none;
 }
 .container-fluid.renku-container {
   padding-right: 2em;
-  padding-left:2em;
+  padding-left: 2em;
 }
 
 .container-xxl.renku-container {
@@ -23,10 +32,10 @@ a:focus-visible, svg:focus, svg:focus-visible {
 }
 
 .h-86 {
-  min-height: 86%
+  min-height: 86%;
 }
 .cursor-auto:hover {
-  cursor:auto !important;
+  cursor: auto !important;
 }
 
 .p-mb-0 > p {
@@ -52,22 +61,17 @@ a:focus-visible, svg:focus, svg:focus-visible {
 .card-header {
   border-radius: 8px 8px 0 0;
 }
-.modal-content {
-  border-radius: 8px;
-  border: 0;
-  background-color: var(--bs-rk-background-0);
-}
-
-.modal-header, .modal-footer {
-  border: none;
-}
 
 .break-word {
   word-break: break-word;
 }
 
+:root {
+  --rk-box-shadow: #{$rk-box-shadow};
+}
+
 .box-shadow-cards {
-  box-shadow: 0 4.0px 10.0px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: var(--rk-box-shadow);
 }
 
 .dropdown-item:active {
@@ -84,11 +88,11 @@ a:focus-visible, svg:focus, svg:focus-visible {
 }
 
 .pagination {
-  border: 1px solid #F5F6FA;
+  border: 1px solid #f5f6fa;
 }
 
 .pagination-label {
-  color: var(--bs-rk-text-light)
+  color: var(--bs-rk-text-light);
 }
 
 .rk-search-pagination {
@@ -103,7 +107,7 @@ a:focus-visible, svg:focus, svg:focus-visible {
 .rk-search-pagination .page-link {
   background-color: white !important;
   border-color: #f5f6fa !important;
-  color: #3A3A3D !important;
+  color: #3a3a3d !important;
 }
 
 .rk-icon {
@@ -117,3 +121,6 @@ a:focus-visible, svg:focus, svg:focus-visible {
   }
 }
 
+.text-muted {
+  --#{$prefix}secondary-color: var(--bs-rk-text-light);
+}

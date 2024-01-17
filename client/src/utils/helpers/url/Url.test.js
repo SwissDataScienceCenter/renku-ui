@@ -23,8 +23,9 @@
  *  Tests for Url.
  */
 
-import { UrlRule, Url, getSearchParams, isSessionUrl } from "./Url";
+import { beforeAll, describe, expect, it } from "vitest";
 
+import { Url, UrlRule, getSearchParams, isSessionUrl } from "./Url";
 
 describe("UrlRule private class", () => {
   it("Initialization values and errors", () => {
@@ -32,35 +33,48 @@ describe("UrlRule private class", () => {
     let rule;
 
     // output
-    expect(() => new UrlRule("wrong_type"))
-      .toThrow("required <output> parameter must be a function");
+    expect(() => new UrlRule("wrong_type")).toThrow(
+      "required <output> parameter must be a function"
+    );
     rule = new UrlRule(() => "/");
     expect(rule.output).toBeInstanceOf(Function);
     expect(rule.required).toBeInstanceOf(Array);
     expect(rule.required).toHaveLength(0);
 
     // required
-    expect(() => new UrlRule(() => "/", "wrong_type"))
-      .toThrow("<required> parameter must be an array");
-    expect(() => new UrlRule(() => "/", ["input1", "input2"]))
-      .toThrow("<output> function must have an argument to assign an object");
-    expect(() => new UrlRule(() => "/", ["input1", 21]))
-      .toThrow("<required> parameter must contain only strings");
+    expect(() => new UrlRule(() => "/", "wrong_type")).toThrow(
+      "<required> parameter must be an array"
+    );
+    expect(() => new UrlRule(() => "/", ["input1", "input2"])).toThrow(
+      "<output> function must have an argument to assign an object"
+    );
+    expect(() => new UrlRule(() => "/", ["input1", 21])).toThrow(
+      "<required> parameter must contain only strings"
+    );
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     rule = new UrlRule((data) => "/", ["input1", "input2"]);
     expect(rule.required).toBeInstanceOf(Array);
     expect(rule.required).toHaveLength(2);
 
     // validation
-    expect(() => new UrlRule((data) => "/", ["input1", "input2"], "wrong_type"))
-      .toThrow("optional <validation> parameter must be a function");
-    rule = new UrlRule((data) => "/", ["input1", "input2"], (data) => true);
+    expect(
+      (data) => new UrlRule((data) => "/", ["input1", "input2"], "wrong_type")
+    ).toThrow("optional <validation> parameter must be a function");
+    rule = new UrlRule(
+      (data) => "/",
+      ["input1", "input2"],
+      () => true
+    );
     expect(rule.validation).toBeInstanceOf(Function);
+    /* eslint-enable @typescript-eslint/no-unused-vars */
 
     // examples
-    expect(() => new UrlRule(() => "/", [], null, "wrong_type"))
-      .toThrow("optional <examples> parameter must be an array");
-    expect(() => new UrlRule(() => "/", [], null, ["input1", 21]))
-      .toThrow("<examples> parameter must contain only strings");
+    expect(() => new UrlRule(() => "/", [], null, "wrong_type")).toThrow(
+      "optional <examples> parameter must be an array"
+    );
+    expect(() => new UrlRule(() => "/", [], null, ["input1", 21])).toThrow(
+      "<examples> parameter must contain only strings"
+    );
     rule = new UrlRule(() => "/", [], null, ["/", "/test"]);
     expect(rule.examples).toBeInstanceOf(Array);
     expect(rule.examples).toHaveLength(2);
@@ -83,7 +97,11 @@ describe("UrlRule private class", () => {
     rule = new UrlRule(
       (data) => `/${data.param1}/something`,
       ["param1"],
-      (data) => { if (typeof data.param1 !== "string") throw new Error("You must specify <param1>"); return true; }
+      (data) => {
+        if (typeof data.param1 !== "string")
+          throw new Error("You must specify <param1>");
+        return true;
+      }
     );
     expect(() => rule.get({ wrongParam: "test" })).toThrow();
     expect(() => rule.get({ param1: false })).toThrow();
@@ -96,7 +114,9 @@ describe("UrlRule private class", () => {
       if (typeof data.namespace !== "string")
         throw new Error("Project url requires a <namespace> of type string.");
       else if (data.namespace.length < 3)
-        throw new Error("Project url requires a <namespace> of minimum 3 letters.");
+        throw new Error(
+          "Project url requires a <namespace> of minimum 3 letters."
+        );
       else if (typeof data.path !== "string")
         throw new Error("Project url requires a <path> of type string.");
       else if (data.path.length < 3)
@@ -135,15 +155,25 @@ describe("UrlRule private class", () => {
 
 describe("Url session validation", () => {
   it("Test valid and invalid session url", () => {
-    expect(isSessionUrl("projects/namespaceProject/projectName/sessions")).toBe(true);
+    expect(isSessionUrl("projects/namespaceProject/projectName/sessions")).toBe(
+      true
+    );
     expect(isSessionUrl("projects/namespaceProject/projectName")).toBe(false);
-    expect(isSessionUrl("projects/namespaceProject/projectName/sessions/new")).toBe(true);
-    expect(isSessionUrl("projects/namespaceProject/projectName/sessions/show/sessionName")).toBe(true);
+    expect(
+      isSessionUrl("projects/namespaceProject/projectName/sessions/new")
+    ).toBe(true);
+    expect(
+      isSessionUrl(
+        "projects/namespaceProject/projectName/sessions/show/sessionName"
+      )
+    ).toBe(true);
     expect(isSessionUrl("projects/namespaceProject/sessions")).toBe(false);
 
-    const namespaceSeveralLevels = "namespaceProjectSubGroup1/namespaceProjectSubGroup2/namespaceProjectSubGroup1";
-    expect(isSessionUrl(`projects/${namespaceSeveralLevels}/projectName/sessions`))
-      .toBe(true);
+    const namespaceSeveralLevels =
+      "namespaceProjectSubGroup1/namespaceProjectSubGroup2/namespaceProjectSubGroup1";
+    expect(
+      isSessionUrl(`projects/${namespaceSeveralLevels}/projectName/sessions`)
+    ).toBe(true);
     expect(isSessionUrl("projects/datasets")).toBe(false);
     expect(isSessionUrl("projects/sessions")).toBe(false);
     expect(isSessionUrl("sessions")).toBe(true);
@@ -174,16 +204,34 @@ describe("Url helper class", () => {
     Url.pages.hijacked = rule;
 
     // Check successful query and errors
-    expect(() => { Url.get(Url.pages.hijacked); }).toThrow();
-    expect(() => { Url.get(Url.pages.hijacked, "wrong_type"); }).toThrow();
-    expect(() => { Url.get(Url.pages.hijacked, { namespace: 123 }); }).not.toThrow();
-    expect(() => { Url.get(Url.pages.hijacked, { namespace: "ns" }); }).not.toThrow();
-    expect(() => { Url.get(Url.pages.hijacked, { path: 123 }); }).toThrow();
-    expect(() => { Url.get(Url.pages.hijacked, { path: "ph" }); }).toThrow();
-    expect(() => { Url.get(Url.pages.hijacked, { namespace: 123, path: "ph" }); }).not.toThrow();
+    expect(() => {
+      Url.get(Url.pages.hijacked);
+    }).toThrow();
+    expect(() => {
+      Url.get(Url.pages.hijacked, "wrong_type");
+    }).toThrow();
+    expect(() => {
+      Url.get(Url.pages.hijacked, { namespace: 123 });
+    }).not.toThrow();
+    expect(() => {
+      Url.get(Url.pages.hijacked, { namespace: "ns" });
+    }).not.toThrow();
+    expect(() => {
+      Url.get(Url.pages.hijacked, { path: 123 });
+    }).toThrow();
+    expect(() => {
+      Url.get(Url.pages.hijacked, { path: "ph" });
+    }).toThrow();
+    expect(() => {
+      Url.get(Url.pages.hijacked, { namespace: 123, path: "ph" });
+    }).not.toThrow();
 
-    expect(Url.get(Url.pages.hijacked, { namespace: "ns" })).toBe(rule.examples[0]);
-    expect(Url.get(Url.pages.hijacked, { namespace: "ns", path: "ph" })).toBe(rule.examples[1]);
+    expect(Url.get(Url.pages.hijacked, { namespace: "ns" })).toBe(
+      rule.examples[0]
+    );
+    expect(Url.get(Url.pages.hijacked, { namespace: "ns", path: "ph" })).toBe(
+      rule.examples[1]
+    );
   });
 
   it("Omit `base`", () => {
@@ -196,13 +244,23 @@ describe("Url helper class", () => {
   it("Get full Url", () => {
     Url.pages.hijacked = "/staticPage";
     expect(Url.get(Url.pages.hijacked)).toBe("/staticPage");
-    expect(() => { Url.get(Url.pages.hijacked, {}, false); }).not.toThrow();
-    expect(() => { Url.get(Url.pages.hijacked, {}, true); }).toThrow();
+    expect(() => {
+      Url.get(Url.pages.hijacked, {}, false);
+    }).not.toThrow();
+    expect(() => {
+      Url.get(Url.pages.hijacked, {}, true);
+    }).toThrow();
     const fakeBaseUrl = "https://Ican'texists/sub/";
     Url.setBaseUrl(fakeBaseUrl);
-    expect(() => { Url.get(Url.pages.hijacked, {}, true); }).not.toThrow();
-    expect(Url.get(Url.pages.hijacked, {}, true)).toBe("https://Ican'texists/sub/staticPage");
-    expect(() => { Url.setBaseUrl("http://AnotherUrl"); }).toThrow("base url can't be set multiple times");
+    expect(() => {
+      Url.get(Url.pages.hijacked, {}, true);
+    }).not.toThrow();
+    expect(Url.get(Url.pages.hijacked, {}, true)).toBe(
+      "https://Ican'texists/sub/staticPage"
+    );
+    expect(() => {
+      Url.setBaseUrl("http://AnotherUrl");
+    }).toThrow("base url can't be set multiple times");
   });
 
   it("Test specific pages", () => {
@@ -211,12 +269,19 @@ describe("Url helper class", () => {
 
     expect(get(pages.projects)).toBe("/projects");
     expect(get(pages.projects.all)).toBe("/projects/all");
-    expect(get(pages.projects.all, { q: "test", searchIn: "projects" }))
-      .toBe("/projects/all?q=test&searchIn=projects");
+    expect(get(pages.projects.all, { q: "test", searchIn: "projects" })).toBe(
+      "/projects/all?q=test&searchIn=projects"
+    );
 
-    expect(() => { get(pages.project); }).toThrow();
-    expect(get(pages.project, { namespace: "ns", path: "ph" })).toBe("/projects/ns/ph");
-    expect(get(pages.project, { namespace: "gr1/gr2", path: "ph" })).toBe("/projects/gr1/gr2/ph");
+    expect(() => {
+      get(pages.project);
+    }).toThrow();
+    expect(get(pages.project, { namespace: "ns", path: "ph" })).toBe(
+      "/projects/ns/ph"
+    );
+    expect(get(pages.project, { namespace: "gr1/gr2", path: "ph" })).toBe(
+      "/projects/gr1/gr2/ph"
+    );
   });
 });
 
@@ -232,9 +297,9 @@ describe("getSearchParams function", () => {
   beforeAll(() => {
     // ? This works fine locally, but it fails in the GitHub actions where the workaround
     // ? is to delete global.window.location each time.
-    global.window = Object.create(window);
+    global.window ??= Object.create(window);
     Object.defineProperty(window, "location", {
-      value: { href: "/", search: "" }
+      value: { href: "/", search: "" },
     });
   });
 
@@ -263,16 +328,21 @@ describe("getSearchParams function", () => {
   it("Expected parameters", () => {
     delete global.window.location;
     window.location = { search: SEARCH.many };
-    const expectedParams = { "page": 1, "q": null };
+    const expectedParams = { page: 1, q: null };
     const params = getSearchParams(expectedParams);
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(4);
-    expect(params).toMatchObject({ page: 4, ascending: true, perPage: 50, q: null });
+    expect(params).toMatchObject({
+      page: 4,
+      ascending: true,
+      perPage: 50,
+      q: null,
+    });
   });
 
   it("Converted legacy", () => {
     const convertParams = { orderSearchAsc: "ascending" };
-    const expectedParams = { "page": 1, "q": null };
+    const expectedParams = { page: 1, q: null };
     let params;
 
     delete global.window.location;
@@ -287,14 +357,24 @@ describe("getSearchParams function", () => {
     params = getSearchParams(expectedParams, convertParams);
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(4);
-    expect(params).toMatchObject({ page: 4, ascending: false, perPage: 50, q: null });
+    expect(params).toMatchObject({
+      page: 4,
+      ascending: false,
+      perPage: 50,
+      q: null,
+    });
 
     delete global.window.location;
     window.location = { search: SEARCH.overlapping };
     params = getSearchParams(expectedParams, convertParams);
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(4);
-    expect(params).toMatchObject({ page: 4, ascending: true, perPage: 50, q: null });
+    expect(params).toMatchObject({
+      page: 4,
+      ascending: true,
+      perPage: 50,
+      q: null,
+    });
   });
 
   it("No conversion", () => {
@@ -303,6 +383,10 @@ describe("getSearchParams function", () => {
     const params = getSearchParams(null, null, false);
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(3);
-    expect(params).toMatchObject({ page: "4", ascending: "true", perPage: "50" });
+    expect(params).toMatchObject({
+      page: "4",
+      ascending: "true",
+      perPage: "50",
+    });
   });
 });

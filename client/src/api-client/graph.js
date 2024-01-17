@@ -17,46 +17,6 @@
  */
 
 function addGraphMethods(client) {
-  // using simpleFetch instead of clientFetch because we can get a 4xx response
-  // https://github.com/SwissDataScienceCenter/renku-graph/tree/master/webhook-service
-  client.checkGraphWebhook = (projectId) => {
-    const url = `${client.baseUrl}/projects/${projectId}/graph/webhooks/validation`;
-    return client.simpleFetch(url, "POST").then((resp) => {
-      if (resp.status === 200)
-        return true;
-
-      else if (resp.status === 404)
-        return false;
-
-
-      // errors expected: 401, 500
-      throw new Error(`Error ${resp.status}`);
-
-    });
-  };
-
-  client.createGraphWebhook = async (projectId) => {
-    const url = `${client.baseUrl}/projects/${projectId}/graph/webhooks`;
-    return client.simpleFetch(url, "POST").then((resp) => {
-      if (resp.status === 200 || resp.status === 201)
-        return true;
-
-      else if (resp.status === 404)
-        return false;
-
-      // errors expected: 500
-      throw new Error(`Error ${resp.status}`);
-    });
-  };
-
-  client.checkGraphStatus = (projectId) => {
-    const url = `${client.baseUrl}/projects/${projectId}/graph/status`;
-    const headers = client.getBasicHeaders();
-    return client.clientFetch(url, { method: "GET", headers }).then((resp) => {
-      return resp.data;
-    });
-  };
-
   /**
    * Get the lineage nodes and edges
    *

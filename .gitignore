@@ -103,5 +103,11 @@ virtualenv
 # All traces of the GitLab server running locally
 /gitlab
 
-# Ignore helm charts requirements lock file
+# helm charts requirements lock file
 requirements.lock
+
+# automatically generated RTK files
+client/.rtk/*Api.ts
+
+# stoybook files
+client/storybook-static

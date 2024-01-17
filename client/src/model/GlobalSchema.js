@@ -23,17 +23,24 @@
  *  Schema for all Components.
  */
 
-import { Schema, PropertyName as Prop } from "./index";
+import { PropertyName as Prop, Schema } from "./Model";
 import {
-  datasetSchema, environmentSchema, formGeneratorSchema, newProjectSchema, notebooksSchema, notificationsSchema,
-  projectsSchema, projectSchema, statuspageSchema, userSchema, webSocketSchema, workflowSchema, workflowsSchema,
+  datasetSchema,
+  environmentSchema,
+  formGeneratorSchema,
+  newProjectSchema,
+  notificationsSchema,
+  projectSchema,
+  projectsSchema,
+  statuspageSchema,
+  userSchema,
+  webSocketSchema,
 } from "./RenkuModels";
 
 const globalSchema = new Schema({
   environment: { [Prop.SCHEMA]: environmentSchema },
   formGenerator: { [Prop.SCHEMA]: formGeneratorSchema },
   newProject: { [Prop.SCHEMA]: newProjectSchema },
-  notebooks: { [Prop.SCHEMA]: notebooksSchema },
   notifications: { [Prop.SCHEMA]: notificationsSchema },
   project: { [Prop.SCHEMA]: projectSchema },
   projects: { [Prop.SCHEMA]: projectsSchema },
@@ -41,8 +48,6 @@ const globalSchema = new Schema({
   statuspage: { [Prop.SCHEMA]: statuspageSchema },
   user: { [Prop.SCHEMA]: userSchema },
   webSocket: { [Prop.SCHEMA]: webSocketSchema },
-  workflow: { [Prop.SCHEMA]: workflowSchema },
-  workflows: { [Prop.SCHEMA]: workflowsSchema },
 });
 
 export { globalSchema };

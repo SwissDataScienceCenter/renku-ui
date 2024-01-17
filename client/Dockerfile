@@ -1,36 +1,32 @@
-FROM node:16.14.2-alpine
+FROM node:18.17.1 AS builder
 
-RUN apk update && apk add python3 make g++
+RUN apt-get update && apt-get upgrade --quiet --assume-yes
 
 WORKDIR /app
 
-#: Use only required files.
-COPY package.json package-lock.json tsconfig.json /app/
+#? Use only required files.
+COPY package.json package-lock.json /app/
+RUN npm ci
+
+COPY index.html tsconfig.json tsconfig.node.json vite.config.ts /app/
 COPY public /app/public
 COPY src /app/src/
-COPY craco.config.js /app/craco.config.js
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
-ARG SHORT_SHA
-ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
 
-# Delete this after reactstrap is released
-RUN apk update && apk upgrade && \
-    apk add --no-cache git
+RUN npm run-script build
 
-# There is some incompatibility between craco and react-scripts >4
-# that causes problems with linting. Lint errors should have been
-# caught before we get here, so we can turn this off.
-# But look into https://github.com/gsoft-inc/craco/pull/219 for a better fix
-ENV DISABLE_ESLINT_PLUGIN=true
-RUN npm ci && \
-    npm run-script build
+COPY .storybook /app/.storybook
 
-FROM nginxinc/nginx-unprivileged:1.20-alpine
+RUN npm run storybook-build -- -o storybook-static
 
-COPY --from=0 /app/build /usr/share/nginx/html
+FROM nginxinc/nginx-unprivileged:1.25-alpine
+
+COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=builder /app/storybook-static /usr/share/nginx/html/storybook
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+COPY scripts/generate_sitemap.sh /app/scripts/generate_sitemap.sh
 
 # Set up the config files written by docker-entrypoint
 USER root

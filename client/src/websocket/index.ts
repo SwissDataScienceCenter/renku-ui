@@ -16,82 +16,99 @@
  * limitations under the License.
  */
 
-import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
-import { handleUserInit, handleUserUiVersion, handleUserError } from "./handlers/userHandlers";
+import {
+  checkWsServerMessage,
+  sendPullKgActivationStatus,
+  WsMessage,
+  WsServerMessage,
+} from "./WsMessages";
+import {
+  handleUserInit,
+  handleUserUiVersion,
+  handleUserError,
+} from "./handlers/userHandlers";
 import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
-import { handleKgActivationStatus } from "./handlers/kgActivationStatusHandler";
-import { InactiveKgProjects } from "../features/inactiveKgProjects/InactiveKgProjects";
+import {
+  handleKgActivationStatus,
+  handleWebSocketErrorForKgActivationStatus,
+  handleWebSocketPing,
+  updateStatus,
+} from "./handlers/kgActivationStatusHandler";
+import type { KgInactiveProjectsState } from "../features/inactiveKgProjects/";
+import { ActivationStatusProgressError } from "../features/inactiveKgProjects/";
 import { StateModel } from "../model";
 import APIClient from "../api-client";
-
 
 const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
 const reconnectIntervalMs = 10 * 1000;
 const reconnectPenaltyFactor = 1.5;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 
 // *** Accepted messages ***
 
 interface MessageData {
   required: Array<string> | null;
   optional: Array<string> | null;
-  handler: Function; // eslint-disable-line
+  handler: Function;
 }
 
 const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
-  "user": {
-    "init": [
+  user: {
+    init: [
       {
         required: null,
         optional: ["message"],
-        handler: handleUserInit
-      }
+        handler: handleUserInit,
+      },
     ],
-    "version": [
+    version: [
       {
         required: ["version"],
         optional: ["start", "message"],
-        handler: handleUserUiVersion
-      }
+        handler: handleUserUiVersion,
+      },
     ],
-    "activation": [
+    activation: [
       {
         required: null,
         optional: ["message"],
-        handler: handleKgActivationStatus
-      }
+        handler: handleKgActivationStatus,
+      },
     ],
-    "ack": [
+    ack: [
       {
         required: null,
         optional: ["message"],
-        handler: () => { }
-      }
+        handler: () => {
+          // eslint-disable-line @typescript-eslint/no-empty-function
+        },
+      },
     ],
-    "error": [
+    error: [
       {
         required: null,
         optional: ["message"],
-        handler: () => handleUserError
-      }
+        handler: () => handleUserError,
+      },
     ],
-    "test": [
+    test: [
       {
         required: null,
         optional: ["message"],
-        handler: () => ({ test: true })
-      }
+        handler: () => ({ test: true }),
+      },
     ],
-    "sessionStatus": [
+    sessionStatus: [
       {
         required: null,
         optional: ["message"],
-        handler: handleSessionsStatus
-      }
+        handler: handleSessionsStatus,
+      },
     ],
-  }
+  },
 };
-
 
 // *** WebSocket startup and configuration ***
 
@@ -104,36 +121,66 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
  * @param notifications - global notifications service
  */
 function setupWebSocket(
-  webSocketUrl: string, fullModel: StateModel, getLocation: Function, client: APIClient, notifications: any) {
+  webSocketUrl: string,
+  fullModel: StateModel,
+  getLocation: Function,
+  client: APIClient,
+  notifications: any
+) {
   const model = fullModel.subModel("webSocket");
   const webSocket = new WebSocket(webSocketUrl);
   model.setObject({ open: false, reconnect: { retrying: false } });
 
   function pingWebSocketServer(targetWebSocket: WebSocket) {
-    if (model.get("open") && targetWebSocket.readyState === targetWebSocket.OPEN) {
+    if (
+      model.get("open") &&
+      targetWebSocket.readyState === targetWebSocket.OPEN
+    ) {
       const pingMessage = new WsMessage({}, "ping");
       targetWebSocket.send(pingMessage.toString());
+      // TODO: Should we remove the lastPing? It's not used anywhere and causes UI re-rendering.
       model.setObject({ lastPing: new Date(pingMessage.timestamp) });
+      handleWebSocketPing(model);
       setTimeout(() => pingWebSocketServer(targetWebSocket), timeoutIntervalMs);
     }
   }
 
   function startPullingSessionStatus(targetWebSocket: WebSocket) {
-    targetWebSocket.send(JSON.stringify(new WsMessage({}, "pullSessionStatus")));
+    targetWebSocket.send(
+      JSON.stringify(new WsMessage({}, "pullSessionStatus"))
+    );
   }
 
   function resumePendingKgActivation(model: any, socket: any) {
     const state = model?.reduxStore?.getState();
+    if (state == null) return;
     // kgInactiveProjects
-    const projectsInProgress = state?.kgInactiveProjects;
-    const projectIds = projectsInProgress?.filter((project: InactiveKgProjects) => {
-      return project.progressActivation !== null && project.progressActivation !== 100;
-    }). map( (p: InactiveKgProjects) => p.id );
+    const projectsInProgress: KgInactiveProjectsState | null =
+      state.kgInactiveProjects;
+    if (projectsInProgress == null) return;
+    const projectIds = projectsInProgress.inactiveProjects
+      .filter((project) => {
+        return (
+          project.progressActivation !== null &&
+          project.progressActivation !== 100
+        );
+      })
+      .map((p) => p.id);
 
-    if (projectIds.length) {
-      const message = JSON.stringify(new WsMessage({ projects: projectIds }, "pullKgActivationStatus"));
-      socket.send(message);
+    if (projectIds.length < 1) return;
+
+    if (socket.readyState === socket.OPEN) {
+      // Send the resume request
+      sendPullKgActivationStatus(projectIds, socket);
+      return;
     }
+
+    // There are projects to update, but the socket is not open
+    const kgActivation: Record<string, number> = {};
+    projectIds.forEach((id) => {
+      kgActivation[`${id}`] = ActivationStatusProgressError.WEB_SOCKET_ERROR;
+    });
+    updateStatus(kgActivation, model.reduxStore);
   }
 
   function resumePendingProcesses(model: any, socket: any) {
@@ -159,8 +206,12 @@ function setupWebSocket(
 
   webSocket.onerror = (error) => {
     model.setObject({
-      open: false, error: true, errorObject: error, lastReceived: new Date()
+      open: false,
+      error: true,
+      errorObject: error,
+      lastReceived: new Date(),
     });
+    handleWebSocketErrorForKgActivationStatus(model);
   };
 
   webSocket.onclose = (data) => {
@@ -168,11 +219,21 @@ function setupWebSocket(
 
     // abnormal closure, restart the socket.
     if (data.code === 1006 || data.code === 4000)
-      wsData = { ...wsData, error: true, errorObject: { message: `WebSocket channel error ${data.code}` } };
+      wsData = {
+        ...wsData,
+        error: true,
+        errorObject: { message: `WebSocket channel error ${data.code}` },
+      };
     model.setObject(wsData);
 
     if (data.code === 1006 || data.code === 4000)
-      retryConnection(webSocketUrl, fullModel, getLocation, client, notifications);
+      retryConnection(
+        webSocketUrl,
+        fullModel,
+        getLocation,
+        client,
+        notifications
+      );
   };
 
   webSocket.onmessage = (message) => {
@@ -185,12 +246,17 @@ function setupWebSocket(
         serverMessage = JSON.parse(message.data as string);
         const res = checkWsServerMessage(serverMessage);
         if (!res)
-          throw new Error("WebSocket message is a valid JSON object but not a WsServerMessage");
-      }
-      catch (error) {
+          throw new Error(
+            "WebSocket message is a valid JSON object but not a WsServerMessage"
+          );
+      } catch (error) {
         model.setObject({
           error: true,
-          errorObject: { ...(error as Error), message: "Incoming message bad formed: " + (error as Error).toString() }
+          errorObject: {
+            ...(error as Error),
+            message:
+              "Incoming message bad formed: " + (error as Error).toString(),
+          },
         });
         return false;
       }
@@ -199,38 +265,48 @@ function setupWebSocket(
       const handler = getWsServerMessageHandler(messageHandlers, serverMessage);
 
       if (typeof handler === "string") {
-        model.setObject({ error: true, errorObject: { message: `${handler}\nmessage: ${message}` } });
+        model.setObject({
+          error: true,
+          errorObject: { message: `${handler}\nmessage: ${message}` },
+        });
         return false;
       }
 
       // execute the command
       try {
         // ? Mind we are passing the full model, not just model
-        const outcome = handler(serverMessage.data, webSocket, fullModel, getLocation, client, notifications);
-        if (outcome && model.get("error"))
-          model.set("error", false);
-        else if (!outcome && !model.get("error"))
-          model.set("error", true);
-      }
-      catch (error) {
-        const info = `Error while executing the '${serverMessage.type}' command: ${(error as Error).toString()}`;
+        const outcome = handler(
+          serverMessage.data,
+          webSocket,
+          fullModel,
+          getLocation,
+          client,
+          notifications
+        );
+        if (outcome && model.get("error")) model.set("error", false);
+        else if (!outcome && !model.get("error")) model.set("error", true);
+      } catch (error) {
+        const info = `Error while executing the '${
+          serverMessage.type
+        }' command: ${(error as Error).toString()}`;
         model.setObject({
           error: true,
-          errorObject: { ...(error as Error), message: `${info}\nmessage: ${message}` }
+          errorObject: {
+            ...(error as Error),
+            message: `${info}\nmessage: ${message}`,
+          },
         });
       }
-    }
-    else {
+    } else {
       model.setObject({
         error: true,
-        errorObject: { message: `Unexpected message: ${message}` }
+        errorObject: { message: `Unexpected message: ${message}` },
       });
     }
   };
 
   return webSocket;
 }
-
 
 // *** Helper functions ***
 
@@ -241,8 +317,9 @@ function setupWebSocket(
  * @returns handler function or error message
  */
 function getWsServerMessageHandler(
-  acceptedMessages: Record<string, Record<string, Array<MessageData>>>, serverMessage: WsServerMessage
-): Function | string { // eslint-disable-line
+  acceptedMessages: Record<string, Record<string, Array<MessageData>>>,
+  serverMessage: WsServerMessage
+): Function | string {
   if (!acceptedMessages[serverMessage.scope])
     return `Scope '${serverMessage.scope}' is not supported.`;
   const acceptedScopeMessages = acceptedMessages[serverMessage.scope];
@@ -265,7 +342,10 @@ function getWsServerMessageHandler(
     // can have only required or optional
     if (valid) {
       for (const prop of dataProps) {
-        if (!instruction.required?.includes(prop) && !instruction.optional?.includes(prop)) {
+        if (
+          !instruction.required?.includes(prop) &&
+          !instruction.optional?.includes(prop)
+        ) {
           valid = false;
           break;
         }
@@ -273,8 +353,7 @@ function getWsServerMessageHandler(
     }
 
     // stop when found a valid one
-    if (valid)
-      return instruction.handler;
+    if (valid) return instruction.handler;
   }
   return `Could not find a proper handler; data is wrong for a '${serverMessage.type}' instruction.`;
 }
@@ -288,21 +367,36 @@ function getWsServerMessageHandler(
  * @param notifications - global notifications service
  */
 function retryConnection(
-  webSocketUrl: string, fullModel: StateModel, getLocation: Function, client: APIClient, notifications: any) {
+  webSocketUrl: string,
+  fullModel: StateModel,
+  getLocation: Function,
+  client: APIClient,
+  notifications: any
+) {
   const reconnectModel = fullModel.subModel("webSocket.reconnect");
   const reconnectData = reconnectModel.get("");
   // reset timer after 1 hour
-  const oneHourAgo = (new Date()).setHours((new Date()).getHours() - 1);
+  const oneHourAgo = new Date().setHours(new Date().getHours() - 1);
   if (reconnectData.lastTime && reconnectData.lastTime < oneHourAgo)
     reconnectData.attempts = 0;
   reconnectData.lastTime = new Date();
   reconnectData.attempts++;
   reconnectData.retrying = true;
-  const delay = (reconnectPenaltyFactor ** reconnectData.attempts) * reconnectIntervalMs;
+  const delay =
+    reconnectPenaltyFactor ** reconnectData.attempts * reconnectIntervalMs;
   reconnectModel.setObject(reconnectData);
-  setTimeout(() => setupWebSocket(webSocketUrl, fullModel, getLocation, client, notifications), delay);
+  setTimeout(
+    () =>
+      setupWebSocket(
+        webSocketUrl,
+        fullModel,
+        getLocation,
+        client,
+        notifications
+      ),
+    delay
+  );
 }
-
 
 export { getWsServerMessageHandler, retryConnection, setupWebSocket };
 export type { MessageData };

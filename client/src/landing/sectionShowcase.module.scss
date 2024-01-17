@@ -1,0 +1,85 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+.sectionShowcase {
+  --swiper-pagination-bullet-size: 16px;
+  --swiper-pagination-bottom: 1px;
+}
+
+.sectionShowcaseCard {
+  --bs-border-width: 2px;
+  --bs-border-color: #ddd;
+  border-radius: 8px;
+  width: 372px;
+  height: 566px;
+}
+
+.cardBody {
+  min-height: 320px;
+  margin: 1.5rem 2rem 0.5rem;
+}
+
+.cardHeaderEntity {
+  // These dimensions come from ImageEditor.CARD_IMAGE_DIMENSIONS, scaled to the width of the card
+  width: 369px;
+  height: 209px;
+  background-size: cover;
+}
+
+.cardHeaderEntity__missing {
+  background-image: url("/src/styles/assets/projectBackgroundSmall.png");
+}
+
+.sectionShowcaseSwiper {
+  --swiper-navigation-sides-offset: 0px;
+  --swiper-theme-color: #01192d;
+}
+
+.sectionShowcaseHeader {
+  // Match WhatIsRenku/WhatIsRenku.module.scss #featContainer
+  h3 {
+    font-size: 40px !important;
+    margin: 40px 0 !important;
+    line-height: normal !important;
+  }
+
+  p {
+    line-height: normal !important;
+  }
+
+  @include media-breakpoint-up(xs) {
+    h3 {
+      font-size: 24px !important;
+      font-weight: bold !important;
+    }
+    p {
+      font-size: 20px !important;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    h3 {
+      font-size: 32px !important;
+    }
+
+    p {
+      font-size: 20px !important;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    h3 {
+      font-size: 40px !important;
+    }
+    p {
+      font-size: 24px !important;
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    h3 {
+      padding-top: 0 !important;
+    }
+  }
+}

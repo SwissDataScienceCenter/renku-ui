@@ -26,7 +26,7 @@
   border: 1px solid #aaa;
   border-top-width: 0;
   background-color: #fff;
-  z-index: 2;
+  z-index: 3;
   max-height: 560px;
   overflow-y: auto;
   border-radius: 0 0 8px 8px;
@@ -56,7 +56,8 @@
   padding: 10px 20px;
 }
 
-.react-autosuggest__suggestion--highlighted, .react-autosuggest__suggestion span.highlighted {
+.react-autosuggest__suggestion--highlighted,
+.react-autosuggest__suggestion span.highlighted {
   background-color: #e4e7ea;
 }
 
@@ -93,11 +94,11 @@ svg.no-pointer {
   background-color: white;
   border: 1px solid var(--bs-rk-border-input);
   -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
-.react-autosuggest__container > input:focus{
+.react-autosuggest__container > input:focus {
   box-shadow: none;
   border: 1px solid #ced4da;
 }
@@ -106,15 +107,9 @@ svg.no-pointer {
   border-radius: 8px 8px 0 0;
   border-width: 1px;
   border-color: var(--bs-rk-green);
-
 }
 
-.react-autosuggest__container > input::-ms-clear{
+.react-autosuggest__container > input::-ms-clear {
   display: none !important;
   content: none !important;
-}
-
-.new-project-indicator {
-  max-width: 650px;
-  margin: auto;
 }

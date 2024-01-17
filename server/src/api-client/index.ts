@@ -5,19 +5,19 @@ import logger from "../logger";
 export const RETURN_TYPES = {
   json: "json",
   text: "text",
-  full: "full"
+  full: "full",
 };
 
 export const FETCH_DEFAULT = {
   options: {
-    headers: new Headers()
+    headers: new Headers(),
   },
   returnType: RETURN_TYPES.json,
 };
 
 type QueryParams = {
-  [key: string]: string
-}
+  [key: string]: string;
+};
 
 interface FetchOptions {
   headers?: Headers;
@@ -26,7 +26,6 @@ interface FetchOptions {
 }
 
 class APIClient {
-
   gatewayUrl: string;
 
   constructor() {
@@ -37,7 +36,9 @@ class APIClient {
    * Fetch session status
    *
    */
-  async getSessionStatus(authHeathers: Record<string, string>): Promise<Response> {
+  async getSessionStatus(
+    authHeathers: Record<string, string>
+  ): Promise<Response> {
     const sessionsUrl = `${this.gatewayUrl}/notebooks/servers`;
     logger.debug(`Fetching session status.`);
     const options = {
@@ -52,11 +53,18 @@ class APIClient {
    * @param {number} projectId - Project Id
    * @param {Headers} authHeaders - Authentication headers
    */
-  async kgActivationStatus(projectId: number, authHeaders: Headers): Promise<Response> {
+  async kgActivationStatus(
+    projectId: number,
+    authHeaders: Headers
+  ): Promise<Response> {
     const headers = new Headers(authHeaders);
-    const activationStatusURL = `${ this.gatewayUrl }/projects/${ projectId }/graph/status`;
-    logger.info(`Fetching kg activation from ${ projectId } project`);
-    return this.clientFetch(activationStatusURL, { headers }, RETURN_TYPES.json);
+    const activationStatusURL = `${this.gatewayUrl}/projects/${projectId}/graph/status`;
+    logger.info(`Fetching kg activation from ${projectId} project`);
+    return this.clientFetch(
+      activationStatusURL,
+      { headers },
+      RETURN_TYPES.json
+    );
   }
 
   /**
@@ -70,21 +78,19 @@ class APIClient {
   async clientFetch(
     url: string,
     options = FETCH_DEFAULT.options,
-    returnType = FETCH_DEFAULT.returnType,
+    returnType = FETCH_DEFAULT.returnType
   ): Promise<Response> {
     return this._renkuFetch(url, options)
       .catch((error: unknown) => {
         return Promise.reject(error);
       })
       .then((response: Response) => {
-        if (!response)
-          return null;
+        if (!response) return null;
         switch (returnType) {
           case RETURN_TYPES.json:
             try {
               return response.json();
-            }
-            catch (e) {
+            } catch (e) {
               return Promise.reject(e);
             }
           case RETURN_TYPES.text:
@@ -116,8 +122,7 @@ class APIClient {
         return Promise.reject(fetchError);
       })
       .then((response) => {
-        if (response.status >= 200 && response.status < 300)
-          return response;
+        if (response.status >= 200 && response.status < 300) return response;
         return Promise.reject(response);
       });
   }

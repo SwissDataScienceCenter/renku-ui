@@ -15,42 +15,78 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RootStateOrAny, useSelector } from "react-redux";
-import { useInactiveProjectSelector } from "../../inactiveKgProjects/inactiveKgProjectsSlice";
-import useGetInactiveProjects from "../../../utils/customHooks/UseGetInactiveProjects";
-import { WarnAlert } from "../../../utils/components/Alert";
 import { Link } from "react-router-dom";
-import React from "react";
+
+import { WarnAlert } from "../../../components/Alert";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import { useGetInactiveKgProjectsQuery } from "../../inactiveKgProjects/InactiveKgProjectsApi";
+
+function InactiveProjectsWarning({
+  isEstimate,
+  totalProjects,
+}: {
+  isEstimate: boolean;
+  totalProjects: number;
+}) {
+  const projectsText =
+    totalProjects === 1 ? "1 project" : `${totalProjects} projects`;
+  const totalProjectsText = isEstimate
+    ? `at least ${projectsText}`
+    : projectsText;
+  return (
+    <WarnAlert>
+      <div data-cy="inactive-kg-project-alert">
+        Metadata indexing is not activated on {totalProjectsText}.{" "}
+        <Link to="/inactive-kg-projects">
+          Activate indexing on your projects
+        </Link>{" "}
+        to properly integrate them with Renku.
+      </div>
+    </WarnAlert>
+  );
+}
+
+const PROJECTS_PER_PAGE = 10;
+
+function EstimatedInactiveProjectsWarning({ userId }: { userId: number }) {
+  const { data, isFetching, isLoading } = useGetInactiveKgProjectsQuery({
+    userId,
+    perPage: PROJECTS_PER_PAGE,
+    page: 1,
+  });
+
+  const totalProjects = data?.data.length;
+  if (isLoading || isFetching || totalProjects == null || totalProjects === 0)
+    return null;
+
+  const isEstimate = totalProjects === PROJECTS_PER_PAGE;
+  return (
+    <InactiveProjectsWarning
+      isEstimate={isEstimate}
+      totalProjects={totalProjects}
+    />
+  );
+}
 
 export function ProjectsInactiveKGWarning() {
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
-  const projectList = useInactiveProjectSelector(
-    (state) => state.kgInactiveProjects
+  const user = useLegacySelector((state) => state.stateModel.user);
+  const projectList = useAppSelector(
+    ({ kgInactiveProjects }) => kgInactiveProjects.inactiveProjects
   );
-  const { data, isFetching, isLoading } = useGetInactiveProjects(user?.data?.id);
+  if (!user.logged) return null;
 
-  if (!user.logged)
-    return null;
+  if (projectList.length < 1)
+    return <EstimatedInactiveProjectsWarning userId={user?.data?.id} />;
 
-  if (isLoading || isFetching || data?.length === 0)
-    return null;
+  const totalProjects = projectList.filter(
+    (p) => p.progressActivation !== 100
+  ).length;
+  if (totalProjects === 0) return null;
 
-  let totalProjects;
-  if (projectList.length > 0) {
-    totalProjects = projectList.filter( p => p.progressActivation !== 100).length;
-    if (totalProjects === 0)
-      return null;
-  }
-  else {
-    totalProjects = data?.length;
-  }
-
-  return <WarnAlert>
-    <div data-cy="inactive-kg-project-alert">
-      You have {totalProjects} projects that are not in the Knowledge Graph.{" "}
-      <Link to="/inactive-kg-projects">Activate your projects</Link> to make them searchable on Renku.
-    </div>
-  </WarnAlert>;
+  return (
+    <InactiveProjectsWarning isEstimate={false} totalProjects={totalProjects} />
+  );
 }
 
 export default ProjectsInactiveKGWarning;

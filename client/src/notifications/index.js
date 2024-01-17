@@ -23,7 +23,18 @@
  *  Components for the notification page
  */
 
-import { NotificationsManager, NotificationsMenu, NotificationsPage, Notification } from "./Notifications.container";
+import {
+  NotificationsManager,
+  NotificationsMenu,
+  NotificationsPage,
+  Notification,
+} from "./Notifications.container";
 import { NotificationsInfo } from "./Notifications.state";
 
-export { NotificationsManager, NotificationsMenu, NotificationsInfo, NotificationsPage, Notification };
+export {
+  NotificationsManager,
+  NotificationsMenu,
+  NotificationsInfo,
+  NotificationsPage,
+  Notification,
+};

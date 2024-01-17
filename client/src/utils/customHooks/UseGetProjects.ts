@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useGetMemberProjectsQuery } from "../../features/projects/ProjectsApi";
+import { useGetMemberProjectsQuery } from "../../features/projects/projects.api";
 
 /**
  *  useGetProjects custom hook
@@ -26,18 +26,21 @@ import { useGetMemberProjectsQuery } from "../../features/projects/ProjectsApi";
  *  hook to fetch member projects
  */
 function useGetUserProjects() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [projectsMember, setProjectsMembers] = useState<any[]>([]);
   const [endCursor, setEndCursor] = useState("");
   const [isFetchingProjects, setIsFetchingProjects] = useState(false);
-  const { data, isFetching, refetch } = useGetMemberProjectsQuery({ per_page: 100, endCursor });
+  const { data, isFetching, refetch } = useGetMemberProjectsQuery({
+    per_page: 100,
+    endCursor,
+  });
 
   // continue fetching if there is more data
   useEffect(() => {
     if (data) {
       if (data?.hasNextPage) setEndCursor(data.endCursor);
       else setIsFetchingProjects(isFetching);
-    }
-    else {
+    } else {
       setIsFetchingProjects(isFetching);
     }
   }, [data?.hasNextPage, data?.endCursor, isFetching]); //eslint-disable-line

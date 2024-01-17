@@ -22,7 +22,6 @@ import { v4 as uuidv4 } from "uuid";
 import config from "../config";
 import { Authenticator } from "./index";
 
-
 /**
  * Get the session id. If not availabe, one is created and set on the response cookies
  *
@@ -33,19 +32,22 @@ import { Authenticator } from "./index";
 function getOrCreateSessionId(
   req: express.Request,
   res: express.Response,
-  serverPrefix: string = config.server.prefix): string {
+  serverPrefix: string = config.server.prefix
+): string {
   const cookiesKey = config.auth.cookiesKey;
   let sessionId: string;
   if (req.cookies[cookiesKey] != null) {
     sessionId = req.cookies[cookiesKey];
-  }
-  else {
+  } else {
     sessionId = uuidv4();
-    res.cookie(cookiesKey, sessionId, { secure: true, httpOnly: true, path: serverPrefix });
+    res.cookie(cookiesKey, sessionId, {
+      secure: true,
+      httpOnly: true,
+      path: serverPrefix,
+    });
   }
   return sessionId;
 }
-
 
 /**
  * Extract and return the search string (i.e. the query parameters in the form `?anyvalue`).
@@ -54,15 +56,17 @@ function getOrCreateSessionId(
  * @returns search string
  */
 function getStringyParams(req: express.Request): string {
-  const fullUrl = req.url.toLowerCase().startsWith("http") ?
-    req.url :
-    config.server.url + req.url;
+  const fullUrl = req.url.toLowerCase().startsWith("http")
+    ? req.url
+    : config.server.url + req.url;
   const urlObject = new URL(fullUrl);
   return urlObject.search;
 }
 
-
-function registerAuthenticationRoutes(app: express.Application, authenticator: Authenticator): void {
+function registerAuthenticationRoutes(
+  app: express.Application,
+  authenticator: Authenticator
+): void {
   const authPrefix = config.server.prefix + config.routes.auth;
 
   app.get(authPrefix + "/login", async (req, res, next) => {
@@ -70,11 +74,13 @@ function registerAuthenticationRoutes(app: express.Application, authenticator: A
       // start the login using the code flow, preserving query params for later.
       const sessionId = getOrCreateSessionId(req, res);
       const inputParams = getStringyParams(req);
-      const loginCodeUrl = await authenticator.startAuthFlow(sessionId, inputParams);
+      const loginCodeUrl = await authenticator.startAuthFlow(
+        sessionId,
+        inputParams
+      );
 
       res.redirect(loginCodeUrl);
-    }
-    catch (error) {
+    } catch (error) {
       next(error);
     }
   });
@@ -88,14 +94,15 @@ function registerAuthenticationRoutes(app: express.Application, authenticator: A
       await authenticator.storeTokens(sessionId, tokens);
 
       // create the login url, adding the original query params.
-      const originalParameters = await authenticator.getPostLoginParametersAndDelete(sessionId);
-      const backendLoginUrl = config.deployment.gatewayLoginUrl + originalParameters;
+      const originalParameters =
+        await authenticator.getPostLoginParametersAndDelete(sessionId);
+      const backendLoginUrl =
+        config.deployment.gatewayLoginUrl + originalParameters;
 
       // ? Do I need to set the access token here? Will this be needed when removing the `session` cookie from gateway?
       // ? res.set(config.auth.authHeaderField, config.auth.authHeaderPrefix + tokens["access_token"]);
       res.redirect(backendLoginUrl);
-    }
-    catch (error) {
+    } catch (error) {
       next(error);
     }
   });
@@ -110,12 +117,10 @@ function registerAuthenticationRoutes(app: express.Application, authenticator: A
       const inputParams = getStringyParams(req);
       const backendLoginUrl = config.deployment.gatewayLogoutUrl + inputParams;
       res.redirect(backendLoginUrl);
-    }
-    catch (error) {
+    } catch (error) {
       next(error);
     }
   });
 }
-
 
 export { registerAuthenticationRoutes, getOrCreateSessionId };

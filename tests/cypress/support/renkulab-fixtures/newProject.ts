@@ -17,22 +17,26 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for New Project
  */
 
-function NewProject<T extends FixturesConstructor>(Parent: T) {
+export function NewProject<T extends FixturesConstructor>(Parent: T) {
   return class NewProjectFixtures extends Parent {
-    createProject(result = "project/create-project.json") {
-      const fixture = this.useMockedData ? { fixture: result } : undefined;
+    createProject(args?: SimpleFixture) {
+      const {
+        fixture = "project/create-project.json",
+        name = "createProject",
+      } = args ?? {};
+      const response = { fixture };
       cy.intercept(
+        "POST",
         "/ui-server/api/renku/templates.create_project",
-        fixture
-      ).as("createProject");
+        response
+      ).as(name);
       return this;
     }
   };
 }
-
-export { NewProject };

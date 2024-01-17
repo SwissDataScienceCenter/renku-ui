@@ -16,34 +16,63 @@
  * limitations under the License.
  */
 
-import { Storage, TypeData } from "../../storage";
+import * as Sentry from "@sentry/node";
 import express from "express";
-import config from "../../config";
-import { getUserIdFromToken } from "../../authentication";
 
-const lastProjectsMiddleware = (storage: Storage) =>
-  (req: express.Request, res: express.Response, next: express.NextFunction): void => {
+import { getUserIdFromToken } from "../../authentication";
+import config from "../../config";
+import logger from "../../logger";
+import { Storage, TypeData } from "../../storage";
+
+function projectNameIsId(projectName: string): boolean {
+  return projectName.match(/^[0-9]*$/) !== null;
+}
+
+const lastProjectsMiddleware =
+  (storage: Storage) =>
+  (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): void => {
     const token = req.headers[config.auth.authHeaderField] as string;
     const projectName = req.params["projectName"];
+    // Ignore projects that are ids -- these will be re-accessed as namespace/name anyway
+    if (projectNameIsId(projectName)) {
+      next();
+      return;
+    }
 
     if (req.query?.doNotTrack !== "true") {
-      res.on("finish", function() {
+      res.on("finish", function () {
         if (res.statusCode >= 400 || !token) {
           next();
           return;
         }
 
         const userId = getUserIdFromToken(token);
+        const normalizedProjectName = projectName.toLowerCase();
         // Save as ordered collection
-        storage.save(
-          `${config.data.projectsStoragePrefix}${userId}`,
-          projectName,
-          {
-            type: TypeData.Collections,
-            limit: config.data.projectsDefaultLength,
-            score: Date.now()
-          }
-        );
+        storage
+          .save(
+            `${config.data.projectsStoragePrefix}${userId}`,
+            normalizedProjectName,
+            {
+              type: TypeData.Collections,
+              limit: config.data.projectsDefaultLength,
+              score: Date.now(),
+            }
+          )
+          .then((value) => {
+            if (!value) {
+              const errorMessage = `Error saving project ${projectName} for user ${userId}`;
+              logger.error(errorMessage);
+              Sentry.captureMessage(errorMessage);
+            }
+          })
+          .catch((err) => {
+            Sentry.captureException(err);
+          });
       });
     }
     next();

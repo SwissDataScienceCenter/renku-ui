@@ -20,10 +20,11 @@ interrupted and re-created.
 We had issues with WebSockets channels being dropped after a few minutes. Intervals were irregular, with an average duration between 5 and 10 minutes.
 
 In RenkuLab, we have a complex network topology; an incoming connection goes through:
-* [HAproxy](https://www.haproxy.com): load balancing the incoming connections.
-* Namespace-wide [Nginx](https://www.nginx.com): routing the requests from the outer
+
+- [HAproxy](https://www.haproxy.com): load balancing the incoming connections.
+- Namespace-wide [Nginx](https://www.nginx.com): routing the requests from the outer
   network to local pods.
-* UI [Nginx](https://www.nginx.com): serving the UI responses
+- UI [Nginx](https://www.nginx.com): serving the UI responses
 
 It turned out we had to modify a setting on the namespace Nginx to keep connections
 alive for longer, precisely the `worker_shutdown_timeout` setting

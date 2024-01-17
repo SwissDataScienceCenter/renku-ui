@@ -22,10 +22,12 @@
  *  ProjectIdentifier.tsx
  *  Identifier form group component.
  */
-import React from "react";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 import { FormGroup, Input } from "../../../utils/ts-wrappers";
-import { InputHintLabel, InputLabel } from "../../../utils/components/formlabels/FormLabels";
+import {
+  InputHintLabel,
+  InputLabel,
+} from "../../../components/formlabels/FormLabels";
 import { NewProjectInputs } from "./newProject.d";
 
 interface ProjectIdentifierProps {

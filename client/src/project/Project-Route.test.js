@@ -23,68 +23,111 @@
  *  Tests for project route extraction
  */
 
+import { describe, expect, it } from "vitest";
 
 import { splitProjectSubRoute } from "./Project";
 
 describe("basic route extraction", () => {
   it("handles project-with-namespace-only routes", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/project-name"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/project-name"
+    );
     expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
     expect(pathComponents.namespace).toEqual("namespace");
   });
   it("handles project-with-namespace sub routes", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/overview");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/project-name/overview"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/project-name"
+    );
     expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
     expect(pathComponents.namespace).toEqual("namespace");
   });
   it("handles project-with-namespace 2-level sub routes", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/overview/stats");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/project-name/overview/stats"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/project-name"
+    );
     expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
     expect(pathComponents.namespace).toEqual("namespace");
   });
   it("handles project-with-namespace file paths 1", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/files/blob/README.md");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/project-name/files/blob/README.md"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/project-name"
+    );
     expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
     expect(pathComponents.namespace).toEqual("namespace");
   });
   it("handles project-with-namespace file paths 2", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/files/blob/root/sub1/sub2/foo.txt");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/project-name/files/blob/root/sub1/sub2/foo.txt"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/project-name"
+    );
     expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
     expect(pathComponents.namespace).toEqual("namespace");
   });
   it("handles project-with-namespace datasets listing", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/datasets/issues");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/project-name/datasets/issues"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/project-name"
+    );
     expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
     expect(pathComponents.namespace).toEqual("namespace");
   });
   it("handles project-with-namespace dataset display", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/datasets/1/");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/project-name/datasets/1/"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/project-name"
+    );
     expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
     expect(pathComponents.namespace).toEqual("namespace");
   });
   it("handles project-with-namespace dataset modify", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/datasets/1/modify");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/project-name/datasets/1/modify"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/project-name"
+    );
     expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
     expect(pathComponents.namespace).toEqual("namespace");
   });
   it("handles project-with-numeric-namespace routes", () => {
-    const pathComponents = splitProjectSubRoute("/projects/1namespace/project-name");
-    expect(pathComponents.projectPathWithNamespace).toEqual("1namespace/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/1namespace/project-name"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "1namespace/project-name"
+    );
     expect(pathComponents.baseUrl).toEqual("/projects/1namespace/project-name");
     expect(pathComponents.namespace).toEqual("1namespace");
   });
   it("handles project-with-numeric-namespace sub routes", () => {
-    const pathComponents = splitProjectSubRoute("/projects/21namespace/project-name/overview");
-    expect(pathComponents.projectPathWithNamespace).toEqual("21namespace/project-name");
-    expect(pathComponents.baseUrl).toEqual("/projects/21namespace/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/21namespace/project-name/overview"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "21namespace/project-name"
+    );
+    expect(pathComponents.baseUrl).toEqual(
+      "/projects/21namespace/project-name"
+    );
     expect(pathComponents.namespace).toEqual("21namespace");
   });
 });
@@ -112,14 +155,18 @@ describe("id route extraction", () => {
     expect(pathComponents.namespace).toEqual(null);
   });
   it("handles project-id file paths 1", () => {
-    const pathComponents = splitProjectSubRoute("/projects/1/files/blob/README.md");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/1/files/blob/README.md"
+    );
     expect(pathComponents.projectPathWithNamespace).toEqual(null);
     expect(pathComponents.projectId).toEqual("1");
     expect(pathComponents.baseUrl).toEqual("/projects/1");
     expect(pathComponents.namespace).toEqual(null);
   });
   it("handles project-id file paths 2", () => {
-    const pathComponents = splitProjectSubRoute("/projects/1/files/blob/root/sub1/sub2/foo.txt");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/1/files/blob/root/sub1/sub2/foo.txt"
+    );
     expect(pathComponents.projectPathWithNamespace).toEqual(null);
     expect(pathComponents.projectId).toEqual("1");
     expect(pathComponents.baseUrl).toEqual("/projects/1");
@@ -129,18 +176,30 @@ describe("id route extraction", () => {
 
 describe("nested route extraction", () => {
   it("handles project-with-namespace-only routes", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/subgroup/project-name");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/subgroup/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/subgroup/project-name"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/subgroup/project-name"
+    );
     expect(pathComponents.namespace).toEqual("namespace/subgroup");
   });
   it("handles project-with-namespace sub routes", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/subgroup/project-name/overview");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/subgroup/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/subgroup/project-name/overview"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/subgroup/project-name"
+    );
     expect(pathComponents.namespace).toEqual("namespace/subgroup");
   });
   it("handles project-with-namespace 2-level sub routes", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/subgroup/project-name/overview/stats");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/subgroup/project-name");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/subgroup/project-name/overview/stats"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/subgroup/project-name"
+    );
     expect(pathComponents.namespace).toEqual("namespace/subgroup");
   });
 });
@@ -148,12 +207,18 @@ describe("nested route extraction", () => {
 describe("tricky route extraction", () => {
   it('handles project named "overview" project-with-namespace-only routes', () => {
     const pathComponents = splitProjectSubRoute("/projects/namespace/overview");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/overview");
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/overview"
+    );
     expect(pathComponents.namespace).toEqual("namespace");
   });
   it('handles project named "overview" project-with-namespace sub routes', () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/overview/overview");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/overview");
+    const pathComponents = splitProjectSubRoute(
+      "/projects/namespace/overview/overview"
+    );
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "namespace/overview"
+    );
     expect(pathComponents.namespace).toEqual("namespace");
   });
 });

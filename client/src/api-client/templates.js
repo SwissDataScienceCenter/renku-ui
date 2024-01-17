@@ -29,10 +29,9 @@ function addTemplatesMethods(client) {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
-    return client.clientFetch(
-      urlApi,
-      { method: "GET", headers, queryParams: parameters }
-    ).then(resp => resp.data);
+    return client
+      .clientFetch(urlApi, { method: "GET", headers, queryParams: parameters })
+      .then((resp) => resp.data);
   };
 
   /**
@@ -52,16 +51,14 @@ function addTemplatesMethods(client) {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
-    return client.clientFetch(
-      urlApi,
-      {
+    return client
+      .clientFetch(urlApi, {
         method: "POST",
         headers,
-        body: JSON.stringify(data)
-      }
-    ).then(resp => resp.data);
+        body: JSON.stringify(data),
+      })
+      .then((resp) => resp.data);
   };
 }
-
 
 export default addTemplatesMethods;

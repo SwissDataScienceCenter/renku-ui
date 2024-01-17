@@ -16,43 +16,26 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
-
-import { ProjectsDashboard } from "./components/ProjectsDashboard";
-import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
+import { SshModal } from "../../components/ssh/ssh";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import DashboardMessage from "./components/DashboardMessage";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
-import { NotebooksCoordinator } from "../../notebooks";
-import { SshModal } from "../../utils/components/ssh/ssh";
+import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
+import { ProjectsDashboard } from "./components/ProjectsDashboard";
 
 import "./Dashboard.scss";
 
-class DashboardWrapper extends Component {
-  constructor(props: any) {
-    super(props);
-    const notebooksModel = props.model.subModel("notebooks");
-    const userModel = props.model.subModel("user");
-    const notebookCoordinator = new NotebooksCoordinator(props.client, notebooksModel, userModel);
-    notebookCoordinator.fetchNotebooks();
-  }
-
-  render() {
-    return <Dashboard />;
-  }
-}
-
-function Dashboard() {
-  const user = useSelector( (state: RootStateOrAny) => state.stateModel.user);
+export function Dashboard() {
+  const user = useLegacySelector((state) => state.stateModel.user);
 
   return (
     <div className="rk-dashboard">
       <h1 data-cy="dashboard-title">Renku Dashboard - {user.data.name}</h1>
+      <DashboardMessage />
       <ProjectsInactiveKGWarning />
-      <ProjectsDashboard userName={user?.data.name} />
-      <DatasetDashboard userName={user?.data.name} />
+      <ProjectsDashboard />
+      <DatasetDashboard />
       <SshModal />
     </div>
   );
 }
-
-export { DashboardWrapper as Dashboard };

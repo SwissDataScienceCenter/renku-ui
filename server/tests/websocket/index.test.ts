@@ -19,81 +19,86 @@
 import { MessageData, getWsClientMessageHandler } from "../../src/websocket";
 import { WsClientMessage } from "../../src/websocket/WsMessages";
 
-
 const acceptedMessages: Record<string, Array<MessageData>> = {
-  "init": [
+  init: [
     {
       required: ["requiredValue"],
       optional: null,
-      handler: () => "valid"
+      handler: () => "valid",
     },
     {
       required: ["specialRequiredValue"],
       optional: ["optionalValue"],
-      handler: () => "valid"
+      handler: () => "valid",
     },
-  ]
+  ],
 };
 
 describe("Test Websocket functions", () => {
-  it("Test getWsClientMessageHandler", async () => {
+  it("Test getWsClientMessageHandler", () => {
     const actions = [
       {
         message: {
           timestamp: new Date(),
           type: "FAKE_TYPE",
-          data: { "requiredValue": "1234abcd" }
+          data: { requiredValue: "1234abcd" },
         } as WsClientMessage,
-        result: "Instruction of type 'FAKE_TYPE' is not supported."
+        result: "Instruction of type 'FAKE_TYPE' is not supported.",
       },
       {
         message: {
           timestamp: new Date(),
           type: "init",
-          data: {}
+          data: {},
         } as WsClientMessage,
-        result: "Could not find a proper handler; data is wrong for a 'init' instruction."
+        result:
+          "Could not find a proper handler; data is wrong for a 'init' instruction.",
       },
       {
         message: {
           timestamp: new Date(),
           type: "init",
-          data: { "requiredValue": "1234abcd", "optionalValue": "1234abcd" }
+          data: { requiredValue: "1234abcd", optionalValue: "1234abcd" },
         } as WsClientMessage,
-        result: "Could not find a proper handler; data is wrong for a 'init' instruction.",
+        result:
+          "Could not find a proper handler; data is wrong for a 'init' instruction.",
       },
       {
         message: {
           timestamp: new Date(),
           type: "init",
-          data: { "optionalValue": "1234abcd" }
+          data: { optionalValue: "1234abcd" },
         } as WsClientMessage,
-        result: "Could not find a proper handler; data is wrong for a 'init' instruction.",
+        result:
+          "Could not find a proper handler; data is wrong for a 'init' instruction.",
       },
       {
         message: {
           timestamp: new Date(),
           type: "init",
-          data: { "requiredValue": "1234abcd" }
+          data: { requiredValue: "1234abcd" },
         } as WsClientMessage,
-        result: () => "valid"
+        result: () => "valid",
       },
       {
         message: {
           timestamp: new Date(),
           type: "init",
-          data: { "specialRequiredValue": "1234abcd", "optionalValue": "1234abcd" }
+          data: { specialRequiredValue: "1234abcd", optionalValue: "1234abcd" },
         } as WsClientMessage,
-        result: () => "valid"
-      }
+        result: () => "valid",
+      },
     ];
 
     // test results
     for (const action of actions) {
-      const result = getWsClientMessageHandler(acceptedMessages, action.message);
-      typeof result === "string" ?
-        expect(result).toBe(action.result) :
-        expect(result()).toBe((action.result as Function)()); // eslint-disable-line
+      const result = getWsClientMessageHandler(
+        acceptedMessages,
+        action.message
+      );
+      typeof result === "string"
+        ? expect(result).toBe(action.result)
+        : expect(result()).toBe((action.result as Function)()); // eslint-disable-line
     }
   });
 });

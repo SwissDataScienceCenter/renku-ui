@@ -17,20 +17,16 @@
  */
 
 /**
-*  renku-ui
-*
-*  authentication/Authentication.container.js
-*  Authentication components to log in and out.
-*/
-
-
-import React, { Component } from "react";
-
+ *  renku-ui
+ *
+ *  authentication/Authentication.container.js
+ *  Authentication components to log in and out.
+ */
 
 const RenkuQueryParams = {
   login: "renku_login",
   logout: "renku_logout",
-  loginValue: "1"
+  loginValue: "1",
 };
 
 const LOGOUT_EVENT_TIMEOUT = 5000;
@@ -41,18 +37,6 @@ const LOGOUT_EVENT_TIMEOUT = 5000;
  */
 const LoginHelper = {
   /**
-   * Add the renku login query parameters
-   *
-   * @param {string} url - return url for the authentication backend
-   */
-  createLoginUrl: (url) => {
-    let redirectUrl = new URL(url);
-    if (!redirectUrl.search.includes(RenkuQueryParams.login))
-      redirectUrl.searchParams.append(RenkuQueryParams.login, RenkuQueryParams.loginValue);
-
-    return redirectUrl.toString();
-  },
-  /**
    * Remove renku login parameters and set localStorage object
    *
    * @param {object} history - return url for the authentication backend
@@ -60,7 +44,9 @@ const LoginHelper = {
   handleLoginParams: (history) => {
     // check if user has just logged in
     const queryParams = new URLSearchParams(history.location.search);
-    if (queryParams.get(RenkuQueryParams.login) === RenkuQueryParams.loginValue) {
+    if (
+      queryParams.get(RenkuQueryParams.login) === RenkuQueryParams.loginValue
+    ) {
       // delete the login param
       queryParams.delete(RenkuQueryParams.login);
       history.replace({ search: queryParams.toString() });
@@ -73,18 +59,17 @@ const LoginHelper = {
    * Set up event listener fol localStorage authentication events. Invoke only once.
    */
   setupListener: () => {
-    window.onstorage = (event) => {
+    window.addEventListener("storage", (event) => {
       if (event.key === RenkuQueryParams.logout) {
         setTimeout(() => {
           sessionStorage.setItem(RenkuQueryParams.logout, Date.now());
           window.location.reload();
         }, LOGOUT_EVENT_TIMEOUT);
-      }
-      else if (event.key === RenkuQueryParams.login) {
+      } else if (event.key === RenkuQueryParams.login) {
         sessionStorage.setItem(RenkuQueryParams.login, Date.now());
         window.location.reload();
       }
-    };
+    });
   },
   /**
    * Set up event listener fol localStorage authentication events. Invoke only once.
@@ -118,23 +103,7 @@ const LoginHelper = {
   notifyLogout: () => {
     localStorage.setItem(RenkuQueryParams.logout, Date.now());
   },
-  queryParams: RenkuQueryParams
+  queryParams: RenkuQueryParams,
 };
 
-// always pass "previous" with the current `location.pathname`
-class Login extends Component {
-  render() {
-    // build redirect url
-    let url = this.props.params.BASE_URL;
-    if (this.props.location.state && this.props.location.state.previous)
-      url += this.props.location.state.previous;
-    const redirectUrl = LoginHelper.createLoginUrl(url);
-
-    // set new location
-    window.location =
-      `${this.props.params.UISERVER_URL}/auth/login?redirect_url=${encodeURIComponent(redirectUrl)}`;
-    return <p>logging in</p>;
-  }
-}
-
-export { Login, LoginHelper };
+export { LoginHelper, RenkuQueryParams };

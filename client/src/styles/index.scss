@@ -51,6 +51,7 @@
 
 // -------------------       EVERYTHING ELSE  -----------------------------
 
+@import "./components/bootstrap_icons";
 @import "./components/jupyter_notebook";
 @import "./components/renku_general";
 @import "./components/renku_home";
@@ -63,5 +64,6 @@
 @import "./components/renku_styleguide";
 @import "./components/project_display";
 @import "./components/renku_form";
+@import "./components/renku_modals";
 
 @import "./icons/icons.scss";

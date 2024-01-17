@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useGetNamespacesQuery } from "../../features/projects/ProjectsApi";
+import { useGetNamespacesQuery } from "../../features/projects/projects.api";
 
 /**
  *  useGetNamespaces custom hook
@@ -25,10 +25,15 @@ import { useGetNamespacesQuery } from "../../features/projects/ProjectsApi";
  *  hook to fetch Namespaces
  */
 function useGetNamespaces(ownedOnly: boolean) {
-  const { data, isFetching, isLoading, refetch } = useGetNamespacesQuery(ownedOnly);
+  const { data, isFetching, isLoading, refetch } =
+    useGetNamespacesQuery(ownedOnly);
+
+  const sortedList = data
+    ? [...data].sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+    : [];
 
   return {
-    list: data ?? [],
+    list: sortedList ?? [],
     fetching: isFetching,
     fetched: !isFetching && !isLoading,
     refetchNamespaces: refetch,

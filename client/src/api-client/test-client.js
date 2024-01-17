@@ -26,126 +26,124 @@ const methods = {
       pagination: {
         currentPage: 1,
         totalItems: 1,
-      }
-    }
+      },
+    },
   },
   getProject: {
     response: {
-      data: carveProject(samples.projects[0])
-    }
+      data: carveProject(samples.projects[0]),
+    },
   },
   getProjectById: {
     response: {
-      data: carveProject(samples.projects[0])
-    }
+      data: carveProject(samples.projects[0]),
+    },
   },
   getProjectReadme: {
     response: {
-      data: samples.projectReadme
-    }
+      data: samples.projectReadme,
+    },
   },
   getProjectFile: {
-    response: samples.projectNotebookFile
+    response: samples.projectNotebookFile,
   },
   getModifiedFiles: {
     response: {
-      data: []
-    }
+      data: [],
+    },
   },
   getRepositoryTree: {
-    response: []
+    response: [],
   },
   getBranches: {
     response: {
-      data: []
-    }
+      data: [],
+    },
   },
   getUser: {
     response: {
-      data: samples.user
-    }
+      data: samples.user,
+    },
   },
   getNotebookServers: {
     response: {
-      data: []
-    }
+      data: [],
+    },
   },
   getRepositoryFile: {
-    response: null
-  },
-  getProjectTemplates: {
-    response: []
+    response: null,
   },
   getNotebookServerOptions: {
-    response: {}
+    response: {},
   },
   getCommits: {
     response: {
-      data: []
-    }
+      data: [],
+    },
   },
   getGroupByPath: {
     response: {
-      data: {}
-    }
+      data: {},
+    },
   },
   getUserByPath: {
     response: {
-      data: []
-    }
+      data: [],
+    },
   },
   getAllProjects: {
     response: {
-      data: []
-    }
+      data: [],
+    },
   },
   getAllProjectsGraphQL: {
     response: {
-      data: []
-    }
+      data: [],
+    },
   },
   getTemplatesManifest: {
     response: {
       result: {
-        templates: []
-      }
-    }
-  },
-  searchDatasets: {
-    response: {
-      data: []
-    }
+        templates: [],
+      },
+    },
   },
   fetchDatasetFromKG: {
-    "name": "test-dataset-name",
-    "title": "Test dataset title",
-    "description": "some description for a dataset",
-    "published": {
-      "creator": [{
-        "name": "First, Creator",
-        "email": null,
-        "affiliation": "Some Affiliation"
-      }],
-      "datePublished": "01/01/2001",
+    name: "test-dataset-name",
+    title: "Test dataset title",
+    description: "some description for a dataset",
+    published: {
+      creator: [
+        {
+          name: "First, Creator",
+          email: null,
+          affiliation: "Some Affiliation",
+        },
+      ],
+      datePublished: "01/01/2001",
     },
-    "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8", // eslint-disable-line
-    "keywords": ["test1", "test2", "test3"],
-    "hasPart": [
-      { "name": "Data file 1.xls", "atLocation": "data/test_dataset/Data file 1.xls" }
+    identifier: "79215657-4319-4fcf-82b9-58267f2a1db8", // eslint-disable-line
+    keywords: ["test1", "test2", "test3"],
+    hasPart: [
+      {
+        name: "Data file 1.xls",
+        atLocation: "data/test_dataset/Data file 1.xls",
+      },
     ],
-    "url": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
-    "sameAs": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
-    "usedIn": []
+    url: "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
+    sameAs:
+      "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
+    usedIn: [],
   },
   isValidUrlForIframe: {
-    response: true
-  }
+    response: true,
+  },
 };
 
 let client = {};
 for (let key in methods) {
-  client[key] = function() {
-    return new Promise(resolve => {
+  client[key] = function () {
+    return new Promise((resolve) => {
       resolve(methods[key].response);
     });
   };

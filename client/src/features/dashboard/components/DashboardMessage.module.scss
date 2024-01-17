@@ -1,0 +1,13 @@
+.plainAlert {
+  --bs-alert-bg: var(--bs-rk-white);
+}
+
+.readMore {
+  color: unset;
+  text-decoration: unset;
+  border-bottom: 1px solid transparent;
+
+  &:hover {
+    border-bottom-color: var(--bs-body-color);
+  }
+}

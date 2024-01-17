@@ -29,7 +29,8 @@ const ImportStateMessage = {
   COMPLETED: "Dataset was imported, you will be redirected soon...",
   FAILED: "Dataset import failed: ",
   FAILED_NO_INFO: "Dataset import failed, please try again.",
-  TOO_LONG: "Dataset import is taking too long, please check if the dataset was imported, and if it wasn't, try again."
+  TOO_LONG:
+    "Dataset import is taking too long, please check if the dataset was imported, and if it wasn't, try again.",
 };
 
 export { ImportStateMessage };

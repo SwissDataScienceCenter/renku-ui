@@ -24,6 +24,6 @@
  */
 
 import AnonymousHome from "./AnonymousHome";
-import { RenkuNavBar, FooterNavbar, MaintenanceNavBar } from "./NavBar";
+import { RenkuNavBar, FooterNavbar } from "./NavBar";
 
-export { AnonymousHome, FooterNavbar, MaintenanceNavBar, RenkuNavBar };
+export { AnonymousHome, FooterNavbar, RenkuNavBar };

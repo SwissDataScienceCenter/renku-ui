@@ -16,33 +16,48 @@
  * limitations under the License.
  */
 
-import { Storage, TypeData } from "../../storage";
+import * as Sentry from "@sentry/node";
 import express from "express";
-import config from "../../config";
-import { getUserIdFromToken } from "../../authentication";
 
-const lastSearchQueriesMiddleware = (storage: Storage) =>
-  (req: express.Request, res: express.Response, next: express.NextFunction): void => {
+import { getUserIdFromToken } from "../../authentication";
+import config from "../../config";
+import logger from "../../logger";
+import { Storage, TypeData } from "../../storage";
+
+const lastSearchQueriesMiddleware =
+  (storage: Storage) =>
+  (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): void => {
     const token = req.headers[config.auth.authHeaderField] as string;
     const query = req.query["query"];
     const phrase = query ? (query as string).trim() : "";
 
     if (req.query?.doNotTrack !== "true" && phrase) {
-      res.on("finish", function() {
+      res.on("finish", function () {
         if (res.statusCode >= 400 || !token) {
           next();
           return;
         }
-
-        storage.save(
-          `${config.data.searchStoragePrefix}${getUserIdFromToken(token)}`,
-          phrase,
-          {
+        const userId = getUserIdFromToken(token);
+        storage
+          .save(`${config.data.searchStoragePrefix}${userId}`, phrase, {
             type: TypeData.Collections,
             limit: config.data.searchDefaultLength,
-            score: Date.now()
-          }
-        );
+            score: Date.now(),
+          })
+          .then((value) => {
+            if (!value) {
+              const errorMessage = `Error saving search query for user ${userId}`;
+              logger.error(errorMessage);
+              Sentry.captureMessage(errorMessage);
+            }
+          })
+          .catch((err) => {
+            Sentry.captureException(err);
+          });
       });
     }
     next();

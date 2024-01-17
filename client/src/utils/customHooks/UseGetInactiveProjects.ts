@@ -18,7 +18,7 @@
 
 import { useEffect, useState } from "react";
 import { useGetInactiveKgProjectsQuery } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
-import { InactiveKgProjects } from "../../features/inactiveKgProjects/InactiveKgProjects";
+import type { InactiveKgProjects } from "../../features/inactiveKgProjects";
 
 const PROJECTS_PER_PAGE = 100;
 /**
@@ -32,7 +32,9 @@ function useGetInactiveProjects(userId: number) {
   const [page, setPage] = useState(1);
   const [isFetchingProjects, setIsFetchingProjects] = useState(false);
   const { data, isFetching, isLoading, error } = useGetInactiveKgProjectsQuery(
-    { userId, perPage: PROJECTS_PER_PAGE, page: page }, { skip: !userId });
+    { userId, perPage: PROJECTS_PER_PAGE, page: page },
+    { skip: !userId }
+  );
 
   // continue fetching if there is more data
   useEffect(() => {
@@ -41,23 +43,19 @@ function useGetInactiveProjects(userId: number) {
       return;
     }
 
-    if (data?.nextPage && data?.nextPage !== page)
-      setPage(data.nextPage);
-    else
-      setIsFetchingProjects(isFetching);
-  }, [ data?.nextPage, isFetching ]); //eslint-disable-line
+    if (data?.nextPage && data?.nextPage !== page) setPage(data.nextPage);
+    else setIsFetchingProjects(isFetching);
+  }, [data?.nextPage, isFetching]); //eslint-disable-line
 
   useEffect(() => {
-    if (isFetching)
-      return;
+    if (isFetching) return;
     if (data?.page === 1) {
       setProjects(data.data || []);
-    }
-    else {
+    } else {
       const newProjects = data?.data ?? [];
       setProjects([...projects, ...newProjects]);
     }
-  }, [ data?.data, isFetching, data?.page ]); //eslint-disable-line
+  }, [data?.data, isFetching, data?.page]); //eslint-disable-line
 
   return { data: projects, isFetching: isFetchingProjects, isLoading, error };
 }

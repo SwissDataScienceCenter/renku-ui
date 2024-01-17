@@ -22,20 +22,35 @@
  *  Automated.tsx
  *  Automated Project component
  */
-import React from "react";
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 import { Col, Row } from "../../../utils/ts-wrappers";
-import { Alert, Button, Fade, Modal, ModalBody, ModalHeader } from "../../../utils/ts-wrappers";
-
-import { ErrorAlert, WarnAlert } from "../../../utils/components/Alert";
+import {
+  Button,
+  Fade,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "../../../utils/ts-wrappers";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Url } from "../../../utils/helpers/url";
-import { Loader } from "../../../utils/components/Loader";
+import { Loader } from "../../../components/Loader";
+import { Docs } from "../../../utils/constants/Docs";
+import { ExternalLink } from "../../../components/ExternalLinks";
 
-const Link = require("react-router-dom").Link;
-
+const docsUrl = Docs.rtdReferencePage(
+  "templates.html#create-shareable-project-creation-links-with-pre-filled-fields"
+);
+const moreInfoLink = (
+  <ExternalLink
+    role="text"
+    iconSup={true}
+    iconAfter={true}
+    url={docsUrl}
+    title="documentation reference"
+  />
+);
 interface Project {
   title?: string;
   description?: string;
@@ -57,11 +72,11 @@ interface AutomatedData extends Project {
 
 interface AutomatedProps {
   automated: AutomatedData;
-  removeAutomated: Function;
+  removeAutomated: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 interface AutomatedModalProps {
-  removeAutomated: Function;
+  removeAutomated: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 function Automated({ automated, removeAutomated }: AutomatedProps) {
@@ -73,55 +88,93 @@ function Automated({ automated, removeAutomated }: AutomatedProps) {
 
   if (!automated.finished) {
     // Show a static modal while loading the data
-    if (automated.received && automated.valid) return <AutomatedModal removeAutomated={removeAutomated} />;
+    if (automated.received && automated.valid)
+      return <AutomatedModal removeAutomated={removeAutomated} />;
     return null;
   }
+
   // Show a feedback when the automated part has finished
-  // errors
+  // Case 1: errors
   if (automated.error) {
-    const error = <pre>{automated.error}</pre>;
+    const error = (
+      <div className="py-3">
+        <code>{automated.error}</code>
+      </div>
+    );
     return (
       <ErrorAlert key="alert">
-        <p>We could not pre-fill the fields with the information provided in the RenkuLab project-creation link.</p>
-        <p>
-          It is possible that the link is outdated or not valid. Please contact the source of the RenkuLab link and ask
-          for a new one.
-        </p>
+        <div data-cy="project-creation-embedded-error">
+          <p>
+            You used a RenkuLab project-creation link containing embedded data (
+            {moreInfoLink}). There was an error while pre-filling the fields.
+            This is usually a sign of a wrong link or outdated information (E.G:
+            outdated template links).
+          </p>
+          <p>
+            We used the default settings instead, but that might not lead to the
+            expected results.
+          </p>
 
-        <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleError()}>
-          {showError ? "Hide error details" : "Show error details"}
-        </Button>
-        <Fade in={showError} tag="div">
-          {showError ? error : null}
-        </Fade>
+          <Button
+            color="danger"
+            className="btn-sm"
+            onClick={() => toggleError()}
+          >
+            {showError ? "Hide error details" : "Show error details"}
+          </Button>
+          <Fade in={showError} tag="div">
+            {showError ? error : null}
+          </Fade>
+        </div>
       </ErrorAlert>
     );
   }
-  // warnings
+  // Case 2: warnings
   else if (automated.warnings.length) {
-    const warnings = <pre>{automated.warnings.join("\n")}</pre>;
+    const warnings = (
+      <div className="py-3">
+        <code>{automated.warnings.join("\n")}</code>
+      </div>
+    );
     return (
       <WarnAlert>
-        <p>Some fields could not be pre-filled with the information provided in the RenkuLab project-creation link.</p>
-        <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleWarn()}>
-          {showWarnings ? "Hide warnings" : "Show warnings"}
-        </Button>
-        <Fade in={showWarnings} tag="div">
-          {showWarnings ? warnings : null}
-        </Fade>
+        <div data-cy="project-creation-embedded-warning">
+          <p>
+            You used a RenkuLab project-creation link containing embedded data (
+            {moreInfoLink}). Some fields could not be pre-filled, likely because
+            data is missing or outdated.
+          </p>
+          <p>
+            We used the default settings instead, but that might not lead to the
+            expected results.
+          </p>
+          <Button
+            color="warning"
+            className="btn-sm"
+            onClick={() => toggleWarn()}
+          >
+            {showWarnings ? "Hide warnings" : "Show warnings"}
+          </Button>
+          <Fade in={showWarnings} tag="div">
+            {showWarnings ? warnings : null}
+          </Fade>
+        </div>
       </WarnAlert>
     );
   }
-  // all good
+  // Case 2: all good, just show a feedback
   return (
-    <Alert color="primary">
-      <p className="mb-0">
-        <FontAwesomeIcon icon={faInfoCircle} />
-        &nbsp; Some fields were pre-filled.
-        <br />
-        You can still change any values before you create the project.
-      </p>
-    </Alert>
+    <InfoAlert dismissible={false} timeout={0}>
+      <div data-cy="project-creation-embedded-info">
+        <p>
+          Some fields are pre-filled because you used a RenkuLab
+          project-creation link containing embedded data ({moreInfoLink}).
+        </p>
+        <p className="mb-0">
+          You can still change any value before creating a new project.
+        </p>
+      </div>
+    </InfoAlert>
   );
 }
 
@@ -133,14 +186,14 @@ function AutomatedModal(props: AutomatedModalProps) {
   const toggle = () => setShowFadeIn(!showFadeIn);
 
   const button = showFadeIn ? null : (
-    <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggle()}>
+    <Button className="btn btn-sm" onClick={() => toggle()}>
       Taking too long?
     </Button>
   );
 
   const to = Url.get(Url.pages.project.new);
   const fadeInContent = (
-    <p className="mt-3">
+    <p className="my-3">
       If pre-filling the new project form is taking too long, you can
       <Link
         className="btn btn-primary btn-sm"
@@ -149,22 +202,27 @@ function AutomatedModal(props: AutomatedModalProps) {
           removeAutomated();
         }}
       >
-        use a blank form
+        Start from scratch
       </Link>
     </p>
   );
   return (
     <Modal isOpen={true} centered={true} keyboard={false} backdrop="static">
-      <ModalHeader>Fetching initialization data</ModalHeader>
+      <ModalHeader data-cy="project-creation-embedded-fetching">
+        Fetching initialization data
+      </ModalHeader>
       <ModalBody>
         <Row>
           <Col>
-            <p>You entered a url containing information to pre-fill.</p>
-            <span>
-              Please wait while we fetch the required metadata...&nbsp;
-              <Loader inline={true} size={16} />
-            </span>
-            <div className="mt-2">
+            <p>
+              You used a RenkuLab project-creation link containing embedded data
+              ({moreInfoLink})
+            </p>
+            <p>
+              Please wait while we fetch the required resources...{" "}
+              <Loader inline size={16} />
+            </p>
+            <div className="my-3">
               {button}
               <Fade in={showFadeIn} tag="div">
                 {showFadeIn ? fadeInContent : null}

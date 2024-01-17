@@ -17,12 +17,33 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useSelector } from "react-redux";
-import { InactiveKgProjects } from "./InactiveKgProjects";
+import type { InactiveKgProjects } from "./inactiveKgProjects.types";
+import { ActivationStatusProgressError } from "./InactiveKgProjectsApi";
 
-const initialState: InactiveKgProjects[] = [];
+export interface KgInactiveProjectsState {
+  inactiveProjects: InactiveKgProjects[];
+  activationStatus: {
+    activationStartedAt: number | null;
+    isActivating: boolean;
+    isActivationSlow: boolean | null;
+    lastUpdateAt: number | null;
+  };
+}
 
-type RootStateInactiveProjects = { kgInactiveProjects: InactiveKgProjects[] };
+const initialState: KgInactiveProjectsState = {
+  inactiveProjects: [],
+  activationStatus: {
+    activationStartedAt: null,
+    isActivating: false,
+    isActivationSlow: null,
+    lastUpdateAt: null,
+  },
+};
+
+export enum ActivationStatusProgressSpecial {
+  QUEUED = -1,
+}
+
 interface ActivationStatus {
   id: number;
   progress: number;
@@ -33,28 +54,67 @@ export const kgInactiveProjectsSlice = createSlice({
   initialState,
   reducers: {
     addFullList: (state, action: PayloadAction<InactiveKgProjects[]>) => {
-      return action.payload;
+      state.inactiveProjects = action.payload;
+      return state;
+    },
+    setActivating: (state, action: PayloadAction<boolean>) => {
+      if (action.payload) {
+        state.activationStatus.isActivating = true;
+        state.activationStatus.activationStartedAt = Date.now();
+        state.activationStatus.isActivationSlow = false;
+      } else {
+        state.activationStatus.isActivating = false;
+        state.activationStatus.activationStartedAt = null;
+        state.activationStatus.isActivationSlow = null;
+      }
+      return state;
+    },
+    setActivationSlow: (state, action: PayloadAction<boolean>) => {
+      if (state.activationStatus.isActivating) {
+        state.activationStatus.isActivationSlow = action.payload;
+      }
+      return state;
+    },
+    updateAllSelected(state, action: PayloadAction<boolean>) {
+      state.inactiveProjects = state.inactiveProjects.map((p) => {
+        return { ...p, selected: action.payload };
+      });
+      return state;
     },
     updateList: (state, action: PayloadAction<InactiveKgProjects>) => {
-      return state.map(p => {
-        if (p.id === action.payload.id)
-          p = action.payload;
+      state.inactiveProjects = state.inactiveProjects.map((p) => {
+        if (p.id === action.payload.id) p = action.payload;
         return p;
       });
+      return state;
     },
     updateProgress: (state, action: PayloadAction<ActivationStatus>) => {
-      return state.map(p => {
-        if (p.id === action.payload.id)
-          p = { ...p, progressActivation: action.payload.progress, selected: true };
-        return p;
+      state.inactiveProjects = state.inactiveProjects.map((p) => {
+        const isProgressError =
+          ActivationStatusProgressError.TIMEOUT === action.payload.progress ||
+          ActivationStatusProgressError.UNKNOWN === action.payload.progress ||
+          ActivationStatusProgressError.WEB_SOCKET_ERROR ===
+            action.payload.progress;
+        return p.id === action.payload.id
+          ? {
+              ...p,
+              progressActivation: action.payload.progress,
+              selected: !isProgressError,
+            }
+          : p;
       });
+      state.activationStatus.lastUpdateAt = Date.now();
+      return state;
     },
-    reset: () => initialState
+    reset: () => initialState,
   },
 });
 
-export const { updateList, addFullList, updateProgress } =
-  kgInactiveProjectsSlice.actions;
-export const useInactiveProjectSelector: TypedUseSelectorHook<RootStateInactiveProjects> =
-  useSelector;
-export default kgInactiveProjectsSlice;
+export const {
+  addFullList,
+  setActivating,
+  setActivationSlow,
+  updateAllSelected,
+  updateList,
+  updateProgress,
+} = kgInactiveProjectsSlice.actions;

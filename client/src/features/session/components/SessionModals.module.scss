@@ -1,0 +1,37 @@
+.sessionModal :global(.modal-title) {
+  font-weight: 600;
+}
+
+.aboutModal,
+.resourcesModal {
+  :global(.modal-title) {
+    font-size: 27px;
+    font-weight: 600;
+  }
+
+  :global(.modal-content) {
+    padding: 15px;
+  }
+
+  :global(h3) {
+    font-size: 16px;
+  }
+}
+
+.aboutModal {
+  max-width: 850px;
+}
+
+.aboutBox {
+  gap: 30px;
+}
+
+.resourcesHeaderNav {
+  font-weight: normal;
+  font-size: 16px;
+}
+
+.resourcesCard {
+  padding: 20px;
+  overflow: auto;
+}

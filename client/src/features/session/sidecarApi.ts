@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-type HealthState = { status: string,
+type HealthState = {
+  status: string;
   error?: {
     code: number;
     message: string;
@@ -43,8 +44,8 @@ interface RenkuOpResult extends JsonRpcResult {
   };
 }
 
-interface SaveResult extends RenkuOpResult {}
-interface PullResult extends RenkuOpResult {}
+type SaveResult = RenkuOpResult;
+type PullResult = RenkuOpResult;
 export const sessionSidecarApi = createApi({
   reducerPath: "sessionSidecarApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/sessions/" }),
@@ -61,14 +62,14 @@ export const sessionSidecarApi = createApi({
         return {
           body,
           method: "POST",
-          url: `${args.serverName}/sidecar/jsonrpc`,
+          url: `${args.serverName}/sidecar/jsonrpc/`,
         };
       },
     }),
     health: builder.query<HealthState, SidecarRequestArgs>({
       query: (args) => {
         return {
-          url: `${args.serverName}/sidecar/health`,
+          url: `${args.serverName}/sidecar/health/`,
         };
       },
     }),

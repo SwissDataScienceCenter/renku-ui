@@ -16,44 +16,70 @@
  * limitations under the License.
  */
 
-import { Progress } from "../../../utils/ts-wrappers";
-import React from "react";
-import { InactiveKgProjects } from "../InactiveKgProjects";
+import { Progress } from "reactstrap";
+
+import { Loader } from "../../../components/Loader";
+import type { InactiveKgProjects } from "../inactiveKgProjects.types";
+import { ActivationStatusProgressError } from "../InactiveKgProjectsApi";
 
 interface ActivationProgressProps {
   project: InactiveKgProjects;
 }
 function ActivationProgress({ project }: ActivationProgressProps) {
-  if (project.progressActivation === -2)
-    return <small className="text-danger">There was an error in activating the KG. Please contact us for help. </small>;
+  if (project.progressActivation === null)
+    return <small className="fst-italic">Not indexed</small>;
 
-  if (project.progressActivation === -408)
-    return <small className="text-danger">Timeout fetching the activation status. Please contact us for help. </small>;
+  if (project.progressActivation === ActivationStatusProgressError.UNKNOWN)
+    return (
+      <small className="text-danger">
+        There was an error indexing this project. Please contact us for help.
+      </small>
+    );
+
+  if (project.progressActivation === ActivationStatusProgressError.TIMEOUT)
+    return (
+      <small className="text-danger">
+        The indexing status is slow to progress. Refresh this page or check the
+        project later to see if indexing has completed, or contact us for help.
+      </small>
+    );
+
+  if (
+    project.progressActivation ===
+    ActivationStatusProgressError.WEB_SOCKET_ERROR
+  )
+    return (
+      <small className="text-danger">
+        There was a problem with the connection to the server. Please refresh
+        this page to see if indexing has completed.
+      </small>
+    );
 
   if (project.progressActivation === 100)
     return <small className="text-success">Activated</small>;
 
-  if (project.progressActivation === null)
-    return <small className="fst-italic">Inactive</small>;
-
+  const progressStyle = { height: "1rem", width: "4rem" };
   if (project.progressActivation === 0 || project.progressActivation === -1) {
-    return <Progress
-      animated
-      striped
-      className="my-3"
-      color="rk-text"
-      style={{ height: "12px", width: "200px" }}
-      value={100}
-    />;
+    return (
+      <small>
+        <div className="d-flex align-items-center">
+          <Loader size={16} />
+          &nbsp;<div>Starting...</div>
+        </div>
+      </small>
+    );
   }
 
-  return <Progress
-    striped animated
-    className="my-3"
-    color="rk-text"
-    style={{ height: "12px", width: "200px" }}
-    value={project.progressActivation}
-  />;
+  return (
+    <Progress
+      striped
+      animated
+      className="my-3"
+      color="rk-text"
+      style={progressStyle}
+      value={project.progressActivation}
+    />
+  );
 }
 
 export default ActivationProgress;

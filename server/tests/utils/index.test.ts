@@ -18,7 +18,6 @@
 
 import { convertType, getCookieValueByName, getRelease } from "../../src/utils";
 
-
 describe("Test utils functions", () => {
   it("Test convertType", async () => {
     // empty value
@@ -46,37 +45,39 @@ describe("Test utils functions", () => {
     const target = "anon-id";
     const values = [
       {
-        cookies: "ui-server-session=0f2-5feef-a50B9; session=35184a0_630.XL56xeF4pmsLMI; anon-id=anon-ODvRAo6Ukj0ZE",
-        result: "anon-ODvRAo6Ukj0ZE"
+        cookies:
+          "ui-server-session=0f2-5feef-a50B9; session=35184a0_630.XL56xeF4pmsLMI; anon-id=anon-ODvRAo6Ukj0ZE",
+        result: "anon-ODvRAo6Ukj0ZE",
       },
       {
-        cookies: "ui-server-session=0f2-5feef-a50B9; anon-id=anon-ODvRAo6Ukj0ZE; session=35184a0_630.XL56xeF4pmsLMI",
-        result: "anon-ODvRAo6Ukj0ZE"
+        cookies:
+          "ui-server-session=0f2-5feef-a50B9; anon-id=anon-ODvRAo6Ukj0ZE; session=35184a0_630.XL56xeF4pmsLMI",
+        result: "anon-ODvRAo6Ukj0ZE",
       },
       {
         cookies: "ui-server-session=062a726c-6737-4dae-8786-2b378a06c66c",
-        result: null
+        result: null,
       },
       {
         cookies: "anon-id=anon-aL84skoIRyaLvkhoBBwb2ZYkAXOo9IyhKEj5bDH7UPE",
-        result: "anon-aL84skoIRyaLvkhoBBwb2ZYkAXOo9IyhKEj5bDH7UPE"
+        result: "anon-aL84skoIRyaLvkhoBBwb2ZYkAXOo9IyhKEj5bDH7UPE",
       },
       {
         cookies: "anon-id=anon-aL84skoIRyaLvkhoBBwb2ZYkAXOo9IyhKEj5bDH7UPE;",
-        result: "anon-aL84skoIRyaLvkhoBBwb2ZYkAXOo9IyhKEj5bDH7UPE"
+        result: "anon-aL84skoIRyaLvkhoBBwb2ZYkAXOo9IyhKEj5bDH7UPE",
       },
       {
         cookies: "ui-server-session=062a726c-6737-4dae-8786-2b378a06c66c",
-        result: null
+        result: null,
       },
       {
         cookies: "",
-        result: null
+        result: null,
       },
       {
         cookies: null,
-        result: null
-      }
+        result: null,
+      },
     ];
     for (const value of values)
       expect(getCookieValueByName(value.cookies, target)).toBe(value.result);

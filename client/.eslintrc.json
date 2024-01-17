@@ -16,7 +16,9 @@
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    "plugin:jest/recommended"
+    "plugin:react/jsx-runtime",
+    "plugin:jest/recommended",
+    "prettier"
   ],
   "plugins": ["react", "react-hooks", "jest", "spellcheck"],
   "settings": {
@@ -24,80 +26,48 @@
       "version": "detect"
     }
   },
+  "overrides": [
+    { "files": ["**/*.js", "**/*.jsx"] },
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "plugins": [
+        "@typescript-eslint",
+        "jest",
+        "react",
+        "react-hooks",
+        "spellcheck"
+      ],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        // We probably want to turn this on at some point
+        // "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:react/recommended",
+        "plugin:react/jsx-runtime",
+        "plugin:react-hooks/recommended",
+        "plugin:jest/recommended",
+        "prettier"
+      ],
+      "parserOptions": {
+        "project": ["./tsconfig.json"]
+      },
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "warn"
+      }
+    }
+  ],
   "rules": {
-    "max-len": ["warn", 120],
     "no-eval": "error",
-    "quotes": [
-      "warn",
-      "double",
-      {
-        "allowTemplateLiterals": true,
-        "avoidEscape": true
-      }
-    ],
-    "no-unused-vars": [
-      "warn",
-      {
-        "vars": "all",
-        "args": "none",
-        "ignoreRestSiblings": false
-      }
-    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
     "no-console": "warn",
     "react/prop-types": "off",
-    "curly": ["warn", "multi-or-nest", "consistent"],
     "react/jsx-indent": [0],
-    "indent": [
-      "warn",
-      2,
-      {
-        "ignoredNodes": ["TemplateLiteral"],
-        "SwitchCase": 1
-      }
-    ],
-    "semi": ["warn", "always"],
-    "space-before-blocks": ["warn", "always"],
-    "no-multi-spaces": "warn",
-    "brace-style": [
-      "warn",
-      "stroustrup",
-      {
-        "allowSingleLine": true
-      }
-    ],
     "max-nested-callbacks": ["warn", 3],
     "no-alert": "error",
     "no-else-return": "warn",
     "jest/expect-expect": "off",
-    "comma-spacing": "warn",
-    "block-spacing": ["warn", "always"],
-    "key-spacing": "warn",
-    "no-trailing-spaces": "warn",
-    "object-curly-spacing": ["warn", "always"],
-    "space-infix-ops": "warn",
-    "space-unary-ops": [
-      "warn",
-      {
-        "words": true,
-        "nonwords": false
-      }
-    ],
-    "keyword-spacing": [
-      "warn",
-      {
-        "before": true
-      }
-    ],
-    "no-multiple-empty-lines": [
-      "warn",
-      {
-        "max": 2,
-        "maxEOF": 1
-      }
-    ],
-    "eol-last": 1,
     "no-unsafe-finally": "off",
-    "react/jsx-curly-spacing": ["warn", "never"],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "spellcheck/spell-checker": [
@@ -118,6 +88,7 @@
         "skipWords": [
           "accessor",
           "allowfullscreen",
+          "amazonaws",
           "apiversion",
           "ascii",
           "asciimath",
@@ -126,14 +97,20 @@
           "autosaves",
           "autostart",
           "autosuggest",
+          "azureblob",
           "backend",
+          "beforeunload",
+          "bioconductor",
           "bool",
+          "booleans",
           "borderless",
           "calc",
           "cancellable",
           "cancelled",
+          "chartpress",
           "cheatsheet",
           "checkbox",
+          "ciyer",
           "ckeditor",
           "cktextarea",
           "cloudstorage",
@@ -144,6 +121,8 @@
           "datasets",
           "dataverse",
           "datetime",
+          "debounce",
+          "debounced",
           "discoverability",
           "dismissible",
           "dropdown",
@@ -164,8 +143,10 @@
           "grayscale",
           "hljs",
           "href",
+          "hstack",
           "iframe",
           "iids",
+          "impl",
           "interruptable",
           "integrations",
           "ipynb",
@@ -174,14 +155,18 @@
           "jpeg",
           "jsonrpc",
           "jszip",
+          "julia",
           "jumbotron",
           "jupyter",
           "katex",
           "kernelspec",
+          "Keycloak",
           "Lausanne",
           "linkify",
           "localhost",
           "maintenances",
+          "mailto",
+          "matcher",
           "mathbf",
           "mathjax",
           "mergerequests",
@@ -202,6 +187,7 @@
           "nowrap",
           "nteract",
           "nullable",
+          "oauth2",
           "objectstores",
           "onloadend",
           "onopen",
@@ -213,13 +199,17 @@
           "prepend",
           "presentational",
           "profiler",
+          "proxying",
           "Pupikofer",
           "pygments",
+          "rclone",
           "react",
           "readme",
+          "readonly",
           "Ravey",
           "rect",
           "redux",
+          "reduxjs",
           "remark2rehype",
           "renderer",
           "renderers",
@@ -229,6 +219,7 @@
           "repo",
           "repos",
           "reproducibility",
+          "rescaled",
           "resize",
           "reusability",
           "rproj",
@@ -242,12 +233,14 @@
           "statuspage",
           "stdout",
           "stockimages",
+          "swiper",
           "tada",
           "telepresence",
           "textarea",
           "thead",
           "toastify",
           "toggler",
+          "tolerations",
           "toml",
           "tooltip",
           "tspan",
@@ -257,6 +250,8 @@
           "unmount",
           "unschedulable",
           "unstar",
+          "unstyled",
+          "unsynced",
           "uploadable",
           "uploader",
           "uploadprogress",
@@ -264,8 +259,10 @@
           "validators",
           "versioned",
           "visibilities",
+          "vstack",
           "webhook",
           "webhooks",
+          "webkit",
           "webpack",
           "webworkers",
           "whitespace",

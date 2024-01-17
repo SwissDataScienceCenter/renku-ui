@@ -23,7 +23,12 @@
  *  Tests for file components.
  */
 
-import { isCloudStorageBucketValid, isCloudStorageEndpointValid } from "./ObjectStoresConfig.present";
+import { describe, expect, it } from "vitest";
+
+import {
+  isCloudStorageBucketValid,
+  isCloudStorageEndpointValid,
+} from "./ObjectStoresConfig.present";
 
 describe("storage bucket names", () => {
   it("validates good storage bucket names", () => {
@@ -46,12 +51,18 @@ describe("storage bucket names", () => {
 
 describe("storage endpoints", () => {
   it("validates good storage endpoints", () => {
-    expect(isCloudStorageEndpointValid({ endpoint: "http://foo.com" })).toEqual(true);
-    expect(isCloudStorageEndpointValid({ endpoint: "https://foo.com/bar" })).toEqual(true);
+    expect(isCloudStorageEndpointValid({ endpoint: "http://foo.com" })).toEqual(
+      true
+    );
+    expect(
+      isCloudStorageEndpointValid({ endpoint: "https://foo.com/bar" })
+    ).toEqual(true);
   });
   it("validates bad storage endpoints", () => {
     expect(isCloudStorageEndpointValid({ endpoint: "a" })).toEqual(false);
     expect(isCloudStorageEndpointValid({ endpoint: "a/" })).toEqual(false);
-    expect(isCloudStorageEndpointValid({ endpoint: "https://foo" })).toEqual(false);
+    expect(isCloudStorageEndpointValid({ endpoint: "https://foo" })).toEqual(
+      false
+    );
   });
 });

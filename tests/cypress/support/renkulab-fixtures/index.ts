@@ -19,29 +19,36 @@
 /**
  * Common fixtures defined in one place.
  */
-import BaseFixtures from "./fixtures";
+import { Admin } from "./admin";
+import { CloudStorage } from "./cloudStorage";
+import { Dashboard } from "./dashboard";
+import { DataServices } from "./dataServices";
 import { Datasets } from "./datasets";
+import BaseFixtures from "./fixtures";
 import { Global } from "./global";
+import { KgSearch } from "./kgSearch";
 import { NewProject } from "./newProject";
 import { NewSession } from "./newSession";
 import { Projects } from "./projects";
-import { Session } from "./session";
 import { Sessions } from "./sessions";
 import { User } from "./user";
+import { UserPreferences } from "./user-preferences";
+import { Versions } from "./versions";
 import { Workflows } from "./workflows";
-import { KgSearch } from "./kgSearch";
 
 const Fixtures = NewProject(
   NewSession(
-    Sessions(
-      Datasets(
-        Projects(
-          Session(
-            User(
-              Workflows(
-                KgSearch(
-                  Global(
-                    BaseFixtures
+    Dashboard(
+      Sessions(
+        Admin(
+          DataServices(
+            CloudStorage(
+              Datasets(
+                Projects(
+                  User(
+                    UserPreferences(
+                      Versions(Workflows(KgSearch(Global(BaseFixtures))))
+                    )
                   )
                 )
               )
@@ -53,4 +60,7 @@ const Fixtures = NewProject(
   )
 );
 
-export default Fixtures;
+const fixtures = new Fixtures();
+export default fixtures;
+
+export type FixturesType = InstanceType<typeof Fixtures>;

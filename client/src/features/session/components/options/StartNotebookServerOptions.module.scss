@@ -1,0 +1,44 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+
+.dropdown {
+  :global(.btn.dropdown-toggle) {
+    border-radius: 8px;
+    border-width: 2.5px;
+    min-width: 160px;
+    padding: 5px 10px;
+    font-weight: bold;
+
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+
+    & span {
+      flex-grow: 1;
+    }
+
+    &::after {
+      margin-left: 6px;
+    }
+  }
+
+  :global(.dropdown-menu) {
+    padding: 0;
+    border: 0;
+    background: transparent;
+
+    :global(.btn) {
+      border: 1px solid var(--#{$prefix}btn-active-border-color);
+      border-radius: unset;
+      text-align: center;
+
+      &.active {
+        font-weight: bold;
+        border-width: 2.5px;
+      }
+    }
+  }
+}

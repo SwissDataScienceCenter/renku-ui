@@ -1,146 +1,162 @@
 name: Test and CI
 
-on: [push]
+on:
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  cleanup-runs:
-    runs-on: ubuntu-22.04
-    if: "!startsWith(github.ref, 'refs/tags/')"
-    steps:
-    - uses: rokroskar/workflow-run-cleanup-action@v0.3.3
-      env:
-        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-
   test-client:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./client
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up node ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: '16.13.2'
-    - name: Install client dependencies
-      run: |
-        cd client
-        npm install
-      env:
-        NODE_OPTIONS: '--max-old-space-size=4096'
-    - name: Run test client
-      run: |
-        cd client
-        npm test
-      env:
-        CI: true
-    - name: Run lint client
-      run: |
-        cd client
-        npm run lint
-    - name: Build client
-      run: |
-        cd client
-        npm run-script build
-      env:
-        NODE_OPTIONS: '--max-old-space-size=4096'
+      - uses: actions/checkout@v3
+      - name: Set up node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.17.1"
+      - name: Install client dependencies
+        run: npm clean-install
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      - name: Run test client
+        run: npm run test
+        env:
+          CI: true
+      - name: Run format client
+        run: npm run format-check
+      - name: Run lint client
+        run: npm run lint
+      - name: Build client
+        run: npm run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
 
   test-server:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./server
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up node ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: '16.13.2'
-    - name: Install server dependencies and build
-      run: |
-        cd server
-        npm install
-        npm run-script build
-      env:
-        NODE_OPTIONS: '--max-old-space-size=4096'
-    - name: Run test server
-      run: |
-        cd server
-        npm test
-      env:
-        CI: true
-    - name: Run lint server
-      run: |
-        cd server
-        npm run lint
-
-  test-e2e:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up node ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '16.13.2'
-      - name: Install project e2e dependencies
-        run: |
-          cd tests
-          npm install
+          node-version: "18.17.1"
+      - name: Install server dependencies
+        run: npm clean-install
+      - name: Build server
+        run: npm run build
         env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      - name: Run test server
+        run: npm test
+        env:
+          CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      - name: Run format server
+        run: npm run format-check
+      - name: Run lint server
+        run: npm run lint
+
+  test-storybook:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.17.1"
+      - name: Install dependencies
+        run: npm clean-install
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      - name: Build Storybook and run tests
+        run: npm run storybook-compile-and-test
+
+  lint-e2e:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./tests
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.17.1"
+      - name: Install project e2e dependencies
+        run: npm clean-install
+      - name: Run format e2e
+        run: npm run format-check
       - name: Run lint e2e
-        run: |
-          cd tests
-          npm run lint
+        run: npm run lint
 
-  test-chart:
+  run-e2e:
+    needs: lint-e2e
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Install helm
-        uses: azure/setup-helm@v1
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install client
+        uses: cypress-io/github-action@v6
         with:
-          version: '3.8.0'
-      - name: Test helm chart
-        run: |
-          helm dependency update helm-chart/renku-ui
-          helm lint helm-chart/renku-ui -f helm-chart/minikube-values.yaml
+          build: npm run client:install
+          runTests: false
+          working-directory: tests
+      - name: Build client
+        uses: cypress-io/github-action@v6
+        with:
+          build: npm run client:build
+          runTests: false
+          working-directory: tests
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          start: npm run client:preview
+          wait-on: http://localhost:3000/
+          wait-on-timeout: 300
+          working-directory: tests
+      - uses: actions/upload-artifact@v3
+        if: failure() # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
+        with:
+          name: cypress-screenshots
+          path: tests/cypress/screenshots
+          retention-days: 7
+      - uses: actions/upload-artifact@v3
+        if: always() # Cypress test video is always captured, so this action uses "always()" condition
+        with:
+          name: cypress-videos
+          path: tests/cypress/videos
+          retention-days: 3
 
-  build-chart:
-    needs: [test-client, test-server, test-chart]
+  publish-images:
+    needs: [test-client, test-server]
     runs-on: ubuntu-22.04
     if: "startsWith(github.ref, 'refs/tags/')"
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
+      - uses: actions/checkout@v3
         with:
-          python-version: 3.7
-      - name: Install helm
-        uses: azure/setup-helm@v1
-        with:
-          version: '3.8.0'
-      - name: Build chart and images
+          fetch-depth: 0
+      - name: set up environment variables
         run: |
-          python -m pip install --upgrade pip "chartpress==1.3.0" "ruamel.yaml==0.15.54" "six==1.16.0"
-          chartpress
-
-  publish-chart:
-    needs: build-chart
-    runs-on: ubuntu-22.04
-    if: "startsWith(github.ref, 'refs/tags/')"
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: set up environment variables
-      run: |
-        echo "GIT_USER=Renku Bot" >> $GITHUB_ENV
-        echo "GIT_EMAIL=renku@datascience.ch" >> $GITHUB_ENV
-    - name: Push chart and images
-      uses: SwissDataScienceCenter/renku-actions/publish-chart@v1.4.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
-        CHART_NAME: renku-ui
-        DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
-    - name: Wait for chart to get published
-      run: sleep 120
-    - name: Update ui version
-      uses: SwissDataScienceCenter/renku-actions/update-component-version@v1.4.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
-        CHART_NAME: renku-ui
+          echo "GIT_USER=Renku Bot" >> $GITHUB_ENV
+          echo "GIT_EMAIL=renku@datascience.ch" >> $GITHUB_ENV
+      - name: Push images
+        uses: SwissDataScienceCenter/renku-actions/publish-chartpress-images@v1.9.0
+        env:
+          DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
+      - name: Update ui version
+        uses: SwissDataScienceCenter/renku-actions/update-component-version@v1.9.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
+          COMPONENT_NAME: renku-ui

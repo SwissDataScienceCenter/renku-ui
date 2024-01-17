@@ -23,74 +23,88 @@
  *  Tests for Sentry.
  */
 
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const FAKE = {
   url: "https://12345abcde@sentry.dev.renku.ch/5",
   namespace: "fake_namespace",
-  promise: new Promise(() => { }),
+  promise: new Promise(() => {
+    // eslint-disable-line @typescript-eslint/no-empty-function
+  }),
   version: "0.0",
 };
 
 describe("Sentry settings", () => {
   // Avoid errors triggered by re-initializing the Sentry client.
   let Sentry;
-  beforeEach(() => {
-    jest.isolateModules(() => {
-      Sentry = require("./Sentry").Sentry;
-    });
+  beforeEach(async () => {
+    vi.resetModules();
+    Sentry = (await import("./Sentry")).Sentry;
   });
 
   it("init function - url parameter", () => {
-    expect(() => Sentry.init())
-      .toThrow("provide a Sentry URL");
-    expect(() => Sentry.init(12345))
-      .toThrow("provide a Sentry URL");
+    expect(() => Sentry.init()).toThrow("provide a Sentry URL");
+    expect(() => Sentry.init(12345)).toThrow("provide a Sentry URL");
     expect(() => Sentry.init(FAKE.url)).not.toThrow();
   });
 
   it("init function - namespace parameter", () => {
-    expect(() => Sentry.init(FAKE.url, 12345))
-      .toThrow("optional <namespace> must be a valid string");
-    expect(() => Sentry.init(FAKE.url, ""))
-      .toThrow("optional <namespace> must be a valid string");
+    expect(() => Sentry.init(FAKE.url, 12345)).toThrow(
+      "optional <namespace> must be a valid string"
+    );
+    expect(() => Sentry.init(FAKE.url, "")).toThrow(
+      "optional <namespace> must be a valid string"
+    );
     expect(() => Sentry.init(FAKE.url, FAKE.namespace)).not.toThrow();
   });
 
   it("init function - userPromise parameter", () => {
-    expect(() => Sentry.init(FAKE.url, null, "wrong_type"))
-      .toThrow("optional <userPromise> must be a valid promise");
-    expect(() => Sentry.init(FAKE.url, null, {}))
-      .toThrow("optional <userPromise> must be a valid promise");
+    expect(() => Sentry.init(FAKE.url, null, "wrong_type")).toThrow(
+      "optional <userPromise> must be a valid promise"
+    );
+    expect(() => Sentry.init(FAKE.url, null, {})).toThrow(
+      "optional <userPromise> must be a valid promise"
+    );
     expect(() => Sentry.init(FAKE.url, null, FAKE.promise)).not.toThrow();
   });
 
   it("init function - version parameter", () => {
-    expect(() => Sentry.init(FAKE.url, null, null, 12345))
-      .toThrow("optional <version> must be a valid string");
-    expect(() => Sentry.init(FAKE.url, null, null, ""))
-      .toThrow("optional <version> must be a valid string");
+    expect(() => Sentry.init(FAKE.url, null, null, 12345)).toThrow(
+      "optional <version> must be a valid string"
+    );
+    expect(() => Sentry.init(FAKE.url, null, null, "")).toThrow(
+      "optional <version> must be a valid string"
+    );
     expect(() => Sentry.init(FAKE.url, null, null, FAKE.url)).not.toThrow();
   });
 
   it("init function - re-initialize", () => {
     expect(() => Sentry.init(FAKE.url)).not.toThrow();
-    expect(() => Sentry.init(FAKE.url)).toThrow("re-initialize the Sentry client");
+    expect(() => Sentry.init(FAKE.url)).toThrow(
+      "re-initialize the Sentry client"
+    );
   });
 
   it("init function - check Sentry object", () => {
-    const sentrySettings = Sentry.init(FAKE.url, FAKE.namespace, FAKE.promise, FAKE.version);
+    const sentrySettings = Sentry.init(
+      FAKE.url,
+      FAKE.namespace,
+      FAKE.promise,
+      FAKE.version
+    );
     expect(sentrySettings).toBeTruthy();
-    expect(sentrySettings.SDK_NAME).toBe("sentry.javascript.browser");
+    expect(Object.keys(sentrySettings)).toContain("SDK_VERSION");
+    expect(typeof sentrySettings.SDK_VERSION).toBe("string");
+    expect(Object.keys(sentrySettings)).toContain("captureEvent");
+    expect(typeof sentrySettings.captureEvent).toBe("function");
   });
 });
 
-
 describe("Helper functions", () => {
   let getRelease;
-  beforeEach(() => {
-    jest.isolateModules(() => {
-      getRelease = require("./Sentry").getRelease;
-    });
+  beforeEach(async () => {
+    vi.resetModules();
+    getRelease = (await import("./Sentry")).getRelease;
   });
 
   it("getRelease", () => {
@@ -99,7 +113,7 @@ describe("Helper functions", () => {
       short: "1.10",
       full: "1.10.0-abcd123",
       wrong: "1.10.0.abcd123",
-      extended: "1.10.0-n24.h376dd06"
+      extended: "1.10.0-n24.h376dd06",
     };
     const DEV_SUFFIX = "-dev";
 

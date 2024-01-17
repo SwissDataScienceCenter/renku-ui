@@ -24,19 +24,18 @@
  */
 
 import * as SentryLib from "@sentry/node";
-import * as Tracing from "@sentry/tracing";
 import express from "express";
+import type { Server } from "ws";
 
-import { getRelease } from "../index";
 import config from "../../config";
 import logger from "../../logger";
+import { clamp, getRelease } from "../index";
 import requestHandlerMiddleware from "../middlewares/requestHandlerMiddleware";
-import { clamp } from "../index";
 
 export interface SentryConfiguration {
   url: string;
   namespace: string;
-  version:string;
+  version: string;
   telepresence: boolean;
   sampleRate: number;
 }
@@ -46,13 +45,15 @@ const VERSION_DEFAULT = "unknown";
 const UI_COMPONENT = "renku-ui-server";
 
 class Sentry {
-
   sentryInitialized = false;
   private uiVersion = VERSION_DEFAULT;
   private sentryUrl: string = null;
   private sentryNamespace: string = NAMESPACE_DEFAULT;
 
-  init (options: SentryConfiguration, app: express.Application): typeof SentryLib {
+  init(
+    options: SentryConfiguration,
+    app: express.Application
+  ): typeof SentryLib {
     // Prevent re-initializing
     if (this.sentryInitialized)
       throw new Error("Cannot re-initialize the Sentry server-ui.");
@@ -64,14 +65,18 @@ class Sentry {
     // Check namespace
     if (options.namespace != null) {
       if (typeof options.namespace !== "string" || !options.namespace.length)
-        throw new Error("The optional <namespace> must be a valid string identifying the current namespace.");
+        throw new Error(
+          "The optional <namespace> must be a valid string identifying the current namespace."
+        );
       this.sentryNamespace = options.namespace;
     }
 
     // Check version
     if (options.version != null) {
       if (typeof options.version !== "string" || !options.version.length)
-        throw new Error("The optional <version> must be a valid string identifying the UI version.");
+        throw new Error(
+          "The optional <version> must be a valid string identifying the UI version."
+        );
       this.uiVersion = options.version;
     }
 
@@ -89,14 +94,14 @@ class Sentry {
         // enable HTTP calls tracing
         new SentryLib.Integrations.Http({ tracing: true }),
         // enable Express.js middleware tracing
-        new Tracing.Integrations.Express({ app }),
+        new SentryLib.Integrations.Express({ app }),
       ],
       tracesSampleRate: clamp(options.sampleRate, 0, 1),
     });
 
     SentryLib.setTags({
       component: UI_COMPONENT,
-      telepresence: options.telepresence
+      telepresence: options.telepresence,
     });
 
     // TODO Handle user data
@@ -111,11 +116,11 @@ class Sentry {
   }
 }
 
-const initializeSentry = (app: express.Application) : void => {
+const initializeSentry = (app: express.Application): void => {
   let sentryInitialized = false;
   if (config.sentry.enabled) {
     logger.info(`Initializing Sentry`);
-    const configSentry : SentryConfiguration = {
+    const configSentry: SentryConfiguration = {
       url: config.sentry.url,
       namespace: config.sentry.namespace,
       version: config.server.serverUiVersion,
@@ -127,19 +132,39 @@ const initializeSentry = (app: express.Application) : void => {
       const sentry = new Sentry();
       sentry.init(configSentry, app);
       sentryInitialized = sentry.sentryInitialized;
-    }
-    catch (e) {
+    } catch (e) {
       logger.profile("Sentry");
       logger.error(e.message);
       // include request Handler middleware to unblock the app if has a uncaughtException and Sentry is not available
       app.use(requestHandlerMiddleware);
     }
-  }
-  else {
+  } else {
     // include request Handler middleware to unblock app if has a uncaughtException
     app.use(requestHandlerMiddleware);
   }
   logger.info(`Sentry Initialized: ${sentryInitialized}`);
 };
+
+export function addWebSocketServerContext(wss: Server): void {
+  if (!config.sentry.enabled) {
+    return;
+  }
+
+  const context = {
+    address: wss.address(),
+    options: Object.entries(wss.options)
+      .filter(
+        ([, value]) =>
+          (typeof value !== "object" && typeof value !== "function") ||
+          value == null
+      )
+      .reduce(
+        (obj, [key, value]) => ({ ...obj, [key]: value }),
+        {} as Record<string, unknown>
+      ),
+    path: wss.path,
+  };
+  SentryLib.setContext("WebSocket Server", context);
+}
 
 export { initializeSentry };

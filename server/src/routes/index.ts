@@ -24,8 +24,13 @@ import registerApiRoutes from "./apis";
 import { IAuthenticator } from "../interfaces";
 import { Storage } from "../storage";
 
-function register(app: express.Application, prefix: string, authenticator: IAuthenticator, storage: Storage): void {
-  registerInternalRoutes(app, authenticator, storage);
+function register(
+  app: express.Application,
+  prefix: string,
+  authenticator: IAuthenticator,
+  storage: Storage
+): void {
+  registerInternalRoutes(app, authenticator);
 
   // Testing ingress
   app.get(prefix, (req, res) => {

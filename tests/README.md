@@ -1,79 +1,70 @@
 # E2E Tests for Renku UI
 
-The `tests` folder implements two kinds of Cypress-based UI tests. The first kind, which are in the `cypress/integration/live` folder, run against a live instance of RenkuLab (such as https://dev.renku.ch). These are useful for testing the end-to-end behavior of an actual running system.
+End-to-end tests are Cypress-based UI tests that rely on a local instance of the UI.
+All the APIs are mocked using JSON files from the `fixtures` folder. Therefore, these tests
+can run completely in isolation.
 
-The second kind, which are in the `cypress/integration/local` folder, run against a UI running on `localhost` and use mocked data. These are designed to test components, isolated, in a variety of situations.
+Mind that the UI is run from the `../client` folder, so you need to setup the client properly
+before running the e2e tests.
 
-Quickstart: Live
-----------------
+## Run the tests
 
-The e2e live tests depend on a running instance of Renku being present.
+### Build the client (optional)
 
-Once you have a development instance of Renku running locally or in the cloud, set the baseUrl and a valid user data (`env.USER`) in the `cypress.json` file.
+_If you already installed the dependencies in the `../client` folder, this step is not necessary._
 
-**Note:** The user should also exist in dev.renku.ch
+Install the client:
 
-````
-"baseUrl": "https://<my-namespace>.dev.renku.ch/"
-"env": {
-    "USER": {
-      "firstname": "<firstname>",
-      "lastname": "<lastname>",
-      "email": "<email>",
-      "password": "<password>"
-    }
-}
-````
+```
+> npm run build-client
+```
 
-**Note:** For CI purposes the user data is saved as secret with key CYPRESS_USER
-**Note:** The `USER` configuration can be put in `cypress.env.json`, which is in `.gitignore`, so you do not need to worry about accidentally pushing passwords to the Git server.
+Mind that this operation is equivalent to `npm run install` in the `../client` folder. It
+requires some time, up to a few minutes depending on your machine.
 
+### Install e2e depencendices
 
-## Installation
-````
-## install al dependencies from e2e directory
+Install the necessary dependencies:
+
+```
 npm install
-````
+```
+
+### Run the e2e tests
+
+There are a few ways to run the end-to-end tests, depending on your goal.
+
+If you plan to visualize the tests on the browser, or you are adding/changing a test, you
+can start using the following command to serve the UI client content and load the tests
+interactively on your browser:
+
+```
+npm run e2e
+```
+
+If you prefer running your tests in bulk, you can use the `:headless` version. The
+following command will start serving the UI client content and run the tests reporting the
+output directly in the CLI without opening the browser.
+
+```
+npm run e2e:headless
+```
+
+If you prefer to run the UI client in a different way (perhaps starting it separately from the
+`../client` folder) differently, or you prefer to run tests against a live deployment, you can
+use either `npm run cypress` or `npm run cypress:headless`. Remember to provide a valid URL as
+`e2e.baseUrl` in case you need something different than `"http://localhost:3000"`
 
 ## Opening Cypress GUI
-````
-npm run e2e
-````
 
-
-## Running the local tests
-````
-npm run e2e:local
-````
-
-This will start the RenkuLab UI locally and open the Cypress GUI.
-
-## Running from the CLI
-````
-# run Cypress tests headlessly
+```
 npm run e2e:headless
-
-### runs all example projects in specific browser
-### similar to cypress run --browser <name>
-npm run e2e:run --browser chrome
-
-### sends test results, videos, screenshots
-### to Cypress dashboard
-npm run e2e:run --record
-````
-
-##  Run Lint
-````
-$ npm run lint
-````
-
-## Cypress dashboard
-
-https://dashboard.cypress.io/projects/2nbsft
-
-Access with e-mail (ask for credentials to Renku UI team)
-
+```
 
 ### Other links
+
+Here are some additional resources:
+
 - Debugging: https://docs.cypress.io/guides/guides/debugging#Using-debugger
 - Best practices: https://docs.cypress.io/guides/references/best-practices
+- Online dashboard: https://dashboard.cypress.io/projects/2nbsft

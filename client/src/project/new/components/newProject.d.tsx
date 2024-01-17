@@ -23,7 +23,10 @@
  *  New Project definitions
  */
 
-import { Visibilities } from "../../../utils/components/visibility/Visibility";
+import { Visibilities } from "../../../components/visibility/Visibility";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 
 interface NewProjectMeta {
   validation: {
@@ -31,19 +34,19 @@ interface NewProjectMeta {
       description?: string;
       title?: string;
       visibility?: string;
-    },
+    };
     warnings: {
       description?: string;
       title?: string;
       visibility?: string;
-    }
-  },
+    };
+  };
   userTemplates: any;
   namespace: {
     fetching: boolean;
     visibilities: Visibilities;
     visibility: Visibilities;
-  }
+  };
 }
 
 interface NewProjectInputs {

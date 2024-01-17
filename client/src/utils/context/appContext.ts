@@ -17,14 +17,29 @@
  */
 
 import React from "react";
+import type { NotificationsManager } from "../../notifications/notifications.types";
+import type { CoreApiVersionedUrlConfig } from "../helpers/url";
+import { createCoreApiVersionedUrlConfig } from "../helpers/url";
+import type { AppParams } from "./appParams.types";
 
-type IAppContext = {
-  client: any;
-  params: unknown;
+export interface AppContextType {
+  client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  coreApiVersionedUrlConfig: CoreApiVersionedUrlConfig;
   location: unknown;
-};
+  model: unknown;
+  notifications: NotificationsManager | undefined;
+  params: AppParams | null;
+}
 
-const AppContext = React.createContext<IAppContext>({ client: undefined, params: undefined, location: undefined });
+const AppContext = React.createContext<AppContextType>({
+  client: undefined,
+  coreApiVersionedUrlConfig: createCoreApiVersionedUrlConfig({
+    coreApiVersion: "/",
+  }),
+  location: undefined,
+  model: undefined,
+  notifications: undefined,
+  params: null,
+});
 
 export default AppContext;
-export type { IAppContext };

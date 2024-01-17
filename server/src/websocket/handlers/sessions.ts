@@ -26,6 +26,7 @@ import { simpleHash, sortObjectProperties } from "../../utils";
 interface SessionsResult {
   servers: Record<string, Session>;
 }
+
 interface Session {
   status: {
     details: {
@@ -34,36 +35,68 @@ interface Session {
     }[];
     message?: string;
     readyNumContainers: number;
-    state: string;
+    state: {
+      pod_name: string;
+      [key: string]: unknown;
+    };
     totalNumContainers: number;
+    [key: string]: unknown;
   };
 }
 
 function handlerRequestSessionStatus(
-  data: Record<string, unknown>, channel: Channel): void {
+  data: Record<string, unknown>,
+  channel: Channel
+): void {
   channel.data.set("sessionStatus", null);
 }
 
 function sendMessage(data: string, channel: Channel) {
   const info = new WsMessage({ message: data }, "user", "sessionStatus");
-  channel.sockets.forEach(socket => socket.send(info.toString()));
+  channel.sockets.forEach((socket) => socket.send(info.toString()));
 }
 
-function heartbeatRequestSessionStatus
-(channel: Channel, apiClient: APIClient, authHeathers: Record<string, string>): void {
+function heartbeatRequestSessionStatus(
+  channel: Channel,
+  apiClient: APIClient,
+  authHeathers: Record<string, string>
+): void {
   const previousStatuses = channel.data.get("sessionStatus") as string;
-  apiClient.getSessionStatus(authHeathers)
+  apiClient
+    .getSessionStatus(authHeathers)
     .then((response) => {
       const statusFetched = response as unknown as SessionsResult;
       const servers = statusFetched?.servers ?? {};
-      const cleanStatus: Record<string, Session> = {};
-      // only keep status information
-      Object.keys(servers).map( key => {
-        cleanStatus[key] = { status: servers[key].status };
-      });
 
-      const sortedObject = sortObjectProperties(cleanStatus as Record<string, never>);
-      const currentHashedSessions = simpleHash(JSON.stringify(sortedObject)).toString();
+      // Keep only relevant status information, without warning messages
+      const cleanedServerEntries = Object.entries(servers).map(
+        ([key, session]) => {
+          const {
+            details,
+            message,
+            readyNumContainers,
+            state,
+            totalNumContainers,
+          } = session.status;
+          const cleanedStatus = {
+            details: details ?? [],
+            ...(message ? { message } : {}),
+            readyNumContainers: readyNumContainers ?? -1,
+            state: state ?? { pod_name: "" },
+            totalNumContainers: totalNumContainers ?? -1,
+          };
+          return [key, { status: cleanedStatus }] as const;
+        }
+      );
+      const cleanedServers = cleanedServerEntries.reduce(
+        (obj, [key, value]) => ({ ...obj, [key]: value }),
+        {} as Record<string, Session>
+      );
+
+      const sortedObject = sortObjectProperties(cleanedServers);
+      const currentHashedSessions = simpleHash(
+        JSON.stringify(sortedObject)
+      ).toString();
       // only send message when something change
       if (!util.isDeepStrictEqual(previousStatuses, currentHashedSessions)) {
         sendMessage("true", channel);
@@ -72,6 +105,7 @@ function heartbeatRequestSessionStatus
     })
     .catch((e) => {
       logger.warn("There was a problem while trying to fetch sessions");
+      if (e.message) logger.warn(e.message);
       logger.warn(e);
     });
 }

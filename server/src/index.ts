@@ -21,6 +21,7 @@ import express from "express";
 import morgan from "morgan";
 import ws from "ws";
 
+import APIClient from "./api-client";
 import config from "./config";
 import logger from "./logger";
 import routes from "./routes";
@@ -29,9 +30,12 @@ import { IAuthenticator } from "./interfaces";
 import { RedisStorage } from "./storage/RedisStorage";
 import { errorHandler } from "./utils/errorHandler";
 import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
-import { initializeSentry } from "./utils/sentry/sentry";
+import { initializePrometheus } from "./utils/prometheus/prometheus";
+import {
+  addWebSocketServerContext,
+  initializeSentry,
+} from "./utils/sentry/sentry";
 import { configureWebsocket } from "./websocket";
-import APIClient from "./api-client";
 
 const app = express();
 const port = config.server.port;
@@ -43,20 +47,24 @@ const logStream = {
     logger.info(message);
   },
 };
-app.use(morgan("combined", {
-  stream: logStream,
-  skip: function (req) {
-    // exclude from logging all the internal routes not accessible from outside
-    if (!req.url.startsWith(config.server.prefix))
-      return true;
-    return false;
-  }
-}));
+app.use(
+  morgan("combined", {
+    stream: logStream,
+    skip: function (req) {
+      // exclude from logging all the internal routes not accessible from outside
+      if (!req.url.startsWith(config.server.prefix)) return true;
+      return false;
+    },
+  })
+);
 
 logger.info("Server configuration: " + JSON.stringify(config));
 
 // initialize sentry if the SENTRY_URL is set
 initializeSentry(app);
+
+// set up Prometheus metrics
+initializePrometheus(app);
 
 // configure storage
 const storage = new RedisStorage();
@@ -80,7 +88,6 @@ app.use(cookieParser());
 // register routes
 routes.register(app, prefix, authenticator, storage);
 
-
 // start the Express server
 const server = app.listen(port, () => {
   logger.info(`Express server started at http://localhost:${port}`);
@@ -90,20 +97,60 @@ const server = app.listen(port, () => {
 const apiClient = new APIClient();
 
 // start the WebSocket server
-if (config.websocket.enabled) {
+function createWsServer() {
+  if (!config.websocket.enabled) {
+    return null;
+  }
+
   const path = `${config.server.prefix}${config.server.wsSuffix}`;
   const wsServer = new ws.Server({ server, path });
+  addWebSocketServerContext(wsServer);
   authPromise.then(() => {
     logger.info("Configuring WebSocket server");
-
     configureWebsocket(wsServer, authenticator, storage, apiClient);
+  });
+  return wsServer;
+}
+const wsServer = createWsServer();
+
+function shutdownServer() {
+  logger.info("Shutting down server");
+  server.close((error) => {
+    if (error) {
+      logger.error(error);
+      process.exit(1);
+    } else {
+      logger.info("Shutting down storage");
+      storage.shutdown();
+      logger.info("Shutdown completed.");
+      setImmediate(() => {
+        process.exit(0);
+      });
+    }
   });
 }
 
 function shutdown() {
-  server.close(() => {
-    storage.shutdown();
-    logger.info("Shutdown completed.");
+  if (wsServer != null) {
+    logger.info("Shutting down WebSocket server");
+    wsServer.clients.forEach((ws) => {
+      ws.close();
+    });
+    wsServer.close((error) => {
+      if (error) {
+        logger.error(error);
+        process.exit(1);
+      } else {
+        shutdownServer();
+      }
+    });
+  } else {
+    shutdownServer();
+  }
+
+  process.on("unhandledRejection", (error) => {
+    logger.error(error);
+    process.exit(1);
   });
 }
 

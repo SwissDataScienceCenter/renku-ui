@@ -1,0 +1,28 @@
+.helper-label {
+  font-style: italic;
+  padding-right: 10px;
+}
+
+.error-feedback {
+  line-height: 16px;
+  color: var(--bs-danger);
+  padding-top: 6px;
+  display: block;
+}
+
+.success-feedback {
+  line-height: 16px;
+  color: var(--bs-success);
+  padding-top: 6px;
+  font-size: medium;
+  display: inline;
+  width: auto;
+  min-width: 100px;
+  text-align: center;
+}
+
+.input-hint {
+  line-height: 16px;
+  padding-top: 5px;
+  display: block;
+}

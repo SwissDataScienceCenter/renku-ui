@@ -26,7 +26,6 @@ import { getOrCreateSessionId } from "./routes";
 import { serializeCookie } from "../utils";
 import { WsMessage } from "../websocket/WsMessages";
 
-
 /**
  * Add the authorization header for invoking gateway APIs as an authenticated renku user.
  *
@@ -38,7 +37,6 @@ function addAuthToken(req: express.Request, accessToken: string): void {
   req.headers[config.auth.authHeaderField] = value;
 }
 
-
 /**
  * Add the nonymous header for invoking gateway APIs as an anonymous renku user.
  *
@@ -49,33 +47,35 @@ function addAnonymousToken(req: express.Request, value: string): void {
   req.headers[config.auth.cookiesAnonymousKey] = value;
 }
 
-
 /**
  * Add the invalid credentials header to signal the need to re-authenticate.
  *
  * @param res - express response
  */
 function addAuthInvalid(req: express.Request): void {
-  req.headers[config.auth.invalidHeaderField] = config.auth.invalidHeaderExpired;
+  req.headers[config.auth.invalidHeaderField] =
+    config.auth.invalidHeaderExpired;
 }
 
-
 function renkuAuth(authenticator: IAuthenticator) {
-  return async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
+  return async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<void> => {
     // get or create session
     const sessionId = getOrCreateSessionId(req, res);
     let tokens: TokenSet;
     try {
       tokens = await authenticator.getTokens(sessionId, true);
-    }
-    catch (error) {
+    } catch (error) {
       const stringyError = error.toString();
-      const expired = stringyError.includes("expired") || stringyError.includes("invalid");
+      const expired =
+        stringyError.includes("expired") || stringyError.includes("invalid");
       if (expired) {
         logger.info(`Adding token expirations info for session ${sessionId}`);
         addAuthInvalid(req);
-      }
-      else {
+      } else {
         throw error;
       }
     }
@@ -94,18 +94,19 @@ function renkuAuth(authenticator: IAuthenticator) {
   };
 }
 
-async function wsRenkuAuth(authenticator: IAuthenticator, sessionId: string):
-  Promise<WsMessage | Record<string, string>> {
+async function wsRenkuAuth(
+  authenticator: IAuthenticator,
+  sessionId: string
+): Promise<WsMessage | Record<string, string>> {
   let tokens: TokenSet;
   try {
     tokens = await authenticator.getTokens(sessionId, true);
-  }
-  catch (error) {
+  } catch (error) {
     const stringyError = error.toString();
 
-    const expired = stringyError.includes("expired") || stringyError.includes("invalid");
-    if (expired)
-      throw new Error("expired");
+    const expired =
+      stringyError.includes("expired") || stringyError.includes("invalid");
+    if (expired) throw new Error("expired");
     throw error;
   }
 
@@ -121,8 +122,10 @@ async function wsRenkuAuth(authenticator: IAuthenticator, sessionId: string):
 
   // Anonymous users
   const fullAnonId = config.auth.anonPrefix + sessionId;
-  const newCookies: Array<string> = [serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)];
-  return { "cookie": newCookies.join("; ") };
+  const newCookies: Array<string> = [
+    serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId),
+  ];
+  return { cookie: newCookies.join("; ") };
 }
 
 export { renkuAuth, addAuthToken, wsRenkuAuth };

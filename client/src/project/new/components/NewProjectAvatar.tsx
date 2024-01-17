@@ -23,13 +23,14 @@
  *  ProjectAvatar container and present code.
  */
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import ImageInput from "../../../utils/components/formgenerator/fields/ImageInput";
-import { ImageInputMode } from "../../../utils/components/formgenerator/fields/ImageInput";
+import ImageInput from "../../../components/form-field/FormGeneratorImageInput";
+import { ImageInputMode } from "../../../components/form-field/FormGeneratorImageInput";
 
 // 3 MB -- GitLab has a 200kB limit, but a 3 MB file should be small enough after cropping
 const PROJECT_AVATAR_MAX_SIZE = 3 * 1024 * 1024;
+const DESIRABLE_FINAL_IMAGE_SIZE = 200 * 1024;
 
 type ArtificialEventTargetValue = {
   options: { FILE: File }[];
@@ -59,17 +60,18 @@ function NewProjectAvatar({ onAvatarChange }: NewProjectAvatarProps) {
     setAlert(null);
   }, [value.selected]);
 
-
   // format: image/png, image/jpeg, image/gif, image/tiff
   return (
-    <div className="mb-3">
+    <div className="mb-4">
       <ImageInput
         name="project-avatar"
         label="Project Avatar"
         value={value}
         help={null}
         maxSize={PROJECT_AVATAR_MAX_SIZE}
+        expectedFinalSize={DESIRABLE_FINAL_IMAGE_SIZE}
         alert={alert}
+        color="green"
         modes={[ImageInputMode.FILE]}
         format="image/png,image/jpeg,image/gif,image/tiff"
         disabled={false}
@@ -81,4 +83,4 @@ function NewProjectAvatar({ onAvatarChange }: NewProjectAvatarProps) {
 }
 
 export default NewProjectAvatar;
-export { PROJECT_AVATAR_MAX_SIZE };
+export { PROJECT_AVATAR_MAX_SIZE, DESIRABLE_FINAL_IMAGE_SIZE };

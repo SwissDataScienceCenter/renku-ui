@@ -21,14 +21,22 @@ interface ProjectConfig {
   gitUrl: string;
 }
 
+interface SessionConfig {
+  targetServer: string;
+}
+
 interface Display {
   modals: {
     ssh: {
       show: boolean;
       projectPath: string;
       gitUrl: string;
-    }
-  },
+    };
+    sessionLogs: {
+      show: boolean;
+      targetServer: string;
+    };
+  };
 }
 
-export type { Display, ProjectConfig };
+export type { Display, ProjectConfig, SessionConfig };

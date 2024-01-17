@@ -73,7 +73,6 @@
   }
 }
 
-
 .rk-tree-details {
   .rk-tree-details-back {
     position: absolute;
@@ -83,8 +82,8 @@
 
     .rk-tree-details-back-container {
       border-radius: 1000px;
-        background-color: rgba(255, 255, 255, 0.8);
-        padding: 5px 10px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 5px 10px;
     }
   }
 
@@ -117,7 +116,8 @@
     }
   }
 
-  @media (max-width: 768px) { //md-size
+  @media (max-width: 768px) {
+    //md-size
     &--shrunk {
       border-radius: 8px;
     }
@@ -131,7 +131,8 @@
     padding-right: 1rem;
   }
 }
-@media (max-width: 768px) { //md-size
+@media (max-width: 768px) {
+  //md-size
   .rk-tree-table {
     td.short {
       white-space: normal;
@@ -143,12 +144,13 @@
   background-color: white;
   border-radius: 0 8px 8px 0;
 
-  & h3{
+  & h3 {
     font-size: 20px;
   }
 }
 
-@media (max-width: 768px) { //md-size
+@media (max-width: 768px) {
+  //md-size
   .rk-tree-details-container {
     border-radius: 8px;
     margin-top: 15px;

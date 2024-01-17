@@ -1,6 +1,6 @@
 export interface CheckURLResponse {
-    isIframeValid: boolean;
-    url: string;
-    error?: string;
-    detail?: string;
+  isIframeValid: boolean;
+  url: string;
+  error?: string;
+  detail?: string;
 }

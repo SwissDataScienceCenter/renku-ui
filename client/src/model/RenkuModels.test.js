@@ -1,5 +1,7 @@
 /* eslint-disable */
 
+import { describe, expect, it } from "vitest";
+
 import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
 // import { Project, projectSchema } from "./RenkuModels";
@@ -10,14 +12,18 @@ const model = new StateModel(globalSchema);
 describe("fetch project", () => {
   it("fetches project", () => {
     const projectId = 3;
-    const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
+    const projectCoordinator = new ProjectCoordinator(
+      client,
+      model.subModel("project")
+    );
     projectCoordinator.fetchProject(client, projectId).then(() => {
       expect(projectCoordinator.get("metadata.id")).toEqual(projectId);
-      expect(projectCoordinator.get("metadata.title")).toEqual("A-first-project");
+      expect(projectCoordinator.get("metadata.title")).toEqual(
+        "A-first-project"
+      );
     });
   });
 });
-
 
 // TODO: CREATE API RELATED TESTS
 //

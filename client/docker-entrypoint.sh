@@ -21,10 +21,13 @@ export NGINX_PATH=/usr/share/nginx/html
 echo "Config file contains the following settings:"
 echo "==================================================="
 echo " UI_VERSION=${UI_VERSION}"
+echo " RENKU_CHART_VERSION=${RENKU_CHART_VERSION}"
 echo " UI_SHORT_SHA=${RENKU_UI_SHORT_SHA}"
 echo " GATEWAY_URL=${GATEWAY_URL:-http://gateway.renku.build}"
 echo " UISERVER_URL=${UISERVER_URL:-http://uiserver.renku.build}"
 echo " BASE_URL=${BASE_URL:-http://renku.build}"
+echo " KEYCLOAK_REALM=${KEYCLOAK_REALM:-Renku}"
+echo " DASHBOARD_MESSAGE=${DASHBOARD_MESSAGE}"
 echo " SENTRY_URL=${SENTRY_URL}"
 echo " SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
 echo " SENTRY_SAMPLE_RATE=${SENTRY_SAMPLE_RATE}"
@@ -36,7 +39,9 @@ echo " PRIVACY_BANNER_LAYOUT=${PRIVACY_BANNER_LAYOUT}"
 echo " TEMPLATES=${TEMPLATES}"
 echo " PREVIEW_THRESHOLD=${PREVIEW_THRESHOLD}"
 echo " UPLOAD_THRESHOLD=${UPLOAD_THRESHOLD}"
-echo " HOMEPAGE": "${HOMEPAGE}"
+echo " HOMEPAGE=${HOMEPAGE}"
+echo " CORE_API_VERSION_CONFIG=${CORE_API_VERSION_CONFIG}"
+echo " USER_PREFERENCES_MAX_PINNED_PROJECTS=${USER_PREFERENCES_MAX_PINNED_PROJECTS}"
 echo "==================================================="
 
 echo "Privacy file contains the following markdown (first 5 lines):"
@@ -47,11 +52,13 @@ echo "==================================================="
 tee > "${NGINX_PATH}/config.json" << EOF
 {
   "UI_VERSION": "${UI_VERSION}",
+  "RENKU_CHART_VERSION": "${RENKU_CHART_VERSION}",
   "UI_SHORT_SHA": "${RENKU_UI_SHORT_SHA}",
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",
   "UISERVER_URL": "${UISERVER_URL:-http://uiserver.renku.build}",
-  "WELCOME_PAGE": "${WELCOME_PAGE}",
+  "KEYCLOAK_REALM": "${KEYCLOAK_REALM:-Renku}",
+  "DASHBOARD_MESSAGE": ${DASHBOARD_MESSAGE},
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "SENTRY_SAMPLE_RATE": "${SENTRY_SAMPLE_RATE}",
@@ -64,28 +71,14 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
   "UPLOAD_THRESHOLD": ${UPLOAD_THRESHOLD},
   "STATUSPAGE_ID": "${STATUSPAGE_ID}",
-  "HOMEPAGE": ${HOMEPAGE}
+  "HOMEPAGE": ${HOMEPAGE},
+  "CORE_API_VERSION_CONFIG": ${CORE_API_VERSION_CONFIG},
+  "USER_PREFERENCES_MAX_PINNED_PROJECTS": ${USER_PREFERENCES_MAX_PINNED_PROJECTS}
 }
 EOF
 echo "config.json created in ${NGINX_PATH}"
 
-tee > "${NGINX_PATH}/sitemap.xml" << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${BASE_URL}</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/projects</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/datasets</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/help</loc>
-  </url>
-</urlset>
-EOF
+/app/scripts/generate_sitemap.sh "${BASE_URL}" "${NGINX_PATH}/sitemap.xml"
 echo "sitemap.xml created in ${NGINX_PATH}"
 
 tee > "${NGINX_PATH}/robots.txt" << EOF

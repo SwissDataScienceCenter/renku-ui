@@ -15,34 +15,61 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from "react";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 
-import { ExternalLink } from "../../../utils/components/ExternalLinks";
-import { ThrottledTooltip } from "../../../utils/components/Tooltip";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import { ThrottledTooltip } from "../../../components/Tooltip";
 import { Docs } from "../../../utils/constants/Docs";
+import { WarnAlert } from "../../../components/Alert";
 
-function KgActivationHeader() {
+interface KgActivationHeaderProps {
+  isActivationSlow: boolean | null;
+}
+function KgActivationHeader({ isActivationSlow }: KgActivationHeaderProps) {
+  const showWarning = isActivationSlow === true;
   const docKg = Docs.rtdTopicGuide("miscellaneous/knowledge-graph.html");
   const tooltip = (
     <>
-      The Renku Knowledge Graph captures the relationships between projects, datasets, metadata, and more.<br/>
-      <ExternalLink url={docKg} size="sm" role="link" className="link-rk-white"
-        title="Learn more about the Renku Knowledge Graph" />
+      Indexing captures the relationships between projects, datasets, metadata,
+      and more.
+      <br />
+      <ExternalLink
+        url={docKg}
+        size="sm"
+        role="link"
+        className="link-rk-white"
+        title="Learn more about indexing"
+      />
     </>
   );
 
   return (
     <>
       <h1 className="activationHeader d-flex gap-2 my-3 align-items-center">
-        Projects Inactive in the Knowledge Graph
-        <FontAwesomeIcon id="activation-question" className="cursor-pointer" size="sm" icon={faQuestionCircle} />
+        Projects requiring indexing
+        <FontAwesomeIcon
+          id="activation-question"
+          className="cursor-pointer"
+          size="sm"
+          icon={faQuestionCircle}
+        />
       </h1>
       <ThrottledTooltip
         target="activation-question"
         autoHide={false}
-        tooltip={tooltip} />
+        tooltip={tooltip}
+      />
+      {showWarning && (
+        <WarnAlert timeout={0} dismissible={false}>
+          <p>
+            <strong>Indexing is progressing slowly.</strong> Refresh this page
+            or check the project later to see if indexing has completed, or
+            contact us for help.
+          </p>
+        </WarnAlert>
+      )}
     </>
   );
 }

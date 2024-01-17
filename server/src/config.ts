@@ -27,7 +27,7 @@ const SERVER = {
   serverUiVersion: process.env.UI_SERVER_VERSION || "unknown",
   proxyTimeout: 600 * 1000, // in milliseconds
   wsSuffix: "/ws",
-  keepCookies: JSON.parse(process.env.SERVER_KEEP_COOKIES || "[]")
+  keepCookies: JSON.parse(process.env.SERVER_KEEP_COOKIES || "[]"),
 };
 
 // Http url for the k8s gateway service - not full external url of the gateway
@@ -46,12 +46,16 @@ const DEPLOYMENT = {
 };
 
 const SENTRY = {
-  enabled: [true, "true"].includes(process.env.SENTRY_ENABLED),
+  enabled: ["true", "1"].includes(
+    (process.env.SENTRY_ENABLED ?? "").toLowerCase()
+  ),
   url: process.env.SENTRY_URL || undefined,
   namespace: process.env.SENTRY_NAMESPACE || undefined,
   telepresence: !!process.env.TELEPRESENCE,
   sampleRate: parseFloat(process.env.SENTRY_TRACE_RATE) || 0,
-  debugMode: [true, "true"].includes(process.env.SENTRY_DEBUG),
+  debugMode: ["true", "1"].includes(
+    (process.env.SENTRY_DEBUG ?? "").toLowerCase()
+  ),
 };
 
 const AUTHENTICATION = {
@@ -93,17 +97,27 @@ const DATA = {
 };
 
 const WEBSOCKET = {
-  enabled: convertType(process.env.WEBSOCKET_ENABLED) || true,
+  enabled: ["true", "1"].includes(
+    (process.env.WEBSOCKET_ENABLED ?? "").toLowerCase()
+  ),
   shortIntervalSec: 5, // ? in seconds
   longIntervalSec: 180, // ? in seconds
   delayStartSec: 3, // ? in seconds
-  timeoutActivationStatus: 120 // in minutes
+  timeoutActivationStatus: 120, // in minutes
+};
+
+const PROMETHEUS = {
+  enabled: ["true", "1"].includes(
+    (process.env.PROMETHEUS_ENABLED ?? "").toLowerCase()
+  ),
+  path: "/metrics",
 };
 
 const config = {
   auth: AUTHENTICATION,
   data: DATA,
   deployment: DEPLOYMENT,
+  prometheus: PROMETHEUS,
   redis: REDIS,
   routes: ROUTES,
   sentry: SENTRY,

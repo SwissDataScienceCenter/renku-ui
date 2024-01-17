@@ -28,7 +28,8 @@ class APIError extends BaseError {
   constructor(
     name: string,
     httpCode = HttpStatusCode.INTERNAL_SERVER,
-    description = "internal server error") {
+    description = "internal server error"
+  ) {
     super(name, httpCode, description);
   }
 }
