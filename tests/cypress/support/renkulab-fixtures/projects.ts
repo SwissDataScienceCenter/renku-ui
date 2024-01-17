@@ -410,9 +410,24 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const projectBranchesResponse = { fixture: projectBranches.fixture };
       cy.intercept(
         "GET",
+        "/ui-server/api/projects/*/repository/branches?",
+        projectBranchesResponse
+      ).as(projectBranches.name);
+      cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/branches?page=1&per_page=100",
         projectBranchesResponse
       ).as(projectBranches.name);
+      // The session start screen also requests the data for the default branch
+      cy.fixture(projectBranches.fixture)
+        .then((branches: unknown[]) => {
+          cy.intercept(
+            "GET",
+            "/ui-server/api/projects/*/repository/branches/master",
+            branches[0]
+          );
+        })
+        .as(projectBranches.name);
       // Intercepting with swapped pagination params is necessary because of the legacy API client
       cy.intercept(
         "GET",
@@ -421,6 +436,11 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       ).as(projectBranches.name);
 
       const projectCommitsResponse = { fixture: projectCommits.fixture };
+      cy.intercept(
+        "GET",
+        "/ui-server/api/projects/*/repository/commits?ref_name=master",
+        projectCommitsResponse
+      ).as(projectCommits.name);
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/commits?ref_name=master&page=1&per_page=100",

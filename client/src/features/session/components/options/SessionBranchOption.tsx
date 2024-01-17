@@ -19,8 +19,16 @@
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { ChangeEvent, useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import Select, {
+  ClassNamesConfig,
+  GroupBase,
+  MenuListProps,
+  SelectComponentsConfig,
+  SingleValue,
+  components,
+} from "react-select";
 import {
   Button,
   FormGroup,
@@ -39,11 +47,18 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
-import { useGetAllRepositoryBranchesQuery } from "../../../project/projectGitLab.api";
+import type { GitLabRepositoryBranch } from "../../../project/GitLab.types";
+import projectGitLabApi, {
+  useGetRepositoryBranchQuery,
+  useGetRepositoryBranchesQuery,
+  useRefetchBranchesMutation,
+} from "../../../project/projectGitLab.api";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import { setBranch } from "../../startSessionOptionsSlice";
 
 import styles from "./SessionBranchOption.module.scss";
+import { PaginatedState } from "./fetchMore.types";
+import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
 
 export default function SessionBranchOption() {
   const defaultBranch = useLegacySelector<string>(
@@ -57,34 +72,89 @@ export default function SessionBranchOption() {
   );
 
   const {
-    data: branches,
-    isError,
-    isFetching,
-    refetch,
-  } = useGetAllRepositoryBranchesQuery(
+    data: defaultBranchData,
+    isError: defaultBranchDataIsError,
+    isFetching: defaultBranchDataIsFetching,
+    requestId: defaultBranchRequestId,
+  } = useGetRepositoryBranchQuery(
     {
-      projectId: `${gitLabProjectId ?? 0}`,
+      projectId: `${gitLabProjectId}`,
+      branch: defaultBranch,
     },
     { skip: !gitLabProjectId }
   );
+  const {
+    data: branchesFirstPage,
+    isError: branchesFirstPageIsError,
+    isFetching: branchesFirstPageIsFetching,
+    requestId: branchesFirstPageRequestId,
+  } = useGetRepositoryBranchesQuery(
+    {
+      projectId: `${gitLabProjectId}`,
+    },
+    { skip: !gitLabProjectId }
+  );
+
+  const initialBranchList = useMemo(() => {
+    if (defaultBranchData == null || branchesFirstPage == null) {
+      return undefined;
+    }
+    return [
+      defaultBranchData,
+      ...branchesFirstPage.data.filter(({ default: isDefault }) => !isDefault),
+    ];
+  }, [branchesFirstPage, defaultBranchData]);
+  const isError = defaultBranchDataIsError || branchesFirstPageIsError;
+  const isFetching = defaultBranchDataIsFetching || branchesFirstPageIsFetching;
+
+  const [
+    { data: allBranches, fetchedPages, hasMore, currentRequestId },
+    setState,
+  ] = useState<PaginatedState<GitLabRepositoryBranch>>({
+    data: undefined,
+    fetchedPages: 0,
+    hasMore: true,
+    currentRequestId: "",
+  });
+
+  const [fetchBranchesPage, branchesPageResult] =
+    projectGitLabApi.useLazyGetRepositoryBranchesQuery();
+  const onFetchMore = useCallback(() => {
+    if (!gitLabProjectId) {
+      return;
+    }
+    const request = fetchBranchesPage({
+      projectId: `${gitLabProjectId}`,
+      page: fetchedPages + 1,
+      perPage: branchesFirstPage?.pagination.perPage,
+    });
+    setState((prevState) => ({
+      ...prevState,
+      currentRequestId: request.requestId,
+    }));
+  }, [
+    branchesFirstPage?.pagination.perPage,
+    fetchBranchesPage,
+    fetchedPages,
+    gitLabProjectId,
+  ]);
 
   const currentBranch = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.branch
   );
 
+  // Handle forced refresh
+  const [refetch] = useRefetchBranchesMutation();
+
   const dispatch = useAppDispatch();
   const onChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const branchName = event.target.value;
-      const branch = branches?.find((branch) => branch.name === branchName);
-      if (branch != null) {
-        dispatch(setBranch(branch.name));
+    (newValue: SingleValue<GitLabRepositoryBranch>) => {
+      if (newValue?.name) {
+        dispatch(setBranch(newValue.name));
       }
     },
-    [branches, dispatch]
+    [dispatch]
   );
-
-  useDefaultBranchOption({ branches, defaultBranch });
 
   // Branch filter
   const [includeMergedBranches, setIncludeMergedBranches] =
@@ -94,11 +164,63 @@ export default function SessionBranchOption() {
       return !value;
     });
   }, []);
-  const filteredBranches = includeMergedBranches
-    ? branches
-    : branches?.filter(
-        (branch) => !branch.merged || branch.name === currentBranch
-      );
+  const filteredBranches = useMemo(
+    () =>
+      includeMergedBranches
+        ? allBranches
+        : allBranches?.filter(
+            (branch) => !branch.merged || branch.name === currentBranch
+          ),
+    [allBranches, currentBranch, includeMergedBranches]
+  );
+
+  useDefaultBranchOption({
+    branches: initialBranchList,
+    defaultBranch,
+  });
+
+  useEffect(() => {
+    if (initialBranchList == null || branchesFirstPage == null) {
+      return;
+    }
+    setState({
+      data: initialBranchList,
+      fetchedPages: branchesFirstPage.pagination.currentPage ?? 0,
+      hasMore: !!branchesFirstPage.pagination.nextPage,
+      currentRequestId: "",
+    });
+  }, [
+    branchesFirstPage,
+    initialBranchList,
+    defaultBranchRequestId,
+    branchesFirstPageRequestId,
+  ]);
+
+  useEffect(() => {
+    if (
+      allBranches == null ||
+      branchesPageResult.currentData == null ||
+      currentRequestId !== branchesPageResult.requestId
+    ) {
+      return;
+    }
+    setState({
+      data: [
+        ...allBranches,
+        ...branchesPageResult.currentData.data.filter(
+          ({ default: isDefault }) => !isDefault
+        ),
+      ],
+      fetchedPages: branchesPageResult.currentData.pagination.currentPage ?? 0,
+      hasMore: !!branchesPageResult.currentData.pagination.nextPage,
+      currentRequestId: "",
+    });
+  }, [
+    allBranches,
+    branchesPageResult.currentData,
+    branchesPageResult.requestId,
+    currentRequestId,
+  ]);
 
   if (isFetching) {
     return (
@@ -111,7 +233,7 @@ export default function SessionBranchOption() {
     );
   }
 
-  if (!branches || !filteredBranches || isError) {
+  if (!initialBranchList || !filteredBranches || isError) {
     return (
       <div className="field-group">
         <div className="form-label">
@@ -124,7 +246,7 @@ export default function SessionBranchOption() {
     );
   }
 
-  if (branches.length == 0) {
+  if (initialBranchList.length == 0) {
     return (
       <div className="field-group">
         <div className="form-label">
@@ -158,7 +280,7 @@ export default function SessionBranchOption() {
     );
   }
 
-  if (branches.length == 1) {
+  if (initialBranchList.length == 1) {
     return (
       <div className="field-group">
         <Label for="session-branch-option">
@@ -189,19 +311,14 @@ export default function SessionBranchOption() {
           toggleIncludeMergedBranches={toggleIncludeMergedBranches}
         />
       </Label>
-      <Input
-        id="session-branch-option"
+      <BranchSelector
+        branches={filteredBranches}
+        currentBranch={currentBranch}
+        hasMore={hasMore}
+        isFetchingMore={branchesPageResult.isFetching}
         onChange={onChange}
-        type="select"
-        value={currentBranch}
-        className={cx(styles.formSelect)}
-      >
-        {filteredBranches.map(({ name }) => (
-          <option key={name} value={name}>
-            {name}
-          </option>
-        ))}
-      </Input>
+        onFetchMore={onFetchMore}
+      />
     </div>
   );
 }
@@ -275,4 +392,130 @@ function BranchOptionsButton({
       </UncontrolledPopover>
     </>
   );
+}
+
+interface BranchSelectorProps {
+  branches: GitLabRepositoryBranch[];
+  currentBranch?: string;
+  hasMore?: boolean;
+  isFetchingMore?: boolean;
+  onChange?: (newValue: SingleValue<GitLabRepositoryBranch>) => void;
+  onFetchMore?: () => void;
+}
+
+function BranchSelector({
+  branches,
+  currentBranch,
+  hasMore,
+  isFetchingMore,
+  onChange,
+  onFetchMore,
+}: BranchSelectorProps) {
+  const currentValue = useMemo(
+    () => branches.find(({ name }) => name === currentBranch),
+    [branches, currentBranch]
+  );
+
+  const components = useMemo(
+    () => ({
+      ...selectComponents,
+      MenuList: CustomMenuList({ hasMore, isFetchingMore, onFetchMore }),
+    }),
+    [hasMore, isFetchingMore, onFetchMore]
+  );
+
+  return (
+    <Select
+      options={branches}
+      value={currentValue}
+      unstyled
+      getOptionValue={(option) => option.name}
+      getOptionLabel={(option) => option.name}
+      onChange={onChange}
+      classNames={selectClassNames}
+      components={components}
+      isClearable={false}
+      isSearchable={false}
+      isLoading={isFetchingMore}
+    />
+  );
+}
+
+const selectClassNames: ClassNamesConfig<GitLabRepositoryBranch, false> = {
+  control: ({ menuIsOpen }) =>
+    cx(
+      menuIsOpen ? "rounded-top" : "rounded",
+      "border",
+      "py-2",
+      styles.control,
+      menuIsOpen && styles.controlIsOpen
+    ),
+  dropdownIndicator: () => cx("pe-3"),
+  menu: () =>
+    cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
+  menuList: () => cx("d-grid"),
+  option: ({ isFocused, isSelected }) =>
+    cx(
+      "d-flex",
+      "px-3",
+      "py-1",
+      styles.option,
+      isFocused && styles.optionIsFocused,
+      !isFocused && isSelected && styles.optionIsSelected
+    ),
+  placeholder: () => cx("px-3"),
+  singleValue: () => cx("d-flex", "px-3"),
+};
+
+const selectComponents: SelectComponentsConfig<
+  GitLabRepositoryBranch,
+  false,
+  GroupBase<GitLabRepositoryBranch>
+> = {
+  DropdownIndicator: (props) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        <ChevronDown size="20" />
+      </components.DropdownIndicator>
+    );
+  },
+};
+
+interface CustomMenuListProps {
+  hasMore?: boolean;
+  isFetchingMore?: boolean;
+  onFetchMore?: () => void;
+}
+
+function CustomMenuList({
+  hasMore,
+  isFetchingMore,
+  onFetchMore,
+}: CustomMenuListProps) {
+  return function CustomMenuListInner(
+    props: MenuListProps<GitLabRepositoryBranch, false>
+  ) {
+    return (
+      <components.MenuList {...props}>
+        {props.children}
+        {hasMore && (
+          <div className={cx("d-flex", "px-3", "pt-1")}>
+            <Button
+              className={cx("btn-outline-rk-green")}
+              disabled={isFetchingMore}
+              onClick={onFetchMore}
+              size="sm"
+            >
+              {isFetchingMore ? (
+                <Loader className="me-2" inline size={16} />
+              ) : (
+                <ThreeDots className={cx("bi", "me-2")} />
+              )}
+              Fetch more
+            </Button>
+          </div>
+        )}
+      </components.MenuList>
+    );
+  };
 }
