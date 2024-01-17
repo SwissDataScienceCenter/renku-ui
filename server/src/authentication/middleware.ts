@@ -85,10 +85,8 @@ function renkuAuth(authenticator: IAuthenticator) {
       next();
     }
 
-    if (tokens)
-      addAuthToken(req, tokens.access_token);
-    else
-      addAnonymousToken(req, sessionId);
+    if (tokens) addAuthToken(req, tokens.access_token);
+    else addAnonymousToken(req, sessionId);
 
     next();
   };

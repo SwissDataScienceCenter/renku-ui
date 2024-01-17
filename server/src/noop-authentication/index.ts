@@ -34,7 +34,11 @@ class NoOpAuthenticator {
   }
 
   // eslint-disable-next-line no-unused-vars
-  async refreshTokens(sessionId: string, tokens?: TokenSet, removeIfFailed?: boolean): Promise<TokenSet> {
+  async refreshTokens(
+    sessionId: string,
+    tokens?: TokenSet,
+    removeIfFailed?: boolean
+  ): Promise<TokenSet> {
     return new TokenSet({ access_token: "do-not-inject" });
   }
 
