@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import type { EntityType } from "../../features/kgSearch/KgSearch";
+import type { EntityType } from "../../features/kgSearch/KgSearch.types";
 import type { EntityCreator } from "../entities/Creators";
 import type { Visibilities } from "../visibility/Visibility";
 

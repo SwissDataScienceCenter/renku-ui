@@ -33,8 +33,8 @@ export function Dashboard() {
       <h1 data-cy="dashboard-title">Renku Dashboard - {user.data.name}</h1>
       <DashboardMessage />
       <ProjectsInactiveKGWarning />
-      <ProjectsDashboard userName={user.data.name} />
-      <DatasetDashboard userName={user.data.name} />
+      <ProjectsDashboard />
+      <DatasetDashboard />
       <SshModal />
     </div>
   );
