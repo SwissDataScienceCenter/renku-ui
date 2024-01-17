@@ -44,6 +44,7 @@ import {
   getUpdatedDatasetImage,
 } from "./DatasetFunctions";
 import { getEntityImageUrl } from "../utils/helpers/HelperFunctions";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -405,6 +406,10 @@ function getLinksDatasetHeader(projects) {
 
 export default function DatasetView(props) {
   const [deleteDatasetModalOpen, setDeleteDatasetModalOpen] = useState(false);
+  const { defaultBranch } = useLegacySelector(
+    (state) => state.stateModel.project.metadata
+  );
+
   const dataset = props.dataset;
   // We only get the locked prop if we are inside a project
   const locked = props.insideProject && props.lockStatus?.locked === true;
@@ -523,7 +528,7 @@ export default function DatasetView(props) {
           projectId={props.projectId}
           description={dataset.description}
           insideProject={props.insideProject}
-          defaultBranch={props.defaultBranch}
+          defaultBranch={props.defaultBranch ?? defaultBranch}
         />
         <DisplayFiles
           projectsUrl={props.projectsUrl}
@@ -587,6 +592,7 @@ export default function DatasetView(props) {
             setModalOpen={setDeleteDatasetModalOpen}
             user={props.user}
             versionUrl={props.versionUrl}
+            branch={defaultBranch}
           />
         ) : null}
       </Col>

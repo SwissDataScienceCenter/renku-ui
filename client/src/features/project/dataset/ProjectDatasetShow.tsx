@@ -38,7 +38,8 @@ type IDatasetCoordinator = {
   fetchDatasetFilesFromCoreService: (
     id: string,
     httpProjectUrl: string,
-    versionUrl: string
+    versionUrl: string,
+    branch: string
   ) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get(key: string): any;
@@ -157,6 +158,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
       git_url: props.externalUrl,
       slug: datasetSlug ?? "",
       metadataVersion,
+      branch: defaultBranch,
     },
     { skip: !datasetSlug }
   );

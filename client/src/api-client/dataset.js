@@ -114,7 +114,12 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  client.datasetImport = (projectUrl, datasetUrl, versionUrl = null) => {
+  client.datasetImport = (
+    projectUrl,
+    datasetUrl,
+    versionUrl = null,
+    branch
+  ) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -127,6 +132,7 @@ export default function addDatasetMethods(client) {
       body: JSON.stringify({
         dataset_uri: datasetUrl,
         git_url: projectUrl,
+        branch,
       }),
     });
   };
@@ -134,14 +140,14 @@ export default function addDatasetMethods(client) {
   client.listProjectDatasetsFromCoreService = (
     git_url,
     versionUrl = null,
-    defaultBranch
+    branch
   ) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
 
     const url = client.versionedCoreUrl("datasets.list", versionUrl);
-    const queryParams = { git_url };
+    const queryParams = { git_url, branch };
 
     return client
       .clientFetch(url, {
@@ -152,7 +158,7 @@ export default function addDatasetMethods(client) {
       .then((response) => {
         if (response.data.result && response.data.result.datasets.length > 0) {
           response.data.result.datasets.map((d) =>
-            addMarqueeImageToDataset(git_url, cleanDatasetId(d), defaultBranch)
+            addMarqueeImageToDataset(git_url, cleanDatasetId(d), branch)
           );
         }
 
@@ -166,14 +172,15 @@ export default function addDatasetMethods(client) {
   client.fetchDatasetFilesFromCoreService = (
     slug,
     git_url,
-    versionUrl = null
+    versionUrl = null,
+    branch
   ) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
 
     const url = client.versionedCoreUrl("datasets.files_list", versionUrl);
-    const queryParams = { git_url, slug };
+    const queryParams = { git_url, slug, branch };
 
     const filesPromise = client
       .clientFetch(url, {

@@ -147,6 +147,7 @@ export interface DeleteDatasetProps extends CoreVersionUrl {
   modalOpen: boolean;
   projectPathWithNamespace: string;
   setModalOpen: (modalOpen: boolean) => void;
+  branch: string;
 }
 
 function DeleteDataset(props: DeleteDatasetProps) {
@@ -196,6 +197,7 @@ function DeleteDataset(props: DeleteDatasetProps) {
       gitUrl: props.externalUrl,
       metadataVersion: props.metadataVersion,
       slug: props.dataset.slug ?? "",
+      branch: props.branch,
     });
   };
 

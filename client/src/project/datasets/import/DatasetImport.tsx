@@ -48,7 +48,8 @@ type DatasetImportClient = {
   datasetImport: (
     httpProjectUrl: string,
     uri: string,
-    versionUrl: string
+    versionUrl: string,
+    branch: string
   ) => Promise<DatasetImportResult>;
   getJobStatus: (job_id: string, versionUrl: string) => Promise<JobStatus>;
 };
@@ -197,6 +198,7 @@ function DatasetImportForm(
 
 type ImportDatasetArgs = {
   client: DatasetImportClient;
+  branch: string;
   externalUrl: string;
   formValues: DatasetInputFormFields;
   handlers: {
@@ -218,11 +220,13 @@ async function importDatasetAndWaitForResult({
   handlers,
   redirectUser,
   versionUrl,
+  branch,
 }: ImportDatasetArgs) {
   const response = await client.datasetImport(
     externalUrl,
     formValues.uri,
-    versionUrl
+    versionUrl,
+    branch
   );
   if (response.data.error !== undefined) {
     const error = response.data.error;
@@ -296,7 +300,7 @@ async function importDatasetAndWaitForResult({
 }
 
 function DatasetImportContainer(
-  props: DatasetImportProps & { versionUrl: string }
+  props: DatasetImportProps & { branch: string; versionUrl: string }
 ) {
   const {
     externalUrl,
@@ -344,6 +348,7 @@ function DatasetImportContainer(
       };
       try {
         await importDatasetAndWaitForResult({
+          branch: props.branch,
           client,
           externalUrl,
           formValues,
@@ -359,6 +364,7 @@ function DatasetImportContainer(
     [
       externalUrl,
       client,
+      props.branch,
       redirectUser,
       setServerErrors,
       setSubmitLoader,
@@ -449,7 +455,13 @@ function DatasetImport(props: DatasetImportProps) {
     );
   }
 
-  return <DatasetImportContainer {...props} versionUrl={versionUrl} />;
+  return (
+    <DatasetImportContainer
+      {...props}
+      branch={defaultBranch}
+      versionUrl={versionUrl}
+    />
+  );
 }
 
 export default DatasetImport;
