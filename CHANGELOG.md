@@ -1,5 +1,11 @@
 # Changes
 
+## [3.18.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.18.0...3.18.1) (2024-01-17)
+
+### Bug Fixes
+
+- Use the default branch on all the core datasets APIs ([#2972](https://github.com/SwissDataScienceCenter/renku-ui/issues/2972))
+
 ## [3.18.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.17.1...3.18.0) (2024-01-15)
 
 ### Features
