@@ -17,9 +17,11 @@
  */
 
 import { TokenSet } from "openid-client";
+import { Storage } from "./storage";
 
 interface IAuthenticator {
   ready: boolean
+  storage: Storage
   getTokens: (sessionId: string, autoRefresh: boolean) => Promise<TokenSet>
   refreshTokens: (sessionId: string, tokens?: TokenSet, removeIfFailed?: boolean) => Promise<TokenSet>
   init: () => Promise<boolean>

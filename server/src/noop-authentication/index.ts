@@ -17,6 +17,7 @@
  */
 
 import { TokenSet } from "openid-client";
+import { RedisStorage } from "../storage/RedisStorage";
 
 /**
  * NoOpAuthenticator is used to skip any authetication or header injection/modification
@@ -25,6 +26,7 @@ import { TokenSet } from "openid-client";
  */
 class NoOpAuthenticator {
   ready = true;
+  storage = new RedisStorage();
 
   // eslint-disable-next-line no-unused-vars
   async getTokens(sessionId: string, autoRefresh: boolean): Promise<TokenSet> {

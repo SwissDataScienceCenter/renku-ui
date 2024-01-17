@@ -24,6 +24,7 @@ import config from "../config";
 import logger from "../logger";
 import { IAuthenticator } from "../interfaces";
 import { renkuAuth } from "../authentication/middleware";
+import { getCookieValueByName, serializeCookie } from "../utils";
 import { validateCSP } from "../utils/url";
 import { lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
 import { lastSearchQueriesMiddleware } from "../utils/middlewares/lastSearchQueriesMiddleware";

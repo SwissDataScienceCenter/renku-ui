@@ -19,12 +19,8 @@
 import ws from "ws";
 import * as SentryLib from "@sentry/node";
 
-import config from "../config";
-import logger from "../logger";
-import { checkWsClientMessage, WsMessage, WsClientMessage } from "./WsMessages";
-import { Storage } from "../storage";
-import { IAuthenticator } from "../interfaces";
 import APIClient from "../api-client";
+import { IAuthenticator } from "../interfaces";
 import { wsRenkuAuth } from "../authentication/middleware";
 import config from "../config";
 import logger from "../logger";
