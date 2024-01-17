@@ -79,11 +79,12 @@ export default function ShowDataset(props) {
 
   // use effect to calculate files
   useEffect(() => {
-    const fetchFiles = (slug, externalUrl, versionUrl) => {
+    const fetchFiles = (slug, externalUrl, versionUrl, branch) => {
       props.datasetCoordinator.fetchDatasetFilesFromCoreService(
         slug,
         externalUrl,
-        versionUrl
+        versionUrl,
+        branch
       );
     };
 
@@ -100,7 +101,7 @@ export default function ShowDataset(props) {
         backendAvailable &&
         !isFilesFetching
       ) {
-        fetchFiles(dataset?.slug, externalUrl, versionUrl);
+        fetchFiles(dataset?.slug, externalUrl, versionUrl, defaultBranch);
       }
     }
   }, [
@@ -112,6 +113,7 @@ export default function ShowDataset(props) {
     props.datasetCoordinator,
     datasetFiles,
     versionUrl,
+    defaultBranch,
   ]);
 
   const currentDataset = useLegacySelector(
