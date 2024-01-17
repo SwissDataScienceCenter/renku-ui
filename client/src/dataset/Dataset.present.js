@@ -23,6 +23,7 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useHistory } from "react-router-dom";
 import { Button, Card, CardBody, CardHeader, Col, Table } from "reactstrap";
+import { useSelector } from "react-redux";
 
 import { ErrorAlert, WarnAlert } from "../components/Alert";
 import { ExternalLink } from "../components/ExternalLinks";
@@ -44,7 +45,6 @@ import {
   getUpdatedDatasetImage,
 } from "./DatasetFunctions";
 import { getEntityImageUrl } from "../utils/helpers/HelperFunctions";
-import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -406,7 +406,7 @@ function getLinksDatasetHeader(projects) {
 
 export default function DatasetView(props) {
   const [deleteDatasetModalOpen, setDeleteDatasetModalOpen] = useState(false);
-  const { defaultBranch } = useLegacySelector(
+  const { defaultBranch } = useSelector(
     (state) => state.stateModel.project.metadata
   );
 
