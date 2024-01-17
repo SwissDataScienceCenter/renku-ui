@@ -255,7 +255,10 @@ function DatasetAddToProject({
       .datasetImport(
         cleanGitUrl(selectedProject.value),
         dataset.url,
-        versionUrl // this will be undefined for a new project, so the latest version will be used
+        versionUrl, // this will be undefined for a new project, so the latest version will be used
+        selectedProject.default_branch
+          ? selectedProject.default_branch
+          : dstProjectDetails?.branch
       )
       .then((response: DatasetImportResponse) => {
         if (response?.data?.error !== undefined) {

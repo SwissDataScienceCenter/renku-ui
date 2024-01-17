@@ -18,6 +18,11 @@
 - Resize the feedback badge on the session settings page ([#2953](https://github.com/SwissDataScienceCenter/renku-ui/issues/2953))
 - Use password fields for credentials ([#2920](https://github.com/SwissDataScienceCenter/renku-ui/issues/2920))
 
+### BREAKING CHANGES
+
+- Requires renku-notebooks version >= 1.21.0
+- Requires renku-data services version >= 0.4.0
+
 ## [3.17.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.17.0...3.17.1) (2023-11-30)
 
 ### Bug Fixes
