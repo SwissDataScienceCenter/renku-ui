@@ -141,16 +141,16 @@ export const projectCoreApi = createApi({
       },
     }),
     getMigrationStatus: builder.query<MigrationStatus, MigrationStatusParams>({
-      query: (migrationParams) => {
-        const params: { git_url: string; branch?: string } = {
-          git_url: migrationParams.gitUrl,
+      query: ({ branch, gitUrl, apiVersion }) => {
+        const params = {
+          git_url: gitUrl,
+          branch,
         };
-        if (migrationParams.branch) params.branch = migrationParams.branch;
         return {
           url: versionedPathForEndpoint({
             endpoint: "cache.migrations_check",
             metadataVersion: undefined, // ? migrations always uses the last renku metadata version
-            apiVersion: migrationParams.apiVersion,
+            apiVersion,
           }),
           params,
         };

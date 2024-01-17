@@ -40,6 +40,7 @@ import { InfoAlert } from "../Alert";
 import { ExternalDocsLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { CommandCopy } from "../commandCopy/CommandCopy";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 
 const docsIconStyle = {
   showLinkIcon: true,
@@ -71,6 +72,9 @@ function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
 }
 
 function SshModal() {
+  const { defaultBranch } = useLegacySelector(
+    (state) => state.stateModel.project.metadata
+  );
   const displayModal = useAppSelector(({ display }) => display.modals.ssh);
   const dispatch = useAppDispatch();
   const gitUrl = cleanGitUrl(displayModal.gitUrl);
@@ -86,6 +90,7 @@ function SshModal() {
     {
       apiVersion: migrationStatusApiVersion,
       gitUrl,
+      branch: defaultBranch,
     },
     { skip: !gitUrl }
   );

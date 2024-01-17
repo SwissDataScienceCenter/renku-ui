@@ -162,7 +162,7 @@ export interface CoreSectionError extends CoreErrorContent {
 
 export interface MigrationStatusParams
   extends Pick<CoreVersionUrl, "apiVersion"> {
-  branch?: string;
+  branch: string;
   gitUrl: string;
 }
 
@@ -233,7 +233,7 @@ export interface ProjectActivateIndexingResponse {
 
 export interface MigrationStartParams
   extends Pick<CoreVersionUrl, "apiVersion"> {
-  branch?: string;
+  branch: string;
   gitUrl: string;
   scope?: MigrationStartScopes;
 }
