@@ -802,7 +802,8 @@ function StartSessionButton() {
         <div className={cx("text-danger", "pb-2")}>
           <FontAwesomeIcon className="me-1" icon={faExclamationTriangle} />
           Please provide credentials for the following cloud storage
-          {missingCredentialsStorage.length > 1 && "s"}:{" "}
+          {missingCredentialsStorage.length > 1 && "s"} or disable{" "}
+          {missingCredentialsStorage.length > 1 ? "them" : "it"}:{" "}
           <strong>
             {missingCredentialsStorage.map(({ name }) => name).join(", ")}
           </strong>

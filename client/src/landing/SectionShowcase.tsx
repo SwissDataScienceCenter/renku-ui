@@ -27,6 +27,7 @@ import cx from "classnames";
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { CardImg, Col, Row } from "reactstrap";
+// @ts-expect-error ts(7016)
 import { Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -208,7 +209,7 @@ export default function SectionShowcase({
         className={cx("rk-anon-home-section-content", styles.sectionShowcase)}
       >
         <Row className="rk-pt-m">
-          <Col md={10}>
+          <Col className={styles.sectionShowcaseHeader} md={10}>
             <h3 className="text-rk-green">{title}</h3>
             <LazyRenkuMarkdown markdownText={description} />
           </Col>

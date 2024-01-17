@@ -104,7 +104,11 @@ export const projectCoreApi = createApi({
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
       query: (params: GetDatasetFilesParams) => {
-        const queryParams = { git_url: params.git_url, slug: params.slug };
+        const queryParams = {
+          git_url: params.git_url,
+          slug: params.slug,
+          branch: params.branch,
+        };
         const headers = {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -234,7 +238,7 @@ export const projectCoreApi = createApi({
           },
         };
       },
-      invalidatesTags: (result, error, migrationParams) => [
+      invalidatesTags: (_result, _error, migrationParams) => [
         { type: "project-status", id: migrationParams.gitUrl },
       ],
     }),

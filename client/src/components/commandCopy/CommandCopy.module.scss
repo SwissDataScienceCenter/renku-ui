@@ -1,4 +1,4 @@
-@import "~/src/styles/bootstrap/_custom_bootstrap_variables.scss";
+@import "/src/styles/bootstrap/_custom_bootstrap_variables.scss";
 
 .main {
   background: $rk-background-1;
@@ -11,17 +11,17 @@
 
   &:hover,
   &:focus {
-    background-color: $rk-background-0;
-    color: $rk-green-highlight;
+    background-color: $rk-background-0 !important;
+    color: $rk-green-highlight !important;
     border-color: $rk-green !important;
   }
   &:active {
-    color: $rk-white;
-    background-color: $rk-green;
+    color: $rk-white !important;
+    background-color: $rk-green !important;
   }
   &:disabled {
-    color: $rk-green;
-    opacity: 0.6;
+    color: $rk-green !important;
+    opacity: 0.6 !important;
   }
 
   svg {

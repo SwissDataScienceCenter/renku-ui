@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import { CloudStorage } from "../../../project/projectCloudStorage.types";
 import { getProvidedSensitiveFields } from "../../../project/utils/projectCloudStorage.utils";
 import { NotebooksVersion } from "../../../versions/versions.types";
 import { setError } from "../../startSession.slice";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
 import { setCloudStorage } from "../../startSessionOptionsSlice";
+import { CloudStorage } from "../../../project/components/cloudStorage/projectCloudStorage.types";
 
 interface UseDefaultCloudStorageOptionArgs {
   notebooksVersion: NotebooksVersion | undefined;
@@ -36,10 +36,7 @@ export default function useDefaultCloudStorageOption({
 }: UseDefaultCloudStorageOptionArgs): void {
   const dispatch = useAppDispatch();
 
-  const support = useMemo(
-    () => (notebooksVersion?.cloudStorageEnabled.s3 ? "s3" : "azure"),
-    [notebooksVersion?.cloudStorageEnabled]
-  );
+  const supported = !!notebooksVersion?.cloudStorageEnabled;
 
   // Populate session cloud storage from project's settings
   useEffect(() => {
@@ -48,7 +45,7 @@ export default function useDefaultCloudStorageOption({
     }
 
     const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
-      getInitialCloudStorageItem(support)
+      getInitialCloudStorageItem()
     );
 
     const missingCredentialsStorage = initialCloudStorage
@@ -67,19 +64,14 @@ export default function useDefaultCloudStorageOption({
     }
 
     dispatch(setCloudStorage(initialCloudStorage));
-  }, [dispatch, storageForProject, support]);
+  }, [dispatch, storageForProject, supported]);
 }
 
-function getInitialCloudStorageItem(
-  support: "s3" | "azure"
-): (storageDefinition: CloudStorage) => SessionCloudStorage {
+function getInitialCloudStorageItem(): (
+  storageDefinition: CloudStorage
+) => SessionCloudStorage {
   return ({ storage, sensitive_fields }) => ({
-    active:
-      (storage.storage_type === "s3" && support === "s3") ||
-      (storage.storage_type === "azureblob" && support === "azure"),
-    supported:
-      (storage.storage_type === "s3" && support === "s3") ||
-      (storage.storage_type === "azureblob" && support === "azure"),
+    active: true,
     ...(sensitive_fields
       ? {
           sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({

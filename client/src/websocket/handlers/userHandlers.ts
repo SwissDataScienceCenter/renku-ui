@@ -38,7 +38,7 @@ function handleUserInit(
 
 function handleUserUiVersion(
   data: Record<string, unknown>,
-  webSocket: WebSocket,
+  _webSocket: WebSocket,
   model: any
 ): boolean {
   const localModel = model.subModel("environment.uiVersion");
@@ -59,7 +59,7 @@ function handleUserUiVersion(
 
 function handleUserError(
   data: Record<string, unknown>,
-  webSocket: WebSocket,
+  _webSocket: WebSocket,
   model: any
 ): boolean {
   const message = data.message
