@@ -60,8 +60,8 @@ export const datasetsCoreApi = createApi({
       },
     }),
     deleteDataset: builder.mutation<DeleteDataset, DeleteDatasetParams>({
-      query: ({ apiVersion, gitUrl, metadataVersion, slug }) => {
-        const body = { git_url: gitUrl, slug };
+      query: ({ apiVersion, gitUrl, metadataVersion, slug, branch }) => {
+        const body = { git_url: gitUrl, slug, branch };
         return {
           body,
           method: "POST",
