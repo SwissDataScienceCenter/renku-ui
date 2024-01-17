@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { Visibilities } from "../../components/visibility/Visibility";
 import {
   CoreErrorContent,
   CoreVersionUrl,
@@ -25,11 +26,6 @@ import {
   ProjectIndexingStatuses,
   ProjectMigrationLevel,
 } from "./projectEnums";
-import { Visibilities } from "../../components/visibility/Visibility";
-
-type DatasetImage = {
-  _links: { href: string }[];
-};
 
 export interface GetDatasetFilesParams extends CoreVersionUrl {
   git_url: string;
@@ -50,10 +46,6 @@ export interface GetDatasetFilesResponse {
 
 export interface GetDatasetKgParams {
   id: string;
-}
-
-export interface IDatasetFiles {
-  hasPart: { name: string; atLocation: string }[];
 }
 
 export interface Creator {
@@ -95,7 +87,7 @@ export interface DatasetKg extends DatasetAbstract {
   };
 }
 
-interface IDataset extends DatasetAbstract {
+export interface IDataset extends DatasetAbstract {
   created: string;
   exists: boolean;
   insideKg: boolean;
@@ -107,11 +99,9 @@ interface IDataset extends DatasetAbstract {
   branch?: string;
 }
 
-export type IDatasetFiles = {
-  fetched: boolean;
-  fetching: boolean;
-  files: IDatasetFile[];
-};
+export interface IDatasetFiles {
+  hasPart: { name: string; atLocation: string }[];
+}
 
 export type IDatasetFile = {
   path: string;
@@ -365,7 +355,7 @@ export interface EditAvatarProjectParams {
   projectId: number;
 }
 
-interface UpdateProjectResponse {
+export interface UpdateProjectResponse {
   message: string;
   severity: string;
   branch?: string;

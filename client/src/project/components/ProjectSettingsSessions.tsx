@@ -55,7 +55,7 @@ import LoginAlert from "../../components/loginAlert/LoginAlert";
 import {
   ProjectConfig,
   StateModelProject,
-} from "../../features/project/Project";
+} from "../../features/project/project.types";
 import {
   useGetConfigQuery,
   useUpdateConfigMutation,

@@ -40,7 +40,7 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
-import { StateModelProject } from "../../../project/Project";
+import { StateModelProject } from "../../../project/project.types";
 import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
 import {

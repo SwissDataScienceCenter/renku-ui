@@ -19,7 +19,7 @@
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
-import { ImagesLinks } from "../Project";
+import { ImagesLinks } from "../project.types";
 import {
   useGetProjectIndexingStatusQuery,
   useProjectMetadataQuery,

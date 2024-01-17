@@ -38,7 +38,7 @@ import {
 
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { StateModelProject } from "../../Project";
+import { StateModelProject } from "../../project.types";
 import {
   useAddCloudStorageForProjectMutation,
   useGetCloudStorageSchemaQuery,

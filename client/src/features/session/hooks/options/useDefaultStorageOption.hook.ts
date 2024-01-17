@@ -19,7 +19,7 @@
 import { useEffect } from "react";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { ProjectConfig } from "../../../project/Project";
+import { ProjectConfig } from "../../../project/project.types";
 import { setError } from "../../startSession.slice";
 import { setStorage } from "../../startSessionOptionsSlice";
 import { validateStorageAmount } from "../../utils/sessionOptions.utils";

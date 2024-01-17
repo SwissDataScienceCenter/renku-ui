@@ -26,7 +26,10 @@ import { Url } from "./url";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
 import { isEqual } from "lodash";
 import { getEntityImageUrl } from "./HelperFunctions";
-import { DatasetKg, KgMetadataResponse } from "../../features/project/Project";
+import {
+  DatasetKg,
+  KgMetadataResponse,
+} from "../../features/project/project.types";
 import { Visibilities } from "../../components/visibility/Visibility";
 
 const getDatasetIdentifier = (links: KgSearchResultLink[]): string => {

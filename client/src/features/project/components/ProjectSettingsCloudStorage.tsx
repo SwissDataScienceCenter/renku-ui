@@ -28,7 +28,7 @@ import { User } from "../../../model/RenkuModels";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetNotebooksVersionQuery } from "../../versions/versions.api";
 import { NotebooksVersion } from "../../versions/versions.types";
-import { StateModelProject } from "../Project";
+import { StateModelProject } from "../project.types";
 import { useGetCloudStorageForProjectQuery } from "./cloudStorage/projectCloudStorage.api";
 import { CloudStorage } from "./cloudStorage/projectCloudStorage.types";
 import AddOrEditCloudStorageButton from "./cloudStorage/AddOrEditCloudStorageButton";

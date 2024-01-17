@@ -18,7 +18,7 @@
 
 import { useEffect } from "react";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import { ProjectConfig } from "../../../project/Project";
+import { ProjectConfig } from "../../../project/project.types";
 import { setDefaultUrl } from "../../startSessionOptionsSlice";
 
 interface UseDefaultUrlOptionArgs {

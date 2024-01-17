@@ -30,7 +30,7 @@ import {
 
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { Loader } from "../../../components/Loader";
-import type { DatasetCore } from "../../../features/project/Project";
+import type { DatasetCore } from "../../../features/project/project.types";
 import { useDeleteDatasetMutation } from "../../../features/datasets/datasetsCore.api";
 import {
   CoreErrorContent,

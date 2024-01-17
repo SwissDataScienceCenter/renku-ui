@@ -44,7 +44,7 @@ import {
   ResourceClass,
   ResourcePool,
 } from "../../../dataServices/dataServices.types";
-import { ProjectConfig } from "../../../project/Project";
+import { ProjectConfig } from "../../../project/project.types";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { setSessionClass } from "../../startSessionOptionsSlice";

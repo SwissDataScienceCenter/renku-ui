@@ -35,7 +35,7 @@ import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { ProjectConfig } from "../../../project/Project";
+import { ProjectConfig } from "../../../project/project.types";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";

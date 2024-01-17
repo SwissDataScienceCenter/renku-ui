@@ -17,7 +17,7 @@
  */
 
 import { useMemo } from "react";
-import { ProjectConfig } from "../../project/Project";
+import { ProjectConfig } from "../../project/project.types";
 import { useGetConfigQuery } from "../../project/projectCoreApi";
 import { useGetConfigFromRepositoryQuery } from "../../project/projectGitLab.api";
 

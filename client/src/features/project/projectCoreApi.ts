@@ -33,7 +33,7 @@ import type {
   MigrationStatusResponse,
   ProjectConfig,
   ProjectConfigSection,
-} from "./Project";
+} from "./project.types";
 import { MigrationStartScopes } from "./projectEnums";
 import { versionedPathForEndpoint } from "../../utils/helpers/url/versionedUrls";
 import { CoreVersionUrl } from "../../utils/types/coreService.types";

@@ -37,7 +37,7 @@ import {
   CoreSectionError,
   MigrationStatus,
   MigrationStatusDetails,
-} from "../../Project";
+} from "../../project.types";
 import { projectCoreApi } from "../../projectCoreApi";
 import {
   MigrationStartScopes,

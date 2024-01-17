@@ -50,7 +50,7 @@ import {
   useAddFilesMutation,
   usePostDatasetMutation,
 } from "../../datasets/datasetsCore.api";
-import { DatasetCore, IDatasetFiles } from "../../project/Project";
+import { DatasetCore, IDatasetFiles } from "../project.types";
 import type {
   DatasetFormFields,
   DatasetPostClient,
