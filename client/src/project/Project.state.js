@@ -525,31 +525,6 @@ class ProjectCoordinator {
     return null;
   }
 
-  async fetchProjectConfig(repositoryUrl, versionUrl = "", branch = null) {
-    const fetching = this.model.get("config.fetching");
-    if (fetching) return false;
-    let configObject = {
-      error: { $set: {} },
-      fetching: true,
-    };
-    this.model.setObject({ config: configObject });
-    const response = await this.client.getProjectConfig(
-      repositoryUrl,
-      versionUrl,
-      branch
-    );
-    configObject.fetching = false;
-    configObject.fetched = new Date();
-    if (response.data && response.data.error) {
-      configObject.error = response.data.error;
-      this.model.setObject({ config: configObject });
-      return response.data.error;
-    }
-    configObject.data = { $set: response.data.result };
-    this.model.setObject({ config: configObject });
-    return response.data.result;
-  }
-
   fetchReadme(client) {
     // Do not fetch if a fetch is in progress
     if (this.get("transient.requests.readme") === SpecialPropVal.UPDATING)

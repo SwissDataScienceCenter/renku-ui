@@ -1195,6 +1195,7 @@ const UnknownOption = ({
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch: null,
       update: {
         [optionKey]: null,
       },

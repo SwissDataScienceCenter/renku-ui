@@ -46,6 +46,7 @@ export default function usePatchedProjectConfig({
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch: null,
     },
     { skip: skip || !commit }
   );

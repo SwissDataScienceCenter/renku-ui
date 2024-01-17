@@ -40,7 +40,7 @@ import { CoreVersionUrl } from "../../utils/types/coreService.types";
 
 interface GetConfigParams extends CoreVersionUrl {
   projectRepositoryUrl: string;
-  branch?: string;
+  branch: string;
 }
 
 interface GetConfigRawResponse {
@@ -69,7 +69,7 @@ type GetConfigRawResponseSection = {
 
 interface UpdateConfigParams extends GetConfigParams {
   projectRepositoryUrl: string;
-  branch?: string;
+  branch: string;
   update: {
     [key: string]: string | null;
   };
@@ -250,7 +250,7 @@ export const projectCoreApi = createApi({
       }) => {
         const params = {
           git_url: projectRepositoryUrl,
-          ...(branch ? { branch } : {}),
+          branch,
         };
         return {
           url: versionedPathForEndpoint({
