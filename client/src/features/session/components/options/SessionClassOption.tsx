@@ -45,8 +45,8 @@ import {
   ResourcePool,
 } from "../../../dataServices/dataServices.types";
 import { ProjectConfig } from "../../../project/project.types";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
-import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { setSessionClass } from "../../startSessionOptionsSlice";
 
 import styles from "./SessionClassOption.module.scss";
@@ -58,9 +58,6 @@ export const SessionClassOption = () => {
   );
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
-  );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
@@ -75,14 +72,18 @@ export const SessionClassOption = () => {
   const commit = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.commit
   );
-  const { data: projectConfig } = usePatchedProjectConfig({
-    apiVersion,
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    metadataVersion,
-    projectRepositoryUrl,
-    skip: !backendAvailable || !coreSupportComputed || !commit,
-  });
+  const { data: projectConfig } = useGetConfigQuery(
+    {
+      apiVersion,
+      metadataVersion,
+      projectRepositoryUrl,
+      branch: "TODO-BRANCH",
+      commit,
+    },
+    {
+      skip: !backendAvailable || !coreSupportComputed || !commit,
+    }
+  );
 
   // Resource pools
   const {
