@@ -30,8 +30,9 @@ import {
 } from "../../components/dateFilter/DateFilter";
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
-import { KgAuthor, KgSearchState } from "./KgSearch";
+import { KgSearchState } from "./KgSearch.types";
 import {
   defaultSearchState,
   searchStringToState,
@@ -41,7 +42,6 @@ import {
 interface KgSearchContextType {
   kgSearchState: KgSearchState;
   reducers: {
-    setAuthor: (author: KgAuthor) => void;
     setDates: (dates: DatesFilter) => void;
     setMyProjects: () => void;
     setMyDatasets: () => void;
@@ -49,6 +49,7 @@ interface KgSearchContextType {
     setPage: (page: number) => void;
     setSort: (sort: SortingOptions) => void;
     setType: (type: TypeEntitySelection) => void;
+    setUserRole: (role: UserRoles) => void;
     setVisibility: (visibility: VisibilitiesFilter) => void;
     reset: () => void;
   };
@@ -71,17 +72,6 @@ export const KgSearchContextProvider = ({
     return state;
   }, [location.search]);
 
-  const setAuthor = useCallback(
-    (author: KgAuthor) => {
-      const search = stateToSearchString({
-        ...kgSearchState,
-        author,
-        page: 1,
-      });
-      history.push({ search });
-    },
-    [history, kgSearchState]
-  );
   const setDates = useCallback(
     (dates: DatesFilter) => {
       const search = stateToSearchString({
@@ -99,7 +89,7 @@ export const KgSearchContextProvider = ({
     const search = stateToSearchString({
       ...kgSearchState,
       type: { project: true, dataset: false },
-      author: "user",
+      role: { owner: true, maintainer: false, reader: false },
       phrase: "",
       page: 1,
     });
@@ -109,7 +99,7 @@ export const KgSearchContextProvider = ({
     const search = stateToSearchString({
       ...kgSearchState,
       type: { project: false, dataset: true },
-      author: "user",
+      role: { owner: true, maintainer: false, reader: false },
       phrase: "",
       page: 1,
     });
@@ -147,6 +137,17 @@ export const KgSearchContextProvider = ({
     },
     [history, kgSearchState]
   );
+  const setUserRole = useCallback(
+    (role: UserRoles) => {
+      const search = stateToSearchString({
+        ...kgSearchState,
+        role,
+        page: 1,
+      });
+      history.push({ search });
+    },
+    [history, kgSearchState]
+  );
   const setVisibility = useCallback(
     (visibility: VisibilitiesFilter) => {
       const search = stateToSearchString({
@@ -164,7 +165,6 @@ export const KgSearchContextProvider = ({
   }, [history]);
 
   const reducers = {
-    setAuthor,
     setDates,
     setMyProjects,
     setMyDatasets,
@@ -172,6 +172,7 @@ export const KgSearchContextProvider = ({
     setPage,
     setSort,
     setType,
+    setUserRole,
     setVisibility,
     reset,
   };

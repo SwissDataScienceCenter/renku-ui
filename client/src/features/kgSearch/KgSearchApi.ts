@@ -17,10 +17,11 @@
  */
 import { FetchBaseQueryMeta } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { KgAuthor, KgSearchResult, ListResponse } from "./KgSearch";
-import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
-import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
+import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
+import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
+import type { KgSearchResult, ListResponse } from "./KgSearch.types";
 
 export type SearchEntitiesQueryParams = {
   phrase: string;
@@ -28,9 +29,8 @@ export type SearchEntitiesQueryParams = {
   page: number;
   perPage: number;
   type: TypeEntitySelection;
-  author: KgAuthor;
+  role: UserRoles;
   visibility?: VisibilitiesFilter;
-  userName?: string;
   since?: string;
   until?: string;
 };
@@ -39,11 +39,11 @@ function getHeaderFieldNumeric(headers: Headers, field: string): number {
   return +(headers.get(field) ?? 0);
 }
 
-function setAuthorInQuery(query: string, author: KgAuthor, userName?: string) {
-  if (author === "user" && userName) query = `${query}&creator=${userName}`;
+// function setAuthorInQuery(query: string, role: KgUserRole) {
+//   if (role) query = `${query}&role=${role}`;
 
-  return query;
-}
+//   return query;
+// }
 
 function setTypeInQuery(query: string, types: TypeEntitySelection) {
   if (!types.project && !types.dataset)
@@ -53,6 +53,22 @@ function setTypeInQuery(query: string, types: TypeEntitySelection) {
 
   if (types.dataset) query = `${query}&type=dataset`;
 
+  return query;
+}
+
+function setUserRoleInQuery(query: string, role?: UserRoles): string {
+  if (!role) {
+    return query;
+  }
+  if (role.owner) {
+    query = `${query}&role=owner`;
+  }
+  if (role.maintainer) {
+    query = `${query}&role=maintainer`;
+  }
+  if (role.reader) {
+    query = `${query}&role=reader`;
+  }
   return query;
 }
 
@@ -105,9 +121,8 @@ export const kgSearchApi = createApi({
         page,
         perPage,
         type,
+        role,
         visibility,
-        author,
-        userName,
         since,
         until,
       }) => {
@@ -116,10 +131,9 @@ export const kgSearchApi = createApi({
         )}&page=${page}&per_page=${perPage}`;
         return setSort(
           setDates(
-            setAuthorInQuery(
+            setUserRoleInQuery(
               setVisibilityInQuery(setTypeInQuery(url, type), visibility),
-              author,
-              userName
+              role
             ),
             since,
             until
