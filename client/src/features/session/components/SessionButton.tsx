@@ -636,34 +636,12 @@ function ModifySessionModal({
       toggle={toggleModal}
     >
       <ModalHeader toggle={toggleModal}>Modify Session</ModalHeader>
-      <ModalBody>
-        <Row>
-          <Col>
-            <p>
-              You can modify the session class before resuming this session.
-            </p>
-            <p>
-              <span className="fw-bold me-3">Current resources:</span>
-              <span>
-                <SessionRowResourceRequests
-                  resourceRequests={resources.requests}
-                />
-              </span>
-            </p>
-            <ModifySessionModalContent
-              annotations={annotations}
-              onModifySession={onModifySession}
-              toggleModal={toggleModal}
-            />
-          </Col>
-        </Row>
-      </ModalBody>
-      <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggleModal}>
-          <XLg className={cx("bi", "me-1")} />
-          Cancel
-        </Button>
-      </ModalFooter>
+      <ModifySessionModalContent
+        annotations={annotations}
+        onModifySession={onModifySession}
+        resources={resources}
+        toggleModal={toggleModal}
+      />
     </Modal>
   );
 }
@@ -671,12 +649,14 @@ function ModifySessionModal({
 interface ModifySessionModalContentProps {
   annotations: NotebookAnnotations;
   onModifySession: (sessionClass: number) => void;
+  resources: Session["resources"];
   toggleModal: () => void;
 }
 
 function ModifySessionModalContent({
   annotations,
   onModifySession,
+  resources,
   toggleModal,
 }: ModifySessionModalContentProps) {
   const currentSessionClassId = useMemo(() => {
@@ -715,45 +695,56 @@ function ModifySessionModalContent({
     setCurrentSessionClass(currentSessionClass);
   }, [currentSessionClassId, resourcePools]);
 
-  if (isLoading) {
-    return (
-      <div className="field-group">
-        <div className="form-label">
-          <Loader className="me-1" inline size={16} />
-          Fetching available resource pools...
-        </div>
-      </div>
-    );
-  }
-
-  if (!resourcePools || resourcePools.length == 0 || isError) {
-    return (
-      <div className="field-group">
-        <ErrorAlert dismissible={false}>
-          <h3 className={cx("fs-6", "fw-bold")}>
-            Error on loading available session resource pools
-          </h3>
-          <p className="mb-0">
-            You can still attempt to launch a session, but the operation may not
-            be successful.
-          </p>
-        </ErrorAlert>
-      </div>
-    );
-  }
+  const selector = isLoading ? (
+    <div className="form-label">
+      <Loader className="me-1" inline size={16} />
+      Fetching available resource pools...
+    </div>
+  ) : !resourcePools || resourcePools.length == 0 || isError ? (
+    <ErrorAlert dismissible={false}>
+      <h3 className={cx("fs-6", "fw-bold")}>
+        Error on loading available session resource pools
+      </h3>
+      <p className="mb-0">
+        You can still attempt to launch a session, but the operation may not be
+        successful.
+      </p>
+    </ErrorAlert>
+  ) : (
+    <SessionClassSelector
+      resourcePools={resourcePools}
+      currentSessionClass={currentSessionClass}
+      onChange={onChange}
+    />
+  );
 
   return (
     <>
-      <div className="field-group">
-        <SessionClassSelector
-          resourcePools={resourcePools}
-          currentSessionClass={currentSessionClass}
-          onChange={onChange}
-        />
-      </div>
-      <div>
+      <ModalBody>
+        <Row>
+          <Col>
+            <p>
+              You can modify the session class before resuming this session.
+            </p>
+            <p>
+              <span className="fw-bold me-3">Current resources:</span>
+              <span>
+                <SessionRowResourceRequests
+                  resourceRequests={resources.requests}
+                />
+              </span>
+            </p>
+            <div className="field-group">{selector}</div>
+          </Col>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
         <Button
           disabled={
+            isLoading ||
+            !resourcePools ||
+            resourcePools.length == 0 ||
+            isError ||
             currentSessionClass == null ||
             (currentSessionClassId != null &&
               currentSessionClassId === currentSessionClass?.id)
@@ -764,7 +755,11 @@ function ModifySessionModalContent({
           <CheckLg className={cx("bi", "me-1")} />
           Modify session
         </Button>
-      </div>
+        <Button className="btn-outline-rk-green" onClick={toggleModal}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+      </ModalFooter>
     </>
   );
 }
