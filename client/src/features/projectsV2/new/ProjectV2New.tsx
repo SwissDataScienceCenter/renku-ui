@@ -18,13 +18,14 @@
 
 import { FormEvent, useCallback } from "react";
 import { useDispatch } from "react-redux";
-
+import { Link } from "react-router-dom";
 import { Button, Form, Label } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import FormSchema from "../../../components/formschema/FormSchema";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import { Url } from "../../../utils/helpers/url";
 
 import { usePostProjectsMutation } from "../api";
 import type { ProjectPost } from "../api";
@@ -142,7 +143,14 @@ function ProjectV2BeingCreated({
       </div>
     );
   }
-  return <div>Project created</div>;
+  const projectList = Url.get(Url.pages.projectsV2.list);
+  return (
+    <>
+      <div>Project created.</div>
+      {"  "}
+      <Link to={projectList}>Go to project list</Link>
+    </>
+  );
 }
 
 function ProjectV2NewReviewCreateStep({

@@ -97,14 +97,22 @@ function ProjectList() {
 }
 
 export default function ProjectV2List() {
+  const newProjectUrl = Url.get(Url.pages.projectsV2.new);
   return (
     <FormSchema
       showHeader={true}
       title="List Projects (V2)"
       description={
-        <div>
-          All visible projects <WipBadge />{" "}
-        </div>
+        <>
+          <div>
+            All visible projects <WipBadge />{" "}
+          </div>
+          <div className="mt-3">
+            <Link className="btn btn-secondary" to={newProjectUrl}>
+              Create New Project
+            </Link>
+          </div>
+        </>
       }
     >
       <ProjectList />

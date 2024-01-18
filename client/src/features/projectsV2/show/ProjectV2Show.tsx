@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import { useCallback, useState } from "react";
+import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router-dom";
 import {
   Dropdown,
@@ -51,12 +52,18 @@ function ProjectV2Header({
   setSettingEdit,
   settingEdit,
 }: ProjectV2HeaderProps) {
+  const projectListUrl = Url.get(Url.pages.projectsV2.list);
   return (
     <>
       <div>{project.slug}</div>
       <div className="fst-italic">{project.visibility}</div>
       <TimeCaption datetime={project.creation_date} prefix="Created" />{" "}
       <WipBadge />
+      <div className="my-2">
+        <Link to={projectListUrl}>
+          <ArrowLeft /> Back to list
+        </Link>
+      </div>
       <hr className="my-2" />
       <ProjectV2HeaderEditButtonGroup
         project={project}
