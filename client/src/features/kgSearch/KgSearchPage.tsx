@@ -38,9 +38,9 @@ import {
   Row,
 } from "../../utils/ts-wrappers";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
-import { KgAuthor } from "./KgSearch";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
 import { KgSearchContextProvider, useKgSearchContext } from "./KgSearchContext";
+import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 
 /* eslint-disable @typescript-eslint/ban-types */
 
@@ -51,8 +51,8 @@ interface SearchPageProps {
 }
 
 interface ModalFilterProps {
-  author: KgAuthor;
   type: TypeEntitySelection;
+  role: UserRoles;
   visibility: VisibilitiesFilter;
   sort: SortingOptions;
   handleSort: Function;
@@ -63,8 +63,8 @@ interface ModalFilterProps {
 }
 
 const ModalFilter = ({
-  author,
   type,
+  role,
   visibility,
   sort,
   handleSort,
@@ -82,8 +82,8 @@ const ModalFilter = ({
         <div className="pb-4 w-100">
           <FilterEntitySearch
             valuesDate={valuesDate}
-            author={author}
             type={type}
+            role={role}
             visibility={visibility}
             isLoggedUser={isLoggedUser}
           />
@@ -108,7 +108,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     sort,
     page,
     type,
-    author,
+    role,
     visibility,
     perPage,
     since,
@@ -125,8 +125,8 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     sort,
     page,
     perPage,
-    author,
     type,
+    role,
     visibility,
     userName,
     since,
@@ -147,8 +147,8 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
           <div className="d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block filter-container">
             <FilterEntitySearch
               valuesDate={valuesDate}
-              author={author}
               type={type}
+              role={role}
               visibility={visibility}
               isLoggedUser={isLoggedUser}
             />
@@ -196,8 +196,8 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
           />
           <div className="d-sm-block d-md-none">
             <ModalFilter
-              author={author}
               type={type}
+              role={role}
               visibility={visibility}
               sort={sort}
               handleSort={(value: SortingOptions) => setSort(value)}

@@ -16,77 +16,143 @@
  * limitations under the License.
  */
 
-import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { clamp } from "lodash";
-import { ChangeEvent, useCallback, useRef, useState } from "react";
-import {
-  Button,
-  FormGroup,
-  FormText,
-  Input,
-  Label,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Select, {
+  ClassNamesConfig,
+  GroupBase,
+  MenuListProps,
+  OptionProps,
+  SelectComponentsConfig,
+  SingleValue,
+  SingleValueProps,
+  components,
+} from "react-select";
+import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
-import CommitSelector from "../../../../components/commitSelector/CommitSelector";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
-import { useGetRepositoryCommitsQuery } from "../../../project/projectGitLab.api";
+import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
+import projectGitLabApi, {
+  useGetRepositoryCommitsQuery,
+  useRefetchCommitsMutation,
+} from "../../../project/projectGitLab.api";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 import { setCommit } from "../../startSessionOptionsSlice";
 
+import styles from "./SessionCommitOption.module.scss";
+import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
+import { TimeCaption } from "../../../../components/TimeCaption";
+import { PaginatedState } from "./fetchMore.types";
+
 export default function SessionCommitOption() {
-  const defaultBranch = useLegacySelector<string>(
-    (state) => state.stateModel.project.metadata.defaultBranch
-  );
   const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
 
-  const currentBranch = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.branch
+  const { branch: currentBranch, commit: currentCommit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
 
   const {
-    data: commits,
+    data: commitsFirstPage,
     isError,
     isFetching,
-    refetch,
+    requestId,
   } = useGetRepositoryCommitsQuery(
     {
       branch: currentBranch,
-      projectId: `${gitLabProjectId ?? 0}`,
+      projectId: `${gitLabProjectId}`,
     },
     { skip: !gitLabProjectId || !currentBranch }
   );
 
+  const [
+    { data: allCommits, fetchedPages, hasMore, currentRequestId },
+    setState,
+  ] = useState<PaginatedState<GitLabRepositoryCommit>>({
+    data: undefined,
+    fetchedPages: 0,
+    hasMore: true,
+    currentRequestId: "",
+  });
+
+  const [fetchCommitsPage, commitsPageResult] =
+    projectGitLabApi.useLazyGetRepositoryCommitsQuery();
+  const onFetchMore = useCallback(() => {
+    if (!gitLabProjectId) {
+      return;
+    }
+    const request = fetchCommitsPage({
+      branch: currentBranch,
+      projectId: `${gitLabProjectId}`,
+      page: fetchedPages + 1,
+      perPage: commitsFirstPage?.pagination.perPage,
+    });
+    setState((prevState) => ({
+      ...prevState,
+      currentRequestId: request.requestId,
+    }));
+  }, [
+    commitsFirstPage?.pagination.perPage,
+    currentBranch,
+    fetchCommitsPage,
+    fetchedPages,
+    gitLabProjectId,
+  ]);
+
+  // Handle forced refresh
+  const [refetch] = useRefetchCommitsMutation();
+
   const dispatch = useAppDispatch();
   const onChange = useCallback(
-    (commitSha: string) => {
-      if (commitSha) {
-        dispatch(setCommit(commitSha));
+    (newValue: SingleValue<GitLabRepositoryCommit>) => {
+      if (newValue?.id) {
+        dispatch(setCommit(newValue.id));
       }
     },
     [dispatch]
   );
 
-  useDefaultCommitOption({ commits });
+  useDefaultCommitOption({ commits: commitsFirstPage?.data });
 
-  // Commit limit
-  const [limit, setLimit] = useState<number>(25);
-  const onChangeLimit = useCallback((limit: number) => {
-    const newLimit = clamp(limit, 0, 100);
-    setLimit(newLimit);
-  }, []);
-  const filteredCommits = limit > 0 ? commits?.slice(0, limit) : commits;
+  useEffect(() => {
+    if (commitsFirstPage == null) {
+      return;
+    }
+    setState({
+      data: commitsFirstPage.data,
+      fetchedPages: commitsFirstPage.pagination.currentPage ?? 0,
+      hasMore: !!commitsFirstPage.pagination.nextPage,
+      currentRequestId: "",
+    });
+  }, [commitsFirstPage, requestId]);
+
+  useEffect(() => {
+    if (
+      allCommits == null ||
+      commitsPageResult.currentData == null ||
+      currentRequestId !== commitsPageResult.requestId
+    ) {
+      return;
+    }
+    setState({
+      data: [...allCommits, ...commitsPageResult.currentData.data],
+      fetchedPages: commitsPageResult.currentData.pagination.currentPage ?? 0,
+      hasMore: !!commitsPageResult.currentData.pagination.nextPage,
+      currentRequestId: "",
+    });
+  }, [
+    allCommits,
+    commitsPageResult.currentData,
+    commitsPageResult.requestId,
+    currentRequestId,
+  ]);
 
   if (isFetching || !gitLabProjectId || !currentBranch) {
     return (
@@ -99,7 +165,7 @@ export default function SessionCommitOption() {
     );
   }
 
-  if (!filteredCommits || isError) {
+  if (!allCommits || isError) {
     return (
       <div className="field-group">
         <div className="form-label">
@@ -117,16 +183,15 @@ export default function SessionCommitOption() {
       <div className="form-label">
         Commits
         <RefreshCommitsButton refresh={refetch} />
-        <CommitOptionsButton limit={limit} onChangeLimit={onChangeLimit} />
       </div>
-      {filteredCommits.length > 0 && (
-        <CommitSelector
-          commits={filteredCommits}
-          disabled={false}
-          key={`branch-${currentBranch || defaultBranch}`}
-          onChange={onChange}
-        />
-      )}
+      <CommitSelector
+        commits={allCommits}
+        currentCommit={currentCommit}
+        hasMore={hasMore}
+        isFetchingMore={commitsPageResult.isFetching}
+        onChange={onChange}
+        onFetchMore={onFetchMore}
+      />
     </div>
   );
 }
@@ -156,60 +221,194 @@ function RefreshCommitsButton({ refresh }: RefreshCommitsButtonProps) {
   );
 }
 
-interface CommitOptionsButtonProps {
-  limit: number;
-  onChangeLimit: (newLimit: number) => void;
+interface CommitSelectorProps {
+  commits: GitLabRepositoryCommit[];
+  currentCommit?: string;
+  hasMore?: boolean;
+  isFetchingMore?: boolean;
+  onChange?: (newValue: SingleValue<GitLabRepositoryCommit>) => void;
+  onFetchMore?: () => void;
 }
 
-function CommitOptionsButton({
-  limit,
-  onChangeLimit,
-}: CommitOptionsButtonProps) {
-  const ref = useRef<HTMLButtonElement>(null);
+function CommitSelector({
+  currentCommit,
+  commits,
+  hasMore,
+  isFetchingMore,
+  onChange,
+  onFetchMore,
+}: CommitSelectorProps) {
+  const currentValue = useMemo(
+    () => commits.find(({ id }) => id === currentCommit),
+    [commits, currentCommit]
+  );
 
-  const onChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      onChangeLimit(event.target.valueAsNumber);
-    },
-    [onChangeLimit]
+  const components = useMemo(
+    () => ({
+      ...selectComponents,
+      MenuList: CustomMenuList({ hasMore, isFetchingMore, onFetchMore }),
+    }),
+    [hasMore, isFetchingMore, onFetchMore]
   );
 
   return (
+    <Select
+      options={commits}
+      value={currentValue}
+      unstyled
+      getOptionValue={(option) => option.id}
+      getOptionLabel={(option) => option.short_id}
+      onChange={onChange}
+      classNames={selectClassNames}
+      components={components}
+      isClearable={false}
+      isSearchable={false}
+      isLoading={isFetchingMore}
+    />
+  );
+}
+
+const selectClassNames: ClassNamesConfig<GitLabRepositoryCommit, false> = {
+  control: ({ menuIsOpen }) =>
+    cx(
+      menuIsOpen ? "rounded-top" : "rounded",
+      "border",
+      "py-2",
+      styles.control,
+      menuIsOpen && styles.controlIsOpen
+    ),
+  dropdownIndicator: () => cx("pe-3"),
+  menu: () =>
+    cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
+  menuList: () => cx("d-grid"),
+  option: ({ isFocused, isSelected }) =>
+    cx(
+      "d-flex",
+      "flex-column",
+      "flex-sm-row",
+      "align-items-start",
+      "align-items-sm-center",
+      "column-gap-3",
+      "px-3",
+      "py-1",
+      styles.option,
+      isFocused && styles.optionIsFocused,
+      !isFocused && isSelected && styles.optionIsSelected
+    ),
+  placeholder: () => cx("px-3"),
+  singleValue: () =>
+    cx(
+      "d-flex",
+      "flex-column",
+      "flex-sm-row",
+      "align-items-start",
+      "align-items-sm-center",
+      "column-gap-3",
+      "px-3",
+      styles.singleValue
+    ),
+};
+
+const selectComponents: SelectComponentsConfig<
+  GitLabRepositoryCommit,
+  false,
+  GroupBase<GitLabRepositoryCommit>
+> = {
+  DropdownIndicator: (props) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        <ChevronDown size="20" />
+      </components.DropdownIndicator>
+    );
+  },
+  Option: (
+    props: OptionProps<
+      GitLabRepositoryCommit,
+      false,
+      GroupBase<GitLabRepositoryCommit>
+    >
+  ) => {
+    const { data: commit } = props;
+    return (
+      <components.Option {...props}>
+        <OptionOrSingleValueContent commit={commit} />
+      </components.Option>
+    );
+  },
+  SingleValue: (
+    props: SingleValueProps<
+      GitLabRepositoryCommit,
+      false,
+      GroupBase<GitLabRepositoryCommit>
+    >
+  ) => {
+    const { data: commit } = props;
+    return (
+      <components.SingleValue {...props}>
+        <OptionOrSingleValueContent commit={commit} />
+      </components.SingleValue>
+    );
+  },
+};
+
+interface CustomMenuListProps {
+  hasMore?: boolean;
+  isFetchingMore?: boolean;
+  onFetchMore?: () => void;
+}
+
+function CustomMenuList({
+  hasMore,
+  isFetchingMore,
+  onFetchMore,
+}: CustomMenuListProps) {
+  return function CustomMenuListInner(
+    props: MenuListProps<GitLabRepositoryCommit, false>
+  ) {
+    return (
+      <components.MenuList {...props}>
+        {props.children}
+        {hasMore && (
+          <div className={cx("d-flex", "px-3", "pt-1")}>
+            <Button
+              className={cx("btn-outline-rk-green")}
+              disabled={isFetchingMore}
+              onClick={onFetchMore}
+              size="sm"
+            >
+              {isFetchingMore ? (
+                <Loader className="me-2" inline size={16} />
+              ) : (
+                <ThreeDots className={cx("bi", "me-2")} />
+              )}
+              Fetch more
+            </Button>
+          </div>
+        )}
+      </components.MenuList>
+    );
+  };
+}
+
+interface OptionOrSingleValueContentProps {
+  commit: GitLabRepositoryCommit;
+}
+
+function OptionOrSingleValueContent({
+  commit,
+}: OptionOrSingleValueContentProps) {
+  return (
     <>
-      <Button
-        className={cx("ms-2", "p-0")}
-        color="link"
-        innerRef={ref}
-        onClick={(event) => {
-          event.preventDefault();
-        }}
-        size="sm"
-      >
-        <FontAwesomeIcon icon={faCogs} />
-      </Button>
-      <UncontrolledTooltip placement="top" target={ref}>
-        Commit options
-      </UncontrolledTooltip>
-      <UncontrolledPopover placement="top" trigger="legacy" target={ref}>
-        <PopoverHeader>Commit options</PopoverHeader>
-        <PopoverBody>
-          <FormGroup>
-            <Label for="session-commit-option-limit">
-              Number of commits to display
-            </Label>
-            <Input
-              id="session-commit-option-limit"
-              min={0}
-              max={100}
-              onChange={onChange}
-              step={1}
-              type="number"
-              value={limit}
-            />
-            <FormText>1-100, 0 for unlimited</FormText>
-          </FormGroup>
-        </PopoverBody>
-      </UncontrolledPopover>
+      <span className={cx("fw-bold", styles.id)}>{commit.short_id}</span>
+      <span className={cx("text-truncate", styles.author)}>
+        {commit.author_name}
+      </span>
+      <span className={cx("text-truncate", styles.datetime)}>
+        <TimeCaption datetime={commit.committed_date} prefix="authored" />
+      </span>
+      <span className={cx("text-truncate", styles.message)}>
+        {commit.message}
+      </span>
     </>
   );
 }

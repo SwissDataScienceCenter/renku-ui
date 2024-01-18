@@ -37,7 +37,7 @@ describe("launch autostart sessions", () => {
     const invalidBranch = "no-valid-branch";
     cy.visit(`${projectUrl}/sessions/new?autostart=1&branch=${invalidBranch}`);
     const alertMessage = `The session could not start because the branch ${invalidBranch} does not exist. Please select another branch to start a session.`;
-    cy.wait("@getProjectCommits");
+    cy.wait("@getProjectBranches");
     cy.wait("@getSessionServerOptions", { timeout: 10000 });
     cy.get(".alert-danger").should("contain.text", alertMessage);
   });

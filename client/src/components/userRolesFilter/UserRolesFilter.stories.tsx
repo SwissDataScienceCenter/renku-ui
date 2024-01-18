@@ -16,30 +16,36 @@
  * limitations under the License.
  */
 
-// Story type is deprecated but at the moment we can use this type
 import { Meta, StoryObj } from "@storybook/react";
-import { AuthorFilter } from "./AuthorFilter";
 
-const meta: Meta<typeof AuthorFilter> = {
-  title: "components/Search/AuthorFilter",
-  component: AuthorFilter,
+import UserRolesFilter from "./UserRolesFilter";
+
+const meta: Meta<typeof UserRolesFilter> = {
+  title: "components/Search/UserRolesFilter",
+  component: UserRolesFilter,
   argTypes: {
-    value: {
-      options: ["user", "all"],
-      control: { type: "radio" },
-    },
-    handler: {
-      table: {
-        disable: true,
+    role: {
+      type: {
+        name: "object",
+        value: {
+          owner: { name: "boolean" },
+          maintainer: { name: "boolean" },
+          reader: { name: "boolean" },
+        },
       },
     },
+    setUserRole: { table: { disable: true } },
+  },
+  args: {
+    role: {
+      owner: false,
+      maintainer: false,
+      reader: false,
+    },
+    setUserRole() {},
   },
 };
 export default meta;
-type Story = StoryObj<typeof AuthorFilter>;
+type Story = StoryObj<typeof UserRolesFilter>;
 
-export const Default: Story = {
-  args: {
-    value: "all",
-  },
-};
+export const Default: Story = {};
