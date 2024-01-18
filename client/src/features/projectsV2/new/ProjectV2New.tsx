@@ -34,6 +34,7 @@ import type { NewProjectV2State } from "./projectV2New.slice";
 import { setCurrentStep } from "./projectV2New.slice";
 import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
 import ProjectV2NewForm from "./ProjectV2NewForm";
+import WipBadge from "../shared/WipBadge";
 
 function projectToProjectPost(
   project: NewProjectV2State["project"]
@@ -63,10 +64,10 @@ function ProjectV2NewHeader({
 }: Pick<NewProjectV2State, "currentStep">) {
   return (
     <>
-      <p>
+      <div className="mb-2">
         V2 Projects let you group together related resources and control who can
-        access them.
-      </p>
+        access them. {"  "} <WipBadge />
+      </div>
       {currentStep === 0 && <ProjectV2NewMetadataStepHeader />}
       {currentStep === 1 && <ProjectV2NewAccessStepHeader />}
       {currentStep === 2 && <ProjectV2NewRepositoryStepHeader />}

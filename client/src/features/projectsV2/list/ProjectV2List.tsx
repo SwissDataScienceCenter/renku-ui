@@ -27,6 +27,7 @@ import { Url } from "../../../utils/helpers/url";
 
 import { useGetProjectsQuery } from "../api";
 import type { Project } from "../api";
+import WipBadge from "../shared/WipBadge";
 
 import styles from "./projectV2List.module.scss";
 
@@ -100,7 +101,11 @@ export default function ProjectV2List() {
     <FormSchema
       showHeader={true}
       title="List Projects (V2)"
-      description={<div>All visible projects</div>}
+      description={
+        <div>
+          All visible projects <WipBadge />{" "}
+        </div>
+      }
     >
       <ProjectList />
     </FormSchema>

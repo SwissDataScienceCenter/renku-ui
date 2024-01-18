@@ -32,6 +32,7 @@ import { Url } from "../../../utils/helpers/url";
 
 import { isErrorResponse, useGetProjectsByProjectIdQuery } from "../api";
 import type { Project } from "../api";
+import WipBadge from "../shared/WipBadge";
 
 import {
   ProjectV2MembersForm,
@@ -54,7 +55,8 @@ function ProjectV2Header({
     <>
       <div>{project.slug}</div>
       <div className="fst-italic">{project.visibility}</div>
-      <TimeCaption datetime={project.creation_date} prefix="Created" />
+      <TimeCaption datetime={project.creation_date} prefix="Created" />{" "}
+      <WipBadge />
       <hr className="my-2" />
       <ProjectV2HeaderEditButtonGroup
         project={project}
