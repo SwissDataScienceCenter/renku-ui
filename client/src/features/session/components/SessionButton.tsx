@@ -47,7 +47,7 @@ import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
 import { SshDropdown } from "../../../components/ssh/ssh";
-import { User } from "../../../model/RenkuModels";
+import { User } from "../../../model/renkuModels.types";
 import { NotebooksHelper } from "../../../notebooks";
 import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";

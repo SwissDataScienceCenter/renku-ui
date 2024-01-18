@@ -25,7 +25,7 @@ import { Button, Modal } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { InfoAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
-import { User } from "../../../model/RenkuModels";
+import { User } from "../../../model/renkuModels.types";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";

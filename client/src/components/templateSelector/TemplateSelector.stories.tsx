@@ -17,7 +17,7 @@
  */
 
 import { Meta, StoryObj } from "@storybook/react";
-import { NewProjectTemplate, Repository } from "../../model/RenkuModels";
+import { NewProjectTemplate, Repository } from "../../model/renkuModels.types";
 import TemplateSelector from "./TemplateSelector";
 
 const meta: Meta<typeof TemplateSelector> = {
