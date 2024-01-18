@@ -42,7 +42,7 @@ import {
 
 import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
 import { SingleValue } from "react-select";
-import { ErrorAlert } from "../../../components/Alert";
+import { ErrorAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
@@ -302,15 +302,22 @@ function SessionActions({ className, session }: SessionActionsProps) {
   const onModifySession = useCallback(
     (sessionClass: number, resumeSession: boolean) => {
       const status = session.status.state;
-      modifySession({
+      const request = modifySession({
         sessionName: session.name,
         sessionClass,
-        ...(resumeSession && status === "hibernated"
-          ? { state: "running" }
-          : {}),
+        // ...(resumeSession && status === "hibernated"
+        //   ? { state: "running" }
+        //   : {}),
       });
+      if (resumeSession && status === "hibernated") {
+        request.then(() => {
+          onResumeSession();
+        });
+      }
+
+      // if (resumeSession && status === 'hibernated') {setIsResuming(true);}
     },
-    [modifySession, session.name, session.status.state]
+    [modifySession, onResumeSession, session.name, session.status.state]
   );
   useEffect(() => {
     if (errorModifySession) {
@@ -547,6 +554,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
         isOpen={showModalModifySession}
         onModifySession={onModifySession}
         resources={session.resources}
+        status={status}
         toggleModal={toggleModifySession}
       />
     </ButtonWithMenu>
@@ -624,6 +632,7 @@ interface ModifySessionModalProps {
   isOpen: boolean;
   onModifySession: (sessionClass: number, resumeSession: boolean) => void;
   resources: Session["resources"];
+  status: SessionStatusState;
   toggleModal: () => void;
 }
 
@@ -632,6 +641,7 @@ function ModifySessionModal({
   isOpen,
   onModifySession,
   resources,
+  status,
   toggleModal,
 }: ModifySessionModalProps) {
   return (
@@ -647,6 +657,7 @@ function ModifySessionModal({
         annotations={annotations}
         onModifySession={onModifySession}
         resources={resources}
+        status={status}
         toggleModal={toggleModal}
       />
     </Modal>
@@ -657,6 +668,7 @@ interface ModifySessionModalContentProps {
   annotations: NotebookAnnotations;
   onModifySession: (sessionClass: number, resumeSession: boolean) => void;
   resources: Session["resources"];
+  status: SessionStatusState;
   toggleModal: () => void;
 }
 
@@ -664,6 +676,7 @@ function ModifySessionModalContent({
   annotations,
   onModifySession,
   resources,
+  status,
   toggleModal,
 }: ModifySessionModalContentProps) {
   const currentSessionClassId = useMemo(() => {
@@ -687,13 +700,18 @@ function ModifySessionModalContent({
     }
   }, []);
 
-  const onClick = useCallback(() => {
-    if (!currentSessionClass) {
-      return;
-    }
-    onModifySession(currentSessionClass.id, /*resumeSession=*/ true);
-    toggleModal();
-  }, [currentSessionClass, onModifySession, toggleModal]);
+  const onClick = useCallback(
+    ({ resumeSession }: { resumeSession: boolean }) => {
+      return function modifySession() {
+        if (!currentSessionClass) {
+          return;
+        }
+        onModifySession(currentSessionClass.id, resumeSession);
+        toggleModal();
+      };
+    },
+    [currentSessionClass, onModifySession, toggleModal]
+  );
 
   useEffect(() => {
     const currentSessionClass = resourcePools
@@ -701,6 +719,21 @@ function ModifySessionModalContent({
       .find((c) => c.id === currentSessionClassId);
     setCurrentSessionClass(currentSessionClass);
   }, [currentSessionClassId, resourcePools]);
+
+  const message =
+    status === "failed" ? (
+      <>
+        <WarnAlert dismissible={false}>
+          This session cannot be started or resumed at the moment.
+        </WarnAlert>
+        <p>
+          You can try to modify the session class and attempt to resume the
+          session.
+        </p>
+      </>
+    ) : (
+      <p>You can modify the session class before resuming this session.</p>
+    );
 
   const selector = isLoading ? (
     <div className="form-label">
@@ -713,8 +746,15 @@ function ModifySessionModalContent({
         Error on loading available session resource pools
       </h3>
       <p className="mb-0">
-        You can still attempt to launch a session, but the operation may not be
-        successful.
+        Modifying the session is not possible at the moment. You can try to{" "}
+        <a
+          className={cx("btn", "btn-sm", "btn-primary", "mx-1")}
+          href={window.location.href}
+          onClick={() => window.location.reload()}
+        >
+          reload the page
+        </a>
+        .
       </p>
     </ErrorAlert>
   ) : (
@@ -730,9 +770,7 @@ function ModifySessionModalContent({
       <ModalBody>
         <Row>
           <Col>
-            <p>
-              You can modify the session class before resuming this session.
-            </p>
+            {message}
             <p>
               <span className="fw-bold me-3">Current resources:</span>
               <span>
@@ -746,7 +784,25 @@ function ModifySessionModalContent({
         </Row>
       </ModalBody>
       <ModalFooter>
+        {status === "hibernated" && (
+          <Button
+            disabled={
+              isLoading ||
+              !resourcePools ||
+              resourcePools.length == 0 ||
+              isError ||
+              currentSessionClass == null ||
+              (currentSessionClassId != null &&
+                currentSessionClassId === currentSessionClass?.id)
+            }
+            onClick={onClick({ resumeSession: true })}
+            type="submit"
+          >
+            <FontAwesomeIcon icon={faPlay} /> Modify and resume session
+          </Button>
+        )}
         <Button
+          className={cx(status === "hibernated" && "btn-outline-rk-green")}
           disabled={
             isLoading ||
             !resourcePools ||
@@ -756,7 +812,7 @@ function ModifySessionModalContent({
             (currentSessionClassId != null &&
               currentSessionClassId === currentSessionClass?.id)
           }
-          onClick={onClick}
+          onClick={onClick({ resumeSession: false })}
           type="submit"
         >
           <CheckLg className={cx("bi", "me-1")} />
