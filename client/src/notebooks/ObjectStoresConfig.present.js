@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { isURL } from "../utils/helpers/HelperFunctions";
+import { isValidURL } from "../utils/helpers/HelperFunctions";
 
 /**
  * Check if the endpoint is valid.
@@ -24,7 +24,7 @@ import { isURL } from "../utils/helpers/HelperFunctions";
  */
 export function isCloudStorageEndpointValid(cloudStoreConfig) {
   if (cloudStoreConfig["endpoint"].length < 1) return false;
-  if (!isURL(cloudStoreConfig["endpoint"])) return false;
+  if (!isValidURL(cloudStoreConfig["endpoint"])) return false;
   return true;
 }
 
