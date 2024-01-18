@@ -315,7 +315,7 @@ interface SessionRowResourceRequestsProps {
   resourceRequests: Session["resources"]["requests"];
 }
 
-function SessionRowResourceRequests({
+export function SessionRowResourceRequests({
   resourceRequests,
 }: SessionRowResourceRequestsProps) {
   if (!resourceRequests) {
