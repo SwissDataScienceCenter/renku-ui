@@ -23,7 +23,7 @@
  *  Description field group component
  */
 import FieldGroup from "../../../components/FieldGroups";
-import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
+import { NewProjectInputs, NewProjectMeta } from "./newProject.types";
 
 interface DescriptionProps {
   handlers: {

@@ -68,7 +68,7 @@ import {
 } from "../../features/session/components/options/StartNotebookServerOptions";
 import { useServerOptionsQuery } from "../../features/session/sessions.api";
 import { ServerOptions } from "../../features/session/sessions.types";
-import { LockStatus, User } from "../../model/RenkuModels";
+import { LockStatus, User } from "../../model/renkuModels.types";
 import { Docs } from "../../utils/constants/Docs";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";

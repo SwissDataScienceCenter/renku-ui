@@ -24,7 +24,7 @@ import {
   NewProjectMeta,
   NewProjectTemplate,
   NewProjectTemplates,
-} from "../../../model/RenkuModels";
+} from "../../../model/renkuModels.types";
 
 interface TemplateProps {
   config: NewProjectConfig;

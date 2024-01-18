@@ -25,7 +25,7 @@ import { IconLink } from "./ExternalLinks";
 import { EntityChildrenDot } from "./entities/Children";
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityDuration from "./entities/Duration";
-import { EntityType, WorkflowType } from "./entities/Entities";
+import { EntityType, WorkflowType } from "./entities/entities.types";
 import { EntityExecutions } from "./entities/Executions";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

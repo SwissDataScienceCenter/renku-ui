@@ -29,13 +29,13 @@ import {
   useGetUserPreferencesQuery,
   useRemovePinnedProjectMutation,
 } from "../../features/user/userPreferences.api";
-import { User } from "../../model/RenkuModels";
+import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { Loader } from "../Loader";
-import { EntityType as AnotherEntityType } from "../entities/Entities";
+import { EntityType as AnotherEntityType } from "../entities/entities.types";
 import { extractRkErrorMessage } from "../errors/RtkErrorAlert";
 
 interface PinnedBadgeProps {

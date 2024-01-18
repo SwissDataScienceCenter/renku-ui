@@ -28,7 +28,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import { Button, DropdownItem } from "../../../utils/ts-wrappers";
-import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
+import { NewProjectInputs, NewProjectMeta } from "./newProject.types";
 
 interface SubmitFormButtonProps {
   createDataAvailable: boolean;
