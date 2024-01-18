@@ -27,7 +27,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import {
   Button,
@@ -35,10 +35,14 @@ import {
   DropdownItem,
   Modal,
   ModalBody,
+  ModalFooter,
   ModalHeader,
   Row,
 } from "reactstrap";
 
+import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
+import { SingleValue } from "react-select";
+import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
@@ -54,6 +58,8 @@ import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
 import { Url } from "../../../utils/helpers/url";
+import { useGetResourcePoolsQuery } from "../../dataServices/dataServices.api";
+import { ResourceClass } from "../../dataServices/dataServices.types";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
   useGetSessionsQuery,
@@ -63,8 +69,10 @@ import {
 import { Session, SessionStatusState } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
+import { SessionRowResourceRequests } from "./SessionsList";
 import SimpleSessionButton from "./SimpleSessionButton";
 import UnsavedWorkWarning from "./UnsavedWorkWarning";
+import { SessionClassSelector } from "./options/SessionClassOption";
 
 interface SessionButtonProps {
   className?: string;
@@ -288,7 +296,42 @@ function SessionActions({ className, session }: SessionActionsProps) {
     []
   );
 
+  // Handle modifying session
+  const [modifySession, { error: errorModifySession }] =
+    usePatchSessionMutation();
+  const onModifySession = useCallback(
+    (sessionClass: number) => {
+      modifySession({ sessionName: session.name, sessionClass });
+    },
+    [modifySession, session.name]
+  );
+  useEffect(() => {
+    if (errorModifySession) {
+      addErrorNotification({
+        error: errorModifySession,
+        notifications: notifications as NotificationsManager,
+        title: "Unable to modify the session",
+      });
+    }
+  }, [errorModifySession, notifications]);
+  // Modal for modifying a session (change the session class)
+  const [showModalModifySession, setShowModalModifySession] = useState(false);
+  const toggleModifySession = useCallback(
+    () => setShowModalModifySession((show) => !show),
+    []
+  );
+
   const status = session.status.state;
+  const failedScheduling =
+    status === "failed" &&
+    (!!session.status.message?.includes(
+      "The resource quota has been exceeded."
+    ) ||
+      !!session.status.message?.includes(
+        // TODO: fix spelling in notebooks
+        // eslint-disable-next-line spellcheck/spell-checker
+        "Your session cannot be scheduled due to insufficent resources."
+      ));
 
   const buttonClassName = cx(
     "btn",
@@ -344,6 +387,15 @@ function SessionActions({ className, session }: SessionActionsProps) {
           </>
         )}
       </Button>
+    ) : failedScheduling ? (
+      <Button
+        className={buttonClassName}
+        data-cy="modify-session-button"
+        onClick={toggleModifySession}
+      >
+        <Tools className={cx("bi", "flex-shrink-0", "me-2")} />
+        Modify
+      </Button>
     ) : (
       <Button
         className={buttonClassName}
@@ -365,7 +417,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
     );
 
   const hibernateAction = status !== "stopping" &&
-    status !== "failed" &&
+    (status !== "failed" || failedScheduling) &&
     status !== "hibernated" &&
     !isStopping &&
     !isHibernating &&
@@ -395,6 +447,19 @@ function SessionActions({ className, session }: SessionActionsProps) {
       Delete session
     </DropdownItem>
   );
+
+  const modifyAction = (status === "hibernated" || status === "failed") &&
+    !isStopping &&
+    !isHibernating &&
+    !failedScheduling && (
+      <DropdownItem
+        data-cy="modify-session-button"
+        onClick={toggleModifySession}
+      >
+        <Tools className={cx("bi", "text-rk-green", "me-2")} />
+        Modify session
+      </DropdownItem>
+    );
 
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
@@ -450,7 +515,10 @@ function SessionActions({ className, session }: SessionActionsProps) {
     >
       {hibernateAction}
       {deleteAction}
-      {(hibernateAction || deleteAction) && <DropdownItem divider />}
+      {modifyAction}
+      {(hibernateAction || deleteAction || modifyAction) && (
+        <DropdownItem divider />
+      )}
 
       {openInNewTabAction}
       {logsAction}
@@ -466,6 +534,13 @@ function SessionActions({ className, session }: SessionActionsProps) {
         sessionName={session.name}
         status={status}
         toggleModal={toggleStopSession}
+      />
+      <ModifySessionModal
+        annotations={annotations}
+        isOpen={showModalModifySession}
+        onModifySession={onModifySession}
+        resources={session.resources}
+        toggleModal={toggleModifySession}
       />
     </ButtonWithMenu>
   );
@@ -496,7 +571,7 @@ function ConfirmDeleteModal({
   }, [onStopSession, toggleModal]);
 
   return (
-    <Modal isOpen={isOpen} toggle={toggleModal}>
+    <Modal centered isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
       <ModalBody>
         <Row>
@@ -534,6 +609,158 @@ function ConfirmDeleteModal({
         </Row>
       </ModalBody>
     </Modal>
+  );
+}
+
+interface ModifySessionModalProps {
+  annotations: NotebookAnnotations;
+  isOpen: boolean;
+  onModifySession: (sessionClass: number) => void;
+  resources: Session["resources"];
+  toggleModal: () => void;
+}
+
+function ModifySessionModal({
+  annotations,
+  isOpen,
+  onModifySession,
+  resources,
+  toggleModal,
+}: ModifySessionModalProps) {
+  return (
+    <Modal
+      centered
+      fullscreen="lg"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggleModal}
+    >
+      <ModalHeader toggle={toggleModal}>Modify Session</ModalHeader>
+      <ModifySessionModalContent
+        annotations={annotations}
+        onModifySession={onModifySession}
+        resources={resources}
+        toggleModal={toggleModal}
+      />
+    </Modal>
+  );
+}
+
+interface ModifySessionModalContentProps {
+  annotations: NotebookAnnotations;
+  onModifySession: (sessionClass: number) => void;
+  resources: Session["resources"];
+  toggleModal: () => void;
+}
+
+function ModifySessionModalContent({
+  annotations,
+  onModifySession,
+  resources,
+  toggleModal,
+}: ModifySessionModalContentProps) {
+  const currentSessionClassId = useMemo(() => {
+    const raw = parseInt(annotations?.resourceClassId ?? "", 10);
+    return isNaN(raw) ? undefined : raw;
+  }, [annotations?.resourceClassId]);
+
+  const {
+    data: resourcePools,
+    isLoading,
+    isError,
+  } = useGetResourcePoolsQuery({});
+
+  const [currentSessionClass, setCurrentSessionClass] = useState<
+    ResourceClass | undefined
+  >(undefined);
+
+  const onChange = useCallback((newValue: SingleValue<ResourceClass>) => {
+    if (newValue) {
+      setCurrentSessionClass(newValue);
+    }
+  }, []);
+
+  const onClick = useCallback(() => {
+    if (!currentSessionClass) {
+      return;
+    }
+    onModifySession(currentSessionClass.id);
+    toggleModal();
+  }, [currentSessionClass, onModifySession, toggleModal]);
+
+  useEffect(() => {
+    const currentSessionClass = resourcePools
+      ?.flatMap((pool) => pool.classes)
+      .find((c) => c.id === currentSessionClassId);
+    setCurrentSessionClass(currentSessionClass);
+  }, [currentSessionClassId, resourcePools]);
+
+  const selector = isLoading ? (
+    <div className="form-label">
+      <Loader className="me-1" inline size={16} />
+      Fetching available resource pools...
+    </div>
+  ) : !resourcePools || resourcePools.length == 0 || isError ? (
+    <ErrorAlert dismissible={false}>
+      <h3 className={cx("fs-6", "fw-bold")}>
+        Error on loading available session resource pools
+      </h3>
+      <p className="mb-0">
+        You can still attempt to launch a session, but the operation may not be
+        successful.
+      </p>
+    </ErrorAlert>
+  ) : (
+    <SessionClassSelector
+      resourcePools={resourcePools}
+      currentSessionClass={currentSessionClass}
+      onChange={onChange}
+    />
+  );
+
+  return (
+    <>
+      <ModalBody>
+        <Row>
+          <Col>
+            <p>
+              You can modify the session class before resuming this session.
+            </p>
+            <p>
+              <span className="fw-bold me-3">Current resources:</span>
+              <span>
+                <SessionRowResourceRequests
+                  resourceRequests={resources.requests}
+                />
+              </span>
+            </p>
+            <div className="field-group">{selector}</div>
+          </Col>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          disabled={
+            isLoading ||
+            !resourcePools ||
+            resourcePools.length == 0 ||
+            isError ||
+            currentSessionClass == null ||
+            (currentSessionClassId != null &&
+              currentSessionClassId === currentSessionClass?.id)
+          }
+          onClick={onClick}
+          type="submit"
+        >
+          <CheckLg className={cx("bi", "me-1")} />
+          Modify session
+        </Button>
+        <Button className="btn-outline-rk-green" onClick={toggleModal}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+      </ModalFooter>
+    </>
   );
 }
 

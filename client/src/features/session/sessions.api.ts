@@ -149,10 +149,13 @@ const sessionsApi = createApi({
       invalidatesTags: ["Session"],
     }),
     patchSession: builder.mutation<null, PatchSessionParams>({
-      query: ({ sessionName, state }) => ({
+      query: ({ sessionName, state, sessionClass }) => ({
         method: "PATCH",
         url: `servers/${sessionName}`,
-        body: { state },
+        body: {
+          ...(state ? { state } : {}),
+          ...(sessionClass ? { resource_class_id: sessionClass } : {}),
+        },
       }),
       transformResponse: () => null,
       invalidatesTags: (_result, _error, { sessionName }) => [
