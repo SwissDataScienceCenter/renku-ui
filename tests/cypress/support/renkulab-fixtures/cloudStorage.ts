@@ -31,7 +31,31 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
         name = "getCloudStorage",
       } = args ?? {};
       const response = { fixture };
+      cy.intercept(
+        "GET",
+        "/ui-server/api/data/storage?project_id=*",
+        response
+      ).as(name);
+      return this;
+    }
+
+    cloudStorageStar(args?: SimpleFixture) {
+      const {
+        fixture = "cloudStorage/cloud-storage.json",
+        name = "getCloudStorage",
+      } = args ?? {};
+      const response = { fixture };
       cy.intercept("GET", "/ui-server/api/data/storage*", response).as(name);
+      return this;
+    }
+
+    cloudStorageSPecific(args?: SimpleFixture) {
+      const {
+        fixture = "cloudStorage/cloud-storage.json",
+        name = "getCloudStorage",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept("GET", "/ui-server/api/data/storage", response).as(name);
       return this;
     }
 
@@ -49,6 +73,18 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       const { name = "patchCloudStorage" } = args ?? {};
       const response = { statusCode: 201 };
       cy.intercept("PATCH", "/ui-server/api/data/storage/*", response).as(name);
+      return this;
+    }
+
+    getStorageSchema(args?: NameOnlyFixture) {
+      const { name = "getStorageSchema" } = args ?? {};
+      const response = {
+        fixture: "cloudStorage/storage-schema.json",
+        statusCode: 200,
+      };
+      cy.intercept("GET", "/ui-server/api/data/storage_schema", response).as(
+        name
+      );
       return this;
     }
 

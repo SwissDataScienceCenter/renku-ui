@@ -17,7 +17,6 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import processPaginationHeaders from "../../api-client/pagination";
 import { parseINIString } from "../../utils/helpers/HelperFunctions";
 import {
   MAX_GITLAB_REPOSITORY_BRANCH_PAGES,
@@ -31,14 +30,19 @@ import {
   GetPipelinesParams,
   GetRegistryTagParams,
   GetRenkuRegistryParams,
+  GetRepositoryBranchParams,
+  GetRepositoryBranchesParams,
   GetRepositoryCommitParams,
   GetRepositoryCommitsParams,
+  GetAllRepositoryCommitsParams,
   GitLabPipeline,
   GitLabPipelineJob,
   GitLabRegistry,
   GitLabRegistryTag,
   GitLabRepositoryBranch,
+  GitLabRepositoryBranchList,
   GitLabRepositoryCommit,
+  GitLabRepositoryCommitList,
   GitlabProjectResponse,
   Pagination,
   RetryPipelineParams,
@@ -46,6 +50,7 @@ import {
 } from "./GitLab.types";
 import { ProjectConfig } from "./Project";
 import { transformGetConfigRawResponse } from "./projectCoreApi";
+import processPaginationHeaders from "../../utils/helpers/pagination.utils";
 
 const projectGitLabApi = createApi({
   reducerPath: "projectGitLab",
@@ -187,6 +192,46 @@ const projectGitLabApi = createApi({
     }),
 
     // Project Repository API
+    getRepositoryBranch: builder.query<
+      GitLabRepositoryBranch,
+      GetRepositoryBranchParams
+    >({
+      query: ({ branch, projectId }) => {
+        return {
+          url: `${projectId}/repository/branches/${encodeURIComponent(branch)}`,
+        };
+      },
+    }),
+    getRepositoryBranches: builder.query<
+      GitLabRepositoryBranchList,
+      GetRepositoryBranchesParams
+    >({
+      query: ({ page, perPage, projectId }) => {
+        return {
+          url: `${projectId}/repository/branches`,
+          params: {
+            ...(page ? { page } : {}),
+            ...(perPage ? { per_page: perPage } : {}),
+          },
+        };
+      },
+      transformResponse: (response: GitLabRepositoryBranch[], meta) => {
+        const pagination = processPaginationHeaders(meta?.response?.headers);
+        return {
+          data: response,
+          pagination,
+        };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(
+                ({ name }) => ({ type: "Branch", id: name } as const)
+              ),
+              "Branch",
+            ]
+          : ["Branch"],
+    }),
     getAllRepositoryBranches: builder.query<
       GitLabRepositoryBranch[],
       GetAllRepositoryBranchesParams
@@ -221,9 +266,7 @@ const projectGitLabApi = createApi({
           allBranches.push(...branches);
 
           const responseHeaders = result.meta?.response?.headers;
-          const pagination = processPaginationHeaders(
-            responseHeaders
-          ) as Pagination;
+          const pagination = processPaginationHeaders(responseHeaders);
 
           if (pagination.nextPage == null) {
             break;
@@ -241,6 +284,10 @@ const projectGitLabApi = createApi({
               "Branch",
             ]
           : ["Branch"],
+    }),
+    refetchBranches: builder.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["Branch"],
     }),
     getConfigFromRepository: builder.query<
       ProjectConfig,
@@ -308,8 +355,37 @@ const projectGitLabApi = createApi({
         result ? [{ id: result.id, type: "Commit" }, "Commit"] : ["Commit"],
     }),
     getRepositoryCommits: builder.query<
-      GitLabRepositoryCommit[],
+      GitLabRepositoryCommitList,
       GetRepositoryCommitsParams
+    >({
+      query: ({ branch, page, perPage, projectId }) => {
+        return {
+          url: `${projectId}/repository/commits`,
+          params: {
+            ref_name: branch,
+            ...(page ? { page } : {}),
+            ...(perPage ? { per_page: perPage } : {}),
+          },
+        };
+      },
+      transformResponse: (response: GitLabRepositoryCommit[], meta) => {
+        const pagination = processPaginationHeaders(meta?.response?.headers);
+        return {
+          data: response,
+          pagination,
+        };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ id }) => ({ type: "Commit", id } as const)),
+              "Commit",
+            ]
+          : ["Commit"],
+    }),
+    getAllRepositoryCommits: builder.query<
+      GitLabRepositoryCommit[],
+      GetAllRepositoryCommitsParams
     >({
       queryFn: async (
         { branch, perPage, projectId },
@@ -361,6 +437,10 @@ const projectGitLabApi = createApi({
             ]
           : ["Commit"],
     }),
+    refetchCommits: builder.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["Commit"],
+    }),
   }),
 });
 
@@ -371,8 +451,13 @@ export const {
   useGetPipelinesQuery,
   useRetryPipelineMutation,
   useRunPipelineMutation,
+  useGetRepositoryBranchQuery,
+  useGetRepositoryBranchesQuery,
   useGetAllRepositoryBranchesQuery,
+  useRefetchBranchesMutation,
   useGetConfigFromRepositoryQuery,
   useGetRepositoryCommitQuery,
   useGetRepositoryCommitsQuery,
+  useGetAllRepositoryCommitsQuery,
+  useRefetchCommitsMutation,
 } = projectGitLabApi;

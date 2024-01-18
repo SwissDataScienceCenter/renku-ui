@@ -33,5 +33,10 @@ export const dashboardMessageSlice = createSlice({
     dismiss: (state) => {
       state.dismissed = true;
     },
+    // eslint-disable-next-line spellcheck/spell-checker
+    undismiss: (state) => {
+      state.dismissed = false;
+    },
+    reset: () => initialState,
   },
 });

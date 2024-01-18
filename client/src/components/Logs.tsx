@@ -178,7 +178,7 @@ const LogDownloadButton = ({
 };
 
 const useDownloadLogs = (
-  logs: IFetchableLogs["logs"],
+  _logs: IFetchableLogs["logs"],
   fetchLogs: IFetchableLogs["fetchLogs"],
   sessionName: string
 ): [boolean | undefined, () => Promise<void>] => {

@@ -22,7 +22,10 @@ import { faSadCry } from "@fortawesome/free-solid-svg-icons";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { SerializedError } from "@reduxjs/toolkit";
 
-import { KgSearchResult, ListResponse } from "../../features/kgSearch/KgSearch";
+import {
+  KgSearchResult,
+  ListResponse,
+} from "../../features/kgSearch/KgSearch.types";
 import {
   FiltersProperties,
   hasInitialFilterValues,
@@ -48,7 +51,7 @@ interface EmptyResultProps {
 }
 const EmptyResult = ({ onRemoveFilters, error }: EmptyResultProps) => {
   const { kgSearchState } = useKgSearchContext();
-  const { phrase, type, author, visibility, since, until, typeDate } =
+  const { phrase, type, role, visibility, since, until, typeDate } =
     kgSearchState;
   const removeFilters = () => {
     if (onRemoveFilters) onRemoveFilters();
@@ -56,7 +59,7 @@ const EmptyResult = ({ onRemoveFilters, error }: EmptyResultProps) => {
 
   const currentFilters: FiltersProperties = {
     type,
-    author,
+    role,
     visibility,
     since,
     until,

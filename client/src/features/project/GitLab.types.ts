@@ -17,6 +17,7 @@
  */
 
 import { Visibilities } from "../../components/visibility/Visibility";
+import { PaginatedResponse } from "../../utils/types/pagination.types";
 
 export interface Pagination {
   currentPage?: number;
@@ -101,6 +102,7 @@ export interface GetRenkuRegistryParams {
 // GitLab Repository API
 
 export interface GitLabRepositoryBranch {
+  default: boolean;
   merged: boolean;
   name: string;
 }
@@ -112,6 +114,22 @@ export interface GitLabRepositoryCommit {
   message: string;
   short_id: string;
   web_url: string;
+}
+
+export type GitLabRepositoryBranchList =
+  PaginatedResponse<GitLabRepositoryBranch>;
+export type GitLabRepositoryCommitList =
+  PaginatedResponse<GitLabRepositoryCommit>;
+
+export interface GetRepositoryBranchParams {
+  branch: string;
+  projectId: string;
+}
+
+export interface GetRepositoryBranchesParams {
+  page?: number;
+  perPage?: number;
+  projectId: string;
 }
 
 export interface GetAllRepositoryBranchesParams {
@@ -152,6 +170,13 @@ export interface GetRepositoryCommitParams {
 }
 
 export interface GetRepositoryCommitsParams {
+  branch: string;
+  page?: number;
+  perPage?: number;
+  projectId: string;
+}
+
+export interface GetAllRepositoryCommitsParams {
   branch: string;
   perPage?: number;
   projectId: string;
