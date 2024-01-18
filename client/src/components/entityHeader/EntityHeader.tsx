@@ -50,6 +50,7 @@ import "./EntityHeader.scss";
 export interface EntityHeaderProps {
   client?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   creators: EntityCreator[];
+  defaultBranch?: string;
   description?: { isLoading?: boolean; unavailable?: string; value: string };
   devAccess: boolean;
   email?: string;
@@ -73,6 +74,7 @@ export interface EntityHeaderProps {
 
 function EntityHeader({
   creators,
+  defaultBranch,
   description,
   devAccess,
   fullPath,
@@ -107,8 +109,12 @@ function EntityHeader({
 
   // Set the main button based on running sessions
   const mainButton =
-    fullPath && gitUrl ? (
-      <SessionButton fullPath={fullPath} gitUrl={gitUrl} />
+    fullPath && gitUrl && defaultBranch ? (
+      <SessionButton
+        fullPath={fullPath}
+        gitUrl={gitUrl}
+        branch={defaultBranch}
+      />
     ) : null;
 
   // Set up support for logs modal

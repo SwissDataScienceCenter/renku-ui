@@ -25,6 +25,7 @@ const initialState: Display = {
       show: false,
       projectPath: "",
       gitUrl: "",
+      branch: "",
     },
     sessionLogs: {
       show: false,
@@ -42,6 +43,7 @@ export const displaySlice = createSlice({
         show: true,
         projectPath: action.payload.projectPath,
         gitUrl: action.payload.gitUrl,
+        branch: action.payload.branch,
       };
     },
     hideSshModal: (state) => {

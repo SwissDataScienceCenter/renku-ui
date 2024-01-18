@@ -173,6 +173,7 @@ function getProjectFormatted(project: Record<string, any>) {
   const gitUrl = cleanGitUrl(project.http_url_to_repo);
   return {
     creators: project.owner ? [project.owner] : [project.namespace],
+    defaultBranch: project.default_branch,
     description: project.description,
     gitUrl,
     id: project.id,
@@ -405,6 +406,7 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
             notebook={item.notebook}
             fullPath={item.slug}
             gitUrl={item.gitUrl}
+            defaultBranch={item.defaultBranch}
             key={`session-${item.id}`}
             labelCaption=""
             tagList={item.tagList}

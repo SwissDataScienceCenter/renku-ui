@@ -40,7 +40,6 @@ import { InfoAlert } from "../Alert";
 import { ExternalDocsLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { CommandCopy } from "../commandCopy/CommandCopy";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 
 const docsIconStyle = {
   showLinkIcon: true,
@@ -51,16 +50,17 @@ const docsIconStyle = {
 interface SshDropdownProps {
   fullPath: string;
   gitUrl: string;
+  branch: string;
 }
 
-function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
+function SshDropdown({ fullPath, gitUrl, branch }: SshDropdownProps) {
   const dispatch = useAppDispatch();
 
   const { data, isLoading, error } = useGetNotebooksVersionQuery();
   if (error || isLoading || !data?.sshEnabled) return null;
 
   const handleClick = () => {
-    dispatch(showSshModal({ projectPath: fullPath, gitUrl }));
+    dispatch(showSshModal({ projectPath: fullPath, gitUrl, branch }));
   };
 
   return (
@@ -72,9 +72,6 @@ function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
 }
 
 function SshModal() {
-  const { defaultBranch } = useLegacySelector(
-    (state) => state.stateModel.project.metadata
-  );
   const displayModal = useAppSelector(({ display }) => display.modals.ssh);
   const dispatch = useAppDispatch();
   const gitUrl = cleanGitUrl(displayModal.gitUrl);
@@ -90,9 +87,9 @@ function SshModal() {
     {
       apiVersion: migrationStatusApiVersion,
       gitUrl,
-      branch: defaultBranch,
+      branch: displayModal.branch,
     },
-    { skip: !gitUrl }
+    { skip: !gitUrl || !displayModal.branch }
   );
 
   // return early if we don't need to display the modal
