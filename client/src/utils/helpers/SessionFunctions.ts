@@ -17,34 +17,12 @@
  */
 
 import { NotebooksHelper } from "../../notebooks";
-import { Url } from "./url";
 
 // ? Consider moving this under /features/session(s)/helpers
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export interface Session {
   annotations: Record<string, unknown>;
   name: string;
-}
-function getSessionRunningByProjectName(
-  sessions: Record<string, Session>,
-  namespace: string,
-  projectName: string
-) {
-  let sessionRunning: boolean | unknown = false;
-  Object.keys(sessions).forEach((sessionName: string) => {
-    const session = sessions[sessionName];
-    const annotations = NotebooksHelper.cleanAnnotations(
-      session.annotations
-    ) as any;
-    if (
-      annotations["namespace"] === namespace &&
-      annotations["projectName"] === projectName
-    )
-      sessionRunning = session;
-  });
-  return sessionRunning;
 }
 
 interface NotebookAnnotations {
@@ -54,7 +32,7 @@ interface NotebookAnnotations {
   gitlabProjectId: string;
 }
 function getFormattedSessionsAnnotations(sessions: Record<string, Session>) {
-  const sessionsFormatted: any[] = [];
+  const sessionsFormatted: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
   for (const sessionKey of Object.keys(sessions)) {
     const session = sessions[sessionKey];
     const annotations = NotebooksHelper.cleanAnnotations(
@@ -65,19 +43,4 @@ function getFormattedSessionsAnnotations(sessions: Record<string, Session>) {
   return sessionsFormatted;
 }
 
-function getShowSessionURL(
-  annotations: Record<string, string>,
-  serverName: string
-) {
-  return Url.get(Url.pages.project.session.show, {
-    namespace: annotations["namespace"],
-    path: annotations["projectName"],
-    server: serverName,
-  });
-}
-
-export {
-  getSessionRunningByProjectName,
-  getFormattedSessionsAnnotations,
-  getShowSessionURL,
-};
+export { getFormattedSessionsAnnotations };

@@ -39,7 +39,7 @@ import {
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { formatBytes, isURL } from "../../utils/helpers/HelperFunctions";
+import { formatBytes, isValidURL } from "../../utils/helpers/HelperFunctions";
 import FileExplorer, { getFilesTree } from "../FileExplorer";
 import { ErrorLabel, InputLabel } from "../formlabels/FormLabels";
 import { FormText } from "../../utils/ts-wrappers";
@@ -200,7 +200,7 @@ class DisplayFilesHandler extends FileUploadHandler {
       this.setErrorUrlInput(INPUT_URL_ERROR.DUPLICATED);
       return;
     }
-    if (fileThere == null && isURL(urlInputValue)) {
+    if (fileThere == null && isValidURL(urlInputValue)) {
       const file_url = {
         file_name: urlInputValue,
         file_path: urlInputValue,
