@@ -143,7 +143,7 @@ export const versionsApi = createApi({
           version: singleVersion?.version ?? "unavailable",
           anonymousSessionsEnabled:
             singleVersion?.data?.anonymousSessionsEnabled ?? false,
-          sshEnabled: singleVersion?.data?.sshEnabled ?? false,
+          sshEnabled: true, //singleVersion?.data?.sshEnabled ?? false,
           cloudStorageEnabled:
             singleVersion?.data?.cloudstorageEnabled ?? false,
         };

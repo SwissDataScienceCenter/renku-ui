@@ -253,8 +253,8 @@ export const projectCoreApi = createApi({
       }) => {
         const params = {
           git_url: projectRepositoryUrl,
-          branch,
-          ...(commit ? { commit_sha: commit } : {}),
+          // ? We can only supply either branch or commit_sha, not both.
+          ...(commit ? { commit_sha: commit } : { branch }),
         };
         return {
           url: versionedPathForEndpoint({
@@ -284,7 +284,7 @@ export const projectCoreApi = createApi({
       }) => {
         const body = {
           git_url: projectRepositoryUrl,
-          ...(branch ? { branch } : {}),
+          branch,
           config: update,
         };
         return {

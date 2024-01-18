@@ -35,7 +35,7 @@ import {
   Table,
   UncontrolledTooltip,
 } from "reactstrap";
-import { filesize as fileSize } from "filesize"; // eslint-disable-line spellcheck/spell-checker
+import fileSize from "filesize"; // eslint-disable-line spellcheck/spell-checker
 import qs from "query-string";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";

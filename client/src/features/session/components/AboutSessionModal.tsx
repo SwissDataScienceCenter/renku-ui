@@ -79,6 +79,7 @@ function ProjectHeader() {
       <h3 className="text-rk-text-light">Project</h3>
       <EntityHeader
         creators={projectMetadata.owner ? [projectMetadata.owner] : []}
+        defaultBranch={projectMetadata.defaultBranch}
         description={{ value: projectMetadata.description }}
         devAccess={projectMetadata.accessLevel >= ACCESS_LEVELS.DEVELOPER}
         fullPath={

@@ -156,7 +156,7 @@ export const SessionClassOption = () => {
     dispatch(setSessionClass(initialSessionClassId));
   }, [defaultSessionClass?.id, dispatch, projectConfig, resourcePools]);
 
-  if (isLoading) {
+  if (isLoading || !projectConfig) {
     return (
       <div className="field-group">
         <div className="form-label">

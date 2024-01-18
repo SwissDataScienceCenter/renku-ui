@@ -84,6 +84,7 @@ export interface Notebook {
 export interface ProjectMetadata {
   accessLevel: number;
   avatarUrl?: string;
+  defaultBranch: string;
   description: string;
   externalUrl?: string;
   lastActivityAt: string;
