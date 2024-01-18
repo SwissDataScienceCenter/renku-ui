@@ -151,7 +151,8 @@ function useAutostartSessionOptions(): void {
       commit,
     },
     {
-      skip: !backendAvailable || !coreSupportComputed || !commit,
+      skip:
+        !backendAvailable || !coreSupportComputed || !currentBranch || !commit,
     }
   );
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =

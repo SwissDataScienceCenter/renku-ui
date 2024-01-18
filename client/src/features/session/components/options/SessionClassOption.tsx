@@ -81,7 +81,8 @@ export const SessionClassOption = () => {
       commit,
     },
     {
-      skip: !backendAvailable || !coreSupportComputed || !commit,
+      skip:
+        !backendAvailable || !coreSupportComputed || !currentBranch || !commit,
     }
   );
 

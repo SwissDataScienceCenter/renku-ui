@@ -55,11 +55,16 @@ export default function SessionDockerImage() {
         commit,
       },
       {
-        skip: !coreSupportComputed || !commit,
+        skip: !coreSupportComputed || !currentBranch || !commit,
       }
     );
 
-  if (!coreSupportComputed || !commit || projectConfigIsFetching) {
+  if (
+    !coreSupportComputed ||
+    !currentBranch ||
+    !commit ||
+    projectConfigIsFetching
+  ) {
     return (
       <div className="field-group">
         <div className="form-label">

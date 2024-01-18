@@ -83,13 +83,20 @@ export const StartNotebookServerOptions = () => {
         branch: currentBranch,
         commit,
       },
-      { skip: !backendAvailable || !coreSupportComputed || !commit }
+      {
+        skip:
+          !backendAvailable ||
+          !coreSupportComputed ||
+          !currentBranch ||
+          !commit,
+      }
     );
 
   if (
     serverOptionsIsLoading ||
     projectConfigIsLoading ||
     !coreSupportComputed ||
+    !currentBranch ||
     !commit
   ) {
     const message = serverOptionsIsLoading
@@ -171,7 +178,11 @@ const DefaultUrlOption = () => {
         commit,
       },
       {
-        skip: !backendAvailable || !coreSupportComputed || !commit,
+        skip:
+          !backendAvailable ||
+          !coreSupportComputed ||
+          !currentBranch ||
+          !commit,
       }
     );
 
@@ -287,7 +298,7 @@ const AutoFetchLfsOption = () => {
       commit,
     },
     {
-      skip: !coreSupportComputed || !commit,
+      skip: !coreSupportComputed || !currentBranch || !commit,
     }
   );
 

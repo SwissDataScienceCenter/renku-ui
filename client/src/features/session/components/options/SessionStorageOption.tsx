@@ -66,7 +66,7 @@ export const SessionStorageOption = () => {
       commit,
     },
     {
-      skip: !coreSupportComputed || !commit,
+      skip: !coreSupportComputed || !currentBranch || !commit,
     }
   );
 
