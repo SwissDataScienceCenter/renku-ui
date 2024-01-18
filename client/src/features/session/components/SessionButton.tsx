@@ -301,6 +301,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
     usePatchSessionMutation();
   const onModifySession = useCallback(
     (sessionClass: number, resumeSession: boolean) => {
+      const status = session.status.state;
       modifySession({
         sessionName: session.name,
         sessionClass,
@@ -309,7 +310,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
           : {}),
       });
     },
-    [modifySession, session.name]
+    [modifySession, session.name, session.status.state]
   );
   useEffect(() => {
     if (errorModifySession) {
