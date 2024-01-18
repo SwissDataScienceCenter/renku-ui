@@ -513,7 +513,7 @@ const DefaultUrlOption = ({
         },
       });
     },
-    [apiVersion, metadataVersion, projectRepositoryUrl, updateConfig]
+    [apiVersion, branch, metadataVersion, projectRepositoryUrl, updateConfig]
   );
 
   const onReset = useCallback(() => {
@@ -529,6 +529,7 @@ const DefaultUrlOption = ({
     });
   }, [
     apiVersion,
+    branch,
     defaultValue,
     metadataVersion,
     projectRepositoryUrl,
@@ -662,8 +663,9 @@ function ComputeResourceOption({
     },
     [
       apiVersion,
-      metadataVersion,
+      branch,
       debouncedUpdateConfig,
+      metadataVersion,
       optionName,
       optionSuffix,
       projectRepositoryUrl,
@@ -683,6 +685,7 @@ function ComputeResourceOption({
     });
   }, [
     apiVersion,
+    branch,
     metadataVersion,
     optionDefaultValue,
     optionName,
@@ -787,6 +790,7 @@ const AutoFetchLfsOption = ({
     });
   }, [
     apiVersion,
+    branch,
     metadataVersion,
     projectRepositoryUrl,
     selectedAutoFetchLfs,
@@ -804,7 +808,7 @@ const AutoFetchLfsOption = ({
         "interactive.lfs_auto_fetch": null,
       },
     });
-  }, [apiVersion, metadataVersion, projectRepositoryUrl, updateConfig]);
+  }, [apiVersion, branch, metadataVersion, projectRepositoryUrl, updateConfig]);
 
   // Reset the temporary value when the API responds with an error
   useEffect(() => {
@@ -967,6 +971,7 @@ const PinnedImageOption = ({
     });
   }, [
     apiVersion,
+    branch,
     metadataVersion,
     newValue,
     projectRepositoryUrl,
@@ -984,7 +989,7 @@ const PinnedImageOption = ({
         "interactive.image": null,
       },
     });
-  }, [apiVersion, metadataVersion, projectRepositoryUrl, updateConfig]);
+  }, [apiVersion, branch, metadataVersion, projectRepositoryUrl, updateConfig]);
 
   // Reset the temporary value when the API responds with an error
   useEffect(() => {
@@ -1235,6 +1240,7 @@ const UnknownOption = ({
     });
   }, [
     apiVersion,
+    branch,
     metadataVersion,
     optionKey,
     projectRepositoryUrl,
