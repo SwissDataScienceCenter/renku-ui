@@ -24,6 +24,7 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import {
   useGetAllRepositoryBranchesQuery,
   useGetAllRepositoryCommitsQuery,
@@ -37,7 +38,6 @@ import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.h
 import useDefaultSessionClassOption from "../../hooks/options/useDefaultSessionClassOption.hook";
 import useDefaultStorageOption from "../../hooks/options/useDefaultStorageOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
-import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { useStartSessionMutation } from "../../sessions.api";
 import {
   setError,
@@ -142,14 +142,17 @@ function useAutostartSessionOptions(): void {
     data: projectConfig,
     error: errorProjectConfig,
     isFetching: projectConfigIsFetching,
-  } = usePatchedProjectConfig({
-    apiVersion,
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    metadataVersion,
-    projectRepositoryUrl,
-    skip: !backendAvailable || !coreSupportComputed || !commit,
-  });
+  } = useGetConfigQuery(
+    {
+      apiVersion,
+      metadataVersion,
+      projectRepositoryUrl,
+      commit,
+    },
+    {
+      skip: !backendAvailable || !coreSupportComputed || !commit,
+    }
+  );
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
     useGetResourcePoolsQuery(
       {

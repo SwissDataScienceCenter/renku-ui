@@ -36,10 +36,10 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { ProjectConfig } from "../../../project/Project";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
-import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { useServerOptionsQuery } from "../../sessions.api";
 import { ServerOptions } from "../../sessions.types";
 import { setDefaultUrl, setLfsAutoFetch } from "../../startSessionOptionsSlice";
@@ -61,9 +61,6 @@ export const StartNotebookServerOptions = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
@@ -78,14 +75,15 @@ export const StartNotebookServerOptions = () => {
     ({ startSessionOptions }) => startSessionOptions.commit
   );
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
-    usePatchedProjectConfig({
-      apiVersion,
-      commit,
-      gitLabProjectId: gitLabProjectId ?? 0,
-      metadataVersion,
-      projectRepositoryUrl,
-      skip: !backendAvailable || !coreSupportComputed || !commit,
-    });
+    useGetConfigQuery(
+      {
+        apiVersion,
+        metadataVersion,
+        projectRepositoryUrl,
+        commit,
+      },
+      { skip: !backendAvailable || !coreSupportComputed || !commit }
+    );
 
   if (
     serverOptionsIsLoading ||
@@ -147,9 +145,6 @@ const DefaultUrlOption = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
@@ -164,14 +159,17 @@ const DefaultUrlOption = () => {
     ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
-    usePatchedProjectConfig({
-      apiVersion,
-      commit,
-      gitLabProjectId: gitLabProjectId ?? 0,
-      metadataVersion,
-      projectRepositoryUrl,
-      skip: !backendAvailable || !coreSupportComputed || !commit,
-    });
+    useGetConfigQuery(
+      {
+        apiVersion,
+        metadataVersion,
+        projectRepositoryUrl,
+        commit,
+      },
+      {
+        skip: !backendAvailable || !coreSupportComputed || !commit,
+      }
+    );
 
   const defaultUrlOptions = mergeDefaultUrlOptions({
     serverOptions,
@@ -264,9 +262,6 @@ const AutoFetchLfsOption = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
@@ -279,14 +274,17 @@ const AutoFetchLfsOption = () => {
   const commit = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.commit
   );
-  const { data: projectConfig } = usePatchedProjectConfig({
-    apiVersion,
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    metadataVersion,
-    projectRepositoryUrl,
-    skip: !coreSupportComputed || !commit,
-  });
+  const { data: projectConfig } = useGetConfigQuery(
+    {
+      apiVersion,
+      metadataVersion,
+      projectRepositoryUrl,
+      commit,
+    },
+    {
+      skip: !coreSupportComputed || !commit,
+    }
+  );
 
   const lfsAutoFetch = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.lfsAutoFetch
