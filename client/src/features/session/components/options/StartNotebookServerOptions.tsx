@@ -71,8 +71,8 @@ export const StartNotebookServerOptions = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.commit
+  const { branch: currentBranch, commit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
     useGetConfigQuery(
@@ -80,7 +80,7 @@ export const StartNotebookServerOptions = () => {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
-        branch: "TODO-BRANCH",
+        branch: currentBranch,
         commit,
       },
       { skip: !backendAvailable || !coreSupportComputed || !commit }
@@ -156,16 +156,18 @@ const DefaultUrlOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const { commit, defaultUrl: selectedDefaultUrl } = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions
-  );
+  const {
+    branch: currentBranch,
+    commit,
+    defaultUrl: selectedDefaultUrl,
+  } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     useGetConfigQuery(
       {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
-        branch: "TODO-BRANCH",
+        branch: currentBranch,
         commit,
       },
       {
@@ -273,15 +275,15 @@ const AutoFetchLfsOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.commit
+  const { branch: currentBranch, commit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
     {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
-      branch: "TODO-BRANCH",
+      branch: currentBranch,
       commit,
     },
     {
