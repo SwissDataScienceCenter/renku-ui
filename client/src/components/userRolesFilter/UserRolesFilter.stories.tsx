@@ -16,28 +16,36 @@
  * limitations under the License.
  */
 
-import { isURL } from "../utils/helpers/HelperFunctions";
+import { Meta, StoryObj } from "@storybook/react";
 
-/**
- * Check if the endpoint is valid.
- * @param {object} cloudStoreConfig
- */
-export function isCloudStorageEndpointValid(cloudStoreConfig) {
-  if (cloudStoreConfig["endpoint"].length < 1) return false;
-  if (!isURL(cloudStoreConfig["endpoint"])) return false;
-  return true;
-}
+import UserRolesFilter from "./UserRolesFilter";
 
-/**
- * Check if the bucket is valid.
- * @param {object} cloudStoreConfig
- */
-export function isCloudStorageBucketValid(cloudStoreConfig) {
-  const bucketPattern = new RegExp(
-    "^([a-z]|\\d)([a-z]|\\d|\\.|-){1,61}([a-z]|\\d)$",
-    "gsm"
-  );
-  const bucket = cloudStoreConfig["bucket"];
-  if (bucket.length < 1) return false;
-  return bucketPattern.test(bucket);
-}
+const meta: Meta<typeof UserRolesFilter> = {
+  title: "components/Search/UserRolesFilter",
+  component: UserRolesFilter,
+  argTypes: {
+    role: {
+      type: {
+        name: "object",
+        value: {
+          owner: { name: "boolean" },
+          maintainer: { name: "boolean" },
+          reader: { name: "boolean" },
+        },
+      },
+    },
+    setUserRole: { table: { disable: true } },
+  },
+  args: {
+    role: {
+      owner: false,
+      maintainer: false,
+      reader: false,
+    },
+    setUserRole() {},
+  },
+};
+export default meta;
+type Story = StoryObj<typeof UserRolesFilter>;
+
+export const Default: Story = {};

@@ -66,6 +66,10 @@ export const startSessionOptionsSlice = createSlice({
       state.environmentVariables.splice(action.payload.index, 1);
     },
     setBranch: (state, action: PayloadAction<string>) => {
+      if (state.branch === action.payload) {
+        return;
+      }
+
       state.branch = action.payload;
       // Also reset the commit when a branch is set
       state.commit = "";
@@ -76,6 +80,10 @@ export const startSessionOptionsSlice = createSlice({
       state.cloudStorage.splice(0, -1, ...action.payload);
     },
     setCommit: (state, action: PayloadAction<string>) => {
+      if (state.commit === action.payload) {
+        return;
+      }
+
       state.commit = action.payload;
       // Also reset the docker image status when a commit is set
       state.dockerImageBuildStatus = "unknown";

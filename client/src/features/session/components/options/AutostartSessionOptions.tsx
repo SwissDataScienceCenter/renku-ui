@@ -27,7 +27,7 @@ import { useGetCloudStorageForProjectQuery } from "../../../project/components/c
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import {
   useGetAllRepositoryBranchesQuery,
-  useGetRepositoryCommitsQuery,
+  useGetAllRepositoryCommitsQuery,
 } from "../../../project/projectGitLab.api";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
@@ -121,7 +121,7 @@ function useAutostartSessionOptions(): void {
       { skip: !gitLabProjectId }
     );
   const { data: commits, isFetching: commitsIsFetching } =
-    useGetRepositoryCommitsQuery(
+    useGetAllRepositoryCommitsQuery(
       {
         branch: currentBranch,
         projectId: `${gitLabProjectId ?? 0}`,

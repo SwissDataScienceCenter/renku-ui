@@ -3,7 +3,7 @@ import {
   EntityType,
   KgSearchResultLink,
   KgSearchResult,
-} from "../kgSearch/KgSearch.d";
+} from "./KgSearch.types";
 import { stateToSearchString } from "./KgSearchState";
 
 export { kgSearchApi, EntityType, stateToSearchString };

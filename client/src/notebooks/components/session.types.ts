@@ -27,6 +27,7 @@ export interface NotebookAnnotations {
   gitlabProjectId: number;
   projectName: string;
   repository: string;
+  resourceClassId: string;
 
   hibernation: Record<string, unknown>;
   hibernationBranch: string;
