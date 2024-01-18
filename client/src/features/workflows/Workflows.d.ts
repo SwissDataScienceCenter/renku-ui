@@ -103,7 +103,7 @@ export interface WorkflowsDisplay {
 
 export interface WorkflowRequestParams
   extends CoreVersionUrl,
-    CoreRepositoryParams {
+    Omit<CoreRepositoryParams, "branch"> {
   reference: string;
   fullPath: string;
 }

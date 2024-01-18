@@ -239,7 +239,7 @@ export interface MigrationStartParams
 }
 
 export interface MigrationStartBody {
-  branch?: string;
+  branch: string;
   force_template_update: boolean;
   git_url: string;
   is_delayed?: boolean;

@@ -222,6 +222,7 @@ export const projectCoreApi = createApi({
         }
         const body: MigrationStartBody = {
           git_url: data.gitUrl,
+          branch: data.branch,
           ...options,
         };
         if (data.branch) body.branch = data.branch;
