@@ -147,6 +147,7 @@ function useAutostartSessionOptions(): void {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch: currentBranch,
       commit,
     },
     {

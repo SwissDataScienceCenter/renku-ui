@@ -126,6 +126,7 @@ export default function ProjectSettingsSessions() {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch: defaultBranch,
     },
     { skip: !coreSupportComputed }
   );
@@ -248,6 +249,7 @@ export default function ProjectSettingsSessions() {
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
+        branch={defaultBranch}
         devAccess={devAccess}
       />
 
@@ -266,6 +268,7 @@ export default function ProjectSettingsSessions() {
         optionValue={projectConfig.config.sessions?.legacyConfig?.cpuRequest}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
+        branch={defaultBranch}
       />
       <ComputeResourceOption
         apiVersion={apiVersion}
@@ -284,6 +287,7 @@ export default function ProjectSettingsSessions() {
         optionValue={projectConfig.config.sessions?.legacyConfig?.memoryRequest}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
+        branch={defaultBranch}
       />
       <ComputeResourceOption
         apiVersion={apiVersion}
@@ -300,6 +304,7 @@ export default function ProjectSettingsSessions() {
         optionValue={projectConfig.config.sessions?.storage}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
+        branch={defaultBranch}
       />
       <ComputeResourceOption
         apiVersion={apiVersion}
@@ -316,6 +321,7 @@ export default function ProjectSettingsSessions() {
         optionValue={projectConfig.config.sessions?.legacyConfig?.gpuRequest}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
+        branch={defaultBranch}
       />
 
       <AutoFetchLfsOption
@@ -324,6 +330,7 @@ export default function ProjectSettingsSessions() {
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
+        branch={defaultBranch}
         devAccess={devAccess}
       />
 
@@ -333,6 +340,7 @@ export default function ProjectSettingsSessions() {
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
+        branch={defaultBranch}
         devAccess={devAccess}
       />
 
@@ -342,6 +350,7 @@ export default function ProjectSettingsSessions() {
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
+        branch={defaultBranch}
         devAccess={devAccess}
       />
     </SessionsDiv>
@@ -455,6 +464,7 @@ interface DefaultUrlOptionProps extends CoreServiceVersionedApiParams {
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
+  branch: string;
   devAccess: boolean;
 }
 
@@ -465,6 +475,7 @@ const DefaultUrlOption = ({
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
+  branch,
   devAccess,
 }: DefaultUrlOptionProps) => {
   const defaultUrlOptions = [
@@ -496,6 +507,7 @@ const DefaultUrlOption = ({
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
+        branch,
         update: {
           "interactive.default_url": value,
         },
@@ -510,6 +522,7 @@ const DefaultUrlOption = ({
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch,
       update: {
         "interactive.default_url": defaultValue,
       },
@@ -599,6 +612,7 @@ interface ComputeResourceOptionProps extends CoreServiceVersionedApiParams {
   optionValue: number | undefined;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
+  branch: string;
 }
 
 function ComputeResourceOption({
@@ -617,6 +631,7 @@ function ComputeResourceOption({
   optionValue,
   projectConfigIsFetching,
   projectRepositoryUrl,
+  branch,
 }: ComputeResourceOptionProps) {
   // Temporary value for optimistic UI update
   const [newValue, setNewValue] = useState<number | null>(null);
@@ -639,6 +654,7 @@ function ComputeResourceOption({
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
+        branch,
         update: {
           [optionName]: `${value}${optionSuffix}`,
         },
@@ -660,6 +676,7 @@ function ComputeResourceOption({
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch,
       update: {
         [optionName]: null,
       },
@@ -734,6 +751,7 @@ interface AutoFetchLfsOptionProps extends CoreServiceVersionedApiParams {
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
+  branch: string;
   devAccess: boolean;
 }
 
@@ -743,6 +761,7 @@ const AutoFetchLfsOption = ({
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
+  branch,
   devAccess,
 }: AutoFetchLfsOptionProps) => {
   // Temporary value for optimistic UI update
@@ -761,6 +780,7 @@ const AutoFetchLfsOption = ({
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch,
       update: {
         "interactive.lfs_auto_fetch": `${!selectedAutoFetchLfs}`,
       },
@@ -779,6 +799,7 @@ const AutoFetchLfsOption = ({
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch,
       update: {
         "interactive.lfs_auto_fetch": null,
       },
@@ -821,6 +842,7 @@ interface ProjectSettingsSessionsAdvancedProps
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
+  branch: string;
   devAccess: boolean;
 }
 
@@ -830,6 +852,7 @@ const ProjectSettingsSessionsAdvanced = ({
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
+  branch,
   devAccess,
 }: ProjectSettingsSessionsAdvancedProps) => {
   const imageIsSet = !!projectConfig.config.sessions?.dockerImage;
@@ -875,6 +898,7 @@ const ProjectSettingsSessionsAdvanced = ({
                 projectConfig={projectConfig}
                 projectConfigIsFetching={projectConfigIsFetching}
                 projectRepositoryUrl={projectRepositoryUrl}
+                branch={branch}
                 devAccess={devAccess}
               />
             </AccordionBody>
@@ -895,6 +919,7 @@ interface PinnedImageOptionProps extends CoreServiceVersionedApiParams {
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
+  branch: string;
   devAccess: boolean;
 }
 
@@ -904,6 +929,7 @@ const PinnedImageOption = ({
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
+  branch,
   devAccess,
 }: PinnedImageOptionProps) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -934,6 +960,7 @@ const PinnedImageOption = ({
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch,
       update: {
         "interactive.image": newValue,
       },
@@ -952,6 +979,7 @@ const PinnedImageOption = ({
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch,
       update: {
         "interactive.image": null,
       },
@@ -1100,6 +1128,7 @@ interface ProjectSettingsSessionsUnknownProps
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
+  branch: string;
   devAccess: boolean;
 }
 
@@ -1109,6 +1138,7 @@ const ProjectSettingsSessionsUnknown = ({
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
+  branch,
   devAccess,
 }: ProjectSettingsSessionsUnknownProps) => {
   const unknownConfig = projectConfig.config.sessions?.unknownConfig ?? {};
@@ -1151,6 +1181,7 @@ const ProjectSettingsSessionsUnknown = ({
                   optionValue={unknownConfig[optionKey]}
                   projectConfigIsFetching={projectConfigIsFetching}
                   projectRepositoryUrl={projectRepositoryUrl}
+                  branch={branch}
                   devAccess={devAccess}
                 />
               ))}
@@ -1168,6 +1199,7 @@ interface UnknownOptionProps extends CoreServiceVersionedApiParams {
   optionValue: string;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
+  branch: string;
   devAccess: boolean;
 }
 
@@ -1179,6 +1211,7 @@ const UnknownOption = ({
   optionValue,
   projectConfigIsFetching,
   projectRepositoryUrl,
+  branch,
   devAccess,
 }: UnknownOptionProps) => {
   const shortKey = optionKey.toLocaleLowerCase().startsWith("interactive")
@@ -1195,7 +1228,7 @@ const UnknownOption = ({
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
-      branch: null,
+      branch,
       update: {
         [optionKey]: null,
       },

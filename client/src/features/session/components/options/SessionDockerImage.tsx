@@ -41,8 +41,8 @@ export default function SessionDockerImage() {
     metadataVersion,
   } = coreSupport;
 
-  const commit = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.commit
+  const { branch: currentBranch, commit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
 
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
@@ -51,6 +51,7 @@ export default function SessionDockerImage() {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
+        branch: currentBranch,
         commit,
       },
       {
