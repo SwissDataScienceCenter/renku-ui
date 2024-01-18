@@ -300,8 +300,14 @@ function SessionActions({ className, session }: SessionActionsProps) {
   const [modifySession, { error: errorModifySession }] =
     usePatchSessionMutation();
   const onModifySession = useCallback(
-    (sessionClass: number) => {
-      modifySession({ sessionName: session.name, sessionClass });
+    (sessionClass: number, resumeSession: boolean) => {
+      modifySession({
+        sessionName: session.name,
+        sessionClass,
+        ...(resumeSession && status === "hibernated"
+          ? { state: "running" }
+          : {}),
+      });
     },
     [modifySession, session.name]
   );
@@ -615,7 +621,7 @@ function ConfirmDeleteModal({
 interface ModifySessionModalProps {
   annotations: NotebookAnnotations;
   isOpen: boolean;
-  onModifySession: (sessionClass: number) => void;
+  onModifySession: (sessionClass: number, resumeSession: boolean) => void;
   resources: Session["resources"];
   toggleModal: () => void;
 }
@@ -648,7 +654,7 @@ function ModifySessionModal({
 
 interface ModifySessionModalContentProps {
   annotations: NotebookAnnotations;
-  onModifySession: (sessionClass: number) => void;
+  onModifySession: (sessionClass: number, resumeSession: boolean) => void;
   resources: Session["resources"];
   toggleModal: () => void;
 }
@@ -684,7 +690,7 @@ function ModifySessionModalContent({
     if (!currentSessionClass) {
       return;
     }
-    onModifySession(currentSessionClass.id);
+    onModifySession(currentSessionClass.id, /*resumeSession=*/ true);
     toggleModal();
   }, [currentSessionClass, onModifySession, toggleModal]);
 
