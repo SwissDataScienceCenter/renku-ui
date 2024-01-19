@@ -9,7 +9,8 @@
           "name": "flights tutorial julia",
           "fullPath": "julia/flights-tutorial-julia",
           "namespace": { "fullPath": "julia" },
-          "path": "flights-tutorial-julia"
+          "path": "flights-tutorial-julia",
+          "default_branch": "master"
         },
         {
           "repository": { "rootRef": "master" },
@@ -17,7 +18,8 @@
           "name": "julia-playground",
           "fullPath": "test-user/julia-playground",
           "namespace": { "fullPath": "test-user" },
-          "path": "julia-playground"
+          "path": "julia-playground",
+          "default_branch": "master"
         },
         {
           "repository": { "rootRef": "master" },
@@ -25,7 +27,8 @@
           "name": "outdated",
           "fullPath": "test-user/outdated",
           "namespace": { "fullPath": "test-user" },
-          "path": "outdated"
+          "path": "outdated",
+          "default_branch": "master"
         },
         {
           "repository": { "rootRef": "master" },
@@ -33,7 +36,8 @@
           "name": "internal playground",
           "fullPath": "test-user-internal/internal-playground",
           "namespace": { "fullPath": "test-user-internal" },
-          "path": "internal-playground"
+          "path": "internal-playground",
+          "default_branch": "master"
         },
         {
           "repository": { "rootRef": "master" },
@@ -41,7 +45,8 @@
           "name": "julia playground future",
           "fullPath": "test-user/julia-playground-future",
           "namespace": { "fullPath": "test-user" },
-          "path": "julia-playground-future"
+          "path": "julia-playground-future",
+          "default_branch": "master"
         },
         {
           "repository": { "rootRef": "master" },
@@ -49,7 +54,8 @@
           "name": "a private project with space",
           "fullPath": "test-user-private/a-private-project-with-space",
           "namespace": { "fullPath": "test-user-private" },
-          "path": "a-private-project-with-space"
+          "path": "a-private-project-with-space",
+          "default_branch": "master"
         },
         {
           "repository": { "rootRef": "master" },
@@ -57,7 +63,8 @@
           "name": "New test",
           "fullPath": "test-user/new-test",
           "namespace": { "fullPath": "test-user" },
-          "path": "new-test"
+          "path": "new-test",
+          "default_branch": "master"
         },
         {
           "repository": { "rootRef": "master" },
@@ -65,7 +72,8 @@
           "name": "old-title",
           "fullPath": "renku-qa/old-title",
           "namespace": { "fullPath": "renku-qa" },
-          "path": "old-title"
+          "path": "old-title",
+          "default_branch": "master"
         },
         {
           "repository": { "rootRef": "master" },
@@ -73,7 +81,8 @@
           "name": "new-project-testing",
           "fullPath": "test-user/new-project-testing",
           "namespace": { "fullPath": "test-user" },
-          "path": "new-project-testing"
+          "path": "new-project-testing",
+          "default_branch": "master"
         },
         {
           "repository": { "rootRef": "master" },
@@ -81,7 +90,8 @@
           "name": "dataset-test-project",
           "fullPath": "test-user/dataset-test-project",
           "namespace": { "fullPath": "test-user" },
-          "path": "dataset-test-project"
+          "path": "dataset-test-project",
+          "default_branch": "master"
         },
         {
           "repository": { "rootRef": "master" },
@@ -89,7 +99,8 @@
           "name": "covid-19-dashboard",
           "fullPath": "test-user/covid-19-dashboard",
           "namespace": { "fullPath": "test-user" },
-          "path": "covid-19-dashboard"
+          "path": "covid-19-dashboard",
+          "default_branch": "master"
         }
       ]
     }

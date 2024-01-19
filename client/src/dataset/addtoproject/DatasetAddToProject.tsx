@@ -130,7 +130,9 @@ function DatasetAddToProject({
           setIsDatasetValid(false);
           return false;
         }
+        console.log({ fetchDatasetProject });
         const branch = fetchDatasetProject?.data?.all?.default_branch;
+        console.log({ gitUrl: urlProjectOrigin, branch });
         setSrcProjectDetails({ gitUrl: urlProjectOrigin, branch });
       } catch (e) {
         setCurrentStatus({ status: "error", text: "Invalid Dataset" });
@@ -191,6 +193,7 @@ function DatasetAddToProject({
     // However, graphql return the httpUrlToRepo, so we remove ".git".
     const gitUrl = cleanGitUrl(project.value);
     const branch = project.default_branch;
+    console.log({ project, gitUrl, branch });
     setDstProjectDetails({ gitUrl, branch });
   };
 

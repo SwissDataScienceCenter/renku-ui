@@ -15,6 +15,7 @@
             "fullPath": "e2e"
           },
           "path": "test-import-project",
+          "default_branch": "master",
           "httpUrlToRepo": "https://dev.renku.ch/gitlab/e2e/test-import-project.git",
           "userPermissions": {
             "adminProject": true,
@@ -31,6 +32,7 @@
             "fullPath": "e2e"
           },
           "path": "testing-datasets",
+          "default_branch": "master",
           "httpUrlToRepo": "https://dev.renku.ch/gitlab/e2e/testing-datasets.git",
           "userPermissions": {
             "adminProject": true,
@@ -47,6 +49,7 @@
             "fullPath": "e2e"
           },
           "path": "local-test-project",
+          "default_branch": "master",
           "httpUrlToRepo": "https://dev.renku.ch/gitlab/e2e/local-test-project.git",
           "userPermissions": {
             "adminProject": true,

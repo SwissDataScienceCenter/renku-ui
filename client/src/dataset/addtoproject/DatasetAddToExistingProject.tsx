@@ -98,6 +98,7 @@ function AddDatasetExistingProject({
 
     searchDomain.forEach((d: ExistingProject) => {
       if (regex.exec(d.path_with_namespace) != null) {
+        console.log({ d });
         hits[d.path_with_namespace] = {
           default_branch: d.default_branch,
           value: d.http_url_to_repo,
