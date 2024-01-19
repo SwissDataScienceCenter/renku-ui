@@ -330,6 +330,7 @@ class FileLineage extends Component {
         <ExternalIconLink
           tooltip="Download File"
           icon={faDownload}
+          // TODO: change this!!!
           to={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
         />
       );

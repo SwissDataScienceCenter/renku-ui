@@ -18,7 +18,7 @@
 
 import { useParams } from "react-router-dom";
 
-import { StateModelProject } from "../features/project/Project";
+import { StateModelProject } from "../features/project/project.types";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import {
   useGetWorkflowDetailQuery,

@@ -43,7 +43,7 @@ import { Loader } from "../../../../components/Loader";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { StateModelProject } from "../../Project";
+import { StateModelProject } from "../../project.types";
 import { useDeleteCloudStorageMutation } from "./projectCloudStorage.api";
 import {
   CloudStorage,

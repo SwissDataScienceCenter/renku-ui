@@ -48,7 +48,7 @@ import {
   RetryPipelineParams,
   RunPipelineParams,
 } from "./GitLab.types";
-import { ProjectConfig } from "./Project";
+import { ProjectConfig } from "./project.types";
 import { transformGetConfigRawResponse } from "./projectCoreApi";
 import processPaginationHeaders from "../../utils/helpers/pagination.utils";
 

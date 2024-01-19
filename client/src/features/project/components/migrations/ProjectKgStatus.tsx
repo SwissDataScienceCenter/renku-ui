@@ -29,7 +29,7 @@ import { Collapse } from "reactstrap";
 
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Docs } from "../../../../utils/constants/Docs";
-import { ProjectIndexingStatusResponse } from "../../Project";
+import { ProjectIndexingStatusResponse } from "../../project.types";
 import { ProjectIndexingStatuses } from "../../projectEnums";
 import { projectKgApi } from "../../projectKg.api";
 import {

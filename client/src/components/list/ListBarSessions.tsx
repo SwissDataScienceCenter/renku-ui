@@ -122,6 +122,7 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
  * Session View
  */
 interface ListBarSessionProps extends ListElementProps {
+  defaultBranch: string;
   fullPath: string;
   gitUrl: string;
   notebook: Notebook["data"];
@@ -130,6 +131,7 @@ interface ListBarSessionProps extends ListElementProps {
 
 function ListBarSession({
   creators,
+  defaultBranch,
   description,
   fullPath,
   gitUrl,
@@ -257,6 +259,7 @@ function ListBarSession({
         <SessionButton
           fullPath={fullPath}
           gitUrl={gitUrl}
+          branch={defaultBranch}
           runningSessionName={notebook.name}
         />
       </div>

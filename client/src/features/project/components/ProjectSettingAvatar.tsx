@@ -30,7 +30,7 @@ import InlineSubmitImageInput, {
 import { InputCard } from "../../../components/inlineSubmitInput/InlineSubmitInput";
 import { PROJECT_AVATAR_MAX_SIZE } from "../../../project/new/components/NewProjectAvatar";
 import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
-import { ImagesLinks } from "../Project";
+import { ImagesLinks } from "../project.types";
 import {
   useGetProjectIndexingStatusQuery,
   useProjectMetadataQuery,

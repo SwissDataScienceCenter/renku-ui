@@ -20,7 +20,7 @@ import {
   MigrationStatus,
   RenkuMigrationLevel,
   TemplateMigrationLevel,
-} from "../Project";
+} from "../project.types";
 import { ProjectMigrationLevel } from "../projectEnums";
 import { TemplateSourceRenku } from "../../../utils/constants/Migrations";
 import { RenkuRepositories } from "../../../utils/constants/Repositories";
