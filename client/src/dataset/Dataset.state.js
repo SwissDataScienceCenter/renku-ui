@@ -121,12 +121,17 @@ class DatasetCoordinator {
       });
   }
 
-  fetchDatasetFilesFromCoreService(name, httpProjectUrl, versionUrl) {
+  fetchDatasetFilesFromCoreService(name, httpProjectUrl, versionUrl, branch) {
     if (!name || !httpProjectUrl || !versionUrl) return;
 
     this.set("files.fetching", true);
     return this.client
-      .fetchDatasetFilesFromCoreService(name, httpProjectUrl, versionUrl)
+      .fetchDatasetFilesFromCoreService(
+        name,
+        httpProjectUrl,
+        versionUrl,
+        branch
+      )
       .then((response) => {
         if (response.data.result) {
           const files = response.data.result.files.map((file) => ({

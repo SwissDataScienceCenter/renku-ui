@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,30 +16,11 @@
  * limitations under the License.
  */
 
-// Story type is deprecated but at the moment we can use this type
-import { Meta, StoryObj } from "@storybook/react";
-import { AuthorFilter } from "./AuthorFilter";
+import processPaginationHeadersJs from "../../api-client/pagination";
+import { Pagination } from "../types/pagination.types";
 
-const meta: Meta<typeof AuthorFilter> = {
-  title: "components/Search/AuthorFilter",
-  component: AuthorFilter,
-  argTypes: {
-    value: {
-      options: ["user", "all"],
-      control: { type: "radio" },
-    },
-    handler: {
-      table: {
-        disable: true,
-      },
-    },
-  },
-};
-export default meta;
-type Story = StoryObj<typeof AuthorFilter>;
+const processPaginationHeaders = processPaginationHeadersJs as (
+  headers: Headers | undefined | null
+) => Pagination;
 
-export const Default: Story = {
-  args: {
-    value: "all",
-  },
-};
+export default processPaginationHeaders;

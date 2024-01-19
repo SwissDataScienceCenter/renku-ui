@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 
-export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
-
-export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
-  "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
-
-export const CLOUD_STORAGE_READWRITE_ENABLED = false;
+export interface UserRoles {
+  owner: boolean;
+  maintainer: boolean;
+  reader: boolean;
+}

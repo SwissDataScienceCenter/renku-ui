@@ -26,7 +26,7 @@ import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
 import { InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
-import { User } from "../../../model/RenkuModels";
+import { User } from "../../../model/renkuModels.types";
 import { NotebooksHelper } from "../../../notebooks";
 import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";

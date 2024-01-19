@@ -17,7 +17,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { WorkflowsDisplay } from "./Workflows";
+import { WorkflowsDisplay } from "./workflows.types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

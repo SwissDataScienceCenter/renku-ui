@@ -106,23 +106,22 @@ export interface StartSessionParams {
 
 export interface PatchSessionParams {
   sessionName: string;
-  state: Extract<"running" | "hibernated", SessionStatusState>;
+  state?: Extract<"running" | "hibernated", SessionStatusState>;
+  sessionClass?: number;
 }
 
 export interface CloudStorageDefinitionForSessionApi {
-  configuration:
-    | {
-        type: "s3";
-        endpoint: string;
-        access_key_id?: string;
-        secret_access_key?: string;
-      }
-    | {
-        type: "azureblob";
-        endpoint: string;
-        secret_access_key: string;
-      };
+  configuration: Record<string, boolean | number | string | undefined>;
   readonly: boolean;
   source_path: string;
   target_path: string;
+}
+
+export interface NotebooksErrorContent {
+  code: number;
+  message: string;
+}
+
+export interface NotebooksErrorResponse {
+  error: NotebooksErrorContent;
 }

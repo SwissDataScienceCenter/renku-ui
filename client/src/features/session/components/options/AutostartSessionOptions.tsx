@@ -23,10 +23,11 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
-import { useGetCloudStorageForProjectQuery } from "../../../project/projectCloudStorage.api";
+import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import {
   useGetAllRepositoryBranchesQuery,
-  useGetRepositoryCommitsQuery,
+  useGetAllRepositoryCommitsQuery,
 } from "../../../project/projectGitLab.api";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
@@ -37,7 +38,6 @@ import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.h
 import useDefaultSessionClassOption from "../../hooks/options/useDefaultSessionClassOption.hook";
 import useDefaultStorageOption from "../../hooks/options/useDefaultStorageOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
-import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { useStartSessionMutation } from "../../sessions.api";
 import {
   setError,
@@ -121,7 +121,7 @@ function useAutostartSessionOptions(): void {
       { skip: !gitLabProjectId }
     );
   const { data: commits, isFetching: commitsIsFetching } =
-    useGetRepositoryCommitsQuery(
+    useGetAllRepositoryCommitsQuery(
       {
         branch: currentBranch,
         projectId: `${gitLabProjectId ?? 0}`,
@@ -142,14 +142,17 @@ function useAutostartSessionOptions(): void {
     data: projectConfig,
     error: errorProjectConfig,
     isFetching: projectConfigIsFetching,
-  } = usePatchedProjectConfig({
-    apiVersion,
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    metadataVersion,
-    projectRepositoryUrl,
-    skip: !backendAvailable || !coreSupportComputed || !commit,
-  });
+  } = useGetConfigQuery(
+    {
+      apiVersion,
+      metadataVersion,
+      projectRepositoryUrl,
+      commit,
+    },
+    {
+      skip: !backendAvailable || !coreSupportComputed || !commit,
+    }
+  );
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
     useGetResourcePoolsQuery(
       {
@@ -170,10 +173,7 @@ function useAutostartSessionOptions(): void {
         skip:
           !gitLabProjectId ||
           !notebooksVersion ||
-          !(
-            notebooksVersion.cloudStorageEnabled.s3 ||
-            notebooksVersion.cloudStorageEnabled.azureBlob
-          ),
+          !notebooksVersion.cloudStorageEnabled,
       }
     );
 

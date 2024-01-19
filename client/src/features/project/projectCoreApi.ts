@@ -41,6 +41,7 @@ import { CoreVersionUrl } from "../../utils/types/coreService.types";
 interface GetConfigParams extends CoreVersionUrl {
   projectRepositoryUrl: string;
   branch?: string;
+  commit?: string;
 }
 
 interface GetConfigRawResponse {
@@ -67,7 +68,7 @@ type GetConfigRawResponseSection = {
   [Key in GetConfigRawResponseSectionKey]?: string;
 };
 
-interface UpdateConfigParams extends GetConfigParams {
+interface UpdateConfigParams extends Omit<GetConfigParams, "commit"> {
   projectRepositoryUrl: string;
   branch?: string;
   update: {
@@ -103,7 +104,11 @@ export const projectCoreApi = createApi({
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
       query: (params: GetDatasetFilesParams) => {
-        const queryParams = { git_url: params.git_url, slug: params.slug };
+        const queryParams = {
+          git_url: params.git_url,
+          slug: params.slug,
+          branch: params.branch,
+        };
         const headers = {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -241,12 +246,14 @@ export const projectCoreApi = createApi({
       query: ({
         apiVersion,
         branch,
+        commit,
         projectRepositoryUrl,
         metadataVersion,
       }) => {
         const params = {
           git_url: projectRepositoryUrl,
           ...(branch ? { branch } : {}),
+          ...(commit ? { commit_sha: commit } : {}),
         };
         return {
           url: versionedPathForEndpoint({

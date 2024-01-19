@@ -1,3 +1,43 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
 .formSelect {
   --bs-border-color: var(--bs-rk-border-input);
+}
+
+.control {
+  background: var(--bs-rk-white);
+  --bs-border-color: var(--bs-rk-border-input);
+
+  cursor: pointer !important;
+
+  &:hover {
+    --bs-border-color: var(--bs-rk-green);
+  }
+
+  &IsOpen {
+    --bs-border-color: var(--bs-rk-green);
+  }
+}
+
+.menu {
+  background: var(--bs-rk-white);
+  --bs-border-color: var(--bs-rk-green);
+  z-index: 10 !important;
+}
+
+.option {
+  cursor: pointer !important;
+
+  &:hover,
+  &IsFocused {
+    background-color: #e4e7ea;
+  }
+
+  &IsSelected {
+    background-color: #e4e7ea80;
+  }
 }

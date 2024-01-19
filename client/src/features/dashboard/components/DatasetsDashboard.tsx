@@ -30,7 +30,6 @@ import { Loader } from "../../../components/Loader";
 import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
 import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
 import { Url } from "../../../utils/helpers/url";
-import { KgAuthor } from "../../kgSearch/KgSearch";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
 
 interface OtherDatasetsButtonProps {
@@ -40,11 +39,10 @@ function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
   const projectFilters = { type: { project: false, dataset: true } };
   const paramsUrlStrMyDatasets = stateToSearchString({
     ...projectFilters,
-    author: "user" as KgAuthor,
+    role: { owner: true, maintainer: false, reader: false },
   });
   const paramsUrlStrExploreDatasets = stateToSearchString({
     ...projectFilters,
-    author: "all" as KgAuthor,
   });
   return totalDatasets > MAX_DATASETS_TO_SHOW ? (
     <div className="d-flex justify-content-center">
@@ -113,21 +111,17 @@ function DatasetListRows({ datasets, gridDisplay }: DatasetListProps) {
 }
 
 const MAX_DATASETS_TO_SHOW = 3;
-interface DatasetDashboardProps {
-  userName: string;
-}
-function DatasetDashboard({ userName }: DatasetDashboardProps) {
+function DatasetDashboard() {
   const searchRequest: SearchEntitiesQueryParams = {
     phrase: "",
     sort: SortingOptions.DescDate,
     page: 1,
     perPage: 3,
-    author: "user",
     type: {
       project: false,
       dataset: true,
     },
-    userName,
+    role: { owner: true, maintainer: false, reader: false },
   };
   const { data, isFetching, isLoading, error } =
     useSearchEntitiesQuery(searchRequest);
