@@ -73,7 +73,11 @@ export const useCoreSupport = ({
     undefined // do not use the override for getting migration status
   );
   const getMigrationStatusQuery = useGetMigrationStatusQuery(
-    { apiVersion: migrationStatusApiVersion, gitUrl: gitUrl ?? "", branch },
+    {
+      apiVersion: migrationStatusApiVersion,
+      gitUrl: gitUrl ?? "",
+      branch: branch ?? "",
+    },
     { skip: !gitUrl || !branch }
   );
   const getCoreVersionsQuery = useGetCoreVersionsQuery();

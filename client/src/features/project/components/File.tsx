@@ -21,7 +21,7 @@ import { ShowFile } from "../../../file/File.container";
 import LazyFileLineage from "../../../file/LazyFileLineage";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
-import type { StateModelProject } from "../Project";
+import type { StateModelProject } from "../project.types";
 
 type ProjectFileLineageProps = {
   client: unknown;

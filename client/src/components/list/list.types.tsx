@@ -31,6 +31,7 @@ export enum ListDisplayType {
 
 export interface ListElementProps {
   creators: EntityCreator[];
+  defaultBranch?: string;
   description: string;
   gitUrl?: string;
   id?: string;

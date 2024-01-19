@@ -1,7 +1,7 @@
 import DatasetImport from "../../../project/datasets/import";
 import type { DatasetImportProps } from "../../../project/datasets/import/DatasetImport";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import type { StateModelProject } from "../Project";
+import type { StateModelProject } from "../project.types";
 
 type ProjectDatasetImportProps = {
   client: DatasetImportProps["client"];

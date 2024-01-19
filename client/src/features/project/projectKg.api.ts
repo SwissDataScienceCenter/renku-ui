@@ -34,7 +34,7 @@ import {
   ProjectIndexingStatusResponse,
   ProjectKgParams,
   UpdateProjectResponse,
-} from "./Project";
+} from "./project.types";
 import { ProjectIndexingStatuses } from "./projectEnums";
 import {
   ErrorDataMessage,

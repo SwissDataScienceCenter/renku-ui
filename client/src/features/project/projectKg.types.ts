@@ -1,4 +1,4 @@
-import { ProjectKgParams } from "./Project";
+import { ProjectKgParams } from "./project.types";
 
 export interface JsonLdValue<T> {
   "@value": T;

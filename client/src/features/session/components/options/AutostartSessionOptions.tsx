@@ -147,10 +147,12 @@ function useAutostartSessionOptions(): void {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch: currentBranch,
       commit,
     },
     {
-      skip: !backendAvailable || !coreSupportComputed || !commit,
+      skip:
+        !backendAvailable || !coreSupportComputed || !currentBranch || !commit,
     }
   );
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =

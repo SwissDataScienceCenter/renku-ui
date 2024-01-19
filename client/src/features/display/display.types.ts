@@ -19,6 +19,7 @@
 interface ProjectConfig {
   projectPath: string;
   gitUrl: string;
+  branch: string;
 }
 
 interface SessionConfig {
@@ -31,6 +32,7 @@ interface Display {
       show: boolean;
       projectPath: string;
       gitUrl: string;
+      branch: string;
     };
     sessionLogs: {
       show: boolean;

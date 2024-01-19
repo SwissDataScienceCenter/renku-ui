@@ -50,16 +50,17 @@ const docsIconStyle = {
 interface SshDropdownProps {
   fullPath: string;
   gitUrl: string;
+  branch: string;
 }
 
-function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
+function SshDropdown({ fullPath, gitUrl, branch }: SshDropdownProps) {
   const dispatch = useAppDispatch();
 
   const { data, isLoading, error } = useGetNotebooksVersionQuery();
   if (error || isLoading || !data?.sshEnabled) return null;
 
   const handleClick = () => {
-    dispatch(showSshModal({ projectPath: fullPath, gitUrl }));
+    dispatch(showSshModal({ projectPath: fullPath, gitUrl, branch }));
   };
 
   return (
@@ -86,8 +87,9 @@ function SshModal() {
     {
       apiVersion: migrationStatusApiVersion,
       gitUrl,
+      branch: displayModal.branch,
     },
-    { skip: !gitUrl }
+    { skip: !gitUrl || !displayModal.branch }
   );
 
   // return early if we don't need to display the modal

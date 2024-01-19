@@ -54,18 +54,19 @@ export const SessionStorageOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.commit
+  const { branch: currentBranch, commit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
     {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch: currentBranch,
       commit,
     },
     {
-      skip: !coreSupportComputed || !commit,
+      skip: !coreSupportComputed || !currentBranch || !commit,
     }
   );
 

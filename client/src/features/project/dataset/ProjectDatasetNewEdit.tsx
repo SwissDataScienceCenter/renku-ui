@@ -35,7 +35,7 @@ import ProgressIndicator, {
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
-import type { IDatasetFiles, StateModelProject } from "../Project";
+import type { IDatasetFiles, StateModelProject } from "../project.types";
 import type {
   DatasetModifyDisplayProps,
   DatasetModifyProps,

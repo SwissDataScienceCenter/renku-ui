@@ -34,7 +34,7 @@ import {
   InputLabel,
 } from "../formlabels/FormLabels";
 
-import { Creator } from "../../features/project/Project";
+import { Creator } from "../../features/project/project.types";
 
 import { SetInputsValue } from "./form-field.types";
 

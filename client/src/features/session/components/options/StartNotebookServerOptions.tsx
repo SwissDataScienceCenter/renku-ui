@@ -35,7 +35,7 @@ import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { ProjectConfig } from "../../../project/Project";
+import { ProjectConfig } from "../../../project/project.types";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
@@ -71,8 +71,8 @@ export const StartNotebookServerOptions = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.commit
+  const { branch: currentBranch, commit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
     useGetConfigQuery(
@@ -80,15 +80,23 @@ export const StartNotebookServerOptions = () => {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
+        branch: currentBranch,
         commit,
       },
-      { skip: !backendAvailable || !coreSupportComputed || !commit }
+      {
+        skip:
+          !backendAvailable ||
+          !coreSupportComputed ||
+          !currentBranch ||
+          !commit,
+      }
     );
 
   if (
     serverOptionsIsLoading ||
     projectConfigIsLoading ||
     !coreSupportComputed ||
+    !currentBranch ||
     !commit
   ) {
     const message = serverOptionsIsLoading
@@ -155,19 +163,26 @@ const DefaultUrlOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const { commit, defaultUrl: selectedDefaultUrl } = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions
-  );
+  const {
+    branch: currentBranch,
+    commit,
+    defaultUrl: selectedDefaultUrl,
+  } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     useGetConfigQuery(
       {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
+        branch: currentBranch,
         commit,
       },
       {
-        skip: !backendAvailable || !coreSupportComputed || !commit,
+        skip:
+          !backendAvailable ||
+          !coreSupportComputed ||
+          !currentBranch ||
+          !commit,
       }
     );
 
@@ -271,18 +286,19 @@ const AutoFetchLfsOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.commit
+  const { branch: currentBranch, commit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
     {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch: currentBranch,
       commit,
     },
     {
-      skip: !coreSupportComputed || !commit,
+      skip: !coreSupportComputed || !currentBranch || !commit,
     }
   );
 

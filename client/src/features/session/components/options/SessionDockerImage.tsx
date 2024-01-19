@@ -41,8 +41,8 @@ export default function SessionDockerImage() {
     metadataVersion,
   } = coreSupport;
 
-  const commit = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.commit
+  const { branch: currentBranch, commit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
 
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
@@ -51,14 +51,20 @@ export default function SessionDockerImage() {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
+        branch: currentBranch,
         commit,
       },
       {
-        skip: !coreSupportComputed || !commit,
+        skip: !coreSupportComputed || !currentBranch || !commit,
       }
     );
 
-  if (!coreSupportComputed || !commit || projectConfigIsFetching) {
+  if (
+    !coreSupportComputed ||
+    !currentBranch ||
+    !commit ||
+    projectConfigIsFetching
+  ) {
     return (
       <div className="field-group">
         <div className="form-label">
