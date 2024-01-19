@@ -20,7 +20,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import type { CreatorInputCreator } from "../../../components/form-field/CreatorsInput";
 import type { ImageInputImage } from "../../../components/form-field/ImageInput";
-import type { RenkuUser } from "../../../model/RenkuModels";
+import type { RenkuUser } from "../../../model/renkuModels.types";
 import { DatasetCore } from "../Project";
 
 export type DatasetUploaderFile = {

@@ -28,7 +28,7 @@ import {
   InputHintLabel,
   InputLabel,
 } from "../../../components/formlabels/FormLabels";
-import { NewProjectInputs } from "./newProject.d";
+import { NewProjectInputs } from "./newProject.types";
 
 interface ProjectIdentifierProps {
   input: NewProjectInputs;

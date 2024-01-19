@@ -30,7 +30,7 @@ import { Link } from "react-router-dom";
 import { Button, UncontrolledTooltip } from "reactstrap";
 import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { EntityType } from "./Entities";
+import { EntityType } from "./entities.types";
 import cx from "classnames";
 
 export interface EntityButtonProps {

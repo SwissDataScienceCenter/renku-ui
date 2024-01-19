@@ -27,7 +27,7 @@ import {
   ErrorLabel,
   HelperLabel,
 } from "../../../components/formlabels/FormLabels";
-import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
+import { NewProjectInputs, NewProjectMeta } from "./newProject.types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

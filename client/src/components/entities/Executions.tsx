@@ -19,7 +19,7 @@
 import { ReactNode, forwardRef, useRef } from "react";
 import cx from "classnames";
 import { TimeCaption } from "../TimeCaption";
-import { EntityType } from "./Entities";
+import { EntityType } from "./entities.types";
 
 export interface EntityExecutionsProps {
   display: "list" | "tree";

@@ -17,7 +17,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Display, ProjectConfig, SessionConfig } from "./display";
+import { Display, ProjectConfig, SessionConfig } from "./display.types";
 
 const initialState: Display = {
   modals: {

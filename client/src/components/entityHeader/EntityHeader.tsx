@@ -35,7 +35,7 @@ import { EnvironmentLogs } from "../Logs";
 import { TimeCaption } from "../TimeCaption";
 import Creators, { EntityCreator } from "../entities/Creators";
 import EntityDescription from "../entities/Description";
-import { EntityType } from "../entities/Entities";
+import { EntityType } from "../entities/entities.types";
 import EntityLabel from "../entities/Label";
 import LinkedEntitiesByItemType, {
   EntityLinksHeader,

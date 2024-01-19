@@ -54,7 +54,7 @@ import {
   NewProjectHandlers,
   NewProjectInputs,
   NewProjectMeta,
-} from "./newProject.d";
+} from "./newProject.types";
 
 interface VisibilityProps {
   handlers: NewProjectHandlers;

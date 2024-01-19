@@ -62,7 +62,7 @@ import { Loader } from "../components/Loader";
 import { TreeBrowser, TreeDetails, TreeElement } from "../components/Tree";
 import { CommandCopy } from "../components/commandCopy/CommandCopy";
 import EntityCreators from "../components/entities/Creators";
-import { EntityType } from "../components/entities/Entities";
+import { EntityType } from "../components/entities/entities.types";
 import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
 import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";

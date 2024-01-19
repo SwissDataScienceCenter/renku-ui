@@ -27,7 +27,7 @@ import {
   WorkflowDetailsRequestParams,
   WorkflowListElement,
   WorkflowRequestParams,
-} from "./Workflows";
+} from "./workflows.types";
 
 type GetWorkflowListResponse = CoreResponse<{
   plans: Array<Record<string, unknown>>;
