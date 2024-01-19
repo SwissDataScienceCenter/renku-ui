@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,13 +16,15 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  project/list
- *  Components for the project listing.
- */
+import { Suspense, lazy } from "react";
+import { Loader } from "../../components/Loader";
 
-import { ProjectList } from "./ProjectList.container";
+const Dashboard = lazy(() => import("./Dashboard"));
 
-export { ProjectList };
+export default function LazyDashboard() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <Dashboard />
+    </Suspense>
+  );
+}

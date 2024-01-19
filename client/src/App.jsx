@@ -34,24 +34,22 @@ import { Loader } from "./components/Loader";
 import ShowDataset from "./dataset/Dataset.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
-// import AdminPage from "./features/admin/AdminPage";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
-import { Dashboard } from "./features/dashboard/Dashboard";
-import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
-import SearchPage from "./features/kgSearch/KgSearchPage";
+import LazyDashboard from "./features/dashboard/LazyDashboard";
+import LazyInactiveKGProjectsPage from "./features/inactiveKgProjects/LazyInactiveKGProjectsPage";
+import LazySearchPage from "./features/kgSearch/LazySearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
-import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
+import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
 import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
-// import Help from "./help";
 import LazyHelp from "./help/LazyHelp";
-import { AnonymousHome, FooterNavbar, RenkuNavBar } from "./landing";
-import { NotFound } from "./not-found";
+import LazyAnonymousHome from "./landing/LazyAnonymousHome";
+import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
+import LazyNotFound from "./not-found/LazyNotFound";
 import { NotificationsManager, NotificationsPage } from "./notifications";
 import { Cookie, Privacy } from "./privacy";
 import { Project } from "./project";
-import { ProjectList } from "./project/list";
-import { NewProject } from "./project/new";
-// import { StyleGuide } from "./styleguide";
+import LazyProjectList from "./project/list/LazyProjectList";
+import LazyNewProject from "./project/new/LazyNewProject";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
@@ -90,7 +88,7 @@ function CentralContentContainer(props) {
   ) {
     return (
       <AppContext.Provider value={appContext}>
-        <AnonymousHome
+        <LazyAnonymousHome
           client={props.client}
           homeCustomized={props.params["HOMEPAGE"]}
           user={props.user}
@@ -127,7 +125,7 @@ function CentralContentContainer(props) {
             render={() =>
               props.user.logged ? (
                 <ContainerWrap>
-                  <Dashboard />
+                  <LazyDashboard />
                 </ContainerWrap>
               ) : null
             }
@@ -144,7 +142,7 @@ function CentralContentContainer(props) {
             path={Url.get(Url.pages.search)}
             render={() => (
               <ContainerWrap>
-                <SearchPage
+                <LazySearchPage
                   key="kg-search"
                   userName={props.user?.data?.name}
                   isLoggedUser={props.user.logged}
@@ -158,13 +156,13 @@ function CentralContentContainer(props) {
             render={(p) =>
               props.user?.logged ? (
                 <ContainerWrap>
-                  <InactiveKGProjectsPage
+                  <LazyInactiveKGProjectsPage
                     key="-inactive-kg-projects"
                     socket={socket}
                   />
                 </ContainerWrap>
               ) : (
-                <NotFound {...p} />
+                <LazyNotFound {...p} />
               )
             }
           />
@@ -177,7 +175,7 @@ function CentralContentContainer(props) {
             ]}
             render={(p) => (
               <ContainerWrap>
-                <ProjectList
+                <LazyProjectList
                   key="projects"
                   user={props.user}
                   client={props.client}
@@ -192,7 +190,7 @@ function CentralContentContainer(props) {
             path={Url.get(Url.pages.project.new)}
             render={(p) => (
               <ContainerWrap>
-                <NewProject
+                <LazyNewProject
                   key="newProject"
                   model={props.model}
                   user={props.user}
@@ -219,7 +217,7 @@ function CentralContentContainer(props) {
             )}
           />
           <Route exact path={Url.get(Url.pages.sessions)}>
-            {!user.logged ? <AnonymousSessionsList /> : <Redirect to="/" />}
+            {!user.logged ? <LazyAnonymousSessionsList /> : <Redirect to="/" />}
           </Route>
           <Route
             path="/datasets/:identifier/add"
@@ -299,7 +297,7 @@ function CentralContentContainer(props) {
               </ContainerWrap>
             </Route>
           )}
-          <Route path="*" render={(p) => <NotFound {...p} />} />
+          <Route path="*" render={(p) => <LazyNotFound {...p} />} />
         </Switch>
       </AppContext.Provider>
     </div>

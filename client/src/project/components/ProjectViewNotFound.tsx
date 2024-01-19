@@ -18,7 +18,8 @@
 
 import { Location } from "history";
 import { Link } from "react-router-dom";
-import { NotFound } from "../../not-found";
+
+import NotFound from "../../not-found/NotFound";
 import { Url } from "../../utils/helpers/url";
 
 interface ProjectViewNotFoundProps {

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,15 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  landing
- *  Components for the landing page
- */
+import { Suspense, lazy } from "react";
+import { Loader } from "../../../components/Loader";
 
-import AnonymousHome from "./AnonymousHome";
-import { RenkuNavBar, FooterNavbar } from "./NavBar";
+const AnonymousSessionsList = lazy(() => import("./AnonymousSessionsList"));
 
-export { AnonymousHome, FooterNavbar, RenkuNavBar };
+export default function LazyAnonymousSessionsList() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <AnonymousSessionsList />
+    </Suspense>
+  );
+}
