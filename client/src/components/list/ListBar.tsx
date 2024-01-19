@@ -37,8 +37,6 @@ export function getMainActionByEntity(
   gitUrl?: string,
   branch?: string
 ) {
-  console.log({ slug, gitUrl, branch });
-
   switch (entityType) {
     case EntityType.Project:
       return slug && gitUrl && branch ? (

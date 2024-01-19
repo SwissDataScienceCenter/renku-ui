@@ -171,7 +171,6 @@ function getProjectFormatted(project: Record<string, any>) {
   // We use the externalUrl property, which typically doesn't include ".git".
   // However, in this context, the externalUrl is missing, so we remove ".git".
   const gitUrl = cleanGitUrl(project.http_url_to_repo);
-  console.log({ project, gitUrl, defaultBranch: project.default_branch });
   return {
     creators: project.owner ? [project.owner] : [project.namespace],
     defaultBranch: project.default_branch,
@@ -234,8 +233,6 @@ function ProjectsDashboard() {
     isLoading: isLoadingSearchProjects,
     error: searchProjectsError,
   } = useSearchEntitiesQuery(searchRequest);
-
-  console.log({ searchProjects });
 
   const totalUserProjects =
     isLoadingSearchProjects || !searchProjects || searchProjectsError
