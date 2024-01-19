@@ -106,7 +106,6 @@ export const projectsApi = createApi({
                 fullPath
               }
               path,
-              default_branch,
               httpUrlToRepo,
               userPermissions {
                 adminProject,
