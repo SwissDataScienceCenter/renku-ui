@@ -39,7 +39,7 @@ import {
   UncontrolledTooltip,
 } from "../../utils/ts-wrappers";
 
-import { NewProjectTemplate, Repository } from "../../model/RenkuModels";
+import { NewProjectTemplate, Repository } from "../../model/renkuModels.types";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { ExternalLink } from "../ExternalLinks";
 import {

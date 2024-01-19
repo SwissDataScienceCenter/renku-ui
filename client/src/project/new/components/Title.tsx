@@ -27,7 +27,7 @@ import {
   NewProjectHandlers,
   NewProjectInputs,
   NewProjectMeta,
-} from "./newProject.d";
+} from "./newProject.types";
 
 interface TitleProps {
   handlers: NewProjectHandlers;

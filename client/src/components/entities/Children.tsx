@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { EntityType } from "./Entities";
+import { EntityType } from "./entities.types";
 import { Badge, UncontrolledTooltip } from "../../utils/ts-wrappers";
 // import { stylesByItemType } from "../../helpers/HelperFunctions";
 

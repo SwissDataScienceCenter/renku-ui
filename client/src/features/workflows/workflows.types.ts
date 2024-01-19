@@ -21,7 +21,7 @@ import {
   CoreVersionUrl,
 } from "../../utils/types/coreService.types";
 
-import { WorkflowType } from "../../components/entities";
+import { WorkflowType } from "../../components/entities/entities.types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -62,9 +62,9 @@ interface WorkflowDetailsCommon {
   id: string;
   keywords: string[];
   latest: string;
-  latestUrl: string?;
+  latestUrl: string | undefined;
   name: string;
-  renkuCommand: string?;
+  renkuCommand: string | undefined;
   touches_existing_files: boolean;
   type: WorkflowType;
 }
@@ -77,7 +77,7 @@ export interface WorkflowDetailsStep extends WorkflowDetailsCommon {
   number_of_executions: number;
   outputs: Record<string, any>;
   parameters: string[];
-  type: WorkflowType.CompositePlan;
+  type: WorkflowType.Composite;
 }
 
 export interface WorkflowDetailsComposite extends WorkflowDetailsCommon {
@@ -86,7 +86,7 @@ export interface WorkflowDetailsComposite extends WorkflowDetailsCommon {
   links: Record<string, any>;
   mappings: Record<string, any>;
   plans: Record<string, any>;
-  type: WorkflowType.Plan;
+  type: WorkflowType.Simple;
 }
 
 export type WorkflowDetails = WorkflowDetailsStep | WorkflowDetailsComposite;

@@ -40,7 +40,7 @@ import {
 import { ACCESS_LEVELS } from "../../../api-client";
 import { SuccessAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
-import { User } from "../../../model/RenkuModels";
+import { User } from "../../../model/renkuModels.types";
 import {
   CenteredLoader,
   InformationalBody,

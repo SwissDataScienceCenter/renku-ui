@@ -24,7 +24,7 @@ import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
-import { User } from "../../../model/RenkuModels";
+import { User } from "../../../model/renkuModels.types";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetNotebooksVersionQuery } from "../../versions/versions.api";
 import { NotebooksVersion } from "../../versions/versions.types";

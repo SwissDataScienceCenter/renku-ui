@@ -35,7 +35,7 @@ import ImageInput from "../../../components/form-field/ImageInput";
 import KeywordsInput from "../../../components/form-field/KeywordsInput";
 import TextAreaInput from "../../../components/form-field/TextAreaInput";
 import TextInput from "../../../components/form-field/TextInput";
-import type { RenkuUser } from "../../../model/RenkuModels";
+import type { RenkuUser } from "../../../model/renkuModels.types";
 import { FormErrorFields } from "../../../project/new/components/FormValidations";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";

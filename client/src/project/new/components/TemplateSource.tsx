@@ -24,7 +24,7 @@
  */
 import { Button, ButtonGroup, FormGroup } from "../../../utils/ts-wrappers";
 import { InputLabel } from "../../../components/formlabels/FormLabels";
-import { NewProjectInputs } from "./newProject.d";
+import { NewProjectInputs } from "./newProject.types";
 
 interface TemplateSourceProps {
   handlers: {
