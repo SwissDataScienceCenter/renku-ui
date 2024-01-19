@@ -40,6 +40,13 @@ import { Url } from "../../../../utils/helpers/url";
 import { ProjectConfig } from "../../../project/project.types";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import {
+  canUpdateProjectAutomatically,
+  getMigrationLevel,
+  getReleaseUrl,
+  getRenkuLevel,
+  getTemplateLevel,
+} from "../../../project/utils/migrations";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
 import { useServerOptionsQuery } from "../../sessions.api";
@@ -51,14 +58,19 @@ import { SessionStorageOption } from "./SessionStorageOption";
 import styles from "./StartNotebookServerOptions.module.scss";
 
 type CoreSupport = ReturnType<typeof useCoreSupport>["coreSupport"];
+type GetMigrationStatusQuery = ReturnType<
+  typeof useCoreSupport
+>["getMigrationStatusQuery"];
 
 type BackendNotAvailableProps = {
   coreSupport: CoreSupport;
+  getMigrationStatusQuery: GetMigrationStatusQuery;
   projectNamespace: string;
   projectName: string;
 };
 function BackendNotAvailableMessage({
   coreSupport,
+  getMigrationStatusQuery,
   projectNamespace,
   projectName,
 }: BackendNotAvailableProps) {
@@ -70,28 +82,59 @@ function BackendNotAvailableMessage({
   } = coreSupport;
   const isSupported = coreSupportComputed && backendAvailable;
   const checkingSupport = !coreSupportComputed;
+  const { data: migrationStatus } = getMigrationStatusQuery;
+
   if (checkingSupport || isSupported) return null;
+
+  const renkuMigrationLevel = getRenkuLevel(migrationStatus, isSupported);
+  const automatedUpdatePossible = canUpdateProjectAutomatically(
+    renkuMigrationLevel,
+    null
+  );
 
   const settingsPageUrl = Url.get(Url.pages.project.settings, {
     namespace: projectNamespace,
     path: projectName,
   });
-  return (
-    <>
-      <h3 className={cx("fs-6", "fw-bold")}>
-        Sessions are not supported on this project.
-      </h3>
-      {backendErrorMessage ? (
+  if (backendErrorMessage)
+    return (
+      <>
+        <h3 className={cx("fs-6", "fw-bold")}>
+          A session cannot be started on this project.
+        </h3>
         <div>{backendErrorMessage}</div>
-      ) : (
+      </>
+    );
+
+  if (automatedUpdatePossible)
+    return (
+      <>
+        <h3 className={cx("fs-6", "fw-bold")}>
+          Update the project to start a session.
+        </h3>
         <div>
-          You can see options for upgrading this project on the{" "}
+          Follow the instructions on the{" "}
           <Link className="btn btn-danger btn-sm" to={settingsPageUrl}>
             Settings
           </Link>{" "}
-          page.
+          page to update the project. Once that is done, you can start a
+          session.
         </div>
-      )}
+      </>
+    );
+
+  return (
+    <>
+      <h3 className={cx("fs-6", "fw-bold")}>
+        Changes are necessary to start a session.
+      </h3>
+      <div>
+        Details are provided on the{" "}
+        <Link className="btn btn-danger btn-sm" to={settingsPageUrl}>
+          Settings
+        </Link>{" "}
+        page.
+      </div>
     </>
   );
 }
@@ -115,7 +158,7 @@ export const StartNotebookServerOptions = () => {
   const projectName = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
-  const { coreSupport } = useCoreSupport({
+  const { coreSupport, getMigrationStatusQuery } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
@@ -177,6 +220,7 @@ export const StartNotebookServerOptions = () => {
         {!backendAvailable ? (
           <BackendNotAvailableMessage
             coreSupport={coreSupport}
+            getMigrationStatusQuery={getMigrationStatusQuery}
             projectName={projectName}
             projectNamespace={projectNamespace}
           />

@@ -212,7 +212,28 @@ describe("launch sessions, outdated projects", () => {
     cy.visit("/projects/e2e/local-test-project");
   });
 
-  it("new session page - logged - project needs upgrade", () => {
+  it("new session page - logged - project automatically upgradable", () => {
+    fixtures.interceptMigrationCheck({
+      fixture: "project/migrationStatus/level5-old-updatable.json",
+    });
+    fixtures.userTest();
+    fixtures.newSessionImages();
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.wait("@getSessionImage", { timeout: 10000 });
+    cy.get("form")
+      .contains("Start Session")
+      .should("be.visible")
+      .should("be.disabled");
+    cy.get("form")
+      .contains("Update the project to start a session.")
+      .should("be.visible");
+    cy.get("a.btn")
+      .should("have.attr", "href", "/projects/e2e/local-test-project/settings")
+      .contains("Settings")
+      .should("be.visible");
+  });
+
+  it("new session page - logged - project manually upgradable", () => {
     fixtures.interceptMigrationCheck({
       fixture: "project/migrationStatus/level5-old-version.json",
     });
@@ -225,7 +246,7 @@ describe("launch sessions, outdated projects", () => {
       .should("be.visible")
       .should("be.disabled");
     cy.get("form")
-      .contains("Sessions are not supported on this project.")
+      .contains("Changes are necessary to start a session.")
       .should("be.visible");
     cy.get("a.btn")
       .should("have.attr", "href", "/projects/e2e/local-test-project/settings")
@@ -244,7 +265,7 @@ describe("launch sessions, outdated projects", () => {
       .should("be.visible")
       .should("be.disabled");
     cy.get("form")
-      .contains("Sessions are not supported on this project.")
+      .contains("A session cannot be started on this project.")
       .should("be.visible");
     cy.get("form")
       .contains("There was an unexpected error while handling project data.")
