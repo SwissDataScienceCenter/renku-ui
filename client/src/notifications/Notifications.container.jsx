@@ -24,29 +24,16 @@
  */
 
 import { Component } from "react";
-import cx from "classnames";
 import { connect } from "react-redux";
-import { toast } from "react-toastify";
 
+import { NotificationTypes } from "./Notifications.constants";
 import {
-  CloseToast,
   NotificationDropdownItem as NotificationDropdown,
   NotificationPageItem,
   NotificationToast,
-  NotificationsMenu as NotificationsMenuPresent,
   Notifications as NotificationsPresent,
 } from "./Notifications.present";
-import {
-  NotificationsCoordinator,
-  NotificationsInfo,
-} from "./Notifications.state";
-
-const NotificationTypes = {
-  TOAST: "toast",
-  DROPDOWN: "dropdown",
-  COMPLETE: "complete",
-  CUSTOM: "custom",
-};
+import { NotificationsCoordinator } from "./Notifications.state";
 
 /**
  * Generic notification component.
@@ -132,4 +119,4 @@ class NotificationsPage extends Component {
   }
 }
 
-export { NotificationsPage, Notification };
+export { Notification, NotificationsPage };

@@ -35,9 +35,9 @@ import { StateModel, globalSchema } from "../../model";
 import { generateFakeUser } from "../../user/User.test";
 import AppContext from "../../utils/context/appContext";
 import { btoaUTF8 } from "../../utils/helpers/Encoding";
-import { getDataFromParams } from "./ProjectNew.container";
+import { NewProject, getDataFromParams } from "./ProjectNew.container";
 import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
-import { NewProject, checkTitleDuplicates, validateTitle } from "./index";
+import { checkTitleDuplicates, validateTitle } from "./index";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],
