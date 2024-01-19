@@ -29,7 +29,7 @@ import {
 
 import { LoginHelper } from "../../authentication";
 import AdminDropdownItem from "../../landing/AdminDropdownItem";
-import { User } from "../../model/RenkuModels";
+import { User } from "../../model/renkuModels.types";
 import { NotificationsMenu } from "../../notifications";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
 import type { AppParams } from "../../utils/context/appParams.types";

@@ -26,8 +26,8 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
-import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
@@ -45,9 +45,6 @@ export const SessionStorageOption = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
@@ -60,14 +57,17 @@ export const SessionStorageOption = () => {
   const commit = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.commit
   );
-  const { data: projectConfig } = usePatchedProjectConfig({
-    apiVersion,
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    metadataVersion,
-    projectRepositoryUrl,
-    skip: !coreSupportComputed || !commit,
-  });
+  const { data: projectConfig } = useGetConfigQuery(
+    {
+      apiVersion,
+      metadataVersion,
+      projectRepositoryUrl,
+      commit,
+    },
+    {
+      skip: !coreSupportComputed || !commit,
+    }
+  );
 
   // Resource pools
   const {

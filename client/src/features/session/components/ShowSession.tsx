@@ -37,7 +37,7 @@ import { Redirect, useLocation, useParams } from "react-router";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
 
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
-import { User } from "../../../model/RenkuModels";
+import { User } from "../../../model/renkuModels.types";
 import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
 import AppContext from "../../../utils/context/appContext";

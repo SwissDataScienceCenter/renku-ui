@@ -43,7 +43,7 @@ import ProgressStepsIndicator, {
   StatusStepProgressBar,
 } from "../../../components/progress/ProgressSteps";
 import { ShareLinkSessionModal } from "../../../components/shareLinkSession/ShareLinkSession";
-import { LockStatus, User } from "../../../model/RenkuModels";
+import { LockStatus, User } from "../../../model/renkuModels.types";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";

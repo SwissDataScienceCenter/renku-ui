@@ -22,7 +22,7 @@ import { Link } from "react-router-dom";
 import { UncontrolledTooltip } from "reactstrap";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { LoadingLabel } from "../formlabels/FormLabels";
-import { EntityType } from "./Entities";
+import { EntityType } from "./entities.types";
 import "./Entities.css";
 
 /**
