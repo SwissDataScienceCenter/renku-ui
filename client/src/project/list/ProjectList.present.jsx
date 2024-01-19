@@ -56,7 +56,6 @@ function ProjectListRows(props) {
     props;
 
   const projectItems = projects.map((project) => {
-    console.log({ project });
     const namespace = project.namespace ? project.namespace.full_path : "";
     const path = project.path;
     const url = Url.get(Url.pages.project, { namespace, path });
