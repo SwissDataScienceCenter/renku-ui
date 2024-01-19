@@ -42,10 +42,7 @@ import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import {
   canUpdateProjectAutomatically,
-  getMigrationLevel,
-  getReleaseUrl,
   getRenkuLevel,
-  getTemplateLevel,
 } from "../../../project/utils/migrations";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
