@@ -30,7 +30,7 @@ import {
 import { LoginHelper } from "../../authentication";
 import AdminDropdownItem from "../../landing/AdminDropdownItem";
 import { User } from "../../model/renkuModels.types";
-import { NotificationsMenu } from "../../notifications";
+import { NotificationsMenu } from "../../notifications/Notifications.present";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
 import type { AppParams } from "../../utils/context/appParams.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";

@@ -31,13 +31,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
 import { CloseToast } from "./Notifications.present";
-import {
-  Notification,
-  NotificationsInfo,
-  NotificationsManager,
-  NotificationsMenu,
-  NotificationsPage,
-} from "./index";
 
 const fakeLocation = { pathname: "" };
 

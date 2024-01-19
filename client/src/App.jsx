@@ -31,9 +31,9 @@ import { ToastContainer } from "react-toastify";
 
 import { LoginHelper, LoginRedirect } from "./authentication";
 import { Loader } from "./components/Loader";
-import ShowDataset from "./dataset/Dataset.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
-import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
+import LazyShowDataset from "./dataset/LazyShowDataset";
+import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProject";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import LazyDashboard from "./features/dashboard/LazyDashboard";
 import LazyInactiveKGProjectsPage from "./features/inactiveKgProjects/LazyInactiveKGProjectsPage";
@@ -45,9 +45,10 @@ import LazyHelp from "./help/LazyHelp";
 import LazyAnonymousHome from "./landing/LazyAnonymousHome";
 import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
 import LazyNotFound from "./not-found/LazyNotFound";
-import { NotificationsManager, NotificationsPage } from "./notifications";
+import LazyNotificationsPage from "./notifications/LazyNotificationsPage";
+import NotificationsManager from "./notifications/NotificationsManager";
 import { Cookie, Privacy } from "./privacy";
-import { Project } from "./project";
+import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
@@ -203,7 +204,7 @@ function CentralContentContainer(props) {
           <Route
             path="/projects/:subUrl+"
             render={(p) => (
-              <Project.View
+              <LazyProjectView
                 key="project/view"
                 client={props.client}
                 params={props.params}
@@ -222,7 +223,7 @@ function CentralContentContainer(props) {
           <Route
             path="/datasets/:identifier/add"
             render={(p) => (
-              <DatasetAddToProject
+              <LazyDatasetAddToProject
                 key="addDatasetNew"
                 insideProject={false}
                 identifier={p.match.params?.identifier?.replaceAll("-", "")}
@@ -234,7 +235,7 @@ function CentralContentContainer(props) {
           <Route
             path="/datasets/:identifier"
             render={(p) => (
-              <ShowDataset
+              <LazyShowDataset
                 key="datasetPreview"
                 {...p}
                 insideProject={false}
@@ -268,7 +269,7 @@ function CentralContentContainer(props) {
             path="/notifications"
             render={(p) => (
               <ContainerWrap>
-                <NotificationsPage
+                <LazyNotificationsPage
                   key="notifications"
                   client={props.client}
                   model={props.model}

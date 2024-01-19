@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import { Card, CardBody } from "reactstrap";
-import { FilePreview } from "../../file";
+import FilePreview from "../../file/FilePreview";
 import type { FilePreviewProps } from "../../file/FilePreview";
 import { Url } from "../../utils/helpers/url";
 

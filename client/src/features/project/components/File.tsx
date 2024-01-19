@@ -17,7 +17,7 @@
  */
 
 import { ACCESS_LEVELS } from "../../../api-client";
-import { ShowFile } from "../../../file";
+import { ShowFile } from "../../../file/File.container";
 import LazyFileLineage from "../../../file/LazyFileLineage";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
