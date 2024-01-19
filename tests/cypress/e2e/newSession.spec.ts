@@ -223,7 +223,7 @@ describe("launch sessions, outdated projects", () => {
     cy.get("form")
       .contains("Start Session")
       .should("be.visible")
-      .should("be.enabled");
+      .should("be.disabled");
     cy.get("form")
       .contains("Sessions are not supported on this project.")
       .should("be.visible");
@@ -242,7 +242,7 @@ describe("launch sessions, outdated projects", () => {
     cy.get("form")
       .contains("Start Session")
       .should("be.visible")
-      .should("be.enabled");
+      .should("be.disabled");
     cy.get("form")
       .contains("Sessions are not supported on this project.")
       .should("be.visible");
