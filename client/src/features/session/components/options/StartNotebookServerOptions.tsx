@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
+import { Link } from "react-router-dom";
 import {
   Badge,
   Button,
@@ -35,6 +36,7 @@ import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { Url } from "../../../../utils/helpers/url";
 import { ProjectConfig } from "../../../project/project.types";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
@@ -48,6 +50,52 @@ import { SessionStorageOption } from "./SessionStorageOption";
 
 import styles from "./StartNotebookServerOptions.module.scss";
 
+type CoreSupport = ReturnType<typeof useCoreSupport>["coreSupport"];
+
+type BackendNotAvailableProps = {
+  coreSupport: CoreSupport;
+  projectNamespace: string;
+  projectName: string;
+};
+function BackendNotAvailableMessage({
+  coreSupport,
+  projectNamespace,
+  projectName,
+}: BackendNotAvailableProps) {
+  if (coreSupport.backendAvailable) return null;
+  const {
+    backendAvailable,
+    backendErrorMessage,
+    computed: coreSupportComputed,
+  } = coreSupport;
+  const isSupported = coreSupportComputed && backendAvailable;
+  const checkingSupport = !coreSupportComputed;
+  if (checkingSupport || isSupported) return null;
+
+  const settingsPageUrl = Url.get(Url.pages.project.settings, {
+    namespace: projectNamespace,
+    path: projectName,
+  });
+  return (
+    <>
+      <h3 className={cx("fs-6", "fw-bold")}>
+        Sessions are not supported on this project.
+      </h3>
+      {backendErrorMessage ? (
+        <div>{backendErrorMessage}</div>
+      ) : (
+        <div>
+          You can see options for upgrading this project on the{" "}
+          <Link className="btn btn-danger btn-sm" to={settingsPageUrl}>
+            Settings
+          </Link>{" "}
+          page.
+        </div>
+      )}
+    </>
+  );
+}
+
 export const StartNotebookServerOptions = () => {
   // Wait for options to load
 
@@ -60,6 +108,12 @@ export const StartNotebookServerOptions = () => {
   );
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
+  );
+  const projectNamespace = useLegacySelector<string>(
+    (state) => state.stateModel.project.metadata.namespace
+  );
+  const projectName = useLegacySelector<string>(
+    (state) => state.stateModel.project.metadata.path
   );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
@@ -120,13 +174,17 @@ export const StartNotebookServerOptions = () => {
   if (!backendAvailable || errorProjectConfig) {
     return (
       <ErrorAlert dismissible={false}>
-        <h3 className={cx("fs-6", "fw-bold")}>
-          {!backendAvailable ? (
-            <>Error: This project is not supported</>
-          ) : (
-            <>Error while loading project configuration</>
-          )}
-        </h3>
+        {!backendAvailable ? (
+          <BackendNotAvailableMessage
+            coreSupport={coreSupport}
+            projectName={projectName}
+            projectNamespace={projectNamespace}
+          />
+        ) : (
+          <h3 className={cx("fs-6", "fw-bold")}>
+            Error while loading project configuration
+          </h3>
+        )}
       </ErrorAlert>
     );
   }
