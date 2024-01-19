@@ -305,17 +305,12 @@ function SessionActions({ className, session }: SessionActionsProps) {
       const request = modifySession({
         sessionName: session.name,
         sessionClass,
-        // ...(resumeSession && status === "hibernated"
-        //   ? { state: "running" }
-        //   : {}),
       });
       if (resumeSession && status === "hibernated") {
         request.then(() => {
           onResumeSession();
         });
       }
-
-      // if (resumeSession && status === 'hibernated') {setIsResuming(true);}
     },
     [modifySession, onResumeSession, session.name, session.status.state]
   );
