@@ -55,6 +55,7 @@ import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
 import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
+import { useCoreSupport } from "../../project/useProjectCoreSupport";
 import { useStartSessionMutation } from "../sessions.api";
 import startSessionSlice, {
   setError,
@@ -696,6 +697,14 @@ function StartSessionButton() {
     storage,
   } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
 
+  const projectRepositoryUrl = useLegacySelector<string>(
+    (state) => state.stateModel.project.metadata.externalUrl
+  );
+  const { coreSupport } = useCoreSupport({
+    gitUrl: projectRepositoryUrl ?? undefined,
+    branch: branch,
+  });
+
   const missingCredentialsStorage = useMemo(
     () =>
       cloudStorage
@@ -712,7 +721,9 @@ function StartSessionButton() {
   );
 
   const enabled =
-    dockerImageStatus === "available" && missingCredentialsStorage.length == 0;
+    dockerImageStatus === "available" &&
+    missingCredentialsStorage.length == 0 &&
+    coreSupport.backendAvailable;
 
   const dispatch = useAppDispatch();
 
