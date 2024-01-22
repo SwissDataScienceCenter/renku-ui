@@ -34,3 +34,10 @@ export enum NOTIFICATION_TOPICS {
   KG_ACTIVATION = "KG Activation",
   USER_PREFERENCES = "User Preferences",
 }
+
+export const NotificationTypes = {
+  TOAST: "toast",
+  DROPDOWN: "dropdown",
+  COMPLETE: "complete",
+  CUSTOM: "custom",
+};

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,13 +16,21 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  help
- *  Components for the help page
- */
+import { ComponentProps, Suspense, lazy } from "react";
+import { Loader } from "../components/Loader";
 
-import { Help } from "./Help.container";
+const NotificationsPage = lazy(() =>
+  import("./Notifications.container").then((module) => ({
+    default: module.NotificationsPage,
+  }))
+);
 
-export default Help;
+export default function LazyNotificationsPage(
+  props: ComponentProps<typeof NotificationsPage>
+) {
+  return (
+    <Suspense fallback={<Loader />}>
+      <NotificationsPage {...props} />
+    </Suspense>
+  );
+}

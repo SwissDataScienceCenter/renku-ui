@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,25 +16,17 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  notifications
- *  Components for the notification page
- */
+import { ComponentProps, Suspense, lazy } from "react";
+import { Loader } from "../components/Loader";
 
-import {
-  NotificationsManager,
-  NotificationsMenu,
-  NotificationsPage,
-  Notification,
-} from "./Notifications.container";
-import { NotificationsInfo } from "./Notifications.state";
+const ShowDataset = lazy(() => import("./Dataset.container"));
 
-export {
-  NotificationsManager,
-  NotificationsMenu,
-  NotificationsInfo,
-  NotificationsPage,
-  Notification,
-};
+export default function LazyShowDataset(
+  props: ComponentProps<typeof ShowDataset>
+) {
+  return (
+    <Suspense fallback={<Loader />}>
+      <ShowDataset {...props} />
+    </Suspense>
+  );
+}

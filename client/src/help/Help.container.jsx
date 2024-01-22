@@ -25,7 +25,7 @@
 
 import { Help as HelpPresent } from "./Help.present";
 
-function Help(props) {
+export default function Help(props) {
   return (
     <HelpPresent
       model={props.model}
@@ -34,5 +34,3 @@ function Help(props) {
     />
   );
 }
-
-export { Help };

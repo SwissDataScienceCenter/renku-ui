@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,17 @@
  * limitations under the License.
  */
 
-/**
- *  incubator-renku-ui
- *
- *  file/index.js
- *  Module for file rendering in Renku.
- */
+import { ComponentProps, Suspense, lazy } from "react";
+import { Loader } from "../../components/Loader";
 
-import { ShowFile } from "./File.container";
-import FilePreview from "./FilePreview";
+const InactiveKGProjectsPage = lazy(() => import("./InactiveKgProjects"));
 
-export { FilePreview, ShowFile };
+export default function LazyInactiveKGProjectsPage(
+  props: ComponentProps<typeof InactiveKGProjectsPage>
+) {
+  return (
+    <Suspense fallback={<Loader />}>
+      <InactiveKGProjectsPage {...props} />
+    </Suspense>
+  );
+}

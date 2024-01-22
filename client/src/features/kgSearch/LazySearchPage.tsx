@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  project
- *  Project components.
- */
+import { ComponentProps, Suspense, lazy } from "react";
+import { Loader } from "../../components/Loader";
 
-import { ProjectCoordinator } from "./Project.state";
-import { withProjectMapped } from "./Project";
-import ProjectView from "./ProjectV2";
+const SearchPage = lazy(() => import("./KgSearchPage"));
 
-const Project = { View: ProjectView };
-
-export { Project, ProjectCoordinator, withProjectMapped };
+export default function LazySearchPage(
+  props: ComponentProps<typeof SearchPage>
+) {
+  return (
+    <Suspense fallback={<Loader />}>
+      <SearchPage {...props} />
+    </Suspense>
+  );
+}

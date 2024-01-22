@@ -47,9 +47,10 @@ import {
   DropdownToggle,
   Row,
 } from "reactstrap";
-import { NotificationsInfo } from ".";
+
 import { ExternalLink } from "../components/ExternalLinks";
 import { TimeCaption } from "../components/TimeCaption";
+import { NotificationsInfo } from "./Notifications.state";
 
 import "./Notifications.css";
 

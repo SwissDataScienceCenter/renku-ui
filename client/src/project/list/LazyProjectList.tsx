@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,21 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  project/new
- *  Components for the new project page
- */
+import { ComponentProps, Suspense, lazy } from "react";
+import { Loader } from "../../components/Loader";
 
-import { ForkProject } from "./ProjectNew.container";
-import { validateTitle, checkTitleDuplicates } from "./ProjectNew.state";
+const ProjectList = lazy(() =>
+  import("./ProjectList.container").then((module) => ({
+    default: module.ProjectList,
+  }))
+);
 
-export { ForkProject, validateTitle, checkTitleDuplicates };
+export default function LazyProjectList(
+  props: ComponentProps<typeof ProjectList>
+) {
+  return (
+    <Suspense fallback={<Loader />}>
+      <ProjectList {...props} />
+    </Suspense>
+  );
+}

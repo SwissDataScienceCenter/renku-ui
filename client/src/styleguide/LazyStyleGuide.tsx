@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,11 +16,17 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  not-found
- *  Components for the not-found page
- */
+import { ComponentProps, Suspense, lazy } from "react";
+import { Loader } from "../components/Loader";
 
-export { NotFound } from "./NotFound";
+const StyleGuide = lazy(() => import("./StyleGuide"));
+
+export default function LazyStyleGuide(
+  props: ComponentProps<typeof StyleGuide>
+) {
+  return (
+    <Suspense fallback={<Loader />}>
+      <StyleGuide {...props} />
+    </Suspense>
+  );
+}
