@@ -19,7 +19,7 @@
 import { Route, Switch } from "react-router";
 import { Col, Nav, NavItem, Row } from "reactstrap";
 import { RenkuNavLink } from "../../../components/RenkuNavLink";
-import ProjectSettingsSessions from "../../../project/components/ProjectSettingsSessions";
+import ProjectSettingsSessions from "./ProjectSettingsSessions";
 import ProjectSettingsCloudStorage from "./ProjectSettingsCloudStorage";
 import { ProjectSettingsGeneral } from "./ProjectSettingsGeneral";
 

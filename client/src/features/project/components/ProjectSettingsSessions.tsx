@@ -45,34 +45,28 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { ACCESS_LEVELS } from "../../api-client";
-import { ErrorAlert, WarnAlert } from "../../components/Alert";
-import { ExternalLink } from "../../components/ExternalLinks";
-import { Loader } from "../../components/Loader";
-import { ThrottledTooltip } from "../../components/Tooltip";
-import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
-import LoginAlert from "../../components/loginAlert/LoginAlert";
-import {
-  ProjectConfig,
-  StateModelProject,
-} from "../../features/project/project.types";
-import {
-  useGetConfigQuery,
-  useUpdateConfigMutation,
-} from "../../features/project/projectCoreApi";
-import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
+import { ACCESS_LEVELS } from "../../../api-client";
+import { ErrorAlert, WarnAlert } from "../../../components/Alert";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import { Loader } from "../../../components/Loader";
+import { ThrottledTooltip } from "../../../components/Tooltip";
+import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import LoginAlert from "../../../components/loginAlert/LoginAlert";
+import { ProjectConfig, StateModelProject } from "../project.types";
+import { useGetConfigQuery, useUpdateConfigMutation } from "../projectCoreApi";
+import { useCoreSupport } from "../useProjectCoreSupport";
 import {
   ServerOptionBoolean,
   ServerOptionEnum,
   mergeDefaultUrlOptions,
-} from "../../features/session/components/options/StartNotebookServerOptions";
-import { useServerOptionsQuery } from "../../features/session/sessions.api";
-import { ServerOptions } from "../../features/session/sessions.types";
-import { LockStatus, User } from "../../model/renkuModels.types";
-import { Docs } from "../../utils/constants/Docs";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
-import { Url } from "../../utils/helpers/url";
+} from "../../session/components/options/StartNotebookServerOptions";
+import { useServerOptionsQuery } from "../../session/sessions.api";
+import { ServerOptions } from "../../session/sessions.types";
+import { LockStatus, User } from "../../../model/renkuModels.types";
+import { Docs } from "../../../utils/constants/Docs";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
+import { Url } from "../../../utils/helpers/url";
 
 import styles from "./ProjectSettingsSessions.module.scss";
 
