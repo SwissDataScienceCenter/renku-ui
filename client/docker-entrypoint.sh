@@ -37,6 +37,7 @@ echo " PRIVACY_ENABLED=${PRIVACY_ENABLED}"
 echo " PRIVACY_BANNER_CONTENT=${PRIVACY_BANNER_CONTENT}"
 echo " PRIVACY_BANNER_LAYOUT=${PRIVACY_BANNER_LAYOUT}"
 echo " TEMPLATES=${TEMPLATES}"
+echo " TERMS_ENABLED=${TERMS_ENABLED}"
 echo " PREVIEW_THRESHOLD=${PREVIEW_THRESHOLD}"
 echo " UPLOAD_THRESHOLD=${UPLOAD_THRESHOLD}"
 echo " HOMEPAGE=${HOMEPAGE}"
@@ -68,6 +69,7 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "PRIVACY_BANNER_CONTENT": "${PRIVACY_BANNER_CONTENT}",
   "PRIVACY_BANNER_LAYOUT": ${PRIVACY_BANNER_LAYOUT},
   "TEMPLATES": ${TEMPLATES},
+  "TERMS_ENABLED": "${TERMS_ENABLED}",
   "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
   "UPLOAD_THRESHOLD": ${UPLOAD_THRESHOLD},
   "STATUSPAGE_ID": "${STATUSPAGE_ID}",
@@ -92,6 +94,14 @@ if [ -f "$FILE" ]; then
   echo "privacy-statement.md created in ${NGINX_PATH}"
 else
   echo "privacy-statement.md created in ${NGINX_PATH}"
+fi
+
+FILE=/config-terms/statement.md
+if [ -f "$FILE" ]; then
+  more /config-terms/statement.md | base64 | tr -d \\n > "${NGINX_PATH}/terms-of-use.md"
+  echo "terms-of-use.md created in ${NGINX_PATH}"
+else
+  echo "No terms-of-use.md"
 fi
 
 exec -- "$@"

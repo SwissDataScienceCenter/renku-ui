@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,24 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  privacy
- *  Components for the privacy page
- */
+import type { AppParams } from "../utils/context/appParams.types";
 
-import { Privacy, Cookie } from "./Privacy.container";
-import RoutedContent from "./RoutedContent";
+import { WarnAlert } from "../components/Alert";
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 
-export { Privacy, Cookie, RoutedContent };
+type TermsProps = {
+  params: AppParams;
+};
+export default function TermsOfService({ params }: TermsProps) {
+  const content = params["TERMS_ENABLED"] ? params["TERMS_STATEMENT"] : null;
+
+  if (!content || !content.length) {
+    return (
+      <WarnAlert dismissible={false}>
+        No terms of use have been configured.
+      </WarnAlert>
+    );
+  }
+
+  return <LazyRenkuMarkdown markdownText={content} />;
+}

@@ -22,12 +22,13 @@
  *  Help.container.js
  *  Container components for help
  */
+import type { AppParams } from "../utils/context/appParams.types";
 
 import { Help as HelpPresent } from "./Help.present";
 
 type HelpProps = {
   model: unknown;
-  params: Record<string, string>;
+  params: AppParams;
   statuspageId: string;
 };
 

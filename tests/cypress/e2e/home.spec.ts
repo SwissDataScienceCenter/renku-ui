@@ -138,16 +138,46 @@ describe("display showcase projects", () => {
   });
 });
 
-describe("do not display showcase projects", () => {
+describe("shows terms of use", () => {
   beforeEach(() => {
-    fixtures
-      .config({ overrides: { showcase: { enabled: false } } })
-      .versions()
-      .userNone();
-    cy.visit("/");
+    fixtures.versions().userNone();
   });
 
-  it("does not show showcase projects if not enabled", () => {
-    cy.get("[data-cy=section-showcase]").should("not.exist");
+  it("Default terms are visible visible", () => {
+    fixtures.config();
+    cy.visit("/help/tos");
+    cy.contains("No terms of use have been configured.").should("be.visible");
+    cy.get("a").contains("Terms of Use").should("not.exist");
+  });
+
+  it("Terms of use are visible", () => {
+    fixtures
+      .config({ overrides: { TERMS_ENABLED: true } })
+      .overrideTermsOfUse();
+    cy.visit("/help/tos");
+    cy.get("h1").contains("Override terms of use").should("be.visible");
+    cy.get("a").contains("Terms of Use").should("exist").should("be.visible");
+  });
+});
+
+describe("shows privacy policy", () => {
+  beforeEach(() => {
+    fixtures.versions().userNone();
+  });
+
+  it("Default privacy policy is visible", () => {
+    fixtures.config();
+    cy.visit("/help/privacy");
+    cy.contains("No privacy policy has been configured.").should("be.visible");
+    cy.get("a").contains("Privacy Policy").should("not.exist");
+  });
+
+  it("Privacy policy is visible", () => {
+    fixtures
+      .config({ overrides: { PRIVACY_ENABLED: true } })
+      .overridePrivacyPolicy();
+    cy.visit("/help/privacy");
+    cy.get("h1").contains("Override privacy policy").should("be.visible");
+    cy.get("a").contains("Privacy Policy").should("exist").should("be.visible");
   });
 });

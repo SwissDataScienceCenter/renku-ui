@@ -167,6 +167,7 @@ tee > ./public/config.json << EOF
   "TEMPLATES": ${TEMPLATES},
   "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
   "UPLOAD_THRESHOLD": ${UPLOAD_THRESHOLD},
+  "TERMS_ENABLED": "false",
   "STATUSPAGE_ID": "${STATUSPAGE_ID}",
   "HOMEPAGE": {
     "custom": {

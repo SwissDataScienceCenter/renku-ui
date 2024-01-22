@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,41 +17,38 @@
  */
 
 /**
- *  renku-ui
- *
- *  Privacy.present.js
- *  Presentational components for privacy.
+ *  Presentational components for the privacy policy.
  */
 
-import { Component } from "react";
+import React from "react";
+
 import CookieConsent from "react-cookie-consent";
+
 import { WarnAlert } from "../components/Alert";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 
-/**
- * Return the HTML content with support for react routing
- *
- * @param {Object} params - parameters object for renku-ui.
- * @param {Object} history - react history object for the local routing
- */
-class CookieBanner extends Component {
-  render() {
-    const { layout, content } = this.props;
-
-    return <CookieConsent {...layout}>{content}</CookieConsent>;
-  }
+type CookieBannerProps = {
+  layout: Record<string, unknown>;
+  content: React.ReactNode;
+};
+function CookieBanner({ layout, content }: CookieBannerProps) {
+  return <CookieConsent {...layout}>{content}</CookieConsent>;
 }
 
-class Privacy extends Component {
-  render() {
-    const { content } = this.props;
-    if (!content || !content.length) {
-      return <WarnAlert>There is no content for this page.</WarnAlert>;
-    }
-
-    const stringContent = atob(content);
-    return <LazyRenkuMarkdown markdownText={stringContent} />;
+type PrivacyProps = {
+  content: string | null;
+};
+function Privacy({ content }: PrivacyProps) {
+  if (!content || !content.length) {
+    return (
+      <WarnAlert dismissible={false}>
+        No privacy policy has been configured.
+      </WarnAlert>
+    );
   }
+
+  const stringContent = content;
+  return <LazyRenkuMarkdown markdownText={stringContent} />;
 }
 
 export { CookieBanner, Privacy };

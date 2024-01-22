@@ -1,0 +1,4 @@
+.scrollContainer {
+  height: calc(100vh - 220px - 75px - 70px);
+  overflow: auto;
+}

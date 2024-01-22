@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,13 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  privacy
- *  Components for the privacy page
- */
+import React from "react";
+import styles from "./Help.module.css";
 
-import { Privacy, Cookie } from "./Privacy.container";
-import RoutedContent from "./RoutedContent";
-
-export { Privacy, Cookie, RoutedContent };
+export default function HelpScrollContainer({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <div className={styles.scrollContainer}>{children}</div>;
+}

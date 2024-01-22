@@ -40,20 +40,27 @@ import {
   ExternalDocsLink,
   ExternalIconLink,
 } from "../components/ExternalLinks";
+import { Privacy } from "../privacy/Privacy.container";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
+import type { AppParams } from "../utils/context/appParams.types";
 import { Url } from "../utils/helpers/url";
 
+import HelpScrollContainer from "./HelpScrollContainer";
 import HelpRelease from "./HelpRelease";
+import TermsOfService from "./TermsOfService";
 
 type HelpNavProps = {
+  params: AppParams;
   statuspageId: string;
 };
-function HelpNav({ statuspageId }: HelpNavProps) {
+function HelpNav({ params, statuspageId }: HelpNavProps) {
   const statusLink = isStatusConfigured(statuspageId) ? (
     <NavItem>
       <RenkuNavLink to={Url.pages.help.status} title="Status" />
     </NavItem>
   ) : null;
+  const privacyPolicyConfigured = params.PRIVACY_ENABLED;
+  const termsConfigured = params.TERMS_ENABLED;
   return (
     <Nav pills className={"nav-pills-underline"}>
       <NavItem>
@@ -70,6 +77,16 @@ function HelpNav({ statuspageId }: HelpNavProps) {
       <NavItem>
         <RenkuNavLink to={Url.pages.help.release} title="Release Information" />
       </NavItem>
+      {termsConfigured && (
+        <NavItem>
+          <RenkuNavLink to={Url.pages.help.tos} title="Terms of Use" />
+        </NavItem>
+      )}
+      {privacyPolicyConfigured && (
+        <NavItem>
+          <RenkuNavLink to={Url.pages.help.privacy} title="Privacy Policy" />
+        </NavItem>
+      )}
     </Nav>
   );
 }
@@ -178,8 +195,9 @@ function HelpDocumentation() {
 
 type HelpContentProps = {
   model: unknown;
+  params: AppParams;
 };
-function HelpContent({ model }: HelpContentProps) {
+function HelpContent({ model, params }: HelpContentProps) {
   return (
     <>
       <Route
@@ -208,16 +226,33 @@ function HelpContent({ model }: HelpContentProps) {
         key="release"
         render={() => <HelpRelease />}
       />
+      <Route
+        path={Url.pages.help.tos}
+        key="tos"
+        render={() => (
+          <HelpScrollContainer>
+            <TermsOfService params={params} />
+          </HelpScrollContainer>
+        )}
+      />
+      <Route
+        path={Url.pages.help.privacy}
+        render={() => (
+          <HelpScrollContainer>
+            <Privacy params={params} />
+          </HelpScrollContainer>
+        )}
+      />
     </>
   );
 }
 
 type HelpProps = {
   model: unknown;
-  params: Record<string, string>;
+  params: AppParams;
   statuspageId: string;
 };
-export function Help({ model, statuspageId }: HelpProps) {
+export function Help({ model, params, statuspageId }: HelpProps) {
   return (
     <>
       <Row className="pt-2 pb-3">
@@ -227,7 +262,7 @@ export function Help({ model, statuspageId }: HelpProps) {
       </Row>
       <Row className="pb-2">
         <Col>
-          <HelpNav statuspageId={statuspageId} />
+          <HelpNav params={params} statuspageId={statuspageId} />
         </Col>
       </Row>
       <Row>
@@ -235,7 +270,7 @@ export function Help({ model, statuspageId }: HelpProps) {
       </Row>
       <Row>
         <Col>
-          <HelpContent model={model} />
+          <HelpContent model={model} params={params} />
         </Col>
       </Row>
     </>
