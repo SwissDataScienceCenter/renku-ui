@@ -69,7 +69,8 @@ export function formatProjectMetadata(project: any): ProjectMetadata {
       ? projectFullId[projectFullId.length - 1]
       : project.id;
 
-  const default_branch = project.repository?.rootRef || "master";
+  // ! The project data may come from different sources
+  const default_branch = project.default_branch ?? project.repository?.rootRef;
 
   return {
     id: projectId,

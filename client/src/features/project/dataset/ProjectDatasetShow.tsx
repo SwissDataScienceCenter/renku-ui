@@ -28,7 +28,7 @@ import type {
   DatasetKg,
   IDataset,
   StateModelProject,
-} from "../Project";
+} from "../project.types";
 import { useGetDatasetFilesQuery } from "../projectCoreApi";
 import { useGetDatasetKgQuery } from "../projectKg.api";
 import { useCoreSupport } from "../useProjectCoreSupport";

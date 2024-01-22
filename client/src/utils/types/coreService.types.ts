@@ -23,7 +23,7 @@ export interface CoreVersionUrl {
 
 export interface CoreRepositoryParams {
   gitUrl: string; // this usually maps to git_url
-  branch?: string;
+  branch: string;
 }
 
 export interface CoreErrorContent {

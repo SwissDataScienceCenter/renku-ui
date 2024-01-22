@@ -37,7 +37,7 @@ import {
   CoreSectionError,
   MigrationStatus,
   MigrationStatusDetails,
-} from "../../Project";
+} from "../../project.types";
 import { projectCoreApi } from "../../projectCoreApi";
 import {
   MigrationStartScopes,
@@ -88,14 +88,18 @@ export function ProjectMigrationStatus({
   const skip = !gitUrl || !branch;
   const { data, isLoading, isFetching, error } =
     projectCoreApi.useGetMigrationStatusQuery(
-      { apiVersion, gitUrl, branch },
+      { apiVersion, gitUrl, branch: branch ?? "" },
       { refetchOnMountOrArgChange: 60 * 5, skip }
     );
   const [startMigration, migrationStatus] =
     projectCoreApi.useStartMigrationMutation();
   const updateProject = useCallback(
-    (scope: MigrationStartScopes) =>
-      startMigration({ apiVersion, branch, gitUrl, scope }),
+    (scope: MigrationStartScopes) => {
+      if (!branch) {
+        return;
+      }
+      startMigration({ apiVersion, branch: branch ?? "", gitUrl, scope });
+    },
     [apiVersion, branch, gitUrl, startMigration]
   );
 

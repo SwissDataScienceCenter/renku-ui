@@ -1,4 +1,4 @@
-import { IDataset } from "../../features/project/Project";
+import { IDataset } from "../../features/project/project.types";
 
 interface AddDatasetDataset extends IDataset {
   fetchError: unknown;

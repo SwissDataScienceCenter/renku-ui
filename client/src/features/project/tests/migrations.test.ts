@@ -18,7 +18,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { MigrationStatus, RenkuMigrationLevel } from "../Project";
+import { MigrationStatus, RenkuMigrationLevel } from "../project.types";
 import { ProjectMigrationLevel } from "../projectEnums";
 import {
   cleanVersion,

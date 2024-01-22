@@ -78,6 +78,7 @@ interface SessionButtonProps {
   className?: string;
   fullPath: string;
   gitUrl?: string;
+  branch?: string;
   runningSessionName?: string;
 }
 
@@ -85,6 +86,7 @@ export default function SessionButton({
   className,
   fullPath,
   gitUrl,
+  branch,
   runningSessionName,
 }: SessionButtonProps) {
   const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, {
@@ -145,7 +147,9 @@ export default function SessionButton({
             Start with options
           </Link>
         </li>
-        {gitUrl && <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />}
+        {gitUrl && branch && (
+          <SshDropdown fullPath={fullPath} gitUrl={gitUrl} branch={branch} />
+        )}
         <DropdownItem divider />
         <li>
           <Link

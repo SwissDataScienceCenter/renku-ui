@@ -9,7 +9,7 @@ import ListDisplay from "../../../components/List";
 import { ThrottledTooltip } from "../../../components/Tooltip";
 import { getUpdatedDatasetImage } from "../../../dataset/DatasetFunctions";
 
-import type { DatasetCore } from "../Project";
+import type { DatasetCore } from "../project.types";
 
 function datasetToDict(
   datasetsUrl: string,

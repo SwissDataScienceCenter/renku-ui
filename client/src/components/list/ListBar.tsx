@@ -34,12 +34,13 @@ import "./ListBar.scss";
 export function getMainActionByEntity(
   entityType: EntityType,
   slug: string,
-  gitUrl?: string
+  gitUrl?: string,
+  branch?: string
 ) {
   switch (entityType) {
     case EntityType.Project:
-      return slug && gitUrl ? (
-        <SessionButton fullPath={slug} gitUrl={gitUrl} />
+      return slug && gitUrl && branch ? (
+        <SessionButton fullPath={slug} gitUrl={gitUrl} branch={branch} />
       ) : null;
     case EntityType.Dataset:
       return null;
@@ -50,6 +51,7 @@ export function getMainActionByEntity(
 
 function ListBar({
   creators,
+  defaultBranch,
   description,
   gitUrl = "",
   imageUrl,
@@ -63,7 +65,12 @@ function ListBar({
 }: ListElementProps) {
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
-  const mainButton = getMainActionByEntity(itemType, slug, gitUrl);
+  const mainButton = getMainActionByEntity(
+    itemType,
+    slug,
+    gitUrl,
+    defaultBranch
+  );
 
   return (
     <div className="container-entity-listBar">

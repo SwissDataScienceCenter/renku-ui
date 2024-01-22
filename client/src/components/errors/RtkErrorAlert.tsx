@@ -23,7 +23,7 @@ import { ErrorAlert, RenkuAlert } from "../Alert";
 import { CoreErrorAlert } from "./CoreErrorAlert";
 import { CoreErrorResponse } from "../../utils/types/coreService.types";
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";
-import { UpdateProjectResponse } from "../../features/project/Project";
+import { UpdateProjectResponse } from "../../features/project/project.types";
 import { NotebooksErrorResponse } from "../../features/session/sessions.types";
 
 export function extractRkErrorMessage(

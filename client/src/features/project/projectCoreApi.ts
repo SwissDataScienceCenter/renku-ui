@@ -33,14 +33,14 @@ import type {
   MigrationStatusResponse,
   ProjectConfig,
   ProjectConfigSection,
-} from "./Project";
+} from "./project.types";
 import { MigrationStartScopes } from "./projectEnums";
 import { versionedPathForEndpoint } from "../../utils/helpers/url/versionedUrls";
 import { CoreVersionUrl } from "../../utils/types/coreService.types";
 
 interface GetConfigParams extends CoreVersionUrl {
   projectRepositoryUrl: string;
-  branch?: string;
+  branch: string;
   commit?: string;
 }
 
@@ -70,7 +70,7 @@ type GetConfigRawResponseSection = {
 
 interface UpdateConfigParams extends Omit<GetConfigParams, "commit"> {
   projectRepositoryUrl: string;
-  branch?: string;
+  branch: string;
   update: {
     [key: string]: string | null;
   };
@@ -142,16 +142,16 @@ export const projectCoreApi = createApi({
       },
     }),
     getMigrationStatus: builder.query<MigrationStatus, MigrationStatusParams>({
-      query: (migrationParams) => {
-        const params: { git_url: string; branch?: string } = {
-          git_url: migrationParams.gitUrl,
+      query: ({ branch, gitUrl, apiVersion }) => {
+        const params = {
+          git_url: gitUrl,
+          branch,
         };
-        if (migrationParams.branch) params.branch = migrationParams.branch;
         return {
           url: versionedPathForEndpoint({
             endpoint: "cache.migrations_check",
             metadataVersion: undefined, // ? migrations always uses the last renku metadata version
-            apiVersion: migrationParams.apiVersion,
+            apiVersion,
           }),
           params,
         };
@@ -222,6 +222,7 @@ export const projectCoreApi = createApi({
         }
         const body: MigrationStartBody = {
           git_url: data.gitUrl,
+          branch: data.branch,
           ...options,
         };
         if (data.branch) body.branch = data.branch;
@@ -252,8 +253,8 @@ export const projectCoreApi = createApi({
       }) => {
         const params = {
           git_url: projectRepositoryUrl,
-          ...(branch ? { branch } : {}),
-          ...(commit ? { commit_sha: commit } : {}),
+          // ? We can only supply either branch or commit_sha, not both.
+          ...(commit ? { commit_sha: commit } : { branch }),
         };
         return {
           url: versionedPathForEndpoint({
@@ -283,7 +284,7 @@ export const projectCoreApi = createApi({
       }) => {
         const body = {
           git_url: projectRepositoryUrl,
-          ...(branch ? { branch } : {}),
+          branch,
           config: update,
         };
         return {

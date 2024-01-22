@@ -19,7 +19,7 @@
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
-import { ImagesLinks } from "../Project";
+import { ImagesLinks } from "../project.types";
 import {
   useGetProjectIndexingStatusQuery,
   useProjectMetadataQuery,
@@ -27,12 +27,13 @@ import {
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & {
-  branch: string;
+  defaultBranch: string;
   projectId: number;
 };
 
 export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
-  const { branch, devAccess, fullPath, gitUrl, projectId, visibility } = props;
+  const { defaultBranch, devAccess, fullPath, gitUrl, projectId, visibility } =
+    props;
 
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
     skip: !fullPath || !projectId,
@@ -55,7 +56,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
 
   const statusButton = (
     <ProjectStatusIcon
-      branch={branch}
+      branch={defaultBranch}
       gitUrl={gitUrl ?? ""}
       isMaintainer={devAccess}
       projectId={projectId}

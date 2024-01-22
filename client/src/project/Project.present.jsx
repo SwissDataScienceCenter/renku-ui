@@ -268,9 +268,9 @@ function ProjectViewHeaderMinimal(props) {
   return (
     <>
       <ProjectEntityHeader
-        branch={props.metadata?.defaultBranch}
         client={props.client}
         creators={props.metadata.owner ? [props.metadata.owner] : []}
+        defaultBranch={props.metadata?.defaultBranch}
         description={{ value: props.metadata.description }} // ? overwritten by KG where available
         devAccess={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
         fullPath={props.metadata.pathWithNamespace}

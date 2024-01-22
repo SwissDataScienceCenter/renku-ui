@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
+import { Link } from "react-router-dom";
 import {
   Badge,
   Button,
@@ -35,9 +36,14 @@ import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { ProjectConfig } from "../../../project/Project";
+import { Url } from "../../../../utils/helpers/url";
+import { ProjectConfig } from "../../../project/project.types";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import {
+  canUpdateProjectAutomatically,
+  getRenkuLevel,
+} from "../../../project/utils/migrations";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
 import { useServerOptionsQuery } from "../../sessions.api";
@@ -47,6 +53,88 @@ import { SessionClassOption } from "./SessionClassOption";
 import { SessionStorageOption } from "./SessionStorageOption";
 
 import styles from "./StartNotebookServerOptions.module.scss";
+
+type CoreSupport = ReturnType<typeof useCoreSupport>["coreSupport"];
+type GetMigrationStatusQuery = ReturnType<
+  typeof useCoreSupport
+>["getMigrationStatusQuery"];
+
+type BackendNotAvailableProps = {
+  coreSupport: CoreSupport;
+  getMigrationStatusQuery: GetMigrationStatusQuery;
+  projectNamespace: string;
+  projectName: string;
+};
+function BackendNotAvailableMessage({
+  coreSupport,
+  getMigrationStatusQuery,
+  projectNamespace,
+  projectName,
+}: BackendNotAvailableProps) {
+  if (coreSupport.backendAvailable) return null;
+  const {
+    backendAvailable,
+    backendErrorMessage,
+    computed: coreSupportComputed,
+  } = coreSupport;
+  const isSupported = coreSupportComputed && backendAvailable;
+  const checkingSupport = !coreSupportComputed;
+  const { data: migrationStatus } = getMigrationStatusQuery;
+
+  if (checkingSupport || isSupported) return null;
+
+  const renkuMigrationLevel = getRenkuLevel(migrationStatus, isSupported);
+  const automatedUpdatePossible = canUpdateProjectAutomatically(
+    renkuMigrationLevel,
+    null
+  );
+
+  const settingsPageUrl = Url.get(Url.pages.project.settings, {
+    namespace: projectNamespace,
+    path: projectName,
+  });
+  if (backendErrorMessage)
+    return (
+      <>
+        <h3 className={cx("fs-6", "fw-bold")}>
+          A session cannot be started on this project.
+        </h3>
+        <div>{backendErrorMessage}</div>
+      </>
+    );
+
+  if (automatedUpdatePossible)
+    return (
+      <>
+        <h3 className={cx("fs-6", "fw-bold")}>
+          Update the project to start a session.
+        </h3>
+        <div>
+          Follow the instructions on the{" "}
+          <Link className="btn btn-danger btn-sm" to={settingsPageUrl}>
+            Settings
+          </Link>{" "}
+          page to update the project. Once that is done, you can start a
+          session.
+        </div>
+      </>
+    );
+
+  return (
+    <>
+      <h3 className={cx("fs-6", "fw-bold")}>
+        Changes are necessary to start a session.
+      </h3>
+      <div>
+        Details are provided on the{" "}
+        <Link className="btn btn-danger btn-sm" to={settingsPageUrl}>
+          Settings
+        </Link>{" "}
+        page.
+      </div>
+    </>
+  );
+}
 
 export const StartNotebookServerOptions = () => {
   // Wait for options to load
@@ -61,7 +149,13 @@ export const StartNotebookServerOptions = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const { coreSupport } = useCoreSupport({
+  const projectNamespace = useLegacySelector<string>(
+    (state) => state.stateModel.project.metadata.namespace
+  );
+  const projectName = useLegacySelector<string>(
+    (state) => state.stateModel.project.metadata.path
+  );
+  const { coreSupport, getMigrationStatusQuery } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
@@ -71,8 +165,8 @@ export const StartNotebookServerOptions = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.commit
+  const { branch: currentBranch, commit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
     useGetConfigQuery(
@@ -80,15 +174,23 @@ export const StartNotebookServerOptions = () => {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
+        branch: currentBranch,
         commit,
       },
-      { skip: !backendAvailable || !coreSupportComputed || !commit }
+      {
+        skip:
+          !backendAvailable ||
+          !coreSupportComputed ||
+          !currentBranch ||
+          !commit,
+      }
     );
 
   if (
     serverOptionsIsLoading ||
     projectConfigIsLoading ||
     !coreSupportComputed ||
+    !currentBranch ||
     !commit
   ) {
     const message = serverOptionsIsLoading
@@ -112,13 +214,18 @@ export const StartNotebookServerOptions = () => {
   if (!backendAvailable || errorProjectConfig) {
     return (
       <ErrorAlert dismissible={false}>
-        <h3 className={cx("fs-6", "fw-bold")}>
-          {!backendAvailable ? (
-            <>Error: This project is not supported</>
-          ) : (
-            <>Error while loading project configuration</>
-          )}
-        </h3>
+        {!backendAvailable ? (
+          <BackendNotAvailableMessage
+            coreSupport={coreSupport}
+            getMigrationStatusQuery={getMigrationStatusQuery}
+            projectName={projectName}
+            projectNamespace={projectNamespace}
+          />
+        ) : (
+          <h3 className={cx("fs-6", "fw-bold")}>
+            Error while loading project configuration
+          </h3>
+        )}
       </ErrorAlert>
     );
   }
@@ -155,19 +262,26 @@ const DefaultUrlOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const { commit, defaultUrl: selectedDefaultUrl } = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions
-  );
+  const {
+    branch: currentBranch,
+    commit,
+    defaultUrl: selectedDefaultUrl,
+  } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     useGetConfigQuery(
       {
         apiVersion,
         metadataVersion,
         projectRepositoryUrl,
+        branch: currentBranch,
         commit,
       },
       {
-        skip: !backendAvailable || !coreSupportComputed || !commit,
+        skip:
+          !backendAvailable ||
+          !coreSupportComputed ||
+          !currentBranch ||
+          !commit,
       }
     );
 
@@ -271,18 +385,19 @@ const AutoFetchLfsOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.commit
+  const { branch: currentBranch, commit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
     {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch: currentBranch,
       commit,
     },
     {
-      skip: !coreSupportComputed || !commit,
+      skip: !coreSupportComputed || !currentBranch || !commit,
     }
   );
 

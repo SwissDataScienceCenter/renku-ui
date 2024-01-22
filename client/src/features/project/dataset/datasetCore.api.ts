@@ -18,7 +18,7 @@
 
 import { FILE_STATUS } from "../../../components/form-field/FileUploaderInput";
 import type { ImageInputImage } from "../../../components/form-field/ImageInput";
-import type { Creator } from "../Project";
+import type { Creator } from "../project.types";
 import type { DatasetFormState } from "./datasetForm.slice";
 import type { DatasetImage } from "./dataset.types";
 import { DatasetUploaderFile } from "./datasetForm.slice";

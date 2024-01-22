@@ -44,7 +44,7 @@ import {
   ResourceClass,
   ResourcePool,
 } from "../../../dataServices/dataServices.types";
-import { ProjectConfig } from "../../../project/Project";
+import { ProjectConfig } from "../../../project/project.types";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import { setSessionClass } from "../../startSessionOptionsSlice";
@@ -69,18 +69,20 @@ export const SessionClassOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions.commit
+  const { branch: currentBranch, commit } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
     {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
+      branch: currentBranch,
       commit,
     },
     {
-      skip: !backendAvailable || !coreSupportComputed || !commit,
+      skip:
+        !backendAvailable || !coreSupportComputed || !currentBranch || !commit,
     }
   );
 
@@ -154,7 +156,7 @@ export const SessionClassOption = () => {
     dispatch(setSessionClass(initialSessionClassId));
   }, [defaultSessionClass?.id, dispatch, projectConfig, resourcePools]);
 
-  if (isLoading) {
+  if (isLoading || !projectConfig) {
     return (
       <div className="field-group">
         <div className="form-label">
