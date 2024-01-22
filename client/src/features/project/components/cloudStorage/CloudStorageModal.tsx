@@ -35,6 +35,7 @@ import {
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
+import { isEqual } from "lodash";
 
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
@@ -65,11 +66,10 @@ import {
   hasProviderShortlist,
 } from "../../utils/projectCloudStorage.utils";
 import { SuccessAlert } from "../../../../components/Alert";
-
-import styles from "./CloudStorage.module.scss";
 import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { isEqual } from "lodash";
+
+import styles from "./CloudStorage.module.scss";
 
 interface CloudStorageModalProps {
   currentStorage?: CloudStorage | null;
