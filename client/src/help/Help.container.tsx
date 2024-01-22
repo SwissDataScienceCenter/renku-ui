@@ -25,12 +25,14 @@
 
 import { Help as HelpPresent } from "./Help.present";
 
-export default function Help(props) {
+type HelpProps = {
+  model: unknown;
+  params: Record<string, string>;
+  statuspageId: string;
+};
+
+export default function Help({ model, params, statuspageId }: HelpProps) {
   return (
-    <HelpPresent
-      model={props.model}
-      params={props.params}
-      statuspageId={props.statuspageId}
-    />
+    <HelpPresent model={model} params={params} statuspageId={statuspageId} />
   );
 }
