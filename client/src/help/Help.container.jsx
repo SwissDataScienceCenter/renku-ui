@@ -34,5 +34,3 @@ export default function Help(props) {
     />
   );
 }
-
-// export { Help };
