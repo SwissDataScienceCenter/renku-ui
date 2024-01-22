@@ -43,6 +43,7 @@ import { StateModelProject } from "../../project.types";
 import {
   useAddCloudStorageForProjectMutation,
   useGetCloudStorageSchemaQuery,
+  useTestCloudStorageConnectionMutation,
   useUpdateCloudStorageMutation,
 } from "./projectCloudStorage.api";
 import {
@@ -57,6 +58,7 @@ import {
   CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
+  TestCloudStorageConnectionParams,
   UpdateCloudStorageParams,
 } from "./projectCloudStorage.types";
 import {
@@ -209,6 +211,34 @@ export default function CloudStorageModal({
     useAddCloudStorageForProjectMutation();
   const [modifyCloudStorageForProject, modifyResult] =
     useUpdateCloudStorageMutation();
+  const [validateCloudStorageConnection, validateResult] =
+    useTestCloudStorageConnectionMutation();
+
+  const validateConnection = () => {
+    const validateParameters: TestCloudStorageConnectionParams = {
+      configuration: {
+        type: storageDetails.schema,
+      },
+      source_path: storageDetails.sourcePath ?? "/",
+    };
+    if (storageDetails.provider) {
+      validateParameters.configuration.provider = storageDetails.provider;
+    }
+    if (
+      storageDetails.options &&
+      Object.keys(storageDetails.options).length > 0
+    ) {
+      const options = storageDetails.options as CloudStorageDetailsOptions;
+      Object.keys(options).forEach((key) => {
+        const value = options[key];
+        if (value != undefined && value !== "") {
+          validateParameters.configuration[key] = value;
+        }
+      });
+    }
+
+    validateCloudStorageConnection(validateParameters);
+  };
 
   const addOrEditStorage = useCallback(() => {
     storageDetails.options;
@@ -429,6 +459,27 @@ export default function CloudStorageModal({
       </Button>
     );
 
+  const testConnectionButton = state.step !== 1 && (
+    <Button
+      className={cx("btn-outline-rk-green", "me-auto")}
+      disabled={validateResult.isLoading}
+      onClick={() => validateConnection()}
+    >
+      Test connection{" "}
+      {validateResult.isLoading && <Loader className="me-1" inline size={16} />}
+    </Button>
+  );
+
+  const connectionResult =
+    validateResult.isUninitialized ||
+    validateResult.isLoading ? null : validateResult.error ? (
+      <RtkOrNotebooksError error={validateResult.error} />
+    ) : (
+      <SuccessAlert timeout={0}>
+        <p className="p-0">The connection to the storage works correctly.</p>
+      </SuccessAlert>
+    );
+
   const errorMessage =
     addResult.error || modifyResult.error ? (
       <div className="w-100">
@@ -481,6 +532,8 @@ export default function CloudStorageModal({
       <ModalBody data-cy="cloud-storage-edit-body">{bodyContent}</ModalBody>
 
       <ModalFooter data-cy="cloud-storage-edit-footer">
+        <div className="w-100">{connectionResult}</div>
+        {testConnectionButton}
         {errorMessage}
         {resetButton}
         {backButton}
