@@ -9,7 +9,7 @@
 
 ### Bug Fixes
 
-- Set a branch every time a renku-core API is invoked ([#2977](https://github.com/SwissDataScienceCenter/renku-ui/issues/2977), [#2965](https://github.com/SwissDataScienceCenter/renku-ui/issues/2965))
+- Set a branch every time a renku-core API is invoked ([#2977](https://github.com/SwissDataScienceCenter/renku-ui/issues/2977))
 - Improve string validation when trying to upload a dataset file by URL ([#2834](https://github.com/SwissDataScienceCenter/renku-ui/issues/2834), [#2801](https://github.com/SwissDataScienceCenter/renku-ui/issues/2801))
 - Update the Renku logo and Renku browser icons ([#2848](https://github.com/SwissDataScienceCenter/renku-ui/issues/2848))
 - Use the renku-core API for session options ([#2947](https://github.com/SwissDataScienceCenter/renku-ui/issues/2947), [#2876](https://github.com/SwissDataScienceCenter/renku-ui/issues/2876))
