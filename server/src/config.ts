@@ -37,11 +37,11 @@ const DEPLOYMENT = {
   gatewayUrl,
   gatewayLoginUrl: urlJoin(
     gatewayUrl,
-    process.env.GATEWAY_LOGIN_PATH || "/auth/login"
+    process.env.GATEWAY_LOGIN_PATH || "/api/auth/login"
   ),
   gatewayLogoutUrl: urlJoin(
     gatewayUrl,
-    process.env.GATEWAY_LOGOUT_PATH || "/auth/logout"
+    process.env.GATEWAY_LOGOUT_PATH || "/api/auth/logout"
   ),
 };
 

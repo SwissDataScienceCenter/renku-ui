@@ -48,8 +48,8 @@ function LoginRedirect({ location, params }: LocationRedirectProps) {
     if (location.state && location.state.previous)
       url += location.state.previous;
     const redirectParam = encodeURIComponent(createLoginUrl(url));
-    const uiServerUrl = params.UISERVER_URL;
-    const authUrl = `${uiServerUrl}/auth/login?redirect_url=${redirectParam}`;
+    const gatewayUrl = params.GATEWAY_URL;
+    const authUrl = `${gatewayUrl}/auth/login?redirect_url=${redirectParam}`;
 
     // set new location
     window.location.replace(authUrl);
