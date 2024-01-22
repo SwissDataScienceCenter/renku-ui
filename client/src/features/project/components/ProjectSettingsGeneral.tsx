@@ -121,7 +121,7 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
       {props.settingsReadOnly ? (
         <InfoAlert dismissible={false} timeout={0}>
           <p className="mb-0">
-            Project settings can be changed only by maintainers.
+            Project settings can be changed only by maintainerszzzz.
           </p>
           {loginElement}
         </InfoAlert>
