@@ -294,7 +294,6 @@ const Url = {
     help: {
       base: "/help",
       documentation: "/help/docs",
-      features: "/help/features",
       getting: "/help/getting",
       release: "/help/release",
       status: "/help/status",
