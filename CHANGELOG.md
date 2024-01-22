@@ -1,5 +1,11 @@
 # Changes
 
+## [3.17.3](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.17.2...3.17.3) (2024-01-22)
+
+### Features
+
+- Improve feedback when starting sessions on outdated projects ([#2983](https://github.com/SwissDataScienceCenter/renku-ui/issues/2983), [#2985](https://github.com/SwissDataScienceCenter/renku-ui/issues/2985))
+
 ## [3.17.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.17.1...3.17.2) (2024-01-17)
 
 ### Bug Fixes
