@@ -46,7 +46,7 @@ import {
 } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
-import { ErrorAlert, WarnAlert } from "../../../components/Alert";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { ThrottledTooltip } from "../../../components/Tooltip";
@@ -125,16 +125,37 @@ export default function ProjectSettingsSessions() {
     { skip: !coreSupportComputed }
   );
 
-  // ? Anonymous users may have problem with notebook options, depending on the deployment
-  if (!logged) {
-    const textIntro = "Only authenticated users can access sessions setting.";
-    const textPost = "to visualize sessions settings.";
-    return (
-      <SessionsDiv>
-        <LoginAlert logged={logged} textIntro={textIntro} textPost={textPost} />
-      </SessionsDiv>
-    );
-  }
+  // // ? Anonymous users may have problem with notebook options, depending on the deployment
+  // if (!logged) {
+  //   const textIntro = "Only authenticated users can access sessions setting.";
+  //   const textPost = "to visualize sessions settings.";
+  //   return (
+  //     <>
+  //       <InfoAlert dismissible={false} timeout={0}>
+  //         <p className="mb-0">
+  //           Settings can be changed only by project owners and maintainers.
+  //         </p>
+
+  //         <p className="mt-3 mb-0">
+  //           <LoginAlert
+  //             logged={false}
+  //             noWrapper={true}
+  //             textPre="You can"
+  //             textPost="here."
+  //           />
+  //         </p>
+  //       </InfoAlert>
+
+  //       <SessionsDiv>
+  //         <LoginAlert
+  //           logged={logged}
+  //           textIntro={textIntro}
+  //           textPost={textPost}
+  //         />
+  //       </SessionsDiv>
+  //     </>
+  //   );
+  // }
 
   if (locked) {
     return (
@@ -169,15 +190,12 @@ export default function ProjectSettingsSessions() {
     );
   }
 
-  const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
+  const maintainerAccess = accessLevel >= ACCESS_LEVELS.MAINTAINER;
   if (!backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace,
       path,
     });
-    const updateInfo = devAccess
-      ? "It is necessary to update this project"
-      : "It is necessary to update this project. Either contact a project maintainer, or fork and update it";
     return (
       <SessionsDiv>
         <p>Session settings not available.</p>
@@ -186,9 +204,13 @@ export default function ProjectSettingsSessions() {
             <b>Session settings are unavailable</b> because the project is not
             compatible with this RenkuLab instance.
           </p>
-          <p>
-            {updateInfo}.
-            <br />
+          <p className="mb-0">
+            It is necessary to update this project.
+            {!maintainerAccess && (
+              <> Either contact a project maintainer, or fork and update it.</>
+            )}
+          </p>
+          <p className="mb-0">
             The <Link to={settingsUrl}>Project settings</Link> page provides
             further information.
           </p>
@@ -227,6 +249,7 @@ export default function ProjectSettingsSessions() {
     );
   }
 
+  const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
   return (
     <SessionsDiv
       projectConfigIsFetching={projectConfigIsFetching}
@@ -234,7 +257,22 @@ export default function ProjectSettingsSessions() {
     >
       <UpdateStatus />
       {!devAccess && (
-        <p>Settings can be changed only by developers and maintainers.</p>
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-0">
+            Session settings can be changed only by project owners, maintainers
+            and developers.
+          </p>
+          {!logged && (
+            <p className={cx("mt-3", "mb-0")}>
+              <LoginAlert
+                logged={false}
+                noWrapper={true}
+                textPre="You can"
+                textPost="here."
+              />
+            </p>
+          )}
+        </InfoAlert>
       )}
       <DefaultUrlOption
         apiVersion={apiVersion}

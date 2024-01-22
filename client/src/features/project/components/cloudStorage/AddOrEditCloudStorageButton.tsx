@@ -81,7 +81,7 @@ export default function AddOrEditCloudStorageButton({
         </Button>
       </div>
       <UncontrolledTooltip target={localId}>
-        Only developers and maintainers can edit cloud storage settings.
+        Only owners, maintainers and developers can edit cloud storage settings.
       </UncontrolledTooltip>
     </>
   );
