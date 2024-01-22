@@ -19,9 +19,9 @@
 import { Route, Switch } from "react-router";
 import { Col, Nav, NavItem, Row } from "reactstrap";
 import { RenkuNavLink } from "../../../components/RenkuNavLink";
-import ProjectSettingsSessions from "./ProjectSettingsSessions";
 import ProjectSettingsCloudStorage from "./ProjectSettingsCloudStorage";
 import { ProjectSettingsGeneral } from "./ProjectSettingsGeneral";
+import ProjectSettingsSessions from "./ProjectSettingsSessions";
 
 type ProjectSettingsGeneralProps = Parameters<typeof ProjectSettingsGeneral>[0];
 
