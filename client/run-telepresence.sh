@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2018 - Swiss Data Science Center (SDSC)
+# Copyright 2024 - Swiss Data Science Center (SDSC)
 # A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
 # Eidgenössische Technische Hochschule Zürich (ETHZ).
 #
@@ -189,9 +189,16 @@ EOF
 
 ./scripts/generate_sitemap.sh "${BASE_URL}" "./public/sitemap.xml"
 
+CURRENT_TELEPRESENCE_NAMESPACE=$( telepresence status | grep "Namespace" | cut -d ":" -f2 | tr -d " " )
+if [[ $DEV_NAMESPACE != $CURRENT_TELEPRESENCE_NAMESPACE ]]
+then
+  telepresence quit
+  telepresence connect --namespace ${DEV_NAMESPACE}
+fi
+
 if [[ $SERVICE_CONSOLE_MODE == 1 ]]
 then
-  BROWSER=none telepresence intercept ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --port 3000:http -- bash
+  BROWSER=none telepresence intercept ${SERVICE_NAME} --port 3000:http -- bash
 else
-  BROWSER=none telepresence intercept ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --port 3000:http -- npm run start:strict-port -- --host
+  BROWSER=none telepresence intercept ${SERVICE_NAME} --port 3000:http -- npm run start:strict-port -- --host
 fi

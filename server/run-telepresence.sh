@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2022 - Swiss Data Science Center (SDSC)
+# Copyright 2024 - Swiss Data Science Center (SDSC)
 # A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
 # Eidgenössische Technische Hochschule Zürich (ETHZ).
 #
@@ -18,60 +18,65 @@
 
 set -e
 
-COLOR_RED="\033[0;31m"
-COLOR_RESET="\033[0m"
+CURRENT_CONTEXT=`kubectl config current-context`
 
-echo -e "If you target a CI deployment, you can type the PR number"
-if [[ ! $DEV_NAMESPACE ]]
+if [[ -n $PR ]]
 then
-    read -p "No dev namespace found. Please specify one: " -r
-    DEV_NAMESPACE=$REPLY
+  DEV_NAMESPACE=renku-ci-ui-${PR}
+  SERVICE_NAME=renku-ci-ui-${PR}-uiserver
+  echo "Deploying to environment for PR ${PR}: ($DEV_NAMESPACE.dev.renku.ch)"
+fi
+
+if [[ $CURRENT_CONTEXT == 'minikube' ]]
+then
+  echo "Exchanging k8s deployments using the following context: ${CURRENT_CONTEXT}"
+  if [[ $RENKU_DOMAIN ]]
+  then
+    # if using localhost.run, it should be http://<some-name>.localhost.run
+    BASE_URL=http://${RENKU_DOMAIN}
+  else
+    MINIKUBE_IP=`minikube ip`
+    BASE_URL=http://${MINIKUBE_IP}
+  fi
+  SERVICE_NAME=renku-uiserver
+  DEV_NAMESPACE=renku
 else
-    echo -e "Your current dev namespace is: ${COLOR_RED}${DEV_NAMESPACE}${COLOR_RESET}"
-    read -p "Press enter to use it, or type a different one [skip]: " -r
-    if [[ $REPLY ]]
+  # if the target context is not dev, have the user confirm
+  if [[ $CURRENT_CONTEXT != 'switch-dev' ]]
+  then
+    echo "You are going to exchange k8s deployments using the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
+    read -p "Do you want to proceed? [y/n]"
+    if [[ ! $REPLY =~ ^[Yy]$ ]]
     then
-        DEV_NAMESPACE=$REPLY
+        exit 1
     fi
-fi
-if [[ ! $DEV_NAMESPACE ]]
-then
-    echo "ERROR: you need to provide a namespace"
-    exit 1
-fi
-if [[ $DEV_NAMESPACE =~ ^[0-9]+$ ]]
-then
-    DEV_NAMESPACE=renku-ci-ui-${DEV_NAMESPACE}
-    SERVICE_NAME=${DEV_NAMESPACE}-uiserver
-else
+  fi
+
+  if [[ ! $DEV_NAMESPACE ]]
+  then
+    read -p "enter your k8s namespace: "
+    DEV_NAMESPACE=$REPLY
+  else
+    echo "Exchanging k8s deployments for the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
+  fi
+  BASE_URL=https://${DEV_NAMESPACE}.dev.renku.ch
+
+  if [[ ! $SERVICE_NAME ]]
+  then
     SERVICE_NAME=${DEV_NAMESPACE}-renku-uiserver
+  fi
 fi
 
-echo -e "The service will start by default. You can switch to console mode to manually start the service."
-read -p "Do you want to use console mode? [Y/n]: " -r
-if [[ $REPLY =~ ^([yY][eE][sS]|[yY])$ ]]
+CURRENT_TELEPRESENCE_NAMESPACE=$( telepresence status | grep "Namespace" | cut -d ":" -f2 | tr -d " " )
+if [[ $DEV_NAMESPACE != $CURRENT_TELEPRESENCE_NAMESPACE ]]
 then
-    SERVICE_CONSOLE_MODE=1
-    SERVICE_CONSOLE_MODE_TEXT="on"
-else
-    SERVICE_CONSOLE_MODE=0
-    SERVICE_CONSOLE_MODE_TEXT="off"
+  telepresence quit
+  telepresence connect --namespace ${DEV_NAMESPACE}
 fi
-
-echo -e ""
-echo -e "Telepresence will start in the dev namespace ${COLOR_RED}${DEV_NAMESPACE}${COLOR_RESET}"
-echo -e "Target service: ${COLOR_RED}${SERVICE_NAME}${COLOR_RESET}"
-echo -e "Console mode: ${COLOR_RED}${SERVICE_CONSOLE_MODE_TEXT}${COLOR_RESET}"
-if [[ $SERVICE_CONSOLE_MODE == 1 ]]
-then
-    echo -e "You can start the service and wait for a debugger to attach with:"
-    echo -e "${COLOR_RED}> npm run dev-debug${COLOR_RESET}"
-fi
-echo -e "\U26A0 Please enter the sudo password when asked."
 
 if [[ $SERVICE_CONSOLE_MODE == 1 ]]
 then
-    telepresence intercept -n ${DEV_NAMESPACE} ${SERVICE_NAME} --port 8080 --mount=true -- bash
+    telepresence intercept ${SERVICE_NAME} --port 8080 --mount=true -- bash
 else
-    telepresence intercept -n ${DEV_NAMESPACE} ${SERVICE_NAME} --port 8080 --mount=true -- npm run dev-debug
+    telepresence intercept ${SERVICE_NAME} --port 8080 --mount=true -- npm run dev-debug
 fi
