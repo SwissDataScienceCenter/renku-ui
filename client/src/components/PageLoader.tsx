@@ -22,7 +22,7 @@ import { Loader } from "./Loader";
 
 export default function PageLoader() {
   return (
-    <div className={cx("d-flex", "align-items-center", "min-vh-100")}>
+    <div className={cx("d-flex", "align-items-center", "min-vh-100", "w-100")}>
       <Loader />
     </div>
   );
