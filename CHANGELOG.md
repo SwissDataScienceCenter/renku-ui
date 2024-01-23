@@ -1,5 +1,19 @@
 # Changes
 
+## [3.19.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.18.1...3.19.0) (2024-01-22)
+
+### Features
+
+- Allow users to modify sessions when paused ([#2942](https://github.com/SwissDataScienceCenter/renku-ui/issues/2942), [#2941](https://github.com/SwissDataScienceCenter/renku-ui/issues/2941), [#2980](https://github.com/SwissDataScienceCenter/renku-ui/issues/2980))
+- Improve feedback when starting sessions on outdated projects ([#2983](https://github.com/SwissDataScienceCenter/renku-ui/issues/2983), [#2985](https://github.com/SwissDataScienceCenter/renku-ui/issues/2985))
+
+### Bug Fixes
+
+- Set a branch every time a renku-core API is invoked ([#2977](https://github.com/SwissDataScienceCenter/renku-ui/issues/2977))
+- Improve string validation when trying to upload a dataset file by URL ([#2834](https://github.com/SwissDataScienceCenter/renku-ui/issues/2834), [#2801](https://github.com/SwissDataScienceCenter/renku-ui/issues/2801))
+- Update the Renku logo and Renku browser icons ([#2848](https://github.com/SwissDataScienceCenter/renku-ui/issues/2848))
+- Use the renku-core API for session options ([#2947](https://github.com/SwissDataScienceCenter/renku-ui/issues/2947), [#2876](https://github.com/SwissDataScienceCenter/renku-ui/issues/2876))
+
 ## [3.18.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.18.0...3.18.1) (2024-01-17)
 
 ### Bug Fixes

@@ -68,9 +68,6 @@ class HelpNav extends Component {
             title="Documentation"
           />
         </NavItem>
-        <NavItem>
-          <RenkuNavLink to={Url.pages.help.features} title="Features" />
-        </NavItem>
         {statusLink}
         <NavItem>
           <RenkuNavLink
@@ -197,86 +194,6 @@ class HelpDocumentation extends Component {
   }
 }
 
-class HelpFeatures extends Component {
-  render() {
-    return (
-      <Row>
-        <Col md={8}>
-          <h3>Features</h3>
-          <p>
-            Renku consists of a collection of services, including a web-based
-            user interface and a command-line client, exploiting in a coherent
-            setup the joint features of:
-          </p>
-          <ul>
-            <li>
-              <a
-                href="https://gitlab.com"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                GitLab
-              </a>{" "}
-              - repository management
-            </li>
-            <li>
-              <a
-                href="http://jupyter.org/hub"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                JupyterHub
-              </a>{" "}
-              - interactive notebooks
-            </li>
-            <li>
-              <a
-                href="https://kubernetes.io"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Kubernetes
-              </a>{" "}
-              - container orchestration
-            </li>
-            <li>
-              <a
-                href="https://www.keycloak.org"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Keycloak
-              </a>{" "}
-              - identity and access management
-            </li>
-            <li>
-              <a
-                href="https://www.commonwl.org"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Common Workflow Language
-              </a>{" "}
-              - analysis workflows &amp; tools description
-            </li>
-          </ul>
-          <p>
-            More information is available in our{" "}
-            <a
-              href={`${Docs.READ_THE_DOCS_INTRODUCTION}/index.html#features`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              documentation
-            </a>
-            .
-          </p>
-        </Col>
-      </Row>
-    );
-  }
-}
-
 class HelpContent extends Component {
   render() {
     return [
@@ -296,11 +213,6 @@ class HelpContent extends Component {
         path={Url.pages.help.documentation}
         key="documentation"
         render={() => <HelpDocumentation key="documentation" {...this.props} />}
-      />,
-      <Route
-        path={Url.pages.help.features}
-        key="features"
-        render={() => <HelpFeatures key="features" {...this.props} />}
       />,
       <Route
         path={Url.pages.help.status}
