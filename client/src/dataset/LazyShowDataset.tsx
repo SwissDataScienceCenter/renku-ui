@@ -17,7 +17,7 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../components/Loader";
+import PageLoader from "../components/PageLoader";
 
 const ShowDataset = lazy(() => import("./Dataset.container"));
 
@@ -25,7 +25,7 @@ export default function LazyShowDataset(
   props: ComponentProps<typeof ShowDataset>
 ) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <ShowDataset {...props} />
     </Suspense>
   );

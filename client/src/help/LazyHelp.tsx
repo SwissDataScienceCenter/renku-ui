@@ -17,13 +17,13 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../components/Loader";
+import PageLoader from "../components/PageLoader";
 
 const Help = lazy(() => import("./Help.container"));
 
 export default function LazyHelp(props: ComponentProps<typeof Help>) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <Help {...props} />
     </Suspense>
   );

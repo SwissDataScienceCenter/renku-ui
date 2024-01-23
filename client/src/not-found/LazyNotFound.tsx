@@ -17,13 +17,13 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../components/Loader";
+import PageLoader from "../components/PageLoader";
 
 const NotFound = lazy(() => import("./NotFound"));
 
 export default function LazyNotFound(props: ComponentProps<typeof NotFound>) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <NotFound {...props} />
     </Suspense>
   );

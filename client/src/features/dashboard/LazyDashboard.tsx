@@ -17,13 +17,13 @@
  */
 
 import { Suspense, lazy } from "react";
-import { Loader } from "../../components/Loader";
+import PageLoader from "../../components/PageLoader";
 
 const Dashboard = lazy(() => import("./Dashboard"));
 
 export default function LazyDashboard() {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <Dashboard />
     </Suspense>
   );

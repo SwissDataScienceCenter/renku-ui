@@ -16,17 +16,14 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
+import cx from "classnames";
 
-const SearchPage = lazy(() => import("./KgSearchPage"));
+import { Loader } from "./Loader";
 
-export default function LazySearchPage(
-  props: ComponentProps<typeof SearchPage>
-) {
+export default function PageLoader() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <SearchPage {...props} />
-    </Suspense>
+    <div className={cx("d-flex", "align-items-center", "min-vh-100")}>
+      <Loader />
+    </div>
   );
 }
