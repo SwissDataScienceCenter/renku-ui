@@ -39,12 +39,12 @@ const Links = {
   GITHUB: "https://github.com/SwissDataScienceCenter/renku",
   HOMEPAGE: "https://datascience.ch",
   MEDIUM: "https://medium.com/the-renku-blog",
-  TWITTER: "https://twitter.com/RenkuIO",
   YOUTUBE: "https://www.youtube.com/channel/UCMF2tBtWU1sKWvtPl_HpI4A",
   SDSC: "https://www.datascience.ch/",
   ETH: "https://ethrat.ch/en/",
   EPFL: "https://www.epfl.ch/en/",
   ETHZ: "https://ethz.ch/en.html",
+  RENKU_BLOG: "https://blog.renkulab.io",
 };
 
 const GitlabLinks = {

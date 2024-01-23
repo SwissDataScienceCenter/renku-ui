@@ -105,7 +105,10 @@ function BottomNav(props: AnonymousHomeConfig) {
           </Col>
           <Col md={3}>
             <BottomNavSection sectionTitle="Follow us">
-              <BottomNavExternalLink title="Twitter" url={Links.TWITTER} />
+              <BottomNavExternalLink
+                title="Renku blog"
+                url={Links.RENKU_BLOG}
+              />
               <BottomNavExternalLink title="YouTube" url={Links.YOUTUBE} />
               <BottomNavExternalLink title="Medium" url={Links.MEDIUM} />
             </BottomNavSection>
