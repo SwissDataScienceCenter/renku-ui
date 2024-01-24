@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,13 +16,14 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  project/list
- *  Components for the project listing.
- */
+import cx from "classnames";
 
-import { ProjectList } from "./ProjectList.container";
+import { Loader } from "./Loader";
 
-export { ProjectList };
+export default function PageLoader() {
+  return (
+    <div className={cx("d-flex", "align-items-center", "min-vh-100", "w-100")}>
+      <Loader />
+    </div>
+  );
+}

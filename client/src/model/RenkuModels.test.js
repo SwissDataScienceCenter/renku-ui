@@ -4,8 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
-// import { Project, projectSchema } from "./RenkuModels";
-import { ProjectCoordinator } from "../project";
+import { ProjectCoordinator } from "../project/Project.state";
 
 const model = new StateModel(globalSchema);
 

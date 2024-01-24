@@ -21,7 +21,7 @@ import { Link } from "react-router-dom";
 
 import { WarnAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
-import { NewProject } from "../../project/new";
+import { NewProject } from "../../project/new/ProjectNew.container";
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import type {
