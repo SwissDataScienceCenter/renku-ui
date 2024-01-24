@@ -28,52 +28,48 @@ import { debounce } from "lodash";
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Accordion,
-  AccordionBody,
-  AccordionHeader,
-  AccordionItem,
-  AccordionProps,
   Badge,
   Button,
+  Card,
+  CardBody,
+  CardHeader,
   Col,
+  Collapse,
+  Container,
   FormGroup,
   FormText,
   Input,
   InputGroup,
   InputGroupText,
   Label,
+  Row,
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { ACCESS_LEVELS } from "../../api-client";
-import { ErrorAlert, WarnAlert } from "../../components/Alert";
-import { ExternalLink } from "../../components/ExternalLinks";
-import { Loader } from "../../components/Loader";
-import { ThrottledTooltip } from "../../components/Tooltip";
-import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
-import LoginAlert from "../../components/loginAlert/LoginAlert";
-import {
-  ProjectConfig,
-  StateModelProject,
-} from "../../features/project/project.types";
-import {
-  useGetConfigQuery,
-  useUpdateConfigMutation,
-} from "../../features/project/projectCoreApi";
-import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
+import { ACCESS_LEVELS } from "../../../api-client";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import { Loader } from "../../../components/Loader";
+import { ThrottledTooltip } from "../../../components/Tooltip";
+import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import LoginAlert from "../../../components/loginAlert/LoginAlert";
+import { LockStatus, User } from "../../../model/renkuModels.types";
+import { Docs } from "../../../utils/constants/Docs";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
+import { Url } from "../../../utils/helpers/url";
 import {
   ServerOptionBoolean,
   ServerOptionEnum,
   mergeDefaultUrlOptions,
-} from "../../features/session/components/options/StartNotebookServerOptions";
-import { useServerOptionsQuery } from "../../features/session/sessions.api";
-import { ServerOptions } from "../../features/session/sessions.types";
-import { LockStatus, User } from "../../model/renkuModels.types";
-import { Docs } from "../../utils/constants/Docs";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
-import { Url } from "../../utils/helpers/url";
+} from "../../session/components/options/StartNotebookServerOptions";
+import { useServerOptionsQuery } from "../../session/sessions.api";
+import { ServerOptions } from "../../session/sessions.types";
+import { ProjectConfig, StateModelProject } from "../project.types";
+import { useGetConfigQuery, useUpdateConfigMutation } from "../projectCoreApi";
+import { useCoreSupport } from "../useProjectCoreSupport";
 
+import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import styles from "./ProjectSettingsSessions.module.scss";
 
 type CoreServiceVersionedApiParams = {
@@ -131,17 +127,6 @@ export default function ProjectSettingsSessions() {
     { skip: !coreSupportComputed }
   );
 
-  // ? Anonymous users may have problem with notebook options, depending on the deployment
-  if (!logged) {
-    const textIntro = "Only authenticated users can access sessions setting.";
-    const textPost = "to visualize sessions settings.";
-    return (
-      <SessionsDiv>
-        <LoginAlert logged={logged} textIntro={textIntro} textPost={textPost} />
-      </SessionsDiv>
-    );
-  }
-
   if (locked) {
     return (
       <SessionsDiv>
@@ -175,15 +160,12 @@ export default function ProjectSettingsSessions() {
     );
   }
 
-  const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
+  const maintainerAccess = accessLevel >= ACCESS_LEVELS.MAINTAINER;
   if (!backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace,
       path,
     });
-    const updateInfo = devAccess
-      ? "It is necessary to update this project"
-      : "It is necessary to update this project. Either contact a project maintainer, or fork and update it";
     return (
       <SessionsDiv>
         <p>Session settings not available.</p>
@@ -192,9 +174,13 @@ export default function ProjectSettingsSessions() {
             <b>Session settings are unavailable</b> because the project is not
             compatible with this RenkuLab instance.
           </p>
-          <p>
-            {updateInfo}.
-            <br />
+          <p className="mb-0">
+            It is necessary to update this project.
+            {!maintainerAccess && (
+              <> Either contact a project maintainer, or fork and update it.</>
+            )}
+          </p>
+          <p className="mb-0">
             The <Link to={settingsUrl}>Project settings</Link> page provides
             further information.
           </p>
@@ -233,6 +219,7 @@ export default function ProjectSettingsSessions() {
     );
   }
 
+  const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
   return (
     <SessionsDiv
       projectConfigIsFetching={projectConfigIsFetching}
@@ -240,99 +227,129 @@ export default function ProjectSettingsSessions() {
     >
       <UpdateStatus />
       {!devAccess && (
-        <p>Settings can be changed only by developers and maintainers.</p>
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-0">
+            Session settings can be changed only by project owners, maintainers
+            and developers.
+          </p>
+          {!logged && (
+            <p className={cx("mt-3", "mb-0")}>
+              <LoginAlert
+                logged={false}
+                noWrapper={true}
+                textPre="You can"
+                textPost="here."
+              />
+            </p>
+          )}
+        </InfoAlert>
       )}
-      <DefaultUrlOption
-        apiVersion={apiVersion}
-        metadataVersion={metadataVersion}
-        serverOptions={serverOptions}
-        projectConfig={projectConfig}
-        projectConfigIsFetching={projectConfigIsFetching}
-        projectRepositoryUrl={projectRepositoryUrl}
-        branch={defaultBranch}
-        devAccess={devAccess}
-      />
 
-      <ComputeResourceOption
-        apiVersion={apiVersion}
-        metadataVersion={metadataVersion}
-        devAccess={devAccess}
-        optionInputAddon="CPUs"
-        optionLabel="Number of CPUs"
-        optionMinValue={0.1}
-        optionName="interactive.cpu_request"
-        optionStepValue={0.1}
-        optionDefaultValue={
-          projectConfig.default.sessions?.legacyConfig?.cpuRequest
-        }
-        optionValue={projectConfig.config.sessions?.legacyConfig?.cpuRequest}
-        projectConfigIsFetching={projectConfigIsFetching}
-        projectRepositoryUrl={projectRepositoryUrl}
-        branch={defaultBranch}
-      />
-      <ComputeResourceOption
-        apiVersion={apiVersion}
-        metadataVersion={metadataVersion}
-        devAccess={devAccess}
-        optionInputAddon="GB"
-        optionInputAddonTooltip="Gigabytes"
-        optionLabel="Amount of Memory"
-        optionMinValue={1}
-        optionName="interactive.mem_request"
-        optionStepValue={1}
-        optionSuffix="G"
-        optionDefaultValue={
-          projectConfig.default.sessions?.legacyConfig?.memoryRequest
-        }
-        optionValue={projectConfig.config.sessions?.legacyConfig?.memoryRequest}
-        projectConfigIsFetching={projectConfigIsFetching}
-        projectRepositoryUrl={projectRepositoryUrl}
-        branch={defaultBranch}
-      />
-      <ComputeResourceOption
-        apiVersion={apiVersion}
-        metadataVersion={metadataVersion}
-        devAccess={devAccess}
-        optionInputAddon="GB"
-        optionInputAddonTooltip="Gigabytes"
-        optionLabel="Amount of Storage"
-        optionMinValue={1}
-        optionName="interactive.disk_request"
-        optionStepValue={1}
-        optionSuffix="G"
-        optionDefaultValue={projectConfig.default.sessions?.storage}
-        optionValue={projectConfig.config.sessions?.storage}
-        projectConfigIsFetching={projectConfigIsFetching}
-        projectRepositoryUrl={projectRepositoryUrl}
-        branch={defaultBranch}
-      />
-      <ComputeResourceOption
-        apiVersion={apiVersion}
-        metadataVersion={metadataVersion}
-        devAccess={devAccess}
-        optionInputAddon="GPUs"
-        optionLabel="Number of GPUs"
-        optionMinValue={1}
-        optionName="interactive.gpu_request"
-        optionStepValue={1}
-        optionDefaultValue={
-          projectConfig.default.sessions?.legacyConfig?.gpuRequest
-        }
-        optionValue={projectConfig.config.sessions?.legacyConfig?.gpuRequest}
-        projectConfigIsFetching={projectConfigIsFetching}
-        projectRepositoryUrl={projectRepositoryUrl}
-        branch={defaultBranch}
-      />
+      <Card className="mb-4">
+        <CardBody>
+          <Container className="p-0" fluid>
+            <Row>
+              <DefaultUrlOption
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+                serverOptions={serverOptions}
+                projectConfig={projectConfig}
+                projectConfigIsFetching={projectConfigIsFetching}
+                projectRepositoryUrl={projectRepositoryUrl}
+                branch={defaultBranch}
+                devAccess={devAccess}
+              />
 
-      <AutoFetchLfsOption
-        apiVersion={apiVersion}
-        metadataVersion={metadataVersion}
-        projectConfig={projectConfig}
-        projectConfigIsFetching={projectConfigIsFetching}
-        projectRepositoryUrl={projectRepositoryUrl}
-        branch={defaultBranch}
-        devAccess={devAccess}
-      />
+              <ComputeResourceOption
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+                devAccess={devAccess}
+                optionInputAddon="CPUs"
+                optionLabel="Number of CPUs"
+                optionMinValue={0.1}
+                optionName="interactive.cpu_request"
+                optionStepValue={0.1}
+                optionDefaultValue={
+                  projectConfig.default.sessions?.legacyConfig?.cpuRequest
+                }
+                optionValue={
+                  projectConfig.config.sessions?.legacyConfig?.cpuRequest
+                }
+                projectConfigIsFetching={projectConfigIsFetching}
+                projectRepositoryUrl={projectRepositoryUrl}
+                branch={defaultBranch}
+              />
+              <ComputeResourceOption
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+                devAccess={devAccess}
+                optionInputAddon="GB"
+                optionInputAddonTooltip="Gigabytes"
+                optionLabel="Amount of Memory"
+                optionMinValue={1}
+                optionName="interactive.mem_request"
+                optionStepValue={1}
+                optionSuffix="G"
+                optionDefaultValue={
+                  projectConfig.default.sessions?.legacyConfig?.memoryRequest
+                }
+                optionValue={
+                  projectConfig.config.sessions?.legacyConfig?.memoryRequest
+                }
+                projectConfigIsFetching={projectConfigIsFetching}
+                projectRepositoryUrl={projectRepositoryUrl}
+                branch={defaultBranch}
+              />
+              <ComputeResourceOption
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+                devAccess={devAccess}
+                optionInputAddon="GB"
+                optionInputAddonTooltip="Gigabytes"
+                optionLabel="Amount of Storage"
+                optionMinValue={1}
+                optionName="interactive.disk_request"
+                optionStepValue={1}
+                optionSuffix="G"
+                optionDefaultValue={projectConfig.default.sessions?.storage}
+                optionValue={projectConfig.config.sessions?.storage}
+                projectConfigIsFetching={projectConfigIsFetching}
+                projectRepositoryUrl={projectRepositoryUrl}
+                branch={defaultBranch}
+              />
+              <ComputeResourceOption
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+                devAccess={devAccess}
+                optionInputAddon="GPUs"
+                optionLabel="Number of GPUs"
+                optionMinValue={1}
+                optionName="interactive.gpu_request"
+                optionStepValue={1}
+                optionDefaultValue={
+                  projectConfig.default.sessions?.legacyConfig?.gpuRequest
+                }
+                optionValue={
+                  projectConfig.config.sessions?.legacyConfig?.gpuRequest
+                }
+                projectConfigIsFetching={projectConfigIsFetching}
+                projectRepositoryUrl={projectRepositoryUrl}
+                branch={defaultBranch}
+              />
+
+              <AutoFetchLfsOption
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+                projectConfig={projectConfig}
+                projectConfigIsFetching={projectConfigIsFetching}
+                projectRepositoryUrl={projectRepositoryUrl}
+                branch={defaultBranch}
+                devAccess={devAccess}
+              />
+            </Row>
+          </Container>
+        </CardBody>
+      </Card>
 
       <ProjectSettingsSessionsAdvanced
         apiVersion={apiVersion}
@@ -375,7 +392,7 @@ const SessionsDiv = ({
         <SavingBadge projectConfigIsFetching={projectConfigIsFetching} />
       )}
     </h3>
-    <div className="row form-rk-green">{children}</div>
+    <div className="-row form-rk-green">{children}</div>
   </div>
 );
 
@@ -714,9 +731,7 @@ function ComputeResourceOption({
         {devAccess && (
           <ResetOption
             optionId={optionId}
-            // eslint-disable-next-line spellcheck/spell-checker
-            // TODO(@leafty): remove `|| currentValue === ""` once https://github.com/SwissDataScienceCenter/renku-python/issues/3544 is fixed
-            disabled={disabled || currentValue === ""}
+            disabled={disabled}
             onReset={onReset}
           />
         )}
@@ -821,7 +836,7 @@ const AutoFetchLfsOption = ({
 
   return (
     <Col xs={12}>
-      <FormGroup className="field-group">
+      <FormGroup className={cx("mb-0")} noMargin>
         <ServerOptionBoolean
           id="option-lfs-auto-fetch"
           displayName="Automatically fetch LFS data"
@@ -869,21 +884,38 @@ const ProjectSettingsSessionsAdvanced = ({
   }, []);
 
   return (
-    <div className="mb-2">
+    <div className="mb-4">
       <Col xs={12}>
-        <AccordionFixed
-          className={styles.accordion}
-          open={showImage ? "advanced-settings" : ""}
-          toggle={toggleShowImage}
-          flush
-        >
-          <AccordionItem>
-            <AccordionHeader targetId="advanced-settings">
+        <Card>
+          <CardHeader
+            className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
+            tag="h5"
+          >
+            <button
+              className={cx(
+                "d-flex",
+                "gap-3",
+                "align-items-center",
+                "w-100",
+                "p-3",
+                "bg-transparent",
+                "border-0",
+                "fw-bold"
+              )}
+              onClick={toggleShowImage}
+              type="button"
+            >
               Advanced settings
-            </AccordionHeader>
-            <AccordionBody accordionId="advanced-settings">
+              <div className="ms-auto">
+                <ChevronFlippedIcon flipped={showImage} />
+              </div>
+            </button>
+          </CardHeader>
+
+          <Collapse isOpen={showImage}>
+            <CardBody>
               {devAccess && (
-                <WarnAlert>
+                <WarnAlert dismissible={false}>
                   Fixing an image can yield improvements, but it can also lead
                   to sessions not working in the expected way.{" "}
                   <ExternalLink
@@ -905,19 +937,13 @@ const ProjectSettingsSessionsAdvanced = ({
                 branch={branch}
                 devAccess={devAccess}
               />
-            </AccordionBody>
-          </AccordionItem>
-        </AccordionFixed>
+            </CardBody>
+          </Collapse>
+        </Card>
       </Col>
     </div>
   );
 };
-
-const AccordionFixed = (
-  props: AccordionProps & {
-    toggle?: (id: string) => void;
-  }
-) => <Accordion {...props} />;
 
 interface PinnedImageOptionProps extends CoreServiceVersionedApiParams {
   projectConfig: ProjectConfig;
@@ -1160,19 +1186,36 @@ const ProjectSettingsSessionsUnknown = ({
   }
 
   return (
-    <div className="mb-2">
+    <div className="mb-4">
       <Col xs={12}>
-        <AccordionFixed
-          className={styles.accordion}
-          open={showSection ? "unknown-settings" : ""}
-          toggle={toggleShowSection}
-          flush
-        >
-          <AccordionItem>
-            <AccordionHeader targetId="unknown-settings">
+        <Card>
+          <CardHeader
+            className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
+            tag="h5"
+          >
+            <button
+              className={cx(
+                "d-flex",
+                "gap-3",
+                "align-items-center",
+                "w-100",
+                "p-3",
+                "bg-transparent",
+                "border-0",
+                "fw-bold"
+              )}
+              onClick={toggleShowSection}
+              type="button"
+            >
               Unknown settings
-            </AccordionHeader>
-            <AccordionBody accordionId="unknown-settings">
+              <div className="ms-auto">
+                <ChevronFlippedIcon flipped={showSection} />
+              </div>
+            </button>
+          </CardHeader>
+
+          <Collapse isOpen={showSection}>
+            <CardBody>
               <p>
                 The following settings are stored in the project configuration
                 but they are not supported in this RenkuLab deployment.
@@ -1190,9 +1233,9 @@ const ProjectSettingsSessionsUnknown = ({
                   devAccess={devAccess}
                 />
               ))}
-            </AccordionBody>
-          </AccordionItem>
-        </AccordionFixed>
+            </CardBody>
+          </Collapse>
+        </Card>
       </Col>
     </div>
   );

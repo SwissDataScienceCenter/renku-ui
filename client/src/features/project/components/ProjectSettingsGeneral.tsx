@@ -60,23 +60,26 @@ interface ProjectSettingsGeneralProps {
 }
 export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
   const isMaintainer = props.metadata?.accessLevel >= ACCESS_LEVELS.MAINTAINER;
-  let loginElement = null;
-  if (!props.user.logged) {
-    const textPre = "You can";
-    const textPost = "here.";
-    loginElement = (
-      <p className="mt-3 mb-0">
-        <LoginAlert
-          logged={false}
-          noWrapper={true}
-          textPre={textPre}
-          textPost={textPost}
-        />
-      </p>
-    );
-  }
+
   return (
     <>
+      {props.settingsReadOnly && (
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-0">
+            Settings can be changed only by project owners and maintainers.
+          </p>
+          {!props.user.logged && (
+            <p className="mt-3 mb-0">
+              <LoginAlert
+                logged={false}
+                noWrapper={true}
+                textPre="You can"
+                textPost="here."
+              />
+            </p>
+          )}
+        </InfoAlert>
+      )}
       <ProjectSettingsGeneralWrapped
         branch={props.metadata?.defaultBranch}
         gitUrl={props.metadata?.externalUrl}
@@ -118,14 +121,6 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         projectPathWithNamespace={props.projectPathWithNamespace}
         userLogged={props.user.logged}
       />
-      {props.settingsReadOnly ? (
-        <InfoAlert dismissible={false} timeout={0}>
-          <p className="mb-0">
-            Project settings can be changed only by maintainers.
-          </p>
-          {loginElement}
-        </InfoAlert>
-      ) : null}
     </>
   );
 }
