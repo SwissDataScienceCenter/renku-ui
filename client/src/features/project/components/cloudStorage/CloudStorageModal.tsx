@@ -22,6 +22,7 @@ import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowCounterclockwise,
+  ArrowRepeat,
   ChevronLeft,
   ChevronRight,
   CloudFill,
@@ -171,29 +172,6 @@ export default function CloudStorageModal({
     [state, storageDetails, schema]
   );
 
-  const setStorageDetailsSafe = useCallback(
-    (newStorageDetails: Partial<CloudStorageDetails>) => {
-      const fullNewDetails = {
-        ...storageDetails,
-        ...newStorageDetails,
-      };
-      if (isEqual(fullNewDetails, storageDetails)) {
-        return;
-      }
-      // reset follow-up properties: schema > provider > options
-      if (fullNewDetails.schema !== storageDetails.schema) {
-        fullNewDetails.provider = undefined;
-        fullNewDetails.options = undefined;
-        fullNewDetails.sourcePath = undefined;
-      } else if (fullNewDetails.provider !== storageDetails.provider) {
-        fullNewDetails.options = undefined;
-        fullNewDetails.sourcePath = undefined;
-      }
-      setStorageDetails(fullNewDetails);
-    },
-    [storageDetails]
-  );
-
   // Reset
   const [redraw, setRedraw] = useState(false);
   useEffect(() => {
@@ -224,8 +202,34 @@ export default function CloudStorageModal({
     usePostStoragesV2Mutation();
   const [modifyCloudStorageForProject, modifyResult] =
     useUpdateCloudStorageMutation();
+  const [modifyCloudStorageV2ForProject, modifyResultV2] =
+    usePatchStoragesV2ByStorageIdMutation();
   const [validateCloudStorageConnection, validateResult] =
     useTestCloudStorageConnectionMutation();
+
+  const setStorageDetailsSafe = useCallback(
+    (newStorageDetails: Partial<CloudStorageDetails>) => {
+      const fullNewDetails = {
+        ...storageDetails,
+        ...newStorageDetails,
+      };
+      if (isEqual(fullNewDetails, storageDetails)) {
+        return;
+      }
+      // reset follow-up properties: schema > provider > options
+      if (fullNewDetails.schema !== storageDetails.schema) {
+        fullNewDetails.provider = undefined;
+        fullNewDetails.options = undefined;
+        fullNewDetails.sourcePath = undefined;
+      } else if (fullNewDetails.provider !== storageDetails.provider) {
+        fullNewDetails.options = undefined;
+        fullNewDetails.sourcePath = undefined;
+      }
+      if (!validateResult.isUninitialized) validateResult.reset();
+      setStorageDetails(fullNewDetails);
+    },
+    [storageDetails, validateResult]
+  );
 
   const validateConnection = () => {
     const validateParameters: TestCloudStorageConnectionParams = {
@@ -422,10 +426,20 @@ export default function CloudStorageModal({
     ? "Please go back and select a storage type"
     : "Please go back and select a provider";
   const addButtonId = "add-cloud-storage-continue";
-
   const continueButton = success ? null : state.step === 3 &&
     state.completedSteps >= 2 ? (
     <div id={`${addButtonId}-div`} className="d-inline-block">
+      <TestConnectionAndContinueButtons
+        actionState={setStateSafe}
+        actionTest={validateConnection}
+        continueId="add-cloud-storage-continue"
+        resetTest={validateResult.reset}
+        step={state.step}
+        testId="test-cloud-storage"
+        testIsFailure={validateResult.isError}
+        testIsOngoing={validateResult.isLoading}
+        testIsSuccess={validateResult.isSuccess}
+      />
       <Button
         data-cy="cloud-storage-edit-update-button"
         id={`${addButtonId}-button`}
@@ -493,7 +507,9 @@ export default function CloudStorageModal({
       <Button
         className="btn-outline-rk-green"
         data-cy="cloud-storage-edit-back-button"
+        disabled={validateResult.isLoading}
         onClick={() => {
+          if (!validateResult.isUninitialized) validateResult.reset();
           setStateSafe({
             step: state.advancedMode ? 0 : state.step - 1,
           });
@@ -510,25 +526,18 @@ export default function CloudStorageModal({
       <Button
         color="outline-danger"
         data-cy="cloud-storage-edit-rest-button"
-        onClick={reset}
+        disabled={validateResult.isLoading}
+        onClick={() => {
+          if (!validateResult.isUninitialized) validateResult.reset();
+          reset();
+        }}
       >
         <ArrowCounterclockwise className={cx("bi", "me-1")} />
         Reset
       </Button>
     );
 
-  const testConnectionButton = state.step !== 1 && (
-    <Button
-      className={cx("btn-outline-rk-green", "me-auto")}
-      disabled={validateResult.isLoading}
-      onClick={() => validateConnection()}
-    >
-      Test connection{" "}
-      {validateResult.isLoading && <Loader className="me-1" inline size={16} />}
-    </Button>
-  );
-
-  const connectionResult =
+  const connectionResultContent =
     validateResult.isUninitialized ||
     validateResult.isLoading ? null : validateResult.error ? (
       <RtkOrNotebooksError error={validateResult.error} />
@@ -537,6 +546,9 @@ export default function CloudStorageModal({
         <p className="p-0">The connection to the storage works correctly.</p>
       </SuccessAlert>
     );
+  const connectionResult = connectionResultContent && (
+    <div className={cx("w-100", "my-0")}>{connectionResultContent}</div>
+  );
 
   const errorMessage =
     addResultError || modifyResult.error ? (
@@ -627,9 +639,8 @@ export default function CloudStorageModal({
         {bodyContent}
       </ModalBody>
 
-      <ModalFooter data-cy="cloud-storage-edit-footer">
-        <div className="w-100">{connectionResult}</div>
-        {testConnectionButton}
+      <ModalFooter className="border-top" data-cy="cloud-storage-edit-footer">
+        {connectionResult}
         {errorMessage}
         {isV2 && (
           <div className={cx("d-flex", "flex-grow-1")}>
@@ -641,5 +652,202 @@ export default function CloudStorageModal({
         {continueButton}
       </ModalFooter>
     </Modal>
+  );
+}
+
+// interface AddOrEditStorageButtonProps {
+//   action: () => void;
+//   disabled?: boolean;
+//   disabledText?: string;
+//   isLoading?: boolean;
+//   localId: string;
+//   storageExists: boolean;
+// }
+// function AddOrEditStorageButton({
+//   action,
+//   disabled = false,
+//   disabledText,
+//   isLoading = false,
+//   localId,
+//   storageExists,
+// }: AddOrEditStorageButtonProps) {
+//   const buttonId = `${localId}-button`;
+//   const divId = `${localId}-div`;
+
+//   return (
+//     <div id={divId} className="d-inline-block">
+//       <Button
+//         data-cy="cloud-storage-edit-update-button"
+//         id={buttonId}
+//         disabled={disabled}
+//         onClick={() => action()}
+//       >
+//         {isLoading ? (
+//           <Loader className="me-1" inline size={16} />
+//         ) : storageExists ? (
+//           <PencilSquare className={cx("bi", "me-1")} />
+//         ) : (
+//           <PlusLg className={cx("bi", "me-1")} />
+//         )}
+//         {storageExists ? "Update" : "Add"} storage
+//       </Button>
+//       {disabled && (
+//         <UncontrolledTooltip placement="top" target={divId}>
+//           {disabledText}
+//         </UncontrolledTooltip>
+//       )}
+//     </div>
+//   );
+// }
+
+// interface NextButtonProps {
+//   action: (newState: Partial<AddCloudStorageState>) => void;
+//   disabled?: boolean;
+//   localId: string;
+//   schemaIsSelected: boolean;
+//   step: number;
+// }
+// function NextButton({
+//   action,
+//   disabled = false,
+//   localId,
+//   schemaIsSelected,
+//   step,
+// }: NextButtonProps) {
+//   const buttonId = `${localId}-button`;
+//   const divId = `${localId}-div`;
+//   return (
+//     <div id={divId} className="d-inline-block">
+//       <Button
+//         id={buttonId}
+//         data-cy="cloud-storage-next-button"
+//         disabled={disabled}
+//         onClick={() => {
+//           action({
+//             completedSteps: step,
+//             step: step + 1,
+//           });
+//         }}
+//       >
+//         <ChevronRight className="bi" />
+//         Next
+//       </Button>
+//       {disabled && (
+//         <UncontrolledTooltip placement="top" target={divId}>
+//           {!schemaIsSelected
+//             ? "Please select a storage type"
+//             : "Please select a provider or change storage type"}
+//         </UncontrolledTooltip>
+//       )}
+//     </div>
+//   );
+// }
+
+interface TestConnectionAndContinueButtonsProps {
+  actionState: (newState: Partial<AddCloudStorageState>) => void;
+  actionTest: () => void;
+  continueId: string;
+  resetTest: () => void;
+  step: number;
+  testId: string;
+  testIsFailure: boolean;
+  testIsOngoing: boolean;
+  testIsSuccess: boolean;
+}
+function TestConnectionAndContinueButtons({
+  actionState,
+  actionTest,
+  continueId,
+  resetTest,
+  step,
+  testId,
+  testIsFailure,
+  testIsOngoing,
+  testIsSuccess,
+}: TestConnectionAndContinueButtonsProps) {
+  const buttonTestId = `${testId}-button`;
+  const divTestId = `${testId}-div`;
+  const testConnectionContent =
+    testIsSuccess || testIsFailure ? (
+      <>
+        Re-test <ArrowRepeat className="bi" />
+      </>
+    ) : testIsOngoing ? (
+      <>
+        Testing connection <Loader inline size={16} />
+      </>
+    ) : (
+      <>Test connection</>
+    );
+  const testConnectionColorClass = testIsSuccess
+    ? "btn-outline-rk-green"
+    : testIsFailure
+    ? "btn-danger"
+    : "btn-secondary";
+  const testConnectionSection = (
+    <div id={divTestId} className="d-inline-block">
+      <Button
+        color=""
+        id={buttonTestId}
+        data-cy={buttonTestId}
+        className={cx(testConnectionColorClass)}
+        disabled={testIsOngoing}
+        onClick={() => actionTest()}
+      >
+        {testConnectionContent}
+      </Button>
+    </div>
+  );
+
+  const buttonContinueId = `${continueId}-button`;
+  const divContinueId = `${continueId}-div`;
+  const continueContent = testIsSuccess ? (
+    <>
+      Continue <ChevronRight className="bi" />
+    </>
+  ) : testIsFailure ? (
+    <>
+      Continue anyway <XLg className="bi" />
+    </>
+  ) : null;
+  const continueColorClass = testIsSuccess
+    ? "btn-secondary"
+    : testIsFailure
+    ? "btn-outline-danger"
+    : "btn-outline-rk-green";
+  const continueSection =
+    !testIsFailure && !testIsSuccess ? null : (
+      <div id={divContinueId} className={cx("d-inline-block", "ms-2")}>
+        <Button
+          color=""
+          id={buttonContinueId}
+          data-cy={buttonContinueId}
+          className={cx(continueColorClass)}
+          disabled={testIsOngoing}
+          onClick={() => {
+            if (testIsFailure || testIsSuccess) {
+              resetTest();
+            }
+            actionState({
+              step: step === 0 ? CLOUD_STORAGE_TOTAL_STEPS : step + 1,
+              completedSteps: step === 0 ? CLOUD_STORAGE_TOTAL_STEPS - 1 : step,
+            });
+          }}
+        >
+          {continueContent}
+        </Button>
+        {testIsFailure && (
+          <UncontrolledTooltip placement="top" target={divContinueId}>
+            Current options are not working. You should fix them and test again.
+          </UncontrolledTooltip>
+        )}
+      </div>
+    );
+
+  return (
+    <div className="d-inline-block">
+      {testConnectionSection}
+      {continueSection}
+    </div>
   );
 }
