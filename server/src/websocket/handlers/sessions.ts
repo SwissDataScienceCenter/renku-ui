@@ -62,7 +62,7 @@ interface Session {
 
 function handlerRequestSessionStatus(
   data: Record<string, unknown>,
-  channel: Channel,
+  channel: Channel
 ): void {
   channel.data.set("sessionStatus", null);
 }
@@ -75,7 +75,7 @@ function sendMessage(data: string, channel: Channel) {
 function heartbeatRequestSessionStatus(
   channel: Channel,
   apiClient: APIClient,
-  authHeathers: Record<string, string>,
+  authHeathers: Record<string, string>
 ): void {
   const previousStatuses = channel.data.get("sessionStatus") as string;
   apiClient
@@ -102,16 +102,16 @@ function heartbeatRequestSessionStatus(
             totalNumContainers: total_num_containers ?? -1,
           };
           return [key, { status: cleanedStatus }] as const;
-        },
+        }
       );
       const cleanedServers = cleanedServerEntries.reduce(
         (obj, [key, value]) => ({ ...obj, [key]: value }),
-        {} as Record<string, Session>,
+        {} as Record<string, Session>
       );
 
       const sortedObject = sortObjectProperties(cleanedServers);
       const currentHashedSessions = simpleHash(
-        JSON.stringify(sortedObject),
+        JSON.stringify(sortedObject)
       ).toString();
       // only send message when something change
       if (!util.isDeepStrictEqual(previousStatuses, currentHashedSessions)) {

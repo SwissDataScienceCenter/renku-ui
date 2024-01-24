@@ -71,7 +71,7 @@ const sessionsApi = createApi({
                   ({
                     id: sessionName,
                     type: "Session",
-                  }) as const,
+                  } as const)
               ),
               "Session",
             ]
