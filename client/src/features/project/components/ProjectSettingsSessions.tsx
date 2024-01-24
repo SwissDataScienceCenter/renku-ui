@@ -127,38 +127,6 @@ export default function ProjectSettingsSessions() {
     { skip: !coreSupportComputed }
   );
 
-  // // ? Anonymous users may have problem with notebook options, depending on the deployment
-  // if (!logged) {
-  //   const textIntro = "Only authenticated users can access sessions setting.";
-  //   const textPost = "to visualize sessions settings.";
-  //   return (
-  //     <>
-  //       <InfoAlert dismissible={false} timeout={0}>
-  //         <p className="mb-0">
-  //           Settings can be changed only by project owners and maintainers.
-  //         </p>
-
-  //         <p className="mt-3 mb-0">
-  //           <LoginAlert
-  //             logged={false}
-  //             noWrapper={true}
-  //             textPre="You can"
-  //             textPost="here."
-  //           />
-  //         </p>
-  //       </InfoAlert>
-
-  //       <SessionsDiv>
-  //         <LoginAlert
-  //           logged={logged}
-  //           textIntro={textIntro}
-  //           textPost={textPost}
-  //         />
-  //       </SessionsDiv>
-  //     </>
-  //   );
-  // }
-
   if (locked) {
     return (
       <SessionsDiv>
