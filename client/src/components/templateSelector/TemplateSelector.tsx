@@ -23,9 +23,10 @@
  *  TemplateSelector component
  */
 
+import cx from "classnames";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Card,
   CardBody,
@@ -37,8 +38,7 @@ import {
   Row,
   UncontrolledPopover,
   UncontrolledTooltip,
-} from "../../utils/ts-wrappers";
-
+} from "reactstrap";
 import { NewProjectTemplate, Repository } from "../../model/renkuModels.types";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { ExternalLink } from "../ExternalLinks";
@@ -48,7 +48,7 @@ import {
   InputLabel,
   LoadingLabel,
 } from "../formlabels/FormLabels";
-import "./TemplateSelector.css";
+import styles from "./TemplateSelector.module.scss";
 
 const defaultTemplateIcon = "/stockimages/templatePlaceholder.svg";
 
@@ -172,90 +172,163 @@ function TemplateGalleryRow({
 }: TemplateGalleryRowProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   useEffect(() => setSelectedTemplate(selected), [selected]);
-  const handleSelectedTemplate = (id: string) => {
-    setSelectedTemplate(id);
-
-    if (select && !isDisabled) select(id);
-  };
-
-  // Don't render anything if there are no templates for the repository
-  if (!templates || !templates.length) return null;
-
-  // Show a card for each template
-  const elements = templates.map((t) => {
-    const imgSrc = t.icon
-      ? `data:image/png;base64,${t.icon}`
-      : defaultTemplateIcon;
-    const id = "id" + simpleHash(repository.name) + simpleHash(t.id);
-    const selectedClass = selectedTemplate === t.id ? "selected" : "";
-    const invalidTemplate = isInvalid ? "template--invalid" : "";
-    const statusTemplate = isDisabled
-      ? "template--disabled cursor-not-allowed"
-      : "template--active cursor-pointer";
-
-    // TODO: update this
-    return (
-      <Col key={t.id}>
-        <Card
-          id={id}
-          className={`template-card mb-2 text-center box-shadow-cards ${selectedClass} ${invalidTemplate} ${statusTemplate}`}
-          onClick={() => {
-            handleSelectedTemplate(t.id);
-          }}
-          data-cy="project-template-card"
-        >
-          <CardBody className="p-1">
-            <img src={imgSrc} alt={t.id + " template image"} />
-          </CardBody>
-          <CardFooter className="p-1 bg-white">
-            <CardText className="small">{t.name}</CardText>
-          </CardFooter>
-        </Card>
-        <UncontrolledTooltip key="tooltip" placement="bottom" target={id}>
-          {t.description}
-        </UncontrolledTooltip>
-      </Col>
-    );
-  });
-
-  // Add a title with information about the source repository
-  const repositoryInfoId = `info-${repository.name}`;
-  const title = (
-    <Row>
-      <p className="fst-italic mt-2 mb-1">
-        Source: {repository.name}
-        <FontAwesomeIcon
-          id={repositoryInfoId}
-          className="ms-2 cursor-pointer"
-          icon={faInfoCircle}
-        />
-      </p>
-      <UncontrolledPopover
-        target={repositoryInfoId}
-        trigger="legacy"
-        placement="bottom"
-      >
-        <PopoverHeader>{repository.name} templates</PopoverHeader>
-        <PopoverBody>
-          <p className="mb-1">
-            <span className="fw-bold">Repository</span>:&nbsp;
-            <TemplateRepositoryLink url={repository.url} />
-          </p>
-          <p className="mb-0">
-            <span className="fw-bold">Reference</span>: {repository.ref}
-          </p>
-        </PopoverBody>
-      </UncontrolledPopover>
-    </Row>
+  const onSelectTemplate = useCallback(
+    (templateId: string) => {
+      return function onSelect() {
+        setSelectedTemplate(templateId);
+        if (select && !isDisabled) {
+          select(templateId);
+        }
+      };
+    },
+    [isDisabled, select]
   );
+
+  const ref = useRef<HTMLSpanElement>(null);
+
+  if (!templates || !templates.length) return null;
 
   return (
     <div>
-      {title}
-      <Row className="row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5">
-        {elements}
+      <Row>
+        <p className="fst-italic mt-2 mb-1">
+          Source: {repository.name}
+          <span ref={ref}>
+            <FontAwesomeIcon
+              className="ms-2 cursor-pointer"
+              icon={faInfoCircle}
+            />
+          </span>
+        </p>
+        <UncontrolledPopover trigger="legacy" placement="bottom" target={ref}>
+          <PopoverHeader>{repository.name} templates</PopoverHeader>
+          <PopoverBody>
+            <p className="mb-1">
+              <span className="fw-bold">Repository</span>:&nbsp;
+              <TemplateRepositoryLink url={repository.url} />
+            </p>
+            <p className="mb-0">
+              <span className="fw-bold">Reference</span>: {repository.ref}
+            </p>
+          </PopoverBody>
+        </UncontrolledPopover>
+      </Row>
+
+      <Row
+        className={cx(
+          "row-cols-1",
+          "row-cols-sm-2",
+          "row-cols-md-3",
+          "row-cols-lg-4",
+          "gy-4"
+        )}
+      >
+        {templates.map((template) => (
+          <TemplateItem
+            key={template.id}
+            template={template}
+            isDisabled={isDisabled}
+            isInvalid={isInvalid}
+            isSelected={selectedTemplate === template.id}
+            onSelectTemplate={onSelectTemplate(template.id)}
+          />
+        ))}
       </Row>
     </div>
+  );
+}
+
+interface TemplateItemProps {
+  template: NewProjectTemplate;
+  isDisabled?: boolean;
+  isInvalid?: boolean;
+  isSelected?: boolean;
+  onSelectTemplate?: () => void;
+}
+
+function TemplateItem({
+  template,
+  isDisabled,
+  isInvalid,
+  isSelected,
+  onSelectTemplate,
+}: TemplateItemProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const { description, icon, id, isSshSupported, name } = template;
+  const imgSrc = icon ? `data:image/png;base64,${icon}` : defaultTemplateIcon;
+
+  return (
+    <Col>
+      <button
+        className={cx("bg-transparent", "p-0", "border-0", "h-100", "w-100")}
+        onClick={onSelectTemplate}
+        ref={ref}
+        role="button"
+        type="button"
+      >
+        <Card
+          className={cx(
+            "h-100",
+            "w-100",
+            "d-flex",
+            "flex-column",
+            "shadow",
+            "border",
+            "overflow-hidden",
+            isSelected ? "border-rk-green" : "border-rk-white",
+            styles.templateCard
+          )}
+          data-cy="project-template-card"
+        >
+          <CardBody className={cx("text-center", "p-4", "flex-grow-0")}>
+            <img
+              src={imgSrc}
+              alt={`${id} template image`}
+              className={cx("object-fit-contain")}
+              width={"60px"}
+              height={"60px"}
+            />
+          </CardBody>
+          <CardBody
+            className={cx(
+              "border-top",
+              "border-2",
+              "flex-grow-1",
+              "d-flex",
+              "flex-column",
+              "justify-content-center",
+              isSelected && ["border-rk-green", "bg-rk-green", "text-rk-white"],
+              styles.templateCardBottom
+            )}
+          >
+            <CardText
+              className={cx(
+                "small",
+                "text-center",
+                "m-0",
+                styles.templateCardDefault
+              )}
+            >
+              {name}
+            </CardText>
+            <CardText
+              className={cx(
+                "small",
+                "text-center",
+                "m-0",
+                styles.templateCardHover
+              )}
+            >
+              {isSshSupported && <>Supports SSH</>}
+            </CardText>
+          </CardBody>
+        </Card>
+      </button>
+      <UncontrolledTooltip placement="bottom" target={ref}>
+        {description}
+      </UncontrolledTooltip>
+    </Col>
   );
 }
 

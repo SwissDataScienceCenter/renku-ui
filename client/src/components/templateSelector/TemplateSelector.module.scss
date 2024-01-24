@@ -1,4 +1,6 @@
-.template-card:hover {
+@import "/src/styles/bootstrap/_custom_bootstrap_variables.scss";
+
+/* .template-card:hover {
   box-shadow: 0 0 0 1px var(--bs-rk-green), var(--rk-box-shadow);
   border-color: var(--bs-rk-green);
 }
@@ -33,4 +35,28 @@
 
 .template-card .card-footer {
   border-radius: 0 0 8px 8px;
+} */
+
+.templateCard {
+  &:hover {
+    background-color: $rk-green-highlight;
+    border-color: $rk-green-highlight !important;
+
+    .templateCardBottom {
+      background-color: unset !important;
+      border-color: $rk-green-highlight !important;
+      color: white;
+    }
+
+    .templateCardDefault {
+      display: none;
+    }
+    .templateCardHover {
+      display: block;
+    }
+  }
+
+  .templateCardHover {
+    display: none;
+  }
 }
