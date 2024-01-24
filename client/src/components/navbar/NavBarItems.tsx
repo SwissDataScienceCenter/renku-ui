@@ -30,7 +30,7 @@ import {
 import { LoginHelper } from "../../authentication";
 import AdminDropdownItem from "../../landing/AdminDropdownItem";
 import { User } from "../../model/renkuModels.types";
-import { NotificationsMenu } from "../../notifications";
+import NotificationsMenu from "../../notifications/NotificationsMenu";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
 import type { AppParams } from "../../utils/context/appParams.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
@@ -43,6 +43,8 @@ import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { RenkuNavLink } from "../RenkuNavLink";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
+
+import styles from "./NavBarItem.module.scss";
 
 export function RenkuToolbarItemPlus() {
   const location = useLocation();
@@ -75,7 +77,7 @@ export function RenkuToolbarItemPlus() {
   );
 
   return (
-    <UncontrolledDropdown className="nav-item dropdown">
+    <UncontrolledDropdown className="nav-item">
       <DropdownToggle
         className={cx("nav-link", "fs-5", "ps-sm-2", "pe-2")}
         nav
@@ -86,7 +88,11 @@ export function RenkuToolbarItemPlus() {
       </DropdownToggle>
       <DropdownMenu
         aria-labelledby="plus-menu"
-        className="plus-menu btn-with-menu-options"
+        className={cx(
+          "plus-menu",
+          "btn-with-menu-options",
+          styles.dropdownMenu
+        )}
         end
       >
         {projectDropdown}
@@ -126,7 +132,11 @@ export function RenkuToolbarGitLabMenu() {
         <BootstrapGitLabIcon className="bi" id="gitLabDropdownToggle" />
       </DropdownToggle>
       <DropdownMenu
-        className="gitLab-menu btn-with-menu-options"
+        className={cx(
+          "gitLab-menu",
+          "btn-with-menu-options",
+          styles.dropdownMenu
+        )}
         end
         key="gitLab-bar"
         aria-labelledby="gitLab-menu"
@@ -188,7 +198,11 @@ export function RenkuToolbarHelpMenu({ firstItem }: RenkuToolbarHelpMenuProps) {
         <QuestionCircle className="bi" id="helpDropdownToggle" />
       </DropdownToggle>
       <DropdownMenu
-        className="help-menu btn-with-menu-options"
+        className={cx(
+          "help-menu",
+          "btn-with-menu-options",
+          styles.dropdownMenu
+        )}
         key="help-bar"
         aria-labelledby="help-menu"
       >
@@ -291,7 +305,11 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
         <Person className="bi" id="userIcon" />
       </DropdownToggle>
       <DropdownMenu
-        className="user-menu btn-with-menu-options"
+        className={cx(
+          "user-menu",
+          "btn-with-menu-options",
+          styles.dropdownMenu
+        )}
         end
         key="user-bar"
         aria-labelledby="user-menu"

@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-import { BrowserRouter as Router, Route } from "react-router-dom";
-import { Button, Row, Col } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWrench } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Route, BrowserRouter as Router } from "react-router-dom";
+import { Button, Col, Row } from "reactstrap";
 
-import { FooterNavbar } from "../../landing";
+import { FooterNavbar } from "../../landing/NavBar";
 import { StatuspageDisplay, isStatusConfigured } from "../../statuspage";
 
 interface MaintenanceProps {

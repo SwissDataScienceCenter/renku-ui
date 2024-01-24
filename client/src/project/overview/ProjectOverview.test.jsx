@@ -30,10 +30,10 @@ import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
 import { describe, it } from "vitest";
 
+import { ProjectOverviewCommits, ProjectOverviewStats } from ".";
 import { testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
-import { ProjectCoordinator } from "../index";
-import { ProjectOverviewCommits, ProjectOverviewStats } from "./index";
+import { ProjectCoordinator } from "../Project.state";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],

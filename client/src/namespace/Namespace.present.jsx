@@ -24,10 +24,11 @@
  */
 
 import { Link } from "react-router-dom";
-import { Row, Col } from "reactstrap";
-import { Loader } from "../components/Loader";
+import { Col, Row } from "reactstrap";
+
 import { ExternalLink } from "../components/ExternalLinks";
-import { NotFound } from "../not-found";
+import { Loader } from "../components/Loader";
+import NotFound from "../not-found/NotFound";
 
 const NamespaceProjects = (props) => {
   const { namespace } = props;

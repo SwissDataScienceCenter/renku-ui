@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,21 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  landing
- *  Components for the landing page
- */
+import { ComponentProps, Suspense, lazy } from "react";
+import PageLoader from "../components/PageLoader";
 
-import AnonymousHome from "./AnonymousHome";
-import { RenkuNavBar, FooterNavbar } from "./NavBar";
+const NotificationsPage = lazy(() =>
+  import("./Notifications.container").then((module) => ({
+    default: module.NotificationsPage,
+  }))
+);
 
-export { AnonymousHome, FooterNavbar, RenkuNavBar };
+export default function LazyNotificationsPage(
+  props: ComponentProps<typeof NotificationsPage>
+) {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <NotificationsPage {...props} />
+    </Suspense>
+  );
+}
