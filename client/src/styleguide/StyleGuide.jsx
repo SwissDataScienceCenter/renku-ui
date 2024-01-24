@@ -216,10 +216,7 @@ function constructUrlMap(baseUrl) {
   };
 }
 
-/**
- *
- */
-function StyleGuide(props) {
+export default function StyleGuide(props) {
   const urlMap = constructUrlMap(props.baseUrl);
   return (
     <Fragment>
@@ -275,5 +272,3 @@ function StyleGuide(props) {
     </Fragment>
   );
 }
-
-export { StyleGuide };
