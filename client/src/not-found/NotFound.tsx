@@ -36,11 +36,11 @@ interface NotFoundProps {
   children?: ReactNode;
 }
 
-export const NotFound = ({
+export default function NotFound({
   title: title_,
   description: description_,
   children,
-}: NotFoundProps) => {
+}: NotFoundProps) {
   const title = title_ ?? "Page not found";
   const description =
     description_ ??
@@ -79,4 +79,4 @@ export const NotFound = ({
       </div>
     </div>
   );
-};
+}
