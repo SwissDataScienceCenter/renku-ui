@@ -17,7 +17,7 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../../components/Loader";
+import PageLoader from "../../components/PageLoader";
 
 const DatasetAddToProject = lazy(() => import("./DatasetAddToProject"));
 
@@ -25,7 +25,7 @@ export default function LazyDatasetAddToProject(
   props: ComponentProps<typeof DatasetAddToProject>
 ) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <DatasetAddToProject {...props} />
     </Suspense>
   );

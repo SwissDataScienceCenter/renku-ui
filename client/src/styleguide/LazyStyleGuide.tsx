@@ -17,7 +17,7 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../components/Loader";
+import PageLoader from "../components/PageLoader";
 
 const StyleGuide = lazy(() => import("./StyleGuide"));
 
@@ -25,7 +25,7 @@ export default function LazyStyleGuide(
   props: ComponentProps<typeof StyleGuide>
 ) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <StyleGuide {...props} />
     </Suspense>
   );

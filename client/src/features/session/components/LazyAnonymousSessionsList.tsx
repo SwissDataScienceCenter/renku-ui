@@ -17,13 +17,13 @@
  */
 
 import { Suspense, lazy } from "react";
-import { Loader } from "../../../components/Loader";
+import PageLoader from "../../../components/PageLoader";
 
 const AnonymousSessionsList = lazy(() => import("./AnonymousSessionsList"));
 
 export default function LazyAnonymousSessionsList() {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <AnonymousSessionsList />
     </Suspense>
   );

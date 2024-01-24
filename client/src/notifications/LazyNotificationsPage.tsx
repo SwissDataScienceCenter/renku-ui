@@ -17,7 +17,7 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../components/Loader";
+import PageLoader from "../components/PageLoader";
 
 const NotificationsPage = lazy(() =>
   import("./Notifications.container").then((module) => ({
@@ -29,7 +29,7 @@ export default function LazyNotificationsPage(
   props: ComponentProps<typeof NotificationsPage>
 ) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <NotificationsPage {...props} />
     </Suspense>
   );

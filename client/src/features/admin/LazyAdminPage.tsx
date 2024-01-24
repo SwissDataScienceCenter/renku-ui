@@ -17,13 +17,13 @@
  */
 
 import { Suspense, lazy } from "react";
-import { Loader } from "../../components/Loader";
+import PageLoader from "../../components/PageLoader";
 
 const AdminPage = lazy(() => import("./AdminPage"));
 
 export default function LazyAdminPage() {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <AdminPage />
     </Suspense>
   );

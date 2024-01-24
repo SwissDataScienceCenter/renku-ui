@@ -17,7 +17,7 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../../components/Loader";
+import PageLoader from "../../components/PageLoader";
 
 const InactiveKGProjectsPage = lazy(() => import("./InactiveKgProjects"));
 
@@ -25,7 +25,7 @@ export default function LazyInactiveKGProjectsPage(
   props: ComponentProps<typeof InactiveKGProjectsPage>
 ) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <InactiveKGProjectsPage {...props} />
     </Suspense>
   );

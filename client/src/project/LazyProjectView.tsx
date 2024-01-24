@@ -17,7 +17,7 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../components/Loader";
+import PageLoader from "../components/PageLoader";
 
 const ProjectView = lazy(() => import("./ProjectV2"));
 
@@ -25,7 +25,7 @@ export default function LazyProjectView(
   props: ComponentProps<typeof ProjectView>
 ) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <ProjectView {...props} />
     </Suspense>
   );

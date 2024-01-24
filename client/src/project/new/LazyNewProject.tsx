@@ -17,7 +17,7 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../../components/Loader";
+import PageLoader from "../../components/PageLoader";
 
 const NewProject = lazy(() =>
   import("./ProjectNew.container").then((module) => ({
@@ -29,7 +29,7 @@ export default function LazyNewProject(
   props: ComponentProps<typeof NewProject>
 ) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <NewProject {...props} />
     </Suspense>
   );

@@ -17,7 +17,8 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../components/Loader";
+
+import PageLoader from "../components/PageLoader";
 
 const AnonymousHome = lazy(() => import("./AnonymousHome"));
 
@@ -25,7 +26,7 @@ export default function LazyAnonymousHome(
   props: ComponentProps<typeof AnonymousHome>
 ) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<PageLoader />}>
       <AnonymousHome {...props} />
     </Suspense>
   );
