@@ -71,7 +71,7 @@ const sessionsApi = createApi({
                   ({
                     id: sessionName,
                     type: "Session",
-                  } as const)
+                  }) as const,
               ),
               "Session",
             ]
@@ -86,12 +86,24 @@ const sessionsApi = createApi({
         url: "server_options",
       }),
       transformResponse: ({
-        defaultUrl,
-        ...legacyOptions
-      }: ServerOptionsResponse) => ({
-        defaultUrl: defaultUrl as ServerOption<string>,
-        legacyOptions,
-      }),
+        default_url,
+        ...legacyOptionsResponse
+      }: ServerOptionsResponse) => {
+        const legacyOptions: { [k: string]: ServerOption } = {};
+        Object.keys(legacyOptionsResponse).forEach((k) => {
+          legacyOptions[k] = {
+            ...legacyOptionsResponse[k],
+            displayName: legacyOptionsResponse[k].display_name,
+          } as ServerOption;
+        });
+        return {
+          defaultUrl: {
+            ...default_url,
+            displayName: default_url.display_name,
+          } as ServerOption<string>,
+          legacyOptions,
+        };
+      },
     }),
     stopSession: builder.mutation<boolean, StopSessionArgs>({
       query: (args) => ({

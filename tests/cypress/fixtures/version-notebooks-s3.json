@@ -3,12 +3,9 @@
   "versions": [
     {
       "data": {
-        "anonymousSessionsEnabled": true,
-        "cloudstorageEnabled": {
-          "azure_blob": false,
-          "s3": true
-        },
-        "sshEnabled": false
+        "anonymous_sessions_enabled": true,
+        "cloudstorage_enabled": true,
+        "ssh_enabled": false
       },
       "version": "1.15.2"
     }
