@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,13 +16,17 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  help
- *  Components for the help page
- */
+import { ComponentProps, Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-import { Help } from "./Help.container";
+const SearchPage = lazy(() => import("./KgSearchPage"));
 
-export default Help;
+export default function LazySearchPage(
+  props: ComponentProps<typeof SearchPage>
+) {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <SearchPage {...props} />
+    </Suspense>
+  );
+}

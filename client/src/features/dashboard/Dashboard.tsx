@@ -25,7 +25,7 @@ import { ProjectsDashboard } from "./components/ProjectsDashboard";
 
 import "./Dashboard.scss";
 
-export function Dashboard() {
+export default function Dashboard() {
   const user = useLegacySelector((state) => state.stateModel.user);
 
   return (

@@ -43,7 +43,7 @@ import { TimeCaption } from "../components/TimeCaption";
 import LazyNotebookPreview from "../components/notebook/LazyNotebookRender";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import FileAndLineageSwitch from "./FileAndLineageComponents";
-import { FilePreview } from "./index";
+import FilePreview from "./FilePreview";
 
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
 
