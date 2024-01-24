@@ -193,6 +193,7 @@ function TemplateGalleryRow({
       ? "template--disabled cursor-not-allowed"
       : "template--active cursor-pointer";
 
+    // TODO: update this
     return (
       <Col key={t.id}>
         <Card
