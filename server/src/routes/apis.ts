@@ -49,34 +49,34 @@ const proxyMiddleware = createProxyMiddleware({
     );
     return rewrittenPath;
   },
-  onProxyReq: (clientReq) => {
-    // remove unnecessary cookies to avoid gateway conflicts with auth tokens
-    const existingCookie = clientReq.getHeader("cookie") as string;
-    const newCookies: Array<string> = [];
-    if (existingCookie) {
-      clientReq.removeHeader("cookie");
-      for (const cookieName of config.server.keepCookies) {
-        const cookieValue: string = getCookieValueByName(
-          existingCookie,
-          cookieName
-        );
-        if (cookieValue) {
-          newCookies.push(serializeCookie(cookieName, cookieValue));
-        }
-      }
-    }
-    // add anon-id to cookies when the proper header is set.
-    const anonId = clientReq.getHeader(config.auth.cookiesAnonymousKey);
-    if (anonId) {
-      // ? the anon-id MUST start with a letter to prevent k8s limitations
-      const fullAnonId = config.auth.anonPrefix + anonId;
-      newCookies.push(
-        serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
-      );
-    }
-    if (newCookies.length > 0)
-      clientReq.setHeader("cookie", newCookies.join("; "));
-  },
+  // onProxyReq: (clientReq) => {
+  //   // remove unnecessary cookies to avoid gateway conflicts with auth tokens
+  //   const existingCookie = clientReq.getHeader("cookie") as string;
+  //   const newCookies: Array<string> = [];
+  //   if (existingCookie) {
+  //     clientReq.removeHeader("cookie");
+  //     for (const cookieName of config.server.keepCookies) {
+  //       const cookieValue: string = getCookieValueByName(
+  //         existingCookie,
+  //         cookieName
+  //       );
+  //       if (cookieValue) {
+  //         newCookies.push(serializeCookie(cookieName, cookieValue));
+  //       }
+  //     }
+  //   }
+  //   // add anon-id to cookies when the proper header is set.
+  //   const anonId = clientReq.getHeader(config.auth.cookiesAnonymousKey);
+  //   if (anonId) {
+  //     // ? the anon-id MUST start with a letter to prevent k8s limitations
+  //     const fullAnonId = config.auth.anonPrefix + anonId;
+  //     newCookies.push(
+  //       serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
+  //     );
+  //   }
+  //   if (newCookies.length > 0)
+  //     clientReq.setHeader("cookie", newCookies.join("; "));
+  // },
   onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
     // Add CORS for sentry
     res.setHeader("Access-Control-Allow-Headers", "sentry-trace");
@@ -97,15 +97,15 @@ const proxyMiddleware = createProxyMiddleware({
     }
 
     // Prevent gateway from setting anon-id cookies. That's not needed in the UI anymore
-    const setCookie = null ?? clientRes.headers["set-cookie"];
-    if (setCookie == null || !setCookie.length) return;
-    const allowedSetCookie = [];
-    for (const cookie of setCookie) {
-      if (!cookie.startsWith(config.auth.cookiesAnonymousKey))
-        allowedSetCookie.push(cookie);
-    }
-    if (!allowedSetCookie.length) clientRes.headers["set-cookie"] = null;
-    else clientRes.headers["set-cookie"] = allowedSetCookie;
+    // const setCookie = null ?? clientRes.headers["set-cookie"];
+    // if (setCookie == null || !setCookie.length) return;
+    // const allowedSetCookie = [];
+    // for (const cookie of setCookie) {
+    //   if (!cookie.startsWith(config.auth.cookiesAnonymousKey))
+    //     allowedSetCookie.push(cookie);
+    // }
+    // if (!allowedSetCookie.length) clientRes.headers["set-cookie"] = null;
+    // else clientRes.headers["set-cookie"] = allowedSetCookie;
   },
 });
 

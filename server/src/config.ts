@@ -63,7 +63,7 @@ const AUTHENTICATION = {
   clientId: process.env.AUTH_CLIENT_ID || "renku-ui",
   clientSecret: process.env.AUTH_CLIENT_SECRET,
   tokenExpirationTolerance: convertType(process.env.AUTH_TOKEN_TOLERANCE) || 10,
-  cookiesKey: "ui-server-session",
+  cookiesKey: "_renku_session",
   cookiesAnonymousKey: "anon-id",
   anonPrefix: "anon-", // ? this MUST start with a letter to prevent k8s limitations
   authHeaderField: "Authorization",
@@ -72,6 +72,7 @@ const AUTHENTICATION = {
   invalidHeaderExpired: "expired",
   retryConnectionAttempts: 10,
   storagePrefix: "AUTH_",
+  gatewaySessionHeaderKey: "Renku-Session",
 };
 
 const REDIS = {

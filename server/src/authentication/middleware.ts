@@ -17,45 +17,43 @@
  */
 
 import express from "express";
-import { TokenSet } from "openid-client";
 
 import config from "../config";
-import logger from "../logger";
 import { IAuthenticator } from "../interfaces";
-import { getOrCreateSessionId } from "./routes";
+import { getSessionId } from "./routes";
 import { serializeCookie } from "../utils";
 import { WsMessage } from "../websocket/WsMessages";
 
-/**
- * Add the authorization header for invoking gateway APIs as an authenticated renku user.
- *
- * @param res - express response
- * @param accessToken - valid access token.
- */
-function addAuthToken(req: express.Request, accessToken: string): void {
-  const value = config.auth.authHeaderPrefix + accessToken;
-  req.headers[config.auth.authHeaderField] = value;
-}
+// /**
+//  * Add the authorization header for invoking gateway APIs as an authenticated renku user.
+//  *
+//  * @param res - express response
+//  * @param accessToken - valid access token.
+//  */
+// function addAuthToken(req: express.Request, accessToken: string): void {
+//   const value = config.auth.authHeaderPrefix + accessToken;
+//   req.headers[config.auth.authHeaderField] = value;
+// }
 
-/**
- * Add the nonymous header for invoking gateway APIs as an anonymous renku user.
- *
- * @param req - express response
- * @param value - uid for the anonamous user.
- */
-function addAnonymousToken(req: express.Request, value: string): void {
-  req.headers[config.auth.cookiesAnonymousKey] = value;
-}
+// /**
+//  * Add the nonymous header for invoking gateway APIs as an anonymous renku user.
+//  *
+//  * @param req - express response
+//  * @param value - uid for the anonamous user.
+//  */
+// function addAnonymousToken(req: express.Request, value: string): void {
+//   req.headers[config.auth.cookiesAnonymousKey] = value;
+// }
 
-/**
- * Add the invalid credentials header to signal the need to re-authenticate.
- *
- * @param res - express response
- */
-function addAuthInvalid(req: express.Request): void {
-  req.headers[config.auth.invalidHeaderField] =
-    config.auth.invalidHeaderExpired;
-}
+// /**
+//  * Add the invalid credentials header to signal the need to re-authenticate.
+//  *
+//  * @param res - express response
+//  */
+// function addAuthInvalid(req: express.Request): void {
+//   req.headers[config.auth.invalidHeaderField] =
+//     config.auth.invalidHeaderExpired;
+// }
 
 function renkuAuth(authenticator: IAuthenticator) {
   return async (
@@ -63,31 +61,8 @@ function renkuAuth(authenticator: IAuthenticator) {
     res: express.Response,
     next: express.NextFunction
   ): Promise<void> => {
-    // get or create session
-    const sessionId = getOrCreateSessionId(req, res);
-    let tokens: TokenSet;
-    try {
-      tokens = await authenticator.getTokens(sessionId, true);
-    } catch (error) {
-      const stringyError = error.toString();
-      const expired =
-        stringyError.includes("expired") || stringyError.includes("invalid");
-      if (expired) {
-        logger.info(`Adding token expirations info for session ${sessionId}`);
-        addAuthInvalid(req);
-      } else {
-        throw error;
-      }
-    }
-
-    if (tokens && tokens.access_token == "do-not-inject") {
-      // Nothing should be injected or passed on, authentication done in gateway
-      next();
-    }
-
-    if (tokens) addAuthToken(req, tokens.access_token);
-    else addAnonymousToken(req, sessionId);
-
+    const sessionId = getSessionId(req, res);
+    req.headers[config.auth.gatewaySessionHeaderKey] = sessionId;
     next();
   };
 }
@@ -96,34 +71,10 @@ async function wsRenkuAuth(
   authenticator: IAuthenticator,
   sessionId: string
 ): Promise<WsMessage | Record<string, string>> {
-  let tokens: TokenSet;
-  try {
-    tokens = await authenticator.getTokens(sessionId, true);
-  } catch (error) {
-    const stringyError = error.toString();
-
-    const expired =
-      stringyError.includes("expired") || stringyError.includes("invalid");
-    if (expired) throw new Error("expired");
-    throw error;
-  }
-
-  if (tokens && tokens.access_token == "do-not-inject") {
-    // Nothing should be injected or passed on, authentication done in gateway
-    return {};
-  }
-
-  if (tokens) {
-    const value = config.auth.authHeaderPrefix + tokens.access_token;
-    return { [config.auth.authHeaderField]: value };
-  }
-
-  // Anonymous users
-  const fullAnonId = config.auth.anonPrefix + sessionId;
   const newCookies: Array<string> = [
-    serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId),
+    serializeCookie(config.auth.cookiesKey, sessionId),
   ];
   return { cookie: newCookies.join("; ") };
 }
 
-export { renkuAuth, addAuthToken, wsRenkuAuth };
+export { renkuAuth, wsRenkuAuth };
