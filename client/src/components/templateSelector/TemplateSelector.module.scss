@@ -1,49 +1,22 @@
 @import "/src/styles/bootstrap/_custom_bootstrap_variables.scss";
 
-/* .template-card:hover {
-  box-shadow: 0 0 0 1px var(--bs-rk-green), var(--rk-box-shadow);
-  border-color: var(--bs-rk-green);
-}
-
-.template--invalid {
-  border-color: var(--bs-danger);
-}
-
-.template--disabled {
-  opacity: 0.5;
-}
-
-.template--active:hover {
-  border-color: var(--bs-rk-green);
-}
-
-.template--active:hover .card-footer {
-  border-color: var(--bs-rk-green);
-  color: var(--bs-rk-green);
-  background-color: white;
-}
-
-.template--active.selected {
-  box-shadow: 0 0 0 2px var(--bs-rk-green), var(--rk-box-shadow);
-  border-color: var(--bs-rk-green);
-  color: var(--bs-rk-green);
-}
-
-.template-card img {
-  height: 60px;
-}
-
-.template-card .card-footer {
-  border-radius: 0 0 8px 8px;
-} */
-
 .templateLabel {
-  // input:focus + & {
-  //   border: 2px solid red;
-  // }
+  .templateCardImage {
+    height: 108px;
+  }
 
   .templateCardName {
     display: flex;
+    height: 74px;
+
+    & p {
+      display: -webkit-box;
+      line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
   }
 
   .templateCardDescription,
@@ -54,9 +27,7 @@
 
   &:hover,
   input:focus + & {
-    .templateCardImage {
-      display: none;
-    }
+    .templateCardImage,
     .templateCardName {
       display: none;
     }
@@ -74,26 +45,6 @@
   }
 }
 
-// .templateCard {
-//   &:hover {
-//     background-color: $rk-green-highlight;
-//     border-color: $rk-green-highlight !important;
-
-//     .templateCardBottom {
-//       background-color: unset !important;
-//       border-color: $rk-green-highlight !important;
-//       color: white;
-//     }
-
-//     .templateCardDefault {
-//       display: none;
-//     }
-//     .templateCardHover {
-//       display: block;
-//     }
-//   }
-
-//   .templateCardHover {
-//     display: none;
-//   }
-// }
+.templateCard {
+  max-height: 182px;
+}

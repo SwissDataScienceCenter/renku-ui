@@ -215,13 +215,7 @@ function TemplateGalleryRow({
       </Row>
 
       <Row
-        className={cx(
-          "row-cols-2",
-          "row-cols-sm-3",
-          // "row-cols-md-3",
-          "row-cols-lg-4",
-          "gy-4"
-        )}
+        className={cx("row-cols-2", "row-cols-sm-3", "row-cols-lg-4", "gy-4")}
       >
         {templates.map((template) => (
           <TemplateItem
@@ -229,7 +223,6 @@ function TemplateGalleryRow({
             repositoryName={repository.name}
             template={template}
             isDisabled={isDisabled}
-            isInvalid={isInvalid}
             isSelected={selectedTemplate === template.id}
             onSelectTemplate={onSelectTemplate(template.id)}
           />
@@ -243,7 +236,6 @@ interface TemplateItemProps {
   repositoryName: string;
   template: NewProjectTemplate;
   isDisabled?: boolean;
-  isInvalid?: boolean;
   isSelected?: boolean;
   onSelectTemplate?: () => void;
 }
@@ -252,7 +244,6 @@ function TemplateItem({
   repositoryName,
   template,
   isDisabled,
-  isInvalid,
   isSelected,
   onSelectTemplate,
 }: TemplateItemProps) {
@@ -295,11 +286,11 @@ function TemplateItem({
             "d-flex",
             "flex-column",
             "shadow",
+            isDisabled && "opacity-50",
             styles.templateCard
           )}
           data-cy="project-template-card"
           innerRef={ref}
-          style={{ maxHeight: "182px" }}
         >
           <CardBody
             className={cx(
@@ -311,7 +302,6 @@ function TemplateItem({
               isSelected ? "border-rk-green" : "border-rk-white",
               styles.templateCardImage
             )}
-            style={{ height: "108px" }}
           >
             <img
               src={imgSrc}
@@ -331,19 +321,8 @@ function TemplateItem({
               isSelected && ["border-rk-green", "bg-rk-green", "text-rk-white"],
               styles.templateCardName
             )}
-            style={{ height: "74px" }}
           >
-            <CardText
-              className={cx("small", "text-center", "m-0")}
-              style={{
-                display: "-webkit-box",
-                lineClamp: 2,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 2,
-              }}
-            >
+            <CardText className={cx("small", "text-center", "m-0")}>
               {name}
             </CardText>
           </CardBody>
