@@ -37,26 +37,63 @@
   border-radius: 0 0 8px 8px;
 } */
 
-.templateCard {
-  &:hover {
+.templateLabel {
+  // input:focus + & {
+  //   border: 2px solid red;
+  // }
+
+  .templateCardName {
+    display: flex;
+  }
+
+  .templateCardDescription,
+  .templateCardSsh {
+    display: none;
     background-color: $rk-green-highlight;
-    border-color: $rk-green-highlight !important;
+  }
 
-    .templateCardBottom {
-      background-color: unset !important;
-      border-color: $rk-green-highlight !important;
-      color: white;
-    }
-
-    .templateCardDefault {
+  &:hover,
+  input:focus + & {
+    .templateCardImage {
       display: none;
     }
-    .templateCardHover {
-      display: block;
+    .templateCardName {
+      display: none;
+    }
+
+    .templateCardDescription,
+    .templateCardSsh {
+      display: flex;
     }
   }
 
-  .templateCardHover {
-    display: none;
+  input:focus + & {
+    box-shadow: var(--bs-focus-ring-x, 0) var(--bs-focus-ring-y, 0)
+      var(--bs-focus-ring-blur, 0) var(--bs-focus-ring-width)
+      var(--bs-focus-ring-color);
   }
 }
+
+// .templateCard {
+//   &:hover {
+//     background-color: $rk-green-highlight;
+//     border-color: $rk-green-highlight !important;
+
+//     .templateCardBottom {
+//       background-color: unset !important;
+//       border-color: $rk-green-highlight !important;
+//       color: white;
+//     }
+
+//     .templateCardDefault {
+//       display: none;
+//     }
+//     .templateCardHover {
+//       display: block;
+//     }
+//   }
+
+//   .templateCardHover {
+//     display: none;
+//   }
+// }

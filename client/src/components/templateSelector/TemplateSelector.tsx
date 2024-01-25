@@ -23,21 +23,21 @@
  *  TemplateSelector component
  */
 
-import cx from "classnames";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { CheckCircleFill, XCircleFill } from "react-bootstrap-icons";
 import {
   Card,
   CardBody,
-  CardFooter,
   CardText,
   Col,
+  Label,
   PopoverBody,
   PopoverHeader,
   Row,
   UncontrolledPopover,
-  UncontrolledTooltip,
 } from "reactstrap";
 import { NewProjectTemplate, Repository } from "../../model/renkuModels.types";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
@@ -216,9 +216,9 @@ function TemplateGalleryRow({
 
       <Row
         className={cx(
-          "row-cols-1",
-          "row-cols-sm-2",
-          "row-cols-md-3",
+          "row-cols-2",
+          "row-cols-sm-3",
+          // "row-cols-md-3",
           "row-cols-lg-4",
           "gy-4"
         )}
@@ -226,6 +226,7 @@ function TemplateGalleryRow({
         {templates.map((template) => (
           <TemplateItem
             key={template.id}
+            repositoryName={repository.name}
             template={template}
             isDisabled={isDisabled}
             isInvalid={isInvalid}
@@ -239,6 +240,7 @@ function TemplateGalleryRow({
 }
 
 interface TemplateItemProps {
+  repositoryName: string;
   template: NewProjectTemplate;
   isDisabled?: boolean;
   isInvalid?: boolean;
@@ -247,25 +249,44 @@ interface TemplateItemProps {
 }
 
 function TemplateItem({
+  repositoryName,
   template,
   isDisabled,
   isInvalid,
   isSelected,
   onSelectTemplate,
 }: TemplateItemProps) {
-  const ref = useRef<HTMLButtonElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const { description, icon, id, isSshSupported, name } = template;
   const imgSrc = icon ? `data:image/png;base64,${icon}` : defaultTemplateIcon;
+  const elementId = `template-${simpleHash(repositoryName)}-${simpleHash(id)}`;
 
   return (
     <Col>
-      <button
-        className={cx("bg-transparent", "p-0", "border-0", "h-100", "w-100")}
-        onClick={onSelectTemplate}
-        ref={ref}
-        role="button"
-        type="button"
+      <input
+        className={cx("btn-check")}
+        checked={isSelected}
+        disabled={isDisabled}
+        onChange={onSelectTemplate}
+        type="radio"
+        name="template"
+        value={template.id}
+        autoComplete="off"
+        id={elementId}
+      />
+      <Label
+        className={cx(
+          "d-block",
+          "h-100",
+          "w-100",
+          "rounded",
+          "focus-ring",
+          "focus-ring-primary",
+          isDisabled ? "cursor-not-allowed" : "cursor-pointer",
+          styles.templateLabel
+        )}
+        for={elementId}
       >
         <Card
           className={cx(
@@ -274,14 +295,24 @@ function TemplateItem({
             "d-flex",
             "flex-column",
             "shadow",
-            "border",
-            "overflow-hidden",
-            isSelected ? "border-rk-green" : "border-rk-white",
             styles.templateCard
           )}
           data-cy="project-template-card"
+          innerRef={ref}
+          style={{ maxHeight: "182px" }}
         >
-          <CardBody className={cx("text-center", "p-4", "flex-grow-0")}>
+          <CardBody
+            className={cx(
+              "text-center",
+              "p-4",
+              "overflow-hidden",
+              "border",
+              "rounded-top",
+              isSelected ? "border-rk-green" : "border-rk-white",
+              styles.templateCardImage
+            )}
+            style={{ height: "108px" }}
+          >
             <img
               src={imgSrc}
               alt={`${id} template image`}
@@ -294,40 +325,67 @@ function TemplateItem({
             className={cx(
               "border-top",
               "border-2",
-              "flex-grow-1",
-              "d-flex",
+              "rounded-bottom",
               "flex-column",
               "justify-content-center",
               isSelected && ["border-rk-green", "bg-rk-green", "text-rk-white"],
-              styles.templateCardBottom
+              styles.templateCardName
             )}
+            style={{ height: "74px" }}
           >
             <CardText
-              className={cx(
-                "small",
-                "text-center",
-                "m-0",
-                styles.templateCardDefault
-              )}
+              className={cx("small", "text-center", "m-0")}
+              style={{
+                display: "-webkit-box",
+                lineClamp: 2,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 2,
+              }}
             >
               {name}
             </CardText>
-            <CardText
-              className={cx(
-                "small",
-                "text-center",
-                "m-0",
-                styles.templateCardHover
+          </CardBody>
+          <CardBody
+            className={cx(
+              "overflow-auto",
+              "flex-shrink-1",
+              "rounded-top",
+              "text-white",
+              styles.templateCardDescription
+            )}
+          >
+            <CardText className={cx("small")}>{description}</CardText>
+          </CardBody>
+          <CardBody
+            className={cx(
+              "py-2",
+              "flex-grow-0",
+              "border-top",
+              "border-1",
+              "border-white",
+              "rounded-bottom",
+              "text-white",
+              styles.templateCardSsh
+            )}
+          >
+            <CardText className={cx("small", "m-0")}>
+              {isSshSupported ? (
+                <>
+                  <CheckCircleFill className={cx("bi", "me-1")} />
+                  Supports SSH
+                </>
+              ) : (
+                <>
+                  <XCircleFill className={cx("bi", "me-1")} />
+                  No SSH
+                </>
               )}
-            >
-              {isSshSupported && <>Supports SSH</>}
             </CardText>
           </CardBody>
         </Card>
-      </button>
-      <UncontrolledTooltip placement="bottom" target={ref}>
-        {description}
-      </UncontrolledTooltip>
+      </Label>
     </Col>
   );
 }
