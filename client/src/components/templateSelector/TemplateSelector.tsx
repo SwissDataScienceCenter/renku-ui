@@ -266,6 +266,7 @@ function TemplateItem({
         value={template.id}
         autoComplete="off"
         id={elementId}
+        data-cy="project-template-input"
       />
       <Label
         className={cx(
