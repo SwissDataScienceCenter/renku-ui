@@ -39,6 +39,7 @@ import {
   Row,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { NewProjectTemplate, Repository } from "../../model/renkuModels.types";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { ExternalLink } from "../ExternalLinks";
@@ -48,6 +49,7 @@ import {
   InputLabel,
   LoadingLabel,
 } from "../formlabels/FormLabels";
+
 import styles from "./TemplateSelector.module.scss";
 
 const defaultTemplateIcon = "/stockimages/templatePlaceholder.svg";
@@ -167,7 +169,6 @@ function TemplateGalleryRow({
   select,
   selected,
   templates,
-  isInvalid,
   isDisabled,
 }: TemplateGalleryRowProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
