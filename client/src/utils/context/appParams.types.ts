@@ -33,7 +33,6 @@ export interface AppParams {
   PRIVACY_BANNER_CONTENT: string;
   PRIVACY_BANNER_LAYOUT: PrivacyBannerLayoutParams | null;
   PRIVACY_ENABLED: boolean;
-  PRIVACY_STATEMENT: string;
   RENKU_CHART_VERSION: string;
   SENTRY_NAMESPACE: string;
   SENTRY_SAMPLE_RATE: string; // TODO: convert to number type
@@ -41,7 +40,6 @@ export interface AppParams {
   STATUSPAGE_ID: string;
   TEMPLATES: TemplatesParams;
   TERMS_ENABLED: boolean;
-  TERMS_STATEMENT: string;
   UISERVER_URL: string;
   UI_SHORT_SHA: string;
   UI_VERSION: string;

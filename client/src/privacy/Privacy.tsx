@@ -22,14 +22,22 @@
 import { useContext } from "react";
 
 import { WarnAlert } from "../components/Alert";
+import { Loader } from "../components/Loader";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
+import { isValidMarkdownResponse } from "../components/markdown/utils";
+import { useGetPrivacyPolicyQuery } from "../features/terms/terms.api";
 import AppContext from "../utils/context/appContext";
 
 export default function Privacy() {
   const { params } = useContext(AppContext);
+  const { data, isLoading } = useGetPrivacyPolicyQuery();
   if (params == null) return null;
-  const content = params["PRIVACY_ENABLED"]
-    ? params["PRIVACY_STATEMENT"]
+  if (isLoading) return <Loader />;
+  if (params == null) return null;
+  const content = !params["PRIVACY_ENABLED"]
+    ? null
+    : data != null && isValidMarkdownResponse(data)
+    ? data
     : null;
 
   if (!content || !content.length) {

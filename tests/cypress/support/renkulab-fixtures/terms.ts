@@ -26,8 +26,7 @@ export function Terms<T extends FixturesConstructor>(Parent: T) {
   return class TermsFixtures extends Parent {
     overridePrivacyPolicy(args?: NameOnlyFixture) {
       const { name = "getOverridePrivacyPolicy" } = args ?? {};
-      const overridePrivacyPolicy = `
-        # Override privacy policy\nThis is a custom privacy policy.
+      const overridePrivacyPolicy = `# Override privacy policy\nThis is a custom privacy policy.
         `;
       const response = { body: overridePrivacyPolicy };
       cy.intercept("GET", "/privacy-statement.md", response).as(name);
@@ -37,8 +36,7 @@ export function Terms<T extends FixturesConstructor>(Parent: T) {
 
     overrideTermsOfUse(args?: NameOnlyFixture) {
       const { name = "getOverrideTermsOfUse" } = args ?? {};
-      const overridePrivacyPolicy = `
-          # Override terms of use\nThis is a custom terms of use.
+      const overridePrivacyPolicy = `# Override terms of use\nThis is a custom terms of use.
           `;
       const response = { body: overridePrivacyPolicy };
       cy.intercept("GET", "/terms-of-use.md", response).as(name);

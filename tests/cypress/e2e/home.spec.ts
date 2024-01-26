@@ -155,6 +155,7 @@ describe("shows terms of use", () => {
       .config({ overrides: { TERMS_ENABLED: true } })
       .overrideTermsOfUse();
     cy.visit("/help/tos");
+    cy.wait("@getOverrideTermsOfUse");
     cy.get("h1").contains("Override terms of use").should("be.visible");
     cy.get("a").contains("Terms of Use").should("exist").should("be.visible");
   });
@@ -177,6 +178,7 @@ describe("shows privacy policy", () => {
       .config({ overrides: { PRIVACY_ENABLED: true } })
       .overridePrivacyPolicy();
     cy.visit("/help/privacy");
+    cy.wait("@getOverridePrivacyPolicy");
     cy.get("h1").contains("Override privacy policy").should("be.visible");
     cy.get("a").contains("Privacy Policy").should("exist").should("be.visible");
   });

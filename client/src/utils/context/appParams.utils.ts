@@ -48,13 +48,11 @@ export function validatedAppParams(params: unknown): AppParams {
     params_,
     "PRIVACY_BANNER_CONTENT"
   );
-  const PRIVACY_STATEMENT = validateString(params_, "PRIVACY_STATEMENT");
   const RENKU_CHART_VERSION = validateString(params_, "RENKU_CHART_VERSION");
   const SENTRY_NAMESPACE = validateString(params_, "SENTRY_NAMESPACE");
   const SENTRY_SAMPLE_RATE = validateString(params_, "SENTRY_SAMPLE_RATE");
   const SENTRY_URL = validateString(params_, "SENTRY_URL");
   const STATUSPAGE_ID = validateString(params_, "STATUSPAGE_ID");
-  const TERMS_STATEMENT = validateString(params_, "TERMS_STATEMENT");
   const UISERVER_URL = validateString(params_, "UISERVER_URL");
   const UI_SHORT_SHA = validateString(params_, "UI_SHORT_SHA");
   const UI_VERSION = validateString(params_, "UI_VERSION");
@@ -92,14 +90,12 @@ export function validatedAppParams(params: unknown): AppParams {
     PRIVACY_BANNER_CONTENT,
     PRIVACY_BANNER_LAYOUT,
     PRIVACY_ENABLED,
-    PRIVACY_STATEMENT,
     RENKU_CHART_VERSION,
     SENTRY_NAMESPACE,
     SENTRY_SAMPLE_RATE,
     SENTRY_URL,
     STATUSPAGE_ID,
     TEMPLATES,
-    TERMS_STATEMENT,
     TERMS_ENABLED,
     UISERVER_URL,
     UI_SHORT_SHA,

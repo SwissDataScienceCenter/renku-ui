@@ -22,38 +22,16 @@ import { Url, createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 
-function isValidMarkdownResponse(markdown) {
-  // ? checking DOCTYPE prevents setting content from bad answers on valid 2xx responses
-  return markdown && markdown.length && !markdown.startsWith("<!DOCTYPE html>");
-}
-
 const configFetch = fetch("/config.json");
-const privacyFetch = fetch("/privacy-statement.md");
-const termsFetch = fetch("/terms-of-use.md");
 
-Promise.all([configFetch, privacyFetch, termsFetch]).then((valuesRead) => {
-  const [configResp, privacyResp, termsResp] = valuesRead;
+Promise.all([configFetch]).then((valuesRead) => {
+  const [configResp] = valuesRead;
   const configRead = configResp.json();
-  const privacyRead = privacyResp.text();
-  const termsRead = termsResp.text();
 
-  Promise.all([configRead, privacyRead, termsRead]).then((values) => {
+  Promise.all([configRead]).then((values) => {
     const container = document.getElementById("root");
     const root = createRoot(container);
-    const [params_, privacy, terms] = values;
-
-    // map privacy statement to parameters
-    if (isValidMarkdownResponse(privacy)) {
-      params_["PRIVACY_STATEMENT"] = privacy;
-    } else {
-      params_["PRIVACY_STATEMENT"] = null;
-    }
-
-    if (isValidMarkdownResponse(terms)) {
-      params_["TERMS_STATEMENT"] = terms;
-    } else {
-      params_["TERMS_STATEMENT"] = null;
-    }
+    const [params_] = values;
 
     const params = validatedAppParams(params_);
 

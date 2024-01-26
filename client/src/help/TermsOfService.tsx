@@ -20,12 +20,21 @@ import { useContext } from "react";
 import AppContext from "../utils/context/appContext";
 
 import { WarnAlert } from "../components/Alert";
+import { Loader } from "../components/Loader";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
+import { isValidMarkdownResponse } from "../components/markdown/utils";
+import { useGetTermsOfUseQuery } from "../features/terms/terms.api";
 
 export default function TermsOfService() {
   const { params } = useContext(AppContext);
+  const { data, isLoading } = useGetTermsOfUseQuery();
   if (params == null) return null;
-  const content = params["TERMS_ENABLED"] ? params["TERMS_STATEMENT"] : null;
+  if (isLoading) return <Loader />;
+  const content = !params["TERMS_ENABLED"]
+    ? null
+    : data != null && isValidMarkdownResponse(data)
+    ? data
+    : null;
 
   if (!content || !content.length) {
     return (
