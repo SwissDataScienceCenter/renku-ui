@@ -20,35 +20,35 @@ DOCKER_REPOSITORY?=renku/
 DOCKER_PREFIX:=${DOCKER_REGISTRY}$(DOCKER_REPOSITORY)
 DOCKER_LABEL?=$(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/^* //')
 
-ifeq ($(DOCKER_LABEL), master)
+ifeq ($(DOCKER_LABEL), main)
 	DOCKER_LABEL=latest
 endif
 
 IMAGES=renku-ui
 
-GIT_MASTER_HEAD_SHA:=$(shell git rev-parse --short=7 --verify HEAD)
+GIT_MAIN_HEAD_SHA:=$(shell git rev-parse --short=7 --verify HEAD)
 
 PLATFORM_DOMAIN?=renku.build
 
 tag-docker-images: $(IMAGES:%=tag/%)
 
 build/renku-ui: Dockerfile
-	docker build --rm --force-rm -t $(DOCKER_PREFIX)$(notdir $@):$(GIT_MASTER_HEAD_SHA) -f $< .
+	docker build --rm --force-rm -t $(DOCKER_PREFIX)$(notdir $@):$(GIT_MAIN_HEAD_SHA) -f $< .
 
 push-docker-images: $(IMAGES:%=push/%)
 
 tag/%: build/%
-ifeq (${DOCKER_LABEL}, master)
-	docker tag $(DOCKER_PREFIX)$(notdir $@):$(GIT_MASTER_HEAD_SHA) $(DOCKER_PREFIX)$(notdir $@):latest
+ifeq (${DOCKER_LABEL}, main)
+	docker tag $(DOCKER_PREFIX)$(notdir $@):$(GIT_MAIN_HEAD_SHA) $(DOCKER_PREFIX)$(notdir $@):latest
 endif
-	docker tag $(DOCKER_PREFIX)$(notdir $@):$(GIT_MASTER_HEAD_SHA) $(DOCKER_PREFIX)$(notdir $@):$(DOCKER_LABEL)
+	docker tag $(DOCKER_PREFIX)$(notdir $@):$(GIT_MAIN_HEAD_SHA) $(DOCKER_PREFIX)$(notdir $@):$(DOCKER_LABEL)
 
 push/%: tag/%
-ifeq (${DOCKER_LABEL}, master)
+ifeq (${DOCKER_LABEL}, main)
 	docker push $(DOCKER_PREFIX)$(notdir $@):latest
 endif
 	docker push $(DOCKER_PREFIX)$(notdir $@):$(DOCKER_LABEL)
-	docker push $(DOCKER_PREFIX)$(notdir $@):$(GIT_MASTER_HEAD_SHA)
+	docker push $(DOCKER_PREFIX)$(notdir $@):$(GIT_MAIN_HEAD_SHA)
 
 test/%: tag/%
 	CI=true npm test
