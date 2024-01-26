@@ -216,7 +216,13 @@ function TemplateGalleryRow({
       </Row>
 
       <Row
-        className={cx("row-cols-2", "row-cols-sm-3", "row-cols-lg-4", "gy-4")}
+        className={cx(
+          "row-cols-2",
+          "row-cols-sm-3",
+          "row-cols-lg-4",
+          "gy-4",
+          "mb-2"
+        )}
       >
         {templates.map((template) => (
           <TemplateItem
