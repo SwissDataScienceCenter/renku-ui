@@ -46,7 +46,6 @@ import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import AppContext from "../utils/context/appContext";
 import { Url } from "../utils/helpers/url";
 
-import HelpScrollContainer from "./HelpScrollContainer";
 import HelpRelease from "./HelpRelease";
 import TermsOfService from "./TermsOfService";
 
@@ -228,20 +227,9 @@ function HelpContent() {
       <Route
         path={Url.pages.help.tos}
         key="tos"
-        render={() => (
-          <HelpScrollContainer>
-            <TermsOfService />
-          </HelpScrollContainer>
-        )}
+        render={() => <TermsOfService />}
       />
-      <Route
-        path={Url.pages.help.privacy}
-        render={() => (
-          <HelpScrollContainer>
-            <Privacy />
-          </HelpScrollContainer>
-        )}
-      />
+      <Route path={Url.pages.help.privacy} render={() => <Privacy />} />
     </>
   );
 }
