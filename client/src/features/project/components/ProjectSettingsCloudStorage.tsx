@@ -110,11 +110,13 @@ export default function ProjectSettingsCloudStorage() {
       )}
       <CloudStorageSupportNotice notebooksVersion={notebooksVersion} />
 
-      <Row>
-        <Col>
-          <AddOrEditCloudStorageButton devAccess={devAccess} />
-        </Col>
-      </Row>
+      {notebooksVersion.cloudStorageEnabled && (
+        <Row>
+          <Col>
+            <AddOrEditCloudStorageButton devAccess={devAccess} />
+          </Col>
+        </Row>
+      )}
 
       <CloudStorageList
         devAccess={devAccess}
