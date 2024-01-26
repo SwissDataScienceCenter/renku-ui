@@ -22,18 +22,12 @@
  *  Help.container.js
  *  Container components for help
  */
-import type { AppParams } from "../utils/context/appParams.types";
-
 import { Help as HelpPresent } from "./Help.present";
 
 type HelpProps = {
-  model: unknown;
-  params: AppParams;
   statuspageId: string;
 };
 
-export default function Help({ model, params, statuspageId }: HelpProps) {
-  return (
-    <HelpPresent model={model} params={params} statuspageId={statuspageId} />
-  );
+export default function Help({ statuspageId }: HelpProps) {
+  return <HelpPresent statuspageId={statuspageId} />;
 }

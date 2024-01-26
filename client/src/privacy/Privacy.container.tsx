@@ -19,7 +19,8 @@
 /**
  *  Container components for privacy
  */
-import type { AppParams } from "../utils/context/appParams.types";
+import { useContext } from "react";
+import AppContext from "../utils/context/appContext";
 import { Privacy as PrivacyPresent, CookieBanner } from "./Privacy.present";
 import RoutedContent from "./RoutedContent";
 
@@ -36,10 +37,11 @@ or navigating the site, you consent to the use of cookies in accordance with
 our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.`;
 
 type CookieProps = {
-  params: AppParams;
   history: unknown;
 };
-function Cookie({ params, history }: CookieProps) {
+function Cookie({ history }: CookieProps) {
+  const { params } = useContext(AppContext);
+  if (params == null) return null;
   // Do not default the privacy banner content
   if (!params["PRIVACY_ENABLED"] || !params["PRIVACY_BANNER_CONTENT"])
     return null;
@@ -57,10 +59,9 @@ function Cookie({ params, history }: CookieProps) {
   return <CookieBanner layout={layout} content={renderedContent} />;
 }
 
-type PrivacyProps = {
-  params: AppParams;
-};
-function Privacy({ params }: PrivacyProps) {
+function Privacy() {
+  const { params } = useContext(AppContext);
+  if (params == null) return null;
   const content = params["PRIVACY_ENABLED"]
     ? params["PRIVACY_STATEMENT"]
     : null;

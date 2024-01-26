@@ -23,6 +23,7 @@
  *  Presentational components for help.
  */
 
+import { useContext } from "react";
 import { Route } from "react-router-dom";
 
 import { Row, Col } from "reactstrap";
@@ -42,7 +43,7 @@ import {
 } from "../components/ExternalLinks";
 import { Privacy } from "../privacy/Privacy.container";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
-import type { AppParams } from "../utils/context/appParams.types";
+import AppContext from "../utils/context/appContext";
 import { Url } from "../utils/helpers/url";
 
 import HelpScrollContainer from "./HelpScrollContainer";
@@ -50,10 +51,11 @@ import HelpRelease from "./HelpRelease";
 import TermsOfService from "./TermsOfService";
 
 type HelpNavProps = {
-  params: AppParams;
   statuspageId: string;
 };
-function HelpNav({ params, statuspageId }: HelpNavProps) {
+function HelpNav({ statuspageId }: HelpNavProps) {
+  const { params } = useContext(AppContext);
+  if (params == null) return null;
   const statusLink = isStatusConfigured(statuspageId) ? (
     <NavItem>
       <RenkuNavLink to={Url.pages.help.status} title="Status" />
@@ -193,11 +195,8 @@ function HelpDocumentation() {
   );
 }
 
-type HelpContentProps = {
-  model: unknown;
-  params: AppParams;
-};
-function HelpContent({ model, params }: HelpContentProps) {
+function HelpContent() {
+  const { model } = useContext(AppContext);
   return (
     <>
       <Route
@@ -231,7 +230,7 @@ function HelpContent({ model, params }: HelpContentProps) {
         key="tos"
         render={() => (
           <HelpScrollContainer>
-            <TermsOfService params={params} />
+            <TermsOfService />
           </HelpScrollContainer>
         )}
       />
@@ -239,7 +238,7 @@ function HelpContent({ model, params }: HelpContentProps) {
         path={Url.pages.help.privacy}
         render={() => (
           <HelpScrollContainer>
-            <Privacy params={params} />
+            <Privacy />
           </HelpScrollContainer>
         )}
       />
@@ -248,11 +247,9 @@ function HelpContent({ model, params }: HelpContentProps) {
 }
 
 type HelpProps = {
-  model: unknown;
-  params: AppParams;
   statuspageId: string;
 };
-export function Help({ model, params, statuspageId }: HelpProps) {
+export function Help({ statuspageId }: HelpProps) {
   return (
     <>
       <Row className="pt-2 pb-3">
@@ -262,7 +259,7 @@ export function Help({ model, params, statuspageId }: HelpProps) {
       </Row>
       <Row className="pb-2">
         <Col>
-          <HelpNav params={params} statuspageId={statuspageId} />
+          <HelpNav statuspageId={statuspageId} />
         </Col>
       </Row>
       <Row>
@@ -270,7 +267,7 @@ export function Help({ model, params, statuspageId }: HelpProps) {
       </Row>
       <Row>
         <Col>
-          <HelpContent model={model} params={params} />
+          <HelpContent />
         </Col>
       </Row>
     </>

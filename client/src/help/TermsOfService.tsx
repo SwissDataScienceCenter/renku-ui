@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import type { AppParams } from "../utils/context/appParams.types";
+import { useContext } from "react";
+import AppContext from "../utils/context/appContext";
 
 import { WarnAlert } from "../components/Alert";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 
-type TermsProps = {
-  params: AppParams;
-};
-export default function TermsOfService({ params }: TermsProps) {
+export default function TermsOfService() {
+  const { params } = useContext(AppContext);
+  if (params == null) return null;
   const content = params["TERMS_ENABLED"] ? params["TERMS_STATEMENT"] : null;
 
   if (!content || !content.length) {
