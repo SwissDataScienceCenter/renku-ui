@@ -20,8 +20,9 @@
  *  Container components for privacy
  */
 import { useContext } from "react";
+import CookieConsent from "react-cookie-consent";
+
 import AppContext from "../utils/context/appContext";
-import { Privacy as PrivacyPresent, CookieBanner } from "./Privacy.present";
 import RoutedContent from "./RoutedContent";
 
 const LAYOUT = {
@@ -36,10 +37,7 @@ const CONTENT = `This website requires cookies in order to ensure basic function
 or navigating the site, you consent to the use of cookies in accordance with
 our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.`;
 
-type CookieProps = {
-  history: unknown;
-};
-function Cookie({ history }: CookieProps) {
+export default function Cookie() {
   const { params } = useContext(AppContext);
   if (params == null) return null;
   // Do not default the privacy banner content
@@ -54,19 +52,7 @@ function Cookie({ history }: CookieProps) {
   const content = params["PRIVACY_BANNER_CONTENT"]
     ? atob(params["PRIVACY_BANNER_CONTENT"])
     : CONTENT;
-  const renderedContent = <RoutedContent content={content} history={history} />;
+  const renderedContent = <RoutedContent htmlContent={content} />;
 
-  return <CookieBanner layout={layout} content={renderedContent} />;
+  return <CookieConsent {...layout}>{renderedContent}</CookieConsent>;
 }
-
-function Privacy() {
-  const { params } = useContext(AppContext);
-  if (params == null) return null;
-  const content = params["PRIVACY_ENABLED"]
-    ? params["PRIVACY_STATEMENT"]
-    : null;
-
-  return <PrivacyPresent content={content} />;
-}
-
-export { Privacy, Cookie };

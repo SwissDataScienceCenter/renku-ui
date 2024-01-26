@@ -29,7 +29,9 @@ import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
 import { describe, it } from "vitest";
 
-import { Cookie, Privacy, RoutedContent } from "./index";
+import Cookie from "./Cookie";
+import Privacy from "./Privacy";
+import RoutedContent from "./RoutedContent";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],

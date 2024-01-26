@@ -17,28 +17,21 @@
  */
 
 /**
- *  Presentational components for the privacy policy.
+ *  Container components for privacy
  */
-
-import React from "react";
-
-import CookieConsent from "react-cookie-consent";
+import { useContext } from "react";
 
 import { WarnAlert } from "../components/Alert";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
+import AppContext from "../utils/context/appContext";
 
-type CookieBannerProps = {
-  layout: Record<string, unknown>;
-  content: React.ReactNode;
-};
-function CookieBanner({ layout, content }: CookieBannerProps) {
-  return <CookieConsent {...layout}>{content}</CookieConsent>;
-}
+export default function Privacy() {
+  const { params } = useContext(AppContext);
+  if (params == null) return null;
+  const content = params["PRIVACY_ENABLED"]
+    ? params["PRIVACY_STATEMENT"]
+    : null;
 
-type PrivacyProps = {
-  content: string | null;
-};
-function Privacy({ content }: PrivacyProps) {
   if (!content || !content.length) {
     return (
       <WarnAlert dismissible={false}>
@@ -51,4 +44,4 @@ function Privacy({ content }: PrivacyProps) {
   return <LazyRenkuMarkdown markdownText={stringContent} />;
 }
 
-export { CookieBanner, Privacy };
+export { Privacy };

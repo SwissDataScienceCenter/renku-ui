@@ -41,7 +41,7 @@ import {
   ExternalDocsLink,
   ExternalIconLink,
 } from "../components/ExternalLinks";
-import { Privacy } from "../privacy/Privacy.container";
+import Privacy from "../privacy/Privacy";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import AppContext from "../utils/context/appContext";
 import { Url } from "../utils/helpers/url";

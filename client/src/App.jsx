@@ -47,7 +47,7 @@ import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
 import LazyNotFound from "./not-found/LazyNotFound";
 import LazyNotificationsPage from "./notifications/LazyNotificationsPage";
 import NotificationsManager from "./notifications/NotificationsManager";
-import { Cookie } from "./privacy";
+import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
