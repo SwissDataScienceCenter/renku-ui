@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { DropdownItem, Modal, ModalBody, ModalHeader } from "reactstrap";
@@ -84,12 +85,13 @@ function SshModal() {
     undefined // do not use the override for getting migration status
   );
   const coreSupport = projectCoreApi.useGetMigrationStatusQuery(
-    {
-      apiVersion: migrationStatusApiVersion,
-      gitUrl,
-      branch: displayModal.branch,
-    },
-    { skip: !gitUrl || !displayModal.branch }
+    !!gitUrl && !!displayModal.branch
+      ? {
+          apiVersion: migrationStatusApiVersion,
+          gitUrl,
+          branch: displayModal.branch,
+        }
+      : skipToken
   );
 
   // return early if we don't need to display the modal

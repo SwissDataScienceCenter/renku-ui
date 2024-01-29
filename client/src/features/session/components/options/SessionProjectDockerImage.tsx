@@ -47,6 +47,7 @@ import {
   setDockerImageBuildStatus,
   setDockerImageStatus,
 } from "../../startSessionOptionsSlice";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 // ? See: SessionProjectDockerImage.md
 export default function SessionProjectDockerImage() {
@@ -158,17 +159,17 @@ function BuildAgainButton() {
   const hasDevAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
   const { data: pipelines } = useGetPipelinesQuery(
-    { commit, projectId: gitLabProjectId ?? 0 },
-    { skip: !gitLabProjectId }
+    !!gitLabProjectId ? { commit, projectId: gitLabProjectId } : skipToken
   );
 
   const { data: pipelineJob } = useGetPipelineJobByNameQuery(
-    {
-      jobName: SESSION_CI_IMAGE_BUILD_JOB,
-      pipelineIds: (pipelines ?? []).map(({ id }) => id),
-      projectId: gitLabProjectId ?? 0,
-    },
-    { skip: !gitLabProjectId || !pipelines }
+    !!gitLabProjectId && !!pipelines
+      ? {
+          jobName: SESSION_CI_IMAGE_BUILD_JOB,
+          pipelineIds: pipelines.map(({ id }) => id),
+          projectId: gitLabProjectId,
+        }
+      : skipToken
   );
 
   const [retryPipeline] = useRetryPipelineMutation();
@@ -234,17 +235,17 @@ function ViewPipelineLink() {
   );
 
   const { data: pipelines } = useGetPipelinesQuery(
-    { commit, projectId: gitLabProjectId ?? 0 },
-    { skip: !gitLabProjectId }
+    !!gitLabProjectId ? { commit, projectId: gitLabProjectId } : skipToken
   );
 
   const { data: pipelineJob } = useGetPipelineJobByNameQuery(
-    {
-      jobName: SESSION_CI_IMAGE_BUILD_JOB,
-      pipelineIds: (pipelines ?? []).map(({ id }) => id),
-      projectId: gitLabProjectId ?? 0,
-    },
-    { skip: !gitLabProjectId || !pipelines }
+    !!gitLabProjectId && !!pipelines
+      ? {
+          jobName: SESSION_CI_IMAGE_BUILD_JOB,
+          pipelineIds: pipelines.map(({ id }) => id),
+          projectId: gitLabProjectId,
+        }
+      : skipToken
   );
 
   const pipelineJobUrl = pipelineJob?.web_url;

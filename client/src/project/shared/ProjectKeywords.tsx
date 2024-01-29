@@ -23,9 +23,10 @@
  *  Project Keywords Input
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
+import { trim } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 
-import { trim } from "lodash";
 import {
   RtkErrorAlert,
   extractRkErrorRemoteBranch,
@@ -75,17 +76,13 @@ function ProjectKeywordsInput({
   };
 
   const [keywords, setKeywords] = useState<string>("");
-  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
-    skip: !projectFullPath || !projectId,
-  });
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(
+    !!projectFullPath && !!projectId ? projectId : skipToken
+  );
   const projectMetadata = useProjectMetadataQuery(
-    { projectPath: projectFullPath, projectId },
-    {
-      skip:
-        !projectFullPath ||
-        !projectId ||
-        !projectIndexingStatus.data?.activated,
-    }
+    !!projectFullPath && !!projectId && !!projectIndexingStatus.data?.activated
+      ? { projectPath: projectFullPath, projectId }
+      : skipToken
   );
 
   const [

@@ -18,6 +18,7 @@
 
 import { faInfoCircle, faUserClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import React, { useEffect } from "react";
 import { Link, Route, Switch, useHistory } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
@@ -187,9 +188,9 @@ function ProjectDatasetsView(props: any) {
   });
 
   const projectId = props.metadata?.id;
-  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
-    skip: !projectId,
-  });
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(
+    !!projectId ? projectId : skipToken
+  );
   const kgDown = !projectIndexingStatus.data?.activated;
 
   const { defaultBranch, externalUrl } = useLegacySelector<

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useParams } from "react-router-dom";
 
 import { StateModelProject } from "../features/project/project.types";
@@ -112,8 +113,15 @@ function WorkflowsList({
   // Fetch workflow list
   const skipList = !metadataVersion || !repositoryUrl || unsupported;
   const workflowsQuery = useGetWorkflowListQuery(
-    { apiVersion, gitUrl: repositoryUrl, metadataVersion, reference, fullPath },
-    { skip: skipList }
+    !skipList
+      ? {
+          apiVersion,
+          gitUrl: repositoryUrl,
+          metadataVersion,
+          reference,
+          fullPath,
+        }
+      : skipToken
   );
   const workflows = {
     list: workflowsQuery.data,
@@ -129,17 +137,17 @@ function WorkflowsList({
     !metadataVersion || !coreSupportComputed || workflowsQuery.isLoading;
 
   // Fetch workflow details
-  const skipDetails = skipList || !selected ? true : false;
   const workflowDetailQuery = useGetWorkflowDetailQuery(
-    {
-      apiVersion,
-      gitUrl: repositoryUrl,
-      metadataVersion,
-      workflowId: selected,
-      reference,
-      fullPath,
-    },
-    { skip: skipDetails }
+    !skipList && !!selected
+      ? {
+          apiVersion,
+          gitUrl: repositoryUrl,
+          metadataVersion,
+          workflowId: selected,
+          reference,
+          fullPath,
+        }
+      : skipToken
   );
   const workflow = {
     details: workflowDetailQuery.data,

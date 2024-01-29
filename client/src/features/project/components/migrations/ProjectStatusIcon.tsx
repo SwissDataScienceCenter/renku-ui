@@ -22,9 +22,10 @@ import {
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Link, useRouteMatch } from "react-router-dom";
-
 import { UncontrolledTooltip } from "reactstrap";
+
 import { Url } from "../../../../utils/helpers/url";
 import { ProjectMigrationLevel } from "../../projectEnums";
 import { projectKgApi } from "../../projectKg.api";
@@ -47,11 +48,12 @@ export function ProjectStatusIcon({
   projectNamespace,
   projectPath,
 }: ProjectStatusIconProps) {
-  const skipKg = !projectId ? true : false;
-  const kgStatus = projectKgApi.useGetProjectIndexingStatusQuery(projectId, {
-    refetchOnMountOrArgChange: 20,
-    skip: skipKg,
-  });
+  const kgStatus = projectKgApi.useGetProjectIndexingStatusQuery(
+    !!projectId ? projectId : skipToken,
+    {
+      refetchOnMountOrArgChange: 20,
+    }
+  );
   const { coreSupport, getMigrationStatusQuery: migrationStatus } =
     useCoreSupport({
       gitUrl,

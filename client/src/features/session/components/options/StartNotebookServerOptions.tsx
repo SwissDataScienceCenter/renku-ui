@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -170,20 +171,15 @@ export const StartNotebookServerOptions = () => {
   );
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
     useGetConfigQuery(
-      {
-        apiVersion,
-        metadataVersion,
-        projectRepositoryUrl,
-        branch: currentBranch,
-        commit,
-      },
-      {
-        skip:
-          !backendAvailable ||
-          !coreSupportComputed ||
-          !currentBranch ||
-          !commit,
-      }
+      !!backendAvailable && coreSupportComputed && !!currentBranch && !!commit
+        ? {
+            apiVersion,
+            metadataVersion,
+            projectRepositoryUrl,
+            branch: currentBranch,
+            commit,
+          }
+        : skipToken
     );
 
   if (
@@ -269,20 +265,15 @@ const DefaultUrlOption = () => {
   } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     useGetConfigQuery(
-      {
-        apiVersion,
-        metadataVersion,
-        projectRepositoryUrl,
-        branch: currentBranch,
-        commit,
-      },
-      {
-        skip:
-          !backendAvailable ||
-          !coreSupportComputed ||
-          !currentBranch ||
-          !commit,
-      }
+      !!backendAvailable && coreSupportComputed && !!currentBranch && !!commit
+        ? {
+            apiVersion,
+            metadataVersion,
+            projectRepositoryUrl,
+            branch: currentBranch,
+            commit,
+          }
+        : skipToken
     );
 
   const defaultUrlOptions = mergeDefaultUrlOptions({
@@ -389,16 +380,15 @@ const AutoFetchLfsOption = () => {
     ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
-    {
-      apiVersion,
-      metadataVersion,
-      projectRepositoryUrl,
-      branch: currentBranch,
-      commit,
-    },
-    {
-      skip: !coreSupportComputed || !currentBranch || !commit,
-    }
+    !!coreSupportComputed && !!currentBranch && !!commit
+      ? {
+          apiVersion,
+          metadataVersion,
+          projectRepositoryUrl,
+          branch: currentBranch,
+          commit,
+        }
+      : skipToken
   );
 
   const lfsAutoFetch = useAppSelector(
