@@ -55,7 +55,7 @@ const uploadFileMiddleware = (
     oldWrite.apply(res, args);
   };
 
-  res.end = (...args: never) => {
+  (res.end as unknown) = (...args: never) => {
     if (args[0]) chunks.push(Buffer.from(args[0]));
     const body = Buffer.concat(chunks).toString("utf8");
     const bodyJson = body as FileUploadResult;
