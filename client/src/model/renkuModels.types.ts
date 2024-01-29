@@ -74,6 +74,7 @@ export interface NewProjectTemplate {
   variables?: { [key: string]: unknown };
   parentRepo?: string;
   parentTemplate?: string;
+  isSshSupported?: boolean;
 }
 
 export interface User {

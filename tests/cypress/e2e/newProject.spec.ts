@@ -207,9 +207,12 @@ describe("Add new project shared link", () => {
       "https://github.com/SwissDataScienceCenter/renku-project-template"
     );
     cy.getDataCy("ref-repository").should("contain.value", "master");
-    cy.getDataCy("project-template-card")
-      .get(".selected")
-      .should("contain.text", "Basic R (4.1.2) Project");
+    cy.getDataCy("project-template-input")
+      .filter(":checked")
+      .parent()
+      .find("[data-cy='project-template-card']")
+      .should("be.visible")
+      .and("contain.text", "Basic R (4.1.2) Project");
   });
 
   it("prefill values custom template", () => {
@@ -256,9 +259,12 @@ describe("Add new project shared link", () => {
     });
 
     // Check selected template
-    cy.getDataCy("project-template-card")
-      .get(".selected")
-      .should("contain.text", "Basic Julia (1.7.1) Project");
+    cy.getDataCy("project-template-input")
+      .filter(":checked")
+      .parent()
+      .find("[data-cy='project-template-card']")
+      .should("be.visible")
+      .and("contain.text", "Basic Julia (1.7.1) Project");
   });
 
   it("use the target template and select the custom variables", () => {
@@ -282,9 +288,13 @@ describe("Add new project shared link", () => {
     });
 
     // Check selected template
-    cy.getDataCy("project-template-card")
-      .get(".selected")
-      .should("contain.text", "Omnibenchmark dataset");
+    cy.getDataCy("project-template-input")
+      .filter(":checked")
+      .parent()
+      .find("[data-cy='project-template-card']")
+      .should("be.visible")
+      .and("contain.text", "Omnibenchmark dataset");
+
     cy.get("#parameter-benchmark_name").should("have.value", "omni_clustering");
     cy.get("#parameter-dataset_keyword").should("have.value", "test value");
     cy.get("#parameter-project_title").should(

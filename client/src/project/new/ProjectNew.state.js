@@ -524,6 +524,7 @@ class NewProjectCoordinator {
             description: template.description,
             variables: template.variables,
             icon: template.icon,
+            isSshSupported: !!template.ssh_supported,
           });
         }
       } else {

@@ -40,17 +40,19 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 interface SessionsListProps {
   disableProjectTitle?: boolean;
+  noSessionComponent?: ReactNode;
   sessions: Sessions;
 }
 
 export default function SessionsList({
   disableProjectTitle,
+  noSessionComponent,
   sessions,
 }: SessionsListProps) {
   const sessionNames = Object.keys(sessions);
 
   if (sessionNames.length == 0) {
-    return <p>No currently running sessions.</p>;
+    return noSessionComponent ?? <p>No currently running sessions.</p>;
   }
 
   return (

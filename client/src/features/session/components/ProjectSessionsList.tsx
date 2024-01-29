@@ -17,14 +17,16 @@
  */
 
 import { useMemo } from "react";
-import { Container } from "reactstrap";
-import { ErrorAlert } from "../../../components/Alert";
+import { Container, Row } from "reactstrap";
+
+import { ErrorAlert, InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { NotebooksHelper } from "../../../notebooks";
 import { useGetSessionsQuery } from "../sessions.api";
 import { Session, Sessions } from "../sessions.types";
 import SessionSaveWarning from "./SessionSaveWarning";
 import SessionsList from "./SessionsList";
+import SimpleSessionButton from "./SimpleSessionButton";
 
 interface ProjectSessionsListProps {
   projectPathWithNamespace: string;
@@ -33,7 +35,7 @@ interface ProjectSessionsListProps {
 export default function ProjectSessionsList({
   projectPathWithNamespace,
 }: ProjectSessionsListProps) {
-  const { isLoading } = useGetSessionsQuery();
+  const { isLoading, isError } = useGetSessionsQuery();
   const projectSessions = useProjectSessions({ projectPathWithNamespace });
 
   if (isLoading) {
@@ -48,10 +50,37 @@ export default function ProjectSessionsList({
     );
   }
 
+  const noSessionComponent = (
+    <>
+      <Row>
+        <p className="ps-0">No currently running sessions.</p>
+        <InfoAlert timeout={0} dismissible={false}>
+          <div className="mb-3">
+            You can quickly{" "}
+            <SimpleSessionButton
+              fullPath={projectPathWithNamespace}
+              skip={isError}
+            />{" "}
+            a new session with default settings.
+          </div>
+          <p className="mb-0">
+            Or, if you want to start a session with options or start a session
+            and connect with SSH, please click on the dropdown menu on the
+            top-right of the project header.
+          </p>
+        </InfoAlert>
+      </Row>
+    </>
+  );
+
   return (
     <>
       <Container fluid>
-        <SessionsList disableProjectTitle sessions={projectSessions} />
+        <SessionsList
+          disableProjectTitle
+          noSessionComponent={noSessionComponent}
+          sessions={projectSessions}
+        />
       </Container>
       <SessionSaveWarning />
     </>
