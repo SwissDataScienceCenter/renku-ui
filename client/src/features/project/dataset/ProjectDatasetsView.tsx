@@ -189,7 +189,7 @@ function ProjectDatasetsView(props: any) {
 
   const projectId = props.metadata?.id;
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(
-    !!projectId ? projectId : skipToken
+    projectId ? projectId : skipToken
   );
   const kgDown = !projectIndexingStatus.data?.activated;
 

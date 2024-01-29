@@ -189,13 +189,13 @@ export function EditVisibility({
     isLoading: isLoadingProject,
     refetch: refetchProjectData,
   } = useProjectMetadataQuery(
-    !!pathWithNamespace ? { projectPath: pathWithNamespace } : skipToken
+    pathWithNamespace ? { projectPath: pathWithNamespace } : skipToken
   );
   const {
     data: forkProjectData,
     isFetching: isFetchingForkProject,
     isLoading: isLoadingForkProject,
-  } = useGetProjectByIdQuery(!!forkedProjectId ? forkedProjectId : skipToken);
+  } = useGetProjectByIdQuery(forkedProjectId ? forkedProjectId : skipToken);
   const {
     data: namespaceData,
     isFetching: isFetchingNamespace,
@@ -203,7 +203,7 @@ export function EditVisibility({
   } = useGetGroupByPathQuery(namespaceKind === "group" ? namespace : skipToken);
 
   const { data: indexingStatusData, isLoading: isLoadingIndexingStatus } =
-    useGetProjectIndexingStatusQuery(!!projectId ? projectId : skipToken);
+    useGetProjectIndexingStatusQuery(projectId ? projectId : skipToken);
 
   const [isOpen, setIsOpen] = useState(false);
   const [newVisibility, setNewVisibility] = useState<Visibilities>();

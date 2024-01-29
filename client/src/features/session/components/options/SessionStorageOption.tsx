@@ -76,7 +76,7 @@ export const SessionStorageOption = () => {
     isLoading,
     isError,
   } = useGetResourcePoolsQuery(
-    !!projectConfig
+    projectConfig
       ? {
           cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
           gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,

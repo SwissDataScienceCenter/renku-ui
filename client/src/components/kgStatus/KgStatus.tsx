@@ -47,7 +47,7 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
   const [pollingInterval, setPollingInterval] = useState(NO_POLLING);
   const { data, isError, isFetching, isLoading, isUninitialized, refetch } =
     projectKgApi.useGetProjectIndexingStatusQuery(
-      !!props.projectId ? props.projectId : skipToken,
+      props.projectId ? props.projectId : skipToken,
       {
         refetchOnMountOrArgChange: 20,
         pollingInterval,

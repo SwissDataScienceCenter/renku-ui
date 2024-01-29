@@ -145,7 +145,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     data: kgDataset,
     error: kgFetchError,
     isFetching: isKgFetching,
-  } = useGetDatasetKgQuery(!!datasetId ? { id: datasetId } : skipToken);
+  } = useGetDatasetKgQuery(datasetId ? { id: datasetId } : skipToken);
   const currentDataset = mergeCoreAndKgDatasets(coreDataset, kgDataset);
   const datasetSlug = currentDataset?.slug;
   const {
@@ -153,7 +153,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     error: filesFetchError,
     isFetching: isFilesFetching,
   } = useGetDatasetFilesQuery(
-    !!datasetSlug
+    datasetSlug
       ? {
           apiVersion,
           git_url: props.externalUrl,

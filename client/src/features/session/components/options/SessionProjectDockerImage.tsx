@@ -159,7 +159,7 @@ function BuildAgainButton() {
   const hasDevAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
   const { data: pipelines } = useGetPipelinesQuery(
-    !!gitLabProjectId ? { commit, projectId: gitLabProjectId } : skipToken
+    gitLabProjectId ? { commit, projectId: gitLabProjectId } : skipToken
   );
 
   const { data: pipelineJob } = useGetPipelineJobByNameQuery(
@@ -235,7 +235,7 @@ function ViewPipelineLink() {
   );
 
   const { data: pipelines } = useGetPipelinesQuery(
-    !!gitLabProjectId ? { commit, projectId: gitLabProjectId } : skipToken
+    gitLabProjectId ? { commit, projectId: gitLabProjectId } : skipToken
   );
 
   const { data: pipelineJob } = useGetPipelineJobByNameQuery(

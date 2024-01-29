@@ -103,7 +103,7 @@ export default function SessionButton({
     data: sessions,
     isLoading,
     isError,
-  } = useGetSessionsQuery(!!getSessions?.isError ? undefined : skipToken);
+  } = useGetSessionsQuery(getSessions?.isError ? undefined : skipToken);
 
   const runningSession =
     sessions && runningSessionName && runningSessionName in sessions

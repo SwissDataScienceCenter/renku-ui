@@ -279,7 +279,7 @@ const DatasetsFeatSection = ({ datasetSlug }: DatasetsFeatSection) => {
     error: kgFetchError,
     isFetching: isKgFetching,
     isLoading: isKgLoading,
-  } = useGetDatasetKgQuery(!!datasetSlug ? { id: datasetSlug } : skipToken);
+  } = useGetDatasetKgQuery(datasetSlug ? { id: datasetSlug } : skipToken);
 
   const isLoading = isKgLoading || isKgFetching;
 

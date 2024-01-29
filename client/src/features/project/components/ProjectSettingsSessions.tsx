@@ -119,7 +119,7 @@ export default function ProjectSettingsSessions() {
     isFetching: projectConfigIsFetching,
     error,
   } = useGetConfigQuery(
-    !!coreSupportComputed
+    coreSupportComputed
       ? {
           apiVersion,
           metadataVersion,

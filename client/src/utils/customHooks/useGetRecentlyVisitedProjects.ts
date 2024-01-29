@@ -43,10 +43,8 @@ function useGetRecentlyVisitedProjects(
       ? args
       : ({} as Partial<UseGetRecentlyVisitedProjectsArgs>);
   const totalProjectsToRequest =
-    args !== skipToken
-      ? args.projectsCount +
-        args.pinnedProjectSlugs.length +
-        args.currentSessions.length
+    projectsCount && pinnedProjectSlugs && currentSessions
+      ? projectsCount + pinnedProjectSlugs.length + currentSessions.length
       : null;
 
   const queryResult = useGetRecentlyVisitedProjectsQuery(
@@ -57,6 +55,7 @@ function useGetRecentlyVisitedProjects(
     if (
       !currentSessions ||
       !pinnedProjectSlugs ||
+      !projectsCount ||
       !queryResult.data ||
       queryResult.data.length == 0
     ) {

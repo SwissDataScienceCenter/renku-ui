@@ -78,7 +78,7 @@ export default function SessionBranchOption() {
     isFetching: defaultBranchDataIsFetching,
     requestId: defaultBranchRequestId,
   } = useGetRepositoryBranchQuery(
-    !!gitLabProjectId
+    gitLabProjectId
       ? {
           projectId: `${gitLabProjectId}`,
           branch: defaultBranch,
@@ -91,7 +91,7 @@ export default function SessionBranchOption() {
     isFetching: branchesFirstPageIsFetching,
     requestId: branchesFirstPageRequestId,
   } = useGetRepositoryBranchesQuery(
-    !!gitLabProjectId
+    gitLabProjectId
       ? {
           projectId: `${gitLabProjectId}`,
         }

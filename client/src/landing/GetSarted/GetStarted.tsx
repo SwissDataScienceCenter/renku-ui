@@ -37,7 +37,7 @@ export default function GetStarted(props: GetStartedProps) {
   const contactEmail = RenkuContactEmail;
   const { sectionRef } = props;
   const projectMetadataQuery = useProjectMetadataQuery(
-    !!projectPath ? { projectPath } : skipToken
+    projectPath ? { projectPath } : skipToken
   );
 
   const isLoading =

@@ -49,7 +49,7 @@ export function ProjectStatusIcon({
   projectPath,
 }: ProjectStatusIconProps) {
   const kgStatus = projectKgApi.useGetProjectIndexingStatusQuery(
-    !!projectId ? projectId : skipToken,
+    projectId ? projectId : skipToken,
     {
       refetchOnMountOrArgChange: 20,
     }

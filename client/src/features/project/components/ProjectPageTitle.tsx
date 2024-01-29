@@ -41,12 +41,12 @@ function ProjectPageTitle({
   );
 
   const { data, isFetching, isLoading } = useProjectJsonLdQuery(
-    !!projectIndexingStatus.data?.activated
+    projectIndexingStatus.data?.activated
       ? { projectPath: projectPathWithNamespace }
       : skipToken
   );
   const { data: kgData } = useProjectMetadataQuery(
-    !!projectIndexingStatus.data?.activated
+    projectIndexingStatus.data?.activated
       ? { projectPath: projectPathWithNamespace, projectId }
       : skipToken
   );

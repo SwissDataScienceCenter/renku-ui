@@ -116,7 +116,7 @@ function useAutostartSessionOptions(): void {
 
   const { data: branches, isFetching: branchesIsFetching } =
     useGetAllRepositoryBranchesQuery(
-      !!gitLabProjectId
+      gitLabProjectId
         ? {
             projectId: `${gitLabProjectId}`,
           }
@@ -158,7 +158,7 @@ function useAutostartSessionOptions(): void {
   );
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
     useGetResourcePoolsQuery(
-      !!projectConfig
+      projectConfig
         ? {
             cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
             gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
