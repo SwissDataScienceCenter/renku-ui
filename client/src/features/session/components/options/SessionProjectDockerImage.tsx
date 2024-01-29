@@ -22,6 +22,7 @@ import {
   faRedo,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { Badge, Button, UncontrolledTooltip } from "reactstrap";
@@ -47,7 +48,6 @@ import {
   setDockerImageBuildStatus,
   setDockerImageStatus,
 } from "../../startSessionOptionsSlice";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 // ? See: SessionProjectDockerImage.md
 export default function SessionProjectDockerImage() {
