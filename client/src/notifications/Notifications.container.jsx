@@ -26,13 +26,7 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 
-import { NotificationTypes } from "./Notifications.constants";
-import {
-  NotificationDropdownItem as NotificationDropdown,
-  NotificationPageItem,
-  NotificationToast,
-  Notifications as NotificationsPresent,
-} from "./Notifications.present";
+import { Notifications as NotificationsPresent } from "./Notifications.present";
 import { NotificationsCoordinator } from "./Notifications.state";
 
 /**
