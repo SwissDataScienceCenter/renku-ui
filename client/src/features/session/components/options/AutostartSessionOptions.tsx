@@ -124,7 +124,7 @@ function useAutostartSessionOptions(): void {
     );
   const { data: commits, isFetching: commitsIsFetching } =
     useGetAllRepositoryCommitsQuery(
-      !!gitLabProjectId && !!currentBranch
+      gitLabProjectId && currentBranch
         ? {
             branch: currentBranch,
             projectId: `${gitLabProjectId}`,
@@ -146,7 +146,7 @@ function useAutostartSessionOptions(): void {
     error: errorProjectConfig,
     isFetching: projectConfigIsFetching,
   } = useGetConfigQuery(
-    !!backendAvailable && coreSupportComputed && !!currentBranch && !!commit
+    backendAvailable && coreSupportComputed && currentBranch && commit
       ? {
           apiVersion,
           metadataVersion,
@@ -172,9 +172,9 @@ function useAutostartSessionOptions(): void {
     useGetNotebooksVersionQuery();
   const { data: storageForProject, isFetching: storageIsFetching } =
     useGetCloudStorageForProjectQuery(
-      !!gitLabProjectId &&
-        !!notebooksVersion &&
-        !!notebooksVersion.cloudStorageEnabled
+      gitLabProjectId &&
+        notebooksVersion &&
+        notebooksVersion.cloudStorageEnabled
         ? { project_id: `${gitLabProjectId}` }
         : skipToken
     );

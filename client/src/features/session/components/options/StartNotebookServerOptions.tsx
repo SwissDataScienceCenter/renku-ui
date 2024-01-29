@@ -171,7 +171,7 @@ export const StartNotebookServerOptions = () => {
   );
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
     useGetConfigQuery(
-      !!backendAvailable && coreSupportComputed && !!currentBranch && !!commit
+      backendAvailable && coreSupportComputed && currentBranch && commit
         ? {
             apiVersion,
             metadataVersion,
@@ -265,7 +265,7 @@ const DefaultUrlOption = () => {
   } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     useGetConfigQuery(
-      !!backendAvailable && coreSupportComputed && !!currentBranch && !!commit
+      backendAvailable && coreSupportComputed && currentBranch && commit
         ? {
             apiVersion,
             metadataVersion,
@@ -380,7 +380,7 @@ const AutoFetchLfsOption = () => {
     ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
-    !!coreSupportComputed && !!currentBranch && !!commit
+    coreSupportComputed && currentBranch && commit
       ? {
           apiVersion,
           metadataVersion,

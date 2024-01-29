@@ -85,7 +85,7 @@ function SshModal() {
     undefined // do not use the override for getting migration status
   );
   const coreSupport = projectCoreApi.useGetMigrationStatusQuery(
-    !!gitUrl && !!displayModal.branch
+    gitUrl && displayModal.branch
       ? {
           apiVersion: migrationStatusApiVersion,
           gitUrl,

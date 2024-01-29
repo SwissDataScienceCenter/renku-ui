@@ -74,7 +74,7 @@ export const SessionClassOption = () => {
     ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
-    !!backendAvailable && coreSupportComputed && !!currentBranch && !!commit
+    backendAvailable && coreSupportComputed && currentBranch && commit
       ? {
           apiVersion,
           metadataVersion,

@@ -37,7 +37,7 @@ function ProjectPageTitle({
   projectTitle,
 }: ProjectJsonLdProps) {
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(
-    !!projectPathWithNamespace && !!projectId ? projectId : skipToken
+    projectPathWithNamespace && projectId ? projectId : skipToken
   );
 
   const { data, isFetching, isLoading } = useProjectJsonLdQuery(

@@ -163,7 +163,7 @@ function BuildAgainButton() {
   );
 
   const { data: pipelineJob } = useGetPipelineJobByNameQuery(
-    !!gitLabProjectId && !!pipelines
+    gitLabProjectId && pipelines
       ? {
           jobName: SESSION_CI_IMAGE_BUILD_JOB,
           pipelineIds: pipelines.map(({ id }) => id),
@@ -239,7 +239,7 @@ function ViewPipelineLink() {
   );
 
   const { data: pipelineJob } = useGetPipelineJobByNameQuery(
-    !!gitLabProjectId && !!pipelines
+    gitLabProjectId && pipelines
       ? {
           jobName: SESSION_CI_IMAGE_BUILD_JOB,
           pipelineIds: pipelines.map(({ id }) => id),

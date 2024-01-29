@@ -77,10 +77,10 @@ function ProjectKeywordsInput({
 
   const [keywords, setKeywords] = useState<string>("");
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(
-    !!projectFullPath && !!projectId ? projectId : skipToken
+    projectFullPath && projectId ? projectId : skipToken
   );
   const projectMetadata = useProjectMetadataQuery(
-    !!projectFullPath && !!projectId && !!projectIndexingStatus.data?.activated
+    projectFullPath && projectId && projectIndexingStatus.data?.activated
       ? { projectPath: projectFullPath, projectId }
       : skipToken
   );

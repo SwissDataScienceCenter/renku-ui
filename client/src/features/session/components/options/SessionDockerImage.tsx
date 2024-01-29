@@ -49,7 +49,7 @@ export default function SessionDockerImage() {
 
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     useGetConfigQuery(
-      !!coreSupportComputed && !!currentBranch && !!commit
+      coreSupportComputed && currentBranch && commit
         ? {
             apiVersion,
             metadataVersion,

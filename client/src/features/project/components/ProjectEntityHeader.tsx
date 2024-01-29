@@ -38,11 +38,11 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
     props;
 
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(
-    !!fullPath && !!projectId ? projectId : skipToken
+    fullPath && projectId ? projectId : skipToken
   );
 
   const projectMetadataQuery = useProjectMetadataQuery(
-    !!fullPath && !!projectId && !!projectIndexingStatus.data?.activated
+    fullPath && projectId && projectIndexingStatus.data?.activated
       ? { projectPath: fullPath, projectId }
       : skipToken
   );

@@ -138,7 +138,7 @@ function WorkflowsList({
 
   // Fetch workflow details
   const workflowDetailQuery = useGetWorkflowDetailQuery(
-    !skipList && !!selected
+    !skipList && selected
       ? {
           apiVersion,
           gitUrl: repositoryUrl,

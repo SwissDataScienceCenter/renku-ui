@@ -26,7 +26,6 @@ interface UseGetRecentlyVisitedProjectsArgs {
   projectsCount: number;
   currentSessions: Session[];
   pinnedProjectSlugs: string[];
-  // skip?: boolean;
 }
 
 /**

@@ -66,7 +66,7 @@ export default function SessionCommitOption() {
     isFetching,
     requestId,
   } = useGetRepositoryCommitsQuery(
-    !!gitLabProjectId && !!currentBranch
+    gitLabProjectId && currentBranch
       ? {
           branch: currentBranch,
           projectId: `${gitLabProjectId}`,

@@ -64,7 +64,7 @@ function SessionRowCommitInfoDetails({
     isLoading,
     isError,
   } = useGetRepositoryCommitQuery(
-    !!commitSha && !!projectId ? { commitSha, projectId } : skipToken
+    commitSha && projectId ? { commitSha, projectId } : skipToken
   );
 
   const content = isLoading ? (

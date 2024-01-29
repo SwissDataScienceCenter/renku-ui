@@ -59,7 +59,7 @@ export const SessionStorageOption = () => {
     ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
-    !!coreSupportComputed && !!currentBranch && !!commit
+    coreSupportComputed && currentBranch && commit
       ? {
           apiVersion,
           metadataVersion,
