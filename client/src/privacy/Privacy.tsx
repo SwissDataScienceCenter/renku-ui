@@ -34,7 +34,7 @@ export default function Privacy() {
   if (params == null) return null;
   if (isLoading) return <Loader />;
   if (params == null) return null;
-  const content = !params["PRIVACY_ENABLED"]
+  const content = !params["PRIVACY_PAGE_ENABLED"]
     ? null
     : data != null && isValidMarkdownResponse(data)
     ? data

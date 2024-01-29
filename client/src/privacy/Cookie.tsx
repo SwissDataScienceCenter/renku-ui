@@ -40,9 +40,8 @@ our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.`;
 export default function Cookie() {
   const { params } = useContext(AppContext);
   if (params == null) return null;
-  // Do not default the privacy banner content
-  if (!params["PRIVACY_ENABLED"] || !params["PRIVACY_BANNER_CONTENT"])
-    return null;
+
+  if (!params["PRIVACY_BANNER_ENABLED"]) return null;
 
   // REF: https://www.npmjs.com/package/react-cookie-consent
   const layout = params["PRIVACY_BANNER_LAYOUT"]

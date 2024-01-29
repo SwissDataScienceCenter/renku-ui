@@ -30,7 +30,7 @@ export default function TermsOfService() {
   const { data, isLoading } = useGetTermsOfUseQuery();
   if (params == null) return null;
   if (isLoading) return <Loader />;
-  const content = !params["TERMS_ENABLED"]
+  const content = !params["PRIVACY_PAGE_ENABLED"]
     ? null
     : data != null && isValidMarkdownResponse(data)
     ? data
