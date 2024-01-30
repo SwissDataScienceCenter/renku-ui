@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-export function isValidMarkdownResponse(markdown: string) {
+export function isValidMarkdownResponse(markdown: string | undefined | null) {
   // ? checking DOCTYPE prevents setting content from bad answers on valid 2xx responses
-  return markdown && markdown.length && !markdown.startsWith("<!DOCTYPE html>");
+  return (
+    markdown != null &&
+    markdown.length > 0 &&
+    !markdown.startsWith("<!DOCTYPE html>")
+  );
 }
