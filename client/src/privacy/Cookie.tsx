@@ -42,9 +42,7 @@ export default function Cookie() {
   if (params == null || !params.PRIVACY_BANNER_ENABLED) return null;
 
   // REF: https://www.npmjs.com/package/react-cookie-consent
-  const layout = params["PRIVACY_BANNER_LAYOUT"]
-    ? params["PRIVACY_BANNER_LAYOUT"]
-    : LAYOUT;
+  const layout = params.PRIVACY_BANNER_LAYOUT ?? LAYOUT;
   // Currently, the false branch will never be taken because the content is always set by here
   const content = params["PRIVACY_BANNER_CONTENT"]
     ? atob(params["PRIVACY_BANNER_CONTENT"])
