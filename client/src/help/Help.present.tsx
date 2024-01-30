@@ -60,7 +60,7 @@ function HelpNav({ statuspageId }: HelpNavProps) {
       <RenkuNavLink to={Url.pages.help.status} title="Status" />
     </NavItem>
   ) : null;
-  const privacyPolicyConfigured = params.PRIVACY_PAGE_ENABLED;
+  const privacyPolicyConfigured = params.TERMS_PAGES_ENABLED;
   const termsConfigured = privacyPolicyConfigured;
   return (
     <Nav pills className={"nav-pills-underline"}>

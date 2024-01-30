@@ -10,7 +10,7 @@
   "SENTRY_NAMESPACE": "",
   "ANONYMOUS_SESSIONS": "true",
   "PRIVACY_BANNER_ENABLED": "false",
-  "PRIVACY_PAGE_ENABLED": "false",
+  "TERMS_PAGES_ENABLED": "false",
   "TEMPLATES": {
     "custom": true,
     "repositories": [

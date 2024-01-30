@@ -152,7 +152,7 @@ describe("shows terms of use", () => {
 
   it("Terms of use are visible", () => {
     fixtures
-      .config({ overrides: { PRIVACY_PAGE_ENABLED: true } })
+      .config({ overrides: { TERMS_PAGES_ENABLED: true } })
       .overrideTermsOfUse();
     cy.visit("/help/tos");
     cy.wait("@getOverrideTermsOfUse");
@@ -175,7 +175,7 @@ describe("shows privacy policy", () => {
 
   it("Privacy policy is visible", () => {
     fixtures
-      .config({ overrides: { PRIVACY_PAGE_ENABLED: true } })
+      .config({ overrides: { TERMS_PAGES_ENABLED: true } })
       .overridePrivacyPolicy();
     cy.visit("/help/privacy");
     cy.wait("@getOverridePrivacyPolicy");
