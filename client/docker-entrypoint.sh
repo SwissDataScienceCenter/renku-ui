@@ -90,7 +90,7 @@ echo "robots.txt created in ${NGINX_PATH}"
 
 FILE=/config-privacy/statement.md
 if [ -f "$FILE" ]; then
-  cp /config-privacy/statement.md "${NGINX_PATH}/privacy-statement.md"
+  cp "${FILE}"  "${NGINX_PATH}/privacy-statement.md"
   echo "privacy-statement.md copied to ${NGINX_PATH}"
 else
   echo "No privacy-statement.md"
@@ -98,7 +98,7 @@ fi
 
 FILE=/config-privacy/terms.md
 if [ -f "$FILE" ]; then
-  cp /config-terms/terms.md "${NGINX_PATH}/terms-of-use.md"
+  cp "${FILE}" "${NGINX_PATH}/terms-of-use.md"
   echo "terms-of-use.md created in ${NGINX_PATH}"
 else
   echo "No terms-of-use.md"
