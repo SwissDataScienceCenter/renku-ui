@@ -30,13 +30,14 @@ export default function TermsOfService() {
   const { data, isLoading } = useGetTermsOfUseQuery();
   if (params == null) return null;
   if (isLoading) return <Loader />;
-  const content = !params["TERMS_PAGES_ENABLED"]
-    ? null
-    : data != null && isValidMarkdownResponse(data)
-    ? data
-    : null;
+  const content =
+    params["TERMS_PAGES_ENABLED"] &&
+    data != null &&
+    isValidMarkdownResponse(data)
+      ? data
+      : null;
 
-  if (!content || !content.length) {
+  if (content == null) {
     return (
       <WarnAlert dismissible={false}>
         No terms of use have been configured.

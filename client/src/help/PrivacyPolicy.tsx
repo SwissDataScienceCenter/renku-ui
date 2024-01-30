@@ -34,13 +34,14 @@ export default function PrivacyPolicy() {
   if (params == null) return null;
   if (isLoading) return <Loader />;
   if (params == null) return null;
-  const content = !params["TERMS_PAGES_ENABLED"]
-    ? null
-    : data != null && isValidMarkdownResponse(data)
-    ? data
-    : null;
+  const content =
+    params["TERMS_PAGES_ENABLED"] &&
+    data != null &&
+    isValidMarkdownResponse(data)
+      ? data
+      : null;
 
-  if (!content || !content.length) {
+  if (content == null) {
     return (
       <WarnAlert dismissible={false}>
         No privacy policy has been configured.
