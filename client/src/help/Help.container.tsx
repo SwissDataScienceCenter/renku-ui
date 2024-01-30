@@ -24,9 +24,9 @@
  */
 import { Help as HelpPresent } from "./Help.present";
 
-type HelpProps = {
+interface HelpProps {
   statuspageId: string;
-};
+}
 
 export default function Help({ statuspageId }: HelpProps) {
   return <HelpPresent statuspageId={statuspageId} />;
