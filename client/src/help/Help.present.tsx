@@ -24,7 +24,7 @@
  */
 
 import { useContext } from "react";
-import { Route } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
 import { Row, Col } from "reactstrap";
 import { Nav, NavItem } from "reactstrap";
@@ -206,40 +206,29 @@ function HelpDocumentation() {
 function HelpContent() {
   const { model } = useContext(AppContext);
   return (
-    <>
-      <Route
-        exact
-        path={Url.pages.help.base}
-        key="base"
-        render={() => <HelpGetting />}
-      />
-      <Route
-        path={Url.pages.help.getting}
-        key="getting"
-        render={() => <HelpGetting />}
-      />
-      <Route
-        path={Url.pages.help.documentation}
-        key="documentation"
-        render={() => <HelpDocumentation />}
-      />
-      <Route
-        path={Url.pages.help.status}
-        key="status"
-        render={() => <StatuspageDisplay key="status" model={model} />}
-      />
-      <Route
-        path={Url.pages.help.release}
-        key="release"
-        render={() => <HelpRelease />}
-      />
-      <Route
-        path={Url.pages.help.tos}
-        key="tos"
-        render={() => <TermsOfService />}
-      />
-      <Route path={Url.pages.help.privacy} render={() => <PrivacyPolicy />} />
-    </>
+    <Switch>
+      <Route exact path={Url.pages.help.base}>
+        <HelpGetting />
+      </Route>
+      <Route path={Url.pages.help.getting}>
+        <HelpGetting />
+      </Route>
+      <Route path={Url.pages.help.documentation}>
+        <HelpDocumentation />
+      </Route>
+      <Route path={Url.pages.help.status}>
+        <StatuspageDisplay key="status" model={model} />
+      </Route>
+      <Route path={Url.pages.help.release}>
+        <HelpRelease />
+      </Route>
+      <Route path={Url.pages.help.tos}>
+        <TermsOfService />
+      </Route>
+      <Route path={Url.pages.help.privacy}>
+        <PrivacyPolicy />
+      </Route>
+    </Switch>
   );
 }
 
