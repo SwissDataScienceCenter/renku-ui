@@ -41,12 +41,12 @@ import {
   ExternalDocsLink,
   ExternalIconLink,
 } from "../components/ExternalLinks";
-import Privacy from "../privacy/Privacy";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import AppContext from "../utils/context/appContext";
 import { Url } from "../utils/helpers/url";
 
 import HelpRelease from "./HelpRelease";
+import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 
 type HelpNavProps = {
@@ -229,7 +229,7 @@ function HelpContent() {
         key="tos"
         render={() => <TermsOfService />}
       />
-      <Route path={Url.pages.help.privacy} render={() => <Privacy />} />
+      <Route path={Url.pages.help.privacy} render={() => <PrivacyPolicy />} />
     </>
   );
 }

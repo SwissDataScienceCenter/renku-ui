@@ -28,7 +28,7 @@ import { isValidMarkdownResponse } from "../components/markdown/utils";
 import { useGetPrivacyPolicyQuery } from "../features/terms/terms.api";
 import AppContext from "../utils/context/appContext";
 
-export default function Privacy() {
+export default function PrivacyPolicy() {
   const { params } = useContext(AppContext);
   const { data, isLoading } = useGetPrivacyPolicyQuery();
   if (params == null) return null;
@@ -48,8 +48,5 @@ export default function Privacy() {
     );
   }
 
-  const stringContent = content;
-  return <LazyRenkuMarkdown markdownText={stringContent} />;
+  return <LazyRenkuMarkdown markdownText={content} />;
 }
-
-export { Privacy };
