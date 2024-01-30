@@ -24,11 +24,11 @@ import { validatedAppParams } from "./utils/context/appParams.utils";
 
 const configFetch = fetch("/config.json");
 
-Promise.all([configFetch]).then((valuesRead) => {
+configFetch.then((valuesRead) => {
   const [configResp] = valuesRead;
   const configRead = configResp.json();
 
-  Promise.all([configRead]).then((values) => {
+  configRead.then((values) => {
     const container = document.getElementById("root");
     const root = createRoot(container);
     const [params_] = values;
