@@ -46,7 +46,6 @@ RUN touch /usr/share/nginx/html/privacy-statement.md
 RUN chmod a+r /usr/share/nginx/html/privacy-statement.md
 RUN chown nginx /usr/share/nginx/html/privacy-statement.md
 
-
 RUN touch /usr/share/nginx/html/terms-of-use.md
 RUN chmod a+r /usr/share/nginx/html/terms-of-use.md
 RUN chown nginx /usr/share/nginx/html/terms-of-use.md
