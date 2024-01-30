@@ -55,11 +55,6 @@ type HelpNavProps = {
 function HelpNav({ statuspageId }: HelpNavProps) {
   const { params } = useContext(AppContext);
   if (params == null) return null;
-  const statusLink = isStatusConfigured(statuspageId) ? (
-    <NavItem>
-      <RenkuNavLink to={Url.pages.help.status} title="Status" />
-    </NavItem>
-  ) : null;
   const privacyPolicyConfigured = params.TERMS_PAGES_ENABLED;
   const termsConfigured = privacyPolicyConfigured;
   return (
@@ -74,7 +69,11 @@ function HelpNav({ statuspageId }: HelpNavProps) {
       <NavItem>
         <RenkuNavLink to={Url.pages.help.documentation} title="Documentation" />
       </NavItem>
-      {statusLink}
+      {isStatusConfigured(statuspageId) && (
+        <NavItem>
+          <RenkuNavLink to={Url.pages.help.status} title="Status" />
+        </NavItem>
+      )}
       <NavItem>
         <RenkuNavLink to={Url.pages.help.release} title="Release Information" />
       </NavItem>
