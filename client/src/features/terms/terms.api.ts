@@ -27,8 +27,9 @@ export const termsApi = createApi({
       headers.set("Accept", "text/markdown; charset=UTF-8");
       return headers;
     },
-    responseHandler: (response) => {
-      return response.text();
+    responseHandler: async (response) => {
+      const text = await response.text();
+      return text.trim();
     },
   }),
   endpoints: (builder) => ({
