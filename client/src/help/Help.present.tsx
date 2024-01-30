@@ -93,52 +93,62 @@ function HelpNav({ statuspageId }: HelpNavProps) {
 
 function HelpGetting() {
   const flexBasis = "500px";
-  return [
-    <div key="intro" className="d-flex mb-3">
-      <div style={{ flex: "0 1", flexBasis }}>
-        There are several channels available for getting help with RenkuLab.
-        Depending on your needs, one or another may be better for you.
+  return (
+    <>
+      <div key="intro" className="d-flex mb-3">
+        <div style={{ flex: "0 1", flexBasis }}>
+          There are several channels available for getting help with RenkuLab.
+          Depending on your needs, one or another may be better for you.
+        </div>
       </div>
-    </div>,
-    <div key="main1" className="d-flex mb-3 flex-wrap">
-      <div className="me-4" style={{ flex: "0 1", flexBasis }}>
-        <h3>
-          <ExternalIconLink
-            url={Links.DISCOURSE}
-            icon={faDiscourse}
-            title="Forum"
-          />
-        </h3>
-        <p>
-          We maintain a{" "}
-          <ExternalDocsLink url={Links.DISCOURSE} title="help forum" /> for
-          discussion about Renku. This is a good place to ask questions and find
-          answers.
-        </p>
+      <div key="main1" className="d-flex mb-3 flex-wrap">
+        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
+          <h3>
+            <ExternalIconLink
+              url={Links.DISCOURSE}
+              icon={faDiscourse}
+              title="Forum"
+            />
+          </h3>
+          <p>
+            We maintain a{" "}
+            <ExternalDocsLink url={Links.DISCOURSE} title="help forum" /> for
+            discussion about Renku. This is a good place to ask questions and
+            find answers.
+          </p>
+        </div>
+        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
+          <h3>
+            <ExternalIconLink
+              url={Links.GITTER}
+              icon={faGitter}
+              title="Gitter"
+            />
+          </h3>
+          <p>
+            Want to reach out to the development team live? Contact us on{" "}
+            <ExternalDocsLink url={Links.GITTER} title="Gitter" />, we would be
+            happy to chat with you.
+          </p>
+        </div>
+        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
+          <h3>
+            <ExternalIconLink
+              url={Links.GITHUB}
+              icon={faGithub}
+              title="GitHub"
+            />
+          </h3>
+          <p>
+            Renku is open source and being developed on{" "}
+            <ExternalDocsLink url={Links.GITHUB} title="GitHub" />. This is the
+            best place to report issues and ask for new features, but feel free
+            to contact us with questions, comments, or any kind of feedback.
+          </p>
+        </div>
       </div>
-      <div className="me-4" style={{ flex: "0 1", flexBasis }}>
-        <h3>
-          <ExternalIconLink url={Links.GITTER} icon={faGitter} title="Gitter" />
-        </h3>
-        <p>
-          Want to reach out to the development team live? Contact us on{" "}
-          <ExternalDocsLink url={Links.GITTER} title="Gitter" />, we would be
-          happy to chat with you.
-        </p>
-      </div>
-      <div className="me-4" style={{ flex: "0 1", flexBasis }}>
-        <h3>
-          <ExternalIconLink url={Links.GITHUB} icon={faGithub} title="GitHub" />
-        </h3>
-        <p>
-          Renku is open source and being developed on{" "}
-          <ExternalDocsLink url={Links.GITHUB} title="GitHub" />. This is the
-          best place to report issues and ask for new features, but feel free to
-          contact us with questions, comments, or any kind of feedback.
-        </p>
-      </div>
-    </div>,
-  ];
+    </>
+  );
 }
 
 function HelpDocumentation() {
