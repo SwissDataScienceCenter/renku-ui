@@ -248,10 +248,7 @@ export function Help({ statuspageId }: HelpProps) {
           <HelpNav statuspageId={statuspageId} />
         </Col>
       </Row>
-      <Row>
-        <Col>&nbsp;</Col>
-      </Row>
-      <Row>
+      <Row className="mt-4">
         <Col>
           <HelpContent />
         </Col>
