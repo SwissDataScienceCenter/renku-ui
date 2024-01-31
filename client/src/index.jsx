@@ -28,10 +28,9 @@ configFetch.then((valuesRead) => {
   const configResp = valuesRead;
   const configRead = configResp.json();
 
-  configRead.then((values) => {
+  configRead.then((params_) => {
     const container = document.getElementById("root");
     const root = createRoot(container);
-    const params_ = values;
 
     const params = validatedAppParams(params_);
 
