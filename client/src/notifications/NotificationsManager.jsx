@@ -17,11 +17,16 @@
  */
 
 import cx from "classnames";
+import { Component } from "react";
 import { toast } from "react-toastify";
 
 import { NotificationTypes } from "./Notifications.constants";
-import { Notification } from "./Notifications.container";
-import { CloseToast } from "./Notifications.present";
+import {
+  CloseToast,
+  NotificationDropdownItem as NotificationDropdown,
+  NotificationPageItem,
+  NotificationToast,
+} from "./Notifications.present";
 import {
   NotificationsCoordinator,
   NotificationsInfo,
@@ -162,5 +167,39 @@ export default class NotificationsManager {
       awareLocations,
       longDesc
     );
+  }
+}
+
+/**
+ * Generic notification component.
+ *
+ * @param {string} type - the notification type. Available types are "toast", "dropdown", "complete"
+ *  and "custom". The presentational component is expected as props.present if you choose the "custom" type.
+ * @param {Object} notification - notification object as created by the NotificationsManager.
+ * @param {function} markRead - function to mark the component as read.
+ * @param {Object} [present] - react component for the presentation. Required for "custom" type notifications.
+ * @param {function} [closeToast] - function to close the toast notification. Required for "toast" notifications
+ */
+export class Notification extends Component {
+  render() {
+    const { type, notification, markRead } = this.props;
+    if (type === NotificationTypes.TOAST)
+      return (
+        <NotificationToast
+          notification={notification}
+          markRead={markRead}
+          closeToast={this.props.closeToast}
+        />
+      );
+    else if (type === NotificationTypes.DROPDOWN)
+      return (
+        <NotificationDropdown notification={notification} markRead={markRead} />
+      );
+    else if (type === NotificationTypes.COMPLETE)
+      return (
+        <NotificationPageItem notification={notification} markRead={markRead} />
+      );
+    else if (type === NotificationTypes.CUSTOM) return this.props.present;
+    return null;
   }
 }
