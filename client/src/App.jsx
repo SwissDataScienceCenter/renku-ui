@@ -104,14 +104,16 @@ function CentralContentContainer(props) {
                 <LazyDashboard />
               </ContainerWrap>
             ) : (
-              <LazyAnonymousHome
-                client={props.client}
-                homeCustomized={props.params["HOMEPAGE"]}
-                user={props.user}
-                model={props.model}
-                location={props.location}
-                params={props.params}
-              />
+              <div className="w-100">
+                <LazyAnonymousHome
+                  client={props.client}
+                  homeCustomized={props.params["HOMEPAGE"]}
+                  user={props.user}
+                  model={props.model}
+                  location={props.location}
+                  params={props.params}
+                />
+              </div>
             )}
           </Route>
           <Route path={Url.get(Url.pages.help)}>
@@ -260,7 +262,9 @@ function CentralContentContainer(props) {
               </ContainerWrap>
             </Route>
           )}
-          <Route path="*" render={(p) => <LazyNotFound {...p} />} />
+          <Route path="*">
+            <LazyNotFound />
+          </Route>
         </Switch>
       </AppContext.Provider>
     </div>
