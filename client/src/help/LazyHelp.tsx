@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import PageLoader from "../components/PageLoader";
 
 const Help = lazy(() => import("./Help.container"));
 
-export default function LazyHelp(props: ComponentProps<typeof Help>) {
+export default function LazyHelp() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <Help {...props} />
+      <Help />
     </Suspense>
   );
 }

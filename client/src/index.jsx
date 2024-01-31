@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { connect, Provider } from "react-redux";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, useHistory } from "react-router-dom";
 
 import "bootstrap";
 import "jquery";
@@ -21,6 +21,7 @@ import { Sentry } from "./utils/helpers/sentry";
 import { Url, createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { validatedAppParams } from "./utils/context/appParams.utils";
+import { useEffect } from "react";
 
 const configFetch = fetch("/config.json");
 const privacyFetch = fetch("/privacy-statement.md");
@@ -109,20 +110,13 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
       <Provider store={model.reduxStore}>
         <Router>
           <AppErrorBoundary>
-            <Route
-              render={(props) => {
-                LoginHelper.handleLoginParams(props.history);
-                return (
-                  <VisibleApp
-                    client={client}
-                    coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
-                    params={params}
-                    model={model}
-                    location={props.location}
-                    statuspageId={statuspageId}
-                  />
-                );
-              }}
+            <LoginHandler />
+            <VisibleApp
+              client={client}
+              coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
+              params={params}
+              model={model}
+              statuspageId={statuspageId}
             />
           </AppErrorBoundary>
         </Router>
@@ -130,3 +124,13 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     );
   });
 });
+
+function LoginHandler() {
+  const history = useHistory();
+
+  useEffect(() => {
+    LoginHelper.handleLoginParams(history);
+  }, [history]);
+
+  return null;
+}
