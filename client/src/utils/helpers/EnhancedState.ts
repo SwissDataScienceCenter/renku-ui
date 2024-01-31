@@ -48,6 +48,7 @@ import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
+import termsApi from "../../features/terms/terms.api";
 import keycloakUserApi from "../../features/user/keycloakUser.api";
 import userPreferencesApi from "../../features/user/userPreferences.api";
 import { versionsApi } from "../../features/versions/versions.api";
@@ -85,6 +86,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
+    [termsApi.reducerPath]: termsApi.reducer,
     [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
@@ -114,6 +116,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
+        .concat(termsApi.middleware)
         .concat(userPreferencesApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),

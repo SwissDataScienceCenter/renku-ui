@@ -24,25 +24,14 @@ import { validatedAppParams } from "./utils/context/appParams.utils";
 import { useEffect } from "react";
 
 const configFetch = fetch("/config.json");
-const privacyFetch = fetch("/privacy-statement.md");
 
-Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
-  const [configResp, privacyResp] = valuesRead;
+configFetch.then((valuesRead) => {
+  const configResp = valuesRead;
   const configRead = configResp.json();
-  const privacyRead = privacyResp.text();
 
-  Promise.all([configRead, privacyRead]).then((values) => {
+  configRead.then((params_) => {
     const container = document.getElementById("root");
     const root = createRoot(container);
-    const [params_, privacy] = values;
-
-    // map privacy statement to parameters
-    // ? checking DOCTYPE prevents setting content from bad answers on valid 2xx responses
-    if (!privacy || !privacy.length || privacy.startsWith("<!DOCTYPE html>")) {
-      params_["PRIVACY_STATEMENT"] = null;
-    } else {
-      params_["PRIVACY_STATEMENT"] = privacy;
-    }
 
     const params = validatedAppParams(params_);
 

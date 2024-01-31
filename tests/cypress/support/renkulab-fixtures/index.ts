@@ -31,6 +31,7 @@ import { NewProject } from "./newProject";
 import { NewSession } from "./newSession";
 import { Projects } from "./projects";
 import { Sessions } from "./sessions";
+import { Terms } from "./terms";
 import { User } from "./user";
 import { UserPreferences } from "./user-preferences";
 import { Versions } from "./versions";
@@ -45,9 +46,11 @@ const Fixtures = NewProject(
             CloudStorage(
               Datasets(
                 Projects(
-                  User(
-                    UserPreferences(
-                      Versions(Workflows(KgSearch(Global(BaseFixtures))))
+                  Terms(
+                    User(
+                      UserPreferences(
+                        Versions(Workflows(KgSearch(Global(BaseFixtures))))
+                      )
                     )
                   )
                 )

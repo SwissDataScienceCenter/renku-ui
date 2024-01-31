@@ -27,12 +27,12 @@ import { useContext } from "react";
 
 import AppContext from "../utils/context/appContext";
 import { Help as HelpPresent } from "./Help.present";
+import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 
 export default function Help() {
-  const { model, params } = useContext(AppContext);
-  const statuspageId = params.STATUSPAGE_ID;
+  const { params } = useContext(AppContext);
+  const statuspageId =
+    params?.STATUSPAGE_ID ?? DEFAULT_APP_PARAMS.STATUSPAGE_ID;
 
-  return (
-    <HelpPresent model={model} params={params} statuspageId={statuspageId} />
-  );
+  return <HelpPresent statuspageId={statuspageId} />;
 }
