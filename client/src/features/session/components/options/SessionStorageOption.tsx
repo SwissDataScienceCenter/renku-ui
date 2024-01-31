@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { Input, InputGroup, InputGroupText } from "reactstrap";
@@ -58,16 +59,15 @@ export const SessionStorageOption = () => {
     ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
-    {
-      apiVersion,
-      metadataVersion,
-      projectRepositoryUrl,
-      branch: currentBranch,
-      commit,
-    },
-    {
-      skip: !coreSupportComputed || !currentBranch || !commit,
-    }
+    coreSupportComputed && currentBranch && commit
+      ? {
+          apiVersion,
+          metadataVersion,
+          projectRepositoryUrl,
+          branch: currentBranch,
+          commit,
+        }
+      : skipToken
   );
 
   // Resource pools
@@ -76,14 +76,15 @@ export const SessionStorageOption = () => {
     isLoading,
     isError,
   } = useGetResourcePoolsQuery(
-    {
-      cpuRequest: projectConfig?.config.sessions?.legacyConfig?.cpuRequest,
-      gpuRequest: projectConfig?.config.sessions?.legacyConfig?.gpuRequest,
-      memoryRequest:
-        projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
-      storageRequest: projectConfig?.config.sessions?.storage,
-    },
-    { skip: !projectConfig }
+    projectConfig
+      ? {
+          cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
+          gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
+          memoryRequest:
+            projectConfig.config.sessions?.legacyConfig?.memoryRequest,
+          storageRequest: projectConfig.config.sessions?.storage,
+        }
+      : skipToken
   );
 
   const { storage, sessionClass: currentSessionClassId } = useAppSelector(

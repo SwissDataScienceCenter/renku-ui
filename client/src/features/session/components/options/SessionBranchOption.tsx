@@ -18,8 +18,10 @@
 
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import Select, {
   ClassNamesConfig,
@@ -55,10 +57,9 @@ import projectGitLabApi, {
 } from "../../../project/projectGitLab.api";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import { setBranch } from "../../startSessionOptionsSlice";
+import { PaginatedState } from "./fetchMore.types";
 
 import styles from "./SessionBranchOption.module.scss";
-import { PaginatedState } from "./fetchMore.types";
-import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
 
 export default function SessionBranchOption() {
   const defaultBranch = useLegacySelector<string>(
@@ -77,11 +78,12 @@ export default function SessionBranchOption() {
     isFetching: defaultBranchDataIsFetching,
     requestId: defaultBranchRequestId,
   } = useGetRepositoryBranchQuery(
-    {
-      projectId: `${gitLabProjectId}`,
-      branch: defaultBranch,
-    },
-    { skip: !gitLabProjectId }
+    gitLabProjectId
+      ? {
+          projectId: `${gitLabProjectId}`,
+          branch: defaultBranch,
+        }
+      : skipToken
   );
   const {
     data: branchesFirstPage,
@@ -89,10 +91,11 @@ export default function SessionBranchOption() {
     isFetching: branchesFirstPageIsFetching,
     requestId: branchesFirstPageRequestId,
   } = useGetRepositoryBranchesQuery(
-    {
-      projectId: `${gitLabProjectId}`,
-    },
-    { skip: !gitLabProjectId }
+    gitLabProjectId
+      ? {
+          projectId: `${gitLabProjectId}`,
+        }
+      : skipToken
   );
 
   const initialBranchList = useMemo(() => {
