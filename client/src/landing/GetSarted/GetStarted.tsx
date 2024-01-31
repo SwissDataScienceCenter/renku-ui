@@ -15,7 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+
 import { ExternalDocsLink, ExternalLink } from "../../components/ExternalLinks";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import EntityCardSkeleton from "../../components/list/EntityCardSkeleton";
@@ -24,6 +26,7 @@ import { useProjectMetadataQuery } from "../../features/project/projectKg.api";
 import { Docs, RenkuContactEmail } from "../../utils/constants/Docs";
 import { mapMetadataKgResultToEntity } from "../../utils/helpers/KgSearchFunctions";
 import { AnonymousHomeConfig } from "../anonymousHome.types";
+
 import styles from "./GetStarted.module.scss";
 
 interface GetStartedProps extends AnonymousHomeConfig {
@@ -34,8 +37,7 @@ export default function GetStarted(props: GetStartedProps) {
   const contactEmail = RenkuContactEmail;
   const { sectionRef } = props;
   const projectMetadataQuery = useProjectMetadataQuery(
-    { projectPath },
-    { skip: !projectPath }
+    projectPath ? { projectPath } : skipToken
   );
 
   const isLoading =

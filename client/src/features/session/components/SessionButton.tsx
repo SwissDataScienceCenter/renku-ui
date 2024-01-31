@@ -25,10 +25,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
 import { Link, useHistory } from "react-router-dom";
+import { SingleValue } from "react-select";
 import {
   Button,
   Col,
@@ -40,8 +42,6 @@ import {
   Row,
 } from "reactstrap";
 
-import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
-import { SingleValue } from "react-select";
 import { ErrorAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
@@ -103,9 +103,7 @@ export default function SessionButton({
     data: sessions,
     isLoading,
     isError,
-  } = useGetSessionsQuery(undefined, {
-    skip: getSessions?.isError,
-  });
+  } = useGetSessionsQuery(!getSessions?.isError ? undefined : skipToken);
 
   const runningSession =
     sessions && runningSessionName && runningSessionName in sessions
