@@ -33,9 +33,10 @@ echo " SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
 echo " SENTRY_SAMPLE_RATE=${SENTRY_SAMPLE_RATE}"
 echo " MAINTENANCE=${MAINTENANCE}"
 echo " ANONYMOUS_SESSIONS=${ANONYMOUS_SESSIONS}"
-echo " PRIVACY_ENABLED=${PRIVACY_ENABLED}"
+echo " PRIVACY_BANNER_ENABLED=${PRIVACY_BANNER_ENABLED}"
 echo " PRIVACY_BANNER_CONTENT=${PRIVACY_BANNER_CONTENT}"
 echo " PRIVACY_BANNER_LAYOUT=${PRIVACY_BANNER_LAYOUT}"
+echo " TERMS_PAGES_ENABLED=${TERMS_PAGES_ENABLED}"
 echo " TEMPLATES=${TEMPLATES}"
 echo " PREVIEW_THRESHOLD=${PREVIEW_THRESHOLD}"
 echo " UPLOAD_THRESHOLD=${UPLOAD_THRESHOLD}"
@@ -64,9 +65,10 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "SENTRY_SAMPLE_RATE": "${SENTRY_SAMPLE_RATE}",
   "MAINTENANCE": "${MAINTENANCE}",
   "ANONYMOUS_SESSIONS": "${ANONYMOUS_SESSIONS}",
-  "PRIVACY_ENABLED": "${PRIVACY_ENABLED}",
+  "PRIVACY_BANNER_ENABLED": "${PRIVACY_BANNER_ENABLED}",
   "PRIVACY_BANNER_CONTENT": "${PRIVACY_BANNER_CONTENT}",
   "PRIVACY_BANNER_LAYOUT": ${PRIVACY_BANNER_LAYOUT},
+  "TERMS_PAGES_ENABLED": "${TERMS_PAGES_ENABLED}",
   "TEMPLATES": ${TEMPLATES},
   "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
   "UPLOAD_THRESHOLD": ${UPLOAD_THRESHOLD},
@@ -88,10 +90,18 @@ echo "robots.txt created in ${NGINX_PATH}"
 
 FILE=/config-privacy/statement.md
 if [ -f "$FILE" ]; then
-  more /config-privacy/statement.md | base64 | tr -d \\n > "${NGINX_PATH}/privacy-statement.md"
-  echo "privacy-statement.md created in ${NGINX_PATH}"
+  cp "${FILE}"  "${NGINX_PATH}/privacy-statement.md"
+  echo "privacy-statement.md copied to ${NGINX_PATH}"
 else
-  echo "privacy-statement.md created in ${NGINX_PATH}"
+  echo "No privacy-statement.md"
+fi
+
+FILE=/config-privacy/terms.md
+if [ -f "$FILE" ]; then
+  cp "${FILE}" "${NGINX_PATH}/terms-of-use.md"
+  echo "terms-of-use.md created in ${NGINX_PATH}"
+else
+  echo "No terms-of-use.md"
 fi
 
 exec -- "$@"

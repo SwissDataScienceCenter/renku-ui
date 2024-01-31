@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,21 +16,11 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  Help.container.js
- *  Container components for help
- */
-
-import { Help as HelpPresent } from "./Help.present";
-
-export default function Help(props) {
+export function isValidMarkdownResponse(markdown: string | undefined | null) {
+  // ? checking DOCTYPE prevents setting content from bad answers on valid 2xx responses
   return (
-    <HelpPresent
-      model={props.model}
-      params={props.params}
-      statuspageId={props.statuspageId}
-    />
+    markdown != null &&
+    markdown.length > 0 &&
+    !markdown.startsWith("<!DOCTYPE html>")
   );
 }
