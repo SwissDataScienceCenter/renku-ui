@@ -47,7 +47,7 @@ import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
 import LazyNotFound from "./not-found/LazyNotFound";
 import LazyNotificationsPage from "./notifications/LazyNotificationsPage";
 import NotificationsManager from "./notifications/NotificationsManager";
-import { Cookie, Privacy } from "./privacy";
+import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
@@ -257,14 +257,6 @@ function CentralContentContainer(props) {
           <Route path="/datasets">
             <Redirect to="/search?type=dataset" />
           </Route>
-          <Route
-            path="/privacy"
-            render={(p) => (
-              <ContainerWrap>
-                <Privacy key="privacy" params={props.params} {...p} />
-              </ContainerWrap>
-            )}
-          />
           <Route
             path="/notifications"
             render={(p) => (

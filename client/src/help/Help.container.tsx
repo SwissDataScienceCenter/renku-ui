@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2019 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,10 +19,15 @@
 /**
  *  renku-ui
  *
- *  privacy
- *  Components for the privacy page
+ *  Help.container.js
+ *  Container components for help
  */
+import { Help as HelpPresent } from "./Help.present";
 
-import { Privacy, Cookie, RoutedContent } from "./Privacy.container";
+interface HelpProps {
+  statuspageId: string;
+}
 
-export { Privacy, Cookie, RoutedContent };
+export default function Help({ statuspageId }: HelpProps) {
+  return <HelpPresent statuspageId={statuspageId} />;
+}

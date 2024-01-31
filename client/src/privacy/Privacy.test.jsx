@@ -29,7 +29,8 @@ import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
 import { describe, it } from "vitest";
 
-import { Cookie, Privacy, RoutedContent } from "./index";
+import Cookie from "./Cookie";
+import RoutedContent from "./RoutedContent";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],
@@ -86,22 +87,6 @@ describe("rendering", () => {
           );
         });
       }
-    }
-  });
-
-  it("renders Privacy with or without statement", async () => {
-    for (const statement of [true, false]) {
-      const params = getParams(statement, false, false);
-      const div = document.createElement("div");
-      document.body.appendChild(div);
-      const root = createRoot(div);
-      await act(async () => {
-        root.render(
-          <MemoryRouter>
-            <Privacy params={params} />
-          </MemoryRouter>
-        );
-      });
     }
   });
 });
