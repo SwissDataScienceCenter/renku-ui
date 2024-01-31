@@ -105,14 +105,7 @@ function CentralContentContainer(props) {
               </ContainerWrap>
             ) : (
               <div className="w-100">
-                <LazyAnonymousHome
-                  client={props.client}
-                  homeCustomized={props.params["HOMEPAGE"]}
-                  user={props.user}
-                  model={props.model}
-                  location={props.location}
-                  params={props.params}
-                />
+                <LazyAnonymousHome />
               </div>
             )}
           </Route>
@@ -229,32 +222,16 @@ function CentralContentContainer(props) {
           <Route path="/datasets">
             <Redirect to="/search?type=dataset" />
           </Route>
-          <Route
-            path="/notifications"
-            render={(p) => (
-              <ContainerWrap>
-                <LazyNotificationsPage
-                  key="notifications"
-                  client={props.client}
-                  model={props.model}
-                  notifications={notifications}
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
-          <Route
-            path="/style-guide"
-            render={(p) => (
-              <ContainerWrap>
-                <LazyStyleGuide
-                  key="style-guide"
-                  baseUrl="/style-guide"
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
+          <Route path="/notifications">
+            <ContainerWrap>
+              <LazyNotificationsPage />
+            </ContainerWrap>
+          </Route>
+          <Route path="/style-guide">
+            <ContainerWrap>
+              <LazyStyleGuide />
+            </ContainerWrap>
+          </Route>
           {userInfo?.isAdmin && (
             <Route path="/admin">
               <ContainerWrap>

@@ -16,17 +16,16 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import PageLoader from "../components/PageLoader";
 
 const StyleGuide = lazy(() => import("./StyleGuide"));
 
-export default function LazyStyleGuide(
-  props: ComponentProps<typeof StyleGuide>
-) {
+export default function LazyStyleGuide() {
+  // props: ComponentProps<typeof StyleGuide>
   return (
     <Suspense fallback={<PageLoader />}>
-      <StyleGuide {...props} />
+      <StyleGuide />
     </Suspense>
   );
 }

@@ -25,7 +25,7 @@
 
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment, useRef } from "react";
+import { Fragment, useContext, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { Col, Row } from "reactstrap";
@@ -48,6 +48,25 @@ import WhatIsRenku from "./WhatIsRenku/WhatIsRenku";
 import WhoWeAre from "./WhoWeAre/WhoWeAre";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
+import AppContext from "../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
+
+export default function AnonymousHome() {
+  const { client, model, params } = useContext(AppContext);
+
+  return (
+    <AnonymousHomeInner
+      client={client}
+      homeCustomized={params?.["HOMEPAGE"] ?? DEFAULT_APP_PARAMS.HOMEPAGE}
+      model={model}
+      // location={location}
+      params={{
+        ...params,
+        UI_SHORT_SHA: params?.UI_SHORT_SHA ?? DEFAULT_APP_PARAMS.UI_SHORT_SHA,
+      }}
+    />
+  );
+}
 
 export function HomeHeader(props: AnonymousHomeConfig) {
   const { urlMap } = props;
@@ -173,7 +192,7 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
   );
 }
 
-function AnonymousHome(props: AnonymousHomeConfig) {
+function AnonymousHomeInner(props: Omit<AnonymousHomeConfig, "urlMap">) {
   const urlMap = {
     siteStatusUrl: Url.get(Url.pages.help.status),
   };
@@ -187,5 +206,3 @@ function AnonymousHome(props: AnonymousHomeConfig) {
     </div>
   );
 }
-
-export default AnonymousHome;
