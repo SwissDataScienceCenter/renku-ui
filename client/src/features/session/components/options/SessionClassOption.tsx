@@ -21,6 +21,7 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
@@ -73,17 +74,15 @@ export const SessionClassOption = () => {
     ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
-    {
-      apiVersion,
-      metadataVersion,
-      projectRepositoryUrl,
-      branch: currentBranch,
-      commit,
-    },
-    {
-      skip:
-        !backendAvailable || !coreSupportComputed || !currentBranch || !commit,
-    }
+    backendAvailable && coreSupportComputed && currentBranch && commit
+      ? {
+          apiVersion,
+          metadataVersion,
+          projectRepositoryUrl,
+          branch: currentBranch,
+          commit,
+        }
+      : skipToken
   );
 
   // Resource pools
@@ -92,14 +91,15 @@ export const SessionClassOption = () => {
     isLoading,
     isError,
   } = useGetResourcePoolsQuery(
-    {
-      cpuRequest: projectConfig?.config.sessions?.legacyConfig?.cpuRequest,
-      gpuRequest: projectConfig?.config.sessions?.legacyConfig?.gpuRequest,
-      memoryRequest:
-        projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
-      storageRequest: projectConfig?.config.sessions?.storage,
-    },
-    { skip: !projectConfig }
+    projectConfig
+      ? {
+          cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
+          gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
+          memoryRequest:
+            projectConfig.config.sessions?.legacyConfig?.memoryRequest,
+          storageRequest: projectConfig.config.sessions?.storage,
+        }
+      : skipToken
   );
 
   const defaultSessionClass = useMemo(

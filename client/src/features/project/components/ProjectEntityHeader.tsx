@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
+
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
@@ -35,13 +37,14 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
   const { defaultBranch, devAccess, fullPath, gitUrl, projectId, visibility } =
     props;
 
-  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
-    skip: !fullPath || !projectId,
-  });
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(
+    fullPath && projectId ? projectId : skipToken
+  );
 
   const projectMetadataQuery = useProjectMetadataQuery(
-    { projectPath: fullPath, projectId },
-    { skip: !fullPath || !projectId || !projectIndexingStatus.data?.activated }
+    fullPath && projectId && projectIndexingStatus.data?.activated
+      ? { projectPath: fullPath, projectId }
+      : skipToken
   );
 
   // overwrite description when available from KG

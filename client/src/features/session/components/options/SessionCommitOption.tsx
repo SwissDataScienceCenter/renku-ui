@@ -18,8 +18,10 @@
 
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
 import Select, {
   ClassNamesConfig,
   GroupBase,
@@ -34,6 +36,7 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import { TimeCaption } from "../../../../components/TimeCaption";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -44,11 +47,9 @@ import projectGitLabApi, {
 } from "../../../project/projectGitLab.api";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 import { setCommit } from "../../startSessionOptionsSlice";
+import { PaginatedState } from "./fetchMore.types";
 
 import styles from "./SessionCommitOption.module.scss";
-import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
-import { TimeCaption } from "../../../../components/TimeCaption";
-import { PaginatedState } from "./fetchMore.types";
 
 export default function SessionCommitOption() {
   const gitLabProjectId = useLegacySelector<number | null>(
@@ -65,11 +66,12 @@ export default function SessionCommitOption() {
     isFetching,
     requestId,
   } = useGetRepositoryCommitsQuery(
-    {
-      branch: currentBranch,
-      projectId: `${gitLabProjectId}`,
-    },
-    { skip: !gitLabProjectId || !currentBranch }
+    gitLabProjectId && currentBranch
+      ? {
+          branch: currentBranch,
+          projectId: `${gitLabProjectId}`,
+        }
+      : skipToken
   );
 
   const [
