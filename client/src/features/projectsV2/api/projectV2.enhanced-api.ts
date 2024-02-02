@@ -1,3 +1,6 @@
+import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
+import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
+
 import { projectV2Api as api } from "./projectV2.api";
 import type {
   ErrorResponse,
@@ -6,12 +9,8 @@ import type {
   ProjectsList,
 } from "./projectV2.api";
 
-interface GetProjectsApiResponse {
+interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
   projects: GetProjectsApiResponseOrig;
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
 }
 
 const injectedApi = api.injectEndpoints({
@@ -23,28 +22,19 @@ const injectedApi = api.injectEndpoints({
       }),
       transformResponse: (response, meta, queryArg) => {
         const projects = response as ProjectsList;
-        const headerPage = meta?.response?.headers.get("page");
-        const headerPerPage = meta?.response?.headers.get("per-page");
-        const headerTotal = meta?.response?.headers.get("total");
-        const headerTotalPages = meta?.response?.headers.get("total-pages");
-        const page = headerPage ? parseInt(headerPage) : queryArg.page ?? 1;
-        const perPage = headerPerPage
-          ? parseInt(headerPerPage)
-          : queryArg.perPage ?? 20;
-        const total = headerTotal
-          ? parseInt(headerTotal)
-          : projects
-          ? projects.length
-          : 0;
-        const totalPages = headerTotalPages
-          ? parseInt(headerTotalPages)
-          : total / perPage;
+        const headers = meta?.response?.headers;
+        const headerResponse = processPaginationHeaders(
+          headers,
+          queryArg,
+          projects
+        );
+
         return {
           projects,
-          page,
-          perPage,
-          total,
-          totalPages,
+          page: headerResponse.page,
+          perPage: headerResponse.perPage,
+          total: headerResponse.total,
+          totalPages: headerResponse.totalPages,
         };
       },
     }),

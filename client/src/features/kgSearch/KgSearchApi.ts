@@ -17,10 +17,13 @@
  */
 import { FetchBaseQueryMeta } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
+import { processPaginationHeaders } from "../../utils/helpers/kgPagination.utils";
+
 import type { KgSearchResult, ListResponse } from "./KgSearch.types";
 
 export type SearchEntitiesQueryParams = {
@@ -143,29 +146,22 @@ export const kgSearchApi = createApi({
       },
       transformResponse: (
         response: KgSearchResult[],
-        meta: FetchBaseQueryMeta
+        meta: FetchBaseQueryMeta,
+        queryArg: SearchEntitiesQueryParams
       ) => {
         // Left here temporarily in case we want to use headers
         const headers = meta.response?.headers;
-        if (headers == null) {
-          return {
-            page: 0,
-            perPage: 0,
-            total: 0,
-            totalPages: 0,
-            results: [],
-          };
-        }
-        const page = getHeaderFieldNumeric(headers, "page");
-        const perPage = getHeaderFieldNumeric(headers, "per-page");
-        const total = getHeaderFieldNumeric(headers, "Total");
-        const totalPages = getHeaderFieldNumeric(headers, "total-pages");
+        const paginationHeaders = processPaginationHeaders(
+          headers,
+          queryArg,
+          response
+        );
         return {
-          page,
-          perPage,
-          total,
-          totalPages,
-          results: response,
+          page: paginationHeaders.page,
+          perPage: paginationHeaders.perPage,
+          total: paginationHeaders.total,
+          totalPages: paginationHeaders.totalPages,
+          results: headers == null ? [] : response,
         };
       },
     }),
