@@ -19,18 +19,6 @@
 import { Visibilities } from "../../components/visibility/Visibility";
 import { PaginatedResponse } from "../../utils/types/pagination.types";
 
-export interface Pagination {
-  currentPage?: number;
-  firstPageLink?: string;
-  lastPageLink?: string;
-  nextPage?: number;
-  nextPageLink?: string;
-  perPage?: number;
-  previousPage?: number;
-  totalItems?: number;
-  totalPages?: number;
-}
-
 export interface GitlabProjectResponse {
   visibility: Visibilities;
   path_with_namespace: string;
