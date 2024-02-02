@@ -17,7 +17,7 @@
  */
 import { useCallback, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   Dropdown,
   DropdownItem,
@@ -166,10 +166,7 @@ export function ProjectV2DescriptionAndRepositories({
 }
 
 export default function ProjectV2Show() {
-  const location = useLocation();
-  const pathname = location.pathname;
-  const components = pathname.split("/");
-  const projectId = components[components.length - 1];
+  const { id: projectId } = useParams<{ id: string }>();
   const { data, isLoading, error } = useGetProjectsByProjectIdQuery({
     projectId,
   });
