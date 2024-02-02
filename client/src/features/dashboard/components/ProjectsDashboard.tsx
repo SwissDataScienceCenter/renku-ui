@@ -18,6 +18,7 @@
 
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { Search } from "react-bootstrap-icons";
@@ -271,12 +272,15 @@ function ProjectsDashboard() {
   }, [sessions]);
 
   const { data: projects, isLoading: isFetchingProjects } =
-    useGetRecentlyVisitedProjects({
-      currentSessions: sessionsFormatted ?? [],
-      pinnedProjectSlugs: pinnedProjectSlugs ?? [],
-      projectsCount: TOTAL_RECENTLY_VISITED_PROJECT,
-      skip: sessionsFormatted == null || pinnedProjectSlugs == null,
-    });
+    useGetRecentlyVisitedProjects(
+      sessionsFormatted && pinnedProjectSlugs
+        ? {
+            currentSessions: sessionsFormatted,
+            pinnedProjectSlugs: pinnedProjectSlugs,
+            projectsCount: TOTAL_RECENTLY_VISITED_PROJECT,
+          }
+        : skipToken
+    );
 
   const content =
     isLoadingSessions || isLoadingUserPreferences || isFetchingProjects ? (

@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { isEqual } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowCounterclockwise,
@@ -36,9 +38,18 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { StateModelProject } from "../../project.types";
+import {
+  findSensitive,
+  getCurrentStorageDetails,
+  getSchemaProviders,
+  hasProviderShortlist,
+} from "../../utils/projectCloudStorage.utils";
+import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
 import {
   useAddCloudStorageForProjectMutation,
   useGetCloudStorageSchemaQuery,
@@ -58,18 +69,8 @@ import {
   CloudStorageDetailsOptions,
   UpdateCloudStorageParams,
 } from "./projectCloudStorage.types";
-import {
-  findSensitive,
-  getCurrentStorageDetails,
-  getSchemaProviders,
-  hasProviderShortlist,
-} from "../../utils/projectCloudStorage.utils";
-import { SuccessAlert } from "../../../../components/Alert";
 
 import styles from "./CloudStorage.module.scss";
-import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { isEqual } from "lodash";
 
 interface CloudStorageModalProps {
   currentStorage?: CloudStorage | null;
@@ -87,7 +88,7 @@ export default function CloudStorageModal({
     data: schema,
     error: schemaError,
     isFetching: schemaIsFetching,
-  } = useGetCloudStorageSchemaQuery(undefined, { skip: !isOpen });
+  } = useGetCloudStorageSchemaQuery(isOpen ? undefined : skipToken);
 
   // Reset state on props change
   useEffect(() => {

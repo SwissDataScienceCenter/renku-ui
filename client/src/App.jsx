@@ -265,7 +265,6 @@ function App(props) {
 
     // Setup authentication listeners and notifications
     LoginHelper.setupListener();
-    // LoginHelper.triggerNotifications(notifications);
     LoginHelper.triggerNotifications(notificationManager);
 
     // Setup WebSocket channel
@@ -282,7 +281,8 @@ function App(props) {
         notificationManager
       )
     );
-  }, [location]); // eslint-disable-line
+    // ! Ignoring the rule of hooks creates issues, we should refactor this hook
+  }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Avoid rendering the application while authenticating the user
   const user = useLegacySelector((state) => state.stateModel.user);
