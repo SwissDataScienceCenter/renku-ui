@@ -39,6 +39,7 @@ export default function ProjectSlugFormField<T extends FieldValues>({
         name={name}
         render={({ field }) => (
           <Input
+            aria-describedby="projectSlugHelp"
             className={cx("form-control", errors.slug && "is-invalid")}
             data-cy="project-slug-input"
             id="project-slug"
@@ -52,7 +53,7 @@ export default function ProjectSlugFormField<T extends FieldValues>({
         Please provide a slug consisting of lowercase letters, numbers, and
         hyphens.
       </div>
-      <FormText className="input-hint">
+      <FormText id="projectSlugHelp" className="input-hint">
         A short, machine-readable identifier for the project, restricted to
         lowercase letters, numbers, and hyphens.{" "}
         <b>Cannot be changed after project creation</b>.

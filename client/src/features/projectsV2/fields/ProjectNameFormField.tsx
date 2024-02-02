@@ -39,6 +39,7 @@ export default function ProjectNameFormField<T extends FieldValues>({
         name={name}
         render={({ field }) => (
           <Input
+            aria-describedby="projectNameHelp"
             className={cx("form-control", errors.name && "is-invalid")}
             data-cy="project-name-input"
             id="project-name"
@@ -49,7 +50,7 @@ export default function ProjectNameFormField<T extends FieldValues>({
         rules={{ required: true, maxLength: 99 }}
       />
       <div className="invalid-feedback">Please provide a name</div>
-      <FormText className="input-hint">
+      <FormText id="projectNameHelp" className="input-hint">
         The name you will use to refer to the project
       </FormText>
     </div>

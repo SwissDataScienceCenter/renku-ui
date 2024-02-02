@@ -39,6 +39,7 @@ export default function ProjectDescriptionFormField<T extends FieldValues>({
         name={name}
         render={({ field }) => (
           <Input
+            aria-describedby="projectDescriptionHelp"
             className={cx("form-control", errors.description && "is-invalid")}
             data-cy="project-description-input"
             id="project-description"
@@ -48,11 +49,9 @@ export default function ProjectDescriptionFormField<T extends FieldValues>({
         )}
         rules={{ maxLength: 500, required: false }}
       />
-      {errors[name] ? null : (
-        <FormText className="input-hint">
-          A brief (at most 500 character) description of the project.
-        </FormText>
-      )}
+      <FormText id="projectDescriptionHelp" className="input-hint">
+        A brief (at most 500 character) description of the project.
+      </FormText>
       <div className="invalid-feedback">Please provide a description</div>
     </div>
   );

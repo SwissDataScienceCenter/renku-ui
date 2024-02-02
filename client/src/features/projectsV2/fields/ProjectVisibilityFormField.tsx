@@ -35,6 +35,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
         Visibility
       </Label>
       <Controller
+        aria-describedby="projectVisibilityHelp"
         control={control}
         name={name}
         render={({ field }) => (
@@ -52,7 +53,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
         rules={{ required: true }}
       />
       <div className="invalid-feedback">Please select a visibility</div>
-      <FormText className="input-hint">
+      <FormText id="projectVisibilityHelp" className="input-hint">
         Should the project be visible to everyone or only to members?
       </FormText>
     </div>
