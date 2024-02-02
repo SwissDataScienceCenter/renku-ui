@@ -18,7 +18,7 @@
 
 import { faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Route, BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { Button, Col, Row } from "reactstrap";
 
 import { FooterNavbar } from "../../landing/NavBar";

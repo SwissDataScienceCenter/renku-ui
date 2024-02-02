@@ -37,8 +37,6 @@ import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../utils/helpers/url";
 
 import "./NavBar.css";
-import { useContext } from "react";
-import AppContext from "../utils/context/appContext";
 
 function RenkuNavBar(props) {
   const { user } = props;

@@ -3,22 +3,9 @@
  * New implementation of the Project component in TypeScript.
  */
 
-import {
-  useHistory,
-  type RouteComponentProps,
-  type StaticContext,
-  useRouteMatch,
-} from "react-router";
+import { useHistory, useRouteMatch } from "react-router";
 
 import ProjectV1 from "./Project";
-
-type RouterProps = RouteComponentProps<
-  {
-    subUrl: string;
-  },
-  StaticContext,
-  unknown
->;
 
 interface ProjectViewProps {
   client: unknown;
