@@ -38,17 +38,15 @@ import {
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMutation,
-} from "../api";
-import type { Member, Project, ProjectPatch } from "../api";
+} from "../api/projectV2.enhanced-api";
+import type { Member, Project, ProjectPatch } from "../api/projectV2.api";
 import type { Repository } from "../projectV2.types";
 
-import {
-  AddProjectMemberModal,
-  ProjectDescriptionFormField,
-  ProjectNameFormField,
-  ProjectRepositoryFormField,
-  ProjectVisibilityFormField,
-} from "../fields";
+import AddProjectMemberModal from "../fields/AddProjectMemberModal";
+import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
+import ProjectNameFormField from "../fields/ProjectNameFormField";
+import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
+import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 
 import { SettingEditOption } from "./projectV2Show.types";
 

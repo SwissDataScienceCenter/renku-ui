@@ -25,8 +25,8 @@ import { Pagination } from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { Url } from "../../../utils/helpers/url";
 
-import { useGetProjectsQuery } from "../api";
-import type { Project } from "../api";
+import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
+import type { Project } from "../api/projectV2.api";
 import WipBadge from "../shared/WipBadge";
 
 import styles from "./projectV2List.module.scss";

@@ -25,7 +25,7 @@ import {
   AnyAction,
   ReducersMapObject,
   StoreEnhancer,
-  configureStore
+  configureStore,
 } from "@reduxjs/toolkit";
 
 import adminComputeResourcesApi from "../../features/admin/adminComputeResources.api";
@@ -43,7 +43,8 @@ import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
-import { projectV2Api, projectV2NewSlice } from "../../features/projectsV2/";
+import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
+import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
@@ -94,7 +95,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [termsApi.reducerPath]: termsApi.reducer,
     [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
-    [workflowsApi.reducerPath]: workflowsApi.reducer
+    [workflowsApi.reducerPath]: workflowsApi.reducer,
   };
 
   // For the moment, disable the custom middleware, since it causes problems for our app.
@@ -103,7 +104,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         immutableCheck: false,
-        serializableCheck: false
+        serializableCheck: false,
       })
         .concat(adminComputeResourcesApi.middleware)
         .concat(adminKeycloakApi.middleware)
@@ -128,7 +129,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(userPreferencesApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),
-    enhancers
+    enhancers,
   });
   return store;
 };

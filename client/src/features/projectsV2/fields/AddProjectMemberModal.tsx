@@ -36,8 +36,8 @@ import {
 import { useGetUsersQuery } from "../../user/dataServicesUser.api";
 import type { UserWithId } from "../../user/dataServicesUser.api";
 
-import type { FullUsersWithRoles, MemberWithRole } from "../api";
-import { usePatchProjectsByProjectIdMembersMutation } from "../api";
+import type { FullUsersWithRoles, MemberWithRole } from "../api/projectV2.api";
+import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
 import type { ProjectMember } from "../projectV2.types";
 
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -242,7 +242,7 @@ function AddProjectMemberAccessForm({
   );
 }
 
-export function AddProjectMemberModal({
+export default function AddProjectMemberModal({
   isOpen,
   members,
   projectId,

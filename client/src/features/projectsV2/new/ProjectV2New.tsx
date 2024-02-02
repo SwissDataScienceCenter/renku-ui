@@ -27,8 +27,8 @@ import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 
-import { usePostProjectsMutation } from "../api";
-import type { ProjectPost } from "../api";
+import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
+import type { ProjectPost } from "../api/projectV2.api";
 import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2Show";
 
 import type { NewProjectV2State } from "./projectV2New.slice";

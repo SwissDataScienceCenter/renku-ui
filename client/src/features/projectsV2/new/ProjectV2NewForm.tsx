@@ -24,13 +24,11 @@ import { Button, Form, Label } from "reactstrap";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
-import {
-  ProjectDescriptionFormField,
-  ProjectNameFormField,
-  ProjectRepositoryFormField,
-  ProjectSlugFormField,
-  ProjectVisibilityFormField,
-} from "../fields";
+import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
+import ProjectNameFormField from "../fields/ProjectNameFormField";
+import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
+import ProjectSlugFormField from "../fields/ProjectSlugFormField";
+import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 
 import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
 import type { NewProjectV2State } from "./projectV2New.slice";

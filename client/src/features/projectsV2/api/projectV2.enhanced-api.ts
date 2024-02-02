@@ -1,5 +1,6 @@
 import { projectV2Api as api } from "./projectV2.api";
 import type {
+  ErrorResponse,
   GetProjectsApiArg,
   GetProjectsApiResponse as GetProjectsApiResponseOrig,
   ProjectsList,
@@ -92,3 +93,7 @@ export const {
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
 } = enhancedApi;
+
+export function isErrorResponse(arg: unknown): arg is { data: ErrorResponse } {
+  return (arg as { data: ErrorResponse }).data?.error != null;
+}
