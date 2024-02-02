@@ -33,6 +33,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+
 import { useGetUsersQuery } from "../../user/dataServicesUser.api";
 import type { UserWithId } from "../../user/dataServicesUser.api";
 
@@ -170,7 +172,7 @@ function AddProjectMemberAccessForm({
   user,
 }: AddProjectMemberAccessFormProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [patchProjectMembers, _result] =
+  const [patchProjectMembers, result] =
     usePatchProjectsByProjectIdMembersMutation();
   const { control, handleSubmit } = useForm<ProjectMemberForAdd>({
     defaultValues: {
@@ -180,6 +182,13 @@ function AddProjectMemberAccessForm({
     },
   });
 
+  useEffect(() => {
+    if (!result.isSuccess) {
+      return;
+    }
+    toggle();
+  }, [result.isSuccess, toggle]);
+
   const onSubmit = useCallback(
     (data: ProjectMemberForAdd) => {
       const projectMembers = members.map((m) => ({
@@ -188,13 +197,9 @@ function AddProjectMemberAccessForm({
       }));
       projectMembers.push({ member: { id: data.member.id }, role: data.role });
 
-      patchProjectMembers({ projectId, membersWithRoles: projectMembers }).then(
-        () => {
-          toggle();
-        }
-      );
+      patchProjectMembers({ projectId, membersWithRoles: projectMembers });
     },
-    [patchProjectMembers, projectId, members, toggle]
+    [patchProjectMembers, projectId, members]
   );
 
   return (
@@ -205,6 +210,7 @@ function AddProjectMemberAccessForm({
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
+          {result.error && <RtkErrorAlert error={result.error} />}
           <div
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
