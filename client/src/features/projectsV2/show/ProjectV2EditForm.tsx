@@ -48,7 +48,7 @@ import {
   ProjectNameFormField,
   ProjectRepositoryFormField,
   ProjectVisibilityFormField,
-} from "../edit";
+} from "../fields";
 
 import { SettingEditOption } from "./projectV2Show.types";
 

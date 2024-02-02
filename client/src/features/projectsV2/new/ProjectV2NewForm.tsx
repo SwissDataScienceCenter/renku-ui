@@ -30,7 +30,7 @@ import {
   ProjectRepositoryFormField,
   ProjectSlugFormField,
   ProjectVisibilityFormField,
-} from "../edit";
+} from "../fields";
 
 import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
 import type { NewProjectV2State } from "./projectV2New.slice";
