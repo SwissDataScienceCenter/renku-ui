@@ -87,9 +87,7 @@ function ProjectList() {
         currentPage={data.page}
         perPage={perPage}
         totalItems={data.total}
-        onPageChange={(page: number) => {
-          setPage(page);
-        }}
+        onPageChange={setPage}
         className={cx(
           "d-flex",
           "justify-content-center",
