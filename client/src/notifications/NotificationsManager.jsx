@@ -37,13 +37,11 @@ import {
  *
  * @param {Object} client - api-client used to query the gateway
  * @param {Object} model - global model for the ui
- * @param {function} getLocation - function to invoke to get the up-to-date react location object
  */
 export default class NotificationsManager {
-  constructor(model, client, getLocation) {
+  constructor(model, client) {
     this.model = model.subModel("notifications");
     this.client = client;
-    this.getLocation = getLocation;
     this.coordinator = new NotificationsCoordinator(this.client, this.model);
     this.Levels = NotificationsInfo.Levels;
     this.Topics = NotificationsInfo.Topics;

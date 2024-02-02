@@ -59,7 +59,6 @@ export default function AnonymousHome() {
       client={client}
       homeCustomized={params?.["HOMEPAGE"] ?? DEFAULT_APP_PARAMS.HOMEPAGE}
       model={model}
-      // location={location}
       params={{
         ...params,
         UI_SHORT_SHA: params?.UI_SHORT_SHA ?? DEFAULT_APP_PARAMS.UI_SHORT_SHA,

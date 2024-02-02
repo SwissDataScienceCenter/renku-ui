@@ -48,7 +48,7 @@ function Maintenance({ info }: MaintenanceProps) {
             </section>
           </main>
         </div>
-        <Route component={FooterNavbar} />
+        <FooterNavbar />
       </div>
     </Router>
   );

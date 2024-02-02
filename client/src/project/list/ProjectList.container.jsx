@@ -368,7 +368,14 @@ function ProjectList() {
     }
   }, [history, user.logged]);
 
-  return <ProjectListRedirected user={user} client={client} />;
+  return (
+    <ProjectListRedirected
+      user={user}
+      client={client}
+      location={history.location}
+      history={history}
+    />
+  );
 }
 
 /**

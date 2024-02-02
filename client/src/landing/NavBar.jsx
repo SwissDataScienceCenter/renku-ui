@@ -120,7 +120,13 @@ function FooterNavbarLoggedInLinks({ privacyLink }) {
   );
 }
 
-function FooterNavbar({ location, params }) {
+function FooterNavbar(props) {
+  const location = useLocation();
+
+  return <FooterNavbarInner {...props} location={location} />;
+}
+
+function FooterNavbarInner({ location, params }) {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
@@ -184,8 +190,8 @@ function FooterNavbar({ location, params }) {
 
   return (
     <Switch key="footerNav">
-      <Route path={sessionShowUrl} render={() => null} />
-      <Route component={() => footer} />
+      <Route path={sessionShowUrl} />
+      <Route>{footer}</Route>
     </Switch>
   );
 }

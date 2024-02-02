@@ -139,86 +139,55 @@ function CentralContentContainer(props) {
               Url.get(Url.pages.projects.starred),
               Url.get(Url.pages.projects.all),
             ]}
-            render={(p) => (
-              <ContainerWrap>
-                <LazyProjectList
-                  key="projects"
-                  user={props.user}
-                  client={props.client}
-                  // statusSummary={props.statusSummary}
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
-          <Route
-            exact
-            path={Url.get(Url.pages.project.new)}
-            render={(p) => (
-              <ContainerWrap>
-                <LazyNewProject
-                  key="newProject"
-                  model={props.model}
-                  user={props.user}
-                  client={props.client}
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
-          <Route
-            path="/projects/:subUrl+"
-            render={(p) => (
-              <LazyProjectView
-                key="project/view"
-                client={props.client}
-                params={props.params}
+          >
+            <ContainerWrap>
+              <LazyProjectList />
+            </ContainerWrap>
+          </Route>
+          <Route exact path={Url.get(Url.pages.project.new)}>
+            <ContainerWrap>
+              <LazyNewProject
                 model={props.model}
                 user={props.user}
-                blockAnonymous={blockAnonymous}
-                notifications={notifications}
-                socket={socket}
-                {...p}
+                client={props.client}
               />
-            )}
-          />
+            </ContainerWrap>
+          </Route>
+          <Route path="/projects/:subUrl+">
+            <LazyProjectView
+              client={props.client}
+              params={props.params}
+              model={props.model}
+              user={props.user}
+              blockAnonymous={blockAnonymous}
+              notifications={notifications}
+              socket={socket}
+            />
+          </Route>
           <Route exact path={Url.get(Url.pages.sessions)}>
             {!user.logged ? <LazyAnonymousSessionsList /> : <Redirect to="/" />}
           </Route>
-          <Route
-            path="/datasets/:identifier/add"
-            render={(p) => (
-              <LazyDatasetAddToProject
-                key="addDatasetNew"
-                insideProject={false}
-                identifier={p.match.params?.identifier?.replaceAll("-", "")}
-                datasets={p.datasets}
-                model={props.model}
-              />
-            )}
-          />
-          <Route
-            path="/datasets/:identifier"
-            render={(p) => (
-              <LazyShowDataset
-                key="datasetPreview"
-                {...p}
-                insideProject={false}
-                identifier={p.match.params?.identifier?.replaceAll("-", "")}
-                client={props.client}
-                projectsUrl="/projects"
-                selectedDataset={p.match.params.datasetId}
-                datasetCoordinator={
-                  new DatasetCoordinator(
-                    props.client,
-                    props.model.subModel("dataset")
-                  )
-                }
-                logged={props.user.logged}
-                model={props.model}
-              />
-            )}
-          />
+          <Route path="/datasets/:identifier/add">
+            <LazyDatasetAddToProject
+              insideProject={false}
+              model={props.model}
+            />
+          </Route>
+          <Route path="/datasets/:identifier">
+            <LazyShowDataset
+              insideProject={false}
+              client={props.client}
+              projectsUrl="/projects"
+              datasetCoordinator={
+                new DatasetCoordinator(
+                  props.client,
+                  props.model.subModel("dataset")
+                )
+              }
+              logged={props.user.logged}
+              model={props.model}
+            />
+          </Route>
           <Route path="/datasets">
             <Redirect to="/search?type=dataset" />
           </Route>
@@ -258,8 +227,7 @@ function App(props) {
     const getLocation = () => location;
     const notificationManager = new NotificationsManager(
       props.model,
-      props.client,
-      getLocation
+      props.client
     );
     setNotifications(notificationManager);
 
@@ -308,16 +276,8 @@ function App(props) {
         location={location}
         {...props}
       />
-      <Route
-        render={(propsRoute) => (
-          <FooterNavbar {...propsRoute} params={props.params} />
-        )}
-      />
-      <Route
-        render={(propsRoute) => (
-          <Cookie {...propsRoute} params={props.params} />
-        )}
-      />
+      <FooterNavbar params={props.params} />
+      <Cookie />
       <ToastContainer />
     </Fragment>
   );

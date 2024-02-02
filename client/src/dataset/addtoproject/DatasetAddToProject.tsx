@@ -17,7 +17,7 @@
  */
 
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
 import { ImportStateMessage } from "../../utils/constants/Dataset";
@@ -47,16 +47,17 @@ type ProjectDetails = {
 
 type AddDatasetToProjectProps = {
   datasets: unknown;
-  identifier: string;
   insideProject: boolean;
   model: { subModel: (arg0: string) => unknown };
 };
 function DatasetAddToProject({
   datasets,
-  identifier,
   insideProject,
   model,
 }: AddDatasetToProjectProps) {
+  const { identifier: identifier_ } = useParams<{ identifier?: string }>();
+  const identifier = identifier_?.replaceAll("-", "");
+
   const [currentStatus, setCurrentStatus] = useState<AddDatasetStatus | null>(
     null
   );
