@@ -38,10 +38,6 @@ export type SearchEntitiesQueryParams = {
   until?: string;
 };
 
-function getHeaderFieldNumeric(headers: Headers, field: string): number {
-  return +(headers.get(field) ?? 0);
-}
-
 // function setAuthorInQuery(query: string, role: KgUserRole) {
 //   if (role) query = `${query}&role=${role}`;
 
