@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
+
 import { useCallback, useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -46,7 +48,7 @@ export default function ProjectV2NewForm({
   currentStep,
 }: ProjectV2NewFormProps) {
   return (
-    <div className="form-rk-green mb-4 w-100">
+    <div className={cx("form-rk-green", "mb-4", "w-100")}>
       {currentStep === 0 && (
         <ProjectV2NewMetadataStepForm currentStep={currentStep} />
       )}
@@ -93,7 +95,7 @@ function ProjectV2NewAccessStepForm({ currentStep }: ProjectV2NewFormProps) {
           errors={errors}
         />
         <div className="mb-3">
-          <div className="d-flex justify-content-between">
+          <div className={cx("d-flex", "justify-content-between")}>
             <Label className="form-label" for="projectV2NewForm-users">
               You can add members after creating the project.
             </Label>
@@ -192,7 +194,7 @@ function ProjectV2NewRepositoryStepForm({
   );
   return (
     <>
-      <div className="d-flex justify-content-between">
+      <div className={cx("d-flex", "justify-content-between")}>
         <h4>Add repositories</h4>
         <div>
           <Button data-cy="project-add-repository" onClick={onAppend}>

@@ -129,7 +129,7 @@ function ProjectEditSubmitGroup({
   onCancel,
 }: ProjectEditSubmitGroupProps) {
   return (
-    <div className="d-flex justify-content-between">
+    <div className={cx("d-flex", "justify-content-between")}>
       <Button disabled={isUpdating} onClick={onCancel}>
         Cancel
       </Button>
@@ -257,7 +257,7 @@ export function ProjectV2MembersForm({
     );
   return (
     <>
-      <div className="d-flex justify-content-between">
+      <div className={cx("d-flex", "justify-content-between")}>
         <h4>Project Members</h4>
         <div>
           <Button
@@ -295,7 +295,7 @@ export function ProjectV2MembersForm({
         projectId={project.id}
         toggle={toggleAddMemberModalOpen}
       />
-      <div className="d-flex justify-content-end">
+      <div className={cx("d-flex", "justify-content-end")}>
         <Button disabled={isLoading} onClick={onCancel}>
           Close
         </Button>
@@ -359,7 +359,7 @@ export function ProjectV2RepositoryForm({
 
   return (
     <>
-      <div className="d-flex justify-content-between">
+      <div className={cx("d-flex", "justify-content-between")}>
         <h4>Update repositories</h4>
         <div>
           <Button data-cy="project-add-repository" onClick={onAppend}>

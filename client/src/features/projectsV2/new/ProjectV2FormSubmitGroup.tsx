@@ -40,7 +40,7 @@ export default function ProjectFormSubmitGroup({
   }, [currentStep, dispatch]);
 
   return (
-    <div className="d-flex justify-content-between">
+    <div className={cx("d-flex", "justify-content-between")}>
       <Button
         className={cx(currentStep > 0 ? "visible" : "invisible")}
         onClick={previousStep}

@@ -126,7 +126,7 @@ function AddProjectMemberEmailLookupForm({
             </div>
             {isUserNotFound && <div>No user found for {lookupEmail}.</div>}
           </div>
-          <div className="d-flex flex-row-reverse">
+          <div className={cx("d-flex", "flex-row-reverse")}>
             <Button
               className="btn-outline-rk-green"
               disabled={isLoading}
@@ -205,7 +205,9 @@ function AddProjectMemberAccessForm({
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className="d-flex flex-row align-items-baseline mb-3">
+          <div
+            className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
+          >
             <Label>{user.email}</Label>
             <Controller
               control={control}

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { FormEvent, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -109,8 +110,8 @@ function ProjectV2NewRepositoryStepHeader() {
 
 function ProjectV2BeingCreatedLoader() {
   return (
-    <div className="d-flex justify-content-center w-100">
-      <div className="d-flex flex-column">
+    <div className={cx("d-flex", "justify-content-center", "w-100")}>
+      <div className={cx("d-flex", "flex-column")}>
         <Loader className="me-2" />
         <div>Creating project...</div>
       </div>
@@ -137,7 +138,7 @@ function ProjectV2BeingCreated({
     return (
       <div>
         <p>Something went wrong.</p>
-        <div className="d-flex justify-content-between">
+        <div className={cx("d-flex", "justify-content-between")}>
           <Button onClick={previousStep}>Back</Button>
         </div>
       </div>

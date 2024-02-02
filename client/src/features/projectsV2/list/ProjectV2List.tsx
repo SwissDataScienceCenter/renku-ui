@@ -41,13 +41,13 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
       data-cy="list-card"
       className={cx("m-2", "rk-search-result-card", styles.listProjectWidth)}
     >
-      <div className="card card-entity p-3">
+      <div className={cx("card", "card-entity", "p-3")}>
         <h3>
           <Link to={projectUrl}>{project.name}</Link>
         </h3>
         <div className="mb-2">{project.description}</div>
-        <div className="d-flex align-items-baseline">
-          <span className="me-3 fst-italic">{project.visibility}</span>
+        <div className={cx("align-items-baseline", "d-flex")}>
+          <span className={cx("fst-italic", "me-3")}>{project.visibility}</span>
           <TimeCaption datetime={project.creation_date} prefix="Created" />
         </div>
       </div>
@@ -65,8 +65,8 @@ function ProjectList() {
 
   if (isLoading)
     return (
-      <div className="d-flex justify-content-center w-100">
-        <div className="d-flex flex-column">
+      <div className={cx("d-flex", "justify-content-center", "w-100")}>
+        <div className={cx("d-flex", "flex-column")}>
           <Loader className="me-2" />
           <div>Retrieving projects...</div>
         </div>
@@ -90,7 +90,11 @@ function ProjectList() {
         onPageChange={(page: number) => {
           setPage(page);
         }}
-        className="d-flex justify-content-center rk-search-pagination"
+        className={cx(
+          "d-flex",
+          "justify-content-center",
+          "rk-search-pagination"
+        )}
       />
     </>
   );
@@ -108,7 +112,7 @@ export default function ProjectV2List() {
             All visible projects <WipBadge />{" "}
           </div>
           <div className="mt-3">
-            <Link className="btn btn-secondary" to={newProjectUrl}>
+            <Link className={cx("btn", "btn-secondary")} to={newProjectUrl}>
               Create New Project
             </Link>
           </div>
