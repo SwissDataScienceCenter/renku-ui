@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { FormEvent, useCallback } from "react";
+import { FormEvent, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Form, Label } from "reactstrap";
@@ -33,7 +33,7 @@ import type { ProjectPost } from "../api/projectV2.api";
 import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2Show";
 
 import type { NewProjectV2State } from "./projectV2New.slice";
-import { setCurrentStep } from "./projectV2New.slice";
+import { projectWasCreated, setCurrentStep } from "./projectV2New.slice";
 import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
 import ProjectV2NewForm from "./ProjectV2NewForm";
 import WipBadge from "../shared/WipBadge";
@@ -129,6 +129,12 @@ function ProjectV2BeingCreated({
   const previousStep = useCallback(() => {
     dispatch(setCurrentStep(2));
   }, [dispatch]);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      dispatch(projectWasCreated());
+    }
+  }, [dispatch, result.isSuccess]);
 
   if (result.isLoading) {
     return <ProjectV2BeingCreatedLoader />;
