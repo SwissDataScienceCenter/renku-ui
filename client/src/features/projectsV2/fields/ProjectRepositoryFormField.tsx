@@ -89,15 +89,14 @@ export default function ProjectRepositoryFormField({
           X
         </Button>
       </div>
-      {errors.repositories && errors.repositories[index] ? null : index >
-        0 ? null : (
-        <FormText className={cx("input-hint", "mb-2")}>
+      <div className="invalid-feedback">
+        Please provide a valid URL or remove the repository.
+      </div>
+      {index == 0 && (
+        <FormText className={"input-hint"}>
           A URL that refers to a git repository.
         </FormText>
       )}
-      <div className="invalid-feedback mb-2">
-        Please provide a valid URL or remove the repository.
-      </div>
     </div>
   );
 }

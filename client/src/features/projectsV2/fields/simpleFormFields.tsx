@@ -82,12 +82,10 @@ export function ProjectNameFormField<T extends FieldValues>({
         )}
         rules={{ required: true, maxLength: 99 }}
       />
-      {errors[name] ? null : (
-        <FormText className="input-hint">
-          The name you will use to refer to the project
-        </FormText>
-      )}
       <div className="invalid-feedback">Please provide a name</div>
+      <FormText className="input-hint">
+        The name you will use to refer to the project
+      </FormText>
     </div>
   );
 }
@@ -116,17 +114,15 @@ export function ProjectSlugFormField<T extends FieldValues>({
         )}
         rules={{ required: true, maxLength: 99, pattern: /^[a-z0-9-]+$/ }}
       />
-      {errors[name] ? null : (
-        <FormText className="input-hint">
-          A short, machine-readable identifier for the project, restricted to
-          lowercase letters, numbers, and hyphens.{" "}
-          <b>Cannot be changed after project creation</b>.
-        </FormText>
-      )}
       <div className="invalid-feedback">
         Please provide a slug consisting of lowercase letters, numbers, and
         hyphens.
       </div>
+      <FormText className="input-hint">
+        A short, machine-readable identifier for the project, restricted to
+        lowercase letters, numbers, and hyphens.{" "}
+        <b>Cannot be changed after project creation</b>.
+      </FormText>
     </div>
   );
 }
@@ -158,12 +154,10 @@ export function ProjectVisibilityFormField<T extends FieldValues>({
         )}
         rules={{ required: true }}
       />
-      {errors[name] ? null : (
-        <FormText className="input-hint">
-          Should the project be visible to everyone or only to members?
-        </FormText>
-      )}
       <div className="invalid-feedback">Please select a visibility</div>
+      <FormText className="input-hint">
+        Should the project be visible to everyone or only to members?
+      </FormText>
     </div>
   );
 }
