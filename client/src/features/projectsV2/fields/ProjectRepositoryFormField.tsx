@@ -26,8 +26,8 @@ import { Button, FormText, Input, Label } from "reactstrap";
 import type { Repository } from "../projectV2.types";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 
-interface ProjectRepositoryFormFieldProps<T extends FieldValues>
-  extends GenericProjectFormFieldProps<T> {
+interface ProjectRepositoryFormFieldProps
+  extends GenericProjectFormFieldProps<ProjectV2Repositories> {
   id: string;
   index: number;
   onDelete: () => void;
@@ -45,7 +45,7 @@ export default function ProjectRepositoryFormField({
   index,
   name,
   onDelete,
-}: ProjectRepositoryFormFieldProps<ProjectV2Repositories>) {
+}: ProjectRepositoryFormFieldProps) {
   return (
     <div className="mb-3">
       <Label className="form-label" for={`project-${index}-repository`}>
