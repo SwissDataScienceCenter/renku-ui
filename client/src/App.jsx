@@ -265,7 +265,8 @@ function App(props) {
 
     // Setup authentication listeners and notifications
     LoginHelper.setupListener();
-    LoginHelper.triggerNotifications(notifications);
+    // LoginHelper.triggerNotifications(notifications);
+    LoginHelper.triggerNotifications(notificationManager);
 
     // Setup WebSocket channel
     let webSocketUrl = props.client.uiserverUrl + "/ws";
@@ -300,13 +301,7 @@ function App(props) {
 
   return (
     <Fragment>
-      <Route
-        render={(p) =>
-          user.logged || p.location.pathname !== Url.get(Url.pages.landing) ? (
-            <RenkuNavBar {...p} {...props} notifications={notifications} />
-          ) : null
-        }
-      />
+      <RenkuNavBar {...props} notifications={notifications} />
       <CentralContentContainer
         notifications={notifications}
         socket={webSocket}

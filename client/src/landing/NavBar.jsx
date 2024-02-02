@@ -23,7 +23,7 @@
  *  NavBar for logged-in and logged-out users.
  */
 
-import { Link, Route, Switch } from "react-router-dom";
+import { Link, Route, Switch, useLocation } from "react-router-dom";
 import { Nav, Navbar } from "reactstrap";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
@@ -37,8 +37,21 @@ import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../utils/helpers/url";
 
 import "./NavBar.css";
+import { useContext } from "react";
+import AppContext from "../utils/context/appContext";
 
 function RenkuNavBar(props) {
+  const { user } = props;
+  const location = useLocation();
+
+  if (!user.logged && location.pathname === Url.get(Url.pages.landing)) {
+    return null;
+  }
+
+  return <RenkuNavBarInner {...props} />;
+}
+
+function RenkuNavBarInner(props) {
   const { user } = props;
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
