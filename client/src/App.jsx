@@ -328,6 +328,7 @@ function App(props) {
         notificationManager
       )
     );
+    // ! Ignoring the rule of hooks creates issues, we should refactor this hook
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Avoid rendering the application while authenticating the user
