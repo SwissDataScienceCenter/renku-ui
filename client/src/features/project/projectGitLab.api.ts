@@ -44,7 +44,6 @@ import {
   GitLabRepositoryCommit,
   GitLabRepositoryCommitList,
   GitlabProjectResponse,
-  Pagination,
   RetryPipelineParams,
   RunPipelineParams,
 } from "./GitLab.types";
@@ -418,9 +417,7 @@ const projectGitLabApi = createApi({
           allCommits.push(...commits);
 
           const responseHeaders = result.meta?.response?.headers;
-          const pagination = processPaginationHeaders(
-            responseHeaders
-          ) as Pagination;
+          const pagination = processPaginationHeaders(responseHeaders);
 
           if (pagination.nextPage == null) {
             break;
