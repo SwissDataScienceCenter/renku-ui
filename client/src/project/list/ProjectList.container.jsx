@@ -17,13 +17,13 @@
  */
 
 import { isEqual } from "lodash";
-import { useState, useEffect, useContext } from "react";
-
-import { ProjectList as ProjectListPresent } from "./ProjectList.present";
-import { Url, getSearchParams } from "../../utils/helpers/url";
+import { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router";
+
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { Url, getSearchParams } from "../../utils/helpers/url";
+import { ProjectList as ProjectListPresent } from "./ProjectList.present";
 
 // *** Constants ***
 const PROJECT_NEW_URL = Url.get(Url.pages.project.new);
@@ -481,7 +481,7 @@ function ProjectListRedirected(props) {
   );
 }
 
-export { URL_MAP as urlMap, ProjectList };
+export { ProjectList, URL_MAP as urlMap };
 
 // test only
 const tests = {

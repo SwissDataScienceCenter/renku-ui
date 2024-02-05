@@ -26,8 +26,8 @@
 import { useContext } from "react";
 
 import AppContext from "../utils/context/appContext";
-import { Help as HelpPresent } from "./Help.present";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
+import { Help as HelpPresent } from "./Help.present";
 
 export default function Help() {
   const { params } = useContext(AppContext);

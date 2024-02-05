@@ -17,11 +17,11 @@
  */
 
 import { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router";
 
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import DatasetView from "./Dataset.present";
-import { useHistory, useParams } from "react-router";
 
 export default function ShowDataset(props) {
   const history = useHistory();

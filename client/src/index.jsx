@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { connect, Provider } from "react-redux";
 import { BrowserRouter as Router, useHistory } from "react-router-dom";
@@ -13,15 +14,14 @@ import App from "./App";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
+import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { Maintenance } from "./features/maintenance/Maintenance";
-import { StateModel, globalSchema } from "./model";
+import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
-import { Sentry } from "./utils/helpers/sentry";
-import { Url, createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
-import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { validatedAppParams } from "./utils/context/appParams.utils";
-import { useEffect } from "react";
+import { Sentry } from "./utils/helpers/sentry";
+import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
 
 const configFetch = fetch("/config.json");
 

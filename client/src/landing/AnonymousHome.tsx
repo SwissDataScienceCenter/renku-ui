@@ -33,6 +33,8 @@ import { Col, Row } from "reactstrap";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { stateToSearchString } from "../features/kgSearch";
 import { StatuspageBanner } from "../statuspage";
+import AppContext from "../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 import { Url } from "../utils/helpers/url";
 
 import { NavBarWarnings } from "./NavBarWarnings";
@@ -48,8 +50,6 @@ import WhatIsRenku from "./WhatIsRenku/WhatIsRenku";
 import WhoWeAre from "./WhoWeAre/WhoWeAre";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
-import AppContext from "../utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 
 export default function AnonymousHome() {
   const { client, model, params } = useContext(AppContext);
