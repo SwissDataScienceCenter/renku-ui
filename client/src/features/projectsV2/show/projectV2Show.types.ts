@@ -16,31 +16,4 @@
  * limitations under the License.
  */
 
-export interface AbstractKgPaginatedResponse {
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
-}
-
-export interface AbstractKgPaginatedQueryArgs {
-  page?: number;
-  perPage?: number;
-}
-
-export interface Pagination {
-  currentPage?: number;
-  firstPageLink?: string;
-  lastPageLink?: string;
-  nextPage?: number;
-  nextPageLink?: string;
-  perPage?: number;
-  previousPage?: number;
-  totalItems?: number;
-  totalPages?: number;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: Pagination;
-}
+export type SettingEditOption = "metadata" | "members" | "repositories" | null;

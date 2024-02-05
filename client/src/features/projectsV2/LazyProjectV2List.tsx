@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -13,34 +13,17 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-export interface AbstractKgPaginatedResponse {
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
-}
+const ProjectV2List = lazy(() => import("./list/ProjectV2List"));
 
-export interface AbstractKgPaginatedQueryArgs {
-  page?: number;
-  perPage?: number;
-}
-
-export interface Pagination {
-  currentPage?: number;
-  firstPageLink?: string;
-  lastPageLink?: string;
-  nextPage?: number;
-  nextPageLink?: string;
-  perPage?: number;
-  previousPage?: number;
-  totalItems?: number;
-  totalPages?: number;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: Pagination;
+export default function LazyProjectV2List() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <ProjectV2List />
+    </Suspense>
+  );
 }

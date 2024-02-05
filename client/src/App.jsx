@@ -51,6 +51,9 @@ import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
+import LazyProjectV2List from "./features/projectsV2/LazyProjectV2List";
+import LazyProjectV2New from "./features/projectsV2/LazyProjectV2New";
+import LazyProjectV2Show from "./features/projectsV2/LazyProjectV2Show";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
@@ -271,6 +274,21 @@ function CentralContentContainer(props) {
               </ContainerWrap>
             )}
           />
+          <Route path={Url.get(Url.pages.projectsV2.new)}>
+            <ContainerWrap>
+              <LazyProjectV2New />
+            </ContainerWrap>
+          </Route>
+          <Route path="/projectsV2/:id">
+            <ContainerWrap>
+              <LazyProjectV2Show />
+            </ContainerWrap>
+          </Route>
+          <Route path={Url.get(Url.pages.projectsV2.list)}>
+            <ContainerWrap>
+              <LazyProjectV2List />
+            </ContainerWrap>
+          </Route>
           <Route
             path="/style-guide"
             render={(p) => (

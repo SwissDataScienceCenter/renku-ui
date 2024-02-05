@@ -16,31 +16,17 @@
  * limitations under the License.
  */
 
-export interface AbstractKgPaginatedResponse {
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
-}
+// Run `npx @rtk-query/codegen-openapi projectV2.api-config.ts` in this folder to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
 
-export interface AbstractKgPaginatedQueryArgs {
-  page?: number;
-  perPage?: number;
-}
+const config: ConfigFile = {
+  apiFile: "./projectV2-empty.api.ts",
+  apiImport: "projectV2EmptyApi",
+  outputFile: "./projectV2.api.ts",
+  exportName: "projectV2Api",
+  hooks: true,
+  schemaFile: path.join(__dirname, "projectV2.openapi.json"),
+};
 
-export interface Pagination {
-  currentPage?: number;
-  firstPageLink?: string;
-  lastPageLink?: string;
-  nextPage?: number;
-  nextPageLink?: string;
-  perPage?: number;
-  previousPage?: number;
-  totalItems?: number;
-  totalPages?: number;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: Pagination;
-}
+export default config;

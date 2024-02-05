@@ -16,31 +16,11 @@
  * limitations under the License.
  */
 
-export interface AbstractKgPaginatedResponse {
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
-}
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
-export interface AbstractKgPaginatedQueryArgs {
-  page?: number;
-  perPage?: number;
-}
-
-export interface Pagination {
-  currentPage?: number;
-  firstPageLink?: string;
-  lastPageLink?: string;
-  nextPage?: number;
-  nextPageLink?: string;
-  perPage?: number;
-  previousPage?: number;
-  totalItems?: number;
-  totalPages?: number;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: Pagination;
-}
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const projectV2EmptyApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
+  endpoints: () => ({}),
+  reducerPath: "projectV2Api",
+});

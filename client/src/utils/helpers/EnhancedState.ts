@@ -43,12 +43,15 @@ import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
+import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
+import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import termsApi from "../../features/terms/terms.api";
+import { dataServicesUserApi } from "../../features/user/dataServicesUser.api";
 import keycloakUserApi from "../../features/user/keycloakUser.api";
 import userPreferencesApi from "../../features/user/userPreferences.api";
 import { versionsApi } from "../../features/versions/versions.api";
@@ -69,11 +72,13 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [startSessionSlice.name]: startSessionSlice.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
+    [projectV2NewSlice.name]: projectV2NewSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [adminComputeResourcesApi.reducerPath]: adminComputeResourcesApi.reducer,
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
     [dataServicesApi.reducerPath]: dataServicesApi.reducer,
+    [dataServicesUserApi.reducerPath]: dataServicesUserApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [keycloakUserApi.reducerPath]: keycloakUserApi.reducer,
@@ -83,6 +88,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
+    [projectV2Api.reducerPath]: projectV2Api.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
@@ -103,6 +109,8 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(adminComputeResourcesApi.middleware)
         .concat(adminKeycloakApi.middleware)
         .concat(dataServicesApi.middleware)
+        // this is causing some problems, and I do not know why
+        .concat(dataServicesUserApi.middleware)
         .concat(datasetsCoreApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(keycloakUserApi.middleware)
@@ -112,6 +120,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectGitLabApi.middleware)
         .concat(projectKgApi.middleware)
         .concat(projectsApi.middleware)
+        .concat(projectV2Api.middleware)
         .concat(recentUserActivityApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsApi.middleware)
