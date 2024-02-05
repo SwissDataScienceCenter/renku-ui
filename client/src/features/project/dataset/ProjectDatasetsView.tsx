@@ -20,7 +20,7 @@ import { faInfoCircle, faUserClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
 import React, { useEffect } from "react";
-import { Link, Route, Switch, useHistory } from "react-router-dom";
+import { Link, Route, Switch, useHistory, useParams } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -379,77 +379,138 @@ function ProjectDatasetsView(props: any) {
             />
           </Col>
           <ProjectAddDataset
-            key="projectsAddDataset"
             {...props}
             apiVersion={apiVersion}
             metadataVersion={metadataVersion}
             versionUrl={versionUrl}
           />
         </Route>
-        <Route
-          path={props.editDatasetUrl}
-          render={(p) => {
-            const locationState = p.location.state
-              ? (p.location.state as LocationState)
-              : undefined;
-            return (
-              <>
-                <Col key="btn" md={12}>
-                  <GoBackButton
-                    label="Back to dataset"
-                    url={`${props.datasetsUrl}/${p.match.params.datasetId}/`}
-                  />
-                </Col>
-                <ProjectDatasetEdit
-                  apiVersion={apiVersion}
-                  client={props.client}
-                  dataset={locationState?.dataset}
-                  datasetId={decodeURIComponent(p.match.params.datasetId ?? "")}
-                  fetchDatasets={props.fetchDatasets}
-                  files={locationState?.files ?? { hasPart: [] }}
-                  filesFetchError={locationState?.filesFetchError}
-                  history={props.history}
-                  isFilesFetching={locationState?.isFilesFetching ?? false}
-                  location={props.location}
-                  metadataVersion={metadataVersion}
-                  model={props.model}
-                  notifications={props.notifications}
-                  params={props.params}
-                  versionUrl={versionUrl}
-                />
-              </>
-            );
-          }}
-        />
-        <Route
-          path={props.datasetUrl}
-          render={(p) => (
-            <>
-              <Col key="btn" md={12}>
-                <GoBackButton
-                  key="btn"
-                  label={`Back to ${props.metadata.pathWithNamespace}`}
-                  url={props.datasetsUrl}
-                />
-              </Col>
-              <ProjectDatasetShow
-                key="datasetPreview"
-                datasetCoordinator={datasetCoordinator}
-                datasetId={decodeURIComponent(p.match.params.datasetId ?? "")}
-                graphStatus={projectIndexingStatus.data?.activated ?? false}
-                history={props.history}
-                location={props.location}
-                model={props.model}
-                projectInsideKg={projectIndexingStatus.data?.activated ?? false}
-              />
-            </>
-          )}
-        />
+        <Route path={props.editDatasetUrl}>
+          <EditDatasetRoute
+            apiVersion={apiVersion}
+            client={props.client}
+            datasetsUrl={props.datasetsUrl}
+            fetchDatasets={props.fetchDatasets}
+            metadataVersion={metadataVersion}
+            model={props.model}
+            notifications={props.notifications}
+            params={props.params}
+            versionUrl={versionUrl}
+          />
+        </Route>
+        <Route path={props.datasetUrl}>
+          <ShowDatasetRoute
+            datasetCoordinator={datasetCoordinator}
+            datasetsUrl={props.datasetsUrl}
+            model={props.model}
+            pathWithNamespace={props.metadata.pathWithNamespace}
+            projectIndexingStatus={projectIndexingStatus}
+          />
+        </Route>
         <Route exact path={props.datasetsUrl}>
           <ProjectDatasetsNav {...props} />
         </Route>
       </Switch>
     </Col>
+  );
+}
+
+interface EditDatasetRouteProps {
+  apiVersion: string | undefined;
+  client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  datasetsUrl: string;
+  fetchDatasets: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  metadataVersion: number;
+  model: unknown;
+  notifications: unknown;
+  params: unknown;
+  versionUrl: string;
+}
+
+function EditDatasetRoute({
+  apiVersion,
+  client,
+  datasetsUrl,
+  fetchDatasets,
+  metadataVersion,
+  model,
+  notifications,
+  params,
+  versionUrl,
+}: EditDatasetRouteProps) {
+  const history = useHistory<Partial<LocationState>>();
+  const location = history.location;
+
+  const { datasetId } = useParams<{ datasetId: string }>();
+
+  return (
+    <>
+      <Col key="btn" md={12}>
+        <GoBackButton
+          label="Back to dataset"
+          url={`${datasetsUrl}/${datasetId}/`}
+        />
+      </Col>
+      <ProjectDatasetEdit
+        apiVersion={apiVersion}
+        client={client}
+        dataset={location.state.dataset}
+        datasetId={decodeURIComponent(datasetId)}
+        fetchDatasets={fetchDatasets}
+        files={location.state.files ?? { hasPart: [] }}
+        filesFetchError={location.state.filesFetchError}
+        history={history}
+        isFilesFetching={location.state.isFilesFetching ?? false}
+        location={location}
+        metadataVersion={metadataVersion}
+        model={model}
+        notifications={notifications}
+        params={params}
+        versionUrl={versionUrl}
+      />
+    </>
+  );
+}
+
+interface ShowDatasetRouteProps {
+  datasetCoordinator: unknown;
+  datasetsUrl: string;
+  model: unknown;
+  pathWithNamespace: string;
+  projectIndexingStatus: ReturnType<typeof useGetProjectIndexingStatusQuery>;
+}
+
+function ShowDatasetRoute({
+  datasetCoordinator,
+  datasetsUrl,
+  model,
+  pathWithNamespace,
+  projectIndexingStatus,
+}: ShowDatasetRouteProps) {
+  const history = useHistory();
+  const location = history.location;
+
+  const { datasetId } = useParams<{ datasetId: string }>();
+
+  return (
+    <>
+      <Col key="btn" md={12}>
+        <GoBackButton
+          key="btn"
+          label={`Back to ${pathWithNamespace}`}
+          url={datasetsUrl}
+        />
+      </Col>
+      <ProjectDatasetShow
+        datasetCoordinator={datasetCoordinator}
+        datasetId={decodeURIComponent(datasetId)}
+        graphStatus={projectIndexingStatus.data?.activated ?? false}
+        history={history}
+        location={location}
+        model={model}
+        projectInsideKg={projectIndexingStatus.data?.activated ?? false}
+      />
+    </>
   );
 }
 

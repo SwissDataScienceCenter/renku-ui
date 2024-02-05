@@ -27,7 +27,7 @@ import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Component, Fragment, useEffect } from "react";
-import { Link, Route, Switch } from "react-router-dom";
+import { Link, Route, Switch, useHistory, useParams } from "react-router-dom";
 import {
   Alert,
   Button,
@@ -704,17 +704,13 @@ class ProjectViewOverview extends Component {
                   branches={this.props.branches.standard}
                 />
               </Route>
-              <Route
-                exact
-                path={this.props.overviewCommitsUrl}
-                render={(props) => (
-                  <ProjectOverviewCommits
-                    location={this.props.location}
-                    history={props.history}
-                    projectCoordinator={projectCoordinator}
-                  />
-                )}
-              />
+              <Route exact path={this.props.overviewCommitsUrl}>
+                <ProjectOverviewCommits
+                  location={this.props.location}
+                  history={this.props.history}
+                  projectCoordinator={projectCoordinator}
+                />
+              </Route>
             </Switch>
           </Col>
         </Row>
@@ -749,42 +745,68 @@ class ProjectViewFiles extends Component {
       </div>,
       <div key="content" className="flex-shrink-1 variableWidthColRight">
         <Switch>
-          <Route
-            path={this.props.lineageUrl}
-            render={(p) => (
-              <ProjectFileLineage
-                client={this.props.client}
-                fetchBranches={() =>
-                  this.props.projectCoordinator.fetchBranches()
-                }
-                filePath={p.match.params.filePath}
-                history={this.props.history}
-                location={p.location}
-                model={this.props.model}
-                projectId={this.props.metadata?.id ?? undefined}
-              />
-            )}
-          />
-          <Route
-            path={this.props.fileContentUrl}
-            render={(p) => (
-              <ProjectFileView
-                client={this.props.client}
-                fetchBranches={() =>
-                  this.props.projectCoordinator.fetchBranches()
-                }
-                filePath={p.match.params.filePath}
-                history={this.props.history}
-                location={p.location}
-                model={this.props.model}
-                params={this.props.params}
-              />
-            )}
-          />
+          <Route path={this.props.lineageUrl}>
+            <ProjectFileLineageRoute
+              client={this.props.client}
+              fetchBranches={() =>
+                this.props.projectCoordinator.fetchBranches()
+              }
+              model={this.props.model}
+              projectId={this.props.metadata?.id ?? undefined}
+            />
+          </Route>
+          <Route path={this.props.fileContentUrl}>
+            <ProjectFileViewRoute
+              client={this.props.client}
+              fetchBranches={() =>
+                this.props.projectCoordinator.fetchBranches()
+              }
+              model={this.props.model}
+              params={this.props.params}
+            />
+          </Route>
         </Switch>
       </div>,
     ];
   }
+}
+
+function ProjectFileLineageRoute({ client, fetchBranches, model, projectId }) {
+  const history = useHistory();
+  const location = history.location;
+
+  const { filePath } = useParams();
+
+  return (
+    <ProjectFileLineage
+      client={client}
+      fetchBranches={fetchBranches}
+      filePath={filePath}
+      history={history}
+      location={location}
+      model={model}
+      projectId={projectId}
+    />
+  );
+}
+
+function ProjectFileViewRoute({ client, fetchBranches, model, params }) {
+  const history = useHistory();
+  const location = history.location;
+
+  const { filePath } = useParams();
+
+  return (
+    <ProjectFileView
+      client={client}
+      fetchBranches={fetchBranches}
+      filePath={filePath}
+      history={history}
+      location={location}
+      model={model}
+      params={params}
+    />
+  );
 }
 
 class ProjectViewLoading extends Component {
