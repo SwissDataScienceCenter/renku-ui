@@ -16,31 +16,17 @@
  * limitations under the License.
  */
 
-export interface AbstractKgPaginatedResponse {
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
-}
+// Run `npx @rtk-query/codegen-openapi dataServicesUser.api-config.ts` to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
 
-export interface AbstractKgPaginatedQueryArgs {
-  page?: number;
-  perPage?: number;
-}
+const config: ConfigFile = {
+  apiFile: "./dataServicesUser-empty.api.ts",
+  apiImport: "dataServicesUserEmptyApi",
+  outputFile: "./dataServicesUser.api.ts",
+  exportName: "dataServicesUserApi",
+  hooks: true,
+  schemaFile: path.join(__dirname, "dataServicesUser.openapi.json"),
+};
 
-export interface Pagination {
-  currentPage?: number;
-  firstPageLink?: string;
-  lastPageLink?: string;
-  nextPage?: number;
-  nextPageLink?: string;
-  perPage?: number;
-  previousPage?: number;
-  totalItems?: number;
-  totalPages?: number;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: Pagination;
-}
+export default config;

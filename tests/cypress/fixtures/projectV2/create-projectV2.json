@@ -1,0 +1,9 @@
+{
+  "id": "THEPROJECTULID26CHARACTERS",
+  "name": "Renku R Project",
+  "slug": "r-project",
+  "created_by": {
+    "id": "owner-KC-id"
+  },
+  "visibility": "public"
+}
