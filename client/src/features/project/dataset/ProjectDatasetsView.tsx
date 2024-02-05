@@ -370,27 +370,22 @@ function ProjectDatasetsView(props: any) {
       {coreSupportMessage}
       <ProjectDatasetLockAlert lockStatus={props.lockStatus} />
       <Switch>
-        <Route
-          path={props.newDatasetUrl}
-          render={() => (
-            <>
-              <Col key="btn" md={12}>
-                <GoBackButton
-                  data-cy="go-back-dataset"
-                  label="Back to list"
-                  url={props.datasetsUrl}
-                />
-              </Col>
-              <ProjectAddDataset
-                key="projectsAddDataset"
-                {...props}
-                apiVersion={apiVersion}
-                metadataVersion={metadataVersion}
-                versionUrl={versionUrl}
-              />
-            </>
-          )}
-        />
+        <Route path={props.newDatasetUrl}>
+          <Col key="btn" md={12}>
+            <GoBackButton
+              data-cy="go-back-dataset"
+              label="Back to list"
+              url={props.datasetsUrl}
+            />
+          </Col>
+          <ProjectAddDataset
+            key="projectsAddDataset"
+            {...props}
+            apiVersion={apiVersion}
+            metadataVersion={metadataVersion}
+            versionUrl={versionUrl}
+          />
+        </Route>
         <Route
           path={props.editDatasetUrl}
           render={(p) => {
@@ -450,11 +445,9 @@ function ProjectDatasetsView(props: any) {
             </>
           )}
         />
-        <Route
-          exact
-          path={props.datasetsUrl}
-          render={() => <ProjectDatasetsNav {...props} />}
-        />
+        <Route exact path={props.datasetsUrl}>
+          <ProjectDatasetsNav {...props} />
+        </Route>
       </Switch>
     </Col>
   );

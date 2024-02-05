@@ -692,28 +692,18 @@ class ProjectViewOverview extends Component {
           </Col>
           <Col key="content" sm={12} md={10} data-cy="project-overview-content">
             <Switch>
-              <Route
-                exact
-                path={this.props.baseUrl}
-                render={() => {
-                  return (
-                    <ProjectViewGeneral
-                      readme={this.props.data.readme}
-                      {...this.props}
-                    />
-                  );
-                }}
-              />
-              <Route
-                exact
-                path={this.props.statsUrl}
-                render={() => (
-                  <ProjectOverviewStats
-                    projectCoordinator={projectCoordinator}
-                    branches={this.props.branches.standard}
-                  />
-                )}
-              />
+              <Route exact path={this.props.baseUrl}>
+                <ProjectViewGeneral
+                  readme={this.props.data.readme}
+                  {...this.props}
+                />
+              </Route>
+              <Route exact path={this.props.statsUrl}>
+                <ProjectOverviewStats
+                  projectCoordinator={projectCoordinator}
+                  branches={this.props.branches.standard}
+                />
+              </Route>
               <Route
                 exact
                 path={this.props.overviewCommitsUrl}
@@ -901,66 +891,54 @@ function ProjectView(props) {
     />,
     <ContainerWrap key="project-content" fullSize={isShowSession}>
       <Switch key="projectHeader">
-        <Route
-          exact
-          path={props.baseUrl}
-          render={() => <ProjectViewHeader {...props} />}
-        />
-        <Route
-          path={props.overviewUrl}
-          render={() => <ProjectViewHeader {...props} />}
-        />
+        <Route exact path={props.baseUrl}>
+          <ProjectViewHeader {...props} />
+        </Route>
+        <Route path={props.overviewUrl}>
+          <ProjectViewHeader {...props} />
+        </Route>
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
         <Route path={props.sessionShowUrl} />
-        <Route
-          path={props.newDatasetUrl}
-          component={() => <ProjectViewHeader {...props} />}
-        />
-        <Route component={() => <ProjectViewHeader {...props} />} />
+        <Route>
+          <ProjectViewHeader {...props} />
+        </Route>
       </Switch>
       <Switch key="projectNav">
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
         <Route path={props.sessionShowUrl} />
-        <Route component={() => <ProjectNav key="nav" {...props} />} />
+        <Route>
+          <ProjectNav key="nav" {...props} />
+        </Route>
       </Switch>
       <Row key="content" className={cx(isShowSession && "m-0")}>
         <Switch>
-          <Route
-            exact
-            path={props.baseUrl}
-            render={() => <ProjectViewOverview key="overview" {...props} />}
-          />
-          <Route
-            path={props.overviewUrl}
-            render={() => <ProjectViewOverview key="overview" {...props} />}
-          />
-          <Route
-            path={props.filesUrl}
-            render={() => <ProjectViewFiles key="files" {...props} />}
-          />
-          <Route
-            path={props.datasetsUrl}
-            render={() => <ProjectDatasetsView key="datasets" {...props} />}
-          />
-          <Route
-            path={[props.workflowUrl, props.workflowsUrl]}
-            render={() => <ProjectViewWorkflows key="workflows" {...props} />}
-          />
-          <Route
-            path={props.settingsUrl}
-            render={() => (
-              <ProjectSettings
-                key="settings"
-                {...props}
-                apiVersion={apiVersion}
-                metadataVersion={metadataVersion}
-              />
-            )}
-          />
+          <Route exact path={props.baseUrl}>
+            <ProjectViewOverview key="overview" {...props} />
+          </Route>
+          <Route path={props.overviewUrl}>
+            <ProjectViewOverview key="overview" {...props} />
+          </Route>
+          <Route path={props.filesUrl}>
+            <ProjectViewFiles key="files" {...props} />
+          </Route>
+          <Route path={props.datasetsUrl}>
+            <ProjectDatasetsView key="datasets" {...props} />
+          </Route>
+          <Route path={[props.workflowUrl, props.workflowsUrl]}>
+            <ProjectViewWorkflows key="workflows" {...props} />
+          </Route>
+          <Route path={props.settingsUrl}>
+            <ProjectSettings
+              key="settings"
+              {...props}
+              apiVersion={apiVersion}
+              metadataVersion={metadataVersion}
+            />
+          </Route>
           <Route path={props.notebookServersUrl}>
             <ProjectSessionsRouter key="sessions" />
           </Route>
