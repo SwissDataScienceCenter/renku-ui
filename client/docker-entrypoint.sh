@@ -50,6 +50,11 @@ echo "==================================================="
 echo "$(head -5 /config-privacy/statement.md)"
 echo "==================================================="
 
+echo "Terms file contains the following markdown (first 5 lines):"
+echo "==================================================="
+echo "$(head -5 /config-privacy/terms.md)"
+echo "==================================================="
+
 tee > "${NGINX_PATH}/config.json" << EOF
 {
   "UI_VERSION": "${UI_VERSION}",
@@ -90,7 +95,7 @@ echo "robots.txt created in ${NGINX_PATH}"
 
 FILE=/config-privacy/statement.md
 if [ -f "$FILE" ]; then
-  cp "${FILE}"  "${NGINX_PATH}/privacy-statement.md"
+  cat "${FILE}" > "${NGINX_PATH}/privacy-statement.md"
   echo "privacy-statement.md copied to ${NGINX_PATH}"
 else
   echo "No privacy-statement.md"
@@ -98,7 +103,7 @@ fi
 
 FILE=/config-privacy/terms.md
 if [ -f "$FILE" ]; then
-  cp "${FILE}" "${NGINX_PATH}/terms-of-use.md"
+  cat "${FILE}" > "${NGINX_PATH}/terms-of-use.md"
   echo "terms-of-use.md created in ${NGINX_PATH}"
 else
   echo "No terms-of-use.md"
