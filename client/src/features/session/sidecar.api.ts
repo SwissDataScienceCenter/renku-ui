@@ -34,7 +34,7 @@ import type {
 } from "./sidecar.types";
 
 const baseQuery = fetchBaseQuery({ baseUrl: "/sessions/" });
-const baseQueryWithRedirectHandler: BaseQueryFn<
+const baseQueryWithMethodNotAllowedHandler: BaseQueryFn<
   string | FetchArgs,
   unknown,
   FetchBaseQueryError
@@ -43,26 +43,16 @@ const baseQueryWithRedirectHandler: BaseQueryFn<
     return baseQuery(args, api, extraOptions);
   }
 
-  // Perform the initial query without following redirects
   const newArgs: FetchArgs = {
     ...args,
-    redirect: "error",
+    responseHandler: "content-type",
   };
   const result = await baseQuery(newArgs, api, extraOptions);
 
-  // Handle re-authentication requests manually
-  if (result.error && result.error.status === 302) {
-    const location = result.meta?.response?.headers.get("Location");
-    if (!location) {
-      return result;
-    }
-
-    const reAuthResult = await baseQuery(location, api, extraOptions);
-    // ? If the original request used "POST", then the redirect will end up with "405 Method Not Allowed"
-    if (reAuthResult.error == null || reAuthResult.error.status === 405) {
-      const resultAgain = await baseQuery(newArgs, api, extraOptions);
-      return resultAgain;
-    }
+  // Handle HTTP 405 responses by re-ussuing the original query
+  if (result.error && result.error.status === 405) {
+    const resultAgain = await baseQuery(newArgs, api, extraOptions);
+    return resultAgain;
   }
 
   return result;
@@ -70,7 +60,7 @@ const baseQueryWithRedirectHandler: BaseQueryFn<
 
 const sessionSidecarApi = createApi({
   reducerPath: "sessionSidecarApi",
-  baseQuery: baseQueryWithRedirectHandler,
+  baseQuery: baseQueryWithMethodNotAllowedHandler,
   tagTypes: [],
   keepUnusedDataFor: 0,
   endpoints: (builder) => ({

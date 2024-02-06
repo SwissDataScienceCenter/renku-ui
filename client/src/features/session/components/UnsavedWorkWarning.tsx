@@ -143,7 +143,7 @@ function RunningUnsavedWorkWarning({
 
   return (
     <WarnAlert dismissible={false}>
-      You {error || data == null || (data.error != null && <>may </>)} have
+      You {(error || data == null || data.error != null) && <>may </>} have
       unsaved work {"("}
       {explanation}
       {")"} in this session
