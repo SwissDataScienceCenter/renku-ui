@@ -34,6 +34,7 @@ import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
 import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
+import { ExternalLink } from "../components/ExternalLinks";
 
 function Overview() {
   return (
@@ -52,7 +53,10 @@ function FontsGuide() {
     <Fragment>
       <h2>Fonts / Typography</h2>
       <p>
-        <b>Font</b> <a href="https://github.com/rsms/inter">Inter</a>
+        <b>Font</b>{" "}
+        <ExternalLink url="https://github.com/rsms/inter" role="link">
+          Inter
+        </ExternalLink>
       </p>
       <h2>Styles</h2>
       <Table>
