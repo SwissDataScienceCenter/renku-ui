@@ -20,7 +20,7 @@ import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import { SessionStatusState } from "../sessions.types";
-import { useGitStatusQuery } from "../sidecarApi";
+import { useGitStatusQuery } from "../sidecar.api";
 
 interface UnsavedWorkWarningProps {
   annotations: NotebookAnnotations;

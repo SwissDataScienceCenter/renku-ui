@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 
-import { useCallback, useState } from "react";
 import cx from "classnames";
+import { useCallback, useState } from "react";
 import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
 import {
   CenteredLoader,
@@ -26,11 +27,12 @@ import {
   commitsPhrasing,
 } from "../../../notebooks/components/Sidecar";
 import {
-  GitStatusResult,
   useGitStatusQuery,
   useHealthQuery,
   useRenkuPullMutation,
-} from "../sidecarApi";
+} from "../sidecar.api";
+import type { GitStatusResult } from "../sidecar.types";
+
 import styles from "./SessionModals.module.scss";
 
 interface PullSessionModalProps {
