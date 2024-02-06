@@ -30,11 +30,12 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
-import { NotificationsPage } from "./Notifications.container";
+import NotificationsPage from "./Notifications.container";
 import { CloseToast } from "./Notifications.present";
 import { NotificationsInfo } from "./Notifications.state";
 import NotificationsManager, { Notification } from "./NotificationsManager";
 import NotificationsMenu from "./NotificationsMenu";
+import AppContext from "../utils/context/appContext";
 
 const fakeLocation = { pathname: "" };
 
@@ -133,7 +134,9 @@ describe("rendering NotificationsPage", () => {
     await act(async () => {
       root.render(
         <MemoryRouter>
-          <NotificationsPage {...props} notifications={notifications} />
+          <AppContext.Provider value={{ client, model, notifications }}>
+            <NotificationsPage />
+          </AppContext.Provider>
         </MemoryRouter>
       );
     });

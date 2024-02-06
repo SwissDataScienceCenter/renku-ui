@@ -26,7 +26,7 @@
 import { Fragment } from "react";
 
 import { Col, Nav, NavItem, Row, Table } from "reactstrap";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
 
 import ButtonsGuide from "./ButtonsGuide";
 import ColorsGuide from "./ColorsGuide";
@@ -216,58 +216,35 @@ function constructUrlMap(baseUrl) {
   };
 }
 
-export default function StyleGuide(props) {
-  const urlMap = constructUrlMap(props.baseUrl);
+export default function StyleGuide() {
+  const { path } = useRouteMatch();
+  const urlMap = constructUrlMap(path);
+
   return (
     <Fragment>
       <StyleGuideHeader urlMap={urlMap} />
       <Switch>
-        <Route
-          exact
-          path={urlMap.baseUrl}
-          render={(p) => <Overview key="overview" {...p} urlMap={urlMap} />}
-        />
-      </Switch>
-      <Switch>
-        <Route
-          exact
-          path={urlMap.fontsUrl}
-          render={(p) => <FontsGuide key="fonts" {...p} urlMap={urlMap} />}
-        />
-      </Switch>
-      <Switch>
-        <Route
-          exact
-          path={urlMap.colorsUrl}
-          render={(p) => <ColorsGuide key="colors" {...p} urlMap={urlMap} />}
-        />
-      </Switch>
-      <Switch>
-        <Route
-          exact
-          path={urlMap.buttonsUrl}
-          render={(p) => <ButtonsGuide key="buttons" {...p} urlMap={urlMap} />}
-        />
-      </Switch>
-      <Switch>
-        <Route
-          path={urlMap.navUrl}
-          render={(p) => <NavGuide key="nav" {...p} urlMap={urlMap} />}
-        />
-      </Switch>
-      <Switch>
-        <Route
-          exact
-          path={urlMap.formsUrl}
-          render={(p) => <FormsGuide key="forms" {...p} urlMap={urlMap} />}
-        />
-      </Switch>
-      <Switch>
-        <Route
-          exact
-          path={urlMap.listsUrl}
-          render={(p) => <ListsGuide key="lists" {...p} urlMap={urlMap} />}
-        />
+        <Route exact path={urlMap.baseUrl}>
+          <Overview />
+        </Route>
+        <Route exact path={urlMap.fontsUrl}>
+          <FontsGuide />
+        </Route>
+        <Route exact path={urlMap.colorsUrl}>
+          <ColorsGuide />
+        </Route>
+        <Route exact path={urlMap.buttonsUrl}>
+          <ButtonsGuide />
+        </Route>
+        <Route path={urlMap.navUrl}>
+          <NavGuide urlMap={urlMap} />
+        </Route>
+        <Route exact path={urlMap.formsUrl}>
+          <FormsGuide urlMap={urlMap} />
+        </Route>
+        <Route exact path={urlMap.listsUrl}>
+          <ListsGuide />
+        </Route>
       </Switch>
     </Fragment>
   );

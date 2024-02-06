@@ -23,7 +23,7 @@
  *  NavBar for logged-in and logged-out users.
  */
 
-import { Link, Route, Switch } from "react-router-dom";
+import { Link, Route, Switch, useLocation } from "react-router-dom";
 import { Nav, Navbar } from "reactstrap";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
@@ -39,6 +39,17 @@ import { Url } from "../utils/helpers/url";
 import "./NavBar.css";
 
 function RenkuNavBar(props) {
+  const { user } = props;
+  const location = useLocation();
+
+  if (!user.logged && location.pathname === Url.get(Url.pages.landing)) {
+    return null;
+  }
+
+  return <RenkuNavBarInner {...props} />;
+}
+
+function RenkuNavBarInner(props) {
   const { user } = props;
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
@@ -107,7 +118,13 @@ function FooterNavbarLoggedInLinks({ privacyLink }) {
   );
 }
 
-function FooterNavbar({ location, params }) {
+function FooterNavbar(props) {
+  const location = useLocation();
+
+  return <FooterNavbarInner {...props} location={location} />;
+}
+
+function FooterNavbarInner({ location, params }) {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
@@ -171,8 +188,8 @@ function FooterNavbar({ location, params }) {
 
   return (
     <Switch key="footerNav">
-      <Route path={sessionShowUrl} render={() => null} />
-      <Route component={() => footer} />
+      <Route path={sessionShowUrl} />
+      <Route>{footer}</Route>
     </Switch>
   );
 }

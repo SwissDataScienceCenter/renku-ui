@@ -25,7 +25,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Redirect } from "react-router";
+import { Redirect, useLocation } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
@@ -86,24 +86,6 @@ function CentralContentContainer(props) {
     params: props.params,
   };
 
-  if (
-    !props.user.logged &&
-    props.location.pathname === Url.get(Url.pages.landing)
-  ) {
-    return (
-      <AppContext.Provider value={appContext}>
-        <LazyAnonymousHome
-          client={props.client}
-          homeCustomized={props.params["HOMEPAGE"]}
-          user={props.user}
-          model={props.model}
-          location={props.location}
-          params={props.params}
-        />
-      </AppContext.Provider>
-    );
-  }
-
   // check anonymous sessions settings
   const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
 
@@ -114,62 +96,45 @@ function CentralContentContainer(props) {
           <title>Reproducible Data Science | Open Research | Renku</title>
         </Helmet>
         <Switch>
-          <Route
-            exact
-            path="/login"
-            render={(p) => (
-              <ContainerWrap fullSize>
-                <LoginRedirect key="login" {...p} {...props} />
-              </ContainerWrap>
-            )}
-          />
-          <Route
-            exact
-            path={Url.get(Url.pages.landing)}
-            render={() =>
-              props.user.logged ? (
-                <ContainerWrap>
-                  <LazyDashboard />
-                </ContainerWrap>
-              ) : null
-            }
-          />
-          <Route
-            path={Url.get(Url.pages.help)}
-            render={(p) => (
+          <Route exact path="/login">
+            <ContainerWrap fullSize>
+              <LoginRedirect />
+            </ContainerWrap>
+          </Route>
+          <Route exact path={Url.get(Url.pages.landing)}>
+            {props.user.logged ? (
               <ContainerWrap>
-                <LazyHelp key="help" {...p} {...props} />
+                <LazyDashboard />
               </ContainerWrap>
+            ) : (
+              <div className="w-100">
+                <LazyAnonymousHome />
+              </div>
             )}
-          />
-          <Route
-            path={Url.get(Url.pages.search)}
-            render={() => (
+          </Route>
+          <Route path={Url.get(Url.pages.help)}>
+            <ContainerWrap>
+              <LazyHelp />
+            </ContainerWrap>
+          </Route>
+          <Route path={Url.get(Url.pages.search)}>
+            <ContainerWrap>
+              <LazySearchPage
+                userName={props.user?.data?.name}
+                isLoggedUser={props.user.logged}
+                model={props.model}
+              />
+            </ContainerWrap>
+          </Route>
+          <Route path={Url.get(Url.pages.inactiveKgProjects)}>
+            {props.user.logged ? (
               <ContainerWrap>
-                <LazySearchPage
-                  key="kg-search"
-                  userName={props.user?.data?.name}
-                  isLoggedUser={props.user.logged}
-                  model={props.model}
-                />
+                <LazyInactiveKGProjectsPage socket={socket} />
               </ContainerWrap>
+            ) : (
+              <LazyNotFound />
             )}
-          />
-          <Route
-            path={Url.get(Url.pages.inactiveKgProjects)}
-            render={(p) =>
-              props.user?.logged ? (
-                <ContainerWrap>
-                  <LazyInactiveKGProjectsPage
-                    key="-inactive-kg-projects"
-                    socket={socket}
-                  />
-                </ContainerWrap>
-              ) : (
-                <LazyNotFound {...p} />
-              )
-            }
-          />
+          </Route>
           <Route
             exact
             path={[
@@ -177,103 +142,63 @@ function CentralContentContainer(props) {
               Url.get(Url.pages.projects.starred),
               Url.get(Url.pages.projects.all),
             ]}
-            render={(p) => (
-              <ContainerWrap>
-                <LazyProjectList
-                  key="projects"
-                  user={props.user}
-                  client={props.client}
-                  statusSummary={props.statusSummary}
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
-          <Route
-            exact
-            path={Url.get(Url.pages.project.new)}
-            render={(p) => (
-              <ContainerWrap>
-                <LazyNewProject
-                  key="newProject"
-                  model={props.model}
-                  user={props.user}
-                  client={props.client}
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
-          <Route
-            path="/projects/:subUrl+"
-            render={(p) => (
-              <LazyProjectView
-                key="project/view"
-                client={props.client}
-                params={props.params}
+          >
+            <ContainerWrap>
+              <LazyProjectList />
+            </ContainerWrap>
+          </Route>
+          <Route exact path={Url.get(Url.pages.project.new)}>
+            <ContainerWrap>
+              <LazyNewProject
                 model={props.model}
                 user={props.user}
-                blockAnonymous={blockAnonymous}
-                notifications={notifications}
-                socket={socket}
-                {...p}
+                client={props.client}
               />
-            )}
-          />
+            </ContainerWrap>
+          </Route>
+          <Route path="/projects/:subUrl+">
+            <LazyProjectView
+              client={props.client}
+              params={props.params}
+              model={props.model}
+              user={props.user}
+              blockAnonymous={blockAnonymous}
+              notifications={notifications}
+              socket={socket}
+            />
+          </Route>
           <Route exact path={Url.get(Url.pages.sessions)}>
             {!user.logged ? <LazyAnonymousSessionsList /> : <Redirect to="/" />}
           </Route>
-          <Route
-            path="/datasets/:identifier/add"
-            render={(p) => (
-              <LazyDatasetAddToProject
-                key="addDatasetNew"
-                insideProject={false}
-                identifier={p.match.params?.identifier?.replaceAll("-", "")}
-                datasets={p.datasets}
-                model={props.model}
-              />
-            )}
-          />
-          <Route
-            path="/datasets/:identifier"
-            render={(p) => (
-              <LazyShowDataset
-                key="datasetPreview"
-                {...p}
-                insideProject={false}
-                identifier={p.match.params?.identifier?.replaceAll("-", "")}
-                client={props.client}
-                projectsUrl="/projects"
-                selectedDataset={p.match.params.datasetId}
-                datasetCoordinator={
-                  new DatasetCoordinator(
-                    props.client,
-                    props.model.subModel("dataset")
-                  )
-                }
-                logged={props.user.logged}
-                model={props.model}
-              />
-            )}
-          />
+          <Route path="/datasets/:identifier/add">
+            <LazyDatasetAddToProject
+              insideProject={false}
+              model={props.model}
+            />
+          </Route>
+          <Route path="/datasets/:identifier">
+            <LazyShowDataset
+              insideProject={false}
+              client={props.client}
+              projectsUrl="/projects"
+              datasetCoordinator={
+                new DatasetCoordinator(
+                  props.client,
+                  props.model.subModel("dataset")
+                )
+              }
+              logged={props.user.logged}
+              model={props.model}
+            />
+          </Route>
           <Route path="/datasets">
             <Redirect to="/search?type=dataset" />
           </Route>
-          <Route
-            path="/notifications"
-            render={(p) => (
-              <ContainerWrap>
-                <LazyNotificationsPage
-                  key="notifications"
-                  client={props.client}
-                  model={props.model}
-                  notifications={notifications}
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
+          <Route path="/notifications">
+            <ContainerWrap>
+              <LazyNotificationsPage />
+            </ContainerWrap>
+          </Route>{" "}
           <Route path={Url.get(Url.pages.projectsV2.new)}>
             <ContainerWrap>
               <LazyProjectV2New />
@@ -289,18 +214,11 @@ function CentralContentContainer(props) {
               <LazyProjectV2List />
             </ContainerWrap>
           </Route>
-          <Route
-            path="/style-guide"
-            render={(p) => (
-              <ContainerWrap>
-                <LazyStyleGuide
-                  key="style-guide"
-                  baseUrl="/style-guide"
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
+          <Route path="/style-guide">
+            <ContainerWrap>
+              <LazyStyleGuide />
+            </ContainerWrap>
+          </Route>
           {userInfo?.isAdmin && (
             <Route path="/admin">
               <ContainerWrap>
@@ -308,7 +226,9 @@ function CentralContentContainer(props) {
               </ContainerWrap>
             </Route>
           )}
-          <Route path="*" render={(p) => <LazyNotFound {...p} />} />
+          <Route path="*">
+            <LazyNotFound />
+          </Route>
         </Switch>
       </AppContext.Provider>
     </div>
@@ -316,15 +236,16 @@ function CentralContentContainer(props) {
 }
 
 function App(props) {
+  const location = useLocation();
+
   const [webSocket, setWebSocket] = useState(null);
   const [notifications, setNotifications] = useState(null);
 
   useEffect(() => {
-    const getLocation = () => props.location;
+    const getLocation = () => location;
     const notificationManager = new NotificationsManager(
       props.model,
-      props.client,
-      getLocation
+      props.client
     );
     setNotifications(notificationManager);
 
@@ -347,7 +268,7 @@ function App(props) {
       )
     );
     // ! Ignoring the rule of hooks creates issues, we should refactor this hook
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Avoid rendering the application while authenticating the user
   const user = useLegacySelector((state) => state.stateModel.user);
@@ -366,28 +287,15 @@ function App(props) {
 
   return (
     <Fragment>
-      <Route
-        render={(p) =>
-          user.logged || p.location.pathname !== Url.get(Url.pages.landing) ? (
-            <RenkuNavBar {...p} {...props} notifications={notifications} />
-          ) : null
-        }
-      />
+      <RenkuNavBar {...props} notifications={notifications} />
       <CentralContentContainer
         notifications={notifications}
         socket={webSocket}
+        location={location}
         {...props}
       />
-      <Route
-        render={(propsRoute) => (
-          <FooterNavbar {...propsRoute} params={props.params} />
-        )}
-      />
-      <Route
-        render={(propsRoute) => (
-          <Cookie {...propsRoute} params={props.params} />
-        )}
-      />
+      <FooterNavbar params={props.params} />
+      <Cookie />
       <ToastContainer />
     </Fragment>
   );

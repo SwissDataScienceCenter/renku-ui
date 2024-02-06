@@ -51,7 +51,7 @@ function StatuspageBanner(props) {
   const VisibleBanner = connect(mapStateToProps)(BannerPresent);
   return (
     <VisibleBanner
-      store={props.model.reduxStore}
+      store={props.model?.reduxStore}
       siteStatusUrl={props.siteStatusUrl}
       location={props.location}
     />
