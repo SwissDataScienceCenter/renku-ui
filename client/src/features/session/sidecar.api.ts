@@ -49,7 +49,7 @@ const baseQueryWithMethodNotAllowedHandler: BaseQueryFn<
   };
   const result = await baseQuery(newArgs, api, extraOptions);
 
-  // Handle HTTP 405 responses by re-ussuing the original query
+  // Handle HTTP 405 responses by re-issuing the original query
   if (result.error && result.error.status === 405) {
     const resultAgain = await baseQuery(newArgs, api, extraOptions);
     return resultAgain;
