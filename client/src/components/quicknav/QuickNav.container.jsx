@@ -17,14 +17,14 @@
  */
 
 import { useEffect, useState } from "react";
-import { useHistory, withRouter } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
-import { QuickNavPresent } from "./QuickNav.present";
+import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 import {
   TOTAL_QUERIES,
   useSearchLastQueriesQuery,
 } from "../../features/recentUserActivity/RecentUserActivityApi";
-import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
+import { QuickNavPresent } from "./QuickNav.present";
 
 export const defaultSuggestionQuickBar = {
   title: "",
