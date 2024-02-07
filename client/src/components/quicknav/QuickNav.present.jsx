@@ -22,7 +22,11 @@ import Autosuggest from "react-autosuggest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
+// ? react-autosuggest styles are defined there q_q
+// ? also, the order of import matters here q_q
+import "../../project/new/Project.style.css";
 import "./QuickNav.style.css";
+
 class QuickNavPresent extends Component {
   constructor(props) {
     super(props);

@@ -72,7 +72,7 @@ export const defaultAnonymousSuggestionQuickBar = {
   ],
 };
 
-const QuickNavContainerWithRouter = ({ user }) => {
+export function QuickNavContainer({ user }) {
   const history = useHistory();
 
   const {
@@ -187,7 +187,4 @@ const QuickNavContainerWithRouter = ({ user }) => {
       suggestions={lastQueriesSuggestions}
     />
   );
-};
-
-const QuickNavContainer = withRouter(QuickNavContainerWithRouter);
-export { QuickNavContainer };
+}
