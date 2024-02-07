@@ -17,10 +17,9 @@
  */
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { uniqueId as uniqueIdFn } from "lodash";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { ThrottledTooltip } from "./Tooltip";
+import { UncontrolledTooltip } from "reactstrap";
 
 /**
  *  renku-ui
@@ -148,16 +147,17 @@ function ExternalDocsLink(props) {
  * @param {string} [tooltip] - the text of the tooltip
  */
 function IconLink(props) {
-  const [uniqueId] = useState(`icon-link-${uniqueIdFn()}`);
-  let iconClass = "icon-link ";
-  if (props.className) iconClass += props.className;
+  const ref = useRef(null);
 
   return (
     <span>
-      <Link to={props.to} id={uniqueId}>
-        <FontAwesomeIcon className={iconClass} icon={props.icon} />
+      <Link ref={ref} to={props.to}>
+        <FontAwesomeIcon
+          className={cx("icon-link", props.className)}
+          icon={props.icon}
+        />
       </Link>
-      <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
+      <UncontrolledTooltip target={ref}>{props.tooltip}</UncontrolledTooltip>
     </span>
   );
 }
@@ -181,7 +181,7 @@ function ExternalIconLinkWithTooltip(props) {
         <FontAwesomeIcon className={className} icon={props.icon} />
         {props.title}
       </a>
-      <ThrottledTooltip target={ref} tooltip={props.tooltip} />
+      <UncontrolledTooltip target={ref}>{props.tooltip}</UncontrolledTooltip>
     </span>
   );
 }

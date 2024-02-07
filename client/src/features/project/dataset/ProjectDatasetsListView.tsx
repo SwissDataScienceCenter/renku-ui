@@ -1,12 +1,11 @@
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Button, Row, Col } from "reactstrap";
+import { Button, Col, Row, UncontrolledTooltip } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
-import LazyMarkdownTextExcerpt from "../../../components/markdown/LazyMarkdownTextExcerpt";
-import { Loader } from "../../../components/Loader";
 import ListDisplay from "../../../components/List";
-import { ThrottledTooltip } from "../../../components/Tooltip";
+import { Loader } from "../../../components/Loader";
+import LazyMarkdownTextExcerpt from "../../../components/markdown/LazyMarkdownTextExcerpt";
 import { getUpdatedDatasetImage } from "../../../dataset/DatasetFunctions";
 
 import type { DatasetCore } from "../project.types";
@@ -81,10 +80,12 @@ function AddDatasetButton({
   locked,
   newDatasetUrl,
 }: AddDatasetButtonProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
   if (accessLevel < ACCESS_LEVELS.MAINTAINER) return null;
   if (locked) {
     return (
-      <div id="add-dataset-button">
+      <div id="add-dataset-button" ref={ref}>
         <Button
           data-cy="add-dataset-button"
           className="btn-outline-rk-pink"
@@ -92,10 +93,9 @@ function AddDatasetButton({
         >
           Add Dataset
         </Button>
-        <ThrottledTooltip
-          target="add-dataset-button"
-          tooltip="Cannot add dataset until project modification finishes."
-        />
+        <UncontrolledTooltip target={ref}>
+          Cannot add dataset until project modification finishes.
+        </UncontrolledTooltip>
       </div>
     );
   }

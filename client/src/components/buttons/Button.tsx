@@ -38,8 +38,8 @@ import {
   DropdownToggle,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
-import { ThrottledTooltip } from "../Tooltip";
 import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
 
 type ButtonWithMenuProps = {
@@ -249,9 +249,9 @@ function InlineSubmitButton({
     </Button>
   ) : null;
 
-  const tooltip = pristine ? (
-    <ThrottledTooltip target={id} tooltip={tooltipPristine} />
-  ) : null;
+  const tooltip = pristine && (
+    <UncontrolledTooltip target={id}>{tooltipPristine}</UncontrolledTooltip>
+  );
 
   return (
     <div id={id}>
