@@ -31,11 +31,12 @@ import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { Url } from "../../../utils/helpers/url";
 
+import SessionsV2 from "../../sessionsV2/SessionsV2";
+import type { Project } from "../api/projectV2.api";
 import {
   isErrorResponse,
   useGetProjectsByProjectIdQuery,
 } from "../api/projectV2.enhanced-api";
-import type { Project } from "../api/projectV2.api";
 import WipBadge from "../shared/WipBadge";
 
 import {
@@ -161,6 +162,7 @@ export function ProjectV2DescriptionAndRepositories({
         <Label>Repositories</Label>
         <ProjectV2Repositories repositories={project.repositories} />
       </div>
+      <SessionsV2 />
     </>
   );
 }
