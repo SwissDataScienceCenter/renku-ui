@@ -51,6 +51,12 @@ import WhoWeAre from "./WhoWeAre/WhoWeAre";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
 
+// ? react-autosuggest styles are defined there q_q
+// ? also, the order of import matters here q_q
+import "../project/new/Project.style.css";
+// ? the "quick-nav" class is used in this file
+import "../components/quicknav/QuickNav.style.css";
+
 export default function AnonymousHome() {
   const { client, model, params } = useContext(AppContext);
 
