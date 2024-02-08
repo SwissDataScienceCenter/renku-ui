@@ -5,7 +5,7 @@
 ### Bug Fixes
 
 - update UI routing ([#3009](https://github.com/SwissDataScienceCenter/renku-ui/pull/3009), [#2605](https://github.com/SwissDataScienceCenter/renku-ui/issues/2605)) by @leafty
-- fix landing page parallax background ([#3010]https://github.com/SwissDataScienceCenter/renku-ui/pull/3010) by @leafty
+- fix landing page parallax background ([#3010](https://github.com/SwissDataScienceCenter/renku-ui/pull/3010)) by @leafty
 - temporarily fix search bar styles ([#3019](https://github.com/SwissDataScienceCenter/renku-ui/pull/3019)) by @leafty
 - update the font part of the style guide ([#3018](https://github.com/SwissDataScienceCenter/renku-ui/pull/3018)) by @leafty
 - handle jsonrpc improper redirects ([#3017](https://github.com/SwissDataScienceCenter/renku-ui/pull/3017), [#2966](https://github.com/SwissDataScienceCenter/renku-ui/issues/2966)) by @leafty
