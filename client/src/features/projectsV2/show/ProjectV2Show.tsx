@@ -55,7 +55,7 @@ function ProjectV2Header({
   setSettingEdit,
   settingEdit,
 }: ProjectV2HeaderProps) {
-  const projectListUrl = Url.get(Url.pages.projectsV2.list);
+  const projectListUrl = Url.get(Url.pages.nativeProjects.list);
   return (
     <>
       <div>{project.slug}</div>
@@ -179,7 +179,9 @@ export default function ProjectV2Show() {
       return (
         <div>
           Project does not exist, or you are not authorized to access it.{" "}
-          <Link to={Url.get(Url.pages.projectsV2.list)}>Return to list</Link>
+          <Link to={Url.get(Url.pages.nativeProjects.list)}>
+            Return to list
+          </Link>
         </div>
       );
     }
