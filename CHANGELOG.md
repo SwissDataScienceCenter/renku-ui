@@ -4,11 +4,11 @@
 
 ### Bug Fixes
 
-- update UI routing https://github.com/SwissDataScienceCenter/renku-ui/pull/3009 by @leafty
-- fix landing page parallax background https://github.com/SwissDataScienceCenter/renku-ui/pull/3010 by @leafty
-- temporarily fix search bar styles https://github.com/SwissDataScienceCenter/renku-ui/pull/3019 by @leafty
-- update the font part of the style guide https://github.com/SwissDataScienceCenter/renku-ui/pull/3018 by @leafty
-- handle jsonrpc improper redirects https://github.com/SwissDataScienceCenter/renku-ui/pull/3017 by @leafty
+- update UI routing ([#3009](https://github.com/SwissDataScienceCenter/renku-ui/pull/3009), [#2605](https://github.com/SwissDataScienceCenter/renku-ui/issues/2605)) by @leafty
+- fix landing page parallax background ([#3010]https://github.com/SwissDataScienceCenter/renku-ui/pull/3010) by @leafty
+- temporarily fix search bar styles ([#3019](https://github.com/SwissDataScienceCenter/renku-ui/pull/3019)) by @leafty
+- update the font part of the style guide ([#3018](https://github.com/SwissDataScienceCenter/renku-ui/pull/3018)) by @leafty
+- handle jsonrpc improper redirects ([#3017](https://github.com/SwissDataScienceCenter/renku-ui/pull/3017), [#2966](https://github.com/SwissDataScienceCenter/renku-ui/issues/2966)) by @leafty
 
 ## [3.20.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.19.0...3.20.0) (2024-02-06)
 
