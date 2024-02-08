@@ -1,7 +1,7 @@
 import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
 
-import { projectV2Api as api } from "./projectV2.api";
+import { projectAndNamespaceApi as api } from "././namespace.api";
 import type {
   ErrorResponse,
   GetProjectsApiArg,
@@ -9,15 +9,51 @@ import type {
   ProjectsList,
 } from "./projectV2.api";
 
+import type {
+  GetNamespacesApiArg,
+  GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
+  NamespacesList,
+} from "./namespace.api";
+
+interface GetNamespacesApiResponse extends AbstractKgPaginatedResponse {
+  namespaces: GetNamespacesApiResponseOrig;
+}
+
 interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
   projects: GetProjectsApiResponseOrig;
 }
 
 const injectedApi = api.injectEndpoints({
   endpoints: (build) => ({
+    getNamespacesPaged: build.query<
+      GetNamespacesApiResponse,
+      GetNamespacesApiArg
+    >({
+      query: (queryArg) => ({
+        url: "/namespaces",
+        params: { page: queryArg.page, per_page: queryArg.perPage },
+      }),
+      transformResponse: (response, meta, queryArg) => {
+        const namespaces = response as NamespacesList;
+        const headers = meta?.response?.headers;
+        const headerResponse = processPaginationHeaders(
+          headers,
+          queryArg,
+          namespaces
+        );
+
+        return {
+          namespaces,
+          page: headerResponse.page,
+          perPage: headerResponse.perPage,
+          total: headerResponse.total,
+          totalPages: headerResponse.totalPages,
+        };
+      },
+    }),
     getProjectsPaged: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
-        url: `/projects`,
+        url: "/projects",
         params: { page: queryArg.page, per_page: queryArg.perPage },
       }),
       transformResponse: (response, meta, queryArg) => {
@@ -77,6 +113,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
 
 export { enhancedApi as projectV2Api };
 export const {
+  // project hooks
   useGetProjectsPagedQuery: useGetProjectsQuery,
   usePostProjectsMutation,
   useGetProjectsByProjectIdQuery,
@@ -85,6 +122,16 @@ export const {
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+
+  // namespace hooks
+  useGetNamespacesPagedQuery: useGetNamespacesQuery,
+  usePostNamespacesMutation,
+  useGetNamespacesByNamespaceSlugQuery,
+  usePatchNamespacesByNamespaceSlugMutation,
+  useDeleteNamespacesByNamespaceSlugMutation,
+  useGetNamespacesByNamespaceSlugMembersQuery,
+  usePatchNamespacesByNamespaceSlugMembersMutation,
+  useDeleteNamespacesByNamespaceSlugMembersAndMemberIdMutation,
 } = enhancedApi;
 
 export function isErrorResponse(arg: unknown): arg is { data: ErrorResponse } {
