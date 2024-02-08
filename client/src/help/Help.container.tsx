@@ -22,12 +22,17 @@
  *  Help.container.js
  *  Container components for help
  */
+
+import { useContext } from "react";
+
+import AppContext from "../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 import { Help as HelpPresent } from "./Help.present";
 
-interface HelpProps {
-  statuspageId: string;
-}
+export default function Help() {
+  const { params } = useContext(AppContext);
+  const statuspageId =
+    params?.STATUSPAGE_ID ?? DEFAULT_APP_PARAMS.STATUSPAGE_ID;
 
-export default function Help({ statuspageId }: HelpProps) {
   return <HelpPresent statuspageId={statuspageId} />;
 }

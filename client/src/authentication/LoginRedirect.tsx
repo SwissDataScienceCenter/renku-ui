@@ -16,11 +16,14 @@
  * limitations under the License.
  */
 
-import React from "react";
-import type { AppParams } from "../utils/context/appParams.types";
+import { useContext, useEffect } from "react";
+import { useLocation } from "react-router";
+
+import AppContext from "../utils/context/appContext";
 import { RenkuQueryParams } from "./Authentication.container";
 
-function createLoginUrl(url: string) {
+// ? Exported for testing
+export function createLoginUrl(url: string) {
   const redirectUrl = new URL(url);
   if (!redirectUrl.search.includes(RenkuQueryParams.login))
     redirectUrl.searchParams.append(
@@ -31,17 +34,15 @@ function createLoginUrl(url: string) {
   return redirectUrl.toString();
 }
 
-type LocationRedirectProps = {
-  params: AppParams;
-  location: {
-    state?: {
-      previous?: string;
-    };
-  };
-};
+export default function LoginRedirect() {
+  const location = useLocation<{ previous?: string }>();
+  const { params } = useContext(AppContext);
 
-function LoginRedirect({ location, params }: LocationRedirectProps) {
-  React.useEffect(() => {
+  useEffect(() => {
+    if (!params) {
+      return;
+    }
+
     // build redirect url
     let url = params.BASE_URL;
     // always pass "previous" with the current `location.pathname`
@@ -53,11 +54,6 @@ function LoginRedirect({ location, params }: LocationRedirectProps) {
 
     // set new location
     window.location.replace(authUrl);
-  });
+  }, [location.state, params]);
   return <div className="bg-primary h-100"></div>;
 }
-
-export default LoginRedirect;
-
-// For testing
-export { createLoginUrl };
