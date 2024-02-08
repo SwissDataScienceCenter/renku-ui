@@ -16,18 +16,16 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 
 import PageLoader from "../components/PageLoader";
 
 const AnonymousHome = lazy(() => import("./AnonymousHome"));
 
-export default function LazyAnonymousHome(
-  props: ComponentProps<typeof AnonymousHome>
-) {
+export default function LazyAnonymousHome() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <AnonymousHome {...props} />
+      <AnonymousHome />
     </Suspense>
   );
 }

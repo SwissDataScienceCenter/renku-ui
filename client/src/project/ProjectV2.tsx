@@ -3,17 +3,9 @@
  * New implementation of the Project component in TypeScript.
  */
 
-import type { RouteComponentProps, StaticContext } from "react-router";
+import { useHistory, useRouteMatch } from "react-router";
 
 import ProjectV1 from "./Project";
-
-type RouterProps = RouteComponentProps<
-  {
-    subUrl: string;
-  },
-  StaticContext,
-  unknown
->;
 
 interface ProjectViewProps {
   client: unknown;
@@ -23,13 +15,12 @@ interface ProjectViewProps {
   blockAnonymous: boolean;
   notifications: unknown;
   socket: unknown;
-  history: Pick<RouterProps, "history">;
-  location: Pick<RouterProps, "location">;
-  match: Pick<RouterProps, "match">;
-  staticContext?: Pick<RouterProps, "staticContext">;
 }
 
 function ProjectView(props: ProjectViewProps) {
+  const history = useHistory();
+  const match = useRouteMatch();
+
   return (
     <ProjectV1.View
       client={props.client}
@@ -39,10 +30,9 @@ function ProjectView(props: ProjectViewProps) {
       blockAnonymous={props.blockAnonymous}
       notifications={props.notifications}
       socket={props.socket}
-      history={props.history}
-      location={props.location}
-      match={props.match}
-      staticContext={props.staticContext}
+      history={history}
+      location={history.location}
+      match={match}
     />
   );
 }
