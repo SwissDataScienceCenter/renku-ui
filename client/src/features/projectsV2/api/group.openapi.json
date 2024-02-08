@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "Renku Namespace Management Service",
-    "description": "Service that allows creating, updating, deleting, and managing Renku native namespaces.\nAll errors have the same format as the schema called ErrorResponse.\n",
+    "title": "Renku Group Management Service",
+    "description": "Service that allows creating, updating, deleting, and managing Renku v2 groups.\nAll errors have the same format as the schema called ErrorResponse.\n",
     "version": "0.1.0"
   },
   "servers": [
@@ -14,9 +14,9 @@
     }
   ],
   "paths": {
-    "/namespaces": {
+    "/groups": {
       "get": {
-        "summary": "Get all namespaces",
+        "summary": "Get all groups",
         "parameters": [
           {
             "in": "query",
@@ -44,11 +44,11 @@
         ],
         "responses": {
           "200": {
-            "description": "List of namespaces",
+            "description": "List of groups",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NamespacesList"
+                  "$ref": "#/components/schemas/GroupResponseList"
                 }
               }
             },
@@ -87,27 +87,27 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["namespaces"]
+        "tags": ["groups"]
       },
       "post": {
-        "summary": "Create a new namespace",
+        "summary": "Create a new group",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NamespacePost"
+                "$ref": "#/components/schemas/GroupPostRequest"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "The namespace was created",
+            "description": "The group was created",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Namespace"
+                  "$ref": "#/components/schemas/GroupResponse"
                 }
               }
             }
@@ -116,35 +116,35 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["namespaces"]
+        "tags": ["groups"]
       }
     },
-    "/namespaces/{namespace_slug}": {
+    "/groups/{group_slug}": {
       "get": {
-        "summary": "Get a namespace",
+        "summary": "Get a group",
         "parameters": [
           {
             "in": "path",
-            "name": "namespace_slug",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "The namespace",
+            "description": "The group",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Namespace"
+                  "$ref": "#/components/schemas/GroupResponse"
                 }
               }
             }
           },
           "404": {
-            "description": "The namespace does not exist",
+            "description": "The group does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -157,17 +157,17 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["namespaces"]
+        "tags": ["groups"]
       },
       "patch": {
-        "summary": "Update specific fields of an existing namespace",
+        "summary": "Update specific fields of an existing group",
         "parameters": [
           {
             "in": "path",
-            "name": "namespace_slug",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           }
         ],
@@ -176,24 +176,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NamespacePatch"
+                "$ref": "#/components/schemas/GroupPatchRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "The patched namespace",
+            "description": "The patched group",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Namespace"
+                  "$ref": "#/components/schemas/GroupResponse"
                 }
               }
             }
           },
           "404": {
-            "description": "The namespace does not exist",
+            "description": "The group does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -206,57 +206,57 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["namespaces"]
+        "tags": ["groups"]
       },
       "delete": {
-        "summary": "Remove a namespace",
+        "summary": "Remove a group",
         "parameters": [
           {
             "in": "path",
-            "name": "namespace_slug",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           }
         ],
         "responses": {
           "204": {
-            "description": "The namespace was removed or did not exist in the first place"
+            "description": "The group was removed or did not exist in the first place"
           },
           "default": {
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["namespaces"]
+        "tags": ["groups"]
       }
     },
-    "/namespaces/{namespace_slug}/members": {
+    "/groups/{group_slug}/members": {
       "get": {
-        "summary": "Get all members of a namespace",
+        "summary": "Get all members of a group",
         "parameters": [
           {
             "in": "path",
-            "name": "namespace_slug",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "The namespace's members",
+            "description": "The group's members",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FullUsersWithRoles"
+                  "$ref": "#/components/schemas/GroupMemberResponseList"
                 }
               }
             }
           },
           "404": {
-            "description": "The namespace does not exist",
+            "description": "The group does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -269,17 +269,17 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["namespaces"]
+        "tags": ["groups"]
       },
       "patch": {
-        "summary": "New members in the list are added to the namespace's members. If a member\nalready exists, then only the role is updated. No member will be deleted\nin this endpoint.\n",
+        "summary": "New members in the list are added to the group's members. If a member\nalready exists, then only the role is updated. No member will be deleted\nin this endpoint.\n",
         "parameters": [
           {
             "in": "path",
-            "name": "namespace_slug",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           }
         ],
@@ -288,17 +288,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MembersWithRoles"
+                "$ref": "#/components/schemas/GroupMemberPatchRequestList"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "The namespace's members were updated"
+            "description": "The group's members were updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupMemberPatchRequestList"
+                }
+              }
+            }
           },
           "404": {
-            "description": "The namespace does not exist",
+            "description": "The group does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -311,24 +318,24 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["namespaces"]
+        "tags": ["groups"]
       }
     },
-    "/namespaces/{namespace_slug}/members/{member_id}": {
+    "/groups/{group_slug}/members/{user_id}": {
       "delete": {
-        "summary": "Remove a member from a namespace",
+        "summary": "Remove a member from a group",
         "parameters": [
           {
             "in": "path",
-            "name": "namespace_slug",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           },
           {
             "in": "path",
-            "name": "member_id",
+            "name": "user_id",
             "description": "This is user's KeyCloak ID",
             "required": true,
             "schema": {
@@ -338,10 +345,10 @@
         ],
         "responses": {
           "204": {
-            "description": "The member was removed or wasn't part of namespace's members."
+            "description": "The member was removed or wasn't part of group's members."
           },
           "404": {
-            "description": "The namespace does not exist",
+            "description": "The group does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -354,29 +361,28 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["namespaces"]
+        "tags": ["groups"]
       }
     }
   },
   "components": {
     "schemas": {
-      "NamespacesList": {
-        "description": "A list of Renku namespaces",
+      "GroupResponseList": {
+        "description": "A list of Renku groups",
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Namespace"
-        },
-        "minItems": 0
+          "$ref": "#/components/schemas/GroupResponse"
+        }
       },
-      "Namespace": {
-        "description": "A Renku native namespace definition and metadata",
+      "GroupResponse": {
+        "description": "A Renku group definition and metadata",
         "type": "object",
         "properties": {
           "id": {
             "$ref": "#/components/schemas/Ulid"
           },
           "name": {
-            "$ref": "#/components/schemas/Name"
+            "$ref": "#/components/schemas/GroupName"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -385,29 +391,27 @@
             "$ref": "#/components/schemas/CreationDate"
           },
           "created_by": {
-            "$ref": "#/components/schemas/Member"
+            "$ref": "#/components/schemas/KeycloakId"
           },
           "description": {
             "$ref": "#/components/schemas/Description"
           }
         },
-        "required": ["id", "name", "created_by", "creation_date"],
+        "required": ["id", "name", "slug", "created_by", "creation_date"],
         "example": {
           "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
-          "name": "R-Project Namespace",
+          "name": "R-Project Group",
           "slug": "r-project",
-          "created_by": {
-            "id": "owner-KC-id"
-          }
+          "created_by": "owner-keycloak-id"
         }
       },
-      "NamespacePost": {
-        "description": "Namespace metadata to be created in Renku",
+      "GroupPostRequest": {
+        "description": "Group metadata to be created in Renku",
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "name": {
-            "$ref": "#/components/schemas/Name"
+            "$ref": "#/components/schemas/GroupName"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -416,15 +420,15 @@
             "$ref": "#/components/schemas/Description"
           }
         },
-        "required": ["name"]
+        "required": ["name", "slug"]
       },
-      "NamespacePatch": {
+      "GroupPatchRequest": {
         "type": "object",
-        "description": "Patch of a namespace",
+        "description": "Patch of a group",
         "additionalProperties": false,
         "properties": {
           "name": {
-            "$ref": "#/components/schemas/Name"
+            "$ref": "#/components/schemas/GroupName"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -442,121 +446,35 @@
         "pattern": "^[A-Z0-9]{26}$",
         "format": "ulid"
       },
-      "Name": {
-        "description": "Renku namespace name",
+      "GroupName": {
+        "description": "Renku group name",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
-        "example": "My Renku Namespace :)"
+        "example": "My Renku Group :)"
       },
       "Slug": {
-        "description": "A command-line/url friendly name for a namespace",
+        "description": "A command-line/url friendly name for a group",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
         "pattern": "^[a-z0-9]+[a-z0-9._-]*$",
-        "example": "my-renku-namespace"
+        "example": "my-renku-group"
       },
       "CreationDate": {
-        "description": "The date and time the namespace was created (time is always in UTC)",
+        "description": "The date and time the group was created (in UTC and ISO-8601 format)",
         "type": "string",
         "format": "date-time",
         "example": "2023-11-01T17:32:28Z"
       },
       "Description": {
-        "description": "A description for the namespace",
+        "description": "A description for the group",
         "type": "string",
         "maxLength": 500
       },
-      "Member": {
-        "description": "A KeyCloak user",
+      "GroupMemberResponse": {
+        "description": "A KeyCloak user that is member of a group",
         "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/KeyCloakId"
-          }
-        },
-        "required": ["id"],
-        "example": {
-          "id": "some-keycloak-user-id"
-        }
-      },
-      "KeyCloakId": {
-        "description": "Member's KeyCloak ID",
-        "type": "string",
-        "pattern": "^[A-Za-z0-9-]+$",
-        "minLength": 1,
-        "example": "123-keycloak-user-id-456"
-      },
-      "MembersWithRoles": {
-        "description": "List of members and their access level to the namespace",
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/MemberWithRole"
-        },
-        "minItems": 0,
-        "example": [
-          {
-            "id": "some-keycloak-user-id",
-            "role": "owner"
-          },
-          {
-            "id": "another-keycloak-user-id",
-            "role": "member"
-          }
-        ]
-      },
-      "MemberWithRole": {
-        "description": "A member and the access level to the namespace",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "member": {
-            "$ref": "#/components/schemas/Member"
-          },
-          "role": {
-            "$ref": "#/components/schemas/Role"
-          }
-        },
-        "required": ["member", "role"],
-        "example": {
-          "member": {
-            "id": "some-keycloak-user-id"
-          },
-          "role": "owner"
-        }
-      },
-      "FullUsersWithRoles": {
-        "description": "List of members with full info and their access level to the namespace",
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/FullUserWithRole"
-        },
-        "minItems": 0
-      },
-      "FullUserWithRole": {
-        "description": "A member with full info (email, name, ...) and the access level to the namespace",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "member": {
-            "$ref": "#/components/schemas/UserWithId"
-          },
-          "role": {
-            "$ref": "#/components/schemas/Role"
-          }
-        },
-        "required": ["member", "role"]
-      },
-      "Role": {
-        "description": "Possible roles of members in a namespace",
-        "type": "string",
-        "enum": ["member", "owner"]
-      },
-      "UserWithId": {
-        "type": "object",
-        "description": "This is copied from ../users/api.spec.yaml",
         "additionalProperties": false,
         "properties": {
           "id": {
@@ -570,13 +488,85 @@
           },
           "last_name": {
             "$ref": "#/components/schemas/UserFirstLastName"
+          },
+          "role": {
+            "$ref": "#/components/schemas/GroupRole"
           }
         },
-        "required": ["id"],
+        "required": ["id", "role"],
         "example": {
-          "id": "some-random-keycloak-id",
-          "email": "user@gmail.com"
+          "id": "some-keycloak-user-id",
+          "role": "owner"
         }
+      },
+      "GroupMemberPatchRequest": {
+        "description": "A KeyCloak user that is member of a group",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/UserId"
+          },
+          "role": {
+            "$ref": "#/components/schemas/GroupRole"
+          }
+        },
+        "required": ["id", "role"],
+        "example": {
+          "id": "some-keycloak-user-id",
+          "role": "owner"
+        }
+      },
+      "KeycloakId": {
+        "description": "Member's KeyCloak ID",
+        "type": "string",
+        "pattern": "^[A-Za-z0-9-]+$",
+        "minLength": 1,
+        "example": "123-keycloak-user-id-456"
+      },
+      "GroupMemberResponseList": {
+        "description": "List of members and their access level to the group",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GroupMemberResponse"
+        },
+        "minItems": 0,
+        "example": [
+          {
+            "id": "some-keycloak-user-id",
+            "role": "owner"
+          },
+          {
+            "id": "another-keycloak-user-id",
+            "role": "member",
+            "email": "user@email.com",
+            "first_name": "John",
+            "last_name": "Doe"
+          }
+        ]
+      },
+      "GroupMemberPatchRequestList": {
+        "description": "List of members and their access level to the group",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GroupMemberPatchRequest"
+        },
+        "minItems": 0,
+        "example": [
+          {
+            "id": "some-keycloak-user-id",
+            "role": "owner"
+          },
+          {
+            "id": "another-keycloak-user-id",
+            "role": "member"
+          }
+        ]
+      },
+      "GroupRole": {
+        "description": "Possible roles of members in a group",
+        "type": "string",
+        "enum": ["member", "owner"]
       },
       "UserId": {
         "type": "string",
