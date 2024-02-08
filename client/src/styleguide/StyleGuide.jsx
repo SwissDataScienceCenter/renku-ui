@@ -34,6 +34,7 @@ import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
 import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
+import { ExternalLink } from "../components/ExternalLinks";
 
 function Overview() {
   return (
@@ -52,7 +53,10 @@ function FontsGuide() {
     <Fragment>
       <h2>Fonts / Typography</h2>
       <p>
-        <b>Font</b> <a href="https://www.ffonts.net">Calcutta</a>
+        <b>Font</b>{" "}
+        <ExternalLink url="https://github.com/rsms/inter" role="link">
+          Inter
+        </ExternalLink>
       </p>
       <h2>Styles</h2>
       <Table>
@@ -68,7 +72,7 @@ function FontsGuide() {
           <tr>
             <th scope="row">Page titles</th>
             <td>h2</td>
-            <td>weight: 500; size: 32px;</td>
+            <td>weight: 500;</td>
             <td>
               <h2>Lorem ipsum</h2>
             </td>
@@ -76,7 +80,7 @@ function FontsGuide() {
           <tr>
             <th scope="row">Section titles</th>
             <td>h3</td>
-            <td>weight: 500; size: 28px;</td>
+            <td>weight: 500;</td>
             <td>
               <h3>Lorem ipsum</h3>
             </td>
@@ -84,7 +88,7 @@ function FontsGuide() {
           <tr>
             <th scope="row">Normal text</th>
             <td>p/div</td>
-            <td>weight: 500; size: 16px;</td>
+            <td>weight: 500;</td>
             <td>Lorem ipsum dolor sit amet</td>
           </tr>
           <tr>
@@ -184,18 +188,15 @@ function StyleGuideHeader(props) {
   return (
     <Fragment>
       <Row className="pt-2 pb-3">
-        <Col className="d-flex mb-2 justify-content-between">
+        <Col>
           <div>
             <h2>Style Guide</h2>
             <div className="text-rk-text">
               An guide to the RenkuLab UI elements.
             </div>
           </div>
-          <div className="d-flex flex-column justify-content-between">
-            <div>Lorem ipsum dolor sit amet</div>
-            <div className="mt-2">
-              <StyleGuideNav urlMap={props.urlMap} />
-            </div>
+          <div className="mt-2">
+            <StyleGuideNav urlMap={props.urlMap} />
           </div>
         </Col>
       </Row>
