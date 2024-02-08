@@ -39,13 +39,18 @@ export default function NavbarV2() {
           <span className="me-1">Renku 2.0</span>
           <WipBadge />
         </div>
-        <Nav className={cx("navbar-nav", "flex-row", "gap-4")}>
+        <Nav className={cx("flex-row", "gap-4")} navbar>
           <NavItem>
             <RenkuNavLinkV2 end to="search" title="Search">
               Search
             </RenkuNavLinkV2>
           </NavItem>
           <NavItem>
+            <RenkuNavLinkV2 to="groups" title="Groups">
+              Groups
+            </RenkuNavLinkV2>
+          </NavItem>
+          <NavItem className="ms-2">
             <RenkuNavLinkV2 end to="projects" title="Projects">
               Projects
             </RenkuNavLinkV2>

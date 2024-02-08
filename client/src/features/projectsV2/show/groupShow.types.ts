@@ -16,22 +16,4 @@
  * limitations under the License.
  */
 
-import type { FieldValues } from "react-hook-form";
-
-import DescriptionFormField from "./DescriptionFormField";
-import type { GenericProjectFormFieldProps } from "./formField.types";
-
-export default function ProjectDescriptionFormField<T extends FieldValues>({
-  control,
-  errors,
-  name,
-}: GenericProjectFormFieldProps<T>) {
-  return (
-    <DescriptionFormField
-      control={control}
-      entityName="project"
-      errors={errors}
-      name={name}
-    />
-  );
-}
+export type SettingEditOption = "metadata" | "members" | null;

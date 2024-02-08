@@ -25,6 +25,10 @@ import LazyNotFound from "../../not-found/LazyNotFound";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
+
+import LazyV2GroupList from "../projectsV2/LazyGroupList";
+import LazyV2GroupNew from "../projectsV2/LazyGroupNew";
+import LazyV2GroupShow from "../projectsV2/LazyGroupShow";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
@@ -62,6 +66,14 @@ export default function RootV2() {
       <div className={cx("d-flex", "flex-grow-1", "h-100")}>
         <Routes>
           <Route
+            path="groups/*"
+            element={
+              <ContainerWrap>
+                <GroupsV2Routes />
+              </ContainerWrap>
+            }
+          />
+          <Route
             path="projects/*"
             element={
               // <ContainerWrap>
@@ -88,6 +100,16 @@ export default function RootV2() {
         </Routes>
       </div>
     </div>
+  );
+}
+
+function GroupsV2Routes() {
+  return (
+    <Routes>
+      <Route path="/" element={<LazyV2GroupList />} />
+      <Route path="new" element={<LazyV2GroupNew />} />
+      <Route path=":slug" element={<LazyV2GroupShow />} />
+    </Routes>
   );
 }
 
