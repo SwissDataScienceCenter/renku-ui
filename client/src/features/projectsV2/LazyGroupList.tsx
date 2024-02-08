@@ -13,25 +13,17 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-import type { FieldValues } from "react-hook-form";
+const NamespaceList = lazy(() => import("./list/GroupList"));
 
-import DescriptionFormField from "./DescriptionFormField";
-import type { GenericProjectFormFieldProps } from "./formField.types";
-
-export default function ProjectDescriptionFormField<T extends FieldValues>({
-  control,
-  errors,
-  name,
-}: GenericProjectFormFieldProps<T>) {
+export default function LazyGroupList() {
   return (
-    <DescriptionFormField
-      control={control}
-      entityName="project"
-      errors={errors}
-      name={name}
-    />
+    <Suspense fallback={<PageLoader />}>
+      <NamespaceList />
+    </Suspense>
   );
 }

@@ -1,7 +1,7 @@
 import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
 
-import { projectAndNamespaceApi as api } from "././namespace.api";
+import { projectAndGroupApi as api } from "././group.api";
 import type {
   ErrorResponse,
   GetProjectsApiArg,
@@ -10,13 +10,13 @@ import type {
 } from "./projectV2.api";
 
 import type {
-  GetNamespacesApiArg,
-  GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
-  NamespacesList,
-} from "./namespace.api";
+  GetGroupsApiArg,
+  GetGroupsApiResponse as GetGroupsApiResponseOrig,
+  GroupResponseList,
+} from "./group.api";
 
-interface GetNamespacesApiResponse extends AbstractKgPaginatedResponse {
-  namespaces: GetNamespacesApiResponseOrig;
+interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
+  groups: GetGroupsApiResponseOrig;
 }
 
 interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
@@ -25,25 +25,22 @@ interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
 
 const injectedApi = api.injectEndpoints({
   endpoints: (build) => ({
-    getNamespacesPaged: build.query<
-      GetNamespacesApiResponse,
-      GetNamespacesApiArg
-    >({
+    getGroupsPaged: build.query<GetGroupsApiResponse, GetGroupsApiArg>({
       query: (queryArg) => ({
-        url: "/namespaces",
+        url: "/groups",
         params: { page: queryArg.page, per_page: queryArg.perPage },
       }),
       transformResponse: (response, meta, queryArg) => {
-        const namespaces = response as NamespacesList;
+        const groups = response as GroupResponseList;
         const headers = meta?.response?.headers;
         const headerResponse = processPaginationHeaders(
           headers,
           queryArg,
-          namespaces
+          groups
         );
 
         return {
-          namespaces,
+          groups,
           page: headerResponse.page,
           perPage: headerResponse.perPage,
           total: headerResponse.total,
@@ -78,13 +75,31 @@ const injectedApi = api.injectEndpoints({
 });
 
 const enhancedApi = injectedApi.enhanceEndpoints({
-  addTagTypes: ["Project", "Members"],
+  addTagTypes: ["Group", "GroupMembers", "Project", "ProjectMembers"],
   endpoints: {
+    deleteGroupsByGroupSlug: {
+      invalidatesTags: ["Group"],
+    },
+    deleteGroupsByGroupSlugMembersAndUserId: {
+      invalidatesTags: ["GroupMembers"],
+    },
     deleteProjectsByProjectId: {
       invalidatesTags: ["Project"],
     },
     deleteProjectsByProjectIdMembersAndMemberId: {
-      invalidatesTags: ["Members"],
+      invalidatesTags: ["ProjectMembers"],
+    },
+    getGroups: {
+      providesTags: ["Group"],
+    },
+    getGroupsByGroupSlug: {
+      providesTags: ["Group"],
+    },
+    getGroupsPaged: {
+      providesTags: ["Group"],
+    },
+    getGroupsByGroupSlugMembers: {
+      providesTags: ["GroupMembers"],
     },
     // alternatively, define a function which is called with the endpoint definition as an argument
     getProjects: {
@@ -97,13 +112,22 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       providesTags: ["Project"],
     },
     getProjectsByProjectIdMembers: {
-      providesTags: ["Members"],
+      providesTags: ["ProjectMembers"],
+    },
+    patchGroupsByGroupSlug: {
+      invalidatesTags: ["Group"],
+    },
+    patchGroupsByGroupSlugMembers: {
+      invalidatesTags: ["GroupMembers"],
     },
     patchProjectsByProjectId: {
       invalidatesTags: ["Project"],
     },
     patchProjectsByProjectIdMembers: {
-      invalidatesTags: ["Members"],
+      invalidatesTags: ["ProjectMembers"],
+    },
+    postGroups: {
+      invalidatesTags: ["Group"],
     },
     postProjects: {
       invalidatesTags: ["Project"],
@@ -124,14 +148,14 @@ export const {
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
 
   // namespace hooks
-  useGetNamespacesPagedQuery: useGetNamespacesQuery,
-  usePostNamespacesMutation,
-  useGetNamespacesByNamespaceSlugQuery,
-  usePatchNamespacesByNamespaceSlugMutation,
-  useDeleteNamespacesByNamespaceSlugMutation,
-  useGetNamespacesByNamespaceSlugMembersQuery,
-  usePatchNamespacesByNamespaceSlugMembersMutation,
-  useDeleteNamespacesByNamespaceSlugMembersAndMemberIdMutation,
+  useGetGroupsPagedQuery: useGetGroupsQuery,
+  usePostGroupsMutation,
+  useGetGroupsByGroupSlugQuery,
+  usePatchGroupsByGroupSlugMutation,
+  useDeleteGroupsByGroupSlugMutation,
+  useGetGroupsByGroupSlugMembersQuery,
+  usePatchGroupsByGroupSlugMembersMutation,
+  useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
 } = enhancedApi;
 
 export function isErrorResponse(arg: unknown): arg is { data: ErrorResponse } {

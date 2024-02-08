@@ -37,6 +37,7 @@ import { Terms } from "./terms";
 import { User } from "./user";
 import { UserPreferences } from "./user-preferences";
 import { Versions } from "./versions";
+import { V2Group } from "./v2Group";
 import { Workflows } from "./workflows";
 
 const Fixtures = NewProject(
@@ -53,7 +54,11 @@ const Fixtures = NewProject(
                       Terms(
                         User(
                           UserPreferences(
-                            Versions(Workflows(KgSearch(Global(BaseFixtures))))
+                            V2Group(
+                              Versions(
+                                Workflows(KgSearch(Global(BaseFixtures)))
+                              )
+                            )
                           )
                         )
                       )

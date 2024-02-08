@@ -1,0 +1,16 @@
+[
+  {
+    "id": "user1-uuid",
+    "email": "user1@email.com",
+    "role": "owner"
+  },
+  {
+    "id": "user2-uuid",
+    "email": "user2@email.com",
+    "role": "member"
+  },
+  {
+    "id": "user3-uuid",
+    "role": "member"
+  }
+]

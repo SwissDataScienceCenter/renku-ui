@@ -13,21 +13,17 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-// Run `npx @rtk-query/codegen-openapi namespace.api-config.ts` in this folder to generate the API
-import type { ConfigFile } from "@rtk-query/codegen-openapi";
-import path from "path";
+const GroupShow = lazy(() => import("./show/GroupShow"));
 
-const config: ConfigFile = {
-  // Configure to inject endpoints into the projectV2Api
-  apiFile: "./projectV2.api.ts",
-  apiImport: "projectV2Api",
-  outputFile: "./namespace.api.ts",
-  exportName: "projectAndNamespaceApi",
-  hooks: true,
-  schemaFile: path.join(__dirname, "namespace.openapi.json"),
-};
-
-export default config;
+export default function LazyGroupList() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <GroupShow />
+    </Suspense>
+  );
+}

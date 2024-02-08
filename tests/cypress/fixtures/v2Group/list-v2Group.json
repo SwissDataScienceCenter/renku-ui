@@ -1,0 +1,18 @@
+[
+  {
+    "id": "THEPROJECTULID26CHARACTERS",
+    "name": "test 2 v2-group",
+    "slug": "test-2-v2-group",
+    "creation_date": "2023-11-15T09:55:59Z",
+    "created_by": { "id": "user1-uuid" },
+    "description": "Group 2 description"
+  },
+  {
+    "id": "01HF96BXZ3JF9DX88B7XB405S5",
+    "name": "test 1 v2-group",
+    "slug": "test-1-v2-group",
+    "creation_date": "2023-11-15T09:52:59Z",
+    "created_by": { "id": "user1-uuid" },
+    "description": "Group 1 description"
+  }
+]

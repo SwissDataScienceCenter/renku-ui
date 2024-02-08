@@ -484,6 +484,23 @@ const Url = {
         ),
       },
     },
+    sessions: {
+      base: "/sessions",
+    },
+    datasets: {
+      base: "/datasets",
+    },
+    searchEntities: {
+      base: "/search",
+    },
+    v2Groups: {
+      base: "/v2/groups",
+      new: "/v2/groups/new",
+      list: "/v2/groups",
+      show: new UrlRule((data) => `/v2/groups/${data.slug}`, ["slug"], null, [
+        "/v2/groups/slug",
+      ]),
+    },
     v2Projects: {
       base: "/v2/projects",
       new: "/v2/projects/new",
@@ -497,15 +514,6 @@ const Url = {
       show: new UrlRule((data) => `/v2/users/${data.id}`, ["id"], null, [
         "/v2/users/id",
       ]),
-    },
-    sessions: {
-      base: "/sessions",
-    },
-    datasets: {
-      base: "/datasets",
-    },
-    searchEntities: {
-      base: "/search",
     },
   },
 
