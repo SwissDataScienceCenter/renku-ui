@@ -23,11 +23,24 @@
  *  Container components for notifications
  */
 
-import { Component } from "react";
+import { Component, useContext } from "react";
 import { connect } from "react-redux";
 
+import AppContext from "../utils/context/appContext";
 import { Notifications as NotificationsPresent } from "./Notifications.present";
 import { NotificationsCoordinator } from "./Notifications.state";
+
+export default function NotificationsPage() {
+  const { client, model, notifications } = useContext(AppContext);
+
+  return (
+    <NotificationsPageInner
+      client={client}
+      model={model}
+      notifications={notifications}
+    />
+  );
+}
 
 /**
  * NotificationsPage component.
@@ -36,7 +49,7 @@ import { NotificationsCoordinator } from "./Notifications.state";
  * @param {Object} model - global model for the ui
  * @param {Object} notifications - global notifications object
  */
-export class NotificationsPage extends Component {
+class NotificationsPageInner extends Component {
   constructor(props) {
     super(props);
     this.model = props.model.subModel("notifications");

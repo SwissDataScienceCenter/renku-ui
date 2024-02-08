@@ -1,6 +1,7 @@
+import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { connect, Provider } from "react-redux";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, useHistory } from "react-router-dom";
 
 import "bootstrap";
 import "jquery";
@@ -13,14 +14,14 @@ import App from "./App";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
+import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { Maintenance } from "./features/maintenance/Maintenance";
-import { StateModel, globalSchema } from "./model";
+import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
-import { Sentry } from "./utils/helpers/sentry";
-import { Url, createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
-import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { validatedAppParams } from "./utils/context/appParams.utils";
+import { Sentry } from "./utils/helpers/sentry";
+import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
 
 const configFetch = fetch("/config.json");
 
@@ -98,20 +99,13 @@ configFetch.then((valuesRead) => {
       <Provider store={model.reduxStore}>
         <Router>
           <AppErrorBoundary>
-            <Route
-              render={(props) => {
-                LoginHelper.handleLoginParams(props.history);
-                return (
-                  <VisibleApp
-                    client={client}
-                    coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
-                    params={params}
-                    model={model}
-                    location={props.location}
-                    statuspageId={statuspageId}
-                  />
-                );
-              }}
+            <LoginHandler />
+            <VisibleApp
+              client={client}
+              coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
+              params={params}
+              model={model}
+              statuspageId={statuspageId}
             />
           </AppErrorBoundary>
         </Router>
@@ -119,3 +113,13 @@ configFetch.then((valuesRead) => {
     );
   });
 });
+
+function LoginHandler() {
+  const history = useHistory();
+
+  useEffect(() => {
+    LoginHelper.handleLoginParams(history);
+  }, [history]);
+
+  return null;
+}

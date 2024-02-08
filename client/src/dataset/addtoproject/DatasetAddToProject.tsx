@@ -17,15 +17,13 @@
  */
 
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
 import { ImportStateMessage } from "../../utils/constants/Dataset";
 import AppContext from "../../utils/context/appContext";
 import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
-
 import { DatasetCoordinator } from "../Dataset.state";
-
 import DatasetAdd from "./DatasetAdd.present";
 import type {
   AddDatasetDataset,
@@ -47,16 +45,17 @@ type ProjectDetails = {
 
 type AddDatasetToProjectProps = {
   datasets: unknown;
-  identifier: string;
   insideProject: boolean;
   model: { subModel: (arg0: string) => unknown };
 };
 function DatasetAddToProject({
   datasets,
-  identifier,
   insideProject,
   model,
 }: AddDatasetToProjectProps) {
+  const { identifier: identifier_ } = useParams<{ identifier?: string }>();
+  const identifier = identifier_?.replaceAll("-", "");
+
   const [currentStatus, setCurrentStatus] = useState<AddDatasetStatus | null>(
     null
   );
