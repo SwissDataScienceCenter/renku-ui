@@ -484,12 +484,12 @@ const Url = {
         ),
       },
     },
-    projectsV2: {
-      base: "/projectsV2",
-      new: "/projectsV2/new",
-      list: "/projectsV2",
-      show: new UrlRule((data) => `/projectsV2/${data.id}`, ["id"], null, [
-        "/projectsV2/id",
+    v2Projects: {
+      base: "/v2/projects",
+      new: "/v2/projects/new",
+      list: "/v2/projects",
+      show: new UrlRule((data) => `/v2/projects/${data.id}`, ["id"], null, [
+        "/v2/projects/id",
       ]),
     },
     sessions: {
