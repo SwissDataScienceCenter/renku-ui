@@ -51,7 +51,7 @@ function CardsSection(props) {
   );
 }
 
-function FormsSection(props) {
+function FormsSection() {
   return (
     <Row>
       <Col>
@@ -62,13 +62,13 @@ function FormsSection(props) {
   );
 }
 
-function FormsGuide(props) {
+function FormsGuide() {
   return (
     <Fragment>
       <h2>Forms and Fields</h2>
       <CardsSection />
       <br />
-      <FormsSection location={props.urlMap.formsUrl} />
+      <FormsSection />
     </Fragment>
   );
 }
