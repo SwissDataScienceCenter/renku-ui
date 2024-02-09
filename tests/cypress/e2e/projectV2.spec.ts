@@ -26,7 +26,7 @@ describe("Add new v2 project", () => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects();
     fixtures.createProjectV2().readProjectV2();
-    cy.visit("projectsV2/new");
+    cy.visit("/v2/projects/new");
   });
 
   it("create a new project", () => {
@@ -91,7 +91,7 @@ describe("Add new v2 project", () => {
 describe("Add new v2 project -- not logged in", () => {
   beforeEach(() => {
     fixtures.config().versions().userNone();
-    cy.visit("projectsV2/new");
+    cy.visit("/v2/projects/new");
   });
 
   it("create a new project", () => {
@@ -103,7 +103,7 @@ describe("List v2 project", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects().listProjectV2();
-    cy.visit("projectsV2");
+    cy.visit("/v2/projects");
   });
 
   it("list projects", () => {
@@ -130,7 +130,7 @@ describe("Edit v2 project", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects().listProjectV2();
-    cy.visit("projectsV2");
+    cy.visit("/v2/projects");
   });
 
   it("changes project metadata", () => {
