@@ -1,11 +1,11 @@
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
-import { BrowserRouter as Router } from "react-router-dom";
 import { describe, it } from "vitest";
 
 import App from "./App";
 import { testClient as client } from "./api-client";
+import Router from "./components/router/Router";
 import { StateModel, globalSchema } from "./model";
 import { generateFakeUser } from "./user/User.test";
 import { createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
