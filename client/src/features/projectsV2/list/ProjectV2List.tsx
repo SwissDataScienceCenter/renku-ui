@@ -35,7 +35,7 @@ interface ProjectV2ListProjectProps {
   project: Project;
 }
 function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
-  const projectUrl = Url.get(Url.pages.nativeProjects.show, { id: project.id });
+  const projectUrl = Url.get(Url.pages.v2Projects.show, { id: project.id });
   return (
     <div
       data-cy="list-card"
@@ -99,7 +99,7 @@ function ProjectList() {
 }
 
 export default function ProjectV2List() {
-  const newProjectUrl = Url.get(Url.pages.nativeProjects.new);
+  const newProjectUrl = Url.get(Url.pages.v2Projects.new);
   return (
     <FormSchema
       showHeader={true}

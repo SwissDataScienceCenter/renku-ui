@@ -199,17 +199,17 @@ function CentralContentContainer(props) {
               <LazyNotificationsPage />
             </ContainerWrap>
           </Route>{" "}
-          <Route path={Url.get(Url.pages.nativeProjects.new)}>
+          <Route path={Url.get(Url.pages.v2Projects.new)}>
             <ContainerWrap>
               <LazyProjectV2New />
             </ContainerWrap>
           </Route>
-          <Route path={`${Url.get(Url.pages.nativeProjects.list)}/:id`}>
+          <Route path={`${Url.get(Url.pages.v2Projects.list)}/:id`}>
             <ContainerWrap>
               <LazyProjectV2Show />
             </ContainerWrap>
           </Route>
-          <Route path={Url.get(Url.pages.nativeProjects.list)}>
+          <Route path={Url.get(Url.pages.v2Projects.list)}>
             <ContainerWrap>
               <LazyProjectV2List />
             </ContainerWrap>

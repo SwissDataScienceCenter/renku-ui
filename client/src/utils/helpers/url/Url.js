@@ -484,12 +484,12 @@ const Url = {
         ),
       },
     },
-    nativeProjects: {
-      base: "/native/projects",
-      new: "/native/projects/new",
-      list: "/native/projects",
-      show: new UrlRule((data) => `/native/projects/${data.id}`, ["id"], null, [
-        "/native/projects/id",
+    v2Projects: {
+      base: "/v2/projects",
+      new: "/v2/projects/new",
+      list: "/v2/projects",
+      show: new UrlRule((data) => `/v2/projects/${data.id}`, ["id"], null, [
+        "/v2/projects/id",
       ]),
     },
     sessions: {
