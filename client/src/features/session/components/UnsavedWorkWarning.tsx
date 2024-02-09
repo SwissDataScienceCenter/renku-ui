@@ -20,7 +20,7 @@ import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import { SessionStatusState } from "../sessions.types";
-import { useGitStatusQuery } from "../sidecarApi";
+import { useGitStatusQuery } from "../sidecar.api";
 
 interface UnsavedWorkWarningProps {
   annotations: NotebookAnnotations;
@@ -143,7 +143,7 @@ function RunningUnsavedWorkWarning({
 
   return (
     <WarnAlert dismissible={false}>
-      You {error || data == null || (data.error != null && <>may </>)} have
+      You {(error || data == null || data.error != null) && <>may </>} have
       unsaved work {"("}
       {explanation}
       {")"} in this session
