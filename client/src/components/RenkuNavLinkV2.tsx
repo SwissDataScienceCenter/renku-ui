@@ -29,13 +29,8 @@ type RenkuNavLinkV2Props = RRNavLinkProps & RefAttributes<HTMLAnchorElement>;
 export default function RenkuNavLinkV2(props: RenkuNavLinkV2Props) {
   return (
     <NavLink
-      //   exact={exact}
-      //   to={to}
-      //   isActive={this.isActive}
-
-      //   id={this.props.id}
-      //   className={this.props.className}
       tag={RRNavLink}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {...(props as any)}
     />
   );

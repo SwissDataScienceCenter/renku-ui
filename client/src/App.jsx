@@ -28,6 +28,7 @@ import { Helmet } from "react-helmet";
 import { Redirect, useLocation } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+// eslint-disable-next-line spellcheck/spell-checker
 import { CompatRoute } from "react-router-dom-v5-compat";
 
 import { LoginHelper, LoginRedirect } from "./authentication";
