@@ -22,13 +22,20 @@ import { isEmpty, groupBy } from "lodash";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useHistory } from "react-router-dom";
-import { Button, Card, CardBody, CardHeader, Col, Table } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Table,
+  UncontrolledTooltip,
+} from "reactstrap";
 
 import { ErrorAlert, WarnAlert } from "../components/Alert";
 import { ExternalLink } from "../components/ExternalLinks";
 import FileExplorer from "../components/FileExplorer";
 import { Loader } from "../components/Loader";
-import { ThrottledTooltip } from "../components/Tooltip";
 import { EntityDeleteButtonButton } from "../components/entities/Buttons";
 import EntityHeader from "../components/entityHeader/EntityHeader";
 import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
@@ -298,20 +305,18 @@ function AddToProjectButton({ insideKg, locked, logged, identifier }) {
 
   const tooltip =
     logged && locked ? (
-      <ThrottledTooltip
-        target="add-dataset-to-project-button"
-        tooltip="Cannot add dataset to project until project modification finishes"
-      />
+      <UncontrolledTooltip target="add-dataset-to-project-button">
+        Cannot add dataset to project until project modification finishes
+      </UncontrolledTooltip>
     ) : insideKg === false ? (
-      <ThrottledTooltip
-        target="add-dataset-to-project-button"
-        tooltip="Cannot add dataset to project, the project containing this dataset is not indexed"
-      />
+      <UncontrolledTooltip target="add-dataset-to-project-button">
+        Cannot add dataset to project, the project containing this dataset is
+        not indexed
+      </UncontrolledTooltip>
     ) : (
-      <ThrottledTooltip
-        target="add-dataset-to-project-button"
-        tooltip="Import Dataset in new or existing project"
-      />
+      <UncontrolledTooltip target="add-dataset-to-project-button">
+        Import Dataset in new or existing project
+      </UncontrolledTooltip>
     );
 
   return (
@@ -351,10 +356,9 @@ function EditDatasetButton({
         >
           <FontAwesomeIcon icon={faPen} color="dark" />
         </Button>
-        <ThrottledTooltip
-          target="editDatasetTooltip"
-          tooltip="Cannot edit dataset until project modification finishes."
-        />
+        <UncontrolledTooltip target="editDatasetTooltip">
+          Cannot edit dataset until project modification finishes.
+        </UncontrolledTooltip>
       </span>
     );
   }
@@ -379,7 +383,9 @@ function EditDatasetButton({
       >
         <FontAwesomeIcon icon={faPen} color="dark" />
       </Button>
-      <ThrottledTooltip target="editDatasetTooltip" tooltip="Modify Dataset" />
+      <UncontrolledTooltip target="editDatasetTooltip">
+        Modify Dataset
+      </UncontrolledTooltip>
     </Link>
   );
 }

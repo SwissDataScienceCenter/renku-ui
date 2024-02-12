@@ -47,7 +47,6 @@ import { InfoAlert } from "../components/Alert";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { RenkuNavLink } from "../components/RenkuNavLink";
-import { ThrottledTooltip } from "../components/Tooltip";
 import { RoundButtonGroup } from "../components/buttons/Button";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { SshModal } from "../components/ssh/ssh";
@@ -135,7 +134,7 @@ function ForkCountButton({ forkProjectDisabled, externalUrl, forksCount }) {
       rel="noreferrer noopener"
     >
       {forksCount}
-      <ThrottledTooltip target="project-forks" tooltip="Forks" />
+      <UncontrolledTooltip target="project-forks">Forks</UncontrolledTooltip>
     </Button>
   );
 }

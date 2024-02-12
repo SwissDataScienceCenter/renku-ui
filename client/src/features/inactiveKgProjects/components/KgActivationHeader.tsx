@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { UncontrolledTooltip } from "reactstrap";
 
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { ThrottledTooltip } from "../../../components/Tooltip";
-import { Docs } from "../../../utils/constants/Docs";
 import { WarnAlert } from "../../../components/Alert";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import { Docs } from "../../../utils/constants/Docs";
 
 interface KgActivationHeaderProps {
   isActivationSlow: boolean | null;
@@ -56,11 +56,9 @@ function KgActivationHeader({ isActivationSlow }: KgActivationHeaderProps) {
           icon={faQuestionCircle}
         />
       </h1>
-      <ThrottledTooltip
-        target="activation-question"
-        autoHide={false}
-        tooltip={tooltip}
-      />
+      <UncontrolledTooltip target="activation-question" autohide={false}>
+        {tooltip}
+      </UncontrolledTooltip>
       {showWarning && (
         <WarnAlert timeout={0} dismissible={false}>
           <p>

@@ -18,9 +18,10 @@
 
 import { useContext, useRef } from "react";
 import { Globe, Lock, Shield } from "react-bootstrap-icons";
+import { UncontrolledTooltip } from "reactstrap";
+
 import AppContext from "../../utils/context/appContext";
 import { capitalizeFirstLetter } from "../../utils/helpers/HelperFunctions";
-import { ThrottledTooltip } from "../Tooltip";
 
 /**
  *  renku-ui
@@ -60,7 +61,9 @@ const VisibilityIcon = ({ visibility, className }: VisibilityIconProps) => {
       >
         {icon[visibility] || ""} {capitalizeFirstLetter(visibility)}
       </div>
-      <ThrottledTooltip target={ref} tooltip={tooltip[visibility]} />
+      <UncontrolledTooltip target={ref}>
+        {tooltip[visibility]}
+      </UncontrolledTooltip>
     </>
   );
 };

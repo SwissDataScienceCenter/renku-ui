@@ -16,23 +16,21 @@
  * limitations under the License
  */
 
-import uniqueIdFn from "lodash/uniqueId";
-import { useState } from "react";
-import { Badge } from "reactstrap";
-
-import { ThrottledTooltip } from "../../../components/Tooltip";
+import { useRef } from "react";
+import { Badge, UncontrolledTooltip } from "reactstrap";
 
 export default function WipBadge() {
-  const [uniqueId] = useState(`wip-tooltip-toggle-${uniqueIdFn()}`);
+  const ref = useRef<HTMLElement>(null);
+
   return (
     <>
-      <ThrottledTooltip
-        target={uniqueId}
-        tooltip="This feature is under development and certain pieces may not work correctly."
-      />
-      <Badge id={uniqueId} className="wip-badge" color="warning">
+      <Badge className="wip-badge" color="warning" innerRef={ref}>
         Alpha
       </Badge>
+      <UncontrolledTooltip target={ref}>
+        This feature is under development and certain pieces may not work
+        correctly.
+      </UncontrolledTooltip>
     </>
   );
 }
