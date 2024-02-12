@@ -51,7 +51,6 @@ import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
-import { ThrottledTooltip } from "../../../components/Tooltip";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
@@ -754,10 +753,9 @@ function ComputeResourceOption({
             </InputGroupText>
           )}
           {optionInputAddon && optionInputAddonTooltip && (
-            <ThrottledTooltip
-              target={`${optionId}-addon`}
-              tooltip={optionInputAddonTooltip}
-            />
+            <UncontrolledTooltip target={`${optionId}-addon`}>
+              {optionInputAddonTooltip}
+            </UncontrolledTooltip>
           )}
         </InputGroup>
       </FormGroup>

@@ -19,9 +19,13 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
-import { Input, InputGroup, InputGroupText } from "reactstrap";
+import {
+  Input,
+  InputGroup,
+  InputGroupText,
+  UncontrolledTooltip,
+} from "reactstrap";
 
-import { ThrottledTooltip } from "../../../../components/Tooltip";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -202,10 +206,9 @@ export const StorageSelector = ({
         <InputGroupText id="session-storage-option-gb" className="rounded-end">
           GB
         </InputGroupText>
-        <ThrottledTooltip
-          target="session-storage-option-gb"
-          tooltip="Gigabytes"
-        />
+        <UncontrolledTooltip target="session-storage-option-gb">
+          Gigabytes
+        </UncontrolledTooltip>
       </InputGroup>
     </div>
   );
