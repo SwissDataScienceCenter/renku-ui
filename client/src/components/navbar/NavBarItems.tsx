@@ -322,6 +322,12 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
             role="link"
           />
         </DropdownItem>
+
+        {/* DO NOT MERGE: this is for testing */}
+        <Link to="/v2/projects" className="dropdown-item">
+          Renku 1.0
+        </Link>
+
         <AdminDropdownItem />
         <DropdownItem divider />
         <a

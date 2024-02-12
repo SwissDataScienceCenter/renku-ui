@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,10 +16,15 @@
  * limitations under the License.
  */
 
+import AddSessionV2Button from "./AddSessionV2Button";
+
 export default function SessionsV2() {
   return (
     <div>
       <h3>Sessions</h3>
+      <div>
+        <AddSessionV2Button />
+      </div>
       <div>{"[Empty]"}</div>
     </div>
   );
