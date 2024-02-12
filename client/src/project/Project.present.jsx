@@ -41,6 +41,7 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
+import { CompatRoute } from "react-router-dom-v5-compat";
 import { ContainerWrap } from "../App";
 import { ACCESS_LEVELS } from "../api-client";
 import { InfoAlert } from "../components/Alert";
@@ -952,14 +953,14 @@ function ProjectView(props) {
           <Route path={[props.workflowUrl, props.workflowsUrl]}>
             <ProjectViewWorkflows key="workflows" {...props} />
           </Route>
-          <Route path={props.settingsUrl}>
+          <CompatRoute path={props.settingsUrl}>
             <ProjectSettings
               key="settings"
               {...props}
               apiVersion={apiVersion}
               metadataVersion={metadataVersion}
             />
-          </Route>
+          </CompatRoute>
           <Route path={props.notebookServersUrl}>
             <ProjectSessionsRouter key="sessions" />
           </Route>
