@@ -22,3 +22,14 @@ export interface AddSessionV2Params {
   description?: string;
   environmentDefinition: string;
 }
+
+export interface UpdateSessionV2Params {
+  sessionId: string;
+  name: string;
+  description?: string;
+  environmentDefinition: string;
+}
+
+export interface DeleteSessionV2Params {
+  sessionId: string;
+}

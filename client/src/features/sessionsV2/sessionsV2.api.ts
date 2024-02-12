@@ -17,7 +17,11 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { AddSessionV2Params } from "./sessionsV2.types";
+import {
+  AddSessionV2Params,
+  DeleteSessionV2Params,
+  UpdateSessionV2Params,
+} from "./sessionsV2.types";
 
 const sessionsV2Api = createApi({
   reducerPath: "sessionsV2Api",
@@ -26,12 +30,36 @@ const sessionsV2Api = createApi({
   }),
   tagTypes: ["SessionV2"],
   endpoints: (builder) => ({
+    getSessionsV2: builder.mutation<unknown, void>({
+      query: () => {
+        return {
+          url: "",
+        };
+      },
+    }),
     addSessionV2: builder.mutation<unknown, AddSessionV2Params>({
       query: (params) => {
         return {
           url: "",
           method: "POST",
           body: { ...params },
+        };
+      },
+    }),
+    updateSessionV2: builder.mutation<unknown, UpdateSessionV2Params>({
+      query: ({ sessionId, ...params }) => {
+        return {
+          url: `${sessionId}`,
+          method: "PATCH",
+          body: { ...params },
+        };
+      },
+    }),
+    deleteSessionV2: builder.mutation<unknown, DeleteSessionV2Params>({
+      query: ({ sessionId }) => {
+        return {
+          url: `${sessionId}`,
+          method: "DELETE",
         };
       },
     }),
