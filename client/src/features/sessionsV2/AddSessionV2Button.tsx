@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Button,
   Modal,
@@ -30,6 +30,9 @@ import {
 import cx from "classnames";
 import { PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
+import { useAddSessionV2Mutation } from "./sessionsV2.api";
+import { useParams } from "react-router";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 
 export default function AddSessionV2Button() {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,6 +57,10 @@ interface AddSessionV2ModalProps {
 }
 
 function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
+  const { id: projectId } = useParams<{ id: string }>();
+
+  const [addSessionV2, result] = useAddSessionV2Mutation();
+
   const {
     control,
     formState: { errors },
@@ -66,7 +73,31 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
       environmentDefinition: "",
     },
   });
-  const onSubmit = useCallback((data: AddSessionV2Form) => {}, []);
+  const onSubmit = useCallback(
+    (data: AddSessionV2Form) => {
+      addSessionV2({
+        projectId,
+        name: data.name,
+        description: data.description,
+        environmentDefinition: data.environmentDefinition,
+      });
+    },
+    [addSessionV2, projectId]
+  );
+
+  useEffect(() => {
+    if (!result.isSuccess) {
+      return;
+    }
+    toggle();
+  }, [result.isSuccess, toggle]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+      result.reset();
+    }
+  }, [isOpen, reset, result]);
 
   return (
     <Modal
@@ -84,6 +115,8 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
       >
         <ModalHeader toggle={toggle}>Add session</ModalHeader>
         <ModalBody>
+          {result.error && <RtkErrorAlert error={result.error} />}
+
           <div className="mb-3">
             <Label className="form-label" for="addSessionV2Name">
               Name
@@ -103,6 +136,51 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
               rules={{ required: true }}
             />
             <div className="invalid-feedback">Please provide a name</div>
+          </div>
+
+          <div className="mb-3">
+            <Label className="form-label" for="addSessionV2Description">
+              Description
+            </Label>
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <textarea
+                  className="form-control"
+                  id="addSessionV2Description"
+                  placeholder="session description"
+                  rows={3}
+                  {...field}
+                />
+              )}
+            />
+          </div>
+
+          <div>
+            <Label className="form-label" for="addSessionV2Environment">
+              Environment
+            </Label>
+            <Controller
+              control={control}
+              name="environmentDefinition"
+              render={({ field }) => (
+                <Input
+                  className={cx(
+                    "form-control",
+                    errors.environmentDefinition && "is-invalid"
+                  )}
+                  id="addSessionV2Environment"
+                  placeholder="Docker image"
+                  type="text"
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">
+              Please provide an environment
+            </div>
           </div>
         </ModalBody>
         <ModalFooter>
