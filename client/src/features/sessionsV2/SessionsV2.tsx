@@ -92,7 +92,7 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
     <Col>
       <Card>
         <CardBody>
-          <CardTitle>{name}</CardTitle>
+          <CardTitle className="fs-5">{name}</CardTitle>
           <CardText className="mb-0">
             {description ?? <i>No description</i>}
           </CardText>
