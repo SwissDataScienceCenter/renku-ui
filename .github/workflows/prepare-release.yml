@@ -12,6 +12,7 @@ on:
           - major
           - minor
           - patch
+  push:
 
 jobs:
   create-release-pr:
