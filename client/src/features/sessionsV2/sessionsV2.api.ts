@@ -20,8 +20,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   AddSessionV2Params,
   DeleteSessionV2Params,
+  SessionV2,
+  SessionV2List,
   UpdateSessionV2Params,
 } from "./sessionsV2.types";
+import { DateTime } from "luxon";
 
 const sessionsV2Api = createApi({
   reducerPath: "sessionsV2Api",
@@ -30,10 +33,32 @@ const sessionsV2Api = createApi({
   }),
   tagTypes: ["SessionV2"],
   endpoints: (builder) => ({
-    getSessionsV2: builder.mutation<unknown, void>({
+    getSessionsV2: builder.query<unknown, void>({
       query: () => {
         return {
           url: "",
+        };
+      },
+    }),
+    getSessionsV2Fake: builder.query<SessionV2List, void>({
+      queryFn: () => {
+        const session1: SessionV2 = {
+          id: "session-1234",
+          name: "fake-session-1",
+          creationDate: DateTime.utc().minus({ days: 4 }).toISO(),
+          description: "A fake session",
+          environmentDefinition: "python:latest",
+        };
+        const session2: SessionV2 = {
+          id: "session-5678",
+          name: "fake-session-2",
+          creationDate: DateTime.utc().minus({ days: 1 }).toISO(),
+          description: "Another fake session",
+          environmentDefinition: "rstudio:latest",
+        };
+
+        return {
+          data: [session1, session2],
         };
       },
     }),
@@ -67,4 +92,5 @@ const sessionsV2Api = createApi({
 });
 
 export default sessionsV2Api;
-export const { useAddSessionV2Mutation } = sessionsV2Api;
+export const { useGetSessionsV2FakeQuery, useAddSessionV2Mutation } =
+  sessionsV2Api;

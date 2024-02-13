@@ -17,6 +17,7 @@
  */
 
 import AddSessionV2Button from "./AddSessionV2Button";
+import { useGetSessionsV2FakeQuery } from "./sessionsV2.api";
 
 export default function SessionsV2() {
   return (
@@ -25,7 +26,15 @@ export default function SessionsV2() {
       <div>
         <AddSessionV2Button />
       </div>
-      <div>{"[Empty]"}</div>
+      <div>
+        <SessionsV2ListDisplay />
+      </div>
     </div>
   );
+}
+
+function SessionsV2ListDisplay() {
+  const { data } = useGetSessionsV2FakeQuery();
+
+  return <pre>{JSON.stringify(data, null, 2)}</pre>;
 }

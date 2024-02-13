@@ -16,6 +16,16 @@
  * limitations under the License.
  */
 
+export interface SessionV2 {
+  id: string;
+  name: string;
+  creationDate: string;
+  description?: string;
+  environmentDefinition: string;
+}
+
+export type SessionV2List = SessionV2[];
+
 export interface AddSessionV2Params {
   projectId: string;
   name: string;
