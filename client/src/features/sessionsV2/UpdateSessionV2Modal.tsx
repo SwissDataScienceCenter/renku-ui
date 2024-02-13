@@ -16,73 +16,60 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import cx from "classnames";
+import { useCallback, useEffect } from "react";
+import { CheckLg, XLg } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import {
   Button,
+  Form,
+  Input,
+  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Form,
-  Label,
-  Input,
 } from "reactstrap";
-import cx from "classnames";
-import { PlusLg, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
-import { useAddSessionV2Mutation } from "./sessionsV2.api";
-import { useParams } from "react-router";
+
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { useUpdateSessionV2Mutation } from "./sessionsV2.api";
+import { SessionV2 } from "./sessionsV2.types";
 
-export default function AddSessionV2Button() {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = useCallback(() => {
-    setIsOpen((open) => !open);
-  }, []);
-
-  return (
-    <>
-      <Button className="btn-outline-rk-green" onClick={toggle}>
-        <PlusLg className={cx("bi", "me-1")} />
-        Add Session
-      </Button>
-      <AddSessionV2Modal isOpen={isOpen} toggle={toggle} />
-    </>
-  );
-}
-
-interface AddSessionV2ModalProps {
+interface DeleteSessionV2ModalProps {
   isOpen: boolean;
+  session: SessionV2;
   toggle: () => void;
 }
 
-function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
-  const { id: projectId } = useParams<{ id: string }>();
-
-  const [addSessionV2, result] = useAddSessionV2Mutation();
+export default function DeleteSessionV2Modal({
+  isOpen,
+  session,
+  toggle,
+}: DeleteSessionV2ModalProps) {
+  const [updateSessionV2, result] = useUpdateSessionV2Mutation();
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
     reset,
-  } = useForm<AddSessionV2Form>({
+  } = useForm<UpdateSessionV2Form>({
     defaultValues: {
-      name: "",
-      description: "",
-      environmentDefinition: "",
+      name: session.name,
+      description: session.description,
+      environmentDefinition: session.environmentDefinition,
     },
   });
   const onSubmit = useCallback(
-    (data: AddSessionV2Form) => {
-      addSessionV2({
-        projectId,
+    (data: UpdateSessionV2Form) => {
+      updateSessionV2({
+        sessionId: session.id,
         name: data.name,
         description: data.description,
         environmentDefinition: data.environmentDefinition,
       });
     },
-    [addSessionV2, projectId]
+    [session.id, updateSessionV2]
   );
 
   useEffect(() => {
@@ -113,7 +100,7 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Add session</ModalHeader>
+        <ModalHeader toggle={toggle}>Update session</ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
 
@@ -188,9 +175,9 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
             <XLg className={cx("bi", "me-1")} />
             Close
           </Button>
-          <Button disabled={result.isLoading} type="submit">
-            <PlusLg className={cx("bi", "me-1")} />
-            Add Session
+          <Button disabled={result.isLoading || !isDirty} type="submit">
+            <CheckLg className={cx("bi", "me-1")} />
+            Update session
           </Button>
         </ModalFooter>
       </Form>
@@ -198,8 +185,8 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
   );
 }
 
-interface AddSessionV2Form {
+interface UpdateSessionV2Form {
   name: string;
-  description: string;
+  description?: string;
   environmentDefinition: string;
 }
