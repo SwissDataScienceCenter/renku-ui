@@ -15,15 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import { Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
 
-const ProjectV2Show = lazy(() => import("./show/ProjectV2Show"));
+import cx from "classnames";
+import { Nav, NavItem, Navbar } from "reactstrap";
 
-export default function LazyProjectV2Show() {
+import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
+import WipBadge from "../projectsV2/shared/WipBadge";
+
+export default function NavbarV2() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <ProjectV2Show />
-    </Suspense>
+    <header className={cx("px-4", "bg-rk-blue")}>
+      <Navbar className="px-2">
+        <div className={cx("text-white", "d-flex", "align-items-center")}>
+          <span className="me-1">Renku 1.0</span>
+          <WipBadge />
+        </div>
+        <Nav className="navbar-nav">
+          <NavItem>
+            <RenkuNavLinkV2 end to="projects" title="Projects">
+              Projects
+            </RenkuNavLinkV2>
+          </NavItem>
+        </Nav>
+      </Navbar>
+    </header>
   );
 }

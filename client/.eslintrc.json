@@ -117,6 +117,7 @@
           "cloudstorage",
           "codegen",
           "codemirror",
+          "compat",
           "craco",
           "dagre",
           "dataset",
