@@ -17,25 +17,33 @@
  */
 
 import { Route, Switch } from "react-router-dom";
+import cx from "classnames";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
+import LazyNotFound from "../../not-found/LazyNotFound";
+import NavbarV2 from "./NavbarV2";
 
 export default function RootV2() {
   return (
     <div className="w-100">
-      <div>Renku 1.0 Navbar</div>
+      <NavbarV2 />
 
-      <div className="d-flex flex-grow-1 h-100">
-        <ContainerWrap>
-          <Switch>
-            <Route path="/v2/projects">
+      <div className={cx("d-flex", "flex-grow-1", "h-100")}>
+        <Switch>
+          <Route path="/v2/projects">
+            <ContainerWrap>
               <ProjectsV2Routes />
-            </Route>
-          </Switch>
-        </ContainerWrap>
+            </ContainerWrap>
+          </Route>
+          <Route path="*">
+            <ContainerWrap fullSize>
+              <LazyNotFound />
+            </ContainerWrap>
+          </Route>
+        </Switch>
       </div>
     </div>
   );

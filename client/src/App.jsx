@@ -198,9 +198,7 @@ function CentralContentContainer(props) {
             </ContainerWrap>
           </Route>
           <Route path="/v2">
-            {/* <ContainerWrap> */}
             <LazyRootV2 />
-            {/* </ContainerWrap> */}
           </Route>
           <Route path="/style-guide">
             <ContainerWrap>
