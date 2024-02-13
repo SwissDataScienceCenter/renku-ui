@@ -16,14 +16,14 @@
  * limitations under the License
  */
 
-import { Route, Switch } from "react-router-dom";
 import cx from "classnames";
+import { Route, Routes } from "react-router-dom-v5-compat";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
+import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
-import LazyNotFound from "../../not-found/LazyNotFound";
 import NavbarV2 from "./NavbarV2";
 
 export default function RootV2() {
@@ -32,18 +32,24 @@ export default function RootV2() {
       <NavbarV2 />
 
       <div className={cx("d-flex", "flex-grow-1", "h-100")}>
-        <Switch>
-          <Route path="/v2/projects">
-            <ContainerWrap>
-              <ProjectsV2Routes />
-            </ContainerWrap>
-          </Route>
-          <Route path="*">
-            <ContainerWrap fullSize>
-              <LazyNotFound />
-            </ContainerWrap>
-          </Route>
-        </Switch>
+        <Routes>
+          <Route
+            path="projects/*"
+            element={
+              <ContainerWrap>
+                <ProjectsV2Routes />
+              </ContainerWrap>
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <ContainerWrap fullSize>
+                <LazyNotFound />
+              </ContainerWrap>
+            }
+          />
+        </Routes>
       </div>
     </div>
   );
@@ -51,16 +57,10 @@ export default function RootV2() {
 
 function ProjectsV2Routes() {
   return (
-    <Switch>
-      <Route path="/v2/projects/new">
-        <LazyProjectV2New />
-      </Route>
-      <Route path="/v2/projects/:id">
-        <LazyProjectV2Show />
-      </Route>
-      <Route path="/v2/projects">
-        <LazyProjectV2List />
-      </Route>
-    </Switch>
+    <Routes>
+      <Route path="/" element={<LazyProjectV2List />} />
+      <Route path="new" element={<LazyProjectV2New />} />
+      <Route path=":id" element={<LazyProjectV2Show />} />
+    </Routes>
   );
 }

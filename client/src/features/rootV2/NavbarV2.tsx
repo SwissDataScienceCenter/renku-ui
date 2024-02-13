@@ -16,24 +16,25 @@
  * limitations under the License
  */
 
-import { Nav, NavItem, Navbar } from "reactstrap";
-import WipBadge from "../projectsV2/shared/WipBadge";
-import { RenkuNavLink } from "../../components/RenkuNavLink";
 import cx from "classnames";
+import { Nav, NavItem, Navbar } from "reactstrap";
+
+import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
+import WipBadge from "../projectsV2/shared/WipBadge";
 
 export default function NavbarV2() {
   return (
     <header className={cx("px-4", "bg-rk-blue")}>
-      <Navbar>
+      <Navbar className="px-2">
         <div className={cx("text-white", "d-flex", "align-items-center")}>
           <span className="me-1">Renku 1.0</span>
           <WipBadge />
         </div>
         <Nav className="navbar-nav">
           <NavItem>
-            <RenkuNavLink to="/v2/projects" title="Projects">
+            <RenkuNavLinkV2 end to="projects" title="Projects">
               Projects
-            </RenkuNavLink>
+            </RenkuNavLinkV2>
           </NavItem>
         </Nav>
       </Navbar>
