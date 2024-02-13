@@ -16,8 +16,25 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardText,
+  CardTitle,
+  Col,
+  Container,
+  Input,
+  Row,
+} from "reactstrap";
+
+import { Loader } from "../../components/Loader";
+import { TimeCaption } from "../../components/TimeCaption";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import AddSessionV2Button from "./AddSessionV2Button";
 import { useGetSessionsV2FakeQuery } from "./sessionsV2.api";
+import { SessionV2 } from "./sessionsV2.types";
 
 export default function SessionsV2() {
   return (
@@ -26,7 +43,7 @@ export default function SessionsV2() {
       <div>
         <AddSessionV2Button />
       </div>
-      <div>
+      <div className="mt-2">
         <SessionsV2ListDisplay />
       </div>
     </div>
@@ -34,7 +51,70 @@ export default function SessionsV2() {
 }
 
 function SessionsV2ListDisplay() {
-  const { data } = useGetSessionsV2FakeQuery();
+  const { data: sessions, error, isLoading } = useGetSessionsV2FakeQuery();
 
-  return <pre>{JSON.stringify(data, null, 2)}</pre>;
+  if (isLoading) {
+    return (
+      <p>
+        <Loader className="bi" inline size={16} />
+        Loading sessions...
+      </p>
+    );
+  }
+
+  if (error) {
+    return <RtkErrorAlert error={error} />;
+  }
+
+  if (!sessions || sessions.length == 0) {
+    return null;
+  }
+
+  return (
+    <Container className="px-0" fluid>
+      <Row>
+        {sessions.map((session) => (
+          <SessionV2Display key={session.id} session={session} />
+        ))}
+      </Row>
+    </Container>
+  );
+}
+
+interface SessionV2DisplayProps {
+  session: SessionV2;
+}
+
+function SessionV2Display({ session }: SessionV2DisplayProps) {
+  const { name, description, creationDate, environmentDefinition } = session;
+
+  return (
+    <Col>
+      <Card>
+        <CardBody>
+          <CardTitle>{name}</CardTitle>
+          <CardText className="mb-0">
+            {description ?? <i>No description</i>}
+          </CardText>
+          <CardText className="mb-0">
+            <Input
+              className="d-inline"
+              disabled
+              value={environmentDefinition}
+            />
+          </CardText>
+          <CardText>
+            <TimeCaption
+              datetime={creationDate}
+              enableTooltip
+              prefix="Created"
+            />
+          </CardText>
+          <Button className={cx()} type="button" role="button">
+            Start
+          </Button>
+        </CardBody>
+      </Card>
+    </Col>
+  );
 }
