@@ -28,6 +28,8 @@ import { Helmet } from "react-helmet";
 import { Redirect, useLocation } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+// eslint-disable-next-line spellcheck/spell-checker
+import { CompatRoute } from "react-router-dom-v5-compat";
 
 import { LoginHelper, LoginRedirect } from "./authentication";
 import { Loader } from "./components/Loader";
@@ -200,11 +202,11 @@ function CentralContentContainer(props) {
           <Route path="/v2">
             <LazyRootV2 />
           </Route>
-          <Route path="/style-guide">
+          <CompatRoute path="/style-guide">
             <ContainerWrap>
               <LazyStyleGuide />
             </ContainerWrap>
-          </Route>
+          </CompatRoute>
           {userInfo?.isAdmin && (
             <Route path="/admin">
               <ContainerWrap>
