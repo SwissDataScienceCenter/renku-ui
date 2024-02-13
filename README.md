@@ -253,6 +253,10 @@ We use [CSS modules](https://github.com/css-modules/css-modules) to apply CSS st
 locally and avoid leaking styles to the whole web application.
 No additional configuration is needed since Create React App [supports CSS modules out of the box](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet).
 
+#### **Use classnames for complex CSS class names**
+
+When a node has a class name that is either computed dynamically or is comprised of two or more classes, use the [classnames](https://www.npmjs.com/package/classnames) package (idiomatically imported typically as `cx`) to construct the class name string.
+
 ### Code splitting
 
 If a component requires a large package, it can be loaded on demand by using the `lazy()` function from React.

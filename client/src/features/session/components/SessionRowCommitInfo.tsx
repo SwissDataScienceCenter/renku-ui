@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 
-import { useRef } from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { useRef } from "react";
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
+
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -62,8 +64,7 @@ function SessionRowCommitInfoDetails({
     isLoading,
     isError,
   } = useGetRepositoryCommitQuery(
-    { commitSha, projectId },
-    { skip: !commitSha || !projectId }
+    commitSha && projectId ? { commitSha, projectId } : skipToken
   );
 
   const content = isLoading ? (

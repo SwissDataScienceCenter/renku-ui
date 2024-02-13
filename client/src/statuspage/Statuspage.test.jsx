@@ -49,11 +49,7 @@ describe("rendering", () => {
     await act(async () => {
       root.render(
         <MemoryRouter>
-          <StatuspageBanner
-            store={model.reduxStore}
-            model={model}
-            location={location}
-          />
+          <StatuspageBanner model={model} location={location} />
         </MemoryRouter>
       );
     });

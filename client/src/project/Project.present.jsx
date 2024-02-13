@@ -27,7 +27,7 @@ import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Component, Fragment, useEffect } from "react";
-import { Link, Route, Switch } from "react-router-dom";
+import { Link, Route, Switch, useHistory, useParams } from "react-router-dom";
 import {
   Alert,
   Button,
@@ -47,7 +47,6 @@ import { InfoAlert } from "../components/Alert";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { RenkuNavLink } from "../components/RenkuNavLink";
-import { ThrottledTooltip } from "../components/Tooltip";
 import { RoundButtonGroup } from "../components/buttons/Button";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { SshModal } from "../components/ssh/ssh";
@@ -135,7 +134,7 @@ function ForkCountButton({ forkProjectDisabled, externalUrl, forksCount }) {
       rel="noreferrer noopener"
     >
       {forksCount}
-      <ThrottledTooltip target="project-forks" tooltip="Forks" />
+      <UncontrolledTooltip target="project-forks">Forks</UncontrolledTooltip>
     </Button>
   );
 }
@@ -692,39 +691,25 @@ class ProjectViewOverview extends Component {
           </Col>
           <Col key="content" sm={12} md={10} data-cy="project-overview-content">
             <Switch>
-              <Route
-                exact
-                path={this.props.baseUrl}
-                render={() => {
-                  return (
-                    <ProjectViewGeneral
-                      readme={this.props.data.readme}
-                      {...this.props}
-                    />
-                  );
-                }}
-              />
-              <Route
-                exact
-                path={this.props.statsUrl}
-                render={() => (
-                  <ProjectOverviewStats
-                    projectCoordinator={projectCoordinator}
-                    branches={this.props.branches.standard}
-                  />
-                )}
-              />
-              <Route
-                exact
-                path={this.props.overviewCommitsUrl}
-                render={(props) => (
-                  <ProjectOverviewCommits
-                    location={this.props.location}
-                    history={props.history}
-                    projectCoordinator={projectCoordinator}
-                  />
-                )}
-              />
+              <Route exact path={this.props.baseUrl}>
+                <ProjectViewGeneral
+                  readme={this.props.data.readme}
+                  {...this.props}
+                />
+              </Route>
+              <Route exact path={this.props.statsUrl}>
+                <ProjectOverviewStats
+                  projectCoordinator={projectCoordinator}
+                  branches={this.props.branches.standard}
+                />
+              </Route>
+              <Route exact path={this.props.overviewCommitsUrl}>
+                <ProjectOverviewCommits
+                  location={this.props.location}
+                  history={this.props.history}
+                  projectCoordinator={projectCoordinator}
+                />
+              </Route>
             </Switch>
           </Col>
         </Row>
@@ -759,42 +744,68 @@ class ProjectViewFiles extends Component {
       </div>,
       <div key="content" className="flex-shrink-1 variableWidthColRight">
         <Switch>
-          <Route
-            path={this.props.lineageUrl}
-            render={(p) => (
-              <ProjectFileLineage
-                client={this.props.client}
-                fetchBranches={() =>
-                  this.props.projectCoordinator.fetchBranches()
-                }
-                filePath={p.match.params.filePath}
-                history={this.props.history}
-                location={p.location}
-                model={this.props.model}
-                projectId={this.props.metadata?.id ?? undefined}
-              />
-            )}
-          />
-          <Route
-            path={this.props.fileContentUrl}
-            render={(p) => (
-              <ProjectFileView
-                client={this.props.client}
-                fetchBranches={() =>
-                  this.props.projectCoordinator.fetchBranches()
-                }
-                filePath={p.match.params.filePath}
-                history={this.props.history}
-                location={p.location}
-                model={this.props.model}
-                params={this.props.params}
-              />
-            )}
-          />
+          <Route path={this.props.lineageUrl}>
+            <ProjectFileLineageRoute
+              client={this.props.client}
+              fetchBranches={() =>
+                this.props.projectCoordinator.fetchBranches()
+              }
+              model={this.props.model}
+              projectId={this.props.metadata?.id ?? undefined}
+            />
+          </Route>
+          <Route path={this.props.fileContentUrl}>
+            <ProjectFileViewRoute
+              client={this.props.client}
+              fetchBranches={() =>
+                this.props.projectCoordinator.fetchBranches()
+              }
+              model={this.props.model}
+              params={this.props.params}
+            />
+          </Route>
         </Switch>
       </div>,
     ];
   }
+}
+
+function ProjectFileLineageRoute({ client, fetchBranches, model, projectId }) {
+  const history = useHistory();
+  const location = history.location;
+
+  const { filePath } = useParams();
+
+  return (
+    <ProjectFileLineage
+      client={client}
+      fetchBranches={fetchBranches}
+      filePath={filePath}
+      history={history}
+      location={location}
+      model={model}
+      projectId={projectId}
+    />
+  );
+}
+
+function ProjectFileViewRoute({ client, fetchBranches, model, params }) {
+  const history = useHistory();
+  const location = history.location;
+
+  const { filePath } = useParams();
+
+  return (
+    <ProjectFileView
+      client={client}
+      fetchBranches={fetchBranches}
+      filePath={filePath}
+      history={history}
+      location={location}
+      model={model}
+      params={params}
+    />
+  );
 }
 
 class ProjectViewLoading extends Component {
@@ -901,66 +912,54 @@ function ProjectView(props) {
     />,
     <ContainerWrap key="project-content" fullSize={isShowSession}>
       <Switch key="projectHeader">
-        <Route
-          exact
-          path={props.baseUrl}
-          render={() => <ProjectViewHeader {...props} />}
-        />
-        <Route
-          path={props.overviewUrl}
-          render={() => <ProjectViewHeader {...props} />}
-        />
+        <Route exact path={props.baseUrl}>
+          <ProjectViewHeader {...props} />
+        </Route>
+        <Route path={props.overviewUrl}>
+          <ProjectViewHeader {...props} />
+        </Route>
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
         <Route path={props.sessionShowUrl} />
-        <Route
-          path={props.newDatasetUrl}
-          component={() => <ProjectViewHeader {...props} />}
-        />
-        <Route component={() => <ProjectViewHeader {...props} />} />
+        <Route>
+          <ProjectViewHeader {...props} />
+        </Route>
       </Switch>
       <Switch key="projectNav">
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
         <Route path={props.sessionShowUrl} />
-        <Route component={() => <ProjectNav key="nav" {...props} />} />
+        <Route>
+          <ProjectNav key="nav" {...props} />
+        </Route>
       </Switch>
       <Row key="content" className={cx(isShowSession && "m-0")}>
         <Switch>
-          <Route
-            exact
-            path={props.baseUrl}
-            render={() => <ProjectViewOverview key="overview" {...props} />}
-          />
-          <Route
-            path={props.overviewUrl}
-            render={() => <ProjectViewOverview key="overview" {...props} />}
-          />
-          <Route
-            path={props.filesUrl}
-            render={() => <ProjectViewFiles key="files" {...props} />}
-          />
-          <Route
-            path={props.datasetsUrl}
-            render={() => <ProjectDatasetsView key="datasets" {...props} />}
-          />
-          <Route
-            path={[props.workflowUrl, props.workflowsUrl]}
-            render={() => <ProjectViewWorkflows key="workflows" {...props} />}
-          />
-          <Route
-            path={props.settingsUrl}
-            render={() => (
-              <ProjectSettings
-                key="settings"
-                {...props}
-                apiVersion={apiVersion}
-                metadataVersion={metadataVersion}
-              />
-            )}
-          />
+          <Route exact path={props.baseUrl}>
+            <ProjectViewOverview key="overview" {...props} />
+          </Route>
+          <Route path={props.overviewUrl}>
+            <ProjectViewOverview key="overview" {...props} />
+          </Route>
+          <Route path={props.filesUrl}>
+            <ProjectViewFiles key="files" {...props} />
+          </Route>
+          <Route path={props.datasetsUrl}>
+            <ProjectDatasetsView key="datasets" {...props} />
+          </Route>
+          <Route path={[props.workflowUrl, props.workflowsUrl]}>
+            <ProjectViewWorkflows key="workflows" {...props} />
+          </Route>
+          <Route path={props.settingsUrl}>
+            <ProjectSettings
+              key="settings"
+              {...props}
+              apiVersion={apiVersion}
+              metadataVersion={metadataVersion}
+            />
+          </Route>
           <Route path={props.notebookServersUrl}>
             <ProjectSessionsRouter key="sessions" />
           </Route>

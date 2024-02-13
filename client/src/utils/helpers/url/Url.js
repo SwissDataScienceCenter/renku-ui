@@ -295,8 +295,10 @@ const Url = {
       base: "/help",
       documentation: "/help/docs",
       getting: "/help/getting",
+      privacy: "/help/privacy",
       release: "/help/release",
       status: "/help/status",
+      tos: "/help/tos",
     },
     login: {
       base: "/login",
@@ -481,6 +483,14 @@ const Url = {
           ]
         ),
       },
+    },
+    v2Projects: {
+      base: "/v2/projects",
+      new: "/v2/projects/new",
+      list: "/v2/projects",
+      show: new UrlRule((data) => `/v2/projects/${data.id}`, ["id"], null, [
+        "/v2/projects/id",
+      ]),
     },
     sessions: {
       base: "/sessions",

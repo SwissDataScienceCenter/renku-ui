@@ -23,6 +23,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { debounce } from "lodash";
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
@@ -50,8 +51,8 @@ import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
-import { ThrottledTooltip } from "../../../components/Tooltip";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { LockStatus, User } from "../../../model/renkuModels.types";
 import { Docs } from "../../../utils/constants/Docs";
@@ -69,7 +70,6 @@ import { ProjectConfig, StateModelProject } from "../project.types";
 import { useGetConfigQuery, useUpdateConfigMutation } from "../projectCoreApi";
 import { useCoreSupport } from "../useProjectCoreSupport";
 
-import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import styles from "./ProjectSettingsSessions.module.scss";
 
 type CoreServiceVersionedApiParams = {
@@ -118,13 +118,14 @@ export default function ProjectSettingsSessions() {
     isFetching: projectConfigIsFetching,
     error,
   } = useGetConfigQuery(
-    {
-      apiVersion,
-      metadataVersion,
-      projectRepositoryUrl,
-      branch: defaultBranch,
-    },
-    { skip: !coreSupportComputed }
+    coreSupportComputed
+      ? {
+          apiVersion,
+          metadataVersion,
+          projectRepositoryUrl,
+          branch: defaultBranch,
+        }
+      : skipToken
   );
 
   if (locked) {
@@ -752,10 +753,9 @@ function ComputeResourceOption({
             </InputGroupText>
           )}
           {optionInputAddon && optionInputAddonTooltip && (
-            <ThrottledTooltip
-              target={`${optionId}-addon`}
-              tooltip={optionInputAddonTooltip}
-            />
+            <UncontrolledTooltip target={`${optionId}-addon`}>
+              {optionInputAddonTooltip}
+            </UncontrolledTooltip>
           )}
         </InputGroup>
       </FormGroup>

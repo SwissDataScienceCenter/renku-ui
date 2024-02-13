@@ -21,6 +21,7 @@
  *  Visibility.js
  *  Visibility field group component
  */
+import { skipToken } from "@reduxjs/toolkit/query";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import {
   Button,
@@ -31,6 +32,7 @@ import {
   ModalBody,
   ModalHeader,
 } from "reactstrap";
+
 import { SuccessAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
@@ -187,28 +189,21 @@ export function EditVisibility({
     isLoading: isLoadingProject,
     refetch: refetchProjectData,
   } = useProjectMetadataQuery(
-    { projectPath: pathWithNamespace },
-    { skip: !pathWithNamespace }
+    pathWithNamespace ? { projectPath: pathWithNamespace } : skipToken
   );
   const {
     data: forkProjectData,
     isFetching: isFetchingForkProject,
     isLoading: isLoadingForkProject,
-  } = useGetProjectByIdQuery(forkedProjectId ?? 0, {
-    skip: !forkedProjectId,
-  });
+  } = useGetProjectByIdQuery(forkedProjectId ? forkedProjectId : skipToken);
   const {
     data: namespaceData,
     isFetching: isFetchingNamespace,
     isLoading: isLoadingNamespace,
-  } = useGetGroupByPathQuery(namespace, {
-    skip: namespaceKind !== "group",
-  });
+  } = useGetGroupByPathQuery(namespaceKind === "group" ? namespace : skipToken);
 
   const { data: indexingStatusData, isLoading: isLoadingIndexingStatus } =
-    useGetProjectIndexingStatusQuery(projectId, {
-      skip: !projectId,
-    });
+    useGetProjectIndexingStatusQuery(projectId ? projectId : skipToken);
 
   const [isOpen, setIsOpen] = useState(false);
   const [newVisibility, setNewVisibility] = useState<Visibilities>();

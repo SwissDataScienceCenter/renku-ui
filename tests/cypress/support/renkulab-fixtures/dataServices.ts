@@ -17,7 +17,18 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { SimpleFixture } from "./fixtures.types";
+import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
+
+interface ExactUser {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+}
+interface ExactUserFixture extends NameOnlyFixture {
+  exactEmailQueryString: string;
+  response: ExactUser[];
+}
 
 /**
  * Fixtures for Data Services
@@ -47,6 +58,18 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("/ui-server/api/data/resource_pools/*/users", {
         fixture,
       });
+      return this;
+    }
+
+    exactUser(args: ExactUserFixture) {
+      const { name = "getExactUser", exactEmailQueryString, response } = args;
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/users?exact_email=${exactEmailQueryString}`,
+        {
+          body: response,
+        }
+      ).as(name);
       return this;
     }
   };

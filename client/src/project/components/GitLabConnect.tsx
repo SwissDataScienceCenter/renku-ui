@@ -1,6 +1,7 @@
+import { UncontrolledTooltip } from "reactstrap";
+
 import { ExternalLink } from "../../components/ExternalLinks";
 import { ButtonWithMenu } from "../../components/buttons/Button";
-import { ThrottledTooltip } from "../../components/Tooltip";
 
 function externalUrlToGitLabIdeUrl(externalUrl: string) {
   if (externalUrl.includes("/gitlab/"))
@@ -71,11 +72,9 @@ function GitLabConnectButton(props: GitLabConnectButtonProps) {
         <GitLabLinkItem text="Merge Requests" url={gitLabMrUrl} />
         {gitlabIDEButton}
       </ButtonWithMenu>
-      <ThrottledTooltip
-        target="open-in-gitlab"
-        tooltip="Open in GitLab"
-        autoHide={false}
-      />
+      <UncontrolledTooltip target="open-in-gitlab" autohide={false}>
+        Open in GitLab
+      </UncontrolledTooltip>
     </>
   );
 }

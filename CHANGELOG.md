@@ -1,5 +1,32 @@
 # Changes
 
+## [3.20.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.0...3.20.1) (2024-02-08)
+
+### Bug Fixes
+
+- refactor UI routing ([#3009](https://github.com/SwissDataScienceCenter/renku-ui/pull/3009), [#2605](https://github.com/SwissDataScienceCenter/renku-ui/issues/2605))
+- fix landing page parallax background ([#3010](https://github.com/SwissDataScienceCenter/renku-ui/pull/3010))
+- temporarily fix search bar styles ([#3019](https://github.com/SwissDataScienceCenter/renku-ui/pull/3019))
+- update the font part of the style guide ([#3018](https://github.com/SwissDataScienceCenter/renku-ui/pull/3018))
+- handle jsonrpc improper redirects ([#3017](https://github.com/SwissDataScienceCenter/renku-ui/pull/3017), [#2966](https://github.com/SwissDataScienceCenter/renku-ui/issues/2966))
+
+## [3.20.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.19.0...3.20.0) (2024-02-06)
+
+### Features
+
+- initial alpha implementation of renku v1 projects ([#2870](https://github.com/SwissDataScienceCenter/renku-ui/issues/2870), [#2875](https://github.com/SwissDataScienceCenter/renku-ui/issues/2875))
+- remove features section from help ([#2986](https://github.com/SwissDataScienceCenter/renku-ui/issues/2986))
+- show terms of use and privacy policy in the help section of the UI ([#2954](https://github.com/SwissDataScienceCenter/renku-ui/issues/2954), [#2991](https://github.com/SwissDataScienceCenter/renku-ui/issues/2991))
+- improve appearance of templates on new project page ([#2999](https://github.com/SwissDataScienceCenter/renku-ui/issues/2999), [#2387](https://github.com/SwissDataScienceCenter/renku-ui/issues/2387))
+
+### Bug Fixes
+
+- restore logged in/out notifications ([#3014](https://github.com/SwissDataScienceCenter/renku-ui/issues/3014))
+- fix z-index clash in the search page ([#2995](https://github.com/SwissDataScienceCenter/renku-ui/issues/2995), [#2934](https://github.com/SwissDataScienceCenter/renku-ui/issues/2934))
+- hide button to add storage when the feature is not available ([#3001](https://github.com/SwissDataScienceCenter/renku-ui/issues/3001))
+- unify appearance of project settings alerts ([#2990](https://github.com/SwissDataScienceCenter/renku-ui/issues/2990))
+- fix build warnings on Notifications component ([#3005](https://github.com/SwissDataScienceCenter/renku-ui/issues/3005))
+
 ## [3.19.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.18.1...3.19.0) (2024-01-22)
 
 ### Features

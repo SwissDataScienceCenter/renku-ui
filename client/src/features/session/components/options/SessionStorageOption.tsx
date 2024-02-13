@@ -16,11 +16,16 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
-import { Input, InputGroup, InputGroupText } from "reactstrap";
+import {
+  Input,
+  InputGroup,
+  InputGroupText,
+  UncontrolledTooltip,
+} from "reactstrap";
 
-import { ThrottledTooltip } from "../../../../components/Tooltip";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -58,16 +63,15 @@ export const SessionStorageOption = () => {
     ({ startSessionOptions }) => startSessionOptions
   );
   const { data: projectConfig } = useGetConfigQuery(
-    {
-      apiVersion,
-      metadataVersion,
-      projectRepositoryUrl,
-      branch: currentBranch,
-      commit,
-    },
-    {
-      skip: !coreSupportComputed || !currentBranch || !commit,
-    }
+    coreSupportComputed && currentBranch && commit
+      ? {
+          apiVersion,
+          metadataVersion,
+          projectRepositoryUrl,
+          branch: currentBranch,
+          commit,
+        }
+      : skipToken
   );
 
   // Resource pools
@@ -76,14 +80,15 @@ export const SessionStorageOption = () => {
     isLoading,
     isError,
   } = useGetResourcePoolsQuery(
-    {
-      cpuRequest: projectConfig?.config.sessions?.legacyConfig?.cpuRequest,
-      gpuRequest: projectConfig?.config.sessions?.legacyConfig?.gpuRequest,
-      memoryRequest:
-        projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
-      storageRequest: projectConfig?.config.sessions?.storage,
-    },
-    { skip: !projectConfig }
+    projectConfig
+      ? {
+          cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
+          gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
+          memoryRequest:
+            projectConfig.config.sessions?.legacyConfig?.memoryRequest,
+          storageRequest: projectConfig.config.sessions?.storage,
+        }
+      : skipToken
   );
 
   const { storage, sessionClass: currentSessionClassId } = useAppSelector(
@@ -201,10 +206,9 @@ export const StorageSelector = ({
         <InputGroupText id="session-storage-option-gb" className="rounded-end">
           GB
         </InputGroupText>
-        <ThrottledTooltip
-          target="session-storage-option-gb"
-          tooltip="Gigabytes"
-        />
+        <UncontrolledTooltip target="session-storage-option-gb">
+          Gigabytes
+        </UncontrolledTooltip>
       </InputGroup>
     </div>
   );

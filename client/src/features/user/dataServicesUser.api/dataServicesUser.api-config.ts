@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,13 +16,17 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  privacy
- *  Components for the privacy page
- */
+// Run `npx @rtk-query/codegen-openapi dataServicesUser.api-config.ts` to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
 
-import { Privacy, Cookie, RoutedContent } from "./Privacy.container";
+const config: ConfigFile = {
+  apiFile: "./dataServicesUser-empty.api.ts",
+  apiImport: "dataServicesUserEmptyApi",
+  outputFile: "./dataServicesUser.api.ts",
+  exportName: "dataServicesUserApi",
+  hooks: true,
+  schemaFile: path.join(__dirname, "dataServicesUser.openapi.json"),
+};
 
-export { Privacy, Cookie, RoutedContent };
+export default config;

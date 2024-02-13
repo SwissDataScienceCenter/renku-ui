@@ -27,6 +27,7 @@ import {
   Progress,
   Table,
   UncontrolledCollapse,
+  UncontrolledTooltip,
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import Dropzone from "dropzone";
@@ -44,7 +45,6 @@ import FileExplorer, { getFilesTree } from "../FileExplorer";
 import { ErrorLabel, InputLabel } from "../formlabels/FormLabels";
 import { FormText } from "../../utils/ts-wrappers";
 import AppContext from "../../utils/context/appContext";
-import { ThrottledTooltip } from "../Tooltip";
 
 const FILE_STATUS = {
   ADDED: 201,
@@ -431,7 +431,9 @@ function DeleteButton({ displayFilesHandler, file, index }) {
         data-cy="delete-file-button"
         onClick={() => displayFilesHandler.deleteFile(file.file_name)}
       />
-      <ThrottledTooltip target={"delete-" + index} tooltip="Delete file" />
+      <UncontrolledTooltip target={"delete-" + index}>
+        Delete file
+      </UncontrolledTooltip>
     </div>
   );
 }
@@ -446,7 +448,9 @@ function RetryButton({ dropzoneHandler, file, index }) {
         data-cy="retry-upload-button"
         onClick={() => dropzoneHandler.retryUpload(file.file_name)}
       />
-      <ThrottledTooltip target={"retry-" + index} tooltip="Retry upload file" />
+      <UncontrolledTooltip target={"retry-" + index}>
+        Retry upload file
+      </UncontrolledTooltip>
     </div>
   );
 }

@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import styles from "./Divider.module.scss";
+import styles from "./Divider.module.css";
+
 export default function DividerLandingPage() {
   return <div className={styles.dividerLandingPage}></div>;
 }

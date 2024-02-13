@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -13,24 +13,17 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-/**
- *  renku-ui
- *
- *  Help.container.js
- *  Container components for help
- */
+const ProjectV2New = lazy(() => import("./new/ProjectV2New"));
 
-import { Help as HelpPresent } from "./Help.present";
-
-export default function Help(props) {
+export default function LazyProjectV2New() {
   return (
-    <HelpPresent
-      model={props.model}
-      params={props.params}
-      statuspageId={props.statuspageId}
-    />
+    <Suspense fallback={<PageLoader />}>
+      <ProjectV2New />
+    </Suspense>
   );
 }
