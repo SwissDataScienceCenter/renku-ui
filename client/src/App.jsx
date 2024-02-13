@@ -39,6 +39,7 @@ import LazyDashboard from "./features/dashboard/LazyDashboard";
 import LazyInactiveKGProjectsPage from "./features/inactiveKgProjects/LazyInactiveKGProjectsPage";
 import LazySearchPage from "./features/kgSearch/LazySearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
+import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
 import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
 import LazyHelp from "./help/LazyHelp";
@@ -51,9 +52,6 @@ import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
-import LazyProjectV2List from "./features/projectsV2/LazyProjectV2List";
-import LazyProjectV2New from "./features/projectsV2/LazyProjectV2New";
-import LazyProjectV2Show from "./features/projectsV2/LazyProjectV2Show";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
@@ -198,21 +196,11 @@ function CentralContentContainer(props) {
             <ContainerWrap>
               <LazyNotificationsPage />
             </ContainerWrap>
-          </Route>{" "}
-          <Route path={Url.get(Url.pages.v2Projects.new)}>
-            <ContainerWrap>
-              <LazyProjectV2New />
-            </ContainerWrap>
           </Route>
-          <Route path={`${Url.get(Url.pages.v2Projects.list)}/:id`}>
-            <ContainerWrap>
-              <LazyProjectV2Show />
-            </ContainerWrap>
-          </Route>
-          <Route path={Url.get(Url.pages.v2Projects.list)}>
-            <ContainerWrap>
-              <LazyProjectV2List />
-            </ContainerWrap>
+          <Route path="/v2">
+            {/* <ContainerWrap> */}
+            <LazyRootV2 />
+            {/* </ContainerWrap> */}
           </Route>
           <Route path="/style-guide">
             <ContainerWrap>
