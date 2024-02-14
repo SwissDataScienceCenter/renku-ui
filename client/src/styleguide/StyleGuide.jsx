@@ -24,17 +24,16 @@
  */
 
 import { Fragment } from "react";
-
+import { Route, Routes } from "react-router-dom-v5-compat";
 import { Col, Nav, NavItem, Row, Table } from "reactstrap";
-import { Route, Switch, useRouteMatch } from "react-router-dom";
 
+import { ExternalLink } from "../components/ExternalLinks";
+import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
+import { TimeCaption } from "../components/TimeCaption";
 import ButtonsGuide from "./ButtonsGuide";
 import ColorsGuide from "./ColorsGuide";
 import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
-import { TimeCaption } from "../components/TimeCaption";
-import { RenkuNavLink } from "../components/RenkuNavLink";
-import { ExternalLink } from "../components/ExternalLinks";
 
 function Overview() {
   return (
@@ -105,8 +104,7 @@ function FontsGuide() {
   );
 }
 
-function NavGuide(props) {
-  const { navUrl } = props.urlMap;
+function NavGuide() {
   return (
     <Fragment>
       <h2>Nav</h2>
@@ -115,13 +113,15 @@ function NavGuide(props) {
       <div className="pb-3 rk-search-bar">
         <Nav pills className="nav-pills-underline">
           <NavItem>
-            <RenkuNavLink to={navUrl} title="Tab 1" />
+            <RenkuNavLinkV2 end to=".">
+              Tab 1
+            </RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLink to={`${navUrl}/tab2`} title="Tab 2" />
+            <RenkuNavLinkV2 to="tab2">Tab 2</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLink to={`${navUrl}/tab3`} title="Tab 3" />
+            <RenkuNavLinkV2 to="tab3">Tab 3</RenkuNavLinkV2>
           </NavItem>
         </Nav>
       </div>
@@ -130,53 +130,48 @@ function NavGuide(props) {
       <p>If a secondary navigation is necessary, use a second-level nav.</p>
       <Nav className="flex-column nav-light nav-pills-underline">
         <NavItem>
-          <RenkuNavLink to={navUrl} title="Tab 1" />
+          <RenkuNavLinkV2 end to=".">
+            Tab 1
+          </RenkuNavLinkV2>
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={`${navUrl}/tab2`} title="Tab 2" />
+          <RenkuNavLinkV2 to="tab2">Tab 2</RenkuNavLinkV2>
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={`${navUrl}/tab3`} title="Tab 3" />
+          <RenkuNavLinkV2 to="tab3">Tab 3</RenkuNavLinkV2>
         </NavItem>
       </Nav>
     </Fragment>
   );
 }
 
-function StyleGuideNav(props) {
-  const {
-    baseUrl,
-    buttonsUrl,
-    colorsUrl,
-    fontsUrl,
-    formsUrl,
-    listsUrl,
-    navUrl,
-  } = props.urlMap;
+function StyleGuideNav() {
   return (
     <div className="pb-3 rk-search-bar">
       <Col className="d-flex pb-2 mb-1" md={12} lg={12}>
         <Nav pills className="nav-pills-underline">
           <NavItem>
-            <RenkuNavLink to={baseUrl} title="Overview" />
+            <RenkuNavLinkV2 end to=".">
+              Overview
+            </RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLink to={fontsUrl} title="Fonts" />
+            <RenkuNavLinkV2 to="fonts">Fonts</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLink to={colorsUrl} title="Colors" />
+            <RenkuNavLinkV2 to="colors">Colors</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLink to={buttonsUrl} title="Buttons" />
+            <RenkuNavLinkV2 to="buttons">Buttons</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLink exact={false} to={navUrl} title="Nav" />
+            <RenkuNavLinkV2 to="nav">Nav</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLink to={formsUrl} title="Forms" />
+            <RenkuNavLinkV2 to="forms">Forms</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLink to={listsUrl} title="Lists" />
+            <RenkuNavLinkV2 to="lists">Lists</RenkuNavLinkV2>
           </NavItem>
         </Nav>
       </Col>
@@ -184,7 +179,7 @@ function StyleGuideNav(props) {
   );
 }
 
-function StyleGuideHeader(props) {
+function StyleGuideHeader() {
   return (
     <Fragment>
       <Row className="pt-2 pb-3">
@@ -196,7 +191,7 @@ function StyleGuideHeader(props) {
             </div>
           </div>
           <div className="mt-2">
-            <StyleGuideNav urlMap={props.urlMap} />
+            <StyleGuideNav />
           </div>
         </Col>
       </Row>
@@ -204,49 +199,19 @@ function StyleGuideHeader(props) {
   );
 }
 
-function constructUrlMap(baseUrl) {
-  return {
-    baseUrl,
-    buttonsUrl: `${baseUrl}/buttons`,
-    colorsUrl: `${baseUrl}/colors`,
-    fontsUrl: `${baseUrl}/fonts`,
-    formsUrl: `${baseUrl}/forms`,
-    listsUrl: `${baseUrl}/lists`,
-    navUrl: `${baseUrl}/nav`,
-    searchUrl: `${baseUrl}/search`,
-  };
-}
-
 export default function StyleGuide() {
-  const { path } = useRouteMatch();
-  const urlMap = constructUrlMap(path);
-
   return (
     <Fragment>
-      <StyleGuideHeader urlMap={urlMap} />
-      <Switch>
-        <Route exact path={urlMap.baseUrl}>
-          <Overview />
-        </Route>
-        <Route exact path={urlMap.fontsUrl}>
-          <FontsGuide />
-        </Route>
-        <Route exact path={urlMap.colorsUrl}>
-          <ColorsGuide />
-        </Route>
-        <Route exact path={urlMap.buttonsUrl}>
-          <ButtonsGuide />
-        </Route>
-        <Route path={urlMap.navUrl}>
-          <NavGuide urlMap={urlMap} />
-        </Route>
-        <Route exact path={urlMap.formsUrl}>
-          <FormsGuide urlMap={urlMap} />
-        </Route>
-        <Route exact path={urlMap.listsUrl}>
-          <ListsGuide />
-        </Route>
-      </Switch>
+      <StyleGuideHeader />
+      <Routes>
+        <Route path="/" element={<Overview />} />
+        <Route path="fonts" element={<FontsGuide />} />
+        <Route path="colors" element={<ColorsGuide />} />
+        <Route path="buttons" element={<ButtonsGuide />} />
+        <Route path="nav/*" element={<NavGuide />} />
+        <Route path="forms" element={<FormsGuide />} />
+        <Route path="lists" element={<ListsGuide />} />
+      </Routes>
     </Fragment>
   );
 }

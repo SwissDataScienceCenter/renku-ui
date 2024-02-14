@@ -13,17 +13,22 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
-import { Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
 
-const ProjectV2Show = lazy(() => import("./show/ProjectV2Show"));
+import { ReactNode } from "react";
+import { BrowserRouter } from "react-router-dom";
+import { CompatRouter } from "react-router-dom-v5-compat";
 
-export default function LazyProjectV2Show() {
+interface RouterProps {
+  children?: ReactNode;
+}
+
+/** Temporary router while routing is being upgraded from react-router@v5 to v6 */
+export default function Router({ children }: RouterProps) {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <ProjectV2Show />
-    </Suspense>
+    <BrowserRouter>
+      <CompatRouter>{children}</CompatRouter>
+    </BrowserRouter>
   );
 }

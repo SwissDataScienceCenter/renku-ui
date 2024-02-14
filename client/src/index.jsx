@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { connect, Provider } from "react-redux";
-import { BrowserRouter as Router, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import "bootstrap";
 import "jquery";
@@ -14,6 +14,7 @@ import App from "./App";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
+import Router from "./components/router/Router";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";

@@ -15,15 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import { Suspense, lazy } from "react";
+
 import PageLoader from "../../components/PageLoader";
 
-const ProjectV2Show = lazy(() => import("./show/ProjectV2Show"));
+const RootV2 = lazy(() => import("./RootV2"));
 
-export default function LazyProjectV2Show() {
+export default function LazyRootV2() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <ProjectV2Show />
+      <RootV2 />
     </Suspense>
   );
 }

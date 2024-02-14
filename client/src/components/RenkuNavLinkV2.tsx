@@ -13,17 +13,25 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
-import { Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
 
-const ProjectV2Show = lazy(() => import("./show/ProjectV2Show"));
+import { RefAttributes } from "react";
+import {
+  NavLink as RRNavLink,
+  NavLinkProps as RRNavLinkProps,
+} from "react-router-dom-v5-compat";
+import { NavLink } from "reactstrap";
 
-export default function LazyProjectV2Show() {
+type RenkuNavLinkV2Props = RRNavLinkProps & RefAttributes<HTMLAnchorElement>;
+
+/** Updated RenkuNavLink which works with react-router@v6 */
+export default function RenkuNavLinkV2(props: RenkuNavLinkV2Props) {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <ProjectV2Show />
-    </Suspense>
+    <NavLink
+      tag={RRNavLink}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      {...(props as any)}
+    />
   );
 }

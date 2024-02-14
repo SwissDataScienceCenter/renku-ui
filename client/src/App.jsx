@@ -28,6 +28,7 @@ import { Helmet } from "react-helmet";
 import { Redirect, useLocation } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { CompatRoute } from "react-router-dom-v5-compat";
 
 import { LoginHelper, LoginRedirect } from "./authentication";
 import { Loader } from "./components/Loader";
@@ -39,6 +40,7 @@ import LazyDashboard from "./features/dashboard/LazyDashboard";
 import LazyInactiveKGProjectsPage from "./features/inactiveKgProjects/LazyInactiveKGProjectsPage";
 import LazySearchPage from "./features/kgSearch/LazySearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
+import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
 import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
 import LazyHelp from "./help/LazyHelp";
@@ -51,9 +53,6 @@ import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
-import LazyProjectV2List from "./features/projectsV2/LazyProjectV2List";
-import LazyProjectV2New from "./features/projectsV2/LazyProjectV2New";
-import LazyProjectV2Show from "./features/projectsV2/LazyProjectV2Show";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
@@ -198,27 +197,15 @@ function CentralContentContainer(props) {
             <ContainerWrap>
               <LazyNotificationsPage />
             </ContainerWrap>
-          </Route>{" "}
-          <Route path={Url.get(Url.pages.v2Projects.new)}>
-            <ContainerWrap>
-              <LazyProjectV2New />
-            </ContainerWrap>
           </Route>
-          <Route path={`${Url.get(Url.pages.v2Projects.list)}/:id`}>
-            <ContainerWrap>
-              <LazyProjectV2Show />
-            </ContainerWrap>
-          </Route>
-          <Route path={Url.get(Url.pages.v2Projects.list)}>
-            <ContainerWrap>
-              <LazyProjectV2List />
-            </ContainerWrap>
-          </Route>
-          <Route path="/style-guide">
+          <CompatRoute path="/v2">
+            <LazyRootV2 />
+          </CompatRoute>
+          <CompatRoute path="/style-guide">
             <ContainerWrap>
               <LazyStyleGuide />
             </ContainerWrap>
-          </Route>
+          </CompatRoute>
           {userInfo?.isAdmin && (
             <Route path="/admin">
               <ContainerWrap>

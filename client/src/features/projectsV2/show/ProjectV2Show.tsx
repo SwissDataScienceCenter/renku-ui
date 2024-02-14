@@ -17,7 +17,7 @@
  */
 import { useCallback, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom-v5-compat";
 import {
   Dropdown,
   DropdownItem,
@@ -168,9 +168,9 @@ export function ProjectV2DescriptionAndRepositories({
 }
 
 export default function ProjectV2Show() {
-  const { id: projectId } = useParams<{ id: string }>();
+  const { id: projectId } = useParams<"id">();
   const { data, isLoading, error } = useGetProjectsByProjectIdQuery({
-    projectId,
+    projectId: projectId ?? "",
   });
 
   const [settingEdit, setSettingEdit] = useState<SettingEditOption>(null);
@@ -202,7 +202,10 @@ export default function ProjectV2Show() {
       }
     >
       {settingEdit == null && (
-        <ProjectV2DescriptionAndRepositories project={data} />
+        <>
+          <ProjectV2DescriptionAndRepositories project={data} />
+          <SessionsV2 />
+        </>
       )}
       {settingEdit == "members" && (
         <ProjectV2MembersForm project={data} setSettingEdit={setSettingEdit} />

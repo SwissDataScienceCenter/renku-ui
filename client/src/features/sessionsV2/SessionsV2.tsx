@@ -30,19 +30,19 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  Input,
   Row,
   UncontrolledDropdown,
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
+import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import AddSessionV2Button from "./AddSessionV2Button";
+import DeleteSessionV2Modal from "./DeleteSessionV2Modal";
 import UpdateSessionV2Modal from "./UpdateSessionV2Modal";
 import { useGetSessionsV2FakeQuery } from "./sessionsV2.api";
 import { SessionV2 } from "./sessionsV2.types";
-import DeleteSessionV2Modal from "./DeleteSessionV2Modal";
 
 export default function SessionsV2() {
   return (
@@ -115,11 +115,7 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
             {description ?? <i>No description</i>}
           </CardText>
           <CardText className="mb-0">
-            <Input
-              className="d-inline"
-              disabled
-              value={environmentDefinition}
-            />
+            <CommandCopy command={environmentDefinition} />
           </CardText>
           <CardText>
             <TimeCaption
