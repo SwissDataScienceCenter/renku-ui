@@ -111,11 +111,11 @@ function CentralContentContainer(props) {
               </div>
             )}
           </Route>
-          <Route path={Url.get(Url.pages.help)}>
+          <CompatRoute path="/help">
             <ContainerWrap>
               <LazyHelp />
             </ContainerWrap>
-          </Route>
+          </CompatRoute>
           <Route path={Url.get(Url.pages.search)}>
             <ContainerWrap>
               <LazySearchPage

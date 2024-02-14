@@ -20,7 +20,7 @@ import { Suspense, lazy } from "react";
 
 import PageLoader from "../components/PageLoader";
 
-const Help = lazy(() => import("./Help.container"));
+const Help = lazy(() => import("./Help"));
 
 export default function LazyHelp() {
   return (
