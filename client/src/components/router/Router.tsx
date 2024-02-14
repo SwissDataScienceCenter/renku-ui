@@ -18,7 +18,6 @@
 
 import { ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
-// eslint-disable-next-line spellcheck/spell-checker
 import { CompatRouter } from "react-router-dom-v5-compat";
 
 interface RouterProps {
