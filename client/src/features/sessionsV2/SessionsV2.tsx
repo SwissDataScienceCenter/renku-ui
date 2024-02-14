@@ -161,7 +161,7 @@ function SessionV2Actions({ session }: SessionV2DisplayProps) {
           </div>
         </DropdownToggle>
         <DropdownMenu className="btn-with-menu-options" end>
-          <DropdownItem onClick={toggleUpdate}>Update</DropdownItem>
+          <DropdownItem onClick={toggleUpdate}>Edit</DropdownItem>
           <DropdownItem onClick={toggleDelete}>Delete</DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>

@@ -35,17 +35,17 @@ import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useUpdateSessionV2Mutation } from "./sessionsV2.api";
 import { SessionV2 } from "./sessionsV2.types";
 
-interface DeleteSessionV2ModalProps {
+interface UpdateSessionV2ModalProps {
   isOpen: boolean;
   session: SessionV2;
   toggle: () => void;
 }
 
-export default function DeleteSessionV2Modal({
+export default function UpdateSessionV2Modal({
   isOpen,
   session,
   toggle,
-}: DeleteSessionV2ModalProps) {
+}: UpdateSessionV2ModalProps) {
   const [updateSessionV2, result] = useUpdateSessionV2Mutation();
 
   const {
@@ -100,7 +100,7 @@ export default function DeleteSessionV2Modal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Update session</ModalHeader>
+        <ModalHeader toggle={toggle}>Edit session {session.name}</ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
 

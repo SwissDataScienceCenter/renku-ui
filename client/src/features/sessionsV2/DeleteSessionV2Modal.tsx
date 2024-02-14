@@ -25,17 +25,17 @@ import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useDeleteSessionV2Mutation } from "./sessionsV2.api";
 import { SessionV2 } from "./sessionsV2.types";
 
-interface UpdateSessionV2ModalProps {
+interface DeleteSessionV2ModalProps {
   isOpen: boolean;
   session: SessionV2;
   toggle: () => void;
 }
 
-export default function UpdateSessionV2Modal({
+export default function DeleteSessionV2Modal({
   isOpen,
   session,
   toggle,
-}: UpdateSessionV2ModalProps) {
+}: DeleteSessionV2ModalProps) {
   const [deleteSessionV2, result] = useDeleteSessionV2Mutation();
 
   const onDelete = useCallback(() => {
