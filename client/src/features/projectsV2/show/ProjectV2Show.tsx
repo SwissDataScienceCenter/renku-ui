@@ -162,7 +162,6 @@ export function ProjectV2DescriptionAndRepositories({
         <Label>Repositories</Label>
         <ProjectV2Repositories repositories={project.repositories} />
       </div>
-      <SessionsV2 />
     </>
   );
 }
