@@ -162,7 +162,6 @@ export function ProjectV2DescriptionAndRepositories({
         <Label>Repositories</Label>
         <ProjectV2Repositories repositories={project.repositories} />
       </div>
-      <SessionsV2 />
     </>
   );
 }
@@ -202,7 +201,10 @@ export default function ProjectV2Show() {
       }
     >
       {settingEdit == null && (
-        <ProjectV2DescriptionAndRepositories project={data} />
+        <>
+          <ProjectV2DescriptionAndRepositories project={data} />
+          <SessionsV2 />
+        </>
       )}
       {settingEdit == "members" && (
         <ProjectV2MembersForm project={data} setSettingEdit={setSettingEdit} />
