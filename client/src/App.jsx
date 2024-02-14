@@ -95,12 +95,12 @@ function CentralContentContainer(props) {
           <title>Reproducible Data Science | Open Research | Renku</title>
         </Helmet>
         <Switch>
-          <Route exact path="/login">
+          <CompatRoute exact path="/login">
             <ContainerWrap fullSize>
               <LoginRedirect />
             </ContainerWrap>
-          </Route>
-          <Route exact path={Url.get(Url.pages.landing)}>
+          </CompatRoute>
+          <CompatRoute exact path="/">
             {props.user.logged ? (
               <ContainerWrap>
                 <LazyDashboard />
@@ -110,7 +110,7 @@ function CentralContentContainer(props) {
                 <LazyAnonymousHome />
               </div>
             )}
-          </Route>
+          </CompatRoute>
           <CompatRoute path="/help">
             <ContainerWrap>
               <LazyHelp />
@@ -190,14 +190,14 @@ function CentralContentContainer(props) {
               model={props.model}
             />
           </Route>
-          <Route path="/datasets">
+          <CompatRoute path="/datasets">
             <Redirect to="/search?type=dataset" />
-          </Route>
-          <Route path="/notifications">
+          </CompatRoute>
+          <CompatRoute path="/notifications">
             <ContainerWrap>
               <LazyNotificationsPage />
             </ContainerWrap>
-          </Route>
+          </CompatRoute>
           <CompatRoute path="/v2">
             <LazyRootV2 />
           </CompatRoute>
@@ -207,13 +207,13 @@ function CentralContentContainer(props) {
             </ContainerWrap>
           </CompatRoute>
           {userInfo?.isAdmin && (
-            <Route path="/admin">
+            <CompatRoute path="/admin">
               <ContainerWrap>
                 <LazyAdminPage />
               </ContainerWrap>
-            </Route>
+            </CompatRoute>
           )}
-          <Route path="*">
+          <Route path="/*">
             <LazyNotFound />
           </Route>
         </Switch>
