@@ -23,27 +23,24 @@
  *  Presentational components for help.
  */
 
-import { useContext } from "react";
-import { Route, Switch } from "react-router-dom";
-
-import { Row, Col } from "reactstrap";
-import { Nav, NavItem } from "reactstrap";
-
 import {
   faDiscourse,
   faGithub,
   faGitter,
 } from "@fortawesome/free-brands-svg-icons";
+import { useContext } from "react";
+import { Route, Routes } from "react-router-dom-v5-compat";
+import { Col, Nav, NavItem, Row } from "reactstrap";
 
-import { StatuspageDisplay, isStatusConfigured } from "../statuspage";
-import { RenkuNavLink } from "../components/RenkuNavLink";
 import {
   ExternalDocsLink,
   ExternalIconLink,
 } from "../components/ExternalLinks";
+import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
+import { StatuspageDisplay, isStatusConfigured } from "../statuspage";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import AppContext from "../utils/context/appContext";
-import { Url } from "../utils/helpers/url";
+import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 
 import HelpRelease from "./HelpRelease";
 import PrivacyPolicy from "./PrivacyPolicy";
@@ -60,31 +57,29 @@ function HelpNav({ statuspageId }: HelpNavProps) {
   return (
     <Nav pills className={"nav-pills-underline"}>
       <NavItem>
-        <RenkuNavLink
-          to={Url.pages.help.base}
-          alternate={Url.pages.help.getting}
-          title="Getting Help"
-        />
+        <RenkuNavLinkV2 end to=".">
+          Getting Help
+        </RenkuNavLinkV2>
       </NavItem>
       <NavItem>
-        <RenkuNavLink to={Url.pages.help.documentation} title="Documentation" />
+        <RenkuNavLinkV2 to="docs">Documentation</RenkuNavLinkV2>
       </NavItem>
       {isStatusConfigured(statuspageId) && (
         <NavItem>
-          <RenkuNavLink to={Url.pages.help.status} title="Status" />
+          <RenkuNavLinkV2 to="status">Status</RenkuNavLinkV2>
         </NavItem>
       )}
       <NavItem>
-        <RenkuNavLink to={Url.pages.help.release} title="Release Information" />
+        <RenkuNavLinkV2 to="release">Release Information</RenkuNavLinkV2>
       </NavItem>
       {termsConfigured && (
         <NavItem>
-          <RenkuNavLink to={Url.pages.help.tos} title="Terms of Use" />
+          <RenkuNavLinkV2 to="tos">Terms of Use</RenkuNavLinkV2>
         </NavItem>
       )}
       {privacyPolicyConfigured && (
         <NavItem>
-          <RenkuNavLink to={Url.pages.help.privacy} title="Privacy Policy" />
+          <RenkuNavLinkV2 to="privacy">Privacy Policy</RenkuNavLinkV2>
         </NavItem>
       )}
     </Nav>
@@ -206,36 +201,22 @@ function HelpDocumentation() {
 function HelpContent() {
   const { model } = useContext(AppContext);
   return (
-    <Switch>
-      <Route exact path={Url.pages.help.base}>
-        <HelpGetting />
-      </Route>
-      <Route path={Url.pages.help.getting}>
-        <HelpGetting />
-      </Route>
-      <Route path={Url.pages.help.documentation}>
-        <HelpDocumentation />
-      </Route>
-      <Route path={Url.pages.help.status}>
-        <StatuspageDisplay key="status" model={model} />
-      </Route>
-      <Route path={Url.pages.help.release}>
-        <HelpRelease />
-      </Route>
-      <Route path={Url.pages.help.tos}>
-        <TermsOfService />
-      </Route>
-      <Route path={Url.pages.help.privacy}>
-        <PrivacyPolicy />
-      </Route>
-    </Switch>
+    <Routes>
+      <Route path="/" element={<HelpGetting />} />
+      <Route path="docs" element={<HelpDocumentation />} />
+      <Route path="status" element={<StatuspageDisplay model={model} />} />
+      <Route path="release" element={<HelpRelease />} />
+      <Route path="tos" element={<TermsOfService />} />
+      <Route path="privacy" element={<PrivacyPolicy />} />
+    </Routes>
   );
 }
 
-type HelpProps = {
-  statuspageId: string;
-};
-export function Help({ statuspageId }: HelpProps) {
+export default function Help() {
+  const { params } = useContext(AppContext);
+  const statuspageId =
+    params?.STATUSPAGE_ID ?? DEFAULT_APP_PARAMS.STATUSPAGE_ID;
+
   return (
     <>
       <Row className="pt-2 pb-3">
