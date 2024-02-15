@@ -17,6 +17,8 @@
  */
 
 import cx from "classnames";
+import { useCallback, useState } from "react";
+import { ThreeDotsVertical } from "react-bootstrap-icons";
 import {
   Button,
   Card,
@@ -25,7 +27,11 @@ import {
   CardTitle,
   Col,
   Container,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Row,
+  UncontrolledDropdown,
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
@@ -33,6 +39,8 @@ import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import AddSessionV2Button from "./AddSessionV2Button";
+import DeleteSessionV2Modal from "./DeleteSessionV2Modal";
+import UpdateSessionV2Modal from "./UpdateSessionV2Modal";
 import { useGetSessionsV2FakeQuery } from "./sessionsV2.api";
 import { SessionV2 } from "./sessionsV2.types";
 
@@ -92,7 +100,17 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
     <Col>
       <Card>
         <CardBody>
-          <CardTitle className="fs-5">{name}</CardTitle>
+          <CardTitle
+            className={cx(
+              "d-flex",
+              "flex-row",
+              "justify-content-between",
+              "align-items-center"
+            )}
+          >
+            <h5 className={cx("mb-0", "fs-5")}>{name}</h5>
+            <SessionV2Actions session={session} />
+          </CardTitle>
           <CardText className="mb-0">
             {description ?? <i>No description</i>}
           </CardText>
@@ -112,5 +130,48 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
         </CardBody>
       </Card>
     </Col>
+  );
+}
+
+function SessionV2Actions({ session }: SessionV2DisplayProps) {
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  const toggleUpdate = useCallback(() => {
+    setIsUpdateOpen((open) => !open);
+  }, []);
+  const toggleDelete = useCallback(() => {
+    setIsDeleteOpen((open) => !open);
+  }, []);
+
+  return (
+    <>
+      <UncontrolledDropdown>
+        <DropdownToggle
+          className={cx("p-2", "rounded-circle")}
+          color="outline-rk-green"
+        >
+          <div className="lh-1">
+            <ThreeDotsVertical className="bi" />
+            <span className="visually-hidden">Actions</span>
+          </div>
+        </DropdownToggle>
+        <DropdownMenu className="btn-with-menu-options" end>
+          <DropdownItem onClick={toggleUpdate}>Edit</DropdownItem>
+          <DropdownItem onClick={toggleDelete}>Delete</DropdownItem>
+        </DropdownMenu>
+      </UncontrolledDropdown>
+
+      <UpdateSessionV2Modal
+        isOpen={isUpdateOpen}
+        session={session}
+        toggle={toggleUpdate}
+      />
+      <DeleteSessionV2Modal
+        isOpen={isDeleteOpen}
+        session={session}
+        toggle={toggleDelete}
+      />
+    </>
   );
 }

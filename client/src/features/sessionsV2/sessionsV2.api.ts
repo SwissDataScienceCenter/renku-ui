@@ -92,5 +92,9 @@ const sessionsV2Api = createApi({
 });
 
 export default sessionsV2Api;
-export const { useGetSessionsV2FakeQuery, useAddSessionV2Mutation } =
-  sessionsV2Api;
+export const {
+  useGetSessionsV2FakeQuery,
+  useAddSessionV2Mutation,
+  useUpdateSessionV2Mutation,
+  useDeleteSessionV2Mutation,
+} = sessionsV2Api;
