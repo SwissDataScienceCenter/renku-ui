@@ -17,6 +17,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import {
   AddSessionV2Params,
   DeleteSessionV2Params,
@@ -24,14 +25,13 @@ import {
   SessionV2List,
   UpdateSessionV2Params,
 } from "./sessionsV2.types";
-import { DateTime } from "luxon";
 
 const sessionsV2Api = createApi({
   reducerPath: "sessionsV2Api",
   baseQuery: fetchBaseQuery({
     baseUrl: "/ui-server/api/data/sessions",
   }),
-  tagTypes: ["SessionV2"],
+  tagTypes: ["Launcher"],
   endpoints: (builder) => ({
     getSessionsV2: builder.query<SessionV2List, void>({
       query: () => {
@@ -39,51 +39,40 @@ const sessionsV2Api = createApi({
           url: "",
         };
       },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Launcher" as const, id })),
+              "Launcher",
+            ]
+          : ["Launcher"],
     }),
-    getSessionsV2Fake: builder.query<SessionV2List, void>({
-      queryFn: () => {
-        const session1: SessionV2 = {
-          id: "session-1234",
-          name: "fake-session-1",
-          creationDate: DateTime.utc().minus({ days: 4 }).toISO(),
-          description: "A fake session",
-          environmentDefinition: "python:latest",
-        };
-        const session2: SessionV2 = {
-          id: "session-5678",
-          name: "fake-session-2",
-          creationDate: DateTime.utc().minus({ days: 1 }).toISO(),
-          description: "Another fake session",
-          environmentDefinition: "rstudio:latest",
-        };
-
-        return {
-          data: [session1, session2],
-        };
-      },
-    }),
-    addSessionV2: builder.mutation<unknown, AddSessionV2Params>({
-      query: ({ environmentDefinition, name, projectId, description }) => {
+    addSessionV2: builder.mutation<SessionV2, AddSessionV2Params>({
+      query: ({ environment_id, name, project_id, description }) => {
         return {
           url: "",
           method: "POST",
           body: {
-            project_id: projectId,
+            project_id,
             name,
             description,
-            environment_id: environmentDefinition,
+            environment_id,
           },
         };
       },
+      invalidatesTags: ["Launcher"],
     }),
-    updateSessionV2: builder.mutation<unknown, UpdateSessionV2Params>({
-      query: ({ sessionId, ...params }) => {
+    updateSessionV2: builder.mutation<SessionV2, UpdateSessionV2Params>({
+      query: ({ session_id, ...params }) => {
         return {
-          url: `${sessionId}`,
+          url: `${session_id}`,
           method: "PATCH",
           body: { ...params },
         };
       },
+      invalidatesTags: (_result, _error, { session_id }) => [
+        { id: session_id, type: "Launcher" },
+      ],
     }),
     deleteSessionV2: builder.mutation<unknown, DeleteSessionV2Params>({
       query: ({ sessionId }) => {
@@ -92,6 +81,7 @@ const sessionsV2Api = createApi({
           method: "DELETE",
         };
       },
+      invalidatesTags: ["Launcher"],
     }),
   }),
 });
@@ -99,7 +89,6 @@ const sessionsV2Api = createApi({
 export default sessionsV2Api;
 export const {
   useGetSessionsV2Query,
-  useGetSessionsV2FakeQuery,
   useAddSessionV2Mutation,
   useUpdateSessionV2Mutation,
   useDeleteSessionV2Mutation,

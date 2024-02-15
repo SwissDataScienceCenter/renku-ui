@@ -57,16 +57,16 @@ export default function UpdateSessionV2Modal({
     defaultValues: {
       name: session.name,
       description: session.description,
-      environmentDefinition: session.environmentDefinition,
+      environmentDefinition: session.environment_id,
     },
   });
   const onSubmit = useCallback(
     (data: UpdateSessionV2Form) => {
       updateSessionV2({
-        sessionId: session.id,
+        session_id: session.id,
         name: data.name,
         description: data.description,
-        environmentDefinition: data.environmentDefinition,
+        environment_id: data.environmentDefinition,
       });
     },
     [session.id, updateSessionV2]

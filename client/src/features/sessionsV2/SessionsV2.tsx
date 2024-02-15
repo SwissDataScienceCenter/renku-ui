@@ -17,8 +17,9 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
+import { useParams } from "react-router-dom-v5-compat";
 import {
   Button,
   Card,
@@ -59,7 +60,14 @@ export default function SessionsV2() {
 }
 
 function SessionsV2ListDisplay() {
+  const { id: projectId } = useParams<"id">();
+
   const { data: sessions, error, isLoading } = useGetSessionsV2Query();
+
+  const filteredSessions = useMemo(
+    () => sessions?.filter((session) => session.project_id === projectId),
+    [projectId, sessions]
+  );
 
   if (isLoading) {
     return (
@@ -74,14 +82,14 @@ function SessionsV2ListDisplay() {
     return <RtkErrorAlert error={error} />;
   }
 
-  if (!sessions || sessions.length == 0) {
+  if (!filteredSessions || filteredSessions.length == 0) {
     return null;
   }
 
   return (
     <Container className="px-0" fluid>
       <Row>
-        {sessions.map((session) => (
+        {filteredSessions.map((session) => (
           <SessionV2Display key={session.id} session={session} />
         ))}
       </Row>
@@ -94,7 +102,7 @@ interface SessionV2DisplayProps {
 }
 
 function SessionV2Display({ session }: SessionV2DisplayProps) {
-  const { name, description, creationDate, environmentDefinition } = session;
+  const { creation_date, environment_id, name, description } = session;
 
   return (
     <Col>
@@ -115,11 +123,11 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
             {description ?? <i>No description</i>}
           </CardText>
           <CardText className="mb-0">
-            <CommandCopy command={environmentDefinition} />
+            <CommandCopy command={environment_id} />
           </CardText>
           <CardText>
             <TimeCaption
-              datetime={creationDate}
+              datetime={creation_date}
               enableTooltip
               prefix="Created"
             />

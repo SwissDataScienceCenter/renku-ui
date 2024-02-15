@@ -77,10 +77,10 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
   const onSubmit = useCallback(
     (data: AddSessionV2Form) => {
       addSessionV2({
-        projectId: projectId ?? "",
+        project_id: projectId ?? "",
         name: data.name,
         description: data.description,
-        environmentDefinition: data.environmentDefinition,
+        environment_id: data.environmentDefinition,
       });
     },
     [addSessionV2, projectId]
