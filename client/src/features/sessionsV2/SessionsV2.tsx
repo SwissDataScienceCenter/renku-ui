@@ -41,7 +41,7 @@ import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import AddSessionV2Button from "./AddSessionV2Button";
 import DeleteSessionV2Modal from "./DeleteSessionV2Modal";
 import UpdateSessionV2Modal from "./UpdateSessionV2Modal";
-import { useGetSessionsV2FakeQuery } from "./sessionsV2.api";
+import { useGetSessionsV2Query } from "./sessionsV2.api";
 import { SessionV2 } from "./sessionsV2.types";
 
 export default function SessionsV2() {
@@ -59,7 +59,7 @@ export default function SessionsV2() {
 }
 
 function SessionsV2ListDisplay() {
-  const { data: sessions, error, isLoading } = useGetSessionsV2FakeQuery();
+  const { data: sessions, error, isLoading } = useGetSessionsV2Query();
 
   if (isLoading) {
     return (

@@ -33,7 +33,7 @@ const sessionsV2Api = createApi({
   }),
   tagTypes: ["SessionV2"],
   endpoints: (builder) => ({
-    getSessionsV2: builder.query<unknown, void>({
+    getSessionsV2: builder.query<SessionV2List, void>({
       query: () => {
         return {
           url: "",
@@ -93,6 +93,7 @@ const sessionsV2Api = createApi({
 
 export default sessionsV2Api;
 export const {
+  useGetSessionsV2Query,
   useGetSessionsV2FakeQuery,
   useAddSessionV2Mutation,
   useUpdateSessionV2Mutation,
