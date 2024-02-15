@@ -16,23 +16,24 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
+import { PlusLg, XLg } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
+import { useParams } from "react-router-dom-v5-compat";
 import {
   Button,
+  Form,
+  Input,
+  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Form,
-  Label,
-  Input,
 } from "reactstrap";
-import cx from "classnames";
-import { PlusLg, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
-import { useAddSessionV2Mutation } from "./sessionsV2.api";
-import { useParams } from "react-router";
+
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { useAddSessionV2Mutation } from "./sessionsV2.api";
 
 export default function AddSessionV2Button() {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,7 +58,7 @@ interface AddSessionV2ModalProps {
 }
 
 function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
-  const { id: projectId } = useParams<{ id: string }>();
+  const { id: projectId } = useParams<"id">();
 
   const [addSessionV2, result] = useAddSessionV2Mutation();
 
@@ -76,7 +77,7 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
   const onSubmit = useCallback(
     (data: AddSessionV2Form) => {
       addSessionV2({
-        projectId,
+        projectId: projectId ?? "",
         name: data.name,
         description: data.description,
         environmentDefinition: data.environmentDefinition,

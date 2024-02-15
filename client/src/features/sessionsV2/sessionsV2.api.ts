@@ -63,11 +63,16 @@ const sessionsV2Api = createApi({
       },
     }),
     addSessionV2: builder.mutation<unknown, AddSessionV2Params>({
-      query: (params) => {
+      query: ({ environmentDefinition, name, projectId, description }) => {
         return {
           url: "",
           method: "POST",
-          body: { ...params },
+          body: {
+            project_id: projectId,
+            name,
+            description,
+            environment_id: environmentDefinition,
+          },
         };
       },
     }),
