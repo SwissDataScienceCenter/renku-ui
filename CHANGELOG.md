@@ -1030,8 +1030,6 @@ Changes compared to 1.0.0-beta5 follow below.
 
 - redesign the header to take less vertical space ([#1420](https://github.com/SwissDataScienceCenter/renku-ui/issues/1420), [#1389](https://github.com/SwissDataScienceCenter/renku-ui/issues/1389))
 
-# Changes
-
 ## [1.0.0-beta4](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta3...1.0.0-beta4) (2021-07-16)
 
 ### Bug Fixes
