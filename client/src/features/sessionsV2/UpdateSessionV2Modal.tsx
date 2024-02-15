@@ -57,7 +57,7 @@ export default function UpdateSessionV2Modal({
     defaultValues: {
       name: session.name,
       description: session.description,
-      environmentDefinition: session.environment_id,
+      environment_id: session.environment_id,
     },
   });
   const onSubmit = useCallback(
@@ -66,7 +66,7 @@ export default function UpdateSessionV2Modal({
         session_id: session.id,
         name: data.name,
         description: data.description,
-        environment_id: data.environmentDefinition,
+        environment_id: data.environment_id,
       });
     },
     [session.id, updateSessionV2]
@@ -150,12 +150,12 @@ export default function UpdateSessionV2Modal({
             </Label>
             <Controller
               control={control}
-              name="environmentDefinition"
+              name="environment_id"
               render={({ field }) => (
                 <Input
                   className={cx(
                     "form-control",
-                    errors.environmentDefinition && "is-invalid"
+                    errors.environment_id && "is-invalid"
                   )}
                   id="addSessionV2Environment"
                   placeholder="Docker image"
@@ -188,5 +188,5 @@ export default function UpdateSessionV2Modal({
 interface UpdateSessionV2Form {
   name: string;
   description?: string;
-  environmentDefinition: string;
+  environment_id: string;
 }

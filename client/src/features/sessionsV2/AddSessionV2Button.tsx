@@ -71,7 +71,7 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
     defaultValues: {
       name: "",
       description: "",
-      environmentDefinition: "",
+      environment_id: "",
     },
   });
   const onSubmit = useCallback(
@@ -80,7 +80,7 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
         project_id: projectId ?? "",
         name: data.name,
         description: data.description,
-        environment_id: data.environmentDefinition,
+        environment_id: data.environment_id,
       });
     },
     [addSessionV2, projectId]
@@ -164,12 +164,12 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
             </Label>
             <Controller
               control={control}
-              name="environmentDefinition"
+              name="environment_id"
               render={({ field }) => (
                 <Input
                   className={cx(
                     "form-control",
-                    errors.environmentDefinition && "is-invalid"
+                    errors.environment_id && "is-invalid"
                   )}
                   id="addSessionV2Environment"
                   placeholder="Docker image"
@@ -202,5 +202,5 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
 interface AddSessionV2Form {
   name: string;
   description: string;
-  environmentDefinition: string;
+  environment_id: string;
 }
