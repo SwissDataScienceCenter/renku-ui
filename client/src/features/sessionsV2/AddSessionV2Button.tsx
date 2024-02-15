@@ -187,7 +187,7 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
         <ModalFooter>
           <Button className="btn-outline-rk-green" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
-            Close
+            Cancel
           </Button>
           <Button disabled={result.isLoading} type="submit">
             <PlusLg className={cx("bi", "me-1")} />

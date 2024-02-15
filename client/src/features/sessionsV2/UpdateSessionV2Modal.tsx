@@ -173,7 +173,7 @@ export default function UpdateSessionV2Modal({
         <ModalFooter>
           <Button className="btn-outline-rk-green" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
-            Close
+            Cancel
           </Button>
           <Button disabled={result.isLoading || !isDirty} type="submit">
             <CheckLg className={cx("bi", "me-1")} />
