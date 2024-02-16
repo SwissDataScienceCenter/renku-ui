@@ -17,27 +17,28 @@
  */
 
 export interface SessionV2 {
+  creation_date: string;
+  description?: string;
+  environment_id: string;
   id: string;
   name: string;
-  creationDate: string;
-  description?: string;
-  environmentDefinition: string;
+  project_id: string;
 }
 
 export type SessionV2List = SessionV2[];
 
 export interface AddSessionV2Params {
-  projectId: string;
-  name: string;
   description?: string;
-  environmentDefinition: string;
+  environment_id: string;
+  name: string;
+  project_id: string;
 }
 
 export interface UpdateSessionV2Params {
-  sessionId: string;
-  name: string;
   description?: string;
-  environmentDefinition: string;
+  environment_id: string;
+  name: string;
+  session_id: string;
 }
 
 export interface DeleteSessionV2Params {
