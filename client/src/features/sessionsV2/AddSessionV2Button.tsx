@@ -16,23 +16,24 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
+import { PlusLg, XLg } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
+import { useParams } from "react-router-dom-v5-compat";
 import {
   Button,
+  Form,
+  Input,
+  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Form,
-  Label,
-  Input,
 } from "reactstrap";
-import cx from "classnames";
-import { PlusLg, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
-import { useAddSessionV2Mutation } from "./sessionsV2.api";
-import { useParams } from "react-router";
+
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { useAddSessionV2Mutation } from "./sessionsV2.api";
 
 export default function AddSessionV2Button() {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,7 +58,7 @@ interface AddSessionV2ModalProps {
 }
 
 function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
-  const { id: projectId } = useParams<{ id: string }>();
+  const { id: projectId } = useParams<"id">();
 
   const [addSessionV2, result] = useAddSessionV2Mutation();
 
@@ -70,16 +71,16 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
     defaultValues: {
       name: "",
       description: "",
-      environmentDefinition: "",
+      environment_id: "",
     },
   });
   const onSubmit = useCallback(
     (data: AddSessionV2Form) => {
       addSessionV2({
-        projectId,
+        project_id: projectId ?? "",
         name: data.name,
         description: data.description,
-        environmentDefinition: data.environmentDefinition,
+        environment_id: data.environment_id,
       });
     },
     [addSessionV2, projectId]
@@ -163,12 +164,12 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
             </Label>
             <Controller
               control={control}
-              name="environmentDefinition"
+              name="environment_id"
               render={({ field }) => (
                 <Input
                   className={cx(
                     "form-control",
-                    errors.environmentDefinition && "is-invalid"
+                    errors.environment_id && "is-invalid"
                   )}
                   id="addSessionV2Environment"
                   placeholder="Docker image"
@@ -201,5 +202,5 @@ function AddSessionV2Modal({ isOpen, toggle }: AddSessionV2ModalProps) {
 interface AddSessionV2Form {
   name: string;
   description: string;
-  environmentDefinition: string;
+  environment_id: string;
 }
