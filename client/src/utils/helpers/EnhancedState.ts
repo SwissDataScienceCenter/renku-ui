@@ -28,35 +28,36 @@ import {
   configureStore,
 } from "@reduxjs/toolkit";
 
-import adminComputeResourcesApi from "../../features/admin/adminComputeResources.api";
-import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataServicesApi } from "../../features/dataServices/dataServices.api";
+import { dataServicesUserApi } from "../../features/user/dataServicesUser.api";
+import { datasetFormSlice } from "../../features/project/dataset";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
-import projectCloudStorageApi from "../../features/project/components/cloudStorage/projectCloudStorage.api";
-import { datasetFormSlice } from "../../features/project/dataset";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
-import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
-import sessionsApi from "../../features/session/sessions.api";
-import sessionSidecarApi from "../../features/session/sidecar.api";
-import startSessionSlice from "../../features/session/startSession.slice";
+import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
-import termsApi from "../../features/terms/terms.api";
-import { dataServicesUserApi } from "../../features/user/dataServicesUser.api";
-import keycloakUserApi from "../../features/user/keycloakUser.api";
-import userPreferencesApi from "../../features/user/userPreferences.api";
 import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
+import adminComputeResourcesApi from "../../features/admin/adminComputeResources.api";
+import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
+import keycloakUserApi from "../../features/user/keycloakUser.api";
+import projectCloudStorageApi from "../../features/project/components/cloudStorage/projectCloudStorage.api";
+import projectGitLabApi from "../../features/project/projectGitLab.api";
+import sessionsApi from "../../features/session/sessions.api";
+import sessionSidecarApi from "../../features/session/sidecar.api";
+import startSessionSlice from "../../features/session/startSession.slice";
+import termsApi from "../../features/terms/terms.api";
+import userPreferencesApi from "../../features/user/userPreferences.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -70,9 +71,10 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [datasetFormSlice.name]: datasetFormSlice.reducer,
     [displaySlice.name]: displaySlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
-    [startSessionSlice.name]: startSessionSlice.reducer,
-    [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [projectV2NewSlice.name]: projectV2NewSlice.reducer,
+    [searchV2Slice.name]: searchV2Slice.reducer,
+    [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
+    [startSessionSlice.name]: startSessionSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [adminComputeResourcesApi.reducerPath]: adminComputeResourcesApi.reducer,
@@ -122,8 +124,8 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectsApi.middleware)
         .concat(projectV2Api.middleware)
         .concat(recentUserActivityApi.middleware)
-        .concat(sessionSidecarApi.middleware)
         .concat(sessionsApi.middleware)
+        .concat(sessionSidecarApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(termsApi.middleware)
         .concat(userPreferencesApi.middleware)

@@ -18,26 +18,29 @@
 import cx from "classnames";
 import { useEffect, useRef } from "react";
 import { Button, Card, CardBody, Col, InputGroup, Row } from "reactstrap";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import { useDispatch } from "react-redux";
+import { setQuery, setSearch } from "./searchV2.slice";
 
 export default function SearchV2() {
   return (
     <>
-      <Row>
+      <Row className="mb-3">
         <Col>
           <h2>Search v2</h2>
         </Col>
       </Row>
-      <Row className="mb-4">
+      <Row className="mb-3">
         <Col>
-          <SearchV2Bar search={() => {}} />
+          <SearchV2Bar />
         </Col>
       </Row>
-      <Row>
-        <Col className="mb-3">
+      <Row className="mb-3">
+        <Col>
           <SearchV2Header currentSorting={availableSortingItems.scoreDesc} />
         </Col>
       </Row>
-      <Row>
+      <Row className="mb-3">
         <Col xs={12} sm={4} lg={3}>
           <SearchV2Filters />
         </Col>
@@ -49,10 +52,10 @@ export default function SearchV2() {
   );
 }
 
-interface SearchV2BarProps {
-  search: () => void;
-}
-function SearchV2Bar({ search }: SearchV2BarProps) {
+function SearchV2Bar() {
+  const dispatch = useDispatch();
+  const { search } = useAppSelector((state) => state.searchV2);
+
   // focus search input when loading the component
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -61,17 +64,27 @@ function SearchV2Bar({ search }: SearchV2BarProps) {
     }
   }, []);
 
+  const startNewSearch = () => {
+    dispatch(setSearch(search.query));
+  };
+
   // handle pressing Enter to search
   // ? We could use react-hotkeys-hook if we wish to handle Enter also outside the input
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      search();
+      startNewSearch();
     }
   };
+
+  // basic autocomplete for searched values, without duplicates
+  const previousSearchEntries = Array.from(new Set(search.history)).map(
+    (value) => <option key={value} value={value} />
+  );
 
   return (
     <InputGroup>
       <input
+        autoComplete="renku-search"
         className={cx("form-control", "rounded-0", "rounded-start")}
         data-cy="search-input"
         id="search-input"
@@ -79,14 +92,20 @@ function SearchV2Bar({ search }: SearchV2BarProps) {
         ref={inputRef}
         tabIndex={-1}
         type="text"
+        onChange={(e) => dispatch(setQuery(e.target.value))}
         onKeyDown={handleKeyDown}
+        value={search.query}
+        list="previous-searches"
       />
+      {previousSearchEntries.length > 0 && (
+        <datalist id="previous-searches">{previousSearchEntries}</datalist>
+      )}
       <Button
         className="rounded-end"
         color="secondary"
         data-cy="search-button"
         id="search-button"
-        onClick={search}
+        onClick={startNewSearch}
       >
         Search
       </Button>
@@ -207,12 +226,29 @@ function SearchV2Filters() {
 
 function SearchV2Results() {
   return (
+    <Row>
+      <Col>
+        <SearchV2ResultsContent />
+      </Col>
+    </Row>
+  );
+}
+
+function SearchV2ResultsContent() {
+  const { search } = useAppSelector((state) => state.searchV2);
+
+  if (!search.lastSearch) {
+    return <p>Start searching by typing in the search bar above.</p>;
+  }
+
+  return (
     <>
-      <Row>
-        <Col>
-          <p>Results</p>
-        </Col>
-      </Row>
+      <p>
+        Search results for{" "}
+        <span className="fw-bold">{`"${search.lastSearch}"`}</span> should
+        appear here.
+      </p>
+      <p className="fw-italics">Not implemented yet 😢</p>
     </>
   );
 }
@@ -249,16 +285,17 @@ const availableSortingItems: SortingItems = {
 
 interface SearchV2ResultsHeaderProps {
   currentSorting: SortingItem;
-  searchQuery?: string;
   sortingItems?: SortingItems;
   total?: number;
 }
 const SearchV2Header = ({
   currentSorting,
-  searchQuery,
   sortingItems = availableSortingItems,
   total,
 }: SearchV2ResultsHeaderProps) => {
+  const { search } = useAppSelector((state) => state.searchV2);
+  const searchQuery = search.lastSearch;
+
   const options = Object.values(sortingItems).map((value) => (
     <option key={value.sortingString} value={value.sortingString}>
       {value.friendlyName}
