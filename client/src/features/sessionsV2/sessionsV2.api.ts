@@ -29,10 +29,19 @@ import {
 const sessionsV2Api = createApi({
   reducerPath: "sessionsV2Api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/ui-server/api/data/sessions",
+    // baseUrl: "/ui-server/api/data/sessions",
+    baseUrl: "/ui-server/api/data",
   }),
-  tagTypes: ["Launcher"],
+  tagTypes: ["Environment", "Launcher"],
   endpoints: (builder) => ({
+    getSessionEnvironments: builder.query<unknown, void>({
+      query: () => {
+        return {
+          url: "environments",
+        };
+      },
+    }),
+
     getSessionsV2: builder.query<SessionV2List, void>({
       query: () => {
         return {
@@ -88,6 +97,7 @@ const sessionsV2Api = createApi({
 
 export default sessionsV2Api;
 export const {
+  useGetSessionEnvironmentsQuery,
   useGetSessionsV2Query,
   useAddSessionV2Mutation,
   useUpdateSessionV2Mutation,
