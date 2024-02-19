@@ -16,11 +16,31 @@
  * limitations under the License.
  */
 
-import { useGetSessionEnvironmentsQuery } from "../sessionsV2/sessionsV2.api";
+import {
+  Card,
+  CardBody,
+  CardText,
+  CardTitle,
+  Col,
+  Container,
+  Row,
+} from "reactstrap";
+import cx from "classnames";
+
+import { Loader } from "../../components/Loader";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import type {
+  SessionEnvironment,
+  SessionEnvironmentList,
+} from "../sessionsV2/sessionsV2.types";
+import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
+import { useGetSessionEnvironmentsQuery } from "./adminSessions.api";
+import { CommandCopy } from "../../components/commandCopy/CommandCopy";
+import { TimeCaption } from "../../components/TimeCaption";
 
 export default function SessionEnvironmentsSection() {
   return (
-    <section>
+    <section className="mt-5">
       <h2 className="fs-5">Session Environments - Renku 1.0</h2>
       <SessionEnvironments />
     </section>
@@ -28,7 +48,95 @@ export default function SessionEnvironmentsSection() {
 }
 
 function SessionEnvironments() {
-  const { data } = useGetSessionEnvironmentsQuery();
+  const {
+    data: environments,
+    error,
+    isLoading,
+  } = useGetSessionEnvironmentsQuery();
 
-  return <pre>{JSON.stringify(data, null, 2)}</pre>;
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <RtkErrorAlert error={error} />;
+  }
+
+  return (
+    <div>
+      <AddSessionEnvironmentButton />
+
+      <div className="mt-2">
+        <SessionEnvironmentsListDisplay environments={environments} />
+      </div>
+    </div>
+  );
+}
+
+interface SessionEnvironmentsListDisplayProps {
+  environments: SessionEnvironmentList | undefined | null;
+}
+
+function SessionEnvironmentsListDisplay({
+  environments,
+}: SessionEnvironmentsListDisplayProps) {
+  if (!environments || environments.length == 0) {
+    return null;
+  }
+
+  return (
+    <Container className="px-0" fluid>
+      <Row>
+        {environments.map((environment) => (
+          <SessionEnvironmentDisplay
+            key={environment.id}
+            environment={environment}
+          />
+        ))}
+      </Row>
+    </Container>
+  );
+}
+
+interface SessionEnvironmentDisplayProps {
+  environment: SessionEnvironment;
+}
+
+function SessionEnvironmentDisplay({
+  environment,
+}: SessionEnvironmentDisplayProps) {
+  const { container_image, creation_date, name, description } = environment;
+
+  return (
+    <Col>
+      <Card>
+        <CardBody>
+          <CardTitle
+            className={cx(
+              "d-flex",
+              "flex-row",
+              "justify-content-between",
+              "align-items-center"
+            )}
+          >
+            <h5 className={cx("mb-0", "fs-5")}>{name}</h5>
+            {/* <SessionV2Actions session={session} /> */}
+          </CardTitle>
+          <CardText className="mb-0">
+            {description ?? <i>No description</i>}
+          </CardText>
+          <CardText className="mb-0">
+            <CommandCopy command={container_image} />
+          </CardText>
+          <CardText>
+            <TimeCaption
+              datetime={creation_date}
+              enableTooltip
+              prefix="Created"
+            />
+          </CardText>
+        </CardBody>
+      </Card>
+    </Col>
+  );
 }

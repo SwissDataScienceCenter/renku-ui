@@ -18,11 +18,6 @@
 
 import { ResourceClass, Resources } from "../dataServices/dataServices.types";
 
-export interface AdminComputeResources {
-  keycloakToken: string;
-  keycloakTokenIsValid: boolean;
-}
-
 export interface ResourcePoolUser {
   id: string;
 }

@@ -16,41 +16,15 @@
  * limitations under the License.
  */
 
-export interface SessionEnvironment {
+export interface AddSessionEnvironmentParams {
   container_image: string;
-  creation_date: string;
-  id: string;
   name: string;
   description?: string;
 }
 
-export type SessionEnvironmentList = SessionEnvironment[];
-
-export interface SessionV2 {
-  creation_date: string;
+export interface UpdateSessionEnvironmentParams {
+  environmentId: string;
+  name?: string;
   description?: string;
-  environment_id: string;
-  id: string;
-  name: string;
-  project_id: string;
-}
-
-export type SessionV2List = SessionV2[];
-
-export interface AddSessionV2Params {
-  description?: string;
-  environment_id: string;
-  name: string;
-  project_id: string;
-}
-
-export interface UpdateSessionV2Params {
-  description?: string;
-  environment_id: string;
-  name: string;
-  session_id: string;
-}
-
-export interface DeleteSessionV2Params {
-  sessionId: string;
+  container_image?: string;
 }
