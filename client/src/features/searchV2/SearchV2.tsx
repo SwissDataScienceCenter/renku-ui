@@ -16,23 +16,66 @@
  * limitations under the License
  */
 import cx from "classnames";
-
-import { Button, Input, InputGroup } from "reactstrap";
+import { useEffect, useRef, useState } from "react";
+import { Button, InputGroup } from "reactstrap";
 
 export default function SearchV2() {
+  const [doSearch, setDoSearch] = useState(false);
+
   return (
     <>
       <h2>Search v2</h2>
-      <InputGroup>
-        <Input
-          className={cx("form-control", "rounded-0", "rounded-start")}
-          placeholder="Search..."
-          tabIndex={1} // ! Link the search button to the default action
-        />
-        <Button color="secondary" className="rounded-end">
-          Search
-        </Button>
-      </InputGroup>
+      <SearchV2Bar search={() => setDoSearch(true)} />
+      {doSearch && <SearchV2Results />}
     </>
   );
+}
+
+interface SearchV2BarProps {
+  search: () => void;
+}
+function SearchV2Bar({ search }: SearchV2BarProps) {
+  // focus search input when loading the component
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  // handle pressing Enter to search
+  // ? We could use react-hotkeys-hook if we wish to handle Enter also outside the input
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      search();
+    }
+  };
+
+  return (
+    <InputGroup>
+      <input
+        className={cx("form-control", "rounded-0", "rounded-start")}
+        data-cy="search-input"
+        id="search-input"
+        placeholder="Search..."
+        ref={inputRef}
+        tabIndex={-1}
+        type="text"
+        onKeyDown={handleKeyDown}
+      />
+      <Button
+        className="rounded-end"
+        color="secondary"
+        data-cy="search-button"
+        id="search-button"
+        onClick={search}
+      >
+        Search
+      </Button>
+    </InputGroup>
+  );
+}
+
+function SearchV2Results() {
+  return <div>Search results -- WIP</div>;
 }
