@@ -17,24 +17,23 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { SearchV2State, ToggleFilterPayload } from "./searchV2.types";
 
-export interface SearchV2State {
-  search: {
-    history: string[];
-    lastSearch: string | null;
-    query: string;
-  };
-  filters: {
-    visibility: ("private" | "public")[];
-    type: ("project" | "user")[];
-    role: ("creator" | "member" | "none")[];
-  };
-}
-
-export interface ToggleFilterPayload {
-  filter: keyof SearchV2State["filters"];
-  value: string;
-}
+export const AVAILABLE_FILTERS = {
+  role: {
+    creator: "Creator",
+    member: "Member",
+    none: "None",
+  },
+  type: {
+    project: "Project",
+    user: "User",
+  },
+  visibility: {
+    private: "Private",
+    public: "Public",
+  },
+};
 
 const initialState: SearchV2State = {
   search: {
@@ -43,9 +42,9 @@ const initialState: SearchV2State = {
     query: "",
   },
   filters: {
-    visibility: ["public", "private"],
-    type: ["project"],
     role: ["creator", "member", "none"],
+    type: ["project"],
+    visibility: ["public", "private"],
   },
 };
 
@@ -60,17 +59,28 @@ export const searchV2Slice = createSlice({
       state.search.lastSearch = action.payload;
       state.search.history = [...state.search.history, action.payload];
     },
-    // toggleFilter: (state, action: PayloadAction<ToggleFilterPayload>) => {
-    //   if (state.filters[action.payload.filter].includes(action.payload.value)) {
-    //     state.filters[action.payload.filter] = state.filters[
-    //       action.payload.filter
-    //     ].filter((value) => value !== action.payload.value);
-    //   } else {
-    //     state.filters[action.payload.filter].push(action.payload.value);
-    //   }
-    // },
+    toggleFilter: (state, action: PayloadAction<ToggleFilterPayload>) => {
+      const arrayToUpdate =
+        action.payload.filter === "visibility"
+          ? state.filters.visibility
+          : action.payload.filter === "type"
+          ? state.filters.type
+          : state.filters.role;
+      toggleArrayItem(arrayToUpdate, action.payload.value);
+    },
     reset: () => initialState,
   },
 });
 
-export const { setQuery, setSearch, reset } = searchV2Slice.actions;
+// helper function to toggle array items
+function toggleArrayItem(array: string[], item: string) {
+  const index = array.indexOf(item);
+  if (index !== -1) {
+    array.splice(index, 1);
+  } else {
+    array.push(item);
+  }
+}
+
+export const { reset, setQuery, setSearch, toggleFilter } =
+  searchV2Slice.actions;

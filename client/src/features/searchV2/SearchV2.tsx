@@ -20,7 +20,12 @@ import { useCallback, useEffect, useRef } from "react";
 import { Button, Card, CardBody, Col, InputGroup, Row } from "reactstrap";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useDispatch } from "react-redux";
-import { setQuery, setSearch } from "./searchV2.slice";
+import {
+  AVAILABLE_FILTERS,
+  setQuery,
+  setSearch,
+  toggleFilter,
+} from "./searchV2.slice";
 import searchV2Api from "./searchV2.api";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
@@ -201,6 +206,31 @@ function SearchV2FilterContainer({
 }
 
 function SearchV2Filters() {
+  const dispatch = useDispatch();
+  const { filters } = useAppSelector((state) => state.searchV2);
+
+  const filtersList = Object.entries(AVAILABLE_FILTERS).map(
+    ([filterName, options]) => (
+      <SearchV2Filter
+        key={filterName}
+        name={filterName}
+        options={Object.entries(options).map(([key, value]) => ({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          checked: !!(filters as any)[filterName]?.includes(key),
+          key,
+          value,
+        }))}
+        title={filterName.charAt(0).toUpperCase() + filterName.slice(1)}
+        toggleOption={(value) => {
+          dispatch(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            toggleFilter({ filter: filterName as any, value: value as any })
+          );
+        }}
+      />
+    )
+  );
+
   return (
     <>
       <Row className="mb-3">
@@ -208,36 +238,7 @@ function SearchV2Filters() {
           <h3>Filters</h3>
         </Col>
         <Col className={cx("d-flex", "flex-column", "gap-3")}>
-          <SearchV2Filter
-            name="visibility"
-            options={[
-              { checked: true, key: "public", value: "Public" },
-              { checked: false, key: "private", value: "Private" },
-            ]}
-            title="Visibility"
-            toggleOption={() => {}}
-          />
-
-          <SearchV2Filter
-            name="entity-type"
-            options={[
-              { checked: true, key: "project", value: "Project" },
-              { checked: true, key: "user", value: "User" },
-            ]}
-            title="Type"
-            toggleOption={() => {}}
-          />
-
-          <SearchV2Filter
-            name="role"
-            options={[
-              { checked: false, key: "creator", value: "Creator" },
-              { checked: false, key: "member", value: "Member" },
-              { checked: false, key: "none", value: "None" },
-            ]}
-            title="Role"
-            toggleOption={() => {}}
-          />
+          {filtersList}
 
           <SearchV2FilterContainer title="Creation date">
             Not yet implemented

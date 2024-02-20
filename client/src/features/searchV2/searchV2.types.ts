@@ -35,3 +35,21 @@ export interface SearchResult {
   // type: string;
   // score: number;
 }
+
+export interface SearchV2State {
+  search: {
+    history: string[];
+    lastSearch: string | null;
+    query: string;
+  };
+  filters: {
+    role: ("creator" | "member" | "none")[];
+    type: ("project" | "user")[];
+    visibility: ("private" | "public")[];
+  };
+}
+
+export interface ToggleFilterPayload {
+  filter: keyof SearchV2State["filters"];
+  value: SearchV2State["filters"][keyof SearchV2State["filters"]][number];
+}
