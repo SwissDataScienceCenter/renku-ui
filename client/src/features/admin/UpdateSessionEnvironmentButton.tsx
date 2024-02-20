@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { PlusLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, XLg } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   Form,
@@ -28,13 +30,18 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import cx from "classnames";
-import { useAddSessionEnvironmentMutation } from "./adminSessions.api";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
-import { Controller, useForm } from "react-hook-form";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
+import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
 
-export default function AddSessionEnvironmentButton() {
+interface UpdateSessionEnvironmentButtonProps {
+  environment: SessionEnvironment;
+}
+
+export default function UpdateSessionEnvironmentButton({
+  environment,
+}: UpdateSessionEnvironmentButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -43,46 +50,53 @@ export default function AddSessionEnvironmentButton() {
   return (
     <>
       <Button className="btn-outline-rk-green" onClick={toggle}>
-        <PlusLg className={cx("bi", "me-1")} />
-        Add Session Environment
+        Update
       </Button>
-      <AddSessionEnvironmentModal isOpen={isOpen} toggle={toggle} />
+      <UpdateSessionEnvironmentModal
+        environment={environment}
+        isOpen={isOpen}
+        toggle={toggle}
+      />
     </>
   );
 }
 
-interface AddSessionEnvironmentModalProps {
+interface UpdateSessionEnvironmentModalProps {
+  environment: SessionEnvironment;
   isOpen: boolean;
   toggle: () => void;
 }
 
-function AddSessionEnvironmentModal({
+function UpdateSessionEnvironmentModal({
+  environment,
   isOpen,
   toggle,
-}: AddSessionEnvironmentModalProps) {
-  const [addSessionEnvironment, result] = useAddSessionEnvironmentMutation();
+}: UpdateSessionEnvironmentModalProps) {
+  const [updateSessionEnvironment, result] =
+    useUpdateSessionEnvironmentMutation();
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
     reset,
-  } = useForm<AddSessionEnvironmentForm>({
+  } = useForm<UpdateSessionEnvironmentForm>({
     defaultValues: {
-      container_image: "",
-      description: "",
-      name: "",
+      container_image: environment.container_image,
+      description: environment.description,
+      name: environment.name,
     },
   });
   const onSubmit = useCallback(
-    (data: AddSessionEnvironmentForm) => {
-      addSessionEnvironment({
+    (data: UpdateSessionEnvironmentForm) => {
+      updateSessionEnvironment({
+        environmentId: environment.id,
         container_image: data.container_image,
         name: data.name,
-        description: data.description.trim() ? data.description : undefined,
+        description: data.description.trim() ? data.description : "",
       });
     },
-    [addSessionEnvironment]
+    [environment.id, updateSessionEnvironment]
   );
 
   useEffect(() => {
@@ -94,10 +108,17 @@ function AddSessionEnvironmentModal({
 
   useEffect(() => {
     if (!isOpen) {
-      reset();
       result.reset();
     }
-  }, [isOpen, reset, result]);
+  }, [isOpen, result]);
+
+  useEffect(() => {
+    reset({
+      container_image: environment.container_image,
+      description: environment.description ?? "",
+      name: environment.name,
+    });
+  }, [environment, reset]);
 
   return (
     <Modal
@@ -113,7 +134,7 @@ function AddSessionEnvironmentModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Add session environment</ModalHeader>
+        <ModalHeader toggle={toggle}>Update session environment</ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
 
@@ -194,21 +215,20 @@ function AddSessionEnvironmentModal({
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading} type="submit">
+          <Button disabled={result.isLoading || !isDirty} type="submit">
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
-              <PlusLg className={cx("bi", "me-1")} />
+              <CheckLg className={cx("bi", "me-1")} />
             )}
-            Add Environment
+            Update Environment
           </Button>
         </ModalFooter>
       </Form>
     </Modal>
   );
 }
-
-interface AddSessionEnvironmentForm {
+interface UpdateSessionEnvironmentForm {
   container_image: string;
   description: string;
   name: string;

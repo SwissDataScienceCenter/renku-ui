@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import {
   Card,
   CardBody,
@@ -25,18 +26,19 @@ import {
   Container,
   Row,
 } from "reactstrap";
-import cx from "classnames";
 
 import { Loader } from "../../components/Loader";
+import { TimeCaption } from "../../components/TimeCaption";
+import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import type {
   SessionEnvironment,
   SessionEnvironmentList,
 } from "../sessionsV2/sessionsV2.types";
 import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
+import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
+import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
 import { useGetSessionEnvironmentsQuery } from "./adminSessions.api";
-import { CommandCopy } from "../../components/commandCopy/CommandCopy";
-import { TimeCaption } from "../../components/TimeCaption";
 
 export default function SessionEnvironmentsSection() {
   return (
@@ -123,7 +125,7 @@ function SessionEnvironmentDisplay({
             {/* <SessionV2Actions session={session} /> */}
           </CardTitle>
           <CardText className="mb-0">
-            {description ?? <i>No description</i>}
+            {description ? description : <i>No description</i>}
           </CardText>
           <CardText className="mb-0">
             <CommandCopy command={container_image} />
@@ -135,6 +137,11 @@ function SessionEnvironmentDisplay({
               prefix="Created"
             />
           </CardText>
+
+          <div className={cx("d-flex", "justify-content-end", "gap-2")}>
+            <UpdateSessionEnvironmentButton environment={environment} />
+            <DeleteSessionEnvironmentButton environment={environment} />
+          </div>
         </CardBody>
       </Card>
     </Col>
