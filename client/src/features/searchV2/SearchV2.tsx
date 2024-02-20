@@ -16,11 +16,15 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Button, Card, CardBody, Col, InputGroup, Row } from "reactstrap";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useDispatch } from "react-redux";
 import { setQuery, setSearch } from "./searchV2.slice";
+import searchV2Api from "./searchV2.api";
+import { Loader } from "../../components/Loader";
+import { TimeCaption } from "../../components/TimeCaption";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 export default function SearchV2() {
   return (
@@ -56,6 +60,9 @@ function SearchV2Bar() {
   const dispatch = useDispatch();
   const { search } = useAppSelector((state) => state.searchV2);
 
+  const [startSearch, searchResult] =
+    searchV2Api.useLazyGetSearchResultsQuery();
+
   // focus search input when loading the component
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -64,9 +71,23 @@ function SearchV2Bar() {
     }
   }, []);
 
-  const startNewSearch = () => {
+  const startNewSearch = useCallback(() => {
+    // this de-bounces the search by 1 second to prevent accidentally querying multiple times
+    if (
+      searchResult.fulfilledTimeStamp &&
+      search.query === search.lastSearch &&
+      +new Date() - searchResult.fulfilledTimeStamp < 1000
+    )
+      return;
     dispatch(setSearch(search.query));
-  };
+    startSearch(search.query);
+  }, [
+    dispatch,
+    search.lastSearch,
+    search.query,
+    searchResult.fulfilledTimeStamp,
+    startSearch,
+  ]);
 
   // handle pressing Enter to search
   // ? We could use react-hotkeys-hook if we wish to handle Enter also outside the input
@@ -183,6 +204,9 @@ function SearchV2Filters() {
   return (
     <>
       <Row className="mb-3">
+        <Col className="d-sm-none" xs={12}>
+          <h3>Filters</h3>
+        </Col>
         <Col className={cx("d-flex", "flex-column", "gap-3")}>
           <SearchV2Filter
             name="visibility"
@@ -227,6 +251,9 @@ function SearchV2Filters() {
 function SearchV2Results() {
   return (
     <Row>
+      <Col className="d-sm-none" xs={12}>
+        <h3>Results</h3>
+      </Col>
       <Col>
         <SearchV2ResultsContent />
       </Col>
@@ -235,22 +262,54 @@ function SearchV2Results() {
 }
 
 function SearchV2ResultsContent() {
+  // get the search state
   const { search } = useAppSelector((state) => state.searchV2);
+  const searchResults = searchV2Api.endpoints.getSearchResults.useQueryState(
+    search.lastSearch != null ? search.lastSearch : skipToken
+  );
 
-  if (!search.lastSearch) {
+  if (searchResults.isFetching) {
+    return <Loader />;
+  }
+  if (search.lastSearch == null) {
     return <p>Start searching by typing in the search bar above.</p>;
   }
 
-  return (
-    <>
-      <p>
-        Search results for{" "}
-        <span className="fw-bold">{`"${search.lastSearch}"`}</span> should
-        appear here.
-      </p>
-      <p className="fw-italics">Not implemented yet 😢</p>
-    </>
-  );
+  if (!searchResults.data?.length) {
+    return (
+      <>
+        <p>
+          No results for{" "}
+          <span className="fw-bold">{`"${search.lastSearch}"`}</span>.
+        </p>
+        <p>You can try another search, or change some filters.</p>
+      </>
+    );
+  }
+
+  const resultsOutput = searchResults.data.map((entity) => {
+    return (
+      <Col key={entity.id} xs={12} lg={6}>
+        <Card className={cx("border", "rounded")}>
+          <CardBody>
+            <h4 className="mb-0">{entity.name}</h4>
+            <p className="form-text mb-0">
+              {entity.slug} - {entity.visibility}
+            </p>
+            <p className="form-text text-rk-green">
+              user-{entity.createdBy.id}
+            </p>
+            <p>{entity.description}</p>
+            <p className="form-text mb-0">
+              <TimeCaption datetime={entity.creationDate} prefix="Created" />
+            </p>
+          </CardBody>
+        </Card>
+      </Col>
+    );
+  });
+
+  return <Row>{resultsOutput}</Row>;
 }
 
 interface SortingItem {

@@ -21,7 +21,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface SearchV2State {
   search: {
     history: string[];
-    lastSearch: string;
+    lastSearch: string | null;
     query: string;
   };
   filters: {
@@ -39,7 +39,7 @@ export interface ToggleFilterPayload {
 const initialState: SearchV2State = {
   search: {
     history: [],
-    lastSearch: "",
+    lastSearch: null,
     query: "",
   },
   filters: {
