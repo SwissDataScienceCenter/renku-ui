@@ -39,19 +39,28 @@ import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import AddSessionV2Button from "./AddSessionV2Button";
+import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionV2Modal";
 import UpdateSessionV2Modal from "./UpdateSessionV2Modal";
-import { useGetSessionsV2Query } from "./sessionsV2.api";
-import { SessionV2 } from "./sessionsV2.types";
+import sessionsV2Api, {
+  useGetProjectSessionLaunchersQuery,
+  useGetSessionEnvironmentsQuery,
+} from "./sessionsV2.api";
+import { SessionLauncher } from "./sessionsV2.types";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 export default function SessionsV2() {
+  const { error } = useGetSessionEnvironmentsQuery();
+
   return (
     <div>
       <h3>Sessions</h3>
       <div>
-        <AddSessionV2Button />
+        <AddSessionLauncherButton />
       </div>
+
+      {error && <RtkErrorAlert error={error} />}
+
       <div className="mt-2">
         <SessionsV2ListDisplay />
       </div>
@@ -62,12 +71,11 @@ export default function SessionsV2() {
 function SessionsV2ListDisplay() {
   const { id: projectId } = useParams<"id">();
 
-  const { data: sessions, error, isLoading } = useGetSessionsV2Query();
-
-  const filteredSessions = useMemo(
-    () => sessions?.filter((session) => session.project_id === projectId),
-    [projectId, sessions]
-  );
+  const {
+    data: sessions,
+    error,
+    isLoading,
+  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
 
   if (isLoading) {
     return (
@@ -82,14 +90,14 @@ function SessionsV2ListDisplay() {
     return <RtkErrorAlert error={error} />;
   }
 
-  if (!filteredSessions || filteredSessions.length == 0) {
+  if (!sessions || sessions.length == 0) {
     return null;
   }
 
   return (
     <Container className="px-0" fluid>
       <Row>
-        {filteredSessions.map((session) => (
+        {sessions.map((session) => (
           <SessionV2Display key={session.id} session={session} />
         ))}
       </Row>
@@ -98,11 +106,29 @@ function SessionsV2ListDisplay() {
 }
 
 interface SessionV2DisplayProps {
-  session: SessionV2;
+  session: SessionLauncher;
 }
 
 function SessionV2Display({ session }: SessionV2DisplayProps) {
-  const { creation_date, environment_id, name, description } = session;
+  const { creation_date, environment_kind, name, description } = session;
+
+  const { data: environments, isLoading } =
+    sessionsV2Api.endpoints.getSessionEnvironments.useQueryState(
+      environment_kind === "global_environment" ? undefined : skipToken
+    );
+  const environment = useMemo(
+    () =>
+      session.environment_kind === "global_environment" &&
+      environments?.find((env) => env.id === session.environment_id),
+    [environments, session]
+  );
+
+  const container_image =
+    environment_kind === "global_environment" && environment
+      ? environment.container_image
+      : environment_kind === "global_environment"
+      ? "unknown"
+      : session.container_image;
 
   return (
     <Col>
@@ -116,14 +142,25 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
               "align-items-center"
             )}
           >
-            <h5 className={cx("mb-0", "fs-5")}>{name}</h5>
+            <h5 className={cx("mb-0", "fs-5")}>
+              {isLoading && (
+                <Loader className={cx("bi", "me-2")} inline size={20} />
+              )}
+              {name}
+            </h5>
             <SessionV2Actions session={session} />
           </CardTitle>
           <CardText className="mb-0">
             {description ?? <i>No description</i>}
           </CardText>
-          <CardText className="mb-0">
-            <CommandCopy command={environment_id} />
+          {environment && (
+            <CardText className="mb-0">
+              Uses the <b>{environment.name}</b> session environment.
+            </CardText>
+          )}
+          <CardText className="mb-2" tag="div">
+            <p className="mb-0">Container image:</p>
+            <CommandCopy command={container_image} noMargin />
           </CardText>
           <CardText>
             <TimeCaption

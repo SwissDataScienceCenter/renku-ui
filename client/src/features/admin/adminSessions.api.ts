@@ -57,7 +57,7 @@ const adminSessionsApi = createApi({
         return {
           url: "environments",
           method: "POST",
-          body: { ...params },
+          body: params,
         };
       },
       invalidatesTags: ["Environment"],
@@ -70,7 +70,7 @@ const adminSessionsApi = createApi({
         return {
           url: `environments/${environmentId}`,
           method: "PATCH",
-          body: { ...params },
+          body: params,
         };
       },
       invalidatesTags: (_result, _error, { environmentId }) => [

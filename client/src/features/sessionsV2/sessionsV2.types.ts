@@ -26,23 +26,39 @@ export interface SessionEnvironment {
 
 export type SessionEnvironmentList = SessionEnvironment[];
 
-export interface SessionV2 {
+export type SessionLauncher = {
+  id: string;
+  project_id: string;
+  name: string;
   creation_date: string;
   description?: string;
-  environment_id: string;
-  id: string;
-  name: string;
-  project_id: string;
+  environment_kind: EnvironmentKind;
+} & SessionLauncherEnvironment;
+
+export type EnvironmentKind = "global_environment" | "container_image";
+
+export type SessionLauncherEnvironment =
+  | {
+      environment_kind: Extract<EnvironmentKind, "global_environment">;
+      environment_id: string;
+    }
+  | {
+      environment_kind: Extract<EnvironmentKind, "container_image">;
+      container_image: string;
+    };
+
+export type SessionLauncherList = SessionLauncher[];
+
+export interface GetProjectSessionLaunchersParams {
+  projectId: string;
 }
 
-export type SessionV2List = SessionV2[];
-
-export interface AddSessionV2Params {
+export type AddSessionLauncherParams = {
   description?: string;
-  environment_id: string;
   name: string;
   project_id: string;
-}
+  environment_kind: EnvironmentKind;
+} & SessionLauncherEnvironment;
 
 export interface UpdateSessionV2Params {
   description?: string;

@@ -33,11 +33,11 @@ import {
 
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useUpdateSessionV2Mutation } from "./sessionsV2.api";
-import { SessionV2 } from "./sessionsV2.types";
+import { SessionLauncher } from "./sessionsV2.types";
 
 interface UpdateSessionV2ModalProps {
   isOpen: boolean;
-  session: SessionV2;
+  session: SessionLauncher;
   toggle: () => void;
 }
 

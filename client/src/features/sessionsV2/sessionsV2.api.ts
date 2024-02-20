@@ -19,10 +19,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import {
-  AddSessionV2Params,
+  AddSessionLauncherParams,
   DeleteSessionV2Params,
-  SessionV2,
-  SessionV2List,
+  GetProjectSessionLaunchersParams,
+  SessionEnvironmentList,
+  SessionLauncher,
+  SessionLauncherList,
   UpdateSessionV2Params,
 } from "./sessionsV2.types";
 
@@ -34,18 +36,17 @@ const sessionsV2Api = createApi({
   }),
   tagTypes: ["Environment", "Launcher"],
   endpoints: (builder) => ({
-    getSessionEnvironments: builder.query<unknown, void>({
+    getSessionEnvironments: builder.query<SessionEnvironmentList, void>({
       query: () => {
         return {
           url: "environments",
         };
       },
     }),
-
-    getSessionsV2: builder.query<SessionV2List, void>({
+    getSessionLaunchers: builder.query<SessionLauncherList, void>({
       query: () => {
         return {
-          url: "",
+          url: "session_launchers",
         };
       },
       providesTags: (result) =>
@@ -56,25 +57,40 @@ const sessionsV2Api = createApi({
             ]
           : ["Launcher"],
     }),
-    addSessionV2: builder.mutation<SessionV2, AddSessionV2Params>({
-      query: ({ environment_id, name, project_id, description }) => {
+    getProjectSessionLaunchers: builder.query<
+      SessionLauncherList,
+      GetProjectSessionLaunchersParams
+    >({
+      query: ({ projectId }) => {
         return {
-          url: "",
+          url: `/projects/${projectId}/session_launchers`,
+        };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Launcher" as const, id })),
+              "Launcher",
+            ]
+          : ["Launcher"],
+    }),
+    addSessionLauncher: builder.mutation<
+      SessionLauncher,
+      AddSessionLauncherParams
+    >({
+      query: ({ ...params }) => {
+        return {
+          url: "session_launchers",
           method: "POST",
-          body: {
-            project_id,
-            name,
-            description,
-            environment_id,
-          },
+          body: params,
         };
       },
       invalidatesTags: ["Launcher"],
     }),
-    updateSessionV2: builder.mutation<SessionV2, UpdateSessionV2Params>({
+    updateSessionV2: builder.mutation<SessionLauncher, UpdateSessionV2Params>({
       query: ({ session_id, ...params }) => {
         return {
-          url: `${session_id}`,
+          url: `session_launchers/${session_id}`,
           method: "PATCH",
           body: { ...params },
         };
@@ -86,7 +102,7 @@ const sessionsV2Api = createApi({
     deleteSessionV2: builder.mutation<unknown, DeleteSessionV2Params>({
       query: ({ sessionId }) => {
         return {
-          url: `${sessionId}`,
+          url: `session_launchers/${sessionId}`,
           method: "DELETE",
         };
       },
@@ -98,8 +114,9 @@ const sessionsV2Api = createApi({
 export default sessionsV2Api;
 export const {
   useGetSessionEnvironmentsQuery,
-  useGetSessionsV2Query,
-  useAddSessionV2Mutation,
+  useGetSessionLaunchersQuery,
+  useGetProjectSessionLaunchersQuery,
+  useAddSessionLauncherMutation,
   useUpdateSessionV2Mutation,
   useDeleteSessionV2Mutation,
 } = sessionsV2Api;

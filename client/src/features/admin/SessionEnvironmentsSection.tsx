@@ -112,17 +112,10 @@ function SessionEnvironmentDisplay({
   return (
     <Col>
       <Card>
+        {" "}
         <CardBody>
-          <CardTitle
-            className={cx(
-              "d-flex",
-              "flex-row",
-              "justify-content-between",
-              "align-items-center"
-            )}
-          >
-            <h5 className={cx("mb-0", "fs-5")}>{name}</h5>
-            {/* <SessionV2Actions session={session} /> */}
+          <CardTitle className={cx("mb-0", "fs-5")} tag="h5">
+            {name}
           </CardTitle>
           <CardText className="mb-0">
             {description ? description : <i>No description</i>}
