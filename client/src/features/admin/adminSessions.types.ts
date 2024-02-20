@@ -24,7 +24,11 @@ export interface AddSessionEnvironmentParams {
 
 export interface UpdateSessionEnvironmentParams {
   environmentId: string;
-  name?: string;
-  description?: string;
   container_image?: string;
+  description?: string;
+  name?: string;
+}
+
+export interface DeleteSessionEnvironmentParams {
+  environmentId: string;
 }
