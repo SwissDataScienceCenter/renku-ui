@@ -69,7 +69,7 @@ function DeleteSessionEnvironmentModal({
     deleteSessionEnvironment({
       environmentId: environment.id,
     });
-  }, []);
+  }, [deleteSessionEnvironment, environment.id]);
 
   useEffect(() => {
     if (!result.isSuccess) {

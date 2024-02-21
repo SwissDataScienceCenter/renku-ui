@@ -17,17 +17,11 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
-import { PlusLg, XLg } from "react-bootstrap-icons";
-import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
-import { useParams } from "react-router-dom-v5-compat";
+import { useCallback, useEffect } from "react";
+import { CheckLg, XLg } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import {
   Button,
-  Card,
-  CardBody,
-  CardText,
-  CardTitle,
-  Col,
   Form,
   Input,
   Label,
@@ -38,76 +32,62 @@ import {
   Row,
 } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import { TimeCaption } from "../../components/TimeCaption";
-import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import {
-  useAddSessionLauncherMutation,
   useGetSessionEnvironmentsQuery,
+  useUpdateSessionLauncherMutation,
 } from "./sessionsV2.api";
 import {
   EnvironmentKind,
-  SessionEnvironment,
+  SessionLauncher,
   SessionLauncherEnvironment,
 } from "./sessionsV2.types";
+import { Loader } from "../../components/Loader";
+import { SessionEnvironmentItem } from "./AddSessionLauncherButton";
 
-import styles from "./AddSessionLauncherButton.module.scss";
-
-export default function AddSessionLauncherButton() {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = useCallback(() => {
-    setIsOpen((open) => !open);
-  }, []);
-
-  return (
-    <>
-      <Button className="btn-outline-rk-green" onClick={toggle}>
-        <PlusLg className={cx("bi", "me-1")} />
-        Add Session
-      </Button>
-      <AddSessionLauncherModal isOpen={isOpen} toggle={toggle} />
-    </>
-  );
-}
-
-interface AddSessionLauncherModalProps {
+interface UpdateSessionLauncherModalProps {
   isOpen: boolean;
+  launcher: SessionLauncher;
   toggle: () => void;
 }
 
-function AddSessionLauncherModal({
+export default function UpdateSessionLauncherModal({
   isOpen,
+  launcher,
   toggle,
-}: AddSessionLauncherModalProps) {
-  const { id: projectId } = useParams<"id">();
-
+}: UpdateSessionLauncherModalProps) {
   const {
     data: environments,
     error,
     isLoading,
   } = useGetSessionEnvironmentsQuery();
 
-  const [addSessionLauncher, result] = useAddSessionLauncherMutation();
+  const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
     reset,
     setValue,
     watch,
-  } = useForm<AddSessionLauncherForm>({
+  } = useForm<UpdateSessionLauncherForm>({
     defaultValues: {
-      name: "",
-      description: "",
-      environment_kind: "global_environment",
-      environment_id: "",
-      container_image: "",
+      name: launcher.name,
+      description: launcher.description ?? "",
+      environment_kind: launcher.environment_kind,
+      environment_id:
+        launcher.environment_kind === "global_environment"
+          ? launcher.environment_id
+          : "",
+      container_image:
+        launcher.environment_kind === "container_image"
+          ? launcher.container_image
+          : "",
     },
   });
   const onSubmit = useCallback(
-    (data: AddSessionLauncherForm) => {
+    (data: UpdateSessionLauncherForm) => {
       const { description, name } = data;
       const environment: SessionLauncherEnvironment =
         data.environment_kind === "global_environment"
@@ -119,14 +99,14 @@ function AddSessionLauncherModal({
               environment_kind: "container_image",
               container_image: data.container_image,
             };
-      addSessionLauncher({
-        project_id: projectId ?? "",
+      updateSessionLauncher({
+        launcherId: launcher.id,
         name,
         description: description.trim() ? description : undefined,
         ...environment,
       });
     },
-    [addSessionLauncher, projectId]
+    [launcher.id, updateSessionLauncher]
   );
 
   const watchEnvironmentKind = watch("environment_kind");
@@ -154,6 +134,22 @@ function AddSessionLauncherModal({
     }
   }, [isOpen, reset, result]);
 
+  useEffect(() => {
+    reset({
+      name: launcher.name,
+      description: launcher.description ?? "",
+      environment_kind: launcher.environment_kind,
+      environment_id:
+        launcher.environment_kind === "global_environment"
+          ? launcher.environment_id
+          : "",
+      container_image:
+        launcher.environment_kind === "container_image"
+          ? launcher.container_image
+          : "",
+    });
+  }, [launcher, reset]);
+
   return (
     <Modal
       backdrop="static"
@@ -168,7 +164,7 @@ function AddSessionLauncherModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Add session</ModalHeader>
+        <ModalHeader toggle={toggle}>Edit session {launcher.name}</ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
 
@@ -346,9 +342,9 @@ function AddSessionLauncherModal({
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading} type="submit">
-            <PlusLg className={cx("bi", "me-1")} />
-            Add Session
+          <Button disabled={result.isLoading || !isDirty} type="submit">
+            <CheckLg className={cx("bi", "me-1")} />
+            Update session
           </Button>
         </ModalFooter>
       </Form>
@@ -356,90 +352,10 @@ function AddSessionLauncherModal({
   );
 }
 
-interface AddSessionLauncherForm {
+interface UpdateSessionLauncherForm {
   name: string;
   description: string;
   environment_kind: EnvironmentKind;
   environment_id: string;
   container_image: string;
-}
-
-interface SessionEnvironmentItemProps {
-  environment: SessionEnvironment;
-  field: ControllerRenderProps<AddSessionLauncherForm, "environment_id">;
-}
-
-export function SessionEnvironmentItem({
-  environment,
-  field,
-}: SessionEnvironmentItemProps) {
-  const { container_image, creation_date, id, name, description } = environment;
-  const isSelected = field.value === id;
-
-  return (
-    <Col>
-      <Input
-        className="btn-check"
-        id={`addSessionLauncherGlobalEnvironment-${id}`}
-        type="radio"
-        {...field}
-        value={id}
-        checked={isSelected}
-      />
-      <Label
-        className={cx(
-          "d-block",
-          "h-100",
-          "w-100",
-          "rounded",
-          "focus-ring",
-          "focus-ring-primary",
-          "cursor-pointer",
-          styles.environmentLabel
-        )}
-        for={`addSessionLauncherGlobalEnvironment-${id}`}
-      >
-        <Card
-          className={cx(
-            "border",
-            "rounded",
-            isSelected ? "border-rk-green" : "border-rk-white",
-            isSelected && "bg-rk-green",
-            isSelected && "text-white"
-          )}
-        >
-          <CardBody className={cx("rounded", styles.environmentCard)}>
-            <CardTitle
-              className={cx(
-                "mb-0",
-                "fs-5",
-                isSelected && "text-white",
-                styles.environmentCardText
-              )}
-              tag="h5"
-            >
-              {name}
-            </CardTitle>
-            <CardText className="mb-0">
-              {description ? description : <i>No description</i>}
-            </CardText>
-            <CardText className="mb-0" tag="div">
-              <CommandCopy command={container_image} />
-            </CardText>
-            <CardText>
-              <TimeCaption
-                className={cx(
-                  isSelected && "text-white",
-                  styles.environmentCardText
-                )}
-                datetime={creation_date}
-                enableTooltip
-                prefix="Created"
-              />
-            </CardText>
-          </CardBody>
-        </Card>
-      </Label>
-    </Col>
-  );
 }

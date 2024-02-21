@@ -20,12 +20,12 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import {
   AddSessionLauncherParams,
-  DeleteSessionV2Params,
+  DeleteSessionLauncherParams,
   GetProjectSessionLaunchersParams,
   SessionEnvironmentList,
   SessionLauncher,
   SessionLauncherList,
-  UpdateSessionV2Params,
+  UpdateSessionLauncherParams,
 } from "./sessionsV2.types";
 
 const sessionsV2Api = createApi({
@@ -87,22 +87,25 @@ const sessionsV2Api = createApi({
       },
       invalidatesTags: ["Launcher"],
     }),
-    updateSessionV2: builder.mutation<SessionLauncher, UpdateSessionV2Params>({
-      query: ({ session_id, ...params }) => {
+    updateSessionLauncher: builder.mutation<
+      SessionLauncher,
+      UpdateSessionLauncherParams
+    >({
+      query: ({ launcherId, ...params }) => {
         return {
-          url: `session_launchers/${session_id}`,
+          url: `session_launchers/${launcherId}`,
           method: "PATCH",
-          body: { ...params },
+          body: params,
         };
       },
-      invalidatesTags: (_result, _error, { session_id }) => [
-        { id: session_id, type: "Launcher" },
+      invalidatesTags: (_result, _error, { launcherId }) => [
+        { id: launcherId, type: "Launcher" },
       ],
     }),
-    deleteSessionV2: builder.mutation<unknown, DeleteSessionV2Params>({
-      query: ({ sessionId }) => {
+    deleteSessionLauncher: builder.mutation<null, DeleteSessionLauncherParams>({
+      query: ({ launcherId }) => {
         return {
-          url: `session_launchers/${sessionId}`,
+          url: `session_launchers/${launcherId}`,
           method: "DELETE",
         };
       },
@@ -117,6 +120,6 @@ export const {
   useGetSessionLaunchersQuery,
   useGetProjectSessionLaunchersQuery,
   useAddSessionLauncherMutation,
-  useUpdateSessionV2Mutation,
-  useDeleteSessionV2Mutation,
+  useUpdateSessionLauncherMutation,
+  useDeleteSessionLauncherMutation,
 } = sessionsV2Api;

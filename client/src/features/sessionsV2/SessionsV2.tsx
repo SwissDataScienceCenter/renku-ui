@@ -40,8 +40,8 @@ import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
-import DeleteSessionV2Modal from "./DeleteSessionV2Modal";
-import UpdateSessionV2Modal from "./UpdateSessionV2Modal";
+import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
+import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import sessionsV2Api, {
   useGetProjectSessionLaunchersQuery,
   useGetSessionEnvironmentsQuery,
@@ -96,7 +96,7 @@ function SessionsV2ListDisplay() {
 
   return (
     <Container className="px-0" fluid>
-      <Row>
+      <Row className="gy-4">
         {sessions.map((session) => (
           <SessionV2Display key={session.id} session={session} />
         ))}
@@ -131,9 +131,9 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
       : session.container_image;
 
   return (
-    <Col>
-      <Card>
-        <CardBody>
+    <Col className={cx("col-12", "col-sm-6")}>
+      <Card className="h-100">
+        <CardBody className={cx("d-flex", "flex-column")}>
           <CardTitle
             className={cx(
               "d-flex",
@@ -169,9 +169,11 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
               prefix="Created"
             />
           </CardText>
-          <Button className={cx()} type="button" role="button">
-            Start
-          </Button>
+          <div className="mt-auto">
+            <Button type="button" role="button">
+              Start
+            </Button>
+          </div>
         </CardBody>
       </Card>
     </Col>
@@ -207,14 +209,14 @@ function SessionV2Actions({ session }: SessionV2DisplayProps) {
         </DropdownMenu>
       </UncontrolledDropdown>
 
-      <UpdateSessionV2Modal
+      <UpdateSessionLauncherModal
         isOpen={isUpdateOpen}
-        session={session}
+        launcher={session}
         toggle={toggleUpdate}
       />
       <DeleteSessionV2Modal
         isOpen={isDeleteOpen}
-        session={session}
+        launcher={session}
         toggle={toggleDelete}
       />
     </>

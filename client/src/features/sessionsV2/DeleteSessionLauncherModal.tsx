@@ -22,27 +22,27 @@ import { TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useDeleteSessionV2Mutation } from "./sessionsV2.api";
+import { useDeleteSessionLauncherMutation } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 
-interface DeleteSessionV2ModalProps {
+interface DDeleteSessionLauncherModalProps {
   isOpen: boolean;
-  session: SessionLauncher;
+  launcher: SessionLauncher;
   toggle: () => void;
 }
 
-export default function DeleteSessionV2Modal({
+export default function DeleteSessionLauncherModal({
   isOpen,
-  session,
+  launcher,
   toggle,
-}: DeleteSessionV2ModalProps) {
-  const [deleteSessionV2, result] = useDeleteSessionV2Mutation();
+}: DDeleteSessionLauncherModalProps) {
+  const [deleteSessionLauncher, result] = useDeleteSessionLauncherMutation();
 
   const onDelete = useCallback(() => {
-    deleteSessionV2({
-      sessionId: session.id,
+    deleteSessionLauncher({
+      launcherId: launcher.id,
     });
-  }, [deleteSessionV2, session.id]);
+  }, [deleteSessionLauncher, launcher.id]);
 
   useEffect(() => {
     if (!result.isSuccess) {
@@ -71,11 +71,11 @@ export default function DeleteSessionV2Modal({
         {result.error && <RtkErrorAlert error={result.error} />}
 
         <p className="mb-0">
-          Please confirm that you want to delete the {session.name} session.
+          Please confirm that you want to delete the {launcher.name} session.
         </p>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>

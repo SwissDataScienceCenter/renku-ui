@@ -60,13 +60,15 @@ export type AddSessionLauncherParams = {
   environment_kind: EnvironmentKind;
 } & SessionLauncherEnvironment;
 
-export interface UpdateSessionV2Params {
+export interface UpdateSessionLauncherParams {
+  launcherId?: string;
   description?: string;
-  environment_id: string;
-  name: string;
-  session_id: string;
+  name?: string;
+  environment_kind?: EnvironmentKind;
+  environment_id?: string;
+  container_image?: string;
 }
 
-export interface DeleteSessionV2Params {
-  sessionId: string;
+export interface DeleteSessionLauncherParams {
+  launcherId: string;
 }
