@@ -17,9 +17,11 @@
  */
 import cx from "classnames";
 import { useCallback, useEffect, useRef } from "react";
-import { Button, Card, CardBody, Col, InputGroup, Row } from "reactstrap";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { Button, Card, CardBody, Col, InputGroup, Row } from "reactstrap";
+
 import {
   AVAILABLE_FILTERS,
   setQuery,
@@ -29,7 +31,8 @@ import {
 import searchV2Api from "./searchV2.api";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
-import { skipToken } from "@reduxjs/toolkit/query";
+import { Url } from "../../utils/helpers/url/Url";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 export default function SearchV2() {
   return (
@@ -291,21 +294,23 @@ function SearchV2ResultsContent() {
   const resultsOutput = searchResults.data.map((entity) => {
     return (
       <Col key={entity.id} xs={12} lg={6}>
-        <Card className={cx("border", "rounded")}>
-          <CardBody>
-            <h4 className="mb-0">{entity.name}</h4>
-            <p className="form-text mb-0">
-              {entity.slug} - {entity.visibility}
-            </p>
-            <p className="form-text text-rk-green">
-              user-{entity.createdBy.id}
-            </p>
-            <p>{entity.description}</p>
-            <p className="form-text mb-0">
-              <TimeCaption datetime={entity.creationDate} prefix="Created" />
-            </p>
-          </CardBody>
-        </Card>
+        <Link to={Url.get(Url.pages.v2Projects.show, { id: entity.id })}>
+          <Card className={cx("border", "rounded")}>
+            <CardBody>
+              <h4 className="mb-0">{entity.name}</h4>
+              <p className="form-text mb-0">
+                {entity.slug} - {entity.visibility}
+              </p>
+              <p className="form-text text-rk-green">
+                user-{entity.createdBy.id}
+              </p>
+              <p>{entity.description}</p>
+              <p className="form-text mb-0">
+                <TimeCaption datetime={entity.creationDate} prefix="Created" />
+              </p>
+            </CardBody>
+          </Card>
+        </Link>
       </Col>
     );
   });
