@@ -60,7 +60,17 @@ export const searchV2Slice = createSlice({
           : action.payload.filter === "type"
           ? state.filters.type
           : state.filters.role;
-      toggleArrayItem(arrayToUpdate, action.payload.value);
+      const updatedArray = toggleArrayItem(
+        [...arrayToUpdate],
+        action.payload.value
+      ) as ("creator" | "member" | "none")[] &
+        ("project" | "user")[] &
+        ("private" | "public")[];
+
+      state.filters = {
+        ...state.filters,
+        [action.payload.filter]: updatedArray,
+      };
     },
     reset: () => initialState,
   },
@@ -74,6 +84,7 @@ function toggleArrayItem(array: string[], item: string) {
   } else {
     array.push(item);
   }
+  return array;
 }
 
 export const { reset, setQuery, setSearch, setSorting, toggleFilter } =

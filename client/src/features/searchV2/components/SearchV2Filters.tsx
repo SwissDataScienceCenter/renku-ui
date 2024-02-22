@@ -16,17 +16,34 @@
  * limitations under the License
  */
 import cx from "classnames";
+import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
 import { toggleFilter } from "../searchV2.slice";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { SearchV2FilterOptions } from "../searchV2.types";
+import { SearchV2FilterOptions, SearchV2State } from "../searchV2.types";
 import { AVAILABLE_FILTERS } from "../searchV2.utils";
 
 export default function SearchV2Filters() {
   const dispatch = useDispatch();
-  const { filters } = useAppSelector((state) => state.searchV2);
+  const searchState = useAppSelector((state) => state.searchV2);
+  const { filters } = searchState;
+
+  const handleToggleFilter = useCallback(
+    (
+      filter: keyof SearchV2State["filters"],
+      value: SearchV2State["filters"][keyof SearchV2State["filters"]][number]
+    ) => {
+      dispatch(
+        toggleFilter({
+          filter,
+          value,
+        })
+      );
+    },
+    [dispatch]
+  );
 
   const filtersList = Object.entries(AVAILABLE_FILTERS).map(
     ([filterName, options]) => (
@@ -34,16 +51,17 @@ export default function SearchV2Filters() {
         key={filterName}
         name={filterName}
         options={Object.entries(options).map(([key, value]) => ({
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          checked: !!(filters as any)[filterName]?.includes(key),
+          checked: !!(
+            filters[filterName as keyof SearchV2State["filters"]] as string[]
+          ).includes(key),
           key,
           value,
         }))}
         title={filterName.charAt(0).toUpperCase() + filterName.slice(1)}
         toggleOption={(value) => {
-          dispatch(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            toggleFilter({ filter: filterName as any, value: value as any })
+          handleToggleFilter(
+            filterName as keyof SearchV2State["filters"],
+            value as SearchV2State["filters"][keyof SearchV2State["filters"]][number]
           );
         }}
       />
@@ -109,12 +127,12 @@ function SearchV2Filter({
             key={id}
           >
             <input
-              className="form-check-input"
-              id={id}
-              type="checkbox"
               checked={checked}
-              onChange={() => toggleOption(key)}
+              className="form-check-input"
               data-cy={`user-role-${key}`}
+              id={id}
+              onChange={() => toggleOption(key)}
+              type="checkbox"
             />
             <label
               className={cx("form-check-label", "ms-2", "mt-1")}

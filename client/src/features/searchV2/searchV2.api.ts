@@ -22,14 +22,14 @@ import { SearchResult } from "./searchV2.types";
 const searchV2Api = createApi({
   reducerPath: "searchV2Api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/search", // update to "/ui-server/api/search" after gateway updates
+    baseUrl: "/search", // ! Update to "/ui-server/api/search" after gateway updates
   }),
   tagTypes: ["SearchV2"],
   endpoints: (builder) => ({
     getSearchResults: builder.query<SearchResult[], string>({
-      query: () => {
+      query: (searchString) => {
         return {
-          url: "first", // update to use the input string instead of "first"
+          url: searchString,
         };
       },
       extraOptions: {

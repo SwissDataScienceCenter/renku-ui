@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+import cx from "classnames";
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -46,6 +47,10 @@ export default function SearchV2Header() {
     [dispatch]
   );
 
+  const handleOnChange = (newSorting: keyof typeof AVAILABLE_SORTING) => {
+    setNewSorting(newSorting);
+  };
+
   const options = Object.values(AVAILABLE_SORTING).map((value) => (
     <option key={value.sortingString} value={value.sortingString}>
       {value.friendlyName}
@@ -64,18 +69,22 @@ export default function SearchV2Header() {
   );
 
   return (
-    <div className="d-flex justify-content-between align-items-center">
-      <div className="d-flex gap-4 align-items-center">{resultsText}</div>
-      <div className="d-flex align-items-center">
-        <label className="mx-2 sorting-label--desk">Sort by</label>
+    <div
+      className={cx("align-items-center", "d-flex", "justify-content-between")}
+    >
+      <div className={cx("align-items-center", "d-flex", "gap-4")}>
+        {resultsText}
+      </div>
+      <div className={cx("align-items-center", "d-flex")}>
+        <label className={cx("mx-2", "sorting-label--desk")}>Sort by</label>
         <select
           className="form-select"
           data-cy="sorting-search-input"
           name="sorting"
-          value={sorting.sortingString}
           onChange={(e) => {
-            setNewSorting(e.target.value as keyof typeof AVAILABLE_SORTING);
+            handleOnChange(e.target.value as keyof typeof AVAILABLE_SORTING);
           }}
+          value={sorting.sortingString}
         >
           {options}
         </select>

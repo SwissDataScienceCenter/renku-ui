@@ -16,20 +16,18 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Button, InputGroup } from "reactstrap";
 
-import { setQuery, setSearch } from "../searchV2.slice";
-import searchV2Api from "../searchV2.api";
+import { setQuery } from "../searchV2.slice";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import useStartNewSearch from "../useStartSearch.hook";
 
 export default function SearchV2Bar() {
   const dispatch = useDispatch();
   const { search } = useAppSelector((state) => state.searchV2);
-
-  const [startSearch, searchResult] =
-    searchV2Api.useLazyGetSearchResultsQuery();
+  const { startNewSearch } = useStartNewSearch();
 
   // focus search input when loading the component
   const inputRef = useRef<HTMLInputElement>(null);
@@ -38,24 +36,6 @@ export default function SearchV2Bar() {
       inputRef.current.focus();
     }
   }, []);
-
-  const startNewSearch = useCallback(() => {
-    // this de-bounces the search by 1 second to prevent accidentally querying multiple times
-    if (
-      searchResult.fulfilledTimeStamp &&
-      search.query === search.lastSearch &&
-      +new Date() - searchResult.fulfilledTimeStamp < 1000
-    )
-      return;
-    dispatch(setSearch(search.query));
-    startSearch(search.query);
-  }, [
-    dispatch,
-    search.lastSearch,
-    search.query,
-    searchResult.fulfilledTimeStamp,
-    startSearch,
-  ]);
 
   // handle pressing Enter to search
   // ? We could use react-hotkeys-hook if we wish to handle Enter also outside the input
@@ -77,14 +57,14 @@ export default function SearchV2Bar() {
         className={cx("form-control", "rounded-0", "rounded-start")}
         data-cy="search-input"
         id="search-input"
+        list="previous-searches"
+        onChange={(e) => dispatch(setQuery(e.target.value))}
+        onKeyDown={handleKeyDown}
         placeholder="Search..."
         ref={inputRef}
         tabIndex={-1}
         type="text"
-        onChange={(e) => dispatch(setQuery(e.target.value))}
-        onKeyDown={handleKeyDown}
         value={search.query}
-        list="previous-searches"
       />
       {previousSearchEntries.length > 0 && (
         <datalist id="previous-searches">{previousSearchEntries}</datalist>

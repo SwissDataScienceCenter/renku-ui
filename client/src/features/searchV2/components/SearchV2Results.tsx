@@ -75,10 +75,10 @@ function SearchV2ResultsContent() {
           <Card className={cx("border", "rounded")}>
             <CardBody>
               <h4 className="mb-0">{entity.name}</h4>
-              <p className="form-text mb-0">
+              <p className={cx("form-text", "mb-0")}>
                 {entity.slug} - {entity.visibility}
               </p>
-              <p className="form-text text-rk-green">
+              <p className={cx("form-text", "text-rk-green")}>
                 user-{entity.createdBy.id}
               </p>
               <p>{entity.description}</p>

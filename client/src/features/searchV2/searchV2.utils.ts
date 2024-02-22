@@ -16,7 +16,7 @@
  * limitations under the License
  */
 
-import { SortingItems } from "./searchV2.types";
+import { SearchV2State, SortingItems } from "./searchV2.types";
 
 export const AVAILABLE_FILTERS = {
   role: {
@@ -37,22 +37,57 @@ export const AVAILABLE_FILTERS = {
 export const AVAILABLE_SORTING: SortingItems = {
   scoreDesc: {
     friendlyName: "Best match",
-    sortingString: "matchingScore:desc",
+    sortingString: "matchingScore-desc",
   },
   dateDesc: {
     friendlyName: "Recently created",
-    sortingString: "date:desc",
+    sortingString: "date-desc",
   },
   dateAsc: {
     friendlyName: "Older",
-    sortingString: "date:asc",
+    sortingString: "date-asc",
   },
   titleAsc: {
     friendlyName: "Title: alphabetical",
-    sortingString: "title:asc",
+    sortingString: "title-asc",
   },
   titleDesc: {
     friendlyName: "Title: reverse",
-    sortingString: "title:desc",
+    sortingString: "title-desc",
   },
+};
+
+export const SORT_KEY = "sort";
+
+export const FILTER_ASSIGNMENT_CHAR = ":";
+
+export const buildSearchQuery = (searchState: SearchV2State): string => {
+  const query = searchState.search.query;
+  const searchQueryItems: string[] = [];
+
+  // Add sorting unless already re-defined by the user
+  const sortPrefix = `${SORT_KEY}${FILTER_ASSIGNMENT_CHAR}`;
+  if (!query.includes(sortPrefix))
+    searchQueryItems.push(`${sortPrefix}${searchState.sorting.sortingString}`);
+
+  for (const filterName in searchState.filters) {
+    const filter =
+      searchState.filters[filterName as keyof SearchV2State["filters"]];
+    const filterPrefix = `${filterName}${FILTER_ASSIGNMENT_CHAR}`;
+
+    // Exclude empty filters and filters where all members are selected
+    if (
+      filter.length > 0 &&
+      filter.length <
+        Object.keys(
+          AVAILABLE_FILTERS[filterName as keyof SearchV2State["filters"]]
+        ).length &&
+      !query.includes(filterPrefix)
+    ) {
+      searchQueryItems.push(`${filterPrefix}${filter.join(",")}`);
+    }
+  }
+  searchQueryItems.push(query);
+
+  return searchQueryItems.join(" ");
 };

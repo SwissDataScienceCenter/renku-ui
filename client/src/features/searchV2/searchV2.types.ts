@@ -22,30 +22,27 @@ export interface UserV2 {
 }
 
 export interface SearchResult {
-  id: string;
-  name: string;
-  slug: string;
-  repositories: string[];
-  visibility: string;
-  description: string;
   createdBy: UserV2;
   creationDate: Date;
+  description: string;
+  id: string;
   members: UserV2[];
-
-  // type: string;
-  // score: number;
+  name: string;
+  repositories: string[];
+  slug: string;
+  visibility: string;
 }
 
 export interface SearchV2State {
-  search: {
-    history: string[];
-    lastSearch: string | null;
-    query: string;
-  };
   filters: {
     role: ("creator" | "member" | "none")[];
     type: ("project" | "user")[];
     visibility: ("private" | "public")[];
+  };
+  search: {
+    history: string[];
+    lastSearch: string | null;
+    query: string;
   };
   sorting: SortingItem;
 }
