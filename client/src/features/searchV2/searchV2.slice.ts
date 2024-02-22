@@ -17,23 +17,13 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SearchV2State, ToggleFilterPayload } from "./searchV2.types";
 
-export const AVAILABLE_FILTERS = {
-  role: {
-    creator: "Creator",
-    member: "Member",
-    none: "None",
-  },
-  type: {
-    project: "Project",
-    user: "User",
-  },
-  visibility: {
-    private: "Private",
-    public: "Public",
-  },
-};
+import {
+  SearchV2State,
+  SortingItem,
+  ToggleFilterPayload,
+} from "./searchV2.types";
+import { AVAILABLE_SORTING } from "./searchV2.utils";
 
 const initialState: SearchV2State = {
   search: {
@@ -46,6 +36,7 @@ const initialState: SearchV2State = {
     type: ["project"],
     visibility: ["public", "private"],
   },
+  sorting: AVAILABLE_SORTING.scoreDesc,
 };
 
 export const searchV2Slice = createSlice({
@@ -58,6 +49,9 @@ export const searchV2Slice = createSlice({
     setSearch: (state, action: PayloadAction<string>) => {
       state.search.lastSearch = action.payload;
       state.search.history = [...state.search.history, action.payload];
+    },
+    setSorting: (state, action: PayloadAction<SortingItem>) => {
+      state.sorting = action.payload;
     },
     toggleFilter: (state, action: PayloadAction<ToggleFilterPayload>) => {
       const arrayToUpdate =
@@ -82,5 +76,5 @@ function toggleArrayItem(array: string[], item: string) {
   }
 }
 
-export const { reset, setQuery, setSearch, toggleFilter } =
+export const { reset, setQuery, setSearch, setSorting, toggleFilter } =
   searchV2Slice.actions;

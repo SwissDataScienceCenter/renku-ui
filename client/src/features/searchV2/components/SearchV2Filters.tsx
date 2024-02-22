@@ -19,9 +19,10 @@ import cx from "classnames";
 import { useDispatch } from "react-redux";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
-import { AVAILABLE_FILTERS, toggleFilter } from "../searchV2.slice";
+import { toggleFilter } from "../searchV2.slice";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { SearchV2FilterOptions } from "../searchV2.types";
+import { AVAILABLE_FILTERS } from "../searchV2.utils";
 
 export default function SearchV2Filters() {
   const dispatch = useDispatch();

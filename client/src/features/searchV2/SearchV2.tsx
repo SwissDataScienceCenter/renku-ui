@@ -19,7 +19,6 @@ import { Col, Row } from "reactstrap";
 
 import SearchV2Bar from "./components/SearchV2Bar";
 import SearchV2Filters from "./components/SearchV2Filters";
-import { AVAILABLE_SORTING } from "./searchV2.utils";
 import SearchV2Header from "./components/SearchV2Header";
 import SearchV2Results from "./components/SearchV2Results";
 
@@ -38,7 +37,7 @@ export default function SearchV2() {
       </Row>
       <Row className="mb-3">
         <Col>
-          <SearchV2Header currentSorting={AVAILABLE_SORTING.scoreDesc} />
+          <SearchV2Header />
         </Col>
       </Row>
       <Row className="mb-3">

@@ -15,22 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+import { useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/query";
 
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { AVAILABLE_SORTING } from "../searchV2.utils";
-import { SortingItem, SortingItems } from "../searchV2.types";
 import searchV2Api from "../searchV2.api";
+import { setSorting } from "../searchV2.slice";
 
-interface SearchV2ResultsHeaderProps {
-  currentSorting: SortingItem;
-  sortingItems?: SortingItems;
-}
-export default function SearchV2Header({
-  currentSorting,
-  sortingItems = AVAILABLE_SORTING,
-}: SearchV2ResultsHeaderProps) {
-  const { search } = useAppSelector((state) => state.searchV2);
+export default function SearchV2Header() {
+  const { search, sorting } = useAppSelector((state) => state.searchV2);
+  const dispatch = useDispatch();
   const searchResults = searchV2Api.endpoints.getSearchResults.useQueryState(
     search.lastSearch != null ? search.lastSearch : skipToken
   );
@@ -38,8 +34,19 @@ export default function SearchV2Header({
   const searchQuery = search.lastSearch;
   const total =
     searchResults.data?.length != null ? searchResults.data?.length : 0;
+  const setNewSorting = useCallback(
+    (newSorting: keyof typeof AVAILABLE_SORTING) => {
+      for (const key of Object.keys(AVAILABLE_SORTING)) {
+        if (AVAILABLE_SORTING[key].sortingString === newSorting) {
+          dispatch(setSorting(AVAILABLE_SORTING[key]));
+          break;
+        }
+      }
+    },
+    [dispatch]
+  );
 
-  const options = Object.values(sortingItems).map((value) => (
+  const options = Object.values(AVAILABLE_SORTING).map((value) => (
     <option key={value.sortingString} value={value.sortingString}>
       {value.friendlyName}
     </option>
@@ -65,8 +72,10 @@ export default function SearchV2Header({
           className="form-select"
           data-cy="sorting-search-input"
           name="sorting"
-          value={currentSorting.sortingString}
-          onChange={() => {}}
+          value={sorting.sortingString}
+          onChange={(e) => {
+            setNewSorting(e.target.value as keyof typeof AVAILABLE_SORTING);
+          }}
         >
           {options}
         </select>

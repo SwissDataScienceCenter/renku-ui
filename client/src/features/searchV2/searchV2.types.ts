@@ -47,6 +47,7 @@ export interface SearchV2State {
     type: ("project" | "user")[];
     visibility: ("private" | "public")[];
   };
+  sorting: SortingItem;
 }
 
 export interface ToggleFilterPayload {

@@ -18,6 +18,22 @@
 
 import { SortingItems } from "./searchV2.types";
 
+export const AVAILABLE_FILTERS = {
+  role: {
+    creator: "Creator",
+    member: "Member",
+    none: "None",
+  },
+  type: {
+    project: "Project",
+    user: "User",
+  },
+  visibility: {
+    private: "Private",
+    public: "Public",
+  },
+};
+
 export const AVAILABLE_SORTING: SortingItems = {
   scoreDesc: {
     friendlyName: "Best match",
