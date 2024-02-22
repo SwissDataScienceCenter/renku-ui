@@ -15,22 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+import { skipToken } from "@reduxjs/toolkit/query";
+
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { AVAILABLE_SORTING } from "../searchV2.utils";
 import { SortingItem, SortingItems } from "../searchV2.types";
+import searchV2Api from "../searchV2.api";
 
 interface SearchV2ResultsHeaderProps {
   currentSorting: SortingItem;
   sortingItems?: SortingItems;
-  total?: number;
 }
 export default function SearchV2Header({
   currentSorting,
   sortingItems = AVAILABLE_SORTING,
-  total,
 }: SearchV2ResultsHeaderProps) {
   const { search } = useAppSelector((state) => state.searchV2);
+  const searchResults = searchV2Api.endpoints.getSearchResults.useQueryState(
+    search.lastSearch != null ? search.lastSearch : skipToken
+  );
+
   const searchQuery = search.lastSearch;
+  const total =
+    searchResults.data?.length != null ? searchResults.data?.length : 0;
 
   const options = Object.values(sortingItems).map((value) => (
     <option key={value.sortingString} value={value.sortingString}>
@@ -40,7 +47,7 @@ export default function SearchV2Header({
   const resultsText = (
     <div className="rk-search-result-title">
       {total ? total : "No"} {total && total > 1 ? "results" : "result"}
-      {searchQuery && (
+      {searchQuery != null && (
         <span>
           {" "}
           for <span className="fw-bold">{`"${searchQuery}"`}</span>

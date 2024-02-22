@@ -68,7 +68,10 @@ function SearchV2ResultsContent() {
   const resultsOutput = searchResults.data.map((entity) => {
     return (
       <Col key={entity.id} xs={12} lg={6}>
-        <Link to={Url.get(Url.pages.v2Projects.show, { id: entity.id })}>
+        <Link
+          className="text-decoration-none"
+          to={Url.get(Url.pages.v2Projects.show, { id: entity.id })}
+        >
           <Card className={cx("border", "rounded")}>
             <CardBody>
               <h4 className="mb-0">{entity.name}</h4>

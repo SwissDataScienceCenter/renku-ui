@@ -15,16 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import cx from "classnames";
-import { Link } from "react-router-dom";
-import { skipToken } from "@reduxjs/toolkit/query";
-import { Card, CardBody, Col, Row } from "reactstrap";
+import { Col, Row } from "reactstrap";
 
-import searchV2Api from "./searchV2.api";
-import { Loader } from "../../components/Loader";
-import { TimeCaption } from "../../components/TimeCaption";
-import { Url } from "../../utils/helpers/url/Url";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import SearchV2Bar from "./components/SearchV2Bar";
 import SearchV2Filters from "./components/SearchV2Filters";
 import { AVAILABLE_SORTING } from "./searchV2.utils";

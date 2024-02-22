@@ -78,7 +78,7 @@ function SearchV2FilterContainer({
   return (
     <Card className={cx("border", "rounded")}>
       <CardBody>
-        <p className={cx("form-text", "mb-1")}>{title}</p>
+        <p className={cx("form-text", "mb-1", "mt-0")}>{title}</p>
         {children}
       </CardBody>
     </Card>
