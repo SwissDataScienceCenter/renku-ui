@@ -62,13 +62,13 @@ export default function SessionsV2() {
       {error && <RtkErrorAlert error={error} />}
 
       <div className="mt-2">
-        <SessionLaucnersListDisplay />
+        <SessionLaunchersListDisplay />
       </div>
     </div>
   );
 }
 
-function SessionLaucnersListDisplay() {
+function SessionLaunchersListDisplay() {
   const { id: projectId } = useParams<"id">();
 
   const {
