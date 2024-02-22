@@ -53,3 +53,18 @@ export interface ToggleFilterPayload {
   filter: keyof SearchV2State["filters"];
   value: SearchV2State["filters"][keyof SearchV2State["filters"]][number];
 }
+
+export interface SearchV2FilterOptions {
+  checked: boolean;
+  key: string;
+  value: string;
+}
+
+export interface SortingItem {
+  friendlyName: string;
+  sortingString: string;
+}
+
+export interface SortingItems {
+  [key: string]: SortingItem;
+}
