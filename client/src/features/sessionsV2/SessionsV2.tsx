@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
 import { useParams } from "react-router-dom-v5-compat";
 import {
@@ -43,6 +43,7 @@ import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
+import { ProjectSessionConfigContextProvider } from "./ProjectSessionConfig.context";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import sessionsV2Api, {
   useGetProjectSessionLaunchersQuery,
@@ -57,23 +58,21 @@ interface SessionsV2Props {
 export default function SessionsV2({ project }: SessionsV2Props) {
   const { error } = useGetSessionEnvironmentsQuery();
 
-  useEffect(() => {
-    console.log({ project });
-  }, [project]);
-
   return (
-    <div>
-      <h3>Sessions</h3>
+    <ProjectSessionConfigContextProvider project={project}>
       <div>
-        <AddSessionLauncherButton />
-      </div>
+        <h3>Sessions</h3>
+        <div>
+          <AddSessionLauncherButton />
+        </div>
 
-      {error && <RtkErrorAlert error={error} />}
+        {error && <RtkErrorAlert error={error} />}
 
-      <div className="mt-2">
-        <SessionLaunchersListDisplay />
+        <div className="mt-2">
+          <SessionLaunchersListDisplay />
+        </div>
       </div>
-    </div>
+    </ProjectSessionConfigContextProvider>
   );
 }
 
