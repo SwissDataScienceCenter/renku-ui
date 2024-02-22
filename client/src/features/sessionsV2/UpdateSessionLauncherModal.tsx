@@ -19,31 +19,28 @@
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Input,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Row,
 } from "reactstrap";
 
+import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import {
-  useGetSessionEnvironmentsQuery,
+import SessionLauncherFormContent, {
+  SessionLauncherForm,
+} from "./SessionLauncherFormContent";
+import sessionsV2Api, {
   useUpdateSessionLauncherMutation,
 } from "./sessionsV2.api";
 import {
-  EnvironmentKind,
   SessionLauncher,
   SessionLauncherEnvironment,
 } from "./sessionsV2.types";
-import { Loader } from "../../components/Loader";
-import { SessionEnvironmentItem } from "./AddSessionLauncherButton";
 
 interface UpdateSessionLauncherModalProps {
   isOpen: boolean;
@@ -56,11 +53,8 @@ export default function UpdateSessionLauncherModal({
   launcher,
   toggle,
 }: UpdateSessionLauncherModalProps) {
-  const {
-    data: environments,
-    error,
-    isLoading,
-  } = useGetSessionEnvironmentsQuery();
+  const { data: environments } =
+    sessionsV2Api.endpoints.getSessionEnvironments.useQueryState();
 
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
 
@@ -71,7 +65,7 @@ export default function UpdateSessionLauncherModal({
     reset,
     setValue,
     watch,
-  } = useForm<UpdateSessionLauncherForm>({
+  } = useForm<SessionLauncherForm>({
     defaultValues: {
       name: launcher.name,
       description: launcher.description ?? "",
@@ -87,7 +81,7 @@ export default function UpdateSessionLauncherModal({
     },
   });
   const onSubmit = useCallback(
-    (data: UpdateSessionLauncherForm) => {
+    (data: SessionLauncherForm) => {
       const { description, name } = data;
       const environment: SessionLauncherEnvironment =
         data.environment_kind === "global_environment"
@@ -108,8 +102,6 @@ export default function UpdateSessionLauncherModal({
     },
     [launcher.id, updateSessionLauncher]
   );
-
-  const watchEnvironmentKind = watch("environment_kind");
 
   useEffect(() => {
     if (environments == null) {
@@ -168,174 +160,11 @@ export default function UpdateSessionLauncherModal({
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
 
-          <div className="mb-3">
-            <Label className="form-label" for="addSessionLauncherName">
-              Name
-            </Label>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.name && "is-invalid")}
-                  id="addSessionLauncherName"
-                  placeholder="session name"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a name</div>
-          </div>
-
-          <div className="mb-3">
-            <Label className="form-label" for="addSessionLauncherDescription">
-              Description
-            </Label>
-            <Controller
-              control={control}
-              name="description"
-              render={({ field }) => (
-                <textarea
-                  className="form-control"
-                  id="addSessionLauncherDescription"
-                  placeholder="session description"
-                  rows={3}
-                  {...field}
-                />
-              )}
-            />
-          </div>
-
-          <div className="mb-3">
-            <div className="form-label">Environment Type</div>
-
-            <Controller
-              control={control}
-              name="environment_kind"
-              render={({ field }) => (
-                <div className={cx("d-flex", "gap-2")}>
-                  <Input
-                    className="btn-check"
-                    id="addSessionLauncherGlobalEnvironment"
-                    type="radio"
-                    {...field}
-                    value={"global_environment"}
-                    checked={field.value === "global_environment"}
-                    disabled={environments && environments.length == 0}
-                  />
-                  <Label
-                    className={cx(
-                      "btn",
-                      "btn-outline-rk-green",
-                      environments && environments.length == 0 && "d-none"
-                    )}
-                    for="addSessionLauncherGlobalEnvironment"
-                  >
-                    Global environment
-                  </Label>
-
-                  <Input
-                    className="btn-check"
-                    id="addSessionLauncherContainerImage"
-                    type="radio"
-                    {...field}
-                    value={"container_image"}
-                    checked={field.value === "container_image"}
-                  />
-                  <Label
-                    className={cx("btn", "btn-outline-rk-green")}
-                    for="addSessionLauncherContainerImage"
-                  >
-                    Container image
-                  </Label>
-                </div>
-              )}
-            />
-          </div>
-
-          <div
-            className={cx(
-              watchEnvironmentKind !== "global_environment" && "d-none"
-            )}
-          >
-            <div className="form-label">Environment</div>
-
-            {isLoading && (
-              <p>
-                <Loader className="me-1" inline size={16} />
-                Loading environments...
-              </p>
-            )}
-            {error && (
-              <>
-                <p>Cannot load environments</p>
-                <RtkErrorAlert dismissible={false} error={error} />
-              </>
-            )}
-            {environments && environments.length > 0 && (
-              <Controller
-                control={control}
-                name="environment_id"
-                render={({ field }) => (
-                  <>
-                    <Row className={cx("row-cols-2", "gy-4")}>
-                      {environments.map((environment) => (
-                        <SessionEnvironmentItem
-                          key={environment.id}
-                          environment={environment}
-                          field={field}
-                        />
-                      ))}
-                    </Row>
-                    <Input
-                      className={cx(errors.environment_id && "is-invalid")}
-                      id="addSessionLauncherEnvironmentId"
-                      type="hidden"
-                      {...field}
-                    />
-                    <div className="invalid-feedback">
-                      Please choose an environment
-                    </div>
-                  </>
-                )}
-                rules={{
-                  required: watchEnvironmentKind === "global_environment",
-                }}
-              />
-            )}
-          </div>
-
-          <div
-            className={cx(
-              watchEnvironmentKind !== "container_image" && "d-none"
-            )}
-          >
-            <Label
-              className="form-label"
-              for="addSessionLauncherContainerImage"
-            >
-              Container Image
-            </Label>
-            <Controller
-              control={control}
-              name="container_image"
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.container_image && "is-invalid")}
-                  id="addSessionLauncherContainerImage"
-                  placeholder="Docker image"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: watchEnvironmentKind === "container_image" }}
-            />
-            <div className="invalid-feedback">
-              Please provide a container image
-            </div>
-          </div>
+          <SessionLauncherFormContent
+            control={control}
+            errors={errors}
+            watch={watch}
+          />
         </ModalBody>
         <ModalFooter>
           <Button className="btn-outline-rk-green" onClick={toggle}>
@@ -343,19 +172,15 @@ export default function UpdateSessionLauncherModal({
             Cancel
           </Button>
           <Button disabled={result.isLoading || !isDirty} type="submit">
-            <CheckLg className={cx("bi", "me-1")} />
+            {result.isLoading ? (
+              <Loader className="me-1" inline size={16} />
+            ) : (
+              <CheckLg className={cx("bi", "me-1")} />
+            )}
             Update session
           </Button>
         </ModalFooter>
       </Form>
     </Modal>
   );
-}
-
-interface UpdateSessionLauncherForm {
-  name: string;
-  description: string;
-  environment_kind: EnvironmentKind;
-  environment_id: string;
-  container_image: string;
 }
