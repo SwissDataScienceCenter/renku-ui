@@ -62,17 +62,17 @@ export default function SessionsV2() {
       {error && <RtkErrorAlert error={error} />}
 
       <div className="mt-2">
-        <SessionsV2ListDisplay />
+        <SessionLaucnersListDisplay />
       </div>
     </div>
   );
 }
 
-function SessionsV2ListDisplay() {
+function SessionLaucnersListDisplay() {
   const { id: projectId } = useParams<"id">();
 
   const {
-    data: sessions,
+    data: launchers,
     error,
     isLoading,
   } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
@@ -90,27 +90,27 @@ function SessionsV2ListDisplay() {
     return <RtkErrorAlert error={error} />;
   }
 
-  if (!sessions || sessions.length == 0) {
+  if (!launchers || launchers.length == 0) {
     return null;
   }
 
   return (
     <Container className="px-0" fluid>
       <Row className="gy-4">
-        {sessions.map((session) => (
-          <SessionV2Display key={session.id} session={session} />
+        {launchers.map((launcher) => (
+          <SessionLauncherDisplay key={launcher.id} launcher={launcher} />
         ))}
       </Row>
     </Container>
   );
 }
 
-interface SessionV2DisplayProps {
-  session: SessionLauncher;
+interface SessionLauncherDisplayProps {
+  launcher: SessionLauncher;
 }
 
-function SessionV2Display({ session }: SessionV2DisplayProps) {
-  const { creation_date, environment_kind, name, description } = session;
+function SessionLauncherDisplay({ launcher }: SessionLauncherDisplayProps) {
+  const { creation_date, environment_kind, name, description } = launcher;
 
   const { data: environments, isLoading } =
     sessionsV2Api.endpoints.getSessionEnvironments.useQueryState(
@@ -118,9 +118,9 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
     );
   const environment = useMemo(
     () =>
-      session.environment_kind === "global_environment" &&
-      environments?.find((env) => env.id === session.environment_id),
-    [environments, session]
+      launcher.environment_kind === "global_environment" &&
+      environments?.find((env) => env.id === launcher.environment_id),
+    [environments, launcher]
   );
 
   const container_image =
@@ -128,7 +128,7 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
       ? environment.container_image
       : environment_kind === "global_environment"
       ? "unknown"
-      : session.container_image;
+      : launcher.container_image;
 
   return (
     <Col className={cx("col-12", "col-sm-6")}>
@@ -148,10 +148,10 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
               )}
               {name}
             </h5>
-            <SessionV2Actions session={session} />
+            <SessionV2Actions launcher={launcher} />
           </CardTitle>
           <CardText className="mb-0">
-            {description ?? <i>No description</i>}
+            {description ? description : <i>No description</i>}
           </CardText>
           {environment && (
             <CardText className="mb-0">
@@ -180,7 +180,7 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
   );
 }
 
-function SessionV2Actions({ session }: SessionV2DisplayProps) {
+function SessionV2Actions({ launcher: session }: SessionLauncherDisplayProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 

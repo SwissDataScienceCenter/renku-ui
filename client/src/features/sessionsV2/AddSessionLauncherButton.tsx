@@ -42,7 +42,7 @@ import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import {
+import sessionsV2Api, {
   useAddSessionLauncherMutation,
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
@@ -86,7 +86,7 @@ function AddSessionLauncherModal({
     data: environments,
     error,
     isLoading,
-  } = useGetSessionEnvironmentsQuery();
+  } = sessionsV2Api.endpoints.getSessionEnvironments.useQueryState();
 
   const [addSessionLauncher, result] = useAddSessionLauncherMutation();
 
