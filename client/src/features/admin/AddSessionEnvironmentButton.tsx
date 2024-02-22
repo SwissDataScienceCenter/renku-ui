@@ -16,23 +16,23 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
+import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Input,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import cx from "classnames";
-import { useAddSessionEnvironmentMutation } from "./adminSessions.api";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+
 import { Loader } from "../../components/Loader";
-import { Controller, useForm } from "react-hook-form";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import SessionEnvironmentFormContent from "./SessionEnvironmentFormContent";
+import { useAddSessionEnvironmentMutation } from "./adminSessions.api";
 
 export default function AddSessionEnvironmentButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -117,77 +117,7 @@ function AddSessionEnvironmentModal({
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
 
-          <div className="mb-3">
-            <Label className="form-label" for="addSessionEnvironmentName">
-              Name
-            </Label>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", errors.name && "is-invalid")}
-                  id="addSessionEnvironmentName"
-                  placeholder="session name"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a name</div>
-          </div>
-
-          <div className="mb-3">
-            <Label
-              className="form-label"
-              for="addSessionEnvironmentDescription"
-            >
-              Description
-            </Label>
-            <Controller
-              control={control}
-              name="description"
-              render={({ field }) => (
-                <textarea
-                  className="form-control"
-                  id="addSessionEnvironmentDescription"
-                  placeholder="session environment description"
-                  rows={3}
-                  {...field}
-                />
-              )}
-            />
-          </div>
-
-          <div>
-            <Label
-              className="form-label"
-              for="addSessionEnvironmentContainerImage"
-            >
-              Container Image
-            </Label>
-            <Controller
-              control={control}
-              name="container_image"
-              render={({ field }) => (
-                <Input
-                  className={cx(
-                    "form-control",
-                    errors.container_image && "is-invalid"
-                  )}
-                  id="addSessionEnvironmentContainerImage"
-                  placeholder="Docker image"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a container image
-            </div>
-          </div>
+          <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
           <Button className="btn-outline-rk-green" onClick={toggle}>

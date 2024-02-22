@@ -19,20 +19,20 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Input,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
+import SessionEnvironmentFormContent from "./SessionEnvironmentFormContent";
 import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
 
 interface UpdateSessionEnvironmentButtonProps {
@@ -138,77 +138,7 @@ function UpdateSessionEnvironmentModal({
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
 
-          <div className="mb-3">
-            <Label className="form-label" for="addSessionEnvironmentName">
-              Name
-            </Label>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", errors.name && "is-invalid")}
-                  id="addSessionEnvironmentName"
-                  placeholder="session name"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a name</div>
-          </div>
-
-          <div className="mb-3">
-            <Label
-              className="form-label"
-              for="addSessionEnvironmentDescription"
-            >
-              Description
-            </Label>
-            <Controller
-              control={control}
-              name="description"
-              render={({ field }) => (
-                <textarea
-                  className="form-control"
-                  id="addSessionEnvironmentDescription"
-                  placeholder="session environment description"
-                  rows={3}
-                  {...field}
-                />
-              )}
-            />
-          </div>
-
-          <div>
-            <Label
-              className="form-label"
-              for="addSessionEnvironmentContainerImage"
-            >
-              Container Image
-            </Label>
-            <Controller
-              control={control}
-              name="container_image"
-              render={({ field }) => (
-                <Input
-                  className={cx(
-                    "form-control",
-                    errors.container_image && "is-invalid"
-                  )}
-                  id="addSessionEnvironmentContainerImage"
-                  placeholder="Docker image"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a container image
-            </div>
-          </div>
+          <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
           <Button className="btn-outline-rk-green" onClick={toggle}>

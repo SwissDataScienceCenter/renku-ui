@@ -112,7 +112,6 @@ function SessionEnvironmentDisplay({
   return (
     <Col>
       <Card>
-        {" "}
         <CardBody>
           <CardTitle className={cx("mb-0", "fs-5")} tag="h5">
             {name}
