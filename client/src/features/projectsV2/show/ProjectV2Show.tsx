@@ -203,7 +203,7 @@ export default function ProjectV2Show() {
       {settingEdit == null && (
         <>
           <ProjectV2DescriptionAndRepositories project={data} />
-          <SessionsV2 />
+          <SessionsV2 project={data} />
         </>
       )}
       {settingEdit == "members" && (

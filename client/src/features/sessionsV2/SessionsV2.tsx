@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
 import { useParams } from "react-router-dom-v5-compat";
 import {
@@ -35,10 +35,12 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
@@ -47,10 +49,17 @@ import sessionsV2Api, {
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
-import { skipToken } from "@reduxjs/toolkit/query";
 
-export default function SessionsV2() {
+interface SessionsV2Props {
+  project: Project;
+}
+
+export default function SessionsV2({ project }: SessionsV2Props) {
   const { error } = useGetSessionEnvironmentsQuery();
+
+  useEffect(() => {
+    console.log({ project });
+  }, [project]);
 
   return (
     <div>
