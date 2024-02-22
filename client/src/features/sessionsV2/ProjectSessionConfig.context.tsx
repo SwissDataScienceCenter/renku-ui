@@ -98,6 +98,16 @@ export function ProjectSessionConfigContextProvider({
   );
 
   useEffect(() => {
+    if (!singleRepository) {
+      setConfig({
+        isUninitialized: false,
+        isLoading: false,
+        supportsSessions: false,
+      });
+    }
+  }, [singleRepository]);
+
+  useEffect(() => {
     if (isFetching) {
       setConfig({
         isUninitialized: false,
@@ -118,6 +128,10 @@ export function ProjectSessionConfigContextProvider({
   }, [isError]);
 
   useEffect(() => {
+    if (currentData == null) {
+      return;
+    }
+
     if (matchedRepositoryMetadata) {
       const {
         default_branch: defaultBranch,
@@ -134,8 +148,14 @@ export function ProjectSessionConfigContextProvider({
           projectName,
         },
       });
+    } else {
+      setConfig({
+        isUninitialized: false,
+        isLoading: false,
+        supportsSessions: false,
+      });
     }
-  }, [matchedRepositoryMetadata]);
+  }, [currentData, matchedRepositoryMetadata]);
 
   return (
     <ProjectSessionConfigContext.Provider value={config}>

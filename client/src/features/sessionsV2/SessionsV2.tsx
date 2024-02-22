@@ -21,7 +21,6 @@ import { useCallback, useMemo, useState } from "react";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
 import { useParams } from "react-router-dom-v5-compat";
 import {
-  Button,
   Card,
   CardBody,
   CardText,
@@ -44,6 +43,7 @@ import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import { ProjectSessionConfigContextProvider } from "./ProjectSessionConfig.context";
+import StartSessionButton from "./StartSessionButton";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import sessionsV2Api, {
   useGetProjectSessionLaunchersQuery,
@@ -178,9 +178,7 @@ function SessionLauncherDisplay({ launcher }: SessionLauncherDisplayProps) {
             />
           </CardText>
           <div className="mt-auto">
-            <Button type="button" role="button">
-              Start
-            </Button>
+            <StartSessionButton />
           </div>
         </CardBody>
       </Card>
