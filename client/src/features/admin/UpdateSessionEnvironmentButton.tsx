@@ -50,7 +50,7 @@ export default function UpdateSessionEnvironmentButton({
   return (
     <>
       <Button className="btn-outline-rk-green" onClick={toggle}>
-        Update
+        Edit
       </Button>
       <UpdateSessionEnvironmentModal
         environment={environment}
