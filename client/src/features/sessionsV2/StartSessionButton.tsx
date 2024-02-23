@@ -17,29 +17,65 @@
  */
 
 import cx from "classnames";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { PlayFill, SlashCircle } from "react-bootstrap-icons";
-import { Button } from "reactstrap";
+import { Button, UncontrolledTooltip } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import ProjectSessionConfigContext from "./ProjectSessionConfig.context";
+import { Link, generatePath } from "react-router-dom-v5-compat";
 
-// interface StartSessionButtonProps {}
+interface StartSessionButtonProps {
+  projectId: string;
+  launcherId: string;
+}
 
-export default function StartSessionButton() {
+export default function StartSessionButton({
+  projectId,
+  launcherId,
+}: StartSessionButtonProps) {
   const { isLoading, supportsSessions } = useContext(
     ProjectSessionConfigContext
   );
 
-  return (
-    <Button type="button" role="button" disabled={!supportsSessions}>
-      {isLoading ? (
+  const ref = useRef<HTMLSpanElement>(null);
+
+  const startUrl = generatePath(
+    "/v2/project/:projectId/sessions/:launcherId/start",
+    {
+      projectId,
+      launcherId,
+    }
+  );
+
+  if (isLoading) {
+    return (
+      <Button type="button" disabled>
         <Loader className="me-1" inline size={16} />
-      ) : !supportsSessions ? (
-        <SlashCircle className={cx("bi", "me-1")} />
-      ) : (
-        <PlayFill className={cx("bi", "me-1")} />
-      )}
+        Loading...
+      </Button>
+    );
+  }
+
+  if (!supportsSessions) {
+    return (
+      <>
+        <span className="d-inline-block" tabIndex={0} ref={ref}>
+          <Button type="button" disabled>
+            <SlashCircle className={cx("bi", "me-1")} />
+            Start
+          </Button>
+        </span>
+        <UncontrolledTooltip target={ref}>
+          This project does not support starting sessions.
+        </UncontrolledTooltip>
+      </>
+    );
+  }
+
+  return (
+    <Link to={startUrl}>
+      <PlayFill className={cx("bi", "me-1")} />
       Start
-    </Button>
+    </Link>
   );
 }

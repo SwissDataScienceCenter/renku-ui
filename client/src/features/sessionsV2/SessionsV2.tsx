@@ -106,7 +106,11 @@ function SessionLaunchersListDisplay() {
     <Container className="px-0" fluid>
       <Row className="gy-4">
         {launchers.map((launcher) => (
-          <SessionLauncherDisplay key={launcher.id} launcher={launcher} />
+          <SessionLauncherDisplay
+            key={launcher.id}
+            launcher={launcher}
+            projectId={projectId ?? ""}
+          />
         ))}
       </Row>
     </Container>
@@ -115,9 +119,13 @@ function SessionLaunchersListDisplay() {
 
 interface SessionLauncherDisplayProps {
   launcher: SessionLauncher;
+  projectId: string;
 }
 
-function SessionLauncherDisplay({ launcher }: SessionLauncherDisplayProps) {
+function SessionLauncherDisplay({
+  launcher,
+  projectId,
+}: SessionLauncherDisplayProps) {
   const { creation_date, environment_kind, name, description } = launcher;
 
   const { data: environments, isLoading } =
@@ -178,7 +186,10 @@ function SessionLauncherDisplay({ launcher }: SessionLauncherDisplayProps) {
             />
           </CardText>
           <div className="mt-auto">
-            <StartSessionButton />
+            <StartSessionButton
+              launcherId={launcher.id}
+              projectId={projectId}
+            />
           </div>
         </CardBody>
       </Card>
@@ -186,7 +197,11 @@ function SessionLauncherDisplay({ launcher }: SessionLauncherDisplayProps) {
   );
 }
 
-function SessionV2Actions({ launcher: session }: SessionLauncherDisplayProps) {
+interface SessionV2ActionsProps {
+  launcher: SessionLauncher;
+}
+
+function SessionV2Actions({ launcher }: SessionV2ActionsProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -217,12 +232,12 @@ function SessionV2Actions({ launcher: session }: SessionLauncherDisplayProps) {
 
       <UpdateSessionLauncherModal
         isOpen={isUpdateOpen}
-        launcher={session}
+        launcher={launcher}
         toggle={toggleUpdate}
       />
       <DeleteSessionV2Modal
         isOpen={isDeleteOpen}
-        launcher={session}
+        launcher={launcher}
         toggle={toggleDelete}
       />
     </>
