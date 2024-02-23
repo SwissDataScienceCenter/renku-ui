@@ -88,7 +88,7 @@ function SessionEnvironmentsListDisplay({
 
   return (
     <Container className="px-0" fluid>
-      <Row>
+      <Row className="gy-4">
         {environments.map((environment) => (
           <SessionEnvironmentDisplay
             key={environment.id}
@@ -110,7 +110,7 @@ function SessionEnvironmentDisplay({
   const { container_image, creation_date, name, description } = environment;
 
   return (
-    <Col>
+    <Col className={cx("col-12", "col-sm-6")}>
       <Card>
         <CardBody>
           <CardTitle className={cx("mb-0", "fs-5")} tag="h5">
