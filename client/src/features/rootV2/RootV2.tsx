@@ -24,6 +24,7 @@ import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
+import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import NavbarV2 from "./NavbarV2";
 
 export default function RootV2() {
@@ -61,6 +62,15 @@ function ProjectsV2Routes() {
       <Route path="/" element={<LazyProjectV2List />} />
       <Route path="new" element={<LazyProjectV2New />} />
       <Route path=":id" element={<LazyProjectV2Show />} />
+      <Route path=":id/sessions/*" element={<ProjectSessionsRoutes />} />
+    </Routes>
+  );
+}
+
+function ProjectSessionsRoutes() {
+  return (
+    <Routes>
+      <Route path=":launcherId/start" element={<LazySessionStartPage />} />
     </Routes>
   );
 }
