@@ -17,6 +17,7 @@
  */
 
 import { Suspense, lazy } from "react";
+
 import PageLoader from "../../components/PageLoader";
 
 const SessionStartPage = lazy(() => import("./SessionStartPage"));
