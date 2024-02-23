@@ -20,6 +20,7 @@ import { Visibilities } from "../../components/visibility/Visibility";
 import { PaginatedResponse } from "../../utils/types/pagination.types";
 
 export interface GitlabProjectResponse {
+  id: number;
   default_branch: string;
   http_url_to_repo: string;
   namespace: { full_path: string };

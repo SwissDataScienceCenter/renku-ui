@@ -29,10 +29,11 @@ export type ProjectSessionConfig = {
 } & (
   | {
       supportsSessions: false;
+      sessionConfiguration?: undefined;
     }
   | {
       supportsSessions: true;
-      sessionConfiguration: SessionConfig | null;
+      sessionConfiguration: SessionConfig;
     }
 );
 
@@ -40,6 +41,7 @@ interface SessionConfig {
   defaultBranch: string;
   namespace: string;
   projectName: string;
+  repositoryMetadata: GitlabProjectResponse;
 }
 
 /**
@@ -146,6 +148,7 @@ export function ProjectSessionConfigContextProvider({
           defaultBranch,
           namespace: namespace.full_path,
           projectName,
+          repositoryMetadata: matchedRepositoryMetadata,
         },
       });
     } else {
