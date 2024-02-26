@@ -25,6 +25,7 @@ import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { Url } from "../../../utils/helpers/url/Url";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 
 export default function SearchV2Results() {
   return (
@@ -66,34 +67,64 @@ function SearchV2ResultsContent() {
   }
 
   const resultsOutput = searchResults.data.map((entity) => {
-    const url = Url.get(
-      entity.type === "Project"
-        ? Url.pages.v2Projects.show
-        : Url.pages.v2Users.show,
-      { id: entity.id }
-    );
+    if (entity.type === "Project") {
+      const url = Url.get(Url.pages.v2Projects.show, { id: entity.id });
+      return (
+        <SearchV2ResultsCard key={entity.id} url={url} cardId={entity.id}>
+          <h4 className="mb-0">{entity.name}</h4>
+          <p className={cx("form-text", "mb-0")}>
+            {entity.slug} - {entity.visibility}
+          </p>
+          <p className={cx("form-text", "text-rk-green")}>
+            user-{entity.createdBy.id}
+          </p>
+          <p>{entity.description}</p>
+          <p className="form-text mb-0">
+            <TimeCaption datetime={entity.creationDate} prefix="Created" />
+          </p>
+        </SearchV2ResultsCard>
+      );
+    } else if (entity.type === "User") {
+      const url = Url.get(Url.pages.v2Users.show, { id: entity.id });
+      return (
+        <SearchV2ResultsCard key={entity.id} url={url} cardId={entity.id}>
+          <h4 className="mb-0">{entity.id}</h4>
+          <p className="form-text mb-0">
+            <TimeCaption datetime={entity.creationDate} prefix="Created" />
+          </p>
+        </SearchV2ResultsCard>
+      );
+    }
+    // Unknown entity type, in case backend introduces new types before the UI catches up
+    const fakeId = simpleHash(Math.random().toString());
     return (
-      <Col key={entity.id} xs={12} lg={6}>
-        <Link className="text-decoration-none" to={url}>
-          <Card className={cx("border", "rounded")}>
-            <CardBody>
-              <h4 className="mb-0">{entity.name}</h4>
-              <p className={cx("form-text", "mb-0")}>
-                {entity.slug} - {entity.visibility}
-              </p>
-              <p className={cx("form-text", "text-rk-green")}>
-                user-{entity.createdBy.id}
-              </p>
-              <p>{entity.description}</p>
-              <p className="form-text mb-0">
-                <TimeCaption datetime={entity.creationDate} prefix="Created" />
-              </p>
-            </CardBody>
-          </Card>
-        </Link>
-      </Col>
+      <SearchV2ResultsCard key={fakeId} cardId={fakeId}>
+        <h4 className="mb-0">Unknown entity</h4>
+        <p className="form-text mb-0">This entity type is not supported yet.</p>
+      </SearchV2ResultsCard>
     );
   });
 
   return <Row>{resultsOutput}</Row>;
+}
+
+interface SearchV2ResultsCardProps {
+  cardId: string;
+  children: React.ReactNode;
+  url?: string;
+}
+function SearchV2ResultsCard({
+  cardId,
+  children,
+  url = "#",
+}: SearchV2ResultsCardProps) {
+  return (
+    <Col key={cardId} xs={12} lg={6}>
+      <Link className="text-decoration-none" to={url}>
+        <Card className={cx("border", "rounded")}>
+          <CardBody>{children}</CardBody>
+        </Card>
+      </Link>
+    </Col>
+  );
 }

@@ -20,7 +20,8 @@ import { UserV2 } from "../userV2/userV2.types";
 
 export type EntityType = "Project" | "User";
 
-export interface SearchResult {
+export type SearchResult = ProjectSearchResult | UserSearchResult;
+export interface ProjectSearchResult {
   createdBy: UserV2;
   creationDate: Date;
   description: string;
@@ -29,8 +30,14 @@ export interface SearchResult {
   name: string;
   repositories: string[];
   slug: string;
-  type: EntityType;
+  type: "Project";
   visibility: string;
+}
+
+export interface UserSearchResult {
+  creationDate: Date;
+  id: string;
+  type: "User";
 }
 
 export interface SearchV2State {
