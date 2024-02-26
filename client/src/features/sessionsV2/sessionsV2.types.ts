@@ -16,31 +16,59 @@
  * limitations under the License.
  */
 
-export interface SessionV2 {
+export interface SessionEnvironment {
+  container_image: string;
   creation_date: string;
-  description?: string;
-  environment_id: string;
   id: string;
   name: string;
-  project_id: string;
+  description?: string;
 }
 
-export type SessionV2List = SessionV2[];
+export type SessionEnvironmentList = SessionEnvironment[];
 
-export interface AddSessionV2Params {
+export type SessionLauncher = {
+  id: string;
+  project_id: string;
+  name: string;
+  creation_date: string;
   description?: string;
-  environment_id: string;
+  environment_kind: EnvironmentKind;
+} & SessionLauncherEnvironment;
+
+export type EnvironmentKind = "global_environment" | "container_image";
+
+export type SessionLauncherEnvironment =
+  | {
+      environment_kind: Extract<EnvironmentKind, "global_environment">;
+      environment_id: string;
+    }
+  | {
+      environment_kind: Extract<EnvironmentKind, "container_image">;
+      container_image: string;
+    };
+
+export type SessionLauncherList = SessionLauncher[];
+
+export interface GetProjectSessionLaunchersParams {
+  projectId: string;
+}
+
+export type AddSessionLauncherParams = {
+  description?: string;
   name: string;
   project_id: string;
-}
+  environment_kind: EnvironmentKind;
+} & SessionLauncherEnvironment;
 
-export interface UpdateSessionV2Params {
+export interface UpdateSessionLauncherParams {
+  launcherId?: string;
   description?: string;
-  environment_id: string;
-  name: string;
-  session_id: string;
+  name?: string;
+  environment_kind?: EnvironmentKind;
+  environment_id?: string;
+  container_image?: string;
 }
 
-export interface DeleteSessionV2Params {
-  sessionId: string;
+export interface DeleteSessionLauncherParams {
+  launcherId: string;
 }

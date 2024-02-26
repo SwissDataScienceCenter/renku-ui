@@ -17,32 +17,59 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useDeleteSessionV2Mutation } from "./sessionsV2.api";
-import { SessionV2 } from "./sessionsV2.types";
+import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
+import { useDeleteSessionEnvironmentMutation } from "./adminSessions.api";
 
-interface DeleteSessionV2ModalProps {
+interface DeleteSessionEnvironmentButtonProps {
+  environment: SessionEnvironment;
+}
+
+export default function DeleteSessionEnvironmentButton({
+  environment,
+}: DeleteSessionEnvironmentButtonProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
+
+  return (
+    <>
+      <Button color="outline-danger" onClick={toggle}>
+        <TrashFill className={cx("bi", "me-1")} />
+        Delete
+      </Button>
+      <DeleteSessionEnvironmentModal
+        environment={environment}
+        isOpen={isOpen}
+        toggle={toggle}
+      />
+    </>
+  );
+}
+
+interface DeleteSessionEnvironmentModalProps {
+  environment: SessionEnvironment;
   isOpen: boolean;
-  session: SessionV2;
   toggle: () => void;
 }
 
-export default function DeleteSessionV2Modal({
+function DeleteSessionEnvironmentModal({
+  environment,
   isOpen,
-  session,
   toggle,
-}: DeleteSessionV2ModalProps) {
-  const [deleteSessionV2, result] = useDeleteSessionV2Mutation();
+}: DeleteSessionEnvironmentModalProps) {
+  const [deleteSessionEnvironment, result] =
+    useDeleteSessionEnvironmentMutation();
 
   const onDelete = useCallback(() => {
-    deleteSessionV2({
-      sessionId: session.id,
+    deleteSessionEnvironment({
+      environmentId: environment.id,
     });
-  }, [deleteSessionV2, session.id]);
+  }, [deleteSessionEnvironment, environment.id]);
 
   useEffect(() => {
     if (!result.isSuccess) {
@@ -71,11 +98,12 @@ export default function DeleteSessionV2Modal({
         {result.error && <RtkErrorAlert error={result.error} />}
 
         <p className="mb-0">
-          Please confirm that you want to delete the {session.name} session.
+          Please confirm that you want to delete the {environment.name} session
+          environment.
         </p>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
@@ -87,7 +115,7 @@ export default function DeleteSessionV2Modal({
           role="button"
         >
           <TrashFill className={cx("bi", "me-1")} />
-          Delete session
+          Delete session environment
         </Button>
       </ModalFooter>
     </Modal>
