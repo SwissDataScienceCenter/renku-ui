@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, PencilSquare, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Button,
@@ -50,7 +50,8 @@ export default function UpdateSessionEnvironmentButton({
   return (
     <>
       <Button className="btn-outline-rk-green" onClick={toggle}>
-        Update
+        <PencilSquare className={cx("bi", "me-1")} />
+        Edit
       </Button>
       <UpdateSessionEnvironmentModal
         environment={environment}
