@@ -40,7 +40,10 @@ export interface SearchV2State {
     visibility: ("private" | "public")[];
   };
   search: {
-    history: string[];
+    history: {
+      search: string;
+      query: string;
+    }[];
     lastSearch: string | null;
     query: string;
   };

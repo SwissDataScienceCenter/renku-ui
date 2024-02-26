@@ -46,9 +46,9 @@ export default function SearchV2Bar() {
   };
 
   // basic autocomplete for searched values, without duplicates
-  const previousSearchEntries = Array.from(new Set(search.history)).map(
-    (value) => <option key={value} value={value} />
-  );
+  const previousSearchEntries = Array.from(
+    new Set(search.history.map((entry) => entry.query))
+  ).map((value) => <option key={value} value={value} />);
 
   return (
     <InputGroup>

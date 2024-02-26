@@ -48,7 +48,13 @@ export const searchV2Slice = createSlice({
     },
     setSearch: (state, action: PayloadAction<string>) => {
       state.search.lastSearch = action.payload;
-      state.search.history = [...state.search.history, action.payload];
+      state.search.history = [
+        ...state.search.history,
+        {
+          search: action.payload,
+          query: state.search.query,
+        },
+      ];
     },
     setSorting: (state, action: PayloadAction<SortingItem>) => {
       state.sorting = action.payload;
