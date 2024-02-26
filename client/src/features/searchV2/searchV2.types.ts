@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-// TODO: move this into a better place -- for V2 users or common resources
-export interface UserV2 {
-  id: string;
-}
+import { UserV2 } from "../userV2/userV2.types";
+
+export type EntityType = "Project" | "User";
 
 export interface SearchResult {
   createdBy: UserV2;
@@ -30,6 +29,7 @@ export interface SearchResult {
   name: string;
   repositories: string[];
   slug: string;
+  type: EntityType;
   visibility: string;
 }
 
