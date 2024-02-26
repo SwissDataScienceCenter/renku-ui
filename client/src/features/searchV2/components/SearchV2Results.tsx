@@ -29,7 +29,7 @@ import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 
 export default function SearchV2Results() {
   return (
-    <Row>
+    <Row data-cy="search-results">
       <Col className="d-sm-none" xs={12}>
         <h3>Results</h3>
       </Col>
@@ -105,7 +105,7 @@ function SearchV2ResultsContent() {
     );
   });
 
-  return <Row>{resultsOutput}</Row>;
+  return <Row className="gy-4">{resultsOutput}</Row>;
 }
 
 interface SearchV2ResultsCardProps {
@@ -121,9 +121,11 @@ function SearchV2ResultsCard({
   return (
     <Col key={cardId} xs={12} lg={6}>
       <Link className="text-decoration-none" to={url}>
-        <Card className={cx("border", "rounded")}>
-          <CardBody>{children}</CardBody>
-        </Card>
+        <div data-cy="search-card">
+          <Card className={cx("border", "rounded")}>
+            <CardBody>{children}</CardBody>
+          </Card>
+        </div>
       </Link>
     </Col>
   );

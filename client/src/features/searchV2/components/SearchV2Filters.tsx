@@ -84,14 +84,14 @@ export default function SearchV2Filters() {
 
   return (
     <>
-      <Row className="mb-3">
+      <Row className="mb-3" data-cy="search-filters">
         <Col className="d-sm-none" xs={12}>
           <h3>Filters</h3>
         </Col>
         <Col className={cx("d-flex", "flex-column", "gap-3")}>
           {filtersList}
 
-          <SearchV2FilterContainer title="Creation date">
+          <SearchV2FilterContainer name="creation-date" title="Creation date">
             Not yet implemented
           </SearchV2FilterContainer>
         </Col>
@@ -102,18 +102,22 @@ export default function SearchV2Filters() {
 
 interface SearchV2FilterContainerProps {
   children: React.ReactNode;
+  name: string;
   title: string;
 }
 function SearchV2FilterContainer({
   children,
+  name,
   title,
 }: SearchV2FilterContainerProps) {
   return (
     <Card className={cx("border", "rounded")}>
-      <CardBody>
-        <p className={cx("form-text", "mb-1", "mt-0")}>{title}</p>
-        {children}
-      </CardBody>
+      <div data-cy={`search-filter-${name}`}>
+        <CardBody>
+          <p className={cx("form-text", "mb-1", "mt-0")}>{title}</p>
+          {children}
+        </CardBody>
+      </div>
     </Card>
   );
 }
@@ -131,7 +135,7 @@ function SearchV2Filter({
   toggleOption,
 }: SearchV2FilterProps) {
   return (
-    <SearchV2FilterContainer title={title}>
+    <SearchV2FilterContainer name={name} title={title}>
       {options.map(({ checked, key, value }) => {
         const id = `search-filter-${name}-${key}`;
 
@@ -143,7 +147,7 @@ function SearchV2Filter({
             <input
               checked={checked}
               className="form-check-input"
-              data-cy={`user-role-${key}`}
+              data-cy={id}
               id={id}
               onChange={() => toggleOption(key)}
               type="checkbox"

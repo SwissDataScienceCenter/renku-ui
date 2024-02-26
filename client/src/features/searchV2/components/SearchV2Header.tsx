@@ -71,6 +71,7 @@ export default function SearchV2Header() {
   return (
     <div
       className={cx("align-items-center", "d-flex", "justify-content-between")}
+      data-cy="search-header"
     >
       <div className={cx("align-items-center", "d-flex", "gap-4")}>
         {resultsText}
@@ -79,7 +80,7 @@ export default function SearchV2Header() {
         <label className={cx("mx-2", "sorting-label--desk")}>Sort by</label>
         <select
           className="form-select"
-          data-cy="sorting-search-input"
+          data-cy="search-sorting-select"
           name="sorting"
           onChange={(e) => {
             handleOnChange(e.target.value as keyof typeof AVAILABLE_SORTING);

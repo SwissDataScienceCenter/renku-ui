@@ -51,7 +51,7 @@ export default function SearchV2Bar() {
   ).map((value) => <option key={value} value={value} />);
 
   return (
-    <InputGroup>
+    <InputGroup data-cy="search-bar">
       <input
         autoComplete="renku-search"
         className={cx("form-control", "rounded-0", "rounded-start")}
