@@ -73,7 +73,7 @@ export default function StartSessionButton({
   }
 
   return (
-    <Link to={startUrl}>
+    <Link className={cx("btn", "btn-sm", "btn-rk-green")} to={startUrl}>
       <PlayFill className={cx("bi", "me-1")} />
       Start
     </Link>
