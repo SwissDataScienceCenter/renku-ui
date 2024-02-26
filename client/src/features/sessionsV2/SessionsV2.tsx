@@ -39,35 +39,43 @@ import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import AddSessionV2Button from "./AddSessionV2Button";
-import DeleteSessionV2Modal from "./DeleteSessionV2Modal";
-import UpdateSessionV2Modal from "./UpdateSessionV2Modal";
-import { useGetSessionsV2Query } from "./sessionsV2.api";
-import { SessionV2 } from "./sessionsV2.types";
+import AddSessionLauncherButton from "./AddSessionLauncherButton";
+import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
+import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
+import sessionsV2Api, {
+  useGetProjectSessionLaunchersQuery,
+  useGetSessionEnvironmentsQuery,
+} from "./sessionsV2.api";
+import { SessionLauncher } from "./sessionsV2.types";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 export default function SessionsV2() {
+  const { error } = useGetSessionEnvironmentsQuery();
+
   return (
     <div>
       <h3>Sessions</h3>
       <div>
-        <AddSessionV2Button />
+        <AddSessionLauncherButton />
       </div>
+
+      {error && <RtkErrorAlert error={error} />}
+
       <div className="mt-2">
-        <SessionsV2ListDisplay />
+        <SessionLaunchersListDisplay />
       </div>
     </div>
   );
 }
 
-function SessionsV2ListDisplay() {
+function SessionLaunchersListDisplay() {
   const { id: projectId } = useParams<"id">();
 
-  const { data: sessions, error, isLoading } = useGetSessionsV2Query();
-
-  const filteredSessions = useMemo(
-    () => sessions?.filter((session) => session.project_id === projectId),
-    [projectId, sessions]
-  );
+  const {
+    data: launchers,
+    error,
+    isLoading,
+  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
 
   if (isLoading) {
     return (
@@ -82,32 +90,50 @@ function SessionsV2ListDisplay() {
     return <RtkErrorAlert error={error} />;
   }
 
-  if (!filteredSessions || filteredSessions.length == 0) {
+  if (!launchers || launchers.length == 0) {
     return null;
   }
 
   return (
     <Container className="px-0" fluid>
-      <Row>
-        {filteredSessions.map((session) => (
-          <SessionV2Display key={session.id} session={session} />
+      <Row className="gy-4">
+        {launchers.map((launcher) => (
+          <SessionLauncherDisplay key={launcher.id} launcher={launcher} />
         ))}
       </Row>
     </Container>
   );
 }
 
-interface SessionV2DisplayProps {
-  session: SessionV2;
+interface SessionLauncherDisplayProps {
+  launcher: SessionLauncher;
 }
 
-function SessionV2Display({ session }: SessionV2DisplayProps) {
-  const { creation_date, environment_id, name, description } = session;
+function SessionLauncherDisplay({ launcher }: SessionLauncherDisplayProps) {
+  const { creation_date, environment_kind, name, description } = launcher;
+
+  const { data: environments, isLoading } =
+    sessionsV2Api.endpoints.getSessionEnvironments.useQueryState(
+      environment_kind === "global_environment" ? undefined : skipToken
+    );
+  const environment = useMemo(
+    () =>
+      launcher.environment_kind === "global_environment" &&
+      environments?.find((env) => env.id === launcher.environment_id),
+    [environments, launcher]
+  );
+
+  const container_image =
+    environment_kind === "global_environment" && environment
+      ? environment.container_image
+      : environment_kind === "global_environment"
+      ? "unknown"
+      : launcher.container_image;
 
   return (
-    <Col>
-      <Card>
-        <CardBody>
+    <Col className={cx("col-12", "col-sm-6")}>
+      <Card className="h-100">
+        <CardBody className={cx("d-flex", "flex-column")}>
           <CardTitle
             className={cx(
               "d-flex",
@@ -116,14 +142,25 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
               "align-items-center"
             )}
           >
-            <h5 className={cx("mb-0", "fs-5")}>{name}</h5>
-            <SessionV2Actions session={session} />
+            <h5 className={cx("mb-0", "fs-5")}>
+              {isLoading && (
+                <Loader className={cx("bi", "me-2")} inline size={20} />
+              )}
+              {name}
+            </h5>
+            <SessionV2Actions launcher={launcher} />
           </CardTitle>
           <CardText className="mb-0">
-            {description ?? <i>No description</i>}
+            {description ? description : <i>No description</i>}
           </CardText>
-          <CardText className="mb-0">
-            <CommandCopy command={environment_id} />
+          {environment && (
+            <CardText className="mb-0">
+              Uses the <b>{environment.name}</b> session environment.
+            </CardText>
+          )}
+          <CardText className="mb-2" tag="div">
+            <p className="mb-0">Container image:</p>
+            <CommandCopy command={container_image} noMargin />
           </CardText>
           <CardText>
             <TimeCaption
@@ -132,16 +169,18 @@ function SessionV2Display({ session }: SessionV2DisplayProps) {
               prefix="Created"
             />
           </CardText>
-          <Button className={cx()} type="button" role="button">
-            Start
-          </Button>
+          <div className="mt-auto">
+            <Button type="button" role="button">
+              Start
+            </Button>
+          </div>
         </CardBody>
       </Card>
     </Col>
   );
 }
 
-function SessionV2Actions({ session }: SessionV2DisplayProps) {
+function SessionV2Actions({ launcher: session }: SessionLauncherDisplayProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -170,14 +209,14 @@ function SessionV2Actions({ session }: SessionV2DisplayProps) {
         </DropdownMenu>
       </UncontrolledDropdown>
 
-      <UpdateSessionV2Modal
+      <UpdateSessionLauncherModal
         isOpen={isUpdateOpen}
-        session={session}
+        launcher={session}
         toggle={toggleUpdate}
       />
       <DeleteSessionV2Modal
         isOpen={isDeleteOpen}
-        session={session}
+        launcher={session}
         toggle={toggleDelete}
       />
     </>

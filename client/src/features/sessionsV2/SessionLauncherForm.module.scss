@@ -1,0 +1,19 @@
+@import "/src/styles/bootstrap/_custom_bootstrap_variables.scss";
+
+.environmentLabel {
+  &:hover {
+    .environmentCard {
+      background-color: $rk-green-highlight;
+      color: white;
+    }
+    .environmentCardText {
+      color: white;
+    }
+  }
+
+  input:focus-visible + & {
+    box-shadow: var(--bs-focus-ring-x, 0) var(--bs-focus-ring-y, 0)
+      var(--bs-focus-ring-blur, 0) var(--bs-focus-ring-width)
+      var(--bs-focus-ring-color);
+  }
+}
