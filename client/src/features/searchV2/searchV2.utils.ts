@@ -34,6 +34,9 @@ export const AVAILABLE_FILTERS = {
   },
 };
 
+export const ANONYMOUS_USERS_EXCLUDE_FILTERS: (keyof typeof AVAILABLE_FILTERS)[] =
+  ["visibility"];
+
 export const AVAILABLE_SORTING: SortingItems = {
   scoreDesc: {
     friendlyName: "Best match",

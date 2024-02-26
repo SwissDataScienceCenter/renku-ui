@@ -23,12 +23,20 @@ import { Card, CardBody, Col, Row } from "reactstrap";
 import { toggleFilter } from "../searchV2.slice";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { SearchV2FilterOptions, SearchV2State } from "../searchV2.types";
-import { AVAILABLE_FILTERS } from "../searchV2.utils";
+import {
+  ANONYMOUS_USERS_EXCLUDE_FILTERS,
+  AVAILABLE_FILTERS,
+} from "../searchV2.utils";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import { User } from "../../../model/renkuModels.types";
 
 export default function SearchV2Filters() {
   const dispatch = useDispatch();
   const searchState = useAppSelector((state) => state.searchV2);
   const { filters } = searchState;
+  const userLogged = useLegacySelector<User["logged"]>(
+    (state) => state.stateModel.user.logged
+  );
 
   const handleToggleFilter = useCallback(
     (
@@ -45,8 +53,15 @@ export default function SearchV2Filters() {
     [dispatch]
   );
 
-  const filtersList = Object.entries(AVAILABLE_FILTERS).map(
-    ([filterName, options]) => (
+  const filtersList = Object.entries(AVAILABLE_FILTERS)
+    .filter(([filterName]) => {
+      if (!userLogged)
+        return !ANONYMOUS_USERS_EXCLUDE_FILTERS.includes(
+          filterName as keyof typeof AVAILABLE_FILTERS
+        );
+      return true;
+    })
+    .map(([filterName, options]) => (
       <SearchV2Filter
         key={filterName}
         name={filterName}
@@ -65,8 +80,7 @@ export default function SearchV2Filters() {
           );
         }}
       />
-    )
-  );
+    ));
 
   return (
     <>
