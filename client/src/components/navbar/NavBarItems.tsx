@@ -45,6 +45,7 @@ import { RenkuNavLink } from "../RenkuNavLink";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
 
 import styles from "./NavBarItem.module.scss";
+import useLocalStorageFeatureFlags from "../../utils/feature-flags/useLocalStorageFeatureFlags";
 
 export function RenkuToolbarItemPlus() {
   const location = useLocation();
@@ -283,6 +284,8 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
 
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
+  const [{ renku10Enabled }] = useLocalStorageFeatureFlags();
+
   const gatewayURL = params.GATEWAY_URL;
   const uiserverURL = params.UISERVER_URL;
   const redirect_url = encodeURIComponent(params.BASE_URL);
@@ -323,6 +326,13 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
           />
         </DropdownItem>
         <AdminDropdownItem />
+
+        {renku10Enabled && (
+          <Link to="/v2/projects" className="dropdown-item">
+            Renku 1.0
+          </Link>
+        )}
+
         <DropdownItem divider />
         <a
           id="logout-link"

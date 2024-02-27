@@ -25,8 +25,18 @@ import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
 import NavbarV2 from "./NavbarV2";
+import useLocalStorageFeatureFlags from "../../utils/feature-flags/useLocalStorageFeatureFlags";
+import { useEffect } from "react";
 
 export default function RootV2() {
+  const [{ renku10Enabled }, { setFlag }] = useLocalStorageFeatureFlags();
+
+  useEffect(() => {
+    if (!renku10Enabled) {
+      setFlag("renku10Enabled", true);
+    }
+  }, [renku10Enabled, setFlag]);
+
   return (
     <div className="w-100">
       <NavbarV2 />
