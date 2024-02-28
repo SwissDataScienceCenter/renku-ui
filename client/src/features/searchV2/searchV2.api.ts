@@ -22,7 +22,8 @@ import { SearchResult } from "./searchV2.types";
 const searchV2Api = createApi({
   reducerPath: "searchV2Api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/search", // ! Update to "/ui-server/api/search" after gateway updates
+    // eslint-disable-next-line spellcheck/spell-checker
+    baseUrl: "/apiv2/search", // ! Update to "/ui-server/api/search" after gateway updates
   }),
   tagTypes: ["SearchV2"],
   endpoints: (builder) => ({
