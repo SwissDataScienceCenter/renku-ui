@@ -17,35 +17,40 @@
  */
 
 import cx from "classnames";
-import { Route, Routes } from "react-router-dom-v5-compat";
+import { useEffect, useState } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom-v5-compat";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
 import NavbarV2 from "./NavbarV2";
-import { useContext, useEffect } from "react";
-import { LocalStorageFeatureFlagsContext } from "../../utils/feature-flags/LocalStorageFeatureFlags.context";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
 export default function RootV2() {
+  const navigate = useNavigate();
+
   const { renku10Enabled } = useAppSelector(({ featureFlags }) => featureFlags);
   const dispatch = useAppDispatch();
 
-  // useEffect(() => {
-  //   if (!renku10Enabled) {
-  //     setFlag("renku10Enabled", true);
-  //   }
-  // }, [renku10Enabled, setFlag]);
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   useEffect(() => {
-    if (!renku10Enabled) {
+    if (isFirstRender && !renku10Enabled) {
       dispatch(setFlag({ flag: "renku10Enabled", value: true }));
+      return;
     }
-  }, [dispatch, renku10Enabled]);
+    if (!renku10Enabled) {
+      navigate("/");
+    }
+  }, [dispatch, isFirstRender, navigate, renku10Enabled]);
+
+  useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
 
   return (
     <div className="w-100">
