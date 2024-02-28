@@ -20,6 +20,20 @@ import { UserV2 } from "../userV2/userV2.types";
 
 export type EntityType = "Project" | "User";
 
+export interface SearchApiResponse {
+  items: SearchResult[];
+  pagingInfo: {
+    page: {
+      limit: number;
+      offset: number;
+    };
+    totalResult: number;
+    totalPages: number;
+    prevPage: number;
+    nextPage: number;
+  };
+}
+
 export type SearchResult = ProjectSearchResult | UserSearchResult;
 export interface ProjectSearchResult {
   createdBy: UserV2;

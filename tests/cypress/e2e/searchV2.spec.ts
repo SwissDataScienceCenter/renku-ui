@@ -56,7 +56,7 @@ describe("Search V2", () => {
     fixtures.searchV2ListProjects();
     cy.visit("/v2/search");
     cy.getDataCy("search-input").type("test{enter}");
-    cy.getDataCy("search-header").contains("sort:matchingScore-desc");
+    cy.getDataCy("search-header").contains("sort:score-desc");
 
     cy.getDataCy("search-sorting-select").select("Recently created");
     cy.getDataCy("search-button").click();
