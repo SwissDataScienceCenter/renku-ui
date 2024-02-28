@@ -43,10 +43,8 @@ export default function ProjectFormSubmitGroup({
   return (
     <div className={cx("d-flex", "justify-content-between")}>
       <Button
-        className={cx(
-          "btn-outline-rk-green",
-          currentStep > 0 ? "visible" : "invisible"
-        )}
+        className={cx(currentStep > 0 ? "visible" : "invisible")}
+        color="outline-rk-green"
         onClick={previousStep}
       >
         <ArrowLeft /> Back

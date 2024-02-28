@@ -131,7 +131,7 @@ function ProjectEditSubmitGroup({
 }: ProjectEditSubmitGroupProps) {
   return (
     <div className={cx("d-flex", "justify-content-between")}>
-      <Button disabled={isUpdating} onClick={onCancel}>
+      <Button disabled={isUpdating} color="outline-rk-green" onClick={onCancel}>
         Cancel
       </Button>
       <div>
