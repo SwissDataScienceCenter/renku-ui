@@ -33,6 +33,7 @@ import { User } from "../../model/renkuModels.types";
 import NotificationsMenu from "../../notifications/NotificationsMenu";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
 import type { AppParams } from "../../utils/context/appParams.types";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
   getActiveProjectPathWithNamespace,
@@ -45,7 +46,6 @@ import { RenkuNavLink } from "../RenkuNavLink";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
 
 import styles from "./NavBarItem.module.scss";
-import useLocalStorageFeatureFlags from "../../utils/feature-flags/useLocalStorageFeatureFlags";
 
 export function RenkuToolbarItemPlus() {
   const location = useLocation();
@@ -284,7 +284,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
 
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
-  const [{ renku10Enabled }] = useLocalStorageFeatureFlags();
+  const { renku10Enabled } = useAppSelector(({ featureFlags }) => featureFlags);
 
   const gatewayURL = params.GATEWAY_URL;
   const uiserverURL = params.UISERVER_URL;

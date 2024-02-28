@@ -16,52 +16,44 @@
  * limitations under the License
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { FeatureFlags } from "./featureFlags.types";
 import {
   DEFAULT_FEATURE_FLAGS,
   FEATURE_FLAG_KEYS,
+  FEATURE_FLAG_LOCAL_STORAGE_KEY_PREFIX,
 } from "./featureFlags.constants";
+import { FeatureFlags } from "./featureFlags.types";
 
-const localStorageKeyPrefix = "RENKU_FEATURE_FLAG__";
+const featureFlagsSlice = createSlice({
+  name: "featureFlags",
+  initialState:
+    typeof window === "undefined"
+      ? DEFAULT_FEATURE_FLAGS
+      : readFlagsFromLocalStorage,
+  reducers: {
+    setFlag: (state, action: PayloadAction<SetFlagPayload>) => {
+      const { flag, value } = action.payload;
+      state[flag] = value;
 
-export default function useLocalStorageFeatureFlags() {
-  const [featureFlags, setFeatureFlags] = useState<FeatureFlags>(
-    DEFAULT_FEATURE_FLAGS
-  );
+      const localStorageKey = `${FEATURE_FLAG_LOCAL_STORAGE_KEY_PREFIX}${flag}`;
+      window.localStorage.setItem(localStorageKey, value ? "1" : "0");
+    },
+    reset: () => readFlagsFromLocalStorage(),
+  },
+});
 
-  const setFlag = useCallback((flag: keyof FeatureFlags, value: boolean) => {
-    const localStorageKey = `${localStorageKeyPrefix}${flag}`;
-    window.localStorage.setItem(localStorageKey, value ? "1" : "0");
-  }, []);
-
-  useEffect(() => {
-    function listener(event: StorageEvent) {
-      if (event.key == null) {
-        setFeatureFlags(DEFAULT_FEATURE_FLAGS);
-        return;
-      }
-      if (!event.key.startsWith(localStorageKeyPrefix)) {
-        return;
-      }
-
-      setFeatureFlags(readFlagsFromLocalStorage());
-    }
-
-    window.addEventListener("storage", listener);
-
-    return () => {
-      window.removeEventListener("storage", listener);
-    };
-  }, []);
-
-  return [featureFlags, { setFlag }] as const;
+interface SetFlagPayload {
+  flag: keyof FeatureFlags;
+  value: boolean;
 }
+
+export default featureFlagsSlice;
+export const { setFlag, reset } = featureFlagsSlice.actions;
 
 function readFlagsFromLocalStorage(): FeatureFlags {
   const keyValuePairs = FEATURE_FLAG_KEYS.map((flag) => {
-    const localStorageKey = `${localStorageKeyPrefix}${flag}`;
+    const localStorageKey = `${FEATURE_FLAG_LOCAL_STORAGE_KEY_PREFIX}${flag}`;
     const value = !!window.localStorage.getItem(localStorageKey);
     return [flag, value] as [keyof FeatureFlags, boolean];
   });

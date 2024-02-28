@@ -25,17 +25,27 @@ import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
 import NavbarV2 from "./NavbarV2";
-import useLocalStorageFeatureFlags from "../../utils/feature-flags/useLocalStorageFeatureFlags";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import { LocalStorageFeatureFlagsContext } from "../../utils/feature-flags/LocalStorageFeatureFlags.context";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
 export default function RootV2() {
-  const [{ renku10Enabled }, { setFlag }] = useLocalStorageFeatureFlags();
+  const { renku10Enabled } = useAppSelector(({ featureFlags }) => featureFlags);
+  const dispatch = useAppDispatch();
+
+  // useEffect(() => {
+  //   if (!renku10Enabled) {
+  //     setFlag("renku10Enabled", true);
+  //   }
+  // }, [renku10Enabled, setFlag]);
 
   useEffect(() => {
     if (!renku10Enabled) {
-      setFlag("renku10Enabled", true);
+      dispatch(setFlag({ flag: "renku10Enabled", value: true }));
     }
-  }, [renku10Enabled, setFlag]);
+  }, [dispatch, renku10Enabled]);
 
   return (
     <div className="w-100">

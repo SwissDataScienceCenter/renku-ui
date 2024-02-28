@@ -16,12 +16,32 @@
  * limitations under the License
  */
 
-import { FeatureFlags } from "./featureFlags.types";
+import { useEffect } from "react";
 
-export const FEATURE_FLAG_KEYS: (keyof FeatureFlags)[] = ["renku10Enabled"];
+import useAppDispatch from "../customHooks/useAppDispatch.hook";
+import { FEATURE_FLAG_LOCAL_STORAGE_KEY_PREFIX } from "./featureFlags.constants";
+import { reset } from "./featureFlags.slice";
 
-export const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
-  renku10Enabled: false,
-};
+export default function useFeatureFlagSync() {
+  const dispatch = useAppDispatch();
 
-export const FEATURE_FLAG_LOCAL_STORAGE_KEY_PREFIX = "RENKU_FEATURE_FLAG__";
+  useEffect(() => {
+    function listener(event: StorageEvent) {
+      if (event.key == null) {
+        dispatch(reset());
+        return;
+      }
+      if (!event.key.startsWith(FEATURE_FLAG_LOCAL_STORAGE_KEY_PREFIX)) {
+        return;
+      }
+
+      dispatch(reset());
+    }
+
+    window.addEventListener("storage", listener);
+
+    return () => {
+      window.removeEventListener("storage", listener);
+    };
+  }, [dispatch]);
+}
