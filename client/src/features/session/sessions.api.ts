@@ -28,6 +28,7 @@ import {
   ServerOptionsResponse,
   Session,
   Sessions,
+  StartRenku10SessionParams,
   StartSessionParams,
 } from "./sessions.types";
 
@@ -148,6 +149,40 @@ const sessionsApi = createApi({
       },
       invalidatesTags: ["Session"],
     }),
+    startRenku10Session: builder.mutation<Session, StartRenku10SessionParams>({
+      query: ({
+        cloudStorage,
+        defaultUrl,
+        environmentVariables,
+        image,
+        launcherId,
+        lfsAutoFetch,
+        projectId,
+        sessionClass,
+        storage,
+      }) => {
+        const cloudstorage = cloudStorage
+          .map(convertCloudStorageForSessionApi)
+          .flatMap((item) => (item == null ? [] : [item]));
+        const body = {
+          renku_1_project_id: projectId,
+          renku_1_environment_id: launcherId,
+          ...(cloudstorage.length > 0 ? { cloudstorage } : {}),
+          default_url: defaultUrl,
+          environment_variables: environmentVariables,
+          ...(image ? { image } : {}),
+          lfs_auto_fetch: lfsAutoFetch,
+          resource_class_id: sessionClass,
+          storage,
+        };
+        return {
+          body,
+          method: "POST",
+          url: "renku-1-servers",
+        };
+      },
+      invalidatesTags: ["Session"],
+    }),
     patchSession: builder.mutation<null, PatchSessionParams>({
       query: ({ sessionName, state, sessionClass }) => ({
         method: "PATCH",
@@ -173,5 +208,6 @@ export const {
   useStopSessionMutation,
   useGetLogsQuery,
   useStartSessionMutation,
+  useStartRenku10SessionMutation,
   usePatchSessionMutation,
 } = sessionsApi;

@@ -17,48 +17,37 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useContext, useEffect, useMemo } from "react";
-import {
-  generatePath,
-  useNavigate,
-  useParams,
-} from "react-router-dom-v5-compat";
+import { useEffect, useMemo } from "react";
+import { useParams } from "react-router-dom-v5-compat";
 
 import PageLoader from "../../components/PageLoader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
-import { useGetAllRepositoryCommitsQuery } from "../project/projectGitLab.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import useDefaultCommitOption from "../session/hooks/options/useDefaultCommitOption.hook";
 import useDefaultSessionClassOption from "../session/hooks/options/useDefaultSessionClassOption.hook";
 import {
   useGetDockerImageQuery,
-  useStartSessionMutation,
+  useStartRenku10SessionMutation,
 } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
 import {
-  setBranch,
   setDefaultUrl,
   setDockerImageStatus,
   setPinnedDockerImage,
   setStorage,
   startSessionOptionsSlice,
 } from "../session/startSessionOptionsSlice";
-import ProjectSessionConfigContext, {
-  ProjectSessionConfig,
-  ProjectSessionConfigContextProvider,
-} from "./ProjectSessionConfig.context";
 import {
   useGetProjectSessionLaunchersQuery,
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 
-export default function SessionStartPage() {
+export default function SessionStartAlt1Page() {
   const { id: projectId, launcherId } = useParams<"id" | "launcherId">();
 
   const {
@@ -103,11 +92,7 @@ export default function SessionStartPage() {
     );
   }
 
-  return (
-    <ProjectSessionConfigContextProvider project={project}>
-      <StartSessionFromLauncher launcher={launcher} project={project} />
-    </ProjectSessionConfigContextProvider>
-  );
+  return <StartSessionFromLauncher launcher={launcher} project={project} />;
 }
 
 interface StartSessionFromLauncherProps {
@@ -119,47 +104,9 @@ function StartSessionFromLauncher({
   launcher,
   project,
 }: StartSessionFromLauncherProps) {
-  const { isLoading, supportsSessions, sessionConfiguration } = useContext(
-    ProjectSessionConfigContext
-  );
-
-  if (isLoading) {
-    return <PageLoader />;
-  }
-
-  if (!supportsSessions) {
-    return <p>boo</p>;
-  }
-
-  return (
-    <SessionStartWithConfiguration
-      launcher={launcher}
-      project={project}
-      sessionConfiguration={sessionConfiguration}
-    />
-  );
-}
-
-interface SessionStartWithConfigurationProps {
-  launcher: SessionLauncher;
-  project: Project;
-  sessionConfiguration: Exclude<
-    ProjectSessionConfig["sessionConfiguration"],
-    undefined | null
-  >;
-}
-
-function SessionStartWithConfiguration({
-  launcher,
-  sessionConfiguration,
-}: SessionStartWithConfigurationProps) {
   const { environment_kind } = launcher;
 
-  const { defaultBranch, namespace, projectName, repositoryMetadata } =
-    sessionConfiguration;
-  const gitLabProjectId = repositoryMetadata.id;
-
-  const navigate = useNavigate();
+  //   const navigate = useNavigate();
 
   const {
     data: environments,
@@ -185,17 +132,6 @@ function SessionStartWithConfiguration({
     ({ startSessionOptions }) => startSessionOptions
   );
 
-  const {
-    data: commits,
-    // isFetching: commitsIsFetching
-  } = useGetAllRepositoryCommitsQuery(
-    startSessionOptions.branch
-      ? {
-          branch: defaultBranch,
-          projectId: `${gitLabProjectId}`,
-        }
-      : skipToken
-  );
   const { data: dockerImageStatus, isLoading: isLoadingDockerImageStatus } =
     useGetDockerImageQuery(
       containerImage !== "unknown"
@@ -228,11 +164,11 @@ function SessionStartWithConfiguration({
   const [
     startSession,
     {
-      data: session,
+      //   data: session,
       error,
       //  isLoading: isLoadingStartSession
     },
-  ] = useStartSessionMutation();
+  ] = useStartRenku10SessionMutation();
 
   // Reset start session options slice when we navigate away
   useEffect(() => {
@@ -242,17 +178,14 @@ function SessionStartWithConfiguration({
   }, [dispatch]);
 
   // Select default options
-  useDefaultCommitOption({ commits });
   useDefaultSessionClassOption({ resourcePools });
-
-  useEffect(() => {
-    dispatch(setBranch(defaultBranch));
-  }, [defaultBranch, dispatch]);
 
   // TODO: support other URLs?
   useEffect(() => {
-    dispatch(setDefaultUrl("/lab"));
-  }, [dispatch]);
+    if (startSessionOptions.defaultUrl !== "/lab") {
+      dispatch(setDefaultUrl("/lab"));
+    }
+  }, [dispatch, startSessionOptions.defaultUrl]);
 
   useEffect(() => {
     dispatch(setPinnedDockerImage(containerImage));
@@ -287,52 +220,56 @@ function SessionStartWithConfiguration({
   // Request session
   useEffect(() => {
     if (
-      commits == null ||
       startSessionOptions.dockerImageStatus !== "available" ||
       resourcePools == null ||
       startSessionOptions.sessionClass == 0
     ) {
       return;
     }
-    startSession({
-      branch: defaultBranch,
+    console.log({
       cloudStorage: [],
-      commit: startSessionOptions.commit,
       defaultUrl: startSessionOptions.defaultUrl,
       environmentVariables: {},
       image: startSessionOptions.pinnedDockerImage,
       lfsAutoFetch: false,
-      namespace,
-      project: projectName,
+      sessionClass: startSessionOptions.sessionClass,
+      storage: startSessionOptions.storage,
+    });
+    startSession({
+      projectId: project.id,
+      launcherId: launcher.id,
+      cloudStorage: [],
+      defaultUrl: startSessionOptions.defaultUrl,
+      environmentVariables: {},
+      image: startSessionOptions.pinnedDockerImage,
+      lfsAutoFetch: false,
       sessionClass: startSessionOptions.sessionClass,
       storage: startSessionOptions.storage,
     });
   }, [
-    commits,
-    defaultBranch,
-    namespace,
-    projectName,
+    launcher.id,
+    project.id,
     resourcePools,
     startSession,
     startSessionOptions,
   ]);
 
-  // Navigate to the session page when it is ready
-  useEffect(() => {
-    if (session != null) {
-      const url = generatePath(
-        "/projects/:namespace/:projectName/sessions/show/:session",
-        {
-          namespace,
-          projectName,
-          session: session.name,
-        }
-      );
-      navigate(url, {
-        state: { redirectFromStartServer: true, fromLanding: false },
-      });
-    }
-  }, [namespace, navigate, projectName, session]);
+  //   // Navigate to the session page when it is ready
+  //   useEffect(() => {
+  //     if (session != null) {
+  //       const url = generatePath(
+  //         "/projects/:namespace/:projectName/sessions/show/:session",
+  //         {
+  //           namespace,
+  //           projectName,
+  //           session: session.name,
+  //         }
+  //       );
+  //       navigate(url, {
+  //         state: { redirectFromStartServer: true, fromLanding: false },
+  //       });
+  //     }
+  //   }, [namespace, navigate, projectName, session]);
 
   return (
     <div>

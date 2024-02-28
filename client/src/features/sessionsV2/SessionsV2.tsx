@@ -50,6 +50,7 @@ import sessionsV2Api, {
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
+import StartSessionButtonAlt1 from "./StartSessionButtonAlt1";
 
 interface SessionsV2Props {
   project: Project;
@@ -187,6 +188,10 @@ function SessionLauncherDisplay({
           </CardText>
           <div className="mt-auto">
             <StartSessionButton
+              launcherId={launcher.id}
+              projectId={projectId}
+            />
+            <StartSessionButtonAlt1
               launcherId={launcher.id}
               projectId={projectId}
             />

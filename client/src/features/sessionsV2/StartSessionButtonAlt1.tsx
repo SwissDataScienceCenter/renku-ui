@@ -17,31 +17,37 @@
  */
 
 import cx from "classnames";
-import { useContext, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { PlayFill, SlashCircle } from "react-bootstrap-icons";
+import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
-import ProjectSessionConfigContext from "./ProjectSessionConfig.context";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+import { projectV2Api } from "../projectsV2/api/projectV2.enhanced-api";
 
-interface StartSessionButtonProps {
+interface StartSessionButtonAlt1Props {
   projectId: string;
   launcherId: string;
 }
 
-export default function StartSessionButton({
+export default function StartSessionButtonAlt1({
   projectId,
   launcherId,
-}: StartSessionButtonProps) {
-  const { isLoading, supportsSessions } = useContext(
-    ProjectSessionConfigContext
+}: StartSessionButtonAlt1Props) {
+  const { data: project, isLoading } =
+    projectV2Api.endpoints.getProjectsByProjectId.useQueryState({
+      projectId: projectId ?? "",
+    });
+
+  const supportsSessions = useMemo(
+    () => (project ? project.repositories?.length == 0 : false),
+    [project]
   );
 
   const ref = useRef<HTMLSpanElement>(null);
 
   const startUrl = generatePath(
-    "/v2/projects/:projectId/sessions/:launcherId/start",
+    "/v2/projects/:projectId/sessions/:launcherId/startAlt1",
     {
       projectId,
       launcherId,
