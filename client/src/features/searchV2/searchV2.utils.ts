@@ -39,24 +39,24 @@ export const ANONYMOUS_USERS_EXCLUDE_FILTERS: (keyof typeof AVAILABLE_FILTERS)[]
 
 export const AVAILABLE_SORTING: SortingItems = {
   scoreDesc: {
-    friendlyName: "Best match",
+    friendlyName: "Score: best match",
     sortingString: "score-desc",
   },
   dateDesc: {
-    friendlyName: "Recently created",
+    friendlyName: "Date: recently created",
     sortingString: "date-desc",
   },
   dateAsc: {
-    friendlyName: "Older",
+    friendlyName: "Date: older",
     sortingString: "date-asc",
   },
   titleAsc: {
-    friendlyName: "Title: alphabetical",
-    sortingString: "title-asc",
+    friendlyName: "Name: alphabetical",
+    sortingString: "name-asc",
   },
   titleDesc: {
-    friendlyName: "Title: reverse",
-    sortingString: "title-desc",
+    friendlyName: "Name: reverse",
+    sortingString: "name-desc",
   },
 };
 

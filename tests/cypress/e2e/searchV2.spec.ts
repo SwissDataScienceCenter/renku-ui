@@ -58,7 +58,7 @@ describe("Search V2", () => {
     cy.getDataCy("search-input").type("test{enter}");
     cy.getDataCy("search-header").contains("sort:score-desc");
 
-    cy.getDataCy("search-sorting-select").select("Recently created");
+    cy.getDataCy("search-sorting-select").select("Date: recently created");
     cy.getDataCy("search-button").click();
     cy.getDataCy("search-header").contains("sort:date-desc");
   });
