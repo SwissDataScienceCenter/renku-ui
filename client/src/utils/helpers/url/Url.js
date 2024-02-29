@@ -492,6 +492,12 @@ const Url = {
         "/v2/projects/id",
       ]),
     },
+    v2Users: {
+      base: "/v2/users",
+      show: new UrlRule((data) => `/v2/users/${data.id}`, ["id"], null, [
+        "/v2/users/id",
+      ]),
+    },
     sessions: {
       base: "/sessions",
     },
