@@ -25,6 +25,7 @@ import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
 import NavbarV2 from "./NavbarV2";
+import LazySearchV2 from "../searchV2/LazySearchV2";
 
 export default function RootV2() {
   return (
@@ -38,6 +39,14 @@ export default function RootV2() {
             element={
               <ContainerWrap>
                 <ProjectsV2Routes />
+              </ContainerWrap>
+            }
+          />
+          <Route
+            path="search*"
+            element={
+              <ContainerWrap>
+                <LazySearchV2 />
               </ContainerWrap>
             }
           />

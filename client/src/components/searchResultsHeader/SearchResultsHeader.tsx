@@ -32,14 +32,14 @@ interface ResultHeaderProps {
   isOpenFilterModal: boolean;
 }
 const SearchResultsHeader = ({
-  total,
-  phrase,
-  sort,
   handleSort,
   isFiltersOpened,
+  isOpenFilterModal,
+  phrase,
+  sort,
   toggleFilter,
   toggleFilterModal,
-  isOpenFilterModal,
+  total,
 }: ResultHeaderProps) => {
   const totalText = total && total > 1 ? "results" : "result";
   const title = phrase ? (
