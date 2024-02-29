@@ -31,6 +31,7 @@ import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import NavbarV2 from "./NavbarV2";
+import LazySearchV2 from "../searchV2/LazySearchV2";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -66,6 +67,14 @@ export default function RootV2() {
               // <ContainerWrap>
               <ProjectsV2Routes />
               // </ContainerWrap>
+            }
+          />
+          <Route
+            path="search*"
+            element={
+              <ContainerWrap>
+                <LazySearchV2 />
+              </ContainerWrap>
             }
           />
           <Route
