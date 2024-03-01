@@ -32,7 +32,9 @@ import {
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
-import SessionEnvironmentFormContent from "./SessionEnvironmentFormContent";
+import SessionEnvironmentFormContent, {
+  SessionEnvironmentForm,
+} from "./SessionEnvironmentFormContent";
 import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
 
 interface UpdateSessionEnvironmentButtonProps {
@@ -81,19 +83,21 @@ function UpdateSessionEnvironmentModal({
     formState: { errors, isDirty },
     handleSubmit,
     reset,
-  } = useForm<UpdateSessionEnvironmentForm>({
+  } = useForm<SessionEnvironmentForm>({
     defaultValues: {
       container_image: environment.container_image,
+      default_url: environment.default_url,
       description: environment.description,
       name: environment.name,
     },
   });
   const onSubmit = useCallback(
-    (data: UpdateSessionEnvironmentForm) => {
+    (data: SessionEnvironmentForm) => {
       updateSessionEnvironment({
         environmentId: environment.id,
         container_image: data.container_image,
         name: data.name,
+        default_url: data.default_url.trim() ? data.default_url : "",
         description: data.description.trim() ? data.description : "",
       });
     },
@@ -158,9 +162,4 @@ function UpdateSessionEnvironmentModal({
       </Form>
     </Modal>
   );
-}
-interface UpdateSessionEnvironmentForm {
-  container_image: string;
-  description: string;
-  name: string;
 }

@@ -107,7 +107,8 @@ interface SessionEnvironmentDisplayProps {
 function SessionEnvironmentDisplay({
   environment,
 }: SessionEnvironmentDisplayProps) {
-  const { container_image, creation_date, name, description } = environment;
+  const { container_image, creation_date, name, default_url, description } =
+    environment;
 
   return (
     <Col className={cx("col-12", "col-sm-6")}>
@@ -122,12 +123,21 @@ function SessionEnvironmentDisplay({
           <CardText className="mb-0">
             <CommandCopy command={container_image} />
           </CardText>
-          <CardText>
+          <CardText className="mb-0">
             <TimeCaption
               datetime={creation_date}
               enableTooltip
               prefix="Created"
             />
+          </CardText>
+          <CardText>
+            {default_url ? (
+              <>
+                Default URL: <code>default_url</code>
+              </>
+            ) : (
+              <i>No default URL</i>
+            )}
           </CardText>
 
           <div className={cx("d-flex", "justify-content-end", "gap-2")}>
