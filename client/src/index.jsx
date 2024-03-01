@@ -23,6 +23,7 @@ import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import { Sentry } from "./utils/helpers/sentry";
 import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
+import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 
 const configFetch = fetch("/config.json");
 
@@ -101,6 +102,7 @@ configFetch.then((valuesRead) => {
         <Router>
           <AppErrorBoundary>
             <LoginHandler />
+            <FeatureFlagHandler />
             <VisibleApp
               client={client}
               coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
@@ -122,5 +124,10 @@ function LoginHandler() {
     LoginHelper.handleLoginParams(history);
   }, [history]);
 
+  return null;
+}
+
+function FeatureFlagHandler() {
+  useFeatureFlagSync();
   return null;
 }
