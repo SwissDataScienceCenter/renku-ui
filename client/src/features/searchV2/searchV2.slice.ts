@@ -20,6 +20,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
   SearchV2State,
+  SearchV2Totals,
   SortingItem,
   ToggleFilterPayload,
 } from "./searchV2.types";
@@ -29,7 +30,12 @@ const initialState: SearchV2State = {
   search: {
     history: [],
     lastSearch: null,
+    outdated: false,
+    page: 1,
+    perPage: 10,
     query: "",
+    totalPages: 0,
+    totalResults: 0,
   },
   filters: {
     role: ["creator", "member", "none"],
@@ -43,10 +49,16 @@ export const searchV2Slice = createSlice({
   name: "searchV2",
   initialState,
   reducers: {
+    setPage: (state, action: PayloadAction<number>) => {
+      state.search.page = action.payload;
+      state.search.outdated = true;
+    },
     setQuery: (state, action: PayloadAction<string>) => {
       state.search.query = action.payload;
+      // ? Mind we don't mark the query as outdated here to prevent unnecessary re-fetching while typing
     },
     setSearch: (state, action: PayloadAction<string>) => {
+      state.search.outdated = false;
       state.search.lastSearch = action.payload;
       state.search.history = [
         ...state.search.history,
@@ -58,6 +70,11 @@ export const searchV2Slice = createSlice({
     },
     setSorting: (state, action: PayloadAction<SortingItem>) => {
       state.sorting = action.payload;
+      state.search.outdated = true;
+    },
+    setTotals: (state, action: PayloadAction<SearchV2Totals>) => {
+      state.search.totalResults = action.payload.results;
+      state.search.totalPages = action.payload.pages;
     },
     toggleFilter: (state, action: PayloadAction<ToggleFilterPayload>) => {
       const arrayToUpdate =
@@ -77,6 +94,7 @@ export const searchV2Slice = createSlice({
         ...state.filters,
         [action.payload.filter]: updatedArray,
       };
+      state.search.outdated = true;
     },
     reset: () => initialState,
   },
@@ -93,5 +111,12 @@ function toggleArrayItem(array: string[], item: string) {
   return array;
 }
 
-export const { reset, setQuery, setSearch, setSorting, toggleFilter } =
-  searchV2Slice.actions;
+export const {
+  setPage,
+  setQuery,
+  setSearch,
+  setSorting,
+  setTotals,
+  toggleFilter,
+  reset,
+} = searchV2Slice.actions;

@@ -17,7 +17,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { SearchApiResponse } from "./searchV2.types";
+import { SearchApiParams, SearchApiResponse } from "./searchV2.types";
 
 const searchV2Api = createApi({
   reducerPath: "searchV2Api",
@@ -27,11 +27,15 @@ const searchV2Api = createApi({
   }),
   tagTypes: ["SearchV2"],
   endpoints: (builder) => ({
-    getSearchResults: builder.query<SearchApiResponse, string>({
-      query: (searchString) => {
+    getSearchResults: builder.query<SearchApiResponse, SearchApiParams>({
+      query: (params) => {
         return {
           method: "GET",
-          params: { q: searchString },
+          params: {
+            q: params.searchString,
+            page: params.page,
+            per_page: params.perPage,
+          },
           url: "",
         };
       },

@@ -20,6 +20,12 @@ import { UserV2 } from "../userV2/userV2.types";
 
 export type EntityType = "Project" | "User";
 
+export interface SearchApiParams {
+  searchString: string;
+  page: number;
+  perPage: number;
+}
+
 export interface SearchApiResponse {
   items: SearchResult[];
   pagingInfo: {
@@ -66,9 +72,19 @@ export interface SearchV2State {
       query: string;
     }[];
     lastSearch: string | null;
+    outdated: boolean;
+    page: number;
+    perPage: number;
     query: string;
+    totalPages: number;
+    totalResults: number;
   };
   sorting: SortingItem;
+}
+
+export interface SearchV2Totals {
+  pages: number;
+  results: number;
 }
 
 export interface ToggleFilterPayload {

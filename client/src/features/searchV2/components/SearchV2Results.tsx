@@ -19,6 +19,7 @@ import cx from "classnames";
 import { Link } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Card, CardBody, Col, Row } from "reactstrap";
+import { useDispatch } from "react-redux";
 
 import searchV2Api from "../searchV2.api";
 import { Loader } from "../../../components/Loader";
@@ -27,15 +28,32 @@ import { Url } from "../../../utils/helpers/url/Url";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { ProjectSearchResult, UserSearchResult } from "../searchV2.types";
+import { Pagination } from "../../../components/Pagination";
+import { setPage } from "../searchV2.slice";
 
 export default function SearchV2Results() {
+  const searchState = useAppSelector((state) => state.searchV2);
+  const dispatch = useDispatch();
+
   return (
     <Row data-cy="search-results">
       <Col className="d-sm-none" xs={12}>
         <h3>Results</h3>
       </Col>
-      <Col>
+      <Col xs={12}>
         <SearchV2ResultsContent />
+      </Col>
+      <Col className="mt-4" xs={12}>
+        <Pagination
+          currentPage={searchState.search.page}
+          perPage={searchState.search.perPage}
+          totalItems={searchState.search.totalResults}
+          onPageChange={(page: number) => {
+            dispatch(setPage(page));
+          }}
+          showDescription={true}
+          className="rk-search-pagination"
+        />
       </Col>
     </Row>
   );
@@ -45,7 +63,13 @@ function SearchV2ResultsContent() {
   // get the search state
   const { search } = useAppSelector((state) => state.searchV2);
   const searchResults = searchV2Api.endpoints.getSearchResults.useQueryState(
-    search.lastSearch != null ? search.lastSearch : skipToken
+    search.lastSearch != null
+      ? {
+          searchString: search.lastSearch,
+          page: search.page,
+          perPage: search.perPage,
+        }
+      : skipToken
   );
 
   if (searchResults.isFetching) {
