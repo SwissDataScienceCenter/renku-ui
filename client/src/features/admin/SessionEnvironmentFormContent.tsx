@@ -104,7 +104,7 @@ export default function SessionEnvironmentFormContent({
 
       <div>
         <Label className="form-label" for="addSessionEnvironmentDefaultUrl">
-          Container Image
+          Default URL
         </Label>
         <Controller
           control={control}

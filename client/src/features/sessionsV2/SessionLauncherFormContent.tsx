@@ -50,6 +50,7 @@ export interface SessionLauncherForm {
   environment_kind: EnvironmentKind;
   environment_id: string;
   container_image: string;
+  default_url: string;
 }
 
 interface SessionLauncherFormContentProps {
@@ -185,7 +186,7 @@ export default function SessionLauncherFormContent({
             name="environment_id"
             render={({ field }) => (
               <>
-                <Row className={cx("row-cols-2", "gy-4")}>
+                <Row className={cx("row-cols-2", "gy-4", "mb-3")}>
                   {environments.map((environment) => (
                     <SessionEnvironmentItem
                       key={environment.id}
@@ -213,7 +214,10 @@ export default function SessionLauncherFormContent({
       </div>
 
       <div
-        className={cx(watchEnvironmentKind !== "container_image" && "d-none")}
+        className={cx(
+          watchEnvironmentKind !== "container_image" && "d-none",
+          "mb-3"
+        )}
       >
         <Label className="form-label" for="addSessionLauncherContainerImage">
           Container Image
@@ -233,6 +237,25 @@ export default function SessionLauncherFormContent({
           rules={{ required: watchEnvironmentKind === "container_image" }}
         />
         <div className="invalid-feedback">Please provide a container image</div>
+      </div>
+
+      <div>
+        <Label className="form-label" for="addSessionLauncherDefaultUrl">
+          Default URL
+        </Label>
+        <Controller
+          control={control}
+          name="default_url"
+          render={({ field }) => (
+            <Input
+              className="form-control"
+              id="addSessionLauncherDefaultUrl"
+              placeholder="/lab"
+              type="text"
+              {...field}
+            />
+          )}
+        />
       </div>
     </>
   );

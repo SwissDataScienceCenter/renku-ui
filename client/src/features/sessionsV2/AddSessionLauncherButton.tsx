@@ -85,11 +85,12 @@ function AddSessionLauncherModal({
       environment_kind: "global_environment",
       environment_id: "",
       container_image: "",
+      default_url: "",
     },
   });
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
-      const { description, name } = data;
+      const { default_url, description, name } = data;
       const environment: SessionLauncherEnvironment =
         data.environment_kind === "global_environment"
           ? {
@@ -104,6 +105,7 @@ function AddSessionLauncherModal({
         project_id: projectId ?? "",
         name,
         description: description.trim() ? description : undefined,
+        default_url: default_url.trim() ? default_url : undefined,
         ...environment,
       });
     },
