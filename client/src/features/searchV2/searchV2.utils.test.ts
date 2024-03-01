@@ -32,7 +32,12 @@ describe("Test the searchV2.utils functions", () => {
       search: {
         history: [],
         lastSearch: "something else",
+        outdated: false,
+        page: 1,
+        perPage: 10,
         query: "test",
+        totalPages: 0,
+        totalResults: 0,
       },
       sorting: {
         friendlyName: "Best match",
