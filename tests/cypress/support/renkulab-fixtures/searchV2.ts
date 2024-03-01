@@ -62,18 +62,35 @@ export function SearchV2<T extends FixturesConstructor>(Parent: T) {
       const bodyProjects = generateSearchProjects(numberOfProjects);
       const bodyUsers = generateSearchUsers(numberOfUsers);
 
-      cy.intercept("GET", "/search/*", (req) => {
-        let body = [];
-        if (req.url.includes("type:")) {
-          if (req.url.includes("type:project,user")) {
-            body = [...bodyProjects, ...bodyUsers];
-          } else if (req.url.includes("type:user")) {
-            body = bodyUsers;
+      function getBody(items) {
+        return {
+          items,
+          pagingInfo: {
+            page: {
+              limit: 25,
+              offset: 0,
+            },
+            totalResult: items.length,
+            totalPages: Math.floor(items.length / 25) + 1,
+            prevPage: 0,
+            nextPage: Math.floor(items.length / 25) + 1 > 1 ? 1 : 0,
+          },
+        };
+      }
+
+      cy.intercept("GET", "/apiv2/search?*", (req) => {
+        let body = null;
+        const queryString = req.query["q"].toString();
+        if (queryString.includes("type:")) {
+          if (queryString.includes("type:project,user")) {
+            body = getBody([...bodyProjects, ...bodyUsers]);
+          } else if (queryString.includes("type:user")) {
+            body = getBody(bodyUsers);
           } else {
-            body = bodyProjects;
+            body = getBody(bodyProjects);
           }
         } else {
-          body = [...bodyProjects, ...bodyUsers];
+          body = getBody([...bodyProjects, ...bodyUsers]);
         }
         req.reply({
           body,
