@@ -19,12 +19,14 @@
 export interface AddSessionEnvironmentParams {
   container_image: string;
   name: string;
+  default_url?: string;
   description?: string;
 }
 
 export interface UpdateSessionEnvironmentParams {
   environmentId: string;
   container_image?: string;
+  default_url?: string;
   description?: string;
   name?: string;
 }
