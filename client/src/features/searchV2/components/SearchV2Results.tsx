@@ -55,7 +55,7 @@ function SearchV2ResultsContent() {
     return <p>Start searching by typing in the search bar above.</p>;
   }
 
-  if (!searchResults.data?.length) {
+  if (!searchResults.data?.items.length) {
     return (
       <>
         <p>
@@ -67,7 +67,7 @@ function SearchV2ResultsContent() {
     );
   }
 
-  const resultsOutput = searchResults.data.map((entity) => {
+  const resultsOutput = searchResults.data.items.map((entity) => {
     if (entity.type === "Project") {
       return <SearchV2ResultProject key={entity.id} project={entity} />;
     } else if (entity.type === "User") {

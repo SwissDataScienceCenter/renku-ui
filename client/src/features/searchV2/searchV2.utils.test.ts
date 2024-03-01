@@ -36,14 +36,12 @@ describe("Test the searchV2.utils functions", () => {
       },
       sorting: {
         friendlyName: "Best match",
-        sortingString: "matchingScore-desc",
+        sortingString: "score-desc",
       },
     };
 
     // Adds sorting to the default string
-    expect(buildSearchQuery(searchState)).toEqual(
-      "sort:matchingScore-desc test"
-    );
+    expect(buildSearchQuery(searchState)).toEqual("sort:score-desc test");
 
     // Adds filters to the default string
     searchState.filters = {
@@ -52,7 +50,7 @@ describe("Test the searchV2.utils functions", () => {
       visibility: ["private"],
     };
     expect(buildSearchQuery(searchState)).toEqual(
-      "sort:matchingScore-desc role:creator,member type:project visibility:private test"
+      "sort:score-desc role:creator,member type:project visibility:private test"
     );
 
     // Let users override sorting
