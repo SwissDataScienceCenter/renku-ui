@@ -120,24 +120,27 @@ function SessionEnvironmentDisplay({
           <CardText className="mb-0">
             {description ? description : <i>No description</i>}
           </CardText>
-          <CardText className="mb-0">
+          <CardText className="mb-0" tag="div">
             <CommandCopy command={container_image} />
           </CardText>
           <CardText className="mb-0">
+            {default_url ? (
+              <>
+                Default URL: <code>{default_url}</code>
+              </>
+            ) : (
+              <i>
+                No default URL {"("}will use <code>{"/lab"}</code>
+                {")"}
+              </i>
+            )}
+          </CardText>
+          <CardText>
             <TimeCaption
               datetime={creation_date}
               enableTooltip
               prefix="Created"
             />
-          </CardText>
-          <CardText>
-            {default_url ? (
-              <>
-                Default URL: <code>default_url</code>
-              </>
-            ) : (
-              <i>No default URL</i>
-            )}
           </CardText>
 
           <div className={cx("d-flex", "justify-content-end", "gap-2")}>

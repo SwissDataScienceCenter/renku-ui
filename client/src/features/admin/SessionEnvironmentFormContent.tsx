@@ -113,7 +113,7 @@ export default function SessionEnvironmentFormContent({
             <Input
               className="form-control"
               id="addSessionEnvironmentDefaultUrl"
-              placeholder="Docker image"
+              placeholder="/lab"
               type="text"
               {...field}
             />

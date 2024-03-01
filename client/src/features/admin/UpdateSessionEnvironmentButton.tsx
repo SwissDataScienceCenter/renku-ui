@@ -120,6 +120,7 @@ function UpdateSessionEnvironmentModal({
   useEffect(() => {
     reset({
       container_image: environment.container_image,
+      default_url: environment.default_url ?? "",
       description: environment.description ?? "",
       name: environment.name,
     });
