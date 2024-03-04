@@ -50,6 +50,12 @@ export const SessionStorageOption = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
+  const statistics = useLegacySelector<unknown>(
+    (state) => state.stateModel.project.statistics
+  );
+  useEffect(() => {
+    console.log({ statistics });
+  }, [statistics]);
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
