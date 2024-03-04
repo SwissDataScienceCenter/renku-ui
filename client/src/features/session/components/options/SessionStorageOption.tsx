@@ -26,6 +26,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -38,7 +39,10 @@ import {
   STEP_SESSION_STORAGE_GB,
 } from "../../startSessionOptions.constants";
 import { setStorage } from "../../startSessionOptionsSlice";
-import { validateStorageAmount } from "../../utils/sessionOptions.utils";
+import {
+  checkStorage,
+  validateStorageAmount,
+} from "../../utils/sessionOptions.utils";
 
 import styles from "./SessionStorageOption.module.scss";
 
@@ -50,12 +54,9 @@ export const SessionStorageOption = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const statistics = useLegacySelector<unknown>(
-    (state) => state.stateModel.project.statistics
+  const statistics = useLegacySelector<ProjectStatistics | null | undefined>(
+    (state) => state.stateModel.project.statistics?.data
   );
-  useEffect(() => {
-    console.log({ statistics });
-  }, [statistics]);
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
@@ -97,9 +98,11 @@ export const SessionStorageOption = () => {
       : skipToken
   );
 
-  const { storage, sessionClass: currentSessionClassId } = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions
-  );
+  const {
+    lfsAutoFetch,
+    storage,
+    sessionClass: currentSessionClassId,
+  } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
 
   const dispatch = useAppDispatch();
 
@@ -120,15 +123,24 @@ export const SessionStorageOption = () => {
     if (projectConfig == null || currentSessionClass == null) {
       return;
     }
+
+    const { recommendedStorageGb } =
+      checkStorage({ lfsAutoFetch, statistics }) ?? {};
+    const recommendedOrDefaultStorage =
+      recommendedStorageGb &&
+      recommendedStorageGb > currentSessionClass.default_storage
+        ? recommendedStorageGb
+        : currentSessionClass.default_storage;
+
     const newValue = validateStorageAmount({
       value:
         projectConfig.config.sessions?.storage ??
         projectConfig.default.sessions?.storage ??
-        currentSessionClass.default_storage,
+        recommendedOrDefaultStorage,
       maxValue: currentSessionClass.max_storage,
     });
     dispatch(setStorage(newValue));
-  }, [currentSessionClass, dispatch, projectConfig]);
+  }, [currentSessionClass, dispatch, lfsAutoFetch, projectConfig, statistics]);
 
   const onChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

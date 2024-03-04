@@ -22,16 +22,24 @@ import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { ProjectConfig } from "../../../project/project.types";
 import { setError } from "../../startSession.slice";
 import { setStorage } from "../../startSessionOptionsSlice";
-import { validateStorageAmount } from "../../utils/sessionOptions.utils";
+import {
+  checkStorage,
+  validateStorageAmount,
+} from "../../utils/sessionOptions.utils";
+import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 
 interface UseDefaultStorageOptionArgs {
   currentSessionClass: ResourceClass | null;
+  lfsAutoFetch: boolean;
   projectConfig: ProjectConfig | undefined;
+  statistics: ProjectStatistics | null | undefined;
 }
 
 export default function useDefaultStorageOption({
   currentSessionClass,
+  lfsAutoFetch,
   projectConfig,
+  statistics,
 }: UseDefaultStorageOptionArgs): void {
   const dispatch = useAppDispatch();
 
@@ -41,10 +49,29 @@ export default function useDefaultStorageOption({
       return;
     }
 
+    const { minimumStorageGb, recommendedStorageGb } =
+      checkStorage({ lfsAutoFetch, statistics }) ?? {};
+    const clampedRecommended = recommendedStorageGb
+      ? validateStorageAmount({
+          value: recommendedStorageGb,
+          maxValue: currentSessionClass.max_storage,
+        })
+      : null;
+    const requestedStorage =
+      clampedRecommended &&
+      minimumStorageGb &&
+      clampedRecommended > currentSessionClass.default_storage &&
+      clampedRecommended > minimumStorageGb
+        ? clampedRecommended
+        : minimumStorageGb &&
+          minimumStorageGb > currentSessionClass.default_storage
+        ? minimumStorageGb
+        : currentSessionClass.default_storage;
+
     const desiredValue =
       projectConfig.config.sessions?.storage ??
       projectConfig.default.sessions?.storage ??
-      currentSessionClass.default_storage;
+      requestedStorage;
     const newValue = validateStorageAmount({
       value: desiredValue,
       maxValue: currentSessionClass.max_storage,
@@ -56,5 +83,5 @@ export default function useDefaultStorageOption({
     }
 
     dispatch(setStorage(newValue));
-  }, [currentSessionClass, dispatch, projectConfig]);
+  }, [currentSessionClass, dispatch, lfsAutoFetch, projectConfig, statistics]);
 }

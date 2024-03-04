@@ -17,7 +17,11 @@
  */
 
 import { clamp } from "lodash";
+
+import { ProjectStatistics } from "../../../notebooks/components/session.types";
 import { MIN_SESSION_STORAGE_GB } from "../startSessionOptions.constants";
+
+const ONE_GB_IN_BYTES = 1_000_000_000;
 
 interface ValidateStorageAmountArgs {
   value: number;
@@ -31,4 +35,33 @@ export function validateStorageAmount({
   return isNaN(value)
     ? MIN_SESSION_STORAGE_GB
     : clamp(Math.round(value), MIN_SESSION_STORAGE_GB, maxValue);
+}
+
+interface CheckStorageArgs {
+  lfsAutoFetch: boolean;
+  statistics: ProjectStatistics | null | undefined;
+}
+
+export function checkStorage({ lfsAutoFetch, statistics }: CheckStorageArgs) {
+  if (!statistics) {
+    return null;
+  }
+
+  const { lfs_objects_size, repository_size } = statistics;
+
+  if (lfs_objects_size == null || repository_size == null) {
+    return null;
+  }
+
+  // ? With git LFS, objects are stored twice: once in their intended location and once in .git/lfs.
+  const minimumStorage = lfsAutoFetch
+    ? 2 * lfs_objects_size + repository_size
+    : repository_size;
+  const recommendedStorage =
+    minimumStorage + (lfsAutoFetch ? 0 : lfs_objects_size) + ONE_GB_IN_BYTES;
+
+  const minimumStorageGb = Math.ceil(minimumStorage / ONE_GB_IN_BYTES);
+  const recommendedStorageGb = Math.ceil(recommendedStorage / ONE_GB_IN_BYTES);
+
+  return { minimumStorageGb, recommendedStorageGb };
 }
