@@ -130,7 +130,7 @@ export type Description = string;
 export type Project = {
   id: Ulid;
   name: Name;
-  slug: Slug;
+  slug?: Slug;
   creation_date: CreationDate;
   created_by: Member;
   repositories?: RepositoriesList;

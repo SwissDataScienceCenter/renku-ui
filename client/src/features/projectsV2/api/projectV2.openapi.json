@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.2",
   "info": {
     "title": "Renku Project Management Service",
     "description": "Service that allows creating, updating, deleting, and managing Renku native projects.\nAll errors have the same format as the schema called ErrorResponse.\n",
@@ -397,14 +397,7 @@
             "$ref": "#/components/schemas/Description"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "slug",
-          "created_by",
-          "creation_date",
-          "visibility"
-        ],
+        "required": ["id", "name", "created_by", "creation_date", "visibility"],
         "example": {
           "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
           "name": "Renku R Project",
