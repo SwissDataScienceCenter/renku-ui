@@ -105,7 +105,7 @@ function ProjectDeleteConfirmation({
         <Button
           className="ms-2"
           color="danger"
-          disabled={typedName !== project.slug.trim()}
+          disabled={typedName !== project.slug?.trim()}
           onClick={onDelete}
         >
           {result.isLoading ? (
