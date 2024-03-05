@@ -43,7 +43,7 @@ import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import { ProjectSessionConfigContextProvider } from "./ProjectSessionConfig.context";
-import StartSessionButton from "./StartSessionButton";
+// import StartSessionButton from "./StartSessionButton";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import sessionsV2Api, {
   useGetProjectSessionLaunchersQuery,
@@ -187,10 +187,10 @@ function SessionLauncherDisplay({
             />
           </CardText>
           <div className="mt-auto">
-            <StartSessionButton
+            {/* <StartSessionButton
               launcherId={launcher.id}
               projectId={projectId}
-            />
+            /> */}
             <StartSessionButtonAlt1
               launcherId={launcher.id}
               projectId={projectId}

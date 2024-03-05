@@ -40,7 +40,10 @@ export default function StartSessionButtonAlt1({
     });
 
   const supportsSessions = useMemo(
-    () => (project ? project.repositories?.length == 0 : false),
+    () =>
+      project
+        ? project.repositories?.length && project.repositories.length > 0
+        : false,
     [project]
   );
 
