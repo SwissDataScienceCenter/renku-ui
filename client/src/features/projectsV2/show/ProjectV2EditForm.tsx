@@ -172,7 +172,11 @@ export function ProjectV2MetadataForm({
 
   const onSubmit = useCallback(
     (data: ProjectV2Metadata) => {
-      updateProject({ projectId: project.id, projectPatch: data })
+      updateProject({
+        "If-Match": project.etag ?? "",
+        projectId: project.id,
+        projectPatch: data,
+      })
         .unwrap()
         .then(() => setSettingEdit(null));
     },
@@ -350,7 +354,11 @@ export function ProjectV2RepositoryForm({
   const onSubmit = useCallback(
     (data: ProjectV2Repositories) => {
       const repositories = data.repositories.map((r) => r.url);
-      updateProject({ projectId: project.id, projectPatch: { repositories } })
+      updateProject({
+        "If-Match": project.etag ?? "",
+        projectId: project.id,
+        projectPatch: { repositories },
+      })
         .unwrap()
         .then(() => setSettingEdit(null));
     },

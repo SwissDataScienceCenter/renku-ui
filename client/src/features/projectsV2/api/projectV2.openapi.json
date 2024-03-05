@@ -169,6 +169,9 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/If-Match"
           }
         ],
         "requestBody": {
@@ -395,6 +398,9 @@
           },
           "description": {
             "$ref": "#/components/schemas/Description"
+          },
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
           }
         },
         "required": ["id", "name", "created_by", "creation_date", "visibility"],
@@ -643,6 +649,11 @@
         "description": "User email",
         "example": "some-user@gmail.com"
       },
+      "ETag": {
+        "type": "string",
+        "description": "Entity Tag",
+        "example": "9EE498F9D565D0C41E511377425F32F3"
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
@@ -679,6 +690,17 @@
               "$ref": "#/components/schemas/ErrorResponse"
             }
           }
+        }
+      }
+    },
+    "parameters": {
+      "If-Match": {
+        "in": "header",
+        "name": "If-Match",
+        "description": "If-Match header, for avoiding mid-air collisions",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/ETag"
         }
       }
     }
