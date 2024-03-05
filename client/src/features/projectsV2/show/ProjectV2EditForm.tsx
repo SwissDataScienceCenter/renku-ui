@@ -49,6 +49,7 @@ import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 
 import { SettingEditOption } from "./projectV2Show.types";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
 type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
 
@@ -162,7 +163,7 @@ export function ProjectV2MetadataForm({
     },
   });
 
-  const [updateProject, { isLoading, isError }] =
+  const [updateProject, { isLoading, error }] =
     usePatchProjectsByProjectIdMutation();
 
   const isUpdating = isLoading;
@@ -200,6 +201,9 @@ export function ProjectV2MetadataForm({
         project={project}
         toggle={toggle}
       />
+
+      {error && <RtkErrorAlert error={error} />}
+
       <Form
         className="form-rk-green"
         noValidate
@@ -217,7 +221,6 @@ export function ProjectV2MetadataForm({
           errors={errors}
         />
         <ProjectEditSubmitGroup isUpdating={isUpdating} onCancel={onCancel} />
-        {isError && <div>There was an error</div>}
       </Form>
     </div>
   );
