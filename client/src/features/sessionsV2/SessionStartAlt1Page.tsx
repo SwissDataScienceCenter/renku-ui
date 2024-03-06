@@ -18,7 +18,11 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom-v5-compat";
+import {
+  generatePath,
+  useNavigate,
+  useParams,
+} from "react-router-dom-v5-compat";
 
 import PageLoader from "../../components/PageLoader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
@@ -106,7 +110,7 @@ function StartSessionFromLauncher({
 }: StartSessionFromLauncherProps) {
   const { environment_kind } = launcher;
 
-  //   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const {
     data: environments,
@@ -164,7 +168,7 @@ function StartSessionFromLauncher({
   const [
     startSession,
     {
-      //   data: session,
+      data: session,
       error,
       //  isLoading: isLoadingStartSession
     },
@@ -265,22 +269,17 @@ function StartSessionFromLauncher({
     startSessionOptions,
   ]);
 
-  //   // Navigate to the session page when it is ready
-  //   useEffect(() => {
-  //     if (session != null) {
-  //       const url = generatePath(
-  //         "/projects/:namespace/:projectName/sessions/show/:session",
-  //         {
-  //           namespace,
-  //           projectName,
-  //           session: session.name,
-  //         }
-  //       );
-  //       navigate(url, {
-  //         state: { redirectFromStartServer: true, fromLanding: false },
-  //       });
-  //     }
-  //   }, [namespace, navigate, projectName, session]);
+  // Navigate to the session page when it is ready
+  useEffect(() => {
+    if (session != null) {
+      const url = generatePath("../show/:session", {
+        session: session.name,
+      });
+      navigate(url, {
+        state: { redirectFromStartServer: true, fromLanding: false },
+      });
+    }
+  }, [navigate, session]);
 
   return (
     <div>

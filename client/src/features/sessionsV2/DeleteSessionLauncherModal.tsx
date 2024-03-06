@@ -25,7 +25,7 @@ import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useDeleteSessionLauncherMutation } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 
-interface DDeleteSessionLauncherModalProps {
+interface DeleteSessionLauncherModalProps {
   isOpen: boolean;
   launcher: SessionLauncher;
   toggle: () => void;
@@ -35,7 +35,7 @@ export default function DeleteSessionLauncherModal({
   isOpen,
   launcher,
   toggle,
-}: DDeleteSessionLauncherModalProps) {
+}: DeleteSessionLauncherModalProps) {
   const [deleteSessionLauncher, result] = useDeleteSessionLauncherMutation();
 
   const onDelete = useCallback(() => {
