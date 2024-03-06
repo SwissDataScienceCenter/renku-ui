@@ -21,8 +21,17 @@ import { Nav, NavItem, Navbar } from "reactstrap";
 
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import WipBadge from "../projectsV2/shared/WipBadge";
+import { useLocation, useMatch } from "react-router-dom-v5-compat";
 
 export default function NavbarV2() {
+  const matchesShowSessionPage = useMatch(
+    "/v2/projects/:id/sessions/show/:session"
+  );
+
+  if (matchesShowSessionPage) {
+    return null;
+  }
+
   return (
     <header className={cx("px-4", "bg-rk-blue")}>
       <Navbar className="px-2">

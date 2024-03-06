@@ -26,6 +26,7 @@ import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
 import LazySessionStartAlt1Page from "../sessionsV2/LazySessionStartAlt1Page";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
+import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import NavbarV2 from "./NavbarV2";
 
 export default function RootV2() {
@@ -92,6 +93,14 @@ function ProjectsV2Routes() {
 function ProjectSessionsRoutes() {
   return (
     <Routes>
+      <Route
+        path="show/:session"
+        element={
+          <ContainerWrap fullSize>
+            <LazyShowSessionPage />
+          </ContainerWrap>
+        }
+      />
       <Route
         path=":launcherId/start"
         element={
