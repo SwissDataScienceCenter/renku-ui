@@ -30,7 +30,7 @@ import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enha
 import useDefaultSessionClassOption from "../session/hooks/options/useDefaultSessionClassOption.hook";
 import {
   useGetDockerImageQuery,
-  useStartRenku10SessionMutation,
+  useStartRenku2SessionMutation,
 } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
@@ -168,7 +168,7 @@ function StartSessionFromLauncher({
       error,
       //  isLoading: isLoadingStartSession
     },
-  ] = useStartRenku10SessionMutation();
+  ] = useStartRenku2SessionMutation();
 
   // Reset start session options slice when we navigate away
   useEffect(() => {
@@ -238,6 +238,16 @@ function StartSessionFromLauncher({
     startSession({
       projectId: project.id,
       launcherId: launcher.id,
+      // repositories: project.repositories ?? [],
+      // TODO: plug in the proper data here.
+      repositories: [
+        {
+          namespace: "flora.thiebaut",
+          project: "a-playground-project",
+          branch: "main",
+          commitSha: "bec38920",
+        },
+      ],
       cloudStorage: [],
       defaultUrl: startSessionOptions.defaultUrl,
       environmentVariables: {},
@@ -249,6 +259,7 @@ function StartSessionFromLauncher({
   }, [
     launcher.id,
     project.id,
+    project.repositories,
     resourcePools,
     startSession,
     startSessionOptions,

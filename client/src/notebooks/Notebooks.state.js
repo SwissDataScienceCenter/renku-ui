@@ -80,6 +80,10 @@ const ExpectedAnnotations = {
       "hibernationDirty",
       "hibernationSynchronized",
       "hibernatedSecondsThreshold",
+      // Renku 2.0 annotations
+      "renkuVersion",
+      "renku2.0ProjectId",
+      "renku2.0LauncherId",
     ],
     default: {
       branch: "unknown",

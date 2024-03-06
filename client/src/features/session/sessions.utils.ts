@@ -34,6 +34,12 @@ export function getRunningSession({
     const annotations = NotebooksHelper.cleanAnnotations(
       session.annotations
     ) as Session["annotations"];
+
+    // Filter out Renku 2.0 sessions.
+    if (annotations["renkuVersion"] === "2.0") {
+      return false;
+    }
+
     const thisAutostartUrl = Url.get(Url.pages.project.session.autostart, {
       namespace: annotations.namespace,
       path: annotations.projectName,

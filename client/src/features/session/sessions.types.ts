@@ -107,6 +107,12 @@ export interface StartSessionParams {
 export interface StartRenku10SessionParams {
   projectId: string;
   launcherId: string;
+  repositories: {
+    namespace: string;
+    project: string;
+    branch: string;
+    commitSha: string;
+  }[];
   cloudStorage: SessionCloudStorage[];
   defaultUrl: string;
   environmentVariables: Record<string, string>;

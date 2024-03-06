@@ -149,7 +149,7 @@ const sessionsApi = createApi({
       },
       invalidatesTags: ["Session"],
     }),
-    startRenku10Session: builder.mutation<Session, StartRenku10SessionParams>({
+    startRenku2Session: builder.mutation<Session, StartRenku10SessionParams>({
       query: ({
         cloudStorage,
         defaultUrl,
@@ -158,6 +158,7 @@ const sessionsApi = createApi({
         launcherId,
         lfsAutoFetch,
         projectId,
+        repositories,
         sessionClass,
         storage,
       }) => {
@@ -165,8 +166,12 @@ const sessionsApi = createApi({
           .map(convertCloudStorageForSessionApi)
           .flatMap((item) => (item == null ? [] : [item]));
         const body = {
-          renku_1_project_id: projectId,
-          renku_1_environment_id: launcherId,
+          project_id: projectId,
+          environment_id: launcherId,
+          repositories: repositories.map(({ commitSha, ...rest }) => ({
+            ...rest,
+            commit_sha: commitSha,
+          })),
           ...(cloudstorage.length > 0 ? { cloudstorage } : {}),
           default_url: defaultUrl,
           environment_variables: environmentVariables,
@@ -178,7 +183,7 @@ const sessionsApi = createApi({
         return {
           body,
           method: "POST",
-          url: "renku-1-servers",
+          url: "renku-2-servers",
         };
       },
       invalidatesTags: ["Session"],
@@ -208,6 +213,6 @@ export const {
   useStopSessionMutation,
   useGetLogsQuery,
   useStartSessionMutation,
-  useStartRenku10SessionMutation,
+  useStartRenku2SessionMutation,
   usePatchSessionMutation,
 } = sessionsApi;
