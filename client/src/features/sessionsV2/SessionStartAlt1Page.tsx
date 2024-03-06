@@ -154,7 +154,7 @@ function SessionStartWithConfiguration({
   project,
   sessionConfiguration,
 }: SessionStartWithConfigurationProps) {
-  const { environment_kind } = launcher;
+  const { environment_kind, default_url } = launcher;
 
   const { defaultBranch, namespace, projectName, repositoryMetadata } =
     sessionConfiguration;
@@ -247,12 +247,17 @@ function SessionStartWithConfiguration({
     dispatch(setBranch(defaultBranch));
   }, [defaultBranch, dispatch]);
 
-  // TODO: support other URLs?
   useEffect(() => {
-    if (startSessionOptions.defaultUrl !== "/lab") {
-      dispatch(setDefaultUrl("/lab"));
+    const defaultUrl = default_url
+      ? default_url
+      : environment && environment.default_url
+      ? environment.default_url
+      : "/lab";
+
+    if (startSessionOptions.defaultUrl !== defaultUrl) {
+      dispatch(setDefaultUrl(defaultUrl));
     }
-  }, [dispatch, startSessionOptions.defaultUrl]);
+  }, [environment, default_url, dispatch, startSessionOptions.defaultUrl]);
 
   useEffect(() => {
     dispatch(setPinnedDockerImage(containerImage));
