@@ -23,7 +23,7 @@ const searchV2Api = createApi({
   reducerPath: "searchV2Api",
   baseQuery: fetchBaseQuery({
     // eslint-disable-next-line spellcheck/spell-checker
-    baseUrl: "/apiv2/search", // ! Update to "/ui-server/api/search" after gateway updates
+    baseUrl: "/ui-server/api/search",
   }),
   tagTypes: ["SearchV2"],
   endpoints: (builder) => ({
