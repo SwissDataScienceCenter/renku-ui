@@ -17,11 +17,11 @@
  */
 
 import cx from "classnames";
+import { useMatch } from "react-router-dom-v5-compat";
 import { Nav, NavItem, Navbar } from "reactstrap";
 
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import WipBadge from "../projectsV2/shared/WipBadge";
-import { useLocation, useMatch } from "react-router-dom-v5-compat";
 
 export default function NavbarV2() {
   const matchesShowSessionPage = useMatch(
