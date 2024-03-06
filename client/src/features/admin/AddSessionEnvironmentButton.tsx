@@ -31,7 +31,9 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import SessionEnvironmentFormContent from "./SessionEnvironmentFormContent";
+import SessionEnvironmentFormContent, {
+  SessionEnvironmentForm,
+} from "./SessionEnvironmentFormContent";
 import { useAddSessionEnvironmentMutation } from "./adminSessions.api";
 
 export default function AddSessionEnvironmentButton() {
@@ -67,18 +69,20 @@ function AddSessionEnvironmentModal({
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<AddSessionEnvironmentForm>({
+  } = useForm<SessionEnvironmentForm>({
     defaultValues: {
       container_image: "",
+      default_url: "",
       description: "",
       name: "",
     },
   });
   const onSubmit = useCallback(
-    (data: AddSessionEnvironmentForm) => {
+    (data: SessionEnvironmentForm) => {
       addSessionEnvironment({
         container_image: data.container_image,
         name: data.name,
+        default_url: data.default_url.trim() ? data.default_url : undefined,
         description: data.description.trim() ? data.description : undefined,
       });
     },
@@ -136,10 +140,4 @@ function AddSessionEnvironmentModal({
       </Form>
     </Modal>
   );
-}
-
-interface AddSessionEnvironmentForm {
-  container_image: string;
-  description: string;
-  name: string;
 }

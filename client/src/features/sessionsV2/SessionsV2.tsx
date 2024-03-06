@@ -141,7 +141,8 @@ function SessionLauncherDisplay({
   launcher,
   projectId,
 }: SessionLauncherDisplayProps) {
-  const { creation_date, environment_kind, name, description } = launcher;
+  const { creation_date, environment_kind, name, default_url, description } =
+    launcher;
 
   const { data: environments, isLoading } =
     sessionsV2Api.endpoints.getSessionEnvironments.useQueryState(
@@ -217,9 +218,19 @@ function SessionLauncherDisplay({
               Uses the <b>{environment.name}</b> session environment.
             </CardText>
           )}
-          <CardText className="mb-2" tag="div">
+          <CardText className="mb-0" tag="div">
             <p className="mb-0">Container image:</p>
             <CommandCopy command={container_image} noMargin />
+          </CardText>
+          <CardText className="mb-2">
+            Default URL:{" "}
+            <code>
+              {default_url
+                ? default_url
+                : environment && environment.default_url
+                ? environment.default_url
+                : "/lab"}
+            </code>
           </CardText>
           <CardText>
             <TimeCaption
