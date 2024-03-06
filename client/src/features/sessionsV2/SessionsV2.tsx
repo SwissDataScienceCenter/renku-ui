@@ -52,7 +52,7 @@ import {
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import sessionsApi, { useGetSessionsQuery } from "../session/sessions.api";
 import { Session, Sessions } from "../session/sessions.types";
-import StartSessionButtonAlt1 from "./StartSessionButtonAlt1";
+import StartSessionButton from "./StartSessionButton";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import sessionsV2Api, {
   useGetProjectSessionLaunchersQuery,
@@ -241,7 +241,7 @@ function SessionLauncherDisplay({
             </div>
           ) : (
             <div className="mt-auto">
-              <StartSessionButtonAlt1
+              <StartSessionButton
                 launcherId={launcher.id}
                 projectId={projectId}
               />

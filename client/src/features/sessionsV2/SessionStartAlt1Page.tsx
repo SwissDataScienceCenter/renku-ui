@@ -17,7 +17,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import {
   generatePath,
   useNavigate,
@@ -39,6 +39,7 @@ import {
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
 import {
+  setBranch,
   setDefaultUrl,
   setDockerImageStatus,
   setPinnedDockerImage,
@@ -50,6 +51,12 @@ import {
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
+import ProjectSessionConfigContext, {
+  ProjectSessionConfig,
+  ProjectSessionConfigContextProvider,
+} from "./ProjectSessionConfig.context";
+import useDefaultCommitOption from "../session/hooks/options/useDefaultCommitOption.hook";
+import { useGetAllRepositoryCommitsQuery } from "../project/projectGitLab.api";
 
 export default function SessionStartAlt1Page() {
   const { id: projectId, launcherId } = useParams<"id" | "launcherId">();
@@ -96,7 +103,11 @@ export default function SessionStartAlt1Page() {
     );
   }
 
-  return <StartSessionFromLauncher launcher={launcher} project={project} />;
+  return (
+    <ProjectSessionConfigContextProvider project={project}>
+      <StartSessionFromLauncher launcher={launcher} project={project} />
+    </ProjectSessionConfigContextProvider>
+  );
 }
 
 interface StartSessionFromLauncherProps {
@@ -108,7 +119,46 @@ function StartSessionFromLauncher({
   launcher,
   project,
 }: StartSessionFromLauncherProps) {
+  const { isLoading, supportsSessions, sessionConfiguration } = useContext(
+    ProjectSessionConfigContext
+  );
+
+  if (isLoading) {
+    return <PageLoader />;
+  }
+
+  if (!supportsSessions) {
+    return <p>boo</p>;
+  }
+
+  return (
+    <SessionStartWithConfiguration
+      launcher={launcher}
+      project={project}
+      sessionConfiguration={sessionConfiguration}
+    />
+  );
+}
+
+interface SessionStartWithConfigurationProps {
+  launcher: SessionLauncher;
+  project: Project;
+  sessionConfiguration: Exclude<
+    ProjectSessionConfig["sessionConfiguration"],
+    undefined | null
+  >;
+}
+
+function SessionStartWithConfiguration({
+  launcher,
+  project,
+  sessionConfiguration,
+}: SessionStartWithConfigurationProps) {
   const { environment_kind } = launcher;
+
+  const { defaultBranch, namespace, projectName, repositoryMetadata } =
+    sessionConfiguration;
+  const gitLabProjectId = repositoryMetadata.id;
 
   const navigate = useNavigate();
 
@@ -136,6 +186,14 @@ function StartSessionFromLauncher({
     ({ startSessionOptions }) => startSessionOptions
   );
 
+  const { data: commits } = useGetAllRepositoryCommitsQuery(
+    startSessionOptions.branch
+      ? {
+          branch: defaultBranch,
+          projectId: `${gitLabProjectId}`,
+        }
+      : skipToken
+  );
   const { data: dockerImageStatus, isLoading: isLoadingDockerImageStatus } =
     useGetDockerImageQuery(
       containerImage !== "unknown"
@@ -182,7 +240,12 @@ function StartSessionFromLauncher({
   }, [dispatch]);
 
   // Select default options
+  useDefaultCommitOption({ commits });
   useDefaultSessionClassOption({ resourcePools });
+
+  useEffect(() => {
+    dispatch(setBranch(defaultBranch));
+  }, [defaultBranch, dispatch]);
 
   // TODO: support other URLs?
   useEffect(() => {
@@ -224,6 +287,8 @@ function StartSessionFromLauncher({
   // Request session
   useEffect(() => {
     if (
+      commits == null ||
+      !startSessionOptions.commit ||
       startSessionOptions.dockerImageStatus !== "available" ||
       resourcePools == null ||
       startSessionOptions.sessionClass == 0
@@ -231,6 +296,16 @@ function StartSessionFromLauncher({
       return;
     }
     console.log({
+      projectId: project.id,
+      launcherId: launcher.id,
+      repositories: [
+        {
+          namespace,
+          project: projectName,
+          branch: defaultBranch,
+          commitSha: startSessionOptions.commit,
+        },
+      ],
       cloudStorage: [],
       defaultUrl: startSessionOptions.defaultUrl,
       environmentVariables: {},
@@ -242,14 +317,12 @@ function StartSessionFromLauncher({
     startSession({
       projectId: project.id,
       launcherId: launcher.id,
-      // repositories: project.repositories ?? [],
-      // TODO: plug in the proper data here.
       repositories: [
         {
-          namespace: "flora.thiebaut",
-          project: "a-playground-project",
-          branch: "main",
-          commitSha: "bec38920",
+          namespace,
+          project: projectName,
+          branch: defaultBranch,
+          commitSha: startSessionOptions.commit,
         },
       ],
       cloudStorage: [],
@@ -261,9 +334,12 @@ function StartSessionFromLauncher({
       storage: startSessionOptions.storage,
     });
   }, [
+    commits,
+    defaultBranch,
     launcher.id,
+    namespace,
     project.id,
-    project.repositories,
+    projectName,
     resourcePools,
     startSession,
     startSessionOptions,

@@ -75,7 +75,10 @@ export function ProjectSessionConfigContextProvider({
   });
 
   const singleRepositoryRaw = useMemo(
-    () => (project.repositories?.length == 1 ? project.repositories[0] : null),
+    () =>
+      project.repositories?.length != null && project.repositories.length > 0
+        ? project.repositories[0]
+        : null,
     [project.repositories]
   );
 
@@ -98,6 +101,12 @@ export function ProjectSessionConfigContextProvider({
         : null,
     [currentData, project]
   );
+
+  console.log({
+    singleRepositoryRaw,
+    singleRepository,
+    matchedRepositoryMetadata,
+  });
 
   useEffect(() => {
     if (!singleRepository) {
@@ -183,7 +192,10 @@ function matchRepositoryMetadata(
   project: Project,
   data: GitlabProjectResponse
 ) {
-  if (project.repositories?.length != 1) {
+  if (
+    project.repositories?.length == null ||
+    project.repositories.length == 0
+  ) {
     return null;
   }
 
