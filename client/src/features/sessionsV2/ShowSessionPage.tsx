@@ -34,13 +34,13 @@ import { User } from "../../model/renkuModels.types";
 import { SESSION_TABS } from "../../notebooks/Notebooks.present";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import useWindowSize from "../../utils/helpers/UseWindowsSize";
-import PauseOrDeleteSessionModal from "../session/components/PauseOrDeleteSessionModal";
 import ResourcesSessionModal from "../session/components/ResourcesSessionModal";
 import SessionHibernated from "../session/components/SessionHibernated";
 import SessionJupyter from "../session/components/SessionJupyter";
 import SessionUnavailable from "../session/components/SessionUnavailable";
 import StartSessionProgressBar from "../session/components/StartSessionProgressBar";
 import { useGetSessionsQuery } from "../session/sessions.api";
+import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
 
 import styles from "../session/components/ShowSession.module.scss";
 
