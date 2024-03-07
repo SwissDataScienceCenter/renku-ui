@@ -17,7 +17,8 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useContext, useEffect, useMemo } from "react";
+import cx from "classnames";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   generatePath,
   useNavigate,
@@ -26,11 +27,19 @@ import {
 
 import PageLoader from "../../components/PageLoader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import ProgressStepsIndicator, {
+  ProgressStyle,
+  ProgressType,
+  StatusStepProgressBar,
+  StepsProgressBar,
+} from "../../components/progress/ProgressSteps";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
+import { useGetAllRepositoryCommitsQuery } from "../project/projectGitLab.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import useDefaultCommitOption from "../session/hooks/options/useDefaultCommitOption.hook";
 import useDefaultSessionClassOption from "../session/hooks/options/useDefaultSessionClassOption.hook";
 import {
   useGetDockerImageQuery,
@@ -46,17 +55,15 @@ import {
   setStorage,
   startSessionOptionsSlice,
 } from "../session/startSessionOptionsSlice";
+import ProjectSessionConfigContext, {
+  ProjectSessionConfig,
+  ProjectSessionConfigContextProvider,
+} from "./ProjectSessionConfig.context";
 import {
   useGetProjectSessionLaunchersQuery,
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
-import ProjectSessionConfigContext, {
-  ProjectSessionConfig,
-  ProjectSessionConfigContextProvider,
-} from "./ProjectSessionConfig.context";
-import useDefaultCommitOption from "../session/hooks/options/useDefaultCommitOption.hook";
-import { useGetAllRepositoryCommitsQuery } from "../project/projectGitLab.api";
 
 export default function SessionStartAlt1Page() {
   const { id: projectId, launcherId } = useParams<"id" | "launcherId">();
@@ -162,6 +169,9 @@ function SessionStartWithConfiguration({
 
   const navigate = useNavigate();
 
+  // StepsProgressBar
+  const [steps, setSteps] = useState<StepsProgressBar[]>([]);
+
   const {
     data: environments,
     //  isLoading
@@ -225,11 +235,7 @@ function SessionStartWithConfiguration({
 
   const [
     startSession,
-    {
-      data: session,
-      error,
-      //  isLoading: isLoadingStartSession
-    },
+    { data: session, error, isLoading: isLoadingStartSession },
   ] = useStartRenku2SessionMutation();
 
   // Reset start session options slice when we navigate away
@@ -362,11 +368,68 @@ function SessionStartWithConfiguration({
     }
   }, [navigate, session]);
 
+  // Update the loading steps UI
+  useEffect(() => {
+    if (
+      commits == null ||
+      !startSessionOptions.commit ||
+      startSessionOptions.dockerImageStatus !== "available" ||
+      resourcePools == null ||
+      startSessionOptions.sessionClass == 0
+    ) {
+      setSteps([
+        {
+          id: 0,
+          status: StatusStepProgressBar.EXECUTING,
+          step: "Loading session configuration",
+        },
+        {
+          id: 1,
+          status: StatusStepProgressBar.WAITING,
+          step: "Requesting session",
+        },
+      ]);
+      return;
+    }
+
+    //isLoadingStartSession
+    setSteps([
+      {
+        id: 0,
+        status: StatusStepProgressBar.READY,
+        step: "Loading session configuration",
+      },
+      {
+        id: 1,
+        status: error
+          ? StatusStepProgressBar.FAILED
+          : isLoadingStartSession
+          ? StatusStepProgressBar.EXECUTING
+          : StatusStepProgressBar.READY,
+        step: "Requesting session",
+      },
+    ]);
+  }, [
+    commits,
+    error,
+    isLoadingStartSession,
+    resourcePools,
+    startSessionOptions,
+  ]);
+
   return (
     <div>
       {error && <RtkErrorAlert error={error} dismissible={false} />}
 
-      <pre>{JSON.stringify(startSessionOptions, null, 2)}</pre>
+      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Starting session ${launcher.name}`}
+          status={steps}
+        />
+      </div>
     </div>
   );
 }

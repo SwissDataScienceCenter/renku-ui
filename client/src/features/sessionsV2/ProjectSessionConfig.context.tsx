@@ -102,12 +102,6 @@ export function ProjectSessionConfigContextProvider({
     [currentData, project]
   );
 
-  console.log({
-    singleRepositoryRaw,
-    singleRepository,
-    matchedRepositoryMetadata,
-  });
-
   useEffect(() => {
     if (!singleRepository) {
       setConfig({
