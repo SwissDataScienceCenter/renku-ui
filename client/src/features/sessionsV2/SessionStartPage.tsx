@@ -169,7 +169,6 @@ function SessionStartWithConfiguration({
 
   const navigate = useNavigate();
 
-  // StepsProgressBar
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
 
   const {
@@ -374,7 +373,6 @@ function SessionStartWithConfiguration({
       return;
     }
 
-    //isLoadingStartSession
     setSteps([
       {
         id: 0,
