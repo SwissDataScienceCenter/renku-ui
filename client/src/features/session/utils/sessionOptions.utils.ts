@@ -42,7 +42,7 @@ interface CheckStorageArgs {
   statistics: ProjectStatistics | null | undefined;
 }
 
-export function checkStorage({ lfsAutoFetch, statistics }: CheckStorageArgs) {
+export function computeStorageSizes({ lfsAutoFetch, statistics }: CheckStorageArgs) {
   if (!statistics) {
     return null;
   }
