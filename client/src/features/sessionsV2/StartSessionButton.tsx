@@ -41,7 +41,7 @@ export default function StartSessionButton({
   const ref = useRef<HTMLSpanElement>(null);
 
   const startUrl = generatePath(
-    "/v2/projects/:projectId/sessions/:launcherId/startAlt1",
+    "/v2/projects/:projectId/sessions/:launcherId/start",
     {
       projectId,
       launcherId,

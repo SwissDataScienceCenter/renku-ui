@@ -17,7 +17,8 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useContext, useEffect, useMemo } from "react";
+import cx from "classnames";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   generatePath,
   useNavigate,
@@ -26,6 +27,12 @@ import {
 
 import PageLoader from "../../components/PageLoader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import ProgressStepsIndicator, {
+  ProgressStyle,
+  ProgressType,
+  StatusStepProgressBar,
+  StepsProgressBar,
+} from "../../components/progress/ProgressSteps";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
@@ -36,7 +43,7 @@ import useDefaultCommitOption from "../session/hooks/options/useDefaultCommitOpt
 import useDefaultSessionClassOption from "../session/hooks/options/useDefaultSessionClassOption.hook";
 import {
   useGetDockerImageQuery,
-  useStartSessionMutation,
+  useStartRenku2SessionMutation,
 } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
@@ -151,15 +158,19 @@ interface SessionStartWithConfigurationProps {
 
 function SessionStartWithConfiguration({
   launcher,
+  project,
   sessionConfiguration,
 }: SessionStartWithConfigurationProps) {
-  const { environment_kind } = launcher;
+  const { environment_kind, default_url } = launcher;
 
   const { defaultBranch, namespace, projectName, repositoryMetadata } =
     sessionConfiguration;
   const gitLabProjectId = repositoryMetadata.id;
 
   const navigate = useNavigate();
+
+  // StepsProgressBar
+  const [steps, setSteps] = useState<StepsProgressBar[]>([]);
 
   const {
     data: environments,
@@ -185,10 +196,7 @@ function SessionStartWithConfiguration({
     ({ startSessionOptions }) => startSessionOptions
   );
 
-  const {
-    data: commits,
-    // isFetching: commitsIsFetching
-  } = useGetAllRepositoryCommitsQuery(
+  const { data: commits } = useGetAllRepositoryCommitsQuery(
     startSessionOptions.branch
       ? {
           branch: defaultBranch,
@@ -227,12 +235,8 @@ function SessionStartWithConfiguration({
 
   const [
     startSession,
-    {
-      data: session,
-      error,
-      //  isLoading: isLoadingStartSession
-    },
-  ] = useStartSessionMutation();
+    { data: session, error, isLoading: isLoadingStartSession },
+  ] = useStartRenku2SessionMutation();
 
   // Reset start session options slice when we navigate away
   useEffect(() => {
@@ -249,10 +253,17 @@ function SessionStartWithConfiguration({
     dispatch(setBranch(defaultBranch));
   }, [defaultBranch, dispatch]);
 
-  // TODO: support other URLs?
   useEffect(() => {
-    dispatch(setDefaultUrl("/lab"));
-  }, [dispatch]);
+    const defaultUrl = default_url
+      ? default_url
+      : environment && environment.default_url
+      ? environment.default_url
+      : "/lab";
+
+    if (startSessionOptions.defaultUrl !== defaultUrl) {
+      dispatch(setDefaultUrl(defaultUrl));
+    }
+  }, [environment, default_url, dispatch, startSessionOptions.defaultUrl]);
 
   useEffect(() => {
     dispatch(setPinnedDockerImage(containerImage));
@@ -288,29 +299,39 @@ function SessionStartWithConfiguration({
   useEffect(() => {
     if (
       commits == null ||
+      !startSessionOptions.commit ||
       startSessionOptions.dockerImageStatus !== "available" ||
       resourcePools == null ||
       startSessionOptions.sessionClass == 0
     ) {
       return;
     }
+
     startSession({
-      branch: defaultBranch,
+      projectId: project.id,
+      launcherId: launcher.id,
+      repositories: [
+        {
+          namespace,
+          project: projectName,
+          branch: defaultBranch,
+          commitSha: startSessionOptions.commit,
+        },
+      ],
       cloudStorage: [],
-      commit: startSessionOptions.commit,
       defaultUrl: startSessionOptions.defaultUrl,
       environmentVariables: {},
       image: startSessionOptions.pinnedDockerImage,
       lfsAutoFetch: false,
-      namespace,
-      project: projectName,
       sessionClass: startSessionOptions.sessionClass,
       storage: startSessionOptions.storage,
     });
   }, [
     commits,
     defaultBranch,
+    launcher.id,
     namespace,
+    project.id,
     projectName,
     resourcePools,
     startSession,
@@ -320,25 +341,77 @@ function SessionStartWithConfiguration({
   // Navigate to the session page when it is ready
   useEffect(() => {
     if (session != null) {
-      const url = generatePath(
-        "/projects/:namespace/:projectName/sessions/show/:session",
-        {
-          namespace,
-          projectName,
-          session: session.name,
-        }
-      );
+      const url = generatePath("../show/:session", {
+        session: session.name,
+      });
       navigate(url, {
         state: { redirectFromStartServer: true, fromLanding: false },
       });
     }
-  }, [namespace, navigate, projectName, session]);
+  }, [navigate, session]);
+
+  // Update the loading steps UI
+  useEffect(() => {
+    if (
+      commits == null ||
+      !startSessionOptions.commit ||
+      startSessionOptions.dockerImageStatus !== "available" ||
+      resourcePools == null ||
+      startSessionOptions.sessionClass == 0
+    ) {
+      setSteps([
+        {
+          id: 0,
+          status: StatusStepProgressBar.EXECUTING,
+          step: "Loading session configuration",
+        },
+        {
+          id: 1,
+          status: StatusStepProgressBar.WAITING,
+          step: "Requesting session",
+        },
+      ]);
+      return;
+    }
+
+    //isLoadingStartSession
+    setSteps([
+      {
+        id: 0,
+        status: StatusStepProgressBar.READY,
+        step: "Loading session configuration",
+      },
+      {
+        id: 1,
+        status: error
+          ? StatusStepProgressBar.FAILED
+          : isLoadingStartSession
+          ? StatusStepProgressBar.EXECUTING
+          : StatusStepProgressBar.READY,
+        step: "Requesting session",
+      },
+    ]);
+  }, [
+    commits,
+    error,
+    isLoadingStartSession,
+    resourcePools,
+    startSessionOptions,
+  ]);
 
   return (
     <div>
       {error && <RtkErrorAlert error={error} dismissible={false} />}
 
-      <pre>{JSON.stringify(startSessionOptions, null, 2)}</pre>
+      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Starting session ${launcher.name}`}
+          status={steps}
+        />
+      </div>
     </div>
   );
 }

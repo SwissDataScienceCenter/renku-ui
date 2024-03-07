@@ -24,7 +24,6 @@ import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
-import LazySessionStartAlt1Page from "../sessionsV2/LazySessionStartAlt1Page";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import NavbarV2 from "./NavbarV2";
@@ -106,14 +105,6 @@ function ProjectSessionsRoutes() {
         element={
           <ContainerWrap>
             <LazySessionStartPage />
-          </ContainerWrap>
-        }
-      />
-      <Route
-        path=":launcherId/startAlt1"
-        element={
-          <ContainerWrap>
-            <LazySessionStartAlt1Page />
           </ContainerWrap>
         }
       />
