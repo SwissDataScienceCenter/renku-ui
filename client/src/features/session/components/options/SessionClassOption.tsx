@@ -50,7 +50,7 @@ import { ProjectConfig } from "../../../project/project.types";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import { setSessionClass } from "../../startSessionOptionsSlice";
-import { checkStorage } from "../../utils/sessionOptions.utils";
+import { computeStorageSizes } from "../../utils/sessionOptions.utils";
 
 import styles from "./SessionClassOption.module.scss";
 
@@ -94,7 +94,7 @@ export const SessionClassOption = () => {
 
   // Get storage sizes based on repository statistics
   const { minimumStorageGb, recommendedStorageGb } =
-    checkStorage({ lfsAutoFetch, statistics }) ?? {};
+    computeStorageSizes({ lfsAutoFetch, statistics }) ?? {};
 
   // Resource pools
   const {

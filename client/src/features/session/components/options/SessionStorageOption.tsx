@@ -40,7 +40,7 @@ import {
 } from "../../startSessionOptions.constants";
 import { setStorage } from "../../startSessionOptionsSlice";
 import {
-  checkStorage,
+  computeStorageSizes,
   validateStorageAmount,
 } from "../../utils/sessionOptions.utils";
 
@@ -125,7 +125,7 @@ export const SessionStorageOption = () => {
     }
 
     const { recommendedStorageGb } =
-      checkStorage({ lfsAutoFetch, statistics }) ?? {};
+      computeStorageSizes({ lfsAutoFetch, statistics }) ?? {};
     const recommendedOrDefaultStorage =
       recommendedStorageGb &&
       recommendedStorageGb > currentSessionClass.default_storage

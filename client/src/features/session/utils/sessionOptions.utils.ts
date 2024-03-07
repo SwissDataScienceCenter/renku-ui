@@ -42,7 +42,19 @@ interface CheckStorageArgs {
   statistics: ProjectStatistics | null | undefined;
 }
 
-export function computeStorageSizes({ lfsAutoFetch, statistics }: CheckStorageArgs) {
+/**
+ * Computes rounded up storage sizes needed to start a session.
+ * @returns the minimum amount of storage and the recommended
+ * amount of storage.
+ *
+ * Note: It is not possible to accurately compute the storage
+ * sizes when a repository uses LFS. In this case, we assume
+ * the worst case scenario, i.e. all objects are required at HEAD.
+ */
+export function computeStorageSizes({
+  lfsAutoFetch,
+  statistics,
+}: CheckStorageArgs) {
   if (!statistics) {
     return null;
   }
@@ -64,4 +76,55 @@ export function computeStorageSizes({ lfsAutoFetch, statistics }: CheckStorageAr
   const recommendedStorageGb = Math.ceil(recommendedStorage / ONE_GB_IN_BYTES);
 
   return { minimumStorageGb, recommendedStorageGb };
+}
+
+interface ComputeRequestedStorageSizeArgs {
+  defaultStorage: number;
+  lfsAutoFetch: boolean;
+  maxStorage: number;
+  statistics: ProjectStatistics | null | undefined;
+}
+
+/**
+ * Computes the storage size to request in the auto-start flow.
+ *
+ * We want to return the clamped recommended storage
+ * (i.e. max(recommended, maxStorage)) when this value is
+ * greater than the default and greater than the minimum needed
+ * for the session.
+ *
+ * The minimum storage value is not clamped so that we can interrupt
+ * the auto-start flow when that value exceeds the amount of
+ * available storage.
+ */
+export function computeRequestedStorageSize({
+  defaultStorage,
+  lfsAutoFetch,
+  maxStorage,
+  statistics,
+}: ComputeRequestedStorageSizeArgs) {
+  const sizes = computeStorageSizes({ lfsAutoFetch, statistics });
+
+  if (sizes == null) {
+    return defaultStorage;
+  }
+
+  const { minimumStorageGb, recommendedStorageGb } = sizes;
+  const clampedRecommended = validateStorageAmount({
+    value: recommendedStorageGb,
+    maxValue: maxStorage,
+  });
+
+  if (
+    clampedRecommended > defaultStorage &&
+    clampedRecommended > minimumStorageGb
+  ) {
+    return clampedRecommended;
+  }
+
+  if (minimumStorageGb > defaultStorage) {
+    return minimumStorageGb;
+  }
+
+  return defaultStorage;
 }

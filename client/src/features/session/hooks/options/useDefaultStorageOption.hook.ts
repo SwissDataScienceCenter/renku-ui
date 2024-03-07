@@ -17,16 +17,17 @@
  */
 
 import { useEffect } from "react";
+
+import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { ProjectConfig } from "../../../project/project.types";
 import { setError } from "../../startSession.slice";
 import { setStorage } from "../../startSessionOptionsSlice";
 import {
-  checkStorage,
+  computeRequestedStorageSize,
   validateStorageAmount,
 } from "../../utils/sessionOptions.utils";
-import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 
 interface UseDefaultStorageOptionArgs {
   currentSessionClass: ResourceClass | null;
@@ -49,24 +50,12 @@ export default function useDefaultStorageOption({
       return;
     }
 
-    const { minimumStorageGb, recommendedStorageGb } =
-      checkStorage({ lfsAutoFetch, statistics }) ?? {};
-    const clampedRecommended = recommendedStorageGb
-      ? validateStorageAmount({
-          value: recommendedStorageGb,
-          maxValue: currentSessionClass.max_storage,
-        })
-      : null;
-    const requestedStorage =
-      clampedRecommended &&
-      minimumStorageGb &&
-      clampedRecommended > currentSessionClass.default_storage &&
-      clampedRecommended > minimumStorageGb
-        ? clampedRecommended
-        : minimumStorageGb &&
-          minimumStorageGb > currentSessionClass.default_storage
-        ? minimumStorageGb
-        : currentSessionClass.default_storage;
+    const requestedStorage = computeRequestedStorageSize({
+      defaultStorage: currentSessionClass.default_storage,
+      lfsAutoFetch,
+      maxStorage: currentSessionClass.max_storage,
+      statistics,
+    });
 
     const desiredValue =
       projectConfig.config.sessions?.storage ??
