@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
-import { Link, generatePath, useParams } from "react-router-dom-v5-compat";
+import { useParams } from "react-router-dom-v5-compat";
 import {
   Card,
   CardBody,
@@ -39,19 +39,19 @@ import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import type { Project } from "../projectsV2/api/projectV2.api";
-import AddSessionLauncherButton from "./AddSessionLauncherButton";
-import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
-import { ProjectSessionConfigContextProvider } from "./ProjectSessionConfig.context";
-// import StartSessionButton from "./StartSessionButton";
 import { NotebooksHelper } from "../../notebooks";
 import {
   SessionListRowStatus,
   SessionListRowStatusIcon,
 } from "../../notebooks/components/SessionListStatus";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
+import type { Project } from "../projectsV2/api/projectV2.api";
 import sessionsApi, { useGetSessionsQuery } from "../session/sessions.api";
 import { Session, Sessions } from "../session/sessions.types";
+import ActiveSessionButton from "./ActiveSessionButton";
+import AddSessionLauncherButton from "./AddSessionLauncherButton";
+import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
+import { ProjectSessionConfigContextProvider } from "./ProjectSessionConfig.context";
 import StartSessionButton from "./StartSessionButton";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import sessionsV2Api, {
@@ -59,6 +59,11 @@ import sessionsV2Api, {
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
+import { EnvironmentLogs } from "../../components/Logs";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+
+// Required for logs formatting
+import "../../notebooks/Notebooks.css";
 
 interface SessionsV2Props {
   project: Project;
@@ -278,6 +283,10 @@ function ActiveSessionV2({ session }: ActiveSessionV2Props) {
 
   const details = { message: session.status.message };
 
+  const displayModal = useAppSelector(
+    ({ display }) => display.modals.sessionLogs
+  );
+
   return (
     <div>
       <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
@@ -297,24 +306,11 @@ function ActiveSessionV2({ session }: ActiveSessionV2Props) {
         />
       </div>
 
-      <Link
-        className={cx(
-          "btn",
-          "btn-rk-green",
-          "btn-sm",
-          "btn-icon-text",
-          "start-session-button",
-          "session-link-group",
-          "mt-1"
-        )}
-        to={generatePath("sessions/show/:session", { session: session.name })}
-      >
-        <img
-          className={cx("rk-icon", "rk-icon-md", "me-2")}
-          src="/connect.svg"
-        />
-        Open
-      </Link>
+      <ActiveSessionButton session={session} />
+      <EnvironmentLogs
+        name={displayModal.targetServer}
+        annotations={cleanAnnotations}
+      />
     </div>
   );
 }
