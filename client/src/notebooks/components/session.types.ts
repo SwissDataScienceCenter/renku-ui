@@ -39,8 +39,8 @@ export interface NotebookAnnotations {
 
   // Annotations for Renku 2.0
   renkuVersion?: string;
-  "renku2.0ProjectId"?: string;
-  "renku2.0LauncherId"?: string;
+  projectId?: string;
+  launcherId?: string;
 
   [key: string]: unknown;
 }

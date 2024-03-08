@@ -82,8 +82,8 @@ const ExpectedAnnotations = {
       "hibernatedSecondsThreshold",
       // Renku 2.0 annotations
       "renkuVersion",
-      "renku2.0ProjectId",
-      "renku2.0LauncherId",
+      "projectId",
+      "launcherId",
     ],
     default: {
       branch: "unknown",
