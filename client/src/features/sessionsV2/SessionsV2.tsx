@@ -99,11 +99,38 @@ function SessionLaunchersListDisplay() {
     isLoading: isLoadingLaunchers,
   } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
 
-  const { error: sessionsError, isLoading: isLoadingSessions } =
-    useGetSessionsQuery();
+  const {
+    data: sessions,
+    error: sessionsError,
+    isLoading: isLoadingSessions,
+  } = useGetSessionsQuery();
 
   const isLoading = isLoadingLaunchers || isLoadingSessions;
   const error = launchersError || sessionsError;
+
+  const orphanSessions = useMemo(
+    () =>
+      launchers != null && sessions != null
+        ? Object.entries(sessions)
+            .filter(([, session]) => {
+              const annotations = NotebooksHelper.cleanAnnotations(
+                session.annotations
+              ) as NotebookAnnotations;
+              return (
+                annotations["renkuVersion"] === "2.0" &&
+                annotations["renku2.0ProjectId"] === projectId &&
+                launchers.find(
+                  ({ id }) => id === annotations["renku2.0LauncherId"]
+                ) == null
+              );
+            })
+            .reduce(
+              (prev, [name, session]) => ({ ...prev, [name]: session }),
+              {} as Sessions
+            )
+        : null,
+    [launchers, projectId, sessions]
+  );
 
   if (isLoading) {
     return (
@@ -118,7 +145,12 @@ function SessionLaunchersListDisplay() {
     return <RtkErrorAlert error={error} />;
   }
 
-  if (!launchers || launchers.length == 0) {
+  if (
+    !launchers ||
+    (launchers.length == 0 &&
+      orphanSessions != null &&
+      Object.keys(orphanSessions).length == 0)
+  ) {
     return null;
   }
 
@@ -132,6 +164,10 @@ function SessionLaunchersListDisplay() {
             projectId={projectId ?? ""}
           />
         ))}
+        {orphanSessions &&
+          Object.entries(orphanSessions).map(([key, session]) => (
+            <OrphanSession key={`orphan-${key}`} session={session} />
+          ))}
       </Row>
     </Container>
   );
@@ -168,7 +204,7 @@ function SessionLauncherDisplay({
             .filter(([, session]) => {
               const annotations = NotebooksHelper.cleanAnnotations(
                 session.annotations
-              ) as Session["annotations"];
+              ) as NotebookAnnotations;
               return (
                 annotations["renkuVersion"] === "2.0" &&
                 annotations["renku2.0ProjectId"] === projectId &&
@@ -247,7 +283,7 @@ function SessionLauncherDisplay({
           {filteredSessions &&
           filteredSessionsLength != null &&
           filteredSessionsLength > 0 ? (
-            <div>
+            <div className="mt-auto">
               <p className="mb-0">
                 Active {filteredSessionsLength > 1 ? "sessions" : "session"}
               </p>
@@ -289,7 +325,15 @@ function ActiveSessionV2({ session }: ActiveSessionV2Props) {
 
   return (
     <div>
-      <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
+      <div
+        className={cx(
+          "d-flex",
+          "flex-row",
+          "gap-2",
+          "align-items-center",
+          "mb-1"
+        )}
+      >
         <SessionListRowStatusIcon
           annotations={cleanAnnotations}
           details={details}
@@ -359,5 +403,39 @@ function SessionV2Actions({ launcher }: SessionV2ActionsProps) {
         toggle={toggleDelete}
       />
     </>
+  );
+}
+
+interface OrphanSessionProps {
+  session: Session;
+}
+
+function OrphanSession({ session }: OrphanSessionProps) {
+  const { image } = session;
+
+  return (
+    <Col className={cx("col-12", "col-sm-6")}>
+      <Card className="h-100">
+        <CardBody className={cx("d-flex", "flex-column")}>
+          <CardTitle
+            className={cx(
+              "d-flex",
+              "flex-row",
+              "justify-content-between",
+              "align-items-center"
+            )}
+          >
+            <h5 className={cx("mb-0", "fs-5", "fst-italic")}>Orphan session</h5>
+          </CardTitle>
+          <CardText className="mb-0" tag="div">
+            <p className="mb-0">Container image:</p>
+            <CommandCopy command={image} noMargin />
+          </CardText>
+          <div className="mt-auto">
+            <ActiveSessionV2 session={session} />
+          </div>
+        </CardBody>
+      </Card>
+    </Col>
   );
 }
