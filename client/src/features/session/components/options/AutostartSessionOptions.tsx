@@ -49,6 +49,7 @@ import {
 import { startSessionOptionsSlice } from "../../startSessionOptionsSlice";
 import { useProjectSessions } from "../ProjectSessionsList";
 import SessionDockerImage from "./SessionDockerImage";
+import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 
 export default function AutostartSessionOptions() {
   useAutostartSessionOptions();
@@ -89,6 +90,9 @@ function useAutostartSessionOptions(): void {
   );
   const projectPathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
+  );
+  const statistics = useLegacySelector<ProjectStatistics | null | undefined>(
+    (state) => state.stateModel.project.statistics?.data
   );
   const projectSessions = useProjectSessions({ projectPathWithNamespace });
   const validSessions = useMemo(
@@ -194,7 +198,9 @@ function useAutostartSessionOptions(): void {
   useDefaultSessionClassOption({ resourcePools });
   useDefaultStorageOption({
     currentSessionClass,
+    lfsAutoFetch,
     projectConfig,
+    statistics,
   });
   useDefaultAutoFetchLfsOption({ projectConfig });
   useDefaultCloudStorageOption({ notebooksVersion, storageForProject });
