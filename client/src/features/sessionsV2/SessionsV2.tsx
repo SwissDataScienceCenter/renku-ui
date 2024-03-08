@@ -118,10 +118,9 @@ function SessionLaunchersListDisplay() {
               ) as NotebookAnnotations;
               return (
                 annotations["renkuVersion"] === "2.0" &&
-                annotations["renku2.0ProjectId"] === projectId &&
-                launchers.find(
-                  ({ id }) => id === annotations["renku2.0LauncherId"]
-                ) == null
+                annotations["projectId"] === projectId &&
+                launchers.find(({ id }) => id === annotations["launcherId"]) ==
+                  null
               );
             })
             .reduce(
@@ -207,8 +206,8 @@ function SessionLauncherDisplay({
               ) as NotebookAnnotations;
               return (
                 annotations["renkuVersion"] === "2.0" &&
-                annotations["renku2.0ProjectId"] === projectId &&
-                annotations["renku2.0LauncherId"] === launcher.id
+                annotations["projectId"] === projectId &&
+                annotations["launcherId"] === launcher.id
               );
             })
             .reduce(
