@@ -67,9 +67,9 @@ export interface KgVersion {
 
 interface NotebookComponent extends BaseVersion {
   data: {
-    anonymousSessionsEnabled: boolean;
-    cloudstorageEnabled: boolean;
-    sshEnabled: boolean;
+    anonymous_sessions_enabled: boolean;
+    cloudstorage_enabled: boolean;
+    ssh_enabled: boolean;
   };
 }
 

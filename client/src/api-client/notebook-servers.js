@@ -86,12 +86,6 @@ function addNotebookServersMethods(client) {
       .then((resp) => {
         let { data } = resp;
 
-        // ? rename defaultUrl to default_url to prevent conflicts later with project options
-        if (data && "defaultUrl" in data) {
-          data.default_url = data.defaultUrl;
-          delete data.defaultUrl;
-        }
-
         Object.keys(data).forEach((key) => {
           data[key].selected = data[key].default;
         });
@@ -113,15 +107,6 @@ function addNotebookServersMethods(client) {
     const url = `${client.baseUrl}/notebooks/servers`;
     let notebook;
 
-    // ? rename default_url to legacy defaultUrl
-    if (
-      options &&
-      options.serverOptions &&
-      "default_url" in options.serverOptions
-    ) {
-      options.serverOptions.defaultUrl = options.serverOptions.default_url;
-      delete options.serverOptions.default_url;
-    }
     if (
       options &&
       options.serverOptions &&
