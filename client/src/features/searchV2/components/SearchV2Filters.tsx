@@ -16,19 +16,24 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
-import { toggleFilter } from "../searchV2.slice";
+import { setCreated, toggleFilter } from "../searchV2.slice";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { SearchV2FilterOptions, SearchV2State } from "../searchV2.types";
+import {
+  DateFilter,
+  SearchV2FilterOptions,
+  SearchV2State,
+} from "../searchV2.types";
 import {
   ANONYMOUS_USERS_EXCLUDE_FILTERS,
   AVAILABLE_FILTERS,
 } from "../searchV2.utils";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { User } from "../../../model/renkuModels.types";
+import { SearchV2DateFilter } from "./SearchV2DateFilter.tsx";
 
 export default function SearchV2Filters() {
   const dispatch = useDispatch();
@@ -39,16 +44,9 @@ export default function SearchV2Filters() {
   );
 
   const handleToggleFilter = useCallback(
-    (
-      filter: keyof SearchV2State["filters"],
-      value: SearchV2State["filters"][keyof SearchV2State["filters"]][number]
-    ) => {
-      dispatch(
-        toggleFilter({
-          filter,
-          value,
-        })
-      );
+    (filter: keyof SearchV2State["filters"], value: string | DateFilter) => {
+      if (filter === "created") dispatch(setCreated(value as DateFilter));
+      else dispatch(toggleFilter({ filter, value: value as string }));
     },
     [dispatch]
   );
@@ -66,17 +64,17 @@ export default function SearchV2Filters() {
         key={filterName}
         name={filterName}
         options={Object.entries(options).map(([key, value]) => ({
-          checked: !!(
+          checked: (
             filters[filterName as keyof SearchV2State["filters"]] as string[]
           ).includes(key),
           key,
           value,
         }))}
         title={filterName.charAt(0).toUpperCase() + filterName.slice(1)}
-        toggleOption={(value) => {
+        toggleOption={(value: string) => {
           handleToggleFilter(
             filterName as keyof SearchV2State["filters"],
-            value as SearchV2State["filters"][keyof SearchV2State["filters"]][number]
+            value
           );
         }}
       />
@@ -90,10 +88,14 @@ export default function SearchV2Filters() {
         </Col>
         <Col className={cx("d-flex", "flex-column", "gap-3")}>
           {filtersList}
-
-          <SearchV2FilterContainer name="creation-date" title="Creation date">
-            Not yet implemented
-          </SearchV2FilterContainer>
+          <SearchV2DateFilter
+            name="CreationDate"
+            title="Creation Date"
+            checked={filters["created"]}
+            toggleOption={(value: DateFilter) => {
+              handleToggleFilter("created", value);
+            }}
+          />
         </Col>
       </Row>
     </>
@@ -105,7 +107,7 @@ interface SearchV2FilterContainerProps {
   name: string;
   title: string;
 }
-function SearchV2FilterContainer({
+export function SearchV2FilterContainer({
   children,
   name,
   title,

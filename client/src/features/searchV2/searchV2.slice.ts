@@ -19,12 +19,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
+  DateFilter,
   SearchV2State,
   SearchV2Totals,
   SortingItem,
   ToggleFilterPayload,
 } from "./searchV2.types";
 import { AVAILABLE_SORTING } from "./searchV2.utils";
+import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
 
 const initialState: SearchV2State = {
   search: {
@@ -41,6 +43,9 @@ const initialState: SearchV2State = {
     role: ["creator", "member", "none"],
     type: ["project"],
     visibility: ["public", "private"],
+    created: {
+      option: DateFilterTypes.all,
+    },
   },
   sorting: AVAILABLE_SORTING.scoreDesc,
 };
@@ -75,6 +80,10 @@ export const searchV2Slice = createSlice({
     setTotals: (state, action: PayloadAction<SearchV2Totals>) => {
       state.search.totalResults = action.payload.results;
       state.search.totalPages = action.payload.pages;
+    },
+    setCreated: (state, action: PayloadAction<DateFilter>) => {
+      state.filters.created = action.payload;
+      state.search.outdated = true;
     },
     toggleFilter: (state, action: PayloadAction<ToggleFilterPayload>) => {
       const arrayToUpdate =
@@ -116,6 +125,7 @@ export const {
   setQuery,
   setSearch,
   setSorting,
+  setCreated,
   setTotals,
   toggleFilter,
   reset,

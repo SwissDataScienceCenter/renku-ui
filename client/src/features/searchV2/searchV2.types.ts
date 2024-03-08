@@ -17,6 +17,7 @@
  */
 
 import { UserV2 } from "../userV2/userV2.types";
+import { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
 
 export type EntityType = "Project" | "User";
 
@@ -60,11 +61,17 @@ export interface UserSearchResult {
   type: "User";
 }
 
+export interface DateFilter {
+  option: DateFilterTypes;
+  from?: string;
+  to?: string;
+}
 export interface SearchV2State {
   filters: {
     role: ("creator" | "member" | "none")[];
     type: ("project" | "user")[];
     visibility: ("private" | "public")[];
+    created: DateFilter;
   };
   search: {
     history: {
@@ -89,7 +96,7 @@ export interface SearchV2Totals {
 
 export interface ToggleFilterPayload {
   filter: keyof SearchV2State["filters"];
-  value: SearchV2State["filters"][keyof SearchV2State["filters"]][number];
+  value: string;
 }
 
 export interface SearchV2FilterOptions {
@@ -105,4 +112,14 @@ export interface SortingItem {
 
 export interface SortingItems {
   [key: string]: SortingItem;
+}
+
+export interface DateFilterItem {
+  friendlyName: string;
+  getDateString:
+    | ((filter: string, from?: string, to?: string) => string)
+    | (() => string);
+}
+export interface DateFilterItems {
+  [key: string]: DateFilterItem;
 }

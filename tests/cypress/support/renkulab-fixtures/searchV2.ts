@@ -78,7 +78,7 @@ export function SearchV2<T extends FixturesConstructor>(Parent: T) {
         };
       }
 
-      cy.intercept("GET", "/apiv2/search?*", (req) => {
+      cy.intercept("GET", "/ui-server/api/search?*", (req) => {
         let body = null;
         const queryString = req.query["q"].toString();
         if (queryString.includes("type:")) {
