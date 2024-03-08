@@ -45,6 +45,7 @@ import type { Repository } from "../projectV2.types";
 import AddProjectMemberModal from "../fields/AddProjectMemberModal";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../fields/ProjectNameFormField";
+import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 
@@ -159,6 +160,7 @@ export function ProjectV2MetadataForm({
     defaultValues: {
       description: project.description,
       name: project.name,
+      namespace: project.namespace,
       visibility: project.visibility,
     },
   });
@@ -210,6 +212,12 @@ export function ProjectV2MetadataForm({
         onSubmit={handleSubmit(onSubmit)}
       >
         <ProjectNameFormField name="name" control={control} errors={errors} />
+        <ProjectNamespaceFormField
+          name="namespace"
+          control={control}
+          entityName="project"
+          errors={errors}
+        />
         <ProjectDescriptionFormField
           name="description"
           control={control}

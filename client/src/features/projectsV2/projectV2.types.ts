@@ -13,6 +13,7 @@ export interface Project {
   };
   metadata: {
     name: string;
+    namespace: string;
     slug: string;
     description: string;
   };

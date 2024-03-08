@@ -20,7 +20,7 @@ import { FixturesConstructor } from "./fixtures";
 import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 /**
- * Fixtures for v2 Group
+ * Fixtures for v2 Group and v2 Namespace
  */
 
 interface ListManyGroupArgs extends NameOnlyFixture {
@@ -43,6 +43,9 @@ interface V2GroupDeleteFixture extends NameOnlyFixture {
 interface V2GroupDeleteMemberFixture extends V2GroupArgs {
   userId?: string;
 }
+interface ListManyNamespacesArgs extends NameOnlyFixture {
+  numberOfNamespaces?: number;
+}
 
 function generateGroups(numberOfGroups: number, start: number) {
   const groups = [];
@@ -62,8 +65,25 @@ function generateGroups(numberOfGroups: number, start: number) {
   return groups;
 }
 
-export function V2Group<T extends FixturesConstructor>(Parent: T) {
-  return class V2GroupFixtures extends Parent {
+function generateNamespaces(numberOfNamespaces: number, start: number) {
+  const groups = [];
+  for (let i = 0; i < numberOfNamespaces; ++i) {
+    const id = start + i;
+    const slug = `test-${id}-v2-group`;
+    const group = {
+      id,
+      name: `test ${id} v2-group`,
+      slug,
+      creation_date: "2023-11-15T09:55:59Z",
+      created_by: { id: "user1-uuid" },
+    };
+    groups.push(group);
+  }
+  return groups;
+}
+
+export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
+  return class V2NamespaceFixtures extends Parent {
     createV2Group(args?: SimpleFixture) {
       const {
         fixture = "v2Group/create-v2Group.json",
@@ -125,11 +145,46 @@ export function V2Group<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    listManyV2Namespace(args?: ListManyNamespacesArgs) {
+      const { numberOfNamespaces = 50, name = "listV2Namespace" } = args ?? {};
+      cy.intercept("GET", `/ui-server/api/data/namespaces?*`, (req) => {
+        const page = (req.query["perPage"] as number) ?? 1;
+        const perPage = (req.query["perPage"] as number) ?? 20;
+        const start = (page - 1) * perPage;
+        const numToGen = Math.min(
+          Math.max(numberOfNamespaces - start - perPage, 0),
+          perPage
+        );
+        req.reply({
+          body: generateNamespaces(numToGen, start),
+          headers: {
+            page: page.toString(),
+            "per-page": perPage.toString(),
+            total: numberOfNamespaces.toString(),
+            "total-pages": Math.ceil(numberOfNamespaces / perPage).toString(),
+          },
+        });
+      }).as(name);
+      return this;
+    }
+
     listV2Group(args?: SimpleFixture) {
       const { fixture = "v2Group/list-v2Group.json", name = "listV2Group" } =
         args ?? {};
       const response = { fixture, delay: 2000 };
       cy.intercept("GET", `/ui-server/api/data/groups?*`, response).as(name);
+      return this;
+    }
+
+    listV2Namespace(args?: SimpleFixture) {
+      const {
+        fixture = "v2Namespace/list-v2Namespace.json",
+        name = "listV2Namespace",
+      } = args ?? {};
+      const response = { fixture, delay: 2000 };
+      cy.intercept("GET", `/ui-server/api/data/namespaces?*`, response).as(
+        name
+      );
       return this;
     }
 

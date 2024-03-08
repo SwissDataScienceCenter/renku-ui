@@ -134,7 +134,8 @@ export type ETag = string;
 export type Project = {
   id: Ulid;
   name: Name;
-  slug?: Slug;
+  namespace: Slug;
+  slug: Slug;
   creation_date: CreationDate;
   created_by: Member;
   repositories?: RepositoriesList;
@@ -152,6 +153,7 @@ export type ErrorResponse = {
 };
 export type ProjectPost = {
   name: Name;
+  namespace: Slug;
   slug?: Slug;
   repositories?: RepositoriesList;
   visibility?: Visibility;
@@ -159,6 +161,7 @@ export type ProjectPost = {
 };
 export type ProjectPatch = {
   name?: Name;
+  namespace?: Slug;
   repositories?: RepositoriesList;
   visibility?: Visibility;
   description?: Description;

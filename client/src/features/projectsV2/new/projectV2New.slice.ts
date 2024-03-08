@@ -38,6 +38,7 @@ const initialState: NewProjectV2State = {
     },
     metadata: {
       name: "",
+      namespace: "",
       slug: "",
       description: "",
     },

@@ -381,6 +381,9 @@
           "name": {
             "$ref": "#/components/schemas/Name"
           },
+          "namespace": {
+            "$ref": "#/components/schemas/Slug"
+          },
           "slug": {
             "$ref": "#/components/schemas/Slug"
           },
@@ -403,10 +406,19 @@
             "$ref": "#/components/schemas/ETag"
           }
         },
-        "required": ["id", "name", "created_by", "creation_date", "visibility"],
+        "required": [
+          "id",
+          "name",
+          "namespace",
+          "slug",
+          "created_by",
+          "creation_date",
+          "visibility"
+        ],
         "example": {
           "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
           "name": "Renku R Project",
+          "namespace": "our-projects",
           "slug": "r-project",
           "created_by": {
             "id": "owner-KC-id"
@@ -430,6 +442,9 @@
           "name": {
             "$ref": "#/components/schemas/Name"
           },
+          "namespace": {
+            "$ref": "#/components/schemas/Slug"
+          },
           "slug": {
             "$ref": "#/components/schemas/Slug"
           },
@@ -444,7 +459,7 @@
             "$ref": "#/components/schemas/Description"
           }
         },
-        "required": ["name"]
+        "required": ["name", "namespace"]
       },
       "ProjectPatch": {
         "type": "object",
@@ -453,6 +468,9 @@
         "properties": {
           "name": {
             "$ref": "#/components/schemas/Name"
+          },
+          "namespace": {
+            "$ref": "#/components/schemas/Slug"
           },
           "repositories": {
             "$ref": "#/components/schemas/RepositoriesList"
@@ -481,7 +499,7 @@
         "example": "My Renku Project :)"
       },
       "Slug": {
-        "description": "A command-line friendly name for a project",
+        "description": "A command-line friendly name for a project or namespace",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
