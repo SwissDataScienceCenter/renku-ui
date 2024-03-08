@@ -64,6 +64,7 @@ import {
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
+import { StartRenku10SessionParams } from "../session/sessions.types";
 
 export default function SessionStartPage() {
   const { id: projectId, launcherId } = useParams<"id" | "launcherId">();
@@ -142,7 +143,7 @@ function StartSessionFromLauncher({
     <SessionStartWithConfiguration
       launcher={launcher}
       project={project}
-      sessionConfiguration={sessionConfiguration}
+      sessionConfiguration={sessionConfiguration ?? null}
     />
   );
 }
@@ -153,7 +154,7 @@ interface SessionStartWithConfigurationProps {
   sessionConfiguration: Exclude<
     ProjectSessionConfig["sessionConfiguration"],
     undefined | null
-  >;
+  > | null;
 }
 
 function SessionStartWithConfiguration({
@@ -163,9 +164,8 @@ function SessionStartWithConfiguration({
 }: SessionStartWithConfigurationProps) {
   const { environment_kind, default_url } = launcher;
 
-  const { defaultBranch, namespace, projectName, repositoryMetadata } =
-    sessionConfiguration;
-  const gitLabProjectId = repositoryMetadata.id;
+  const { defaultBranch, repositoryMetadata } = sessionConfiguration ?? {};
+  const gitLabProjectId = repositoryMetadata?.id ?? null;
 
   const navigate = useNavigate();
 
@@ -196,7 +196,7 @@ function SessionStartWithConfiguration({
   );
 
   const { data: commits } = useGetAllRepositoryCommitsQuery(
-    startSessionOptions.branch
+    defaultBranch && gitLabProjectId && startSessionOptions.branch
       ? {
           branch: defaultBranch,
           projectId: `${gitLabProjectId}`,
@@ -249,7 +249,9 @@ function SessionStartWithConfiguration({
   useDefaultSessionClassOption({ resourcePools });
 
   useEffect(() => {
-    dispatch(setBranch(defaultBranch));
+    if (defaultBranch != null) {
+      dispatch(setBranch(defaultBranch));
+    }
   }, [defaultBranch, dispatch]);
 
   useEffect(() => {
@@ -297,8 +299,8 @@ function SessionStartWithConfiguration({
   // Request session
   useEffect(() => {
     if (
-      commits == null ||
-      !startSessionOptions.commit ||
+      (sessionConfiguration != null &&
+        (commits == null || !startSessionOptions.commit)) ||
       startSessionOptions.dockerImageStatus !== "available" ||
       resourcePools == null ||
       startSessionOptions.sessionClass == 0
@@ -306,17 +308,22 @@ function SessionStartWithConfiguration({
       return;
     }
 
+    const repositories: StartRenku10SessionParams["repositories"] =
+      sessionConfiguration != null
+        ? [
+            {
+              namespace: sessionConfiguration.namespace,
+              project: sessionConfiguration.projectName,
+              branch: sessionConfiguration.defaultBranch,
+              commitSha: startSessionOptions.commit,
+            },
+          ]
+        : [];
+
     startSession({
       projectId: project.id,
       launcherId: launcher.id,
-      repositories: [
-        {
-          namespace,
-          project: projectName,
-          branch: defaultBranch,
-          commitSha: startSessionOptions.commit,
-        },
-      ],
+      repositories,
       cloudStorage: [],
       defaultUrl: startSessionOptions.defaultUrl,
       environmentVariables: {},
@@ -327,12 +334,10 @@ function SessionStartWithConfiguration({
     });
   }, [
     commits,
-    defaultBranch,
     launcher.id,
-    namespace,
     project.id,
-    projectName,
     resourcePools,
+    sessionConfiguration,
     startSession,
     startSessionOptions,
   ]);
@@ -352,8 +357,8 @@ function SessionStartWithConfiguration({
   // Update the loading steps UI
   useEffect(() => {
     if (
-      commits == null ||
-      !startSessionOptions.commit ||
+      (sessionConfiguration != null &&
+        (commits == null || !startSessionOptions.commit)) ||
       startSessionOptions.dockerImageStatus !== "available" ||
       resourcePools == null ||
       startSessionOptions.sessionClass == 0
@@ -394,6 +399,7 @@ function SessionStartWithConfiguration({
     error,
     isLoadingStartSession,
     resourcePools,
+    sessionConfiguration,
     startSessionOptions,
   ]);
 

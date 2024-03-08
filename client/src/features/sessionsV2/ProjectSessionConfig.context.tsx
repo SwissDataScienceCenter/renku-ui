@@ -29,10 +29,17 @@ export type ProjectSessionConfig = {
 } & (
   | {
       supportsSessions: false;
+      hasRepositories?: undefined;
       sessionConfiguration?: undefined;
     }
   | {
       supportsSessions: true;
+      hasRepositories: false;
+      sessionConfiguration?: undefined;
+    }
+  | {
+      supportsSessions: true;
+      hasRepositories: true;
       sessionConfiguration: SessionConfig;
     }
 );
@@ -107,7 +114,8 @@ export function ProjectSessionConfigContextProvider({
       setConfig({
         isUninitialized: false,
         isLoading: false,
-        supportsSessions: false,
+        supportsSessions: true,
+        hasRepositories: false,
       });
     }
   }, [singleRepository]);
@@ -147,6 +155,7 @@ export function ProjectSessionConfigContextProvider({
         isUninitialized: false,
         isLoading: false,
         supportsSessions: true,
+        hasRepositories: true,
         sessionConfiguration: {
           defaultBranch,
           namespace: namespace.full_path,
