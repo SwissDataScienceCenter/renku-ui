@@ -99,11 +99,38 @@ function SessionLaunchersListDisplay() {
     isLoading: isLoadingLaunchers,
   } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
 
-  const { error: sessionsError, isLoading: isLoadingSessions } =
-    useGetSessionsQuery();
+  const {
+    data: sessions,
+    error: sessionsError,
+    isLoading: isLoadingSessions,
+  } = useGetSessionsQuery();
 
   const isLoading = isLoadingLaunchers || isLoadingSessions;
   const error = launchersError || sessionsError;
+
+  const orphanSessions = useMemo(
+    () =>
+      launchers != null && sessions != null
+        ? Object.entries(sessions)
+            .filter(([, session]) => {
+              const annotations = NotebooksHelper.cleanAnnotations(
+                session.annotations
+              ) as NotebookAnnotations;
+              return (
+                annotations["renkuVersion"] === "2.0" &&
+                annotations["renku2.0ProjectId"] === projectId &&
+                launchers.find(
+                  ({ id }) => id === annotations["renku2.0LauncherId"]
+                ) == null
+              );
+            })
+            .reduce(
+              (prev, [name, session]) => ({ ...prev, [name]: session }),
+              {} as Sessions
+            )
+        : null,
+    []
+  );
 
   if (isLoading) {
     return (
@@ -133,6 +160,7 @@ function SessionLaunchersListDisplay() {
           />
         ))}
       </Row>
+      <pre>{JSON.stringify(orphanSessions, null, 2)}</pre>
     </Container>
   );
 }
@@ -168,7 +196,7 @@ function SessionLauncherDisplay({
             .filter(([, session]) => {
               const annotations = NotebooksHelper.cleanAnnotations(
                 session.annotations
-              ) as Session["annotations"];
+              ) as NotebookAnnotations;
               return (
                 annotations["renkuVersion"] === "2.0" &&
                 annotations["renku2.0ProjectId"] === projectId &&
