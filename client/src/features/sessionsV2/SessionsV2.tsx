@@ -259,7 +259,7 @@ function SessionLauncherDisplay({
               prefix="Created"
             />
           </CardText>
-          {filteredSessions && filteredSessionsLength > 0 ? (
+          {filteredSessionsLength > 0 ? (
             <div className="mt-auto">
               <p className="mb-0">
                 Active {filteredSessionsLength > 1 ? "sessions" : "session"}
