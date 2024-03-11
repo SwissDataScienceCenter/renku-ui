@@ -64,7 +64,7 @@ import {
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
-import { StartRenku10SessionParams } from "../session/sessions.types";
+import { StartRenku2SessionParams } from "../session/sessions.types";
 
 export default function SessionStartPage() {
   const { id: projectId, launcherId } = useParams<"id" | "launcherId">();
@@ -308,7 +308,7 @@ function SessionStartWithConfiguration({
       return;
     }
 
-    const repositories: StartRenku10SessionParams["repositories"] =
+    const repositories: StartRenku2SessionParams["repositories"] =
       sessionConfiguration != null
         ? [
             {

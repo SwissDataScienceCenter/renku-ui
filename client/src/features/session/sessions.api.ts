@@ -28,7 +28,7 @@ import {
   ServerOptionsResponse,
   Session,
   Sessions,
-  StartRenku10SessionParams,
+  StartRenku2SessionParams,
   StartSessionParams,
 } from "./sessions.types";
 
@@ -149,7 +149,7 @@ const sessionsApi = createApi({
       },
       invalidatesTags: ["Session"],
     }),
-    startRenku2Session: builder.mutation<Session, StartRenku10SessionParams>({
+    startRenku2Session: builder.mutation<Session, StartRenku2SessionParams>({
       query: ({
         cloudStorage,
         defaultUrl,
