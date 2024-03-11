@@ -115,7 +115,7 @@ export default function ShowSessionPage() {
     if (thisSession?.status.state === "running") {
       const timeout = window.setTimeout(() => {
         setIsTheSessionReady(true);
-      }, 1_000);
+      }, 4_000);
       return () => window.clearTimeout(timeout);
     }
     setIsTheSessionReady(false);
