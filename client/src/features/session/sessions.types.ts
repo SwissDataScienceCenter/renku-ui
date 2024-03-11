@@ -104,7 +104,7 @@ export interface StartSessionParams {
   storage: number;
 }
 
-export interface StartRenku10SessionParams {
+export interface StartRenku2SessionParams {
   projectId: string;
   launcherId: string;
   repositories: {
