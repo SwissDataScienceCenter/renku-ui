@@ -49,6 +49,7 @@ import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 
 import { SettingEditOption } from "./projectV2Show.types";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
 type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
 
@@ -105,7 +106,7 @@ function ProjectDeleteConfirmation({
         <Button
           className="ms-2"
           color="danger"
-          disabled={typedName !== project.slug.trim()}
+          disabled={typedName !== project.slug?.trim()}
           onClick={onDelete}
         >
           {result.isLoading ? (
@@ -162,7 +163,7 @@ export function ProjectV2MetadataForm({
     },
   });
 
-  const [updateProject, { isLoading, isError }] =
+  const [updateProject, { isLoading, error }] =
     usePatchProjectsByProjectIdMutation();
 
   const isUpdating = isLoading;
@@ -172,7 +173,11 @@ export function ProjectV2MetadataForm({
 
   const onSubmit = useCallback(
     (data: ProjectV2Metadata) => {
-      updateProject({ projectId: project.id, projectPatch: data })
+      updateProject({
+        "If-Match": project.etag ?? "",
+        projectId: project.id,
+        projectPatch: data,
+      })
         .unwrap()
         .then(() => setSettingEdit(null));
     },
@@ -196,6 +201,9 @@ export function ProjectV2MetadataForm({
         project={project}
         toggle={toggle}
       />
+
+      {error && <RtkErrorAlert error={error} />}
+
       <Form
         className="form-rk-green"
         noValidate
@@ -213,7 +221,6 @@ export function ProjectV2MetadataForm({
           errors={errors}
         />
         <ProjectEditSubmitGroup isUpdating={isUpdating} onCancel={onCancel} />
-        {isError && <div>There was an error</div>}
       </Form>
     </div>
   );
@@ -350,7 +357,11 @@ export function ProjectV2RepositoryForm({
   const onSubmit = useCallback(
     (data: ProjectV2Repositories) => {
       const repositories = data.repositories.map((r) => r.url);
-      updateProject({ projectId: project.id, projectPatch: { repositories } })
+      updateProject({
+        "If-Match": project.etag ?? "",
+        projectId: project.id,
+        projectPatch: { repositories },
+      })
         .unwrap()
         .then(() => setSettingEdit(null));
     },
