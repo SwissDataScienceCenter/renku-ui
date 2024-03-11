@@ -36,6 +36,7 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
+import { EnvironmentLogs } from "../../components/Logs";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
@@ -45,9 +46,11 @@ import {
   SessionListRowStatusIcon,
 } from "../../notebooks/components/SessionListStatus";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import sessionsApi, { useGetSessionsQuery } from "../session/sessions.api";
-import { Session, Sessions } from "../session/sessions.types";
+import { Session } from "../session/sessions.types";
+import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
 import ActiveSessionButton from "./ActiveSessionButton";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
@@ -59,8 +62,6 @@ import sessionsV2Api, {
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
-import { EnvironmentLogs } from "../../components/Logs";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
@@ -111,23 +112,14 @@ function SessionLaunchersListDisplay() {
   const orphanSessions = useMemo(
     () =>
       launchers != null && sessions != null
-        ? Object.entries(sessions)
-            .filter(([, session]) => {
-              const annotations = NotebooksHelper.cleanAnnotations(
-                session.annotations
-              ) as NotebookAnnotations;
-              return (
-                annotations["renkuVersion"] === "2.0" &&
-                annotations["projectId"] === projectId &&
-                launchers.find(({ id }) => id === annotations["launcherId"]) ==
-                  null
-              );
-            })
-            .reduce(
-              (prev, [name, session]) => ({ ...prev, [name]: session }),
-              {} as Sessions
-            )
-        : null,
+        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
+            sessions,
+            ({ annotations }) =>
+              annotations["renkuVersion"] === "2.0" &&
+              annotations["projectId"] === projectId &&
+              launchers.every(({ id }) => annotations["launcherId"] !== id)
+          )
+        : {},
     [launchers, projectId, sessions]
   );
 
@@ -146,9 +138,7 @@ function SessionLaunchersListDisplay() {
 
   if (
     !launchers ||
-    (launchers.length == 0 &&
-      orphanSessions != null &&
-      Object.keys(orphanSessions).length == 0)
+    (launchers.length == 0 && Object.keys(orphanSessions).length == 0)
   ) {
     return null;
   }
@@ -163,10 +153,9 @@ function SessionLaunchersListDisplay() {
             projectId={projectId ?? ""}
           />
         ))}
-        {orphanSessions &&
-          Object.entries(orphanSessions).map(([key, session]) => (
-            <OrphanSession key={`orphan-${key}`} session={session} />
-          ))}
+        {Object.entries(orphanSessions).map(([key, session]) => (
+          <OrphanSession key={`orphan-${key}`} session={session} />
+        ))}
       </Row>
     </Container>
   );
@@ -199,27 +188,18 @@ function SessionLauncherDisplay({
   const filteredSessions = useMemo(
     () =>
       sessions != null
-        ? Object.entries(sessions)
-            .filter(([, session]) => {
-              const annotations = NotebooksHelper.cleanAnnotations(
-                session.annotations
-              ) as NotebookAnnotations;
-              return (
-                annotations["renkuVersion"] === "2.0" &&
-                annotations["projectId"] === projectId &&
-                annotations["launcherId"] === launcher.id
-              );
-            })
-            .reduce(
-              (prev, [name, session]) => ({ ...prev, [name]: session }),
-              {} as Sessions
-            )
-        : null,
+        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
+            sessions,
+            ({ annotations }) =>
+              annotations["renkuVersion"] === "2.0" &&
+              annotations["projectId"] === projectId &&
+              annotations["launcherId"] === launcher.id
+          )
+        : {},
     [launcher.id, projectId, sessions]
   );
   const filteredSessionsLength = useMemo(
-    () =>
-      filteredSessions != null ? Object.keys(filteredSessions).length : null,
+    () => Object.keys(filteredSessions).length,
     [filteredSessions]
   );
 
@@ -279,9 +259,7 @@ function SessionLauncherDisplay({
               prefix="Created"
             />
           </CardText>
-          {filteredSessions &&
-          filteredSessionsLength != null &&
-          filteredSessionsLength > 0 ? (
+          {filteredSessions && filteredSessionsLength > 0 ? (
             <div className="mt-auto">
               <p className="mb-0">
                 Active {filteredSessionsLength > 1 ? "sessions" : "session"}

@@ -51,3 +51,29 @@ export function getRunningSession({
   );
   return sorted.at(0);
 }
+
+export function filterSessions(
+  sessions: Sessions,
+  predicate: (session: Session) => unknown
+) {
+  return Object.entries(sessions)
+    .filter(([, session]) => predicate(session))
+    .reduce(
+      (prev, [name, session]) => ({ ...prev, [name]: session }),
+      {} as Sessions
+    );
+}
+
+export function filterSessionsWithCleanedAnnotations<
+  T = Session["annotations"]
+>(
+  sessions: Sessions,
+  predicate: (item: { session: Session; annotations: T }) => unknown
+) {
+  return filterSessions(sessions, (session) => {
+    const annotations = NotebooksHelper.cleanAnnotations(
+      session.annotations
+    ) as T;
+    return predicate({ session, annotations });
+  });
+}
