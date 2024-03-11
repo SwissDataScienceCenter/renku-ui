@@ -92,7 +92,7 @@ export type PatchProjectsByProjectIdApiResponse =
 export type PatchProjectsByProjectIdApiArg = {
   projectId: string;
   /** If-Match header, for avoiding mid-air collisions */
-  "If-Match": ETag;
+  "If-Match"?: ETag;
   projectPatch: ProjectPatch;
 };
 export type DeleteProjectsByProjectIdApiResponse =

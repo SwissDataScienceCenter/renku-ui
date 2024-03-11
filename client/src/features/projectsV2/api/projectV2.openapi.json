@@ -698,7 +698,7 @@
         "in": "header",
         "name": "If-Match",
         "description": "If-Match header, for avoiding mid-air collisions",
-        "required": true,
+        "required": false,
         "schema": {
           "$ref": "#/components/schemas/ETag"
         }
