@@ -174,7 +174,7 @@ export function ProjectV2MetadataForm({
   const onSubmit = useCallback(
     (data: ProjectV2Metadata) => {
       updateProject({
-        "If-Match": project.etag ?? "",
+        "If-Match": project.etag ? project.etag : undefined,
         projectId: project.id,
         projectPatch: data,
       })
@@ -358,7 +358,7 @@ export function ProjectV2RepositoryForm({
     (data: ProjectV2Repositories) => {
       const repositories = data.repositories.map((r) => r.url);
       updateProject({
-        "If-Match": project.etag ?? "",
+        "If-Match": project.etag ? project.etag : undefined,
         projectId: project.id,
         projectPatch: { repositories },
       })
