@@ -69,6 +69,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     patchProjectsByProjectIdMembers: {
       invalidatesTags: ["Members"],
     },
+    postProjects: {
+      invalidatesTags: ["Project"],
+    },
   },
 });
 

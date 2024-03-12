@@ -37,6 +37,7 @@ import { projectWasCreated, setCurrentStep } from "./projectV2New.slice";
 import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
 import ProjectV2NewForm from "./ProjectV2NewForm";
 import WipBadge from "../shared/WipBadge";
+import { ArrowLeft } from "react-bootstrap-icons";
 
 function projectToProjectPost(
   project: NewProjectV2State["project"]
@@ -145,7 +146,9 @@ function ProjectV2BeingCreated({
       <div>
         <p>Something went wrong.</p>
         <div className={cx("d-flex", "justify-content-between")}>
-          <Button onClick={previousStep}>Back</Button>
+          <Button onClick={previousStep}>
+            <ArrowLeft /> Back
+          </Button>
         </div>
       </div>
     );
@@ -202,6 +205,10 @@ function ProjectV2NewReviewCreateStep({
 
 export default function ProjectV2New() {
   const user = useLegacySelector((state) => state.stateModel.user);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setCurrentStep(0));
+  }, []); // eslint-disable-line
   const { currentStep } = useAppSelector((state) => state.newProjectV2);
   if (!user.logged) {
     return <h2>Please log in to create a project.</h2>;
