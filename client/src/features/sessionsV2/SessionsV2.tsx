@@ -62,6 +62,7 @@ import sessionsV2Api, {
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
+import SessionConfig from "./SessionConfig";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
@@ -76,7 +77,9 @@ export default function SessionsV2({ project }: SessionsV2Props) {
   return (
     <ProjectSessionConfigContextProvider project={project}>
       <div>
-        <h3>Sessions</h3>
+        <SessionConfig project={project} />
+
+        <h3 className="fs-5">Sessions</h3>
         <div>
           <AddSessionLauncherButton />
         </div>

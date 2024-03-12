@@ -51,6 +51,7 @@ import sessionsApi from "../../features/session/sessions.api";
 import sessionSidecarApi from "../../features/session/sidecar.api";
 import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
+import sessionConfigV2Slice from "../../features/sessionsV2/sessionConfigV2.slice";
 import sessionsV2Api from "../../features/sessionsV2/sessionsV2.api";
 import termsApi from "../../features/terms/terms.api";
 import { dataServicesUserApi } from "../../features/user/dataServicesUser.api";
@@ -76,6 +77,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [startSessionSlice.name]: startSessionSlice.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
+    [sessionConfigV2Slice.name]: sessionConfigV2Slice.reducer,
     [projectV2NewSlice.name]: projectV2NewSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
