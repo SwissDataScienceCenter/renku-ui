@@ -33,6 +33,7 @@ import { User } from "../../model/renkuModels.types";
 import NotificationsMenu from "../../notifications/NotificationsMenu";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
 import type { AppParams } from "../../utils/context/appParams.types";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
   getActiveProjectPathWithNamespace,
@@ -283,6 +284,8 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
 
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
+  const { renku10Enabled } = useAppSelector(({ featureFlags }) => featureFlags);
+
   const gatewayURL = params.GATEWAY_URL;
   const uiserverURL = params.UISERVER_URL;
   const redirect_url = encodeURIComponent(params.BASE_URL);
@@ -329,6 +332,13 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
         </Link>
 
         <AdminDropdownItem />
+
+        {renku10Enabled && (
+          <Link to="/v2/projects" className="dropdown-item">
+            Renku 1.0
+          </Link>
+        )}
+
         <DropdownItem divider />
         <a
           id="logout-link"

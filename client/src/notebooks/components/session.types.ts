@@ -100,3 +100,8 @@ export interface ProjectMetadata {
   title: string;
   visibility: "public" | "internal" | "private";
 }
+
+export interface ProjectStatistics {
+  lfs_objects_size?: number | null | undefined;
+  repository_size?: number | null | undefined;
+}

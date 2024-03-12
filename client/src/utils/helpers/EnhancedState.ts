@@ -59,6 +59,7 @@ import userPreferencesApi from "../../features/user/userPreferences.api";
 import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
+import featureFlagsSlice from "../feature-flags/featureFlags.slice";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -71,6 +72,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
     [datasetFormSlice.name]: datasetFormSlice.reducer,
     [displaySlice.name]: displaySlice.reducer,
+    [featureFlagsSlice.name]: featureFlagsSlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [startSessionSlice.name]: startSessionSlice.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
