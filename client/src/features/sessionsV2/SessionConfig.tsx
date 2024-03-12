@@ -27,17 +27,64 @@ import type { GitlabProjectResponse } from "../project/GitLab.types";
 import { useGetProjectByPathQuery } from "../project/projectGitLab.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import sessionConfigV2Slice from "./sessionConfigV2.slice";
+import { RepositorySupport } from "./sessionConfigV2.types";
 
 interface SessionConfigProps {
   project: Project;
 }
 
 export default function SessionConfig({ project }: SessionConfigProps) {
-  const repositories = project.repositories ?? [];
+  const repositories = useMemo(
+    () => project.repositories ?? [],
+    [project.repositories]
+  );
+
+  const projectSupport = useAppSelector(
+    ({ sessionConfigV2 }) => sessionConfigV2.projectSupport[project.id]
+  );
+  const { repositorySupport } = useAppSelector(
+    ({ sessionConfigV2 }) => sessionConfigV2
+  );
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (projectSupport == null) {
+      dispatch(
+        sessionConfigV2Slice.actions.initializeProject({
+          projectId: project.id,
+          repositories,
+        })
+      );
+    }
+  }, [dispatch, project.id, projectSupport, repositories]);
+
+  useEffect(() => {
+    repositories.forEach((url, index) => {
+      const canonicalUrl = `${url.replace(/.git$/i, "")}.git`;
+      const support = repositorySupport[canonicalUrl];
+      if (support && !support.isLoading) {
+        dispatch(
+          sessionConfigV2Slice.actions.updateProjectRepository({
+            projectId: project.id,
+            index,
+            ...(support as RepositorySupport & { isLoading: false }),
+          })
+        );
+        return false;
+      }
+      return true;
+    });
+  }, [dispatch, project.id, repositories, repositorySupport]);
 
   return (
     <>
-      <h3 className="fs-5">Repository support for sessions</h3>
+      <h3 className="fs-5">
+        Repository support for sessions
+        {(!projectSupport || projectSupport.isLoading) && (
+          <Loader className={cx("bi", "ms-1")} inline size={16} />
+        )}
+      </h3>
       <ol className="list-unstyled">
         {repositories.map((url, idx) => (
           <SessionRepositoryConfig key={idx} project={project} url={url} />

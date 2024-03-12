@@ -20,7 +20,7 @@ import type { GitlabProjectResponse } from "../project/GitLab.types";
 
 export interface SessionConfigV2 {
   repositorySupport: { [url: string]: RepositorySupport | undefined };
-  projectSupport: Record<string, ProjectSupport>;
+  projectSupport: { [projectId: string]: ProjectSupport | undefined };
 }
 
 export type RepositorySupport = {

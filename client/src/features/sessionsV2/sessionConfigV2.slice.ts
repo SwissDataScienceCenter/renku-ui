@@ -43,11 +43,59 @@ const sessionConfigV2Slice = createSlice({
       const { url, ...support } = action.payload;
       state.repositorySupport[url] = support;
     },
+    initializeProject: (
+      state,
+      action: PayloadAction<InitializeProjectPayload>
+    ) => {
+      const { projectId, repositories } = action.payload;
+      state.projectSupport[projectId] = {
+        isLoading: true,
+        repositories,
+        repositoriesConfig: repositories.map(() => ({
+          isLoading: true,
+          supportsSessions: false,
+        })),
+      };
+    },
+    updateProjectRepository: (
+      state,
+      action: PayloadAction<UpdateProjectRepositoryPayload>
+    ) => {
+      const { projectId, index, ...support } = action.payload;
+      const projectSupport = state.projectSupport[projectId];
+
+      if (!projectSupport) {
+        throw new Error(
+          `Error: state for project ${projectId} is not initialized`
+        );
+      }
+
+      projectSupport.repositoriesConfig[index] = support;
+
+      // Check if everything is loaded
+      if (
+        projectSupport.repositoriesConfig.every(({ isLoading }) => !isLoading)
+      ) {
+        projectSupport.isLoading = false;
+      }
+    },
     reset: () => initialState,
   },
 });
 
 type SetRepositorySupportPayload = { url: string } & RepositorySupport & {
+    isLoading: false;
+  };
+
+interface InitializeProjectPayload {
+  projectId: string;
+  repositories: string[];
+}
+
+type UpdateProjectRepositoryPayload = {
+  projectId: string;
+  index: number;
+} & RepositorySupport & {
     isLoading: false;
   };
 
