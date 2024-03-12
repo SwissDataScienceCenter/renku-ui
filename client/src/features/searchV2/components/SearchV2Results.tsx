@@ -18,7 +18,7 @@
 import cx from "classnames";
 import { Link } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Card, CardBody, Col, Row } from "reactstrap";
+import { Button, Card, CardBody, Col, Row } from "reactstrap";
 import { useDispatch } from "react-redux";
 
 import searchV2Api from "../searchV2.api";
@@ -29,7 +29,7 @@ import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { ProjectSearchResult, UserSearchResult } from "../searchV2.types";
 import { Pagination } from "../../../components/Pagination";
-import { setPage } from "../searchV2.slice";
+import { setCreatedBy, setPage } from "../searchV2.slice";
 
 export default function SearchV2Results() {
   const searchState = useAppSelector((state) => state.searchV2);
@@ -60,6 +60,7 @@ export default function SearchV2Results() {
 }
 
 function SearchV2ResultsContent() {
+  const dispatch = useDispatch();
   // get the search state
   const { search } = useAppSelector((state) => state.searchV2);
   const searchResults = searchV2Api.endpoints.getSearchResults.useQueryState(
@@ -93,7 +94,15 @@ function SearchV2ResultsContent() {
 
   const resultsOutput = searchResults.data.items.map((entity) => {
     if (entity.type === "Project") {
-      return <SearchV2ResultProject key={entity.id} project={entity} />;
+      return (
+        <SearchV2ResultProject
+          searchByUser={(userId) => {
+            dispatch(setCreatedBy(userId));
+          }}
+          key={entity.id}
+          project={entity}
+        />
+      );
     } else if (entity.type === "User") {
       return <SearchV2ResultUser key={entity.id} user={entity} />;
     }
@@ -108,39 +117,45 @@ function SearchV2ResultsContent() {
 interface SearchV2ResultsCardProps {
   cardId: string;
   children: React.ReactNode;
-  url: string;
+  url?: string;
 }
-function SearchV2ResultsCard({
-  cardId,
-  children,
-  url,
-}: SearchV2ResultsCardProps) {
+function SearchV2ResultsCard({ cardId, children }: SearchV2ResultsCardProps) {
   return (
     <Col key={cardId} xs={12} lg={6}>
-      <Link className="text-decoration-none" to={url}>
-        <div data-cy="search-card">
-          <Card className={cx("border", "rounded")}>
-            <CardBody>{children}</CardBody>
-          </Card>
-        </div>
-      </Link>
+      <div data-cy="search-card">
+        <Card className={cx("border", "rounded")}>
+          <CardBody>{children}</CardBody>
+        </Card>
+      </div>
     </Col>
   );
 }
 
 interface SearchV2ResultProjectProps {
   project: ProjectSearchResult;
+  searchByUser: (userId: string) => void;
 }
-function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
+function SearchV2ResultProject({
+  project,
+  searchByUser,
+}: SearchV2ResultProjectProps) {
   const url = Url.get(Url.pages.v2Projects.show, { id: project.id });
   return (
-    <SearchV2ResultsCard key={project.id} url={url} cardId={project.id}>
-      <h4 className="mb-0">{project.name}</h4>
+    <SearchV2ResultsCard key={project.id} cardId={project.id}>
+      <Link to={url}>
+        <h4 className="mb-0">{project.name}</h4>
+      </Link>
       <p className={cx("form-text", "mb-0")}>
         {project.slug} - {project.visibility}
       </p>
       <p className={cx("form-text", "text-rk-green")}>
-        user-{project.createdBy.id}
+        <Button
+          className="pe-0 ps-1 pt-0 pb-0 mb-1"
+          color="link"
+          onClick={() => searchByUser(project.createdBy.id)}
+        >
+          user-{project.createdBy.id}
+        </Button>
       </p>
       <p>{project.description}</p>
       <p className="form-text mb-0">
@@ -154,9 +169,8 @@ interface SearchV2ResultUserProps {
   user: UserSearchResult;
 }
 function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
-  const url = Url.get(Url.pages.v2Users.show, { id: user.id });
   return (
-    <SearchV2ResultsCard key={user.id} url={url} cardId={user.id}>
+    <SearchV2ResultsCard key={user.id} cardId={user.id}>
       <p className="form-text mb-0">{user.id}</p>
       <h4 className="mb-0">
         {user.firstName} {user.lastName}

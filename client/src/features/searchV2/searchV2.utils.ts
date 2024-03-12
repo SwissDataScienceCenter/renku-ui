@@ -115,7 +115,8 @@ export const buildSearchQuery = (searchState: SearchV2State): string => {
     searchQueryItems.push(`${sortPrefix}${searchState.sorting.sortingString}`);
 
   for (const filterName in searchState.filters) {
-    if (DATE_FILTERS.includes(filterName)) continue;
+    if (DATE_FILTERS.includes(filterName) || filterName === "createdBy")
+      continue;
     const filter = searchState.filters[
       filterName as keyof SearchV2State["filters"]
     ] as string[];
@@ -146,6 +147,11 @@ export const buildSearchQuery = (searchState: SearchV2State): string => {
       searchQueryItems.push(dateStringFilter);
     }
   });
+
+  // add createdBy filter
+  if (searchState.filters.createdBy)
+    searchQueryItems.push(`createdBy:${searchState.filters.createdBy}`);
+
   searchQueryItems.push(query);
 
   return searchQueryItems.join(" ");

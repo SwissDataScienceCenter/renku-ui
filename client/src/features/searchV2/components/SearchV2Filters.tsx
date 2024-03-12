@@ -20,7 +20,7 @@ import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
-import { setCreated, toggleFilter } from "../searchV2.slice";
+import { setCreated, setCreatedBy, toggleFilter } from "../searchV2.slice";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import {
   DateFilter,
@@ -34,6 +34,7 @@ import {
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { User } from "../../../model/renkuModels.types";
 import { SearchV2DateFilter } from "./SearchV2DateFilter.tsx";
+import { SearchV2UserFilter } from "./SearchV2UserFilter.tsx";
 
 export default function SearchV2Filters() {
   const dispatch = useDispatch();
@@ -87,6 +88,10 @@ export default function SearchV2Filters() {
           <h3>Filters</h3>
         </Col>
         <Col className={cx("d-flex", "flex-column", "gap-3")}>
+          <SearchV2UserFilter
+            createdBy={filters["createdBy"]}
+            removeUserFilter={() => dispatch(setCreatedBy(""))}
+          />
           {filtersList}
           <SearchV2DateFilter
             name="CreationDate"

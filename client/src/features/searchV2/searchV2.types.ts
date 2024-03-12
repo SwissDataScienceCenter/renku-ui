@@ -74,6 +74,7 @@ export interface SearchV2State {
     type: ("project" | "user")[];
     visibility: ("private" | "public")[];
     created: DateFilter;
+    createdBy: string;
   };
   search: {
     history: {

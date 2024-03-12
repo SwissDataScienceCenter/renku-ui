@@ -46,6 +46,7 @@ const initialState: SearchV2State = {
     created: {
       option: DateFilterTypes.all,
     },
+    createdBy: "",
   },
   sorting: AVAILABLE_SORTING.scoreDesc,
 };
@@ -56,6 +57,10 @@ export const searchV2Slice = createSlice({
   reducers: {
     setPage: (state, action: PayloadAction<number>) => {
       state.search.page = action.payload;
+      state.search.outdated = true;
+    },
+    setCreatedBy: (state, action: PayloadAction<string>) => {
+      state.filters.createdBy = action.payload;
       state.search.outdated = true;
     },
     setQuery: (state, action: PayloadAction<string>) => {
@@ -126,6 +131,7 @@ export const {
   setSearch,
   setSorting,
   setCreated,
+  setCreatedBy,
   setTotals,
   toggleFilter,
   reset,
