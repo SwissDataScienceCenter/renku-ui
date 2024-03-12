@@ -61,7 +61,7 @@ const injectedApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: "/namespaces",
-        params: { page: queryArg.page, per_page: queryArg.perPage },
+        params: { page: queryArg.page ?? 1, per_page: queryArg.perPage ?? 20 },
       }),
       transformResponse: (response, meta, queryArg) => {
         const namespaces = response as NamespaceResponseList;

@@ -76,6 +76,7 @@ function generateNamespaces(numberOfNamespaces: number, start: number) {
       slug,
       creation_date: "2023-11-15T09:55:59Z",
       created_by: { id: "user1-uuid" },
+      namespace_kind: "group",
     };
     groups.push(group);
   }
@@ -125,8 +126,10 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
     listManyV2Group(args?: ListManyGroupArgs) {
       const { numberOfGroups = 50, name = "listV2Group" } = args ?? {};
       cy.intercept("GET", `/ui-server/api/data/groups?*`, (req) => {
-        const page = (req.query["perPage"] as number) ?? 1;
-        const perPage = (req.query["perPage"] as number) ?? 20;
+        const page = +req.query["page"] ?? 1;
+        // TODO the request parameter is per_page, the result is per-page. These should be the same.
+        const perPage = +req.query["per_page"] ?? 20;
+        const totalPages = Math.ceil(numberOfGroups / perPage);
         const start = (page - 1) * perPage;
         const numToGen = Math.min(
           Math.max(numberOfGroups - start - perPage, 0),
@@ -138,7 +141,7 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
             page: page.toString(),
             "per-page": perPage.toString(),
             total: numberOfGroups.toString(),
-            "total-pages": Math.ceil(numberOfGroups / perPage).toString(),
+            "total-pages": totalPages.toString(),
           },
         });
       }).as(name);
@@ -148,9 +151,11 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
     listManyV2Namespace(args?: ListManyNamespacesArgs) {
       const { numberOfNamespaces = 50, name = "listV2Namespace" } = args ?? {};
       cy.intercept("GET", `/ui-server/api/data/namespaces?*`, (req) => {
-        const page = (req.query["perPage"] as number) ?? 1;
-        const perPage = (req.query["perPage"] as number) ?? 20;
+        const page = +req.query["page"] ?? 1;
+        // TODO the request parameter is per_page, the result is per-page. These should be the same.
+        const perPage = +req.query["per_page"] ?? 20;
         const start = (page - 1) * perPage;
+        const totalPages = Math.ceil(numberOfNamespaces / perPage);
         const numToGen = Math.min(
           Math.max(numberOfNamespaces - start - perPage, 0),
           perPage
@@ -161,7 +166,7 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
             page: page.toString(),
             "per-page": perPage.toString(),
             total: numberOfNamespaces.toString(),
-            "total-pages": Math.ceil(numberOfNamespaces / perPage).toString(),
+            "total-pages": totalPages.toString(),
           },
         });
       }).as(name);

@@ -55,12 +55,15 @@ describe("Add new group -- not logged in", () => {
 describe("List v2 groups", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects().listV2Group();
+    fixtures.projects().landingUserProjects().listManyV2Group();
     cy.visit("/v2/groups");
   });
 
   it("list groups", () => {
     cy.contains("List Groups").should("be.visible");
+    cy.contains("test 10 v2-group").should("not.exist");
+    cy.get(".page-item").find("a").contains("2").click();
+    cy.contains("test 10 v2-group").should("be.visible");
   });
 
   it("shows groups", () => {
