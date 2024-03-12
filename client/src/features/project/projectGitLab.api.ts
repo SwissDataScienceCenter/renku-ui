@@ -64,6 +64,13 @@ const projectGitLabApi = createApi({
         };
       },
     }),
+    getProjectByPath: builder.query<GitlabProjectResponse, string>({
+      query: (projectPath: string) => {
+        return {
+          url: `${encodeURIComponent(projectPath)}`,
+        };
+      },
+    }),
 
     // Project pipelines API
     getPipelineJobByName: builder.query<
@@ -444,6 +451,7 @@ const projectGitLabApi = createApi({
 export default projectGitLabApi;
 export const {
   useGetProjectByIdQuery,
+  useGetProjectByPathQuery,
   useGetPipelineJobByNameQuery,
   useGetPipelinesQuery,
   useRetryPipelineMutation,

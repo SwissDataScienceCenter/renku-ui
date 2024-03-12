@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
 import { useParams } from "react-router-dom-v5-compat";
 import {
-  Button,
   Card,
   CardBody,
   CardText,
@@ -36,35 +36,58 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
+import { EnvironmentLogs } from "../../components/Logs";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { NotebooksHelper } from "../../notebooks";
+import {
+  SessionListRowStatus,
+  SessionListRowStatusIcon,
+} from "../../notebooks/components/SessionListStatus";
+import { NotebookAnnotations } from "../../notebooks/components/session.types";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import type { Project } from "../projectsV2/api/projectV2.api";
+import sessionsApi, { useGetSessionsQuery } from "../session/sessions.api";
+import { Session } from "../session/sessions.types";
+import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
+import ActiveSessionButton from "./ActiveSessionButton";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
+import { ProjectSessionConfigContextProvider } from "./ProjectSessionConfig.context";
+import StartSessionButton from "./StartSessionButton";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import sessionsV2Api, {
   useGetProjectSessionLaunchersQuery,
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
-import { skipToken } from "@reduxjs/toolkit/query";
 
-export default function SessionsV2() {
+// Required for logs formatting
+import "../../notebooks/Notebooks.css";
+
+interface SessionsV2Props {
+  project: Project;
+}
+
+export default function SessionsV2({ project }: SessionsV2Props) {
   const { error } = useGetSessionEnvironmentsQuery();
 
   return (
-    <div>
-      <h3>Sessions</h3>
+    <ProjectSessionConfigContextProvider project={project}>
       <div>
-        <AddSessionLauncherButton />
-      </div>
+        <h3>Sessions</h3>
+        <div>
+          <AddSessionLauncherButton />
+        </div>
 
-      {error && <RtkErrorAlert error={error} />}
+        {error && <RtkErrorAlert error={error} />}
 
-      <div className="mt-2">
-        <SessionLaunchersListDisplay />
+        <div className="mt-2">
+          <SessionLaunchersListDisplay />
+        </div>
       </div>
-    </div>
+    </ProjectSessionConfigContextProvider>
   );
 }
 
@@ -73,9 +96,32 @@ function SessionLaunchersListDisplay() {
 
   const {
     data: launchers,
-    error,
-    isLoading,
+    error: launchersError,
+    isLoading: isLoadingLaunchers,
   } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
+
+  const {
+    data: sessions,
+    error: sessionsError,
+    isLoading: isLoadingSessions,
+  } = useGetSessionsQuery();
+
+  const isLoading = isLoadingLaunchers || isLoadingSessions;
+  const error = launchersError || sessionsError;
+
+  const orphanSessions = useMemo(
+    () =>
+      launchers != null && sessions != null
+        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
+            sessions,
+            ({ annotations }) =>
+              annotations["renkuVersion"] === "2.0" &&
+              annotations["projectId"] === projectId &&
+              launchers.every(({ id }) => annotations["launcherId"] !== id)
+          )
+        : {},
+    [launchers, projectId, sessions]
+  );
 
   if (isLoading) {
     return (
@@ -90,7 +136,10 @@ function SessionLaunchersListDisplay() {
     return <RtkErrorAlert error={error} />;
   }
 
-  if (!launchers || launchers.length == 0) {
+  if (
+    !launchers ||
+    (launchers.length == 0 && Object.keys(orphanSessions).length == 0)
+  ) {
     return null;
   }
 
@@ -98,7 +147,14 @@ function SessionLaunchersListDisplay() {
     <Container className="px-0" fluid>
       <Row className="gy-4">
         {launchers.map((launcher) => (
-          <SessionLauncherDisplay key={launcher.id} launcher={launcher} />
+          <SessionLauncherDisplay
+            key={launcher.id}
+            launcher={launcher}
+            projectId={projectId ?? ""}
+          />
+        ))}
+        {Object.entries(orphanSessions).map(([key, session]) => (
+          <OrphanSession key={`orphan-${key}`} session={session} />
         ))}
       </Row>
     </Container>
@@ -107,9 +163,13 @@ function SessionLaunchersListDisplay() {
 
 interface SessionLauncherDisplayProps {
   launcher: SessionLauncher;
+  projectId: string;
 }
 
-function SessionLauncherDisplay({ launcher }: SessionLauncherDisplayProps) {
+function SessionLauncherDisplay({
+  launcher,
+  projectId,
+}: SessionLauncherDisplayProps) {
   const { creation_date, environment_kind, name, default_url, description } =
     launcher;
 
@@ -122,6 +182,25 @@ function SessionLauncherDisplay({ launcher }: SessionLauncherDisplayProps) {
       launcher.environment_kind === "global_environment" &&
       environments?.find((env) => env.id === launcher.environment_id),
     [environments, launcher]
+  );
+
+  const { data: sessions } = sessionsApi.endpoints.getSessions.useQueryState();
+  const filteredSessions = useMemo(
+    () =>
+      sessions != null
+        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
+            sessions,
+            ({ annotations }) =>
+              annotations["renkuVersion"] === "2.0" &&
+              annotations["projectId"] === projectId &&
+              annotations["launcherId"] === launcher.id
+          )
+        : {},
+    [launcher.id, projectId, sessions]
+  );
+  const filteredSessionsLength = useMemo(
+    () => Object.keys(filteredSessions).length,
+    [filteredSessions]
   );
 
   const container_image =
@@ -180,18 +259,88 @@ function SessionLauncherDisplay({ launcher }: SessionLauncherDisplayProps) {
               prefix="Created"
             />
           </CardText>
-          <div className="mt-auto">
-            <Button type="button" role="button">
-              Start
-            </Button>
-          </div>
+          {filteredSessionsLength > 0 ? (
+            <div className="mt-auto">
+              <p className="mb-0">
+                Active {filteredSessionsLength > 1 ? "sessions" : "session"}
+              </p>
+              {Object.entries(filteredSessions).map(([key, session]) => (
+                <ActiveSessionV2 key={key} session={session} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-auto">
+              <StartSessionButton
+                launcherId={launcher.id}
+                projectId={projectId}
+              />
+            </div>
+          )}
         </CardBody>
       </Card>
     </Col>
   );
 }
 
-function SessionV2Actions({ launcher: session }: SessionLauncherDisplayProps) {
+interface ActiveSessionV2Props {
+  session: Session;
+}
+
+function ActiveSessionV2({ session }: ActiveSessionV2Props) {
+  const { annotations, image, started, status } = session;
+
+  const cleanAnnotations = useMemo(
+    () => NotebooksHelper.cleanAnnotations(annotations) as NotebookAnnotations,
+    [annotations]
+  );
+
+  const details = { message: session.status.message };
+
+  const displayModal = useAppSelector(
+    ({ display }) => display.modals.sessionLogs
+  );
+
+  return (
+    <div>
+      <div
+        className={cx(
+          "d-flex",
+          "flex-row",
+          "gap-2",
+          "align-items-center",
+          "mb-1"
+        )}
+      >
+        <SessionListRowStatusIcon
+          annotations={cleanAnnotations}
+          details={details}
+          image={image}
+          status={status.state}
+          uid={session.name}
+        />
+        <SessionListRowStatus
+          annotations={cleanAnnotations}
+          details={details}
+          startTimestamp={started}
+          status={status.state}
+          uid={session.name}
+        />
+      </div>
+
+      <ActiveSessionButton session={session} />
+      <EnvironmentLogs
+        name={displayModal.targetServer}
+        annotations={cleanAnnotations}
+      />
+    </div>
+  );
+}
+
+interface SessionV2ActionsProps {
+  launcher: SessionLauncher;
+}
+
+function SessionV2Actions({ launcher }: SessionV2ActionsProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -222,14 +371,48 @@ function SessionV2Actions({ launcher: session }: SessionLauncherDisplayProps) {
 
       <UpdateSessionLauncherModal
         isOpen={isUpdateOpen}
-        launcher={session}
+        launcher={launcher}
         toggle={toggleUpdate}
       />
       <DeleteSessionV2Modal
         isOpen={isDeleteOpen}
-        launcher={session}
+        launcher={launcher}
         toggle={toggleDelete}
       />
     </>
+  );
+}
+
+interface OrphanSessionProps {
+  session: Session;
+}
+
+function OrphanSession({ session }: OrphanSessionProps) {
+  const { image } = session;
+
+  return (
+    <Col className={cx("col-12", "col-sm-6")}>
+      <Card className="h-100">
+        <CardBody className={cx("d-flex", "flex-column")}>
+          <CardTitle
+            className={cx(
+              "d-flex",
+              "flex-row",
+              "justify-content-between",
+              "align-items-center"
+            )}
+          >
+            <h5 className={cx("mb-0", "fs-5", "fst-italic")}>Orphan session</h5>
+          </CardTitle>
+          <CardText className="mb-0" tag="div">
+            <p className="mb-0">Container image:</p>
+            <CommandCopy command={image} noMargin />
+          </CardText>
+          <div className="mt-auto">
+            <ActiveSessionV2 session={session} />
+          </div>
+        </CardBody>
+      </Card>
+    </Col>
   );
 }

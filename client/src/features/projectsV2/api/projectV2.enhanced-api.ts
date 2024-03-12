@@ -44,6 +44,9 @@ const injectedApi = api.injectEndpoints({
 const enhancedApi = injectedApi.enhanceEndpoints({
   addTagTypes: ["Project", "Members"],
   endpoints: {
+    postProjects: {
+      invalidatesTags: ["Project"],
+    },
     deleteProjectsByProjectId: {
       invalidatesTags: ["Project"],
     },

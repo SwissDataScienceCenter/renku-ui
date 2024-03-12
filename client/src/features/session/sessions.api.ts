@@ -28,6 +28,7 @@ import {
   ServerOptionsResponse,
   Session,
   Sessions,
+  StartRenku2SessionParams,
   StartSessionParams,
 } from "./sessions.types";
 
@@ -148,6 +149,45 @@ const sessionsApi = createApi({
       },
       invalidatesTags: ["Session"],
     }),
+    startRenku2Session: builder.mutation<Session, StartRenku2SessionParams>({
+      query: ({
+        cloudStorage,
+        defaultUrl,
+        environmentVariables,
+        image,
+        launcherId,
+        lfsAutoFetch,
+        projectId,
+        repositories,
+        sessionClass,
+        storage,
+      }) => {
+        const cloudstorage = cloudStorage
+          .map(convertCloudStorageForSessionApi)
+          .flatMap((item) => (item == null ? [] : [item]));
+        const body = {
+          project_id: projectId,
+          environment_id: launcherId,
+          repositories: repositories.map(({ commitSha, ...rest }) => ({
+            ...rest,
+            commit_sha: commitSha,
+          })),
+          ...(cloudstorage.length > 0 ? { cloudstorage } : {}),
+          default_url: defaultUrl,
+          environment_variables: environmentVariables,
+          ...(image ? { image } : {}),
+          lfs_auto_fetch: lfsAutoFetch,
+          resource_class_id: sessionClass,
+          storage,
+        };
+        return {
+          body,
+          method: "POST",
+          url: "renku-2-servers",
+        };
+      },
+      invalidatesTags: ["Session"],
+    }),
     patchSession: builder.mutation<null, PatchSessionParams>({
       query: ({ sessionName, state, sessionClass }) => ({
         method: "PATCH",
@@ -173,5 +213,6 @@ export const {
   useStopSessionMutation,
   useGetLogsQuery,
   useStartSessionMutation,
+  useStartRenku2SessionMutation,
   usePatchSessionMutation,
 } = sessionsApi;
