@@ -23,6 +23,8 @@ import type { GitlabProjectResponse } from "../project/GitLab.types";
 import { useGetProjectByPathQuery } from "../project/projectGitLab.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 
+// TODO: support multi-repos
+
 export type ProjectSessionConfig = {
   isUninitialized: boolean;
   isLoading: boolean;

@@ -317,6 +317,13 @@ function SessionStartWithConfiguration({
               branch: sessionConfiguration.defaultBranch,
               commitSha: startSessionOptions.commit,
             },
+            // ! This is for testing
+            {
+              namespace: "flora.thiebaut",
+              project: "updated-flight-tutorial-2023",
+              branch: "master",
+              commitSha: "b4c04ab729eb01bceaf0040f7b3f390b8939c579",
+            },
           ]
         : [];
 
