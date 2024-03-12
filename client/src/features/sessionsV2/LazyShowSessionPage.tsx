@@ -13,24 +13,19 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
 
-export interface AddSessionEnvironmentParams {
-  container_image: string;
-  name: string;
-  default_url?: string;
-  description?: string;
-}
+import { Suspense, lazy } from "react";
 
-export interface UpdateSessionEnvironmentParams {
-  environmentId: string;
-  container_image?: string;
-  default_url?: string;
-  description?: string;
-  name?: string;
-}
+import PageLoader from "../../components/PageLoader";
 
-export interface DeleteSessionEnvironmentParams {
-  environmentId: string;
+const ShowSessionPage = lazy(() => import("./ShowSessionPage"));
+
+export default function LazyShowSessionPage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <ShowSessionPage />
+    </Suspense>
+  );
 }

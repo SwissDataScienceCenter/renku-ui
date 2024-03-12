@@ -21,6 +21,7 @@ export interface SessionEnvironment {
   creation_date: string;
   id: string;
   name: string;
+  default_url?: string;
   description?: string;
 }
 
@@ -31,6 +32,7 @@ export type SessionLauncher = {
   project_id: string;
   name: string;
   creation_date: string;
+  default_url?: string;
   description?: string;
   environment_kind: EnvironmentKind;
 } & SessionLauncherEnvironment;
@@ -54,6 +56,7 @@ export interface GetProjectSessionLaunchersParams {
 }
 
 export type AddSessionLauncherParams = {
+  default_url?: string;
   description?: string;
   name: string;
   project_id: string;
@@ -62,6 +65,7 @@ export type AddSessionLauncherParams = {
 
 export interface UpdateSessionLauncherParams {
   launcherId?: string;
+  default_url?: string;
   description?: string;
   name?: string;
   environment_kind?: EnvironmentKind;

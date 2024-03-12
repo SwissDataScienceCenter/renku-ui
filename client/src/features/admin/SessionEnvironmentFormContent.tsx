@@ -22,6 +22,7 @@ import { Input, Label } from "reactstrap";
 
 export interface SessionEnvironmentForm {
   container_image: string;
+  default_url: string;
   description: string;
   name: string;
 }
@@ -77,7 +78,7 @@ export default function SessionEnvironmentFormContent({
         />
       </div>
 
-      <div>
+      <div className="mb-3">
         <Label className="form-label" for="addSessionEnvironmentContainerImage">
           Container Image
         </Label>
@@ -99,6 +100,25 @@ export default function SessionEnvironmentFormContent({
           rules={{ required: true }}
         />
         <div className="invalid-feedback">Please provide a container image</div>
+      </div>
+
+      <div>
+        <Label className="form-label" for="addSessionEnvironmentDefaultUrl">
+          Default URL
+        </Label>
+        <Controller
+          control={control}
+          name="default_url"
+          render={({ field }) => (
+            <Input
+              className="form-control"
+              id="addSessionEnvironmentDefaultUrl"
+              placeholder="/lab"
+              type="text"
+              {...field}
+            />
+          )}
+        />
       </div>
     </>
   );

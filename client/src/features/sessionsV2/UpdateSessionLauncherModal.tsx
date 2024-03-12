@@ -78,11 +78,12 @@ export default function UpdateSessionLauncherModal({
         launcher.environment_kind === "container_image"
           ? launcher.container_image
           : "",
+      default_url: launcher.default_url ?? "",
     },
   });
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
-      const { description, name } = data;
+      const { default_url, description, name } = data;
       const environment: SessionLauncherEnvironment =
         data.environment_kind === "global_environment"
           ? {
@@ -97,6 +98,7 @@ export default function UpdateSessionLauncherModal({
         launcherId: launcher.id,
         name,
         description: description.trim() ? description : undefined,
+        default_url: default_url.trim() ? default_url : undefined,
         ...environment,
       });
     },
@@ -139,6 +141,7 @@ export default function UpdateSessionLauncherModal({
         launcher.environment_kind === "container_image"
           ? launcher.container_image
           : "",
+      default_url: launcher.default_url ?? "",
     });
   }, [launcher, reset]);
 

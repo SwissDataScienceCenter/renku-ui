@@ -37,6 +37,11 @@ export interface NotebookAnnotations {
   hibernationSynchronized: boolean;
   hibernatedSecondsThreshold: string;
 
+  // Annotations for Renku 2.0
+  renkuVersion?: string;
+  projectId?: string;
+  launcherId?: string;
+
   [key: string]: unknown;
 }
 
