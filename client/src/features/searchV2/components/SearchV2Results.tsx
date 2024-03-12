@@ -157,10 +157,11 @@ function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
   const url = Url.get(Url.pages.v2Users.show, { id: user.id });
   return (
     <SearchV2ResultsCard key={user.id} url={url} cardId={user.id}>
-      <h4 className="mb-0">{user.id}</h4>
-      <p className="form-text mb-0">
-        <TimeCaption datetime={user.creationDate} prefix="Created" />
-      </p>
+      <p className="form-text mb-0">{user.id}</p>
+      <h4 className="mb-0">
+        {user.firstName} {user.lastName}
+      </h4>
+      <p className="form-text mb-0">{user.email}</p>
     </SearchV2ResultsCard>
   );
 }

@@ -56,9 +56,11 @@ export interface ProjectSearchResult {
 }
 
 export interface UserSearchResult {
-  creationDate: Date;
   id: string;
+  firstName: string;
+  lastName: string;
   type: "User";
+  email: string;
 }
 
 export interface DateFilter {
