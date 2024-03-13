@@ -49,7 +49,7 @@ const sessionConfigV2Slice = createSlice({
     ) => {
       const { projectId, repositories } = action.payload;
       state.projectSupport[projectId] = {
-        isLoading: true,
+        isLoading: repositories.length > 0,
         repositories,
         repositoriesConfig: repositories.map(() => ({
           isLoading: true,

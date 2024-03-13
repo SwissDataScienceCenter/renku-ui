@@ -49,15 +49,13 @@ export default function SessionConfig({ project }: SessionConfigProps) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (projectSupport == null) {
-      dispatch(
-        sessionConfigV2Slice.actions.initializeProject({
-          projectId: project.id,
-          repositories,
-        })
-      );
-    }
-  }, [dispatch, project.id, projectSupport, repositories]);
+    dispatch(
+      sessionConfigV2Slice.actions.initializeProject({
+        projectId: project.id,
+        repositories,
+      })
+    );
+  }, [dispatch, project.id, repositories]);
 
   useEffect(() => {
     repositories.forEach((url, index) => {
@@ -71,9 +69,7 @@ export default function SessionConfig({ project }: SessionConfigProps) {
             ...(support as RepositorySupport & { isLoading: false }),
           })
         );
-        return false;
       }
-      return true;
     });
   }, [dispatch, project.id, repositories, repositorySupport]);
 
