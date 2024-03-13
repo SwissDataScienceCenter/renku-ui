@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
+import type { GitlabProjectResponse } from "../project/GitLab.types";
 import type {
   DockerImageStatus,
   SessionCloudStorage,
   SessionEnvironmentVariable,
 } from "../session/startSessionOptions.types";
-import type { GitlabProjectResponse } from "../project/GitLab.types";
 
 export interface StartSessionOptionsV2 {
   cloudStorage: SessionCloudStorage[];

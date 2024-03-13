@@ -326,16 +326,11 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
           />
         </DropdownItem>
 
-        {/* DO NOT MERGE: this is for testing */}
-        <Link to="/v2/projects" className="dropdown-item">
-          Renku 1.0
-        </Link>
-
         <AdminDropdownItem />
 
         {renku10Enabled && (
           <Link to="/v2/projects" className="dropdown-item">
-            Renku 1.0
+            Renku 2.0
           </Link>
         )}
 
