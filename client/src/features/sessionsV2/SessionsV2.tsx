@@ -54,7 +54,7 @@ import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils"
 import ActiveSessionButton from "./ActiveSessionButton";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
-import { ProjectSessionConfigContextProvider } from "./ProjectSessionConfig.context";
+import SessionConfig from "./SessionConfig";
 import StartSessionButton from "./StartSessionButton";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import sessionsV2Api, {
@@ -62,7 +62,6 @@ import sessionsV2Api, {
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
-import SessionConfig from "./SessionConfig";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
@@ -75,22 +74,20 @@ export default function SessionsV2({ project }: SessionsV2Props) {
   const { error } = useGetSessionEnvironmentsQuery();
 
   return (
-    <ProjectSessionConfigContextProvider project={project}>
+    <div>
+      <SessionConfig project={project} />
+
+      <h3 className="fs-5">Sessions</h3>
       <div>
-        <SessionConfig project={project} />
-
-        <h3 className="fs-5">Sessions</h3>
-        <div>
-          <AddSessionLauncherButton />
-        </div>
-
-        {error && <RtkErrorAlert error={error} />}
-
-        <div className="mt-2">
-          <SessionLaunchersListDisplay />
-        </div>
+        <AddSessionLauncherButton />
       </div>
-    </ProjectSessionConfigContextProvider>
+
+      {error && <RtkErrorAlert error={error} />}
+
+      <div className="mt-2">
+        <SessionLaunchersListDisplay />
+      </div>
+    </div>
   );
 }
 

@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { CheckCircleFill, XCircleFill } from "react-bootstrap-icons";
 import { Loader } from "../../components/Loader";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
@@ -28,6 +28,7 @@ import { useGetProjectByPathQuery } from "../project/projectGitLab.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import sessionConfigV2Slice from "./sessionConfigV2.slice";
 import { RepositorySupport } from "./sessionConfigV2.types";
+import { UncontrolledTooltip } from "reactstrap";
 
 interface SessionConfigProps {
   project: Project;
@@ -73,6 +74,10 @@ export default function SessionConfig({ project }: SessionConfigProps) {
     });
   }, [dispatch, project.id, repositories, repositorySupport]);
 
+  if (repositories.length == 0) {
+    return null;
+  }
+
   return (
     <>
       <h3 className="fs-5">
@@ -96,6 +101,8 @@ interface SessionRepositoryConfigProps {
 }
 
 function SessionRepositoryConfig({ url }: SessionRepositoryConfigProps) {
+  const ref = useRef<HTMLSpanElement>(null);
+
   const canonicalUrl = useMemo(() => `${url.replace(/.git$/i, "")}.git`, [url]);
 
   const repository = useMemo(
@@ -194,14 +201,25 @@ function SessionRepositoryConfig({ url }: SessionRepositoryConfigProps) {
 
   return (
     <li>
-      {!repositorySupport || repositorySupport.isLoading ? (
-        <Loader className={cx("bi", "me-1")} inline size={16} />
-      ) : repositorySupport.supportsSessions ? (
-        <CheckCircleFill className={cx("bi", "me-1", "text-success")} />
-      ) : (
-        <XCircleFill className={cx("bi", "me-1", "text-danger")} />
-      )}
+      <span className="me-1" ref={ref} tabIndex={0}>
+        {!repositorySupport || repositorySupport.isLoading ? (
+          <Loader className="bi" inline size={16} />
+        ) : repositorySupport.supportsSessions ? (
+          <CheckCircleFill className={cx("bi", "text-success")} />
+        ) : (
+          <XCircleFill className={cx("bi", "text-danger")} />
+        )}
+      </span>
       <span>{canonicalUrl}</span>
+      {repositorySupport && !repositorySupport.isLoading && (
+        <UncontrolledTooltip target={ref} placement="top">
+          {repositorySupport.supportsSessions ? (
+            <>This repository will be mounted in sessions.</>
+          ) : (
+            <>This repository cannot be mounted in sessions.</>
+          )}
+        </UncontrolledTooltip>
+      )}
     </li>
   );
 }

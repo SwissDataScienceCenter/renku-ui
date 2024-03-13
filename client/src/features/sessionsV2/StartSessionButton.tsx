@@ -17,12 +17,7 @@
  */
 
 import cx from "classnames";
-import { useContext, useRef } from "react";
-import { PlayFill, SlashCircle } from "react-bootstrap-icons";
-import { Button, UncontrolledTooltip } from "reactstrap";
-
-import { Loader } from "../../components/Loader";
-import ProjectSessionConfigContext from "./ProjectSessionConfig.context";
+import { PlayFill } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 
 interface StartSessionButtonProps {
@@ -34,12 +29,6 @@ export default function StartSessionButton({
   projectId,
   launcherId,
 }: StartSessionButtonProps) {
-  const { isLoading, supportsSessions } = useContext(
-    ProjectSessionConfigContext
-  );
-
-  const ref = useRef<HTMLSpanElement>(null);
-
   const startUrl = generatePath(
     "/v2/projects/:projectId/sessions/:launcherId/start",
     {
@@ -47,31 +36,6 @@ export default function StartSessionButton({
       launcherId,
     }
   );
-
-  if (isLoading) {
-    return (
-      <Button type="button" disabled>
-        <Loader className="me-1" inline size={16} />
-        Loading...
-      </Button>
-    );
-  }
-
-  if (!supportsSessions) {
-    return (
-      <>
-        <span className="d-inline-block" tabIndex={0} ref={ref}>
-          <Button type="button" disabled>
-            <SlashCircle className={cx("bi", "me-1")} />
-            Start
-          </Button>
-        </span>
-        <UncontrolledTooltip target={ref}>
-          This project does not support starting sessions.
-        </UncontrolledTooltip>
-      </>
-    );
-  }
 
   return (
     <Link className={cx("btn", "btn-sm", "btn-rk-green")} to={startUrl}>
