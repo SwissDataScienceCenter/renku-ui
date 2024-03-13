@@ -34,6 +34,10 @@ interface SessionConfigProps {
   project: Project;
 }
 
+/**
+ * This component computes which repositories of a project the user
+ * has access to.
+ */
 export default function SessionConfig({ project }: SessionConfigProps) {
   const repositories = useMemo(
     () => project.repositories ?? [],
