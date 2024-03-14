@@ -17,11 +17,9 @@
  */
 
 function findReactSelectOptions(
-  waitFor: string,
   selectDataCy: string,
   reactSelectClassPrefix: string
 ) {
-  cy.wait(waitFor);
   return (
     cy
       .getDataCy(selectDataCy)

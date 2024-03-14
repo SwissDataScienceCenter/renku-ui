@@ -33,11 +33,8 @@ describe("Add new v2 project", () => {
     cy.contains("New Project (V2)").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").should("have.value", slug);
-    cy.findReactSelectOptions(
-      "@listNamespaceV2",
-      "project-namespace-input",
-      "namespace-select"
-    )
+    cy.wait("@listNamespaceV2");
+    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click(); // click on first option
     cy.contains("Set Visibility").click();
@@ -58,11 +55,8 @@ describe("Add new v2 project", () => {
     cy.contains("New Project (V2)").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").should("have.value", slug);
-    cy.findReactSelectOptions(
-      "@listNamespaceV2",
-      "project-namespace-input",
-      "namespace-select"
-    )
+    cy.wait("@listNamespaceV2");
+    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click();
     cy.contains("user1-uuid").should("exist");
@@ -99,11 +93,8 @@ describe("Add new v2 project", () => {
     ).should("be.visible");
     cy.contains("A project must belong to a namespace.").should("be.visible");
     cy.getDataCy("project-slug-input").clear().type(slug);
-    cy.findReactSelectOptions(
-      "@listNamespaceV2",
-      "project-namespace-input",
-      "namespace-select"
-    )
+    cy.wait("@listNamespaceV2");
+    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click();
     cy.contains("Set Visibility").click();
@@ -211,19 +202,13 @@ describe("Edit v2 project", () => {
     cy.contains("Edit Settings").should("be.visible").click();
     cy.get("button").contains("Metadata").should("be.visible").click();
     // Fetch the second page of namespaces
-    cy.findReactSelectOptions(
-      "@listNamespaceV2",
-      "project-namespace-input",
-      "namespace-select"
-    );
+    cy.wait("@listNamespaceV2");
+    cy.findReactSelectOptions("project-namespace-input", "namespace-select");
     cy.get("button").contains("Fetch more").click();
     // Need to click away so the dropdown option selection works
     cy.getDataCy("project-name-input").click();
-    cy.findReactSelectOptions(
-      "@listNamespaceV2",
-      "project-namespace-input",
-      "namespace-select"
-    )
+    cy.wait("@listNamespaceV2");
+    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       // Pick an element from the second page of results
       .eq(25)
       .click();
