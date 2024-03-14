@@ -37,7 +37,7 @@ import { Terms } from "./terms";
 import { User } from "./user";
 import { UserPreferences } from "./user-preferences";
 import { Versions } from "./versions";
-import { V2Namespace } from "./v2Namespace";
+import { NamespaceV2 } from "./namespaceV2";
 import { Workflows } from "./workflows";
 
 const V1Fixtures = NewProject(
@@ -70,7 +70,7 @@ const V1Fixtures = NewProject(
   )
 );
 
-const Fixtures = ProjectV2(V2Namespace(V1Fixtures));
+const Fixtures = ProjectV2(NamespaceV2(V1Fixtures));
 
 const fixtures = new Fixtures();
 export default fixtures;

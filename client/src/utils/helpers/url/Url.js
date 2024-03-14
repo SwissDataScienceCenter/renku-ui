@@ -493,7 +493,7 @@ const Url = {
     searchEntities: {
       base: "/search",
     },
-    v2Groups: {
+    groupV2s: {
       base: "/v2/groups",
       new: "/v2/groups/new",
       list: "/v2/groups",

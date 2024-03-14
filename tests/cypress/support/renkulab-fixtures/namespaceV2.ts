@@ -20,27 +20,27 @@ import { FixturesConstructor } from "./fixtures";
 import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 /**
- * Fixtures for v2 Group and v2 Namespace
+ * Fixtures for Renku 2.0 groups and namespaces
  */
 
 interface ListManyGroupArgs extends NameOnlyFixture {
   numberOfGroups?: number;
 }
 
-interface ListV2GroupMembersFixture extends V2GroupArgs {
+interface ListGroupV2MembersFixture extends GroupV2Args {
   removeUserId?: string;
   addMember?: { id: string; email: string; role: string };
 }
 
-interface V2GroupArgs extends SimpleFixture {
+interface GroupV2Args extends SimpleFixture {
   groupSlug?: string;
 }
 
-interface V2GroupDeleteFixture extends NameOnlyFixture {
+interface GroupV2DeleteFixture extends NameOnlyFixture {
   groupSlug?: string;
 }
 
-interface V2GroupDeleteMemberFixture extends V2GroupArgs {
+interface GroupV2DeleteMemberFixture extends GroupV2Args {
   userId?: string;
 }
 interface ListManyNamespacesArgs extends NameOnlyFixture {
@@ -51,10 +51,10 @@ function generateGroups(numberOfGroups: number, start: number) {
   const groups = [];
   for (let i = 0; i < numberOfGroups; ++i) {
     const id = start + i;
-    const slug = `test-${id}-v2-group`;
+    const slug = `test-${id}-group-v2`;
     const group = {
       id,
-      name: `test ${id} v2-group`,
+      name: `test ${id} group-v2`,
       slug,
       creation_date: "2023-11-15T09:55:59Z",
       created_by: { id: "user1-uuid" },
@@ -69,10 +69,10 @@ function generateNamespaces(numberOfNamespaces: number, start: number) {
   const groups = [];
   for (let i = 0; i < numberOfNamespaces; ++i) {
     const id = start + i;
-    const slug = `test-${id}-v2-group`;
+    const slug = `test-${id}-group-v2`;
     const group = {
       id,
-      name: `test ${id} v2-group`,
+      name: `test ${id} group-v2`,
       slug,
       creation_date: "2023-11-15T09:55:59Z",
       created_by: { id: "user1-uuid" },
@@ -83,20 +83,20 @@ function generateNamespaces(numberOfNamespaces: number, start: number) {
   return groups;
 }
 
-export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
-  return class V2NamespaceFixtures extends Parent {
-    createV2Group(args?: SimpleFixture) {
+export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
+  return class NamespaceV2Fixtures extends Parent {
+    createGroupV2(args?: SimpleFixture) {
       const {
-        fixture = "v2Group/create-v2Group.json",
-        name = "createV2Group",
+        fixture = "groupV2/create-groupV2.json",
+        name = "createGroupV2",
       } = args ?? {};
       const response = { fixture, delay: 2000, statusCode: 201 };
       cy.intercept("POST", "/ui-server/api/data/groups", response).as(name);
       return this;
     }
 
-    deleteV2Group(args?: V2GroupDeleteFixture) {
-      const { name = "deleteV2Group", groupSlug = "test-2-v2-group" } =
+    deleteGroupV2(args?: GroupV2DeleteFixture) {
+      const { name = "deleteGroupV2", groupSlug = "test-2-group-v2" } =
         args ?? {};
       const response = { delay: 2000, statusCode: 204 };
       cy.intercept(
@@ -107,11 +107,11 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    deleteV2GroupMember(args?: V2GroupDeleteMemberFixture) {
+    deleteGroupV2Member(args?: GroupV2DeleteMemberFixture) {
       const {
-        fixture = "v2Group/list-v2Group-members.json",
-        name = "deleteV2GroupMembers",
-        groupSlug = "test-2-v2-group",
+        fixture = "groupV2/list-groupV2-members.json",
+        name = "deleteGroupV2Members",
+        groupSlug = "test-2-group-v2",
         userId = "user3-uuid",
       } = args ?? {};
       const response = { fixture };
@@ -123,8 +123,8 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    listManyV2Group(args?: ListManyGroupArgs) {
-      const { numberOfGroups = 50, name = "listV2Group" } = args ?? {};
+    listManyGroupV2(args?: ListManyGroupArgs) {
+      const { numberOfGroups = 50, name = "listGroupV2" } = args ?? {};
       cy.intercept("GET", `/ui-server/api/data/groups?*`, (req) => {
         const page = +req.query["page"] ?? 1;
         // TODO the request parameter is per_page, the result is per-page. These should be the same.
@@ -148,8 +148,8 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    listManyV2Namespace(args?: ListManyNamespacesArgs) {
-      const { numberOfNamespaces = 50, name = "listV2Namespace" } = args ?? {};
+    listManyNamespaceV2(args?: ListManyNamespacesArgs) {
+      const { numberOfNamespaces = 50, name = "listNamespaceV2" } = args ?? {};
       cy.intercept("GET", `/ui-server/api/data/namespaces?*`, (req) => {
         const page = +req.query["page"] ?? 1;
         // TODO the request parameter is per_page, the result is per-page. These should be the same.
@@ -173,18 +173,18 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    listV2Group(args?: SimpleFixture) {
-      const { fixture = "v2Group/list-v2Group.json", name = "listV2Group" } =
+    listGroupV2(args?: SimpleFixture) {
+      const { fixture = "groupV2/list-groupV2.json", name = "listGroupV2" } =
         args ?? {};
       const response = { fixture, delay: 2000 };
       cy.intercept("GET", `/ui-server/api/data/groups?*`, response).as(name);
       return this;
     }
 
-    listV2Namespace(args?: SimpleFixture) {
+    listNamespaceV2(args?: SimpleFixture) {
       const {
-        fixture = "v2Namespace/list-v2Namespace.json",
-        name = "listV2Namespace",
+        fixture = "namespaceV2/list-namespaceV2.json",
+        name = "listNamespaceV2",
       } = args ?? {};
       const response = { fixture, delay: 2000 };
       cy.intercept("GET", `/ui-server/api/data/namespaces?*`, response).as(
@@ -193,11 +193,11 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    listV2GroupMembers(args?: ListV2GroupMembersFixture) {
+    listGroupV2Members(args?: ListGroupV2MembersFixture) {
       const {
-        fixture = "v2Group/list-v2Group-members.json",
-        name = "listV2GroupMembers",
-        groupSlug = "test-2-v2-group",
+        fixture = "groupV2/list-groupV2-members.json",
+        name = "listGroupV2Members",
+        groupSlug = "test-2-group-v2",
         removeUserId = null,
         addMember = null,
       } = args ?? {};
@@ -216,11 +216,11 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    patchV2GroupMember(args?: V2GroupDeleteMemberFixture) {
+    patchGroupV2Member(args?: GroupV2DeleteMemberFixture) {
       const {
-        fixture = "v2Group/list-v2Group-members.json",
-        name = "patchV2GroupMembers",
-        groupSlug = "test-2-v2-group",
+        fixture = "groupV2/list-groupV2-members.json",
+        name = "patchGroupV2Members",
+        groupSlug = "test-2-group-v2",
       } = args ?? {};
       const response = { fixture };
       cy.intercept(
@@ -231,8 +231,8 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    postDeleteReadV2Group(args?: V2GroupDeleteFixture) {
-      const { name = "postDeleteReadV2Group", groupSlug = "test-2-v2-group" } =
+    postDeleteReadGroupV2(args?: GroupV2DeleteFixture) {
+      const { name = "postDeleteReadGroupV2", groupSlug = "test-2-group-v2" } =
         args ?? {};
       const response = {
         body: {
@@ -252,11 +252,11 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    readV2Group(args?: V2GroupArgs) {
+    readGroupV2(args?: GroupV2Args) {
       const {
-        fixture = "v2Group/read-v2Group.json",
-        name = "readV2Group",
-        groupSlug = "test-2-v2-group",
+        fixture = "groupV2/read-groupV2.json",
+        name = "readGroupV2",
+        groupSlug = "test-2-group-v2",
       } = args ?? {};
       const response = { fixture };
       cy.intercept(
@@ -267,11 +267,11 @@ export function V2Namespace<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    updateV2Group(args?: V2GroupArgs) {
+    updateGroupV2(args?: GroupV2Args) {
       const {
-        fixture = "v2Group/update-v2Group-metadata.json",
-        name = "updateV2Group",
-        groupSlug = "test-2-v2-group",
+        fixture = "groupV2/update-groupV2-metadata.json",
+        name = "updateGroupV2",
+        groupSlug = "test-2-group-v2",
       } = args ?? {};
       const response = { fixture, delay: 2000 };
       cy.intercept(

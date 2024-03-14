@@ -1,8 +1,8 @@
 [
   {
     "id": "01HF96BXZ3JF9DX88B7XB405S5",
-    "name": "test 1 v2-group",
-    "slug": "test-1-v2-group",
+    "name": "test 1 group-v2",
+    "slug": "test-1-group-v2",
     "creation_date": "2023-11-15T09:52:59Z",
     "created_by": { "id": "user1-uuid" },
     "description": "Group 1 description"

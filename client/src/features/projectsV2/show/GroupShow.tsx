@@ -47,7 +47,7 @@ interface GroupHeaderProps {
   settingEdit: SettingEditOption;
 }
 function GroupHeader({ group, setSettingEdit, settingEdit }: GroupHeaderProps) {
-  const groupListUrl = Url.get(Url.pages.v2Groups.list);
+  const groupListUrl = Url.get(Url.pages.groupV2s.list);
   return (
     <>
       <div>{group.slug}</div>
@@ -150,7 +150,7 @@ export default function GroupShow() {
       return (
         <div>
           Group does not exist, or you are not authorized to access it.{" "}
-          <Link to={Url.get(Url.pages.v2Groups.list)}>Return to list</Link>
+          <Link to={Url.get(Url.pages.groupV2s.list)}>Return to list</Link>
         </div>
       );
     }

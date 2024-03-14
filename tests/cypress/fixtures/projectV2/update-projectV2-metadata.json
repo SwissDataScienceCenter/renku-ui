@@ -2,7 +2,7 @@
   "id": "THEPROJECTULID26CHARACTERS",
   "name": "new name",
   "slug": "new-slug",
-  "namespace": "test-2-v2-group",
+  "namespace": "test-2-group-v2",
   "creation_date": "2023-11-15T09:55:59Z",
   "created_by": { "id": "user1-uuid" },
   "repositories": [

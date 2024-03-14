@@ -25,7 +25,7 @@ describe("Add new v2 project", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects();
-    fixtures.createProjectV2().listV2Namespace().readProjectV2();
+    fixtures.createProjectV2().listNamespaceV2().readProjectV2();
     cy.visit("/v2/projects/new");
   });
 
@@ -34,7 +34,7 @@ describe("Add new v2 project", () => {
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").should("have.value", slug);
     cy.findReactSelectOptions(
-      "@listV2Namespace",
+      "@listNamespaceV2",
       "project-namespace-input",
       "namespace-select"
     )
@@ -59,7 +59,7 @@ describe("Add new v2 project", () => {
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").should("have.value", slug);
     cy.findReactSelectOptions(
-      "@listV2Namespace",
+      "@listNamespaceV2",
       "project-namespace-input",
       "namespace-select"
     )
@@ -100,7 +100,7 @@ describe("Add new v2 project", () => {
     cy.contains("A project must belong to a namespace.").should("be.visible");
     cy.getDataCy("project-slug-input").clear().type(slug);
     cy.findReactSelectOptions(
-      "@listV2Namespace",
+      "@listNamespaceV2",
       "project-namespace-input",
       "namespace-select"
     )
@@ -183,7 +183,7 @@ describe("Edit v2 project", () => {
   });
 
   it("changes project metadata", () => {
-    fixtures.readProjectV2().updateProjectV2().listV2Namespace();
+    fixtures.readProjectV2().updateProjectV2().listNamespaceV2();
     cy.contains("List Projects (V2)").should("be.visible");
     cy.contains("test 2 v2-project").should("be.visible").click();
     cy.wait("@readProjectV2");
@@ -203,7 +203,7 @@ describe("Edit v2 project", () => {
   });
 
   it("changes project namespace", () => {
-    fixtures.readProjectV2().updateProjectV2().listManyV2Namespace();
+    fixtures.readProjectV2().updateProjectV2().listManyNamespaceV2();
     cy.contains("List Projects (V2)").should("be.visible");
     cy.contains("test 2 v2-project").should("be.visible").click();
     cy.wait("@readProjectV2");
@@ -212,7 +212,7 @@ describe("Edit v2 project", () => {
     cy.get("button").contains("Metadata").should("be.visible").click();
     // Fetch the second page of namespaces
     cy.findReactSelectOptions(
-      "@listV2Namespace",
+      "@listNamespaceV2",
       "project-namespace-input",
       "namespace-select"
     );
@@ -220,7 +220,7 @@ describe("Edit v2 project", () => {
     // Need to click away so the dropdown option selection works
     cy.getDataCy("project-name-input").click();
     cy.findReactSelectOptions(
-      "@listV2Namespace",
+      "@listNamespaceV2",
       "project-namespace-input",
       "namespace-select"
     )
