@@ -208,7 +208,7 @@ export default function ProjectV2New() {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setCurrentStep(0));
-  }, []); // eslint-disable-line
+  }, [dispatch]);
   const { currentStep } = useAppSelector((state) => state.newProjectV2);
   if (!user.logged) {
     return <h2>Please log in to create a project.</h2>;
