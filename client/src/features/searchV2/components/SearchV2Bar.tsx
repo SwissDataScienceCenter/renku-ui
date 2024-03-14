@@ -26,7 +26,7 @@ import useStartNewSearch from "../useStartSearch.hook";
 
 export default function SearchV2Bar() {
   const dispatch = useDispatch();
-  const { search } = useAppSelector((state) => state.searchV2);
+  const searchState = useAppSelector((state) => state.searchV2);
   const { startNewSearch } = useStartNewSearch();
 
   // focus search input when loading the component
@@ -47,7 +47,7 @@ export default function SearchV2Bar() {
 
   // basic autocomplete for searched values, without duplicates
   const previousSearchEntries = Array.from(
-    new Set(search.history.map((entry) => entry.query))
+    new Set(searchState.search.history.map((entry) => entry.query))
   ).map((value) => <option key={value} value={value} />);
 
   return (
@@ -64,7 +64,7 @@ export default function SearchV2Bar() {
         ref={inputRef}
         tabIndex={-1}
         type="text"
-        value={search.query}
+        value={searchState.search.query}
       />
       {previousSearchEntries.length > 0 && (
         <datalist id="previous-searches">{previousSearchEntries}</datalist>

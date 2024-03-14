@@ -17,8 +17,15 @@
  */
 
 import { UserV2 } from "../userV2/userV2.types";
+import { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
 
 export type EntityType = "Project" | "User";
+
+export interface SearchApiParams {
+  searchString: string;
+  page: number;
+  perPage: number;
+}
 
 export interface SearchApiResponse {
   items: SearchResult[];
@@ -49,16 +56,25 @@ export interface ProjectSearchResult {
 }
 
 export interface UserSearchResult {
-  creationDate: Date;
   id: string;
+  firstName: string;
+  lastName: string;
   type: "User";
+  email: string;
 }
 
+export interface DateFilter {
+  option: DateFilterTypes;
+  from?: string;
+  to?: string;
+}
 export interface SearchV2State {
   filters: {
     role: ("creator" | "member" | "none")[];
     type: ("project" | "user")[];
     visibility: ("private" | "public")[];
+    created: DateFilter;
+    createdBy: string;
   };
   search: {
     history: {
@@ -66,14 +82,24 @@ export interface SearchV2State {
       query: string;
     }[];
     lastSearch: string | null;
+    outdated: boolean;
+    page: number;
+    perPage: number;
     query: string;
+    totalPages: number;
+    totalResults: number;
   };
   sorting: SortingItem;
 }
 
+export interface SearchV2Totals {
+  pages: number;
+  results: number;
+}
+
 export interface ToggleFilterPayload {
   filter: keyof SearchV2State["filters"];
-  value: SearchV2State["filters"][keyof SearchV2State["filters"]][number];
+  value: string;
 }
 
 export interface SearchV2FilterOptions {
@@ -89,4 +115,14 @@ export interface SortingItem {
 
 export interface SortingItems {
   [key: string]: SortingItem;
+}
+
+export interface DateFilterItem {
+  friendlyName: string;
+  getDateString:
+    | ((filter: string, from?: string, to?: string) => string)
+    | (() => string);
+}
+export interface DateFilterItems {
+  [key: string]: DateFilterItem;
 }

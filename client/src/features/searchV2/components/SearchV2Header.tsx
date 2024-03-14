@@ -29,7 +29,13 @@ export default function SearchV2Header() {
   const { search, sorting } = useAppSelector((state) => state.searchV2);
   const dispatch = useDispatch();
   const searchResults = searchV2Api.endpoints.getSearchResults.useQueryState(
-    search.lastSearch != null ? search.lastSearch : skipToken
+    search.lastSearch != null
+      ? {
+          searchString: search.lastSearch,
+          page: search.page,
+          perPage: search.perPage,
+        }
+      : skipToken
   );
 
   const searchQuery = search.lastSearch;

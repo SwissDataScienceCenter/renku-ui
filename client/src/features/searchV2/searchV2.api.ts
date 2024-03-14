@@ -17,21 +17,25 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { SearchApiResponse } from "./searchV2.types";
+import { SearchApiParams, SearchApiResponse } from "./searchV2.types";
 
 const searchV2Api = createApi({
   reducerPath: "searchV2Api",
   baseQuery: fetchBaseQuery({
     // eslint-disable-next-line spellcheck/spell-checker
-    baseUrl: "/apiv2/search", // ! Update to "/ui-server/api/search" after gateway updates
+    baseUrl: "/ui-server/api/search",
   }),
   tagTypes: ["SearchV2"],
   endpoints: (builder) => ({
-    getSearchResults: builder.query<SearchApiResponse, string>({
-      query: (searchString) => {
+    getSearchResults: builder.query<SearchApiResponse, SearchApiParams>({
+      query: (params) => {
         return {
           method: "GET",
-          params: { q: searchString },
+          params: {
+            q: params.searchString,
+            page: params.page,
+            per_page: params.perPage,
+          },
           url: "",
         };
       },

@@ -43,12 +43,10 @@ describe("Search V2", () => {
 
     cy.getDataCy("search-filter-type-user").click();
     cy.getDataCy("search-filter-type-user").should("be.checked");
-    cy.getDataCy("search-input").type("{enter}");
     cy.getDataCy("search-card").should("have.length", 7);
 
     cy.getDataCy("search-filter-type-project").click();
     cy.getDataCy("search-filter-type-project").should("not.be.checked");
-    cy.getDataCy("search-button").click();
     cy.getDataCy("search-card").should("have.length", 2);
   });
 
@@ -59,7 +57,6 @@ describe("Search V2", () => {
     cy.getDataCy("search-header").contains("sort:score-desc");
 
     cy.getDataCy("search-sorting-select").select("Date: recently created");
-    cy.getDataCy("search-button").click();
     cy.getDataCy("search-header").contains("sort:date-desc");
   });
 });
