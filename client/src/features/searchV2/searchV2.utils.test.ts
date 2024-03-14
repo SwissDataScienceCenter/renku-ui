@@ -20,6 +20,7 @@ import { describe, expect, it } from "vitest";
 
 import { buildSearchQuery } from "./searchV2.utils";
 import { SearchV2State } from "./searchV2.types";
+import { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
 
 describe("Test the searchV2.utils functions", () => {
   it("function buildSearchQuery ", () => {
@@ -28,11 +29,20 @@ describe("Test the searchV2.utils functions", () => {
         role: [],
         type: [],
         visibility: [],
+        created: {
+          option: DateFilterTypes.all,
+        },
+        createdBy: "",
       },
       search: {
         history: [],
         lastSearch: "something else",
+        outdated: false,
+        page: 1,
+        perPage: 10,
         query: "test",
+        totalPages: 0,
+        totalResults: 0,
       },
       sorting: {
         friendlyName: "Best match",
@@ -48,6 +58,10 @@ describe("Test the searchV2.utils functions", () => {
       role: ["creator", "member"],
       type: ["project"],
       visibility: ["private"],
+      created: {
+        option: DateFilterTypes.all,
+      },
+      createdBy: "",
     };
     expect(buildSearchQuery(searchState)).toEqual(
       "sort:score-desc role:creator,member type:project visibility:private test"
@@ -63,6 +77,18 @@ describe("Test the searchV2.utils functions", () => {
     searchState.search.query = "test sort:name-desc type:user role:none";
     expect(buildSearchQuery(searchState)).toEqual(
       "visibility:private test sort:name-desc type:user role:none"
+    );
+
+    //Update date filter
+    searchState.filters.created.option = DateFilterTypes.last90days;
+    expect(buildSearchQuery(searchState)).toEqual(
+      "visibility:private created>today-90d test sort:name-desc type:user role:none"
+    );
+
+    //Update createdBy filter
+    searchState.filters.createdBy = "abc";
+    expect(buildSearchQuery(searchState)).toEqual(
+      "visibility:private created>today-90d createdBy:abc test sort:name-desc type:user role:none"
     );
   });
 });

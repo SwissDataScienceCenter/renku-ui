@@ -16,7 +16,13 @@
  * limitations under the License
  */
 
-import { SearchV2State, SortingItems } from "./searchV2.types";
+import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
+import {
+  DateFilter,
+  DateFilterItems,
+  SearchV2State,
+  SortingItems,
+} from "./searchV2.types";
 
 export const AVAILABLE_FILTERS = {
   role: {
@@ -60,6 +66,41 @@ export const AVAILABLE_SORTING: SortingItems = {
   },
 };
 
+export const AVAILABLE_DATE_FILTERS: DateFilterItems = {
+  all: {
+    friendlyName: "All",
+    getDateString: () => "",
+  },
+  lastWeek: {
+    friendlyName: "Last Week",
+    getDateString: (filter: string) => `${filter}>today-7d`,
+  },
+  lastMonth: {
+    friendlyName: "Last Month",
+    getDateString: (filter: string) => `${filter}>today-31d`,
+  },
+  last90days: {
+    friendlyName: "Last 90 days",
+    getDateString: (filter: string) => `${filter}>today-90d`,
+  },
+  older: {
+    friendlyName: "Older",
+    getDateString: (filter: string) => `${filter}>today+90d`,
+  },
+  custom: {
+    friendlyName: "Custom",
+    getDateString: (filter: string, from?: string, to?: string) => {
+      const filters = [];
+      if (from) filters.push(`${filter}>${from}-1d`);
+
+      if (to) filters.push(`${filter}<${to}+1d`);
+      return filters.join(" ");
+    },
+  },
+};
+
+const DATE_FILTERS = ["created"];
+
 export const SORT_KEY = "sort";
 
 export const FILTER_ASSIGNMENT_CHAR = ":";
@@ -74,22 +115,43 @@ export const buildSearchQuery = (searchState: SearchV2State): string => {
     searchQueryItems.push(`${sortPrefix}${searchState.sorting.sortingString}`);
 
   for (const filterName in searchState.filters) {
-    const filter =
-      searchState.filters[filterName as keyof SearchV2State["filters"]];
+    if (DATE_FILTERS.includes(filterName) || filterName === "createdBy")
+      continue;
+    const filter = searchState.filters[
+      filterName as keyof SearchV2State["filters"]
+    ] as string[];
     const filterPrefix = `${filterName}${FILTER_ASSIGNMENT_CHAR}`;
 
+    const totalAvailableFilters = Object.keys(
+      AVAILABLE_FILTERS[filterName as "role" | "visibility" | "type"]
+    ).length;
     // Exclude empty filters and filters where all members are selected
     if (
       filter.length > 0 &&
-      filter.length <
-        Object.keys(
-          AVAILABLE_FILTERS[filterName as keyof SearchV2State["filters"]]
-        ).length &&
+      filter.length < totalAvailableFilters &&
       !query.includes(filterPrefix)
     ) {
       searchQueryItems.push(`${filterPrefix}${filter.join(",")}`);
     }
   }
+
+  // add date filters
+  DATE_FILTERS.map((filter: string) => {
+    const dateFilter = searchState.filters[
+      filter as keyof SearchV2State["filters"]
+    ] as DateFilter;
+    if (dateFilter.option !== DateFilterTypes.all) {
+      const dateStringFilter = AVAILABLE_DATE_FILTERS[
+        dateFilter.option
+      ].getDateString("created", dateFilter.from, dateFilter.to);
+      searchQueryItems.push(dateStringFilter);
+    }
+  });
+
+  // add createdBy filter
+  if (searchState.filters.createdBy)
+    searchQueryItems.push(`createdBy:${searchState.filters.createdBy}`);
+
   searchQueryItems.push(query);
 
   return searchQueryItems.join(" ");

@@ -16,10 +16,10 @@
  * limitations under the License
  */
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 
-import { setSearch } from "./searchV2.slice";
+import { setPage, setSearch, setTotals } from "./searchV2.slice";
 import searchV2Api from "./searchV2.api";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { buildSearchQuery } from "./searchV2.utils";
@@ -30,6 +30,7 @@ const useStartNewSearch = () => {
   const [startSearch, searchResult] =
     searchV2Api.useLazyGetSearchResultsQuery();
 
+  // update the search slice and start the new query
   const startNewSearch = useCallback(() => {
     const searchQuery = buildSearchQuery(searchState);
 
@@ -41,8 +42,43 @@ const useStartNewSearch = () => {
       return;
 
     dispatch(setSearch(searchQuery));
-    startSearch(searchQuery);
+    const resetPage = searchState.search.lastSearch !== searchQuery;
+    if (resetPage) dispatch(setPage(1));
+    startSearch({
+      searchString: searchQuery,
+      page: resetPage ? 1 : searchState.search.page,
+      perPage: searchState.search.perPage,
+    });
   }, [dispatch, searchState, startSearch, searchResult.fulfilledTimeStamp]);
+
+  // handle pagination results
+  useEffect(() => {
+    if (
+      searchResult.data &&
+      searchState.search.totalResults !==
+        searchResult.data?.pagingInfo.totalResult
+    ) {
+      dispatch(
+        setTotals({
+          results: searchResult.data?.pagingInfo.totalResult,
+          pages: searchResult.data?.pagingInfo.totalPages,
+        })
+      );
+    }
+  }, [
+    dispatch,
+    searchResult.data,
+    searchResult.data?.pagingInfo.totalResult,
+    searchResult.data?.pagingInfo.totalPages,
+    searchState.search.totalResults,
+  ]);
+
+  // handle changes that influence the UI appearance and requires a new backend search
+  useEffect(() => {
+    if (searchState.search.outdated) {
+      startNewSearch();
+    }
+  }, [searchState.search.outdated, startNewSearch]);
 
   return { startNewSearch, searchResult };
 };
