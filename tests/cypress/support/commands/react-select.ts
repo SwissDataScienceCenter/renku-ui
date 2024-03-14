@@ -34,8 +34,6 @@ function findReactSelectOptions(
 export default function registerReactSelectCommands() {
   // This line incites a Type instantiation is excessively deep and possibly infinite.ts(2589) error
   // but we can ignore it
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   Cypress.Commands.add("findReactSelectOptions", findReactSelectOptions);
 }
 
