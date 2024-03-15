@@ -212,6 +212,7 @@ export const SessionClassOption = () => {
         onChange={onChange}
       />
       <SessionClassWarning currentSessionClass={currentSessionClass} />
+      <AskForComputeResources />
     </div>
   );
 };
@@ -348,6 +349,10 @@ function SessionClassWarning({
       not match the compute requirements
     </div>
   );
+}
+
+function AskForComputeResources() {
+  return <div className="small">Need more compute resources? Email us!</div>;
 }
 
 interface SessionClassSelectorProps {
