@@ -126,6 +126,6 @@ async function main({ core, github }) {
   }
 }
 
-module.exports = ({ core, github }) => {
-  main({ core, github });
+module.exports = async ({ core, github }) => {
+  await main({ core, github });
 };

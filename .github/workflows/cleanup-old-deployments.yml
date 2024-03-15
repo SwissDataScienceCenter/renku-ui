@@ -14,4 +14,4 @@ jobs:
         with:
           script: |
             const script = require('./.github/workflows/cleanup-old-deployments.js')
-            script({ core, github })
+            await script({ core, github })
