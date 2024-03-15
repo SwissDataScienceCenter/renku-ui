@@ -31,7 +31,6 @@ import {
 const sessionsV2Api = createApi({
   reducerPath: "sessionsV2Api",
   baseQuery: fetchBaseQuery({
-    // baseUrl: "/ui-server/api/data/sessions",
     baseUrl: "/ui-server/api/data",
   }),
   tagTypes: ["Environment", "Launcher"],
