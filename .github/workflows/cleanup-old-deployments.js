@@ -125,3 +125,7 @@ async function main({ core, github }) {
     }
   }
 }
+
+module.exports = ({ core, github }) => {
+  main({ core, github });
+};
