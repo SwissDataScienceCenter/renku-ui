@@ -1,21 +1,10 @@
-import { Octokit } from "octokit";
-
-const octokit = new Octokit({
-  auth: "REDACTED",
-});
-
-const {
-  data: { login },
-} = await octokit.rest.users.getAuthenticated();
-console.log(`Connected as ${login}`);
-
-async function getOldEnvironments() {
+async function getOldEnvironments({ core, github }) {
   const now = new Date();
   const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1_000;
 
   const {
     data: { environments, total_count },
-  } = await octokit.request("GET /repos/{owner}/{repo}/environments", {
+  } = await github.request("GET /repos/{owner}/{repo}/environments", {
     owner: "SwissDataScienceCenter",
     repo: "renku-ui",
     headers: {
@@ -28,9 +17,9 @@ async function getOldEnvironments() {
   }
 
   if (total_count && environments.length < total_count) {
-    console.log(
-      `Seeing only ${environments.length} environments out of ${total_count}`
-    );
+    const message = `Seeing only ${environments.length} environments out of ${total_count}`;
+    console.log(message);
+    core.notice(message);
   }
 
   const oldEnvironments = environments
@@ -39,8 +28,8 @@ async function getOldEnvironments() {
   return oldEnvironments;
 }
 
-async function getActiveDeployment(environment) {
-  const { data: deployments } = await octokit.request(
+async function getActiveDeployment({ github, environment }) {
+  const { data: deployments } = await github.request(
     "GET /repos/{owner}/{repo}/deployments",
     {
       owner: "SwissDataScienceCenter",
@@ -53,7 +42,7 @@ async function getActiveDeployment(environment) {
   );
   const deploymentStatuses = await Promise.all(
     deployments.map(async ({ id }) => {
-      const { data } = await octokit.request(
+      const { data } = await github.request(
         "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses",
         {
           owner: "SwissDataScienceCenter",
@@ -81,10 +70,10 @@ async function getActiveDeployment(environment) {
   return [activeDeployment, activeDeploymentStatus?.environment_url];
 }
 
-async function decideIfEnvironmentShouldBeDeleted(
+async function decideIfEnvironmentShouldBeDeleted({
   activeDeployment,
-  environment_url
-) {
+  environment_url,
+}) {
   if (!activeDeployment || !environment_url) {
     return "delete";
   }
@@ -99,34 +88,40 @@ async function decideIfEnvironmentShouldBeDeleted(
   }
 }
 
-const oldEnvironments = await getOldEnvironments();
+async function main({ core, github }) {
+  const oldEnvironments = await getOldEnvironments({ core, github });
 
-for (let i = 0; i < oldEnvironments.length; ++i) {
-  const environment = oldEnvironments[i];
+  for (let i = 0; i < oldEnvironments.length; ++i) {
+    const environment = oldEnvironments[i];
 
-  console.log(`Processing environment: ${environment.name}`);
+    console.log(`Processing environment: ${environment.name}`);
 
-  const [activeDeployment, environment_url] = await getActiveDeployment(
-    environment.name
-  );
-  const decision = await decideIfEnvironmentShouldBeDeleted(
-    activeDeployment,
-    environment_url
-  );
+    const [activeDeployment, environment_url] = await getActiveDeployment({
+      github,
+      environment: environment.name,
+    });
+    const decision = await decideIfEnvironmentShouldBeDeleted({
+      activeDeployment,
+      environment_url,
+    });
 
-  console.log(`Decision: ${decision}`);
+    console.log(`Decision: ${decision}`);
+    if (decision === "error") {
+      core.warning(`Error while contacting: ${environment_url}`);
+    }
 
-  if (decision === "delete") {
-    await octokit.request(
-      "DELETE /repos/{owner}/{repo}/environments/{environment}",
-      {
-        owner: "SwissDataScienceCenter",
-        repo: "renku-ui",
-        environment: environment.name,
-        headers: {
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
-      }
-    );
+    if (decision === "delete") {
+      await github.request(
+        "DELETE /repos/{owner}/{repo}/environments/{environment}",
+        {
+          owner: "SwissDataScienceCenter",
+          repo: "renku-ui",
+          environment: environment.name,
+          headers: {
+            "X-GitHub-Api-Version": "2022-11-28",
+          },
+        }
+      );
+    }
   }
 }
