@@ -95,6 +95,7 @@ describe("Edit v2 group", () => {
     cy.getDataCy("group-description-input").clear().type("new description");
     fixtures.readGroupV2({
       fixture: "groupV2/update-groupV2-metadata.json",
+      groupSlug: "new-slug",
       name: "readPostUpdate",
     });
     cy.get("button").contains("Update").should("be.visible").click();

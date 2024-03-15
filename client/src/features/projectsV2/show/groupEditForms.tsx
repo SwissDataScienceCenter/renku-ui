@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
+import { Redirect } from "react-router-dom";
 
 import {
   Button,
@@ -165,7 +166,7 @@ export function GroupMetadataForm({
     },
   });
 
-  const [updateGroup, { isLoading, isError }] =
+  const [updateGroup, { data, isLoading, isError }] =
     usePatchGroupsByGroupSlugMutation();
 
   const isUpdating = isLoading;
@@ -177,7 +178,9 @@ export function GroupMetadataForm({
     (data: GroupMetadata) => {
       updateGroup({ groupSlug: group.slug ?? "", groupPatchRequest: data })
         .unwrap()
-        .then(() => setSettingEdit(null));
+        .then(() => {
+          setSettingEdit(null);
+        });
     },
     [group, updateGroup, setSettingEdit]
   );
@@ -186,6 +189,9 @@ export function GroupMetadataForm({
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
+
+  if (data != null && data.slug !== group.slug)
+    return <Redirect to={`${data.slug}`} />;
 
   return (
     <div>
