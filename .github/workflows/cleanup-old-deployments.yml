@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  cleanup-old-deployments:
+  cleanup-old-deployments-from-github:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
