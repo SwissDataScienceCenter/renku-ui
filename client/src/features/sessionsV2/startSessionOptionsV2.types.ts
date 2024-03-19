@@ -16,31 +16,28 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { PlayFill } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+import type { GitlabProjectResponse } from "../project/GitLab.types";
+import type {
+  DockerImageStatus,
+  SessionCloudStorage,
+  SessionEnvironmentVariable,
+} from "../session/startSessionOptions.types";
 
-interface StartSessionButtonProps {
-  projectId: string;
-  launcherId: string;
+export interface StartSessionOptionsV2 {
+  cloudStorage: SessionCloudStorage[];
+  defaultUrl: string;
+  dockerImageStatus: DockerImageStatus;
+  environmentVariables: SessionEnvironmentVariable[];
+  lfsAutoFetch: boolean;
+  repositories: SessionRepository[];
+  sessionClass: number;
+  storage: number;
 }
 
-export default function StartSessionButton({
-  projectId,
-  launcherId,
-}: StartSessionButtonProps) {
-  const startUrl = generatePath(
-    "/v2/projects/:projectId/sessions/:launcherId/start",
-    {
-      projectId,
-      launcherId,
-    }
-  );
-
-  return (
-    <Link className={cx("btn", "btn-sm", "btn-rk-green")} to={startUrl}>
-      <PlayFill className={cx("bi", "me-1")} />
-      Start
-    </Link>
-  );
+export interface SessionRepository {
+  namespace: string;
+  project: string;
+  branch: string;
+  commitSha: string;
+  repositoryMetadata: GitlabProjectResponse;
 }

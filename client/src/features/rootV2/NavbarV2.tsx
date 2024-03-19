@@ -36,7 +36,7 @@ export default function NavbarV2() {
     <header className={cx("px-4", "bg-rk-blue")}>
       <Navbar className="px-2">
         <div className={cx("text-white", "d-flex", "align-items-center")}>
-          <span className="me-1">Renku 1.0</span>
+          <span className="me-1">Renku 2.0</span>
           <WipBadge />
         </div>
         <Nav className="navbar-nav">

@@ -16,31 +16,35 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { PlayFill } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+import type { GitlabProjectResponse } from "../project/GitLab.types";
 
-interface StartSessionButtonProps {
-  projectId: string;
-  launcherId: string;
+export interface SessionConfigV2 {
+  repositorySupport: { [url: string]: RepositorySupport | undefined };
+  projectSupport: { [projectId: string]: ProjectSupport | undefined };
 }
 
-export default function StartSessionButton({
-  projectId,
-  launcherId,
-}: StartSessionButtonProps) {
-  const startUrl = generatePath(
-    "/v2/projects/:projectId/sessions/:launcherId/start",
-    {
-      projectId,
-      launcherId,
+export type RepositorySupport = {
+  isLoading: boolean;
+} & (
+  | {
+      supportsSessions: false;
+      sessionConfiguration?: undefined;
     }
-  );
+  | {
+      supportsSessions: true;
+      sessionConfiguration: SessionConfig;
+    }
+);
 
-  return (
-    <Link className={cx("btn", "btn-sm", "btn-rk-green")} to={startUrl}>
-      <PlayFill className={cx("bi", "me-1")} />
-      Start
-    </Link>
-  );
+interface SessionConfig {
+  defaultBranch: string;
+  namespace: string;
+  projectName: string;
+  repositoryMetadata: GitlabProjectResponse;
 }
+
+type ProjectSupport = {
+  isLoading: boolean;
+  repositories: string[];
+  repositoriesConfig: RepositorySupport[];
+};

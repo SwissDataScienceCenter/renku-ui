@@ -167,7 +167,7 @@ const sessionsApi = createApi({
           .flatMap((item) => (item == null ? [] : [item]));
         const body = {
           project_id: projectId,
-          environment_id: launcherId,
+          launcher_id: launcherId,
           repositories: repositories.map(({ commitSha, ...rest }) => ({
             ...rest,
             commit_sha: commitSha,
@@ -183,7 +183,7 @@ const sessionsApi = createApi({
         return {
           body,
           method: "POST",
-          url: "renku-2-servers",
+          url: "/v2/servers",
         };
       },
       invalidatesTags: ["Session"],
