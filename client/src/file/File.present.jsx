@@ -113,10 +113,7 @@ class FileCard extends React.Component {
                 <small> {formatBytes(this.props.fileSize)}</small>
               </div>
             ) : null}
-            <Clipboard
-              clipboardText={this.props.filePath}
-              className="icon-link d-flex"
-            />
+            <Clipboard clipboardText={this.props.filePath} />
           </div>
           <div
             className={cx(
