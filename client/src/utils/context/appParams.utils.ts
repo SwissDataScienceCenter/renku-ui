@@ -309,6 +309,8 @@ function validateUploadThreshold(params: RawAppParams): UploadThresholdParams {
 function validateSessionClassEmailUs(
   params: RawAppParams
 ): SessionClassEmailUsParams {
+  console.log(params["SESSION_CLASS_EMAIL_US"]);
+
   const value = params["SESSION_CLASS_EMAIL_US"];
   if (typeof value !== "object" || value == null) {
     return DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
@@ -317,18 +319,29 @@ function validateSessionClassEmailUs(
   const rawEmailUsParams = value as {
     [key: string]: unknown;
   };
+  const rawEmailUsEmailParams =
+    typeof rawEmailUsParams.email === "object" && rawEmailUsParams.email != null
+      ? (rawEmailUsParams.email as {
+          [key: string]: unknown;
+        })
+      : {};
 
   const enabled = !!rawEmailUsParams.enabled;
 
-  const to = typeof rawEmailUsParams.to === "string" ? rawEmailUsParams.to : "";
+  const to =
+    typeof rawEmailUsEmailParams.to === "string"
+      ? rawEmailUsEmailParams.to
+      : "";
 
   const subject =
-    typeof rawEmailUsParams.subject === "string"
-      ? rawEmailUsParams.subject
+    typeof rawEmailUsEmailParams.subject === "string"
+      ? rawEmailUsEmailParams.subject
       : "";
 
   const body =
-    typeof rawEmailUsParams.body === "string" ? rawEmailUsParams.body : "";
+    typeof rawEmailUsEmailParams.body === "string"
+      ? rawEmailUsEmailParams.body
+      : "";
 
   if (enabled && to) {
     return {

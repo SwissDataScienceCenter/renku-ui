@@ -23,7 +23,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import Select, {
   ClassNamesConfig,
@@ -54,6 +54,9 @@ import { computeStorageSizes } from "../../utils/sessionOptions.utils";
 
 import styles from "./SessionClassOption.module.scss";
 import { ExternalLink } from "../../../../components/ExternalLinks";
+import AppContext from "../../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
+import { User } from "../../../../model/renkuModels.types";
 
 export const SessionClassOption = () => {
   // Project options
@@ -353,32 +356,34 @@ function SessionClassWarning({
 }
 
 function AskForComputeResources() {
-  const url = new URL("mailto:hello@renku.io");
-  url.searchParams.set(
-    "subject",
-    "Request to access more compute resources in RenkuLab"
-  );
-  url.searchParams.set(
-    "body",
-    `Hello Renku team,
+  const { params } = useContext(AppContext);
+  const SESSION_CLASS_EMAIL_US =
+    params?.SESSION_CLASS_EMAIL_US ??
+    DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
 
-I would like access to more compute resources on RenkuLab. Here is some information about me and my project:
+  const user = useLegacySelector<User>((state) => state.stateModel.user);
 
-I am affiliated with an educational institution: (yes or no)
-If yes: <enter here>
+  if (!SESSION_CLASS_EMAIL_US.enabled) {
+    return null;
+  }
 
-The amount of resources I need for my project is:
-<enter here> CPU
-<enter here> RAM
-<enter here> GPU
+  const { email } = SESSION_CLASS_EMAIL_US;
 
-Please send us the link to your project(s) on RenkuLab:
-<enter here>
-
-Best regards,
-
-<signature>`
-  );
+  const url = new URL(`mailto:${email.to}`);
+  if (email.subject) {
+    url.searchParams.set(
+      "subject",
+      "Request to access more compute resources in RenkuLab"
+    );
+  }
+  if (email.body) {
+    const name = (user?.data as { name: string })?.name || "<signature>";
+    const renderedBody = email.body.replace(
+      /[{][{]full_name[}][}]/g,
+      `${name}`
+    );
+    url.searchParams.set("body", renderedBody);
+  }
   const urlStr = url.toString().replace(/[+]/g, "%20");
 
   return (
