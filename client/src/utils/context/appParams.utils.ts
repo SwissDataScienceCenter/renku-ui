@@ -309,8 +309,6 @@ function validateUploadThreshold(params: RawAppParams): UploadThresholdParams {
 function validateSessionClassEmailUs(
   params: RawAppParams
 ): SessionClassEmailUsParams {
-  console.log(params["SESSION_CLASS_EMAIL_US"]);
-
   const value = params["SESSION_CLASS_EMAIL_US"];
   if (typeof value !== "object" || value == null) {
     return DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
