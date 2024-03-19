@@ -28,6 +28,7 @@ import type {
   AppParamsStrings,
   PreviewThresholdParams,
   PrivacyBannerLayoutParams,
+  SessionClassEmailUsParams,
   TemplatesParams,
   UploadThresholdParams,
 } from "./appParams.types";
@@ -79,6 +80,7 @@ export function validatedAppParams(params: unknown): AppParams {
   const PRIVACY_BANNER_LAYOUT = validatePrivacyBannerLayout(params_);
   const TEMPLATES = validateTemplates(params_);
   const UPLOAD_THRESHOLD = validateUploadThreshold(params_);
+  const SESSION_CLASS_EMAIL_US = validateSessionClassEmailUs(params_);
 
   return {
     ANONYMOUS_SESSIONS,
@@ -98,6 +100,7 @@ export function validatedAppParams(params: unknown): AppParams {
     SENTRY_NAMESPACE,
     SENTRY_SAMPLE_RATE,
     SENTRY_URL,
+    SESSION_CLASS_EMAIL_US,
     STATUSPAGE_ID,
     TEMPLATES,
     UISERVER_URL,
@@ -301,4 +304,42 @@ function validateUploadThreshold(params: RawAppParams): UploadThresholdParams {
       ? rawParams.soft
       : DEFAULT_APP_PARAMS["PREVIEW_THRESHOLD"].soft;
   return { soft };
+}
+
+function validateSessionClassEmailUs(
+  params: RawAppParams
+): SessionClassEmailUsParams {
+  const value = params["SESSION_CLASS_EMAIL_US"];
+  if (typeof value !== "object" || value == null) {
+    return DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
+  }
+
+  const rawEmailUsParams = value as {
+    [key: string]: unknown;
+  };
+
+  const enabled = !!rawEmailUsParams.enabled;
+
+  const to = typeof rawEmailUsParams.to === "string" ? rawEmailUsParams.to : "";
+
+  const subject =
+    typeof rawEmailUsParams.subject === "string"
+      ? rawEmailUsParams.subject
+      : "";
+
+  const body =
+    typeof rawEmailUsParams.body === "string" ? rawEmailUsParams.body : "";
+
+  if (enabled && to) {
+    return {
+      enabled,
+      email: {
+        to,
+        subject,
+        body,
+      },
+    };
+  }
+
+  return DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
 }
