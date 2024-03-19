@@ -193,6 +193,26 @@ describe("launch sessions", () => {
 
     cy.get("#cloud-storage-example-storage-active").should("be.checked");
   });
+
+  it('new session page - show "email us" link', () => {
+    fixtures.config({ fixture: "config-session-class-email-us.json" });
+    fixtures.userTest();
+    fixtures.newSessionImages();
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.contains("Need more compute resources?").should("be.visible");
+    cy.contains("a", "Email us!")
+      .should("be.visible")
+      .and("have.attr", "href", "mailto:test@example.org");
+  });
+
+  it('new session page - show "email us" link is disabled', () => {
+    fixtures.userTest();
+    fixtures.newSessionImages();
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.contains("Session requirements").should("be.visible");
+    cy.contains("Need more compute resources?").should("not.exist");
+    cy.contains("a", "Email us!").should("not.exist");
+  });
 });
 
 describe("launch sessions, outdated projects", () => {
