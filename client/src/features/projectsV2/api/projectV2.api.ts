@@ -28,6 +28,7 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/projects/${queryArg.projectId}`,
         method: "PATCH",
         body: queryArg.projectPatch,
+        headers: { "If-Match": queryArg["If-Match"] },
       }),
     }),
     deleteProjectsByProjectId: build.mutation<
@@ -90,6 +91,8 @@ export type PatchProjectsByProjectIdApiResponse =
   /** status 200 The patched project */ Project;
 export type PatchProjectsByProjectIdApiArg = {
   projectId: string;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match"?: ETag;
   projectPatch: ProjectPatch;
 };
 export type DeleteProjectsByProjectIdApiResponse =
@@ -127,15 +130,17 @@ export type Repository = string;
 export type RepositoriesList = Repository[];
 export type Visibility = "private" | "public";
 export type Description = string;
+export type ETag = string;
 export type Project = {
   id: Ulid;
   name: Name;
-  slug: Slug;
+  slug?: Slug;
   creation_date: CreationDate;
   created_by: Member;
   repositories?: RepositoriesList;
   visibility: Visibility;
   description?: Description;
+  etag?: ETag;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {

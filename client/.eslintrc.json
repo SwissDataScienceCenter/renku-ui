@@ -133,6 +133,7 @@
           "dockerfile",
           "dockerignore",
           "enum",
+          "etag",
           "fetchable",
           "formgenerator",
           "fortran",
