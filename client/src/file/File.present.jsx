@@ -115,7 +115,7 @@ class FileCard extends React.Component {
             ) : null}
             <Clipboard
               clipboardText={this.props.filePath}
-              className="icon-link d-flex"
+              className={cx("btn", "p-0", "border-0", "icon-link")}
             />
           </div>
           <div
