@@ -36,8 +36,12 @@ import Select, {
 } from "react-select";
 
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import { User } from "../../../../model/renkuModels.types";
 import { ProjectStatistics } from "../../../../notebooks/components/session.types";
+import AppContext from "../../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -53,10 +57,6 @@ import { setSessionClass } from "../../startSessionOptionsSlice";
 import { computeStorageSizes } from "../../utils/sessionOptions.utils";
 
 import styles from "./SessionClassOption.module.scss";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import AppContext from "../../../../utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
-import { User } from "../../../../model/renkuModels.types";
 
 export const SessionClassOption = () => {
   // Project options
