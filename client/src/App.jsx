@@ -78,7 +78,7 @@ function CentralContentContainer(props) {
     props.user.logged ? undefined : skipToken
   );
   // ? In the future, we should get the user info from `renku-data-services` instead of Keycloak.
-  // ? See: XXXX
+  // ? See: https://github.com/SwissDataScienceCenter/renku-ui/pull/3080.
   useGetUserQuery(props.user.logged ? undefined : skipToken);
 
   const appContext = {
