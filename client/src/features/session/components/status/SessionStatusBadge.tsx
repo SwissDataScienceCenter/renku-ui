@@ -19,7 +19,7 @@
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   Badge,
   PopoverBody,
@@ -46,6 +46,10 @@ export default function SessionStatusBadge({
   const ref = useRef<HTMLDivElement>(null);
 
   const { message, state: status } = statusObject;
+
+  useEffect(() => {
+    console.log(message);
+  }, [message]);
 
   const color = getSessionStatusColor({ defaultImage, status });
   const popover = (status === "failed" ||
