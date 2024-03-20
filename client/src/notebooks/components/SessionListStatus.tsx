@@ -32,6 +32,8 @@ import SessionStatusText from "../../features/session/components/status/SessionS
 import { SessionStatusState } from "../../features/session/sessions.types";
 import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
 import type { NotebookAnnotations } from "./session.types";
+import { useEffect } from "react";
+import { PrettySessionErrorMessage } from "../../features/session/components/status/SessionStatusBadge";
 
 interface SessionListRowCoreProps {
   annotations: NotebookAnnotations;
@@ -55,8 +57,7 @@ function SessionListRowStatusExtraDetails({
     <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
       <PopoverHeader>Kubernetes pod status</PopoverHeader>
       <PopoverBody>
-        <span>{details.message}</span>
-        <br />
+        <PrettySessionErrorMessage message={details.message} />
       </PopoverBody>
     </UncontrolledPopover>
   );
@@ -127,6 +128,10 @@ function SessionListRowStatusIconPopover({
   id,
   status,
 }: SessionListRowStatusIconPopoverProps) {
+  useEffect(() => {
+    console.log({ annotations, details, image, id, status });
+  }, [annotations, details, image, id, status]);
+
   if (status !== "running" && status !== "failed" && status !== "hibernated") {
     return null;
   }
@@ -136,8 +141,7 @@ function SessionListRowStatusIconPopover({
       <UncontrolledPopover target={id} trigger="legacy" placement="right">
         <PopoverHeader>Kubernetes pod status</PopoverHeader>
         <PopoverBody>
-          <span>{details.message}</span>
-          <br />
+          <PrettySessionErrorMessage message={details.message} />
         </PopoverBody>
       </UncontrolledPopover>
     );
