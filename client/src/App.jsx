@@ -23,6 +23,7 @@
  *  Coordinator for the application.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Redirect, useLocation } from "react-router";
@@ -30,7 +31,6 @@ import { Route, Switch } from "react-router-dom";
 import { CompatRoute } from "react-router-dom-v5-compat";
 import { ToastContainer } from "react-toastify";
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import { LoginHelper, LoginRedirect } from "./authentication";
 import { Loader } from "./components/Loader";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
