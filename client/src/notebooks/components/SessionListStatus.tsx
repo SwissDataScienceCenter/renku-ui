@@ -25,15 +25,15 @@ import {
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { Clipboard } from "../../components/clipboard/Clipboard";
 import SessionHibernationStatusDetails from "../../features/session/components/status/SessionHibernationStatusDetails";
+import { PrettySessionErrorMessage } from "../../features/session/components/status/SessionStatusBadge";
 import SessionStatusIcon from "../../features/session/components/status/SessionStatusIcon";
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";
 import { SessionStatusState } from "../../features/session/sessions.types";
 import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
 import type { NotebookAnnotations } from "./session.types";
-import { useEffect } from "react";
-import { PrettySessionErrorMessage } from "../../features/session/components/status/SessionStatusBadge";
 
 interface SessionListRowCoreProps {
   annotations: NotebookAnnotations;
@@ -128,10 +128,6 @@ function SessionListRowStatusIconPopover({
   id,
   status,
 }: SessionListRowStatusIconPopoverProps) {
-  useEffect(() => {
-    console.log({ annotations, details, image, id, status });
-  }, [annotations, details, image, id, status]);
-
   if (status !== "running" && status !== "failed" && status !== "hibernated") {
     return null;
   }

@@ -19,13 +19,14 @@
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import {
   Badge,
   PopoverBody,
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
 import { SessionStatus, SessionStatusState } from "../../sessions.types";
 import { getSessionStatusColor } from "../../utils/sessionStatus.utils";
@@ -46,10 +47,6 @@ export default function SessionStatusBadge({
   const ref = useRef<HTMLDivElement>(null);
 
   const { message, state: status } = statusObject;
-
-  useEffect(() => {
-    console.log(message);
-  }, [message]);
 
   const color = getSessionStatusColor({ defaultImage, status });
   const popover = (status === "failed" ||
@@ -104,6 +101,7 @@ interface PrettySessionErrorMessageProps {
 export function PrettySessionErrorMessage({
   message,
 }: PrettySessionErrorMessageProps) {
+  // eslint-disable-next-line spellcheck/spell-checker
   if (message?.includes("Insufficient nvidia.com/gpu")) {
     return (
       <>
