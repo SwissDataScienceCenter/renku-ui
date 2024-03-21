@@ -59,8 +59,12 @@ function ProjectV2Header({
   const projectListUrl = Url.get(Url.pages.v2Projects.list);
   return (
     <>
-      <div>
-        {project.namespace}/{project.slug}
+      <div className="fw-medium">
+        <div className="mb-0">{project.namespace}/</div>
+        <div className="ms-2">
+          {"  "}
+          {project.slug}
+        </div>
       </div>
       <div className="fst-italic">{project.visibility}</div>
       <TimeCaption datetime={project.creation_date} prefix="Created" />{" "}
