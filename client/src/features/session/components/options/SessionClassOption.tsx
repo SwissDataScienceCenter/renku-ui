@@ -371,10 +371,7 @@ function AskForComputeResources() {
 
   const url = new URL(`mailto:${email.to}`);
   if (email.subject) {
-    url.searchParams.set(
-      "subject",
-      "Request to access more compute resources in RenkuLab"
-    );
+    url.searchParams.set("subject", email.subject);
   }
   if (email.body) {
     const name = (user?.data as { name: string })?.name || "<signature>";
