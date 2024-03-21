@@ -374,10 +374,6 @@ function DeleteSessionModalBody({
     }
   }, [backUrl, isSuccess, isWaiting, navigate]);
 
-  // if (isSuccess && !isWaiting) {
-  //   return <Redirect push to={sessionsListUrl} />;
-  // }
-
   const annotations = session
     ? (NotebooksHelper.cleanAnnotations(
         session.annotations

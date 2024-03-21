@@ -416,36 +416,6 @@ export default function ActiveSessionButton({
         status={status}
         toggleModal={toggleModifySession}
       />
-
-      {/* {deleteAction}
-          {modifyAction}
-          {(hibernateAction || deleteAction || modifyAction) && (
-            <DropdownItem divider />
-          )}
-    
-          {openInNewTabAction}
-          {logsAction}
-          {(openInNewTabAction || logsAction) && <DropdownItem divider />}
-    
-          {createSessionLinkAction}
-    
-          <ConfirmDeleteModal
-            annotations={annotations}
-            isOpen={showModalStopSession}
-            isStopping={isStopping}
-            onStopSession={onStopSession}
-            sessionName={session.name}
-            status={status}
-            toggleModal={toggleStopSession}
-          />
-          <ModifySessionModal
-            annotations={annotations}
-            isOpen={showModalModifySession}
-            onModifySession={onModifySession}
-            resources={session.resources}
-            status={status}
-            toggleModal={toggleModifySession}
-          /> */}
     </ButtonWithMenu>
   );
 }
