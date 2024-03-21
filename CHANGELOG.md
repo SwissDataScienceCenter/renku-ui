@@ -2,6 +2,8 @@
 
 ## [3.20.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.1...3.20.2) (2024-03-21)
 
+### Bug Fixes
+
 - fix Keycloak sync fallback by calling /user endpoint when logged in ([#3080](https://github.com/SwissDataScienceCenter/renku-ui/pull/3080))
 
 ## [3.20.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.0...3.20.1) (2024-02-08)
