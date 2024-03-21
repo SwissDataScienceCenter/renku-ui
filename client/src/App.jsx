@@ -23,6 +23,7 @@
  *  Coordinator for the application.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Redirect, useLocation } from "react-router";
@@ -39,7 +40,11 @@ import LazyDashboard from "./features/dashboard/LazyDashboard";
 import LazyInactiveKGProjectsPage from "./features/inactiveKgProjects/LazyInactiveKGProjectsPage";
 import LazySearchPage from "./features/kgSearch/LazySearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
+import LazyProjectV2List from "./features/projectsV2/LazyProjectV2List";
+import LazyProjectV2New from "./features/projectsV2/LazyProjectV2New";
+import LazyProjectV2Show from "./features/projectsV2/LazyProjectV2Show";
 import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
+import { useGetUserQuery } from "./features/user/dataServicesUser.api";
 import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
 import LazyHelp from "./help/LazyHelp";
 import LazyAnonymousHome from "./landing/LazyAnonymousHome";
@@ -51,9 +56,6 @@ import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
-import LazyProjectV2List from "./features/projectsV2/LazyProjectV2List";
-import LazyProjectV2New from "./features/projectsV2/LazyProjectV2New";
-import LazyProjectV2Show from "./features/projectsV2/LazyProjectV2Show";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
@@ -73,9 +75,12 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 function CentralContentContainer(props) {
   const { coreApiVersionedUrlConfig, notifications, socket, user } = props;
 
-  const { data: userInfo } = useGetUserInfoQuery(undefined, {
-    skip: !props.user.logged,
-  });
+  const { data: userInfo } = useGetUserInfoQuery(
+    props.user.logged ? undefined : skipToken
+  );
+  // ? In the future, we should get the user info from `renku-data-services` instead of Keycloak.
+  // ? See: https://github.com/SwissDataScienceCenter/renku-ui/pull/3080.
+  useGetUserQuery(props.user.logged ? undefined : skipToken);
 
   const appContext = {
     client: props.client,
