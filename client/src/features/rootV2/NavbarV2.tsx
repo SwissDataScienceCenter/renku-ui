@@ -42,12 +42,12 @@ export default function NavbarV2() {
         <Nav className={cx("navbar-nav", "flex-row", "gap-4")}>
           <NavItem>
             <RenkuNavLinkV2 end to="search" title="Search">
-              Search v2
+              Search
             </RenkuNavLinkV2>
           </NavItem>
           <NavItem>
             <RenkuNavLinkV2 end to="projects" title="Projects">
-              Projects v2
+              Projects
             </RenkuNavLinkV2>
           </NavItem>
         </Nav>

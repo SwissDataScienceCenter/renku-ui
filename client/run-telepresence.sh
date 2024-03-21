@@ -86,11 +86,6 @@ then
   DEV_NAMESPACE=renku-ci-ui-${PR}
   SERVICE_NAME=renku-ci-ui-${PR}-ui
   echo "Deploying to environment for PR ${PR}: ($DEV_NAMESPACE.dev.renku.ch)"
-elif [[ -n $NAMESPACE ]]
-then
-  DEV_NAMESPACE=${NAMESPACE}
-  SERVICE_NAME=${NAMESPACE}-ui
-  echo "Deploying to environment for namespace ${NAMESPACE}: ($DEV_NAMESPACE.dev.renku.ch)"
 fi
 
 if [[ $CURRENT_CONTEXT == 'minikube' ]]

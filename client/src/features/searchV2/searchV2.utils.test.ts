@@ -55,7 +55,7 @@ describe("Test the searchV2.utils functions", () => {
 
     // Adds filters to the default string
     searchState.filters = {
-      role: ["creator", "member"],
+      role: ["owner", "member"],
       type: ["project"],
       visibility: ["private"],
       created: {

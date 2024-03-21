@@ -26,7 +26,6 @@ import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { Url } from "../../../utils/helpers/url/Url";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { ProjectSearchResult, UserSearchResult } from "../searchV2.types";
 import { Pagination } from "../../../components/Pagination";
 import { setCreatedBy, setPage } from "../searchV2.slice";
@@ -92,23 +91,26 @@ function SearchV2ResultsContent() {
     );
   }
 
-  const resultsOutput = searchResults.data.items.map((entity) => {
+  const resultsOutput = searchResults.data.items.map((entity, index) => {
     if (entity.type === "Project") {
       return (
         <SearchV2ResultProject
           searchByUser={(userId) => {
             dispatch(setCreatedBy(userId));
           }}
-          key={entity.id}
+          key={`project-result-${entity.id}`}
           project={entity}
         />
       );
     } else if (entity.type === "User") {
-      return <SearchV2ResultUser key={entity.id} user={entity} />;
+      return (
+        <SearchV2ResultUser key={`user-result-${entity.id}`} user={entity} />
+      );
     }
     // Unknown entity type, in case backend introduces new types before the UI catches up
-    const fakeId = simpleHash(Math.random().toString());
-    return <SearchV2ResultsUnknown key={fakeId} fakeId={fakeId} />;
+    return (
+      <SearchV2ResultsUnknown key={`unknown-result-${index}`} index={index} />
+    );
   });
 
   return <Row className="gy-4">{resultsOutput}</Row>;
@@ -141,7 +143,10 @@ function SearchV2ResultProject({
 }: SearchV2ResultProjectProps) {
   const url = Url.get(Url.pages.v2Projects.show, { id: project.id });
   return (
-    <SearchV2ResultsCard key={project.id} cardId={project.id}>
+    <SearchV2ResultsCard
+      key={`project-${project.id}`}
+      cardId={`project-card-${project.id}`}
+    >
       <Link to={url}>
         <h4 className="mb-0">{project.name}</h4>
       </Link>
@@ -170,7 +175,10 @@ interface SearchV2ResultUserProps {
 }
 function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
   return (
-    <SearchV2ResultsCard key={user.id} cardId={user.id}>
+    <SearchV2ResultsCard
+      key={`user-${user.id}`}
+      cardId={`user-card-${user.id}`}
+    >
       <p className="form-text mb-0">{user.id}</p>
       <h4 className="mb-0">
         {user.firstName} {user.lastName}
@@ -181,11 +189,15 @@ function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
 }
 
 interface SearchV2ResultsUnknownProps {
-  fakeId: string;
+  index: number;
 }
-function SearchV2ResultsUnknown({ fakeId }: SearchV2ResultsUnknownProps) {
+function SearchV2ResultsUnknown({ index }: SearchV2ResultsUnknownProps) {
   return (
-    <SearchV2ResultsCard key={fakeId} cardId={fakeId} url="#">
+    <SearchV2ResultsCard
+      key={`unknown-${index}`}
+      cardId={`unknown-card-${index}`}
+      url="#"
+    >
       <h4 className="mb-0">Unknown entity</h4>
       <p className="form-text mb-0">This entity type is not supported yet.</p>
     </SearchV2ResultsCard>

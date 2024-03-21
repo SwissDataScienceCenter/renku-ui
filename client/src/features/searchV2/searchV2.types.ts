@@ -70,7 +70,7 @@ export interface DateFilter {
 }
 export interface SearchV2State {
   filters: {
-    role: ("creator" | "member" | "none")[];
+    role: ("owner" | "member")[];
     type: ("project" | "user")[];
     visibility: ("private" | "public")[];
     created: DateFilter;
