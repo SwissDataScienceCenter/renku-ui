@@ -23,12 +23,13 @@
  *  Coordinator for the application.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Redirect, useLocation } from "react-router";
 import { Route, Switch } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import { CompatRoute } from "react-router-dom-v5-compat";
+import { ToastContainer } from "react-toastify";
 
 import { LoginHelper, LoginRedirect } from "./authentication";
 import { Loader } from "./components/Loader";
@@ -42,6 +43,7 @@ import LazySearchPage from "./features/kgSearch/LazySearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
+import { useGetUserQuery } from "./features/user/dataServicesUser.api";
 import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
 import LazyHelp from "./help/LazyHelp";
 import LazyAnonymousHome from "./landing/LazyAnonymousHome";
@@ -72,9 +74,12 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 function CentralContentContainer(props) {
   const { coreApiVersionedUrlConfig, notifications, socket, user } = props;
 
-  const { data: userInfo } = useGetUserInfoQuery(undefined, {
-    skip: !props.user.logged,
-  });
+  const { data: userInfo } = useGetUserInfoQuery(
+    props.user.logged ? undefined : skipToken
+  );
+  // ? In the future, we should get the user info from `renku-data-services` instead of Keycloak.
+  // ? See: https://github.com/SwissDataScienceCenter/renku-ui/pull/3080.
+  useGetUserQuery(props.user.logged ? undefined : skipToken);
 
   const appContext = {
     client: props.client,

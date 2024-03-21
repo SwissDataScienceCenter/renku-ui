@@ -347,7 +347,7 @@ class FileLineage extends Component {
               </div>
             ) : null}
             <span className="fileBarIconButton">
-              <Clipboard clipboardText={this.props.path} className="d-flex" />
+              <Clipboard clipboardText={this.props.path} />
             </span>
           </div>
 
