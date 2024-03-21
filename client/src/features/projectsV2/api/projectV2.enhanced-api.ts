@@ -81,9 +81,6 @@ const injectedApi = api.injectEndpoints({
         };
       },
     }),
-    refetchNamespaces: builder.mutation<null, void>({
-      queryFn: () => ({ data: null }),
-    }),
     getProjectsPaged: builder.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: "/projects",
@@ -146,6 +143,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getNamespaces: {
       providesTags: ["Namespace"],
     },
+    getNamespacesPaged: {
+      providesTags: ["Namespace"],
+    },
     // alternatively, define a function which is called with the endpoint definition as an argument
     getProjects: {
       providesTags: ["Project"],
@@ -160,7 +160,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       providesTags: ["ProjectMembers"],
     },
     patchGroupsByGroupSlug: {
-      invalidatesTags: ["Group"],
+      invalidatesTags: ["Group", "Namespace"],
     },
     patchGroupsByGroupSlugMembers: {
       invalidatesTags: ["GroupMembers"],
@@ -172,13 +172,10 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       invalidatesTags: ["ProjectMembers"],
     },
     postGroups: {
-      invalidatesTags: ["Group"],
+      invalidatesTags: ["Group", "Namespace"],
     },
     postProjects: {
       invalidatesTags: ["Project"],
-    },
-    refetchNamespaces: {
-      invalidatesTags: ["Namespace"],
     },
   },
 });
@@ -209,7 +206,6 @@ export const {
   useGetNamespacesPagedQuery: useGetNamespacesQuery,
   useLazyGetNamespacesPagedQuery: useLazyGetNamespacesQuery,
   useGetNamespacesByGroupSlugQuery,
-  useRefetchNamespacesMutation,
 } = enhancedApi;
 
 export function isErrorResponse(arg: unknown): arg is { data: ErrorResponse } {

@@ -41,13 +41,14 @@ import { Loader } from "../../../components/Loader";
 import type { PaginatedState } from "../../session/components/options/fetchMore.types";
 import type { GetNamespacesApiResponse } from "../api/projectV2.enhanced-api";
 import {
+  projectV2Api,
   useGetNamespacesQuery,
   useLazyGetNamespacesQuery,
-  useRefetchNamespacesMutation,
 } from "../api/projectV2.enhanced-api";
 
 import type { GenericFormFieldProps } from "./formField.types";
 import styles from "./ProjectNamespaceFormField.module.scss";
+import { useDispatch } from "react-redux";
 
 type ResponseNamespaces = GetNamespacesApiResponse["namespaces"];
 type ResponseNamespace = ResponseNamespaces[number];
@@ -226,7 +227,10 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
   name,
 }: GenericFormFieldProps<T>) {
   // Handle forced refresh
-  const [refetch] = useRefetchNamespacesMutation();
+  const dispatch = useDispatch();
+  const refetch = useCallback(() => {
+    dispatch(projectV2Api.util.invalidateTags(["Namespace"]));
+  }, [dispatch]);
   return (
     <div className="mb-3">
       <Label className="form-label" for={`${entityName}-namespace`}>
