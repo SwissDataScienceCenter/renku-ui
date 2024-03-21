@@ -64,31 +64,37 @@ describe("Test the searchV2.utils functions", () => {
       createdBy: "",
     };
     expect(buildSearchQuery(searchState)).toEqual(
-      "sort:score-desc role:creator,member type:project visibility:private test"
+      "sort:score-desc type:project visibility:private test"
     );
 
     // Let users override sorting
     searchState.search.query = "test sort:name-asc";
     expect(buildSearchQuery(searchState)).toEqual(
-      "role:creator,member type:project visibility:private test sort:name-asc"
+      "type:project visibility:private test sort:name-asc"
     );
 
     // Let users override filters
-    searchState.search.query = "test sort:name-desc type:user role:none";
+    searchState.search.query = "test sort:name-desc type:user";
     expect(buildSearchQuery(searchState)).toEqual(
-      "visibility:private test sort:name-desc type:user role:none"
+      "visibility:private test sort:name-desc type:user"
     );
 
     //Update date filter
     searchState.filters.created.option = DateFilterTypes.last90days;
     expect(buildSearchQuery(searchState)).toEqual(
-      "visibility:private created>today-90d test sort:name-desc type:user role:none"
+      "visibility:private created>today-90d test sort:name-desc type:user"
     );
 
     //Update createdBy filter
     searchState.filters.createdBy = "abc";
     expect(buildSearchQuery(searchState)).toEqual(
-      "visibility:private created>today-90d createdBy:abc test sort:name-desc type:user role:none"
+      "visibility:private created>today-90d createdBy:abc test sort:name-desc type:user"
+    );
+
+    //Update role filter
+    searchState.filters.role = ["owner"];
+    expect(buildSearchQuery(searchState)).toEqual(
+      "role:owner visibility:private created>today-90d createdBy:abc test sort:name-desc type:user"
     );
   });
 });

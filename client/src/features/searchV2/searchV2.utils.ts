@@ -26,9 +26,8 @@ import {
 
 export const AVAILABLE_FILTERS = {
   role: {
-    creator: "Creator",
+    owner: "Owner",
     member: "Member",
-    none: "None",
   },
   type: {
     project: "Project",

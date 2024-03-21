@@ -100,7 +100,7 @@ export const searchV2Slice = createSlice({
       const updatedArray = toggleArrayItem(
         [...arrayToUpdate],
         action.payload.value
-      ) as ("creator" | "member" | "none")[] &
+      ) as ("owner" | "member")[] &
         ("project" | "user")[] &
         ("private" | "public")[];
 
