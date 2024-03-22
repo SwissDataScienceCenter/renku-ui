@@ -29,7 +29,7 @@ interface ListManyProjectArgs extends NameOnlyFixture {
 
 interface ListProjectV2MembersFixture extends ProjectV2Args {
   removeMemberId?: string;
-  addMember?: { member: { id: string; email: string }; role: string };
+  addMember?: { id: string; email: string; role: string };
 }
 
 interface ProjectV2Args extends SimpleFixture {
@@ -151,7 +151,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       cy.fixture(fixture).then((content) => {
         const result = content.filter(
-          (memberWithRole) => memberWithRole.member.id !== removeMemberId
+          (memberWithRole) => memberWithRole.id !== removeMemberId
         );
         if (addMember != null) result.push(addMember);
         const response = { body: result };

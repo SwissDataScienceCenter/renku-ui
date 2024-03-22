@@ -288,7 +288,8 @@ describe("Edit v2 project", () => {
     cy.wait("@getExactUserSuccess");
     fixtures.patchProjectV2Member().listProjectV2Members({
       addMember: {
-        member: { id: "foo-id", email: "foo@bar.com" },
+        id: "foo-id",
+        email: "foo@bar.com",
         role: "member",
       },
       removeMemberId: projectMemberToRemove,
@@ -296,7 +297,7 @@ describe("Edit v2 project", () => {
     cy.get("button").contains("Add Member").should("be.visible").click();
     cy.contains("foo@bar.com").should("be.visible");
 
-    cy.contains("Add").should("be.visible").click();
+    cy.get("button").contains("Add").should("be.visible").click();
     cy.getDataCy("add-project-member-email").clear().type("noone@bar.com");
     cy.contains("Lookup").should("be.visible").click();
     cy.wait("@getExactUserFail");

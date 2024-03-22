@@ -53,7 +53,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/projects/${queryArg.projectId}/members`,
         method: "PATCH",
-        body: queryArg.membersWithRoles,
+        body: queryArg.projectMemberListPatchRequest,
       }),
     }),
     deleteProjectsByProjectIdMembersAndMemberId: build.mutation<
@@ -101,7 +101,7 @@ export type DeleteProjectsByProjectIdApiArg = {
   projectId: string;
 };
 export type GetProjectsByProjectIdMembersApiResponse =
-  /** status 200 The project's members */ FullUsersWithRoles;
+  /** status 200 The project's members */ ProjectMemberListResponse;
 export type GetProjectsByProjectIdMembersApiArg = {
   projectId: string;
 };
@@ -109,7 +109,7 @@ export type PatchProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members were updated */ void;
 export type PatchProjectsByProjectIdMembersApiArg = {
   projectId: string;
-  membersWithRoles: MembersWithRoles;
+  projectMemberListPatchRequest: ProjectMemberListPatchRequest;
 };
 export type DeleteProjectsByProjectIdMembersAndMemberIdApiResponse =
   /** status 204 The member was removed or wasn't part of project's members. */ void;
@@ -122,10 +122,7 @@ export type Ulid = string;
 export type Name = string;
 export type Slug = string;
 export type CreationDate = string;
-export type KeyCloakId = string;
-export type Member = {
-  id: KeyCloakId;
-};
+export type UserId = string;
 export type Repository = string;
 export type RepositoriesList = Repository[];
 export type Visibility = "private" | "public";
@@ -137,7 +134,7 @@ export type Project = {
   namespace: Slug;
   slug: Slug;
   creation_date: CreationDate;
-  created_by: Member;
+  created_by: UserId;
   repositories?: RepositoriesList;
   visibility: Visibility;
   description?: Description;
@@ -166,26 +163,22 @@ export type ProjectPatch = {
   visibility?: Visibility;
   description?: Description;
 };
-export type UserId = string;
 export type UserEmail = string;
 export type UserFirstLastName = string;
-export type UserWithId = {
+export type Role = "member" | "owner";
+export type ProjectMemberResponse = {
   id: UserId;
   email?: UserEmail;
   first_name?: UserFirstLastName;
   last_name?: UserFirstLastName;
-};
-export type Role = "member" | "owner";
-export type FullUserWithRole = {
-  member: UserWithId;
   role: Role;
 };
-export type FullUsersWithRoles = FullUserWithRole[];
-export type MemberWithRole = {
-  member: Member;
+export type ProjectMemberListResponse = ProjectMemberResponse[];
+export type ProjectMemberPatchRequest = {
+  id: UserId;
   role: Role;
 };
-export type MembersWithRoles = MemberWithRole[];
+export type ProjectMemberListPatchRequest = ProjectMemberPatchRequest[];
 export const {
   useGetProjectsQuery,
   usePostProjectsMutation,

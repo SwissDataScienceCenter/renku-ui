@@ -39,7 +39,11 @@ import {
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMutation,
 } from "../api/projectV2.enhanced-api";
-import type { Member, Project, ProjectPatch } from "../api/projectV2.api";
+import type {
+  Project,
+  ProjectMemberResponse,
+  ProjectPatch,
+} from "../api/projectV2.api";
 import type { Repository } from "../projectV2.types";
 
 import AddProjectMemberModal from "../fields/AddProjectMemberModal";
@@ -253,7 +257,7 @@ export function ProjectV2MembersForm({
   }, [setSettingEdit]);
 
   const onDelete = useCallback(
-    (member: Member) => {
+    (member: ProjectMemberResponse) => {
       deleteMember({ projectId: project.id, memberId: member.id });
     },
     [deleteMember, project.id]
@@ -287,14 +291,14 @@ export function ProjectV2MembersForm({
         <tbody>
           {data.map((d, i) => {
             return (
-              <tr key={d.member.id}>
-                <td>{d.member.email ?? d.member.id}</td>
+              <tr key={d.id}>
+                <td>{d.email ?? d.id}</td>
                 <td>{d.role}</td>
                 <td>
                   <Button
                     color="outline-danger"
                     data-cy={`delete-member-${i}`}
-                    onClick={() => onDelete(d.member)}
+                    onClick={() => onDelete(d)}
                   >
                     Delete
                   </Button>
