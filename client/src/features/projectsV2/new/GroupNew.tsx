@@ -31,7 +31,7 @@ import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
 
 import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
-import type { GroupPostRequest } from "../api/group.api";
+import type { GroupPostRequest } from "../api/namespace.api";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";

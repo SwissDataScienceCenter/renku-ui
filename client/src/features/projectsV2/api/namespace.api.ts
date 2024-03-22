@@ -79,7 +79,7 @@ const injectedRtkApi = api.injectEndpoints({
   }),
   overrideExisting: false,
 });
-export { injectedRtkApi as projectAndGroupApi };
+export { injectedRtkApi as projectAndNamespaceApi };
 export type GetGroupsApiResponse =
   /** status 200 List of groups */ GroupResponseList;
 export type GetGroupsApiArg = {

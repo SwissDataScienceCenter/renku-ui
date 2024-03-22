@@ -35,7 +35,7 @@ import {
   isErrorResponse,
   useGetGroupsByGroupSlugQuery,
 } from "../api/projectV2.enhanced-api";
-import type { GroupResponse } from "../api/group.api";
+import type { GroupResponse } from "../api/namespace.api";
 import WipBadge from "../shared/WipBadge";
 
 import { SettingEditOption } from "./groupShow.types";

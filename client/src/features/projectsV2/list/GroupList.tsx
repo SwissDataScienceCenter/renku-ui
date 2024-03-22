@@ -26,7 +26,7 @@ import { TimeCaption } from "../../../components/TimeCaption";
 import { Url } from "../../../utils/helpers/url";
 
 import { useGetGroupsQuery } from "../api/projectV2.enhanced-api";
-import type { GroupResponse } from "../api/group.api";
+import type { GroupResponse } from "../api/namespace.api";
 import WipBadge from "../shared/WipBadge";
 
 import styles from "./projectV2List.module.scss";

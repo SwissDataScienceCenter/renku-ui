@@ -44,7 +44,7 @@ import type {
   GroupMemberResponse,
   GroupResponse,
   GroupPatchRequest,
-} from "../api/group.api";
+} from "../api/namespace.api";
 
 import AddGroupMemberModal from "../fields/AddGroupMemberModal";
 

@@ -1,7 +1,7 @@
 import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
 
-import { projectAndGroupApi as api } from "././group.api";
+import { projectAndNamespaceApi as api } from "./namespace.api";
 import type {
   ErrorResponse,
   GetProjectsApiArg,
@@ -16,7 +16,7 @@ import type {
   GetNamespacesApiArg,
   GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
   NamespaceResponseList,
-} from "./group.api";
+} from "./namespace.api";
 
 interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;

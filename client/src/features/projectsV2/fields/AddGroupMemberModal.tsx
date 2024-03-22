@@ -40,7 +40,7 @@ import type { UserWithId } from "../../user/dataServicesUser.api";
 import type {
   GroupMemberResponseList,
   GroupMemberPatchRequest,
-} from "../api/group.api";
+} from "../api/namespace.api";
 import { usePatchGroupsByGroupSlugMembersMutation } from "../api/projectV2.enhanced-api";
 
 import AddEntityMemberEmailLookupForm from "./AddEntityMemberLookupForm";
