@@ -9,8 +9,8 @@
 - ad-hoc feature flag for Renku 2.0 ([#3051](https://github.com/SwissDataScienceCenter/renku-ui/pull/3051))
 - adapt session storage to repository ([#3057](https://github.com/SwissDataScienceCenter/renku-ui/issues/3057), [#3058](https://github.com/SwissDataScienceCenter/renku-ui/pull/3058))
 - add support for entity tags on Renku 2.0 projects ([#3067](https://github.com/SwissDataScienceCenter/renku-ui/pull/3067))
-- Renku 2.0 Sessions ([#3037](https://github.com/SwissDataScienceCenter/renku-ui/pull/3037))
-- Search and Discovery for Renku 2.0 ([#3032](https://github.com/SwissDataScienceCenter/renku-ui/pull/3032))
+- add sessions for Renku 2.0 projects ([#3037](https://github.com/SwissDataScienceCenter/renku-ui/pull/3037))
+- add search for projects and users on Renku 2.0 ([#3032](https://github.com/SwissDataScienceCenter/renku-ui/pull/3032))
 
 ### Bug Fixes
 
