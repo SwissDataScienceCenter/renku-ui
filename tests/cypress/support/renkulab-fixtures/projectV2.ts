@@ -53,7 +53,7 @@ export function generateProjects(numberOfProjects: number, start: number) {
       name: `test ${id} v2-project`,
       slug: `test-${id}-v2-project`,
       creation_date: "2023-11-15T09:55:59Z",
-      created_by: { id: "user1-uuid" },
+      created_by: "user1-uuid",
       repositories: [
         "https://domain.name/repo1.git",
         "https://domain.name/repo2.git",

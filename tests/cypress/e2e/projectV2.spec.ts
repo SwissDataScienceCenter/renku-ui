@@ -59,10 +59,10 @@ describe("Add new v2 project", () => {
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click();
-    cy.contains("user1-uuid").should("exist");
+    cy.contains("user1.uuid").should("exist");
     cy.contains("Set Visibility").click();
     cy.contains("Back").click();
-    cy.contains("user1-uuid").should("exist");
+    cy.contains("user1.uuid").should("exist");
   });
 
   it("keeps namespace set after going back", () => {
@@ -72,10 +72,10 @@ describe("Add new v2 project", () => {
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click();
-    cy.contains("user1-uuid").should("exist");
+    cy.contains("user1.uuid").should("exist");
     cy.contains("Set Visibility").click();
     cy.contains("Back").click();
-    cy.contains("user1-uuid").should("exist");
+    cy.contains("user1.uuid").should("exist");
   });
 
   it("prevents invalid input", () => {

@@ -57,7 +57,7 @@ function generateGroups(numberOfGroups: number, start: number) {
       name: `test ${id} group-v2`,
       slug,
       creation_date: "2023-11-15T09:55:59Z",
-      created_by: { id: "user1-uuid" },
+      created_by: "user1-uuid",
       description: `Group ${slug} description`,
     };
     groups.push(group);
@@ -75,7 +75,7 @@ function generateNamespaces(numberOfNamespaces: number, start: number) {
       name: `test ${id} group-v2`,
       slug,
       creation_date: "2023-11-15T09:55:59Z",
-      created_by: { id: "user1-uuid" },
+      created_by: "user1-uuid",
       namespace_kind: "group",
     };
     groups.push(group);
