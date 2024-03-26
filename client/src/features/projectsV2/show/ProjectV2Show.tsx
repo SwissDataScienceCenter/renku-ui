@@ -31,11 +31,12 @@ import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { Url } from "../../../utils/helpers/url";
 
+import SessionsV2 from "../../sessionsV2/SessionsV2";
+import type { Project } from "../api/projectV2.api";
 import {
   isErrorResponse,
   useGetProjectsByProjectIdQuery,
 } from "../api/projectV2.enhanced-api";
-import type { Project } from "../api/projectV2.api";
 import WipBadge from "../shared/WipBadge";
 
 import {
@@ -200,7 +201,10 @@ export default function ProjectV2Show() {
       }
     >
       {settingEdit == null && (
-        <ProjectV2DescriptionAndRepositories project={data} />
+        <>
+          <ProjectV2DescriptionAndRepositories project={data} />
+          <SessionsV2 project={data} />
+        </>
       )}
       {settingEdit == "members" && (
         <ProjectV2MembersForm project={data} setSettingEdit={setSettingEdit} />

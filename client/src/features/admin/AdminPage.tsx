@@ -44,6 +44,7 @@ import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
+import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import {
@@ -63,6 +64,7 @@ export default function AdminPage() {
     <>
       <h1 className={cx("fs-2", "mb-3")}>Admin Panel</h1>
       <ComputeResourcesSection />
+      <SessionEnvironmentsSection />
     </>
   );
 }

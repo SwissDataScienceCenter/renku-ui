@@ -325,11 +325,12 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
             role="link"
           />
         </DropdownItem>
+
         <AdminDropdownItem />
 
         {renku10Enabled && (
           <Link to="/v2/projects" className="dropdown-item">
-            Renku 1.0
+            Renku 2.0
           </Link>
         )}
 

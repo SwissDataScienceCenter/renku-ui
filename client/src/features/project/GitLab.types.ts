@@ -20,8 +20,13 @@ import { Visibilities } from "../../components/visibility/Visibility";
 import { PaginatedResponse } from "../../utils/types/pagination.types";
 
 export interface GitlabProjectResponse {
-  visibility: Visibilities;
+  id: number;
+  default_branch: string;
+  http_url_to_repo: string;
+  namespace: { full_path: string };
+  path: string;
   path_with_namespace: string;
+  visibility: Visibilities;
 }
 
 // GitLab Pipelines API
