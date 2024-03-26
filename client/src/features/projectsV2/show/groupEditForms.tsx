@@ -92,7 +92,9 @@ function GroupDeleteConfirmation({
           Are you absolutely sure?
         </h3>
         <p className="mb-0">
-          Deleted projects cannot be restored. Please type{" "}
+          Deleting a group{" "}
+          <strong>will also delete all projects in the group</strong>, and
+          deleted groups and projects cannot be restored. Please type{" "}
           <strong>{group.slug}</strong>, the slug of the group, to confirm.
         </p>
         <Input
