@@ -29,7 +29,7 @@
 ### BREAKING CHANGES
 
 - Requires renku-notebooks version >= 1.22.0
-- Requires renku-data services version >= 6.0.0
+- Requires renku-data services version >= 0.6.0
 - Requires renku >= 0.50.0 (New services: `solr`, `renku-search`)
 
 ## [3.20.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.1...3.20.2) (2024-03-21)
