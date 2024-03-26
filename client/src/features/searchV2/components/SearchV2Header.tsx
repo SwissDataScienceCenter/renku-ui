@@ -41,7 +41,7 @@ export default function SearchV2Header() {
   const searchQuery = search.lastSearch;
   const total =
     searchResults.data?.items.length != null
-      ? searchResults.data?.items.length
+      ? searchResults.data?.pagingInfo.totalResult
       : 0;
   const setNewSorting = useCallback(
     (newSorting: keyof typeof AVAILABLE_SORTING) => {

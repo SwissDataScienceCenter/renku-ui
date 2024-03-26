@@ -40,7 +40,7 @@ export const AVAILABLE_FILTERS = {
 };
 
 export const ANONYMOUS_USERS_EXCLUDE_FILTERS: (keyof typeof AVAILABLE_FILTERS)[] =
-  ["visibility"];
+  ["visibility", "role"];
 
 export const AVAILABLE_SORTING: SortingItems = {
   scoreDesc: {
@@ -124,10 +124,10 @@ export const buildSearchQuery = (searchState: SearchV2State): string => {
     const totalAvailableFilters = Object.keys(
       AVAILABLE_FILTERS[filterName as "role" | "visibility" | "type"]
     ).length;
-    // Exclude empty filters and filters where all members are selected
+    // Exclude empty filters and filters where all members are selected, only role should add the filter even if both are selected
     if (
       filter.length > 0 &&
-      filter.length < totalAvailableFilters &&
+      (filter.length < totalAvailableFilters || filterName == "role") &&
       !query.includes(filterPrefix)
     ) {
       searchQueryItems.push(`${filterPrefix}${filter.join(",")}`);

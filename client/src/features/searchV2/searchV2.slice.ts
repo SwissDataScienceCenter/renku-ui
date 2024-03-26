@@ -40,7 +40,7 @@ const initialState: SearchV2State = {
     totalResults: 0,
   },
   filters: {
-    role: ["owner", "member"],
+    role: [],
     type: ["project"],
     visibility: ["public", "private"],
     created: {
