@@ -174,14 +174,14 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
           }
         >
           <SearchResultsHeader
-            total={error ? 0 : data?.total}
+            handleSort={(value: SortingOptions) => setSort(value)}
+            isFiltersOpened={isOpenFilter}
+            isOpenFilterModal={isOpenFilterModal}
             phrase={decodeURIComponent(phrase)}
             sort={sort}
-            isFiltersOpened={isOpenFilter}
             toggleFilter={() => setIsOpenFilter(!isOpenFilter)}
             toggleFilterModal={setIsOpenFilterModal}
-            isOpenFilterModal={isOpenFilterModal}
-            handleSort={(value: SortingOptions) => setSort(value)}
+            total={error ? 0 : data?.total}
           />
         </Col>
         {filter}

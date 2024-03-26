@@ -47,6 +47,8 @@ import { projectsApi } from "../../features/projects/projects.api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
+import searchV2Api from "../../features/searchV2/searchV2.api";
+import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import sessionsApi from "../../features/session/sessions.api";
 import sessionSidecarApi from "../../features/session/sidecar.api";
 import startSessionSlice from "../../features/session/startSession.slice";
@@ -76,6 +78,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [displaySlice.name]: displaySlice.reducer,
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
+    [searchV2Slice.name]: searchV2Slice.reducer,
     [sessionConfigV2Slice.name]: sessionConfigV2Slice.reducer,
     [startSessionSlice.name]: startSessionSlice.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
@@ -99,6 +102,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectV2Api.reducerPath]: projectV2Api.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
+    [searchV2Api.reducerPath]: searchV2Api.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
@@ -133,8 +137,9 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectsApi.middleware)
         .concat(projectV2Api.middleware)
         .concat(recentUserActivityApi.middleware)
-        .concat(sessionSidecarApi.middleware)
+        .concat(searchV2Api.middleware)
         .concat(sessionsApi.middleware)
+        .concat(sessionSidecarApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsV2Api.middleware)
         .concat(termsApi.middleware)

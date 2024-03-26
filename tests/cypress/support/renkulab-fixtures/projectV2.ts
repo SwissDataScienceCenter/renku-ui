@@ -44,7 +44,7 @@ interface ProjectV2DeleteMemberFixture extends ProjectV2Args {
   memberId?: string;
 }
 
-function generateProjects(numberOfProjects: number, start: number) {
+export function generateProjects(numberOfProjects: number, start: number) {
   const projects = [];
   for (let i = 0; i < numberOfProjects; ++i) {
     const id = start + i;
