@@ -69,11 +69,7 @@ describe("Add new v2 project", () => {
     cy.contains("New Project (V2)").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").should("have.value", slug);
-    cy.findReactSelectOptions(
-      "@listV2Namespace",
-      "project-namespace-input",
-      "namespace-select"
-    )
+    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click();
     cy.contains("user1-uuid").should("exist");
