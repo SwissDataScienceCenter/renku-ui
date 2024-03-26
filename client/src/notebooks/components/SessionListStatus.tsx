@@ -25,8 +25,10 @@ import {
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { Clipboard } from "../../components/clipboard/Clipboard";
 import SessionHibernationStatusDetails from "../../features/session/components/status/SessionHibernationStatusDetails";
+import { PrettySessionErrorMessage } from "../../features/session/components/status/SessionStatusBadge";
 import SessionStatusIcon from "../../features/session/components/status/SessionStatusIcon";
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";
 import { SessionStatusState } from "../../features/session/sessions.types";
@@ -55,8 +57,7 @@ function SessionListRowStatusExtraDetails({
     <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
       <PopoverHeader>Kubernetes pod status</PopoverHeader>
       <PopoverBody>
-        <span>{details.message}</span>
-        <br />
+        <PrettySessionErrorMessage message={details.message} />
       </PopoverBody>
     </UncontrolledPopover>
   );
@@ -136,8 +137,7 @@ function SessionListRowStatusIconPopover({
       <UncontrolledPopover target={id} trigger="legacy" placement="right">
         <PopoverHeader>Kubernetes pod status</PopoverHeader>
         <PopoverBody>
-          <span>{details.message}</span>
-          <br />
+          <PrettySessionErrorMessage message={details.message} />
         </PopoverBody>
       </UncontrolledPopover>
     );
