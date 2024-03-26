@@ -7,7 +7,7 @@
 - change the url structure for Renku 2.0 projects ([#3026](https://github.com/SwissDataScienceCenter/renku-ui/pull/3026))
 - add an additional top bar for Renku 2.0 ([#3030](https://github.com/SwissDataScienceCenter/renku-ui/pull/3030))
 - ad-hoc feature flag for Renku 2.0 ([#3051](https://github.com/SwissDataScienceCenter/renku-ui/pull/3051))
-- adapt session storage to repository ([#3058](https://github.com/SwissDataScienceCenter/renku-ui/pull/3058))
+- adapt session storage to repository ([#3057](https://github.com/SwissDataScienceCenter/renku-ui/issues/3057), [#3058](https://github.com/SwissDataScienceCenter/renku-ui/pull/3058))
 - add support for entity tags on Renku 2.0 projects ([#3067](https://github.com/SwissDataScienceCenter/renku-ui/pull/3067))
 - Renku 2.0 Sessions ([#3037](https://github.com/SwissDataScienceCenter/renku-ui/pull/3037))
 - Search and Discovery for Renku 2.0 ([#3032](https://github.com/SwissDataScienceCenter/renku-ui/pull/3032))
@@ -22,9 +22,9 @@
 - some migration step for `react-router@v6` ([#3041](https://github.com/SwissDataScienceCenter/renku-ui/pull/3041))
 - update `tsconfig.json` ([#3066](https://github.com/SwissDataScienceCenter/renku-ui/pull/3066))
 - update appearance of copy button in file view ([#3078](https://github.com/SwissDataScienceCenter/renku-ui/pull/3078))
-- update footer links with Mastodon ([#3081](https://github.com/SwissDataScienceCenter/renku-ui/pull/3081))
-- update `react-pdf` version and fix it ([#3083](https://github.com/SwissDataScienceCenter/renku-ui/pull/3083))
-- improve session scheduling error messages ([#3082](https://github.com/SwissDataScienceCenter/renku-ui/pull/3082))
+- update footer links with Mastodon ([#3059](https://github.com/SwissDataScienceCenter/renku-ui/issues/3059), [#3081](https://github.com/SwissDataScienceCenter/renku-ui/pull/3081))
+- update `react-pdf` version and fix it ([#3006](https://github.com/SwissDataScienceCenter/renku-ui/issues/3006), [#3083](https://github.com/SwissDataScienceCenter/renku-ui/pull/3083))
+- improve session scheduling error messages ([#3036](https://github.com/SwissDataScienceCenter/renku-ui/issues/3036), [#3082](https://github.com/SwissDataScienceCenter/renku-ui/pull/3082))
 
 ### BREAKING CHANGES
 
