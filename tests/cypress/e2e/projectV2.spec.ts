@@ -33,14 +33,14 @@ describe("Add new v2 project", () => {
     cy.contains("New Project (V2)").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").should("have.value", slug);
-    cy.contains("Set Visibility").click();
-    cy.contains("Add repositories").click();
+    cy.contains("button", "Set Visibility").click();
+    cy.contains("button", "Add repositories").click();
     cy.getDataCy("project-add-repository").click();
     cy.getDataCy("project-repository-input-0")
       .clear()
       .type("https://domain.name/repo1.git");
-    cy.contains("Review").click();
-    cy.contains("Create").click();
+    cy.contains("button", "Review").click();
+    cy.contains("button", "Create").click();
 
     cy.contains("Creating project...").should("be.visible");
     cy.wait("@createProjectV2");
@@ -48,25 +48,25 @@ describe("Add new v2 project", () => {
   });
 
   it("prevents invalid input", () => {
-    cy.contains("Set Visibility").click();
+    cy.contains("button", "Set Visibility").click();
     cy.contains("Please provide a name").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").clear().type(newProjectTitle);
-    cy.contains("Set Visibility").click();
+    cy.contains("button", "Set Visibility").click();
     cy.contains(
       "Please provide a slug consisting of lowercase letters, numbers, and hyphens."
     ).should("be.visible");
     cy.getDataCy("project-slug-input").clear().type(slug);
-    cy.contains("Set Visibility").click();
+    cy.contains("button", "Set Visibility").click();
 
     cy.contains("Define access").should("be.visible");
     cy.getDataCy("project-visibility").select("Public");
-    cy.contains("Add repositories").click();
+    cy.contains("button", "Add repositories").click();
 
-    cy.contains("Review").click();
-    cy.contains("Back").click();
+    cy.contains("button", "Review").click();
+    cy.contains("button", "Back").click();
     cy.getDataCy("project-add-repository").click();
-    cy.contains("Review").click();
+    cy.contains("button", "Review").click();
     cy.contains("Please provide a valid URL or remove the repository").should(
       "be.visible"
     );
@@ -74,13 +74,13 @@ describe("Add new v2 project", () => {
       .clear()
       .type("https://domain.name/repo1.git");
 
-    cy.contains("Review").click();
+    cy.contains("button", "Review").click();
     cy.contains(newProjectTitle).should("be.visible");
     cy.contains(slug).should("be.visible");
     cy.contains("public").should("be.visible");
     cy.contains("https://domain.name/repo1.git").should("be.visible");
 
-    cy.contains("Create").click();
+    cy.contains("button", "Create").click();
 
     cy.contains("Creating project...").should("be.visible");
     cy.wait("@createProjectV2");

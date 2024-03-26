@@ -17,17 +17,26 @@
  */
 
 import cx from "classnames";
+import { useMatch } from "react-router-dom-v5-compat";
 import { Nav, NavItem, Navbar } from "reactstrap";
 
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import WipBadge from "../projectsV2/shared/WipBadge";
 
 export default function NavbarV2() {
+  const matchesShowSessionPage = useMatch(
+    "/v2/projects/:id/sessions/show/:session"
+  );
+
+  if (matchesShowSessionPage) {
+    return null;
+  }
+
   return (
     <header className={cx("px-4", "bg-rk-blue")}>
       <Navbar className="px-2">
         <div className={cx("text-white", "d-flex", "align-items-center")}>
-          <span className="me-1">Renku 1.0</span>
+          <span className="me-1">Renku 2.0</span>
           <WipBadge />
         </div>
         <Nav className="navbar-nav">
