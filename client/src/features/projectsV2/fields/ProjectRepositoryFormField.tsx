@@ -85,7 +85,10 @@ export default function ProjectRepositoryFormField({
             pattern: /^(http|https):\/\/[^ "]+$/,
           }}
         />
-        <Button className="ms-1" onClick={onDelete}>
+        <Button
+          className={cx("btn-outline-rk-green", "ms-1")}
+          onClick={onDelete}
+        >
           X
         </Button>
       </div>

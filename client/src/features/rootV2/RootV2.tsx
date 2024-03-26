@@ -28,7 +28,10 @@ import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
+import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
+import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import NavbarV2 from "./NavbarV2";
+import LazySearchV2 from "../searchV2/LazySearchV2";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -61,8 +64,16 @@ export default function RootV2() {
           <Route
             path="projects/*"
             element={
+              // <ContainerWrap>
+              <ProjectsV2Routes />
+              // </ContainerWrap>
+            }
+          />
+          <Route
+            path="search*"
+            element={
               <ContainerWrap>
-                <ProjectsV2Routes />
+                <LazySearchV2 />
               </ContainerWrap>
             }
           />
@@ -83,9 +94,62 @@ export default function RootV2() {
 function ProjectsV2Routes() {
   return (
     <Routes>
-      <Route path="/" element={<LazyProjectV2List />} />
-      <Route path="new" element={<LazyProjectV2New />} />
-      <Route path=":id" element={<LazyProjectV2Show />} />
+      <Route
+        path="/"
+        element={
+          <ContainerWrap>
+            <LazyProjectV2List />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path="new"
+        element={
+          <ContainerWrap>
+            <LazyProjectV2New />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path=":id"
+        element={
+          <ContainerWrap>
+            <LazyProjectV2Show />
+          </ContainerWrap>
+        }
+      />
+      <Route path=":id/sessions/*" element={<ProjectSessionsRoutes />} />
+    </Routes>
+  );
+}
+
+function ProjectSessionsRoutes() {
+  return (
+    <Routes>
+      <Route
+        path="show/:session"
+        element={
+          <ContainerWrap fullSize>
+            <LazyShowSessionPage />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path=":launcherId/start"
+        element={
+          <ContainerWrap>
+            <LazySessionStartPage />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <ContainerWrap fullSize>
+            <LazyNotFound />
+          </ContainerWrap>
+        }
+      />
     </Routes>
   );
 }

@@ -104,6 +104,24 @@ export interface StartSessionParams {
   storage: number;
 }
 
+export interface StartRenku2SessionParams {
+  projectId: string;
+  launcherId: string;
+  repositories: {
+    namespace: string;
+    project: string;
+    branch: string;
+    commitSha: string;
+  }[];
+  cloudStorage: SessionCloudStorage[];
+  defaultUrl: string;
+  environmentVariables: Record<string, string>;
+  image?: string;
+  lfsAutoFetch: boolean;
+  sessionClass: number;
+  storage: number;
+}
+
 export interface PatchSessionParams {
   sessionName: string;
   state?: Extract<"running" | "hibernated", SessionStatusState>;

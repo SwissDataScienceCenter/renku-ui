@@ -24,6 +24,7 @@ import { Button } from "reactstrap";
 
 import type { NewProjectV2State } from "./projectV2New.slice";
 import { setCurrentStep } from "./projectV2New.slice";
+import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
 
 interface ProjectV2NewFormProps {
   currentStep: NewProjectV2State["currentStep"];
@@ -42,23 +43,30 @@ export default function ProjectFormSubmitGroup({
   return (
     <div className={cx("d-flex", "justify-content-between")}>
       <Button
-        className={cx(currentStep > 0 ? "visible" : "invisible")}
+        className={cx(
+          "btn-outline-rk-green",
+          currentStep > 0 ? "visible" : "invisible"
+        )}
         onClick={previousStep}
       >
-        Back
+        <ArrowLeft /> Back
       </Button>
       <div>
         {currentStep === 0 && (
           <Button className="me-1" type="submit">
-            Set Visibility
+            Set Visibility <ArrowRight />
           </Button>
         )}
         {currentStep === 1 && (
           <Button className="me-1" type="submit">
-            Add repositories
+            Add repositories <ArrowRight />
           </Button>
         )}
-        {currentStep === 2 && <Button type="submit">Review</Button>}
+        {currentStep === 2 && (
+          <Button type="submit">
+            Review <ArrowRight />
+          </Button>
+        )}
         {currentStep === 3 && <Button type="submit">Create</Button>}
       </div>
     </div>

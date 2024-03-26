@@ -63,6 +63,7 @@ function RenkuNavBarInner(props) {
   return (
     <Switch key="mainNav">
       <Route path={sessionShowUrl} />
+      <Route path="/v2/projects/:id/sessions/show/:server" />
       <Route>
         {user.logged ? (
           <LoggedInNavBar
@@ -189,6 +190,7 @@ function FooterNavbarInner({ location, params }) {
   return (
     <Switch key="footerNav">
       <Route path={sessionShowUrl} />
+      <Route path="/v2/projects/:id/sessions/show/:server" />
       <Route>{footer}</Route>
     </Switch>
   );
