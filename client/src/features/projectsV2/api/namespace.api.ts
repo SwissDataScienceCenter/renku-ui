@@ -64,10 +64,22 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getNamespaces: build.query<GetNamespacesApiResponse, GetNamespacesApiArg>({
+      query: (queryArg) => ({
+        url: `/namespaces`,
+        params: { page: queryArg.page, per_page: queryArg.perPage },
+      }),
+    }),
+    getNamespacesByGroupSlug: build.query<
+      GetNamespacesByGroupSlugApiResponse,
+      GetNamespacesByGroupSlugApiArg
+    >({
+      query: (queryArg) => ({ url: `/namespaces/${queryArg.groupSlug}` }),
+    }),
   }),
   overrideExisting: false,
 });
-export { injectedRtkApi as projectAndGroupApi };
+export { injectedRtkApi as projectAndNamespaceApi };
 export type GetGroupsApiResponse =
   /** status 200 List of groups */ GroupResponseList;
 export type GetGroupsApiArg = {
@@ -115,15 +127,28 @@ export type DeleteGroupsByGroupSlugMembersAndUserIdApiArg = {
   /** This is user's KeyCloak ID */
   userId: string;
 };
+export type GetNamespacesApiResponse =
+  /** status 200 List of namespaces */ NamespaceResponseList;
+export type GetNamespacesApiArg = {
+  /** Result's page number starting from 1 */
+  page?: number;
+  /** The number of results per page */
+  perPage?: number;
+};
+export type GetNamespacesByGroupSlugApiResponse =
+  /** status 200 The namespace */ NamespaceResponse;
+export type GetNamespacesByGroupSlugApiArg = {
+  groupSlug: Slug;
+};
 export type Ulid = string;
-export type GroupName = string;
+export type NamespaceName = string;
 export type Slug = string;
 export type CreationDate = string;
 export type KeycloakId = string;
 export type Description = string;
 export type GroupResponse = {
   id: Ulid;
-  name: GroupName;
+  name: NamespaceName;
   slug: Slug;
   creation_date: CreationDate;
   created_by: KeycloakId;
@@ -138,12 +163,12 @@ export type ErrorResponse = {
   };
 };
 export type GroupPostRequest = {
-  name: GroupName;
+  name: NamespaceName;
   slug: Slug;
   description?: Description;
 };
 export type GroupPatchRequest = {
-  name?: GroupName;
+  name?: NamespaceName;
   slug?: Slug;
   description?: Description;
 };
@@ -164,6 +189,16 @@ export type GroupMemberPatchRequest = {
   role: GroupRole;
 };
 export type GroupMemberPatchRequestList = GroupMemberPatchRequest[];
+export type NamespaceKind = "group" | "user";
+export type NamespaceResponse = {
+  id: Ulid;
+  name?: NamespaceName;
+  slug: Slug;
+  creation_date?: CreationDate;
+  created_by?: KeycloakId;
+  namespace_kind: NamespaceKind;
+};
+export type NamespaceResponseList = NamespaceResponse[];
 export const {
   useGetGroupsQuery,
   usePostGroupsMutation,
@@ -173,4 +208,6 @@ export const {
   useGetGroupsByGroupSlugMembersQuery,
   usePatchGroupsByGroupSlugMembersMutation,
   useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
+  useGetNamespacesQuery,
+  useGetNamespacesByGroupSlugQuery,
 } = injectedRtkApi;

@@ -28,6 +28,7 @@ import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../fields/ProjectNameFormField";
+import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
 import ProjectSlugFormField from "../fields/ProjectSlugFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
@@ -145,6 +146,12 @@ function ProjectV2NewMetadataStepForm({ currentStep }: ProjectV2NewFormProps) {
       >
         <ProjectNameFormField control={control} errors={errors} name="name" />
         <ProjectSlugFormField control={control} errors={errors} name="slug" />
+        <ProjectNamespaceFormField
+          control={control}
+          entityName="project"
+          errors={errors}
+          name="namespace"
+        />
         <ProjectDescriptionFormField
           control={control}
           errors={errors}
