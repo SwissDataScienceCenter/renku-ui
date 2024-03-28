@@ -176,15 +176,17 @@ export function GroupMetadataForm({
     setSettingEdit(null);
   }, [setSettingEdit]);
 
+  useEffect(() => {
+    if (data != null) {
+      setSettingEdit(null);
+    }
+  }, [data, setSettingEdit]);
+
   const onSubmit = useCallback(
     (data: GroupMetadata) => {
-      updateGroup({ groupSlug: group.slug ?? "", groupPatchRequest: data })
-        .unwrap()
-        .then(() => {
-          setSettingEdit(null);
-        });
+      updateGroup({ groupSlug: group.slug ?? "", groupPatchRequest: data });
     },
-    [group, updateGroup, setSettingEdit]
+    [group, updateGroup]
   );
 
   const [isOpen, setIsOpen] = useState(false);

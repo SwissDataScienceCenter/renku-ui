@@ -234,8 +234,8 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
   return (
     <div className="mb-3">
       <Label className="form-label" for={`${entityName}-namespace`}>
-        Namespaces
-        <RefreshNamespacesButton refresh={refetch} />
+        Namespace
+        <RefreshNamespaceButton refresh={refetch} />
       </Label>
       <Controller
         control={control}
@@ -398,11 +398,11 @@ function OptionOrSingleValueContent({
   );
 }
 
-interface RefreshNamespacesButtonProps {
+interface RefreshNamespaceButtonProps {
   refresh: () => void;
 }
 
-function RefreshNamespacesButton({ refresh }: RefreshNamespacesButtonProps) {
+function RefreshNamespaceButton({ refresh }: RefreshNamespaceButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   return (

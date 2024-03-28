@@ -35,7 +35,7 @@ interface GroupListGroupProps {
   group: GroupResponse;
 }
 function GroupListGroup({ group }: GroupListGroupProps) {
-  const groupUrl = Url.get(Url.pages.groupV2s.show, {
+  const groupUrl = Url.get(Url.pages.groupV2.show, {
     slug: group.slug,
   });
   return (
@@ -100,7 +100,7 @@ function GroupListDisplay() {
 }
 
 export default function GroupList() {
-  const newGroupUrl = Url.get(Url.pages.groupV2s.new);
+  const newGroupUrl = Url.get(Url.pages.groupV2.new);
   return (
     <FormSchema
       showHeader={true}
