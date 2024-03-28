@@ -38,38 +38,38 @@ import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import type { UserWithId } from "../../user/dataServicesUser.api";
 
 import type {
-  ProjectMemberPatchRequest,
-  ProjectMemberResponse,
-} from "../api/projectV2.api";
-import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
+  GroupMemberResponseList,
+  GroupMemberPatchRequest,
+} from "../api/namespace.api";
+import { usePatchGroupsByGroupSlugMembersMutation } from "../api/projectV2.enhanced-api";
 
 import AddEntityMemberEmailLookupForm from "./AddEntityMemberLookupForm";
 
-interface AddProjectMemberModalProps {
+interface AddGroupMemberModalProps {
   isOpen: boolean;
-  members: ProjectMemberPatchRequest[];
-  projectId: string;
+  members: GroupMemberResponseList;
+  groupSlug: string;
   toggle: () => void;
 }
 
-interface ProjectMemberForAdd extends ProjectMemberResponse {
+interface GroupMemberForAdd extends GroupMemberPatchRequest {
   email: string;
 }
 
-interface AddProjectMemberAccessFormProps
-  extends Pick<AddProjectMemberModalProps, "members" | "projectId" | "toggle"> {
+interface AddGroupMemberAccessFormProps
+  extends Pick<AddGroupMemberModalProps, "members" | "groupSlug" | "toggle"> {
   user: UserWithId;
 }
-function AddProjectMemberAccessForm({
+function AddGroupMemberAccessForm({
   members,
-  projectId,
+  groupSlug,
   toggle,
   user,
-}: AddProjectMemberAccessFormProps) {
+}: AddGroupMemberAccessFormProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [patchProjectMembers, result] =
-    usePatchProjectsByProjectIdMembersMutation();
-  const { control, handleSubmit } = useForm<ProjectMemberForAdd>({
+  const [patchGroupMembers, result] =
+    usePatchGroupsByGroupSlugMembersMutation();
+  const { control, handleSubmit } = useForm<GroupMemberForAdd>({
     defaultValues: {
       id: user.id,
       email: user.email,
@@ -85,19 +85,19 @@ function AddProjectMemberAccessForm({
   }, [result.isSuccess, toggle]);
 
   const onSubmit = useCallback(
-    (data: ProjectMemberForAdd) => {
-      const projectMembers = members.map((m: ProjectMemberResponse) => ({
+    (data: GroupMemberForAdd) => {
+      const groupMembers = members.map((m) => ({
         id: m.id,
         role: m.role,
       }));
-      projectMembers.push({ id: data.id, role: data.role });
+      groupMembers.push({ id: data.id, role: data.role });
 
-      patchProjectMembers({
-        projectId,
-        projectMemberListPatchRequest: projectMembers,
+      patchGroupMembers({
+        groupSlug,
+        groupMemberPatchRequestList: groupMembers,
       });
     },
-    [patchProjectMembers, projectId, members]
+    [patchGroupMembers, groupSlug, members]
   );
 
   return (
@@ -151,9 +151,9 @@ function AddProjectMemberAccessForm({
 export default function AddProjectMemberModal({
   isOpen,
   members,
-  projectId,
+  groupSlug,
   toggle,
-}: AddProjectMemberModalProps) {
+}: AddGroupMemberModalProps) {
   const [newMember, setNewMember] = useState<UserWithId | undefined>(undefined);
   const toggleVisible = useCallback(() => {
     setNewMember(undefined);
@@ -177,9 +177,9 @@ export default function AddProjectMemberModal({
         />
       )}
       {newMember != null && (
-        <AddProjectMemberAccessForm
+        <AddGroupMemberAccessForm
           members={members}
-          projectId={projectId}
+          groupSlug={groupSlug}
           toggle={toggleVisible}
           user={newMember}
         />

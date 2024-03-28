@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "Renku Project Management Service",
-    "description": "Service that allows creating, updating, deleting, and managing Renku native projects.\nAll errors have the same format as the schema called ErrorResponse.\n",
-    "version": "0.5.0"
+    "title": "Renku Group Management Service",
+    "description": "Service that allows creating, updating, deleting, and managing Renku v2 groups.\nAll errors have the same format as the schema called ErrorResponse.\n",
+    "version": "0.1.0"
   },
   "servers": [
     {
@@ -14,9 +14,9 @@
     }
   ],
   "paths": {
-    "/projects": {
+    "/groups": {
       "get": {
-        "summary": "Get all projects",
+        "summary": "Get all groups",
         "parameters": [
           {
             "in": "query",
@@ -44,11 +44,11 @@
         ],
         "responses": {
           "200": {
-            "description": "List of projects",
+            "description": "List of groups",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectsList"
+                  "$ref": "#/components/schemas/GroupResponseList"
                 }
               }
             },
@@ -87,27 +87,27 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["projects"]
+        "tags": ["groups"]
       },
       "post": {
-        "summary": "Create a new project",
+        "summary": "Create a new group",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProjectPost"
+                "$ref": "#/components/schemas/GroupPostRequest"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "The project was created",
+            "description": "The group was created",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Project"
+                  "$ref": "#/components/schemas/GroupResponse"
                 }
               }
             }
@@ -116,35 +116,35 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["projects"]
+        "tags": ["groups"]
       }
     },
-    "/projects/{project_id}": {
+    "/groups/{group_slug}": {
       "get": {
-        "summary": "Get a project",
+        "summary": "Get a group",
         "parameters": [
           {
             "in": "path",
-            "name": "project_id",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "The project",
+            "description": "The group",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Project"
+                  "$ref": "#/components/schemas/GroupResponse"
                 }
               }
             }
           },
           "404": {
-            "description": "The project does not exist",
+            "description": "The group does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -157,21 +157,18 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["projects"]
+        "tags": ["groups"]
       },
       "patch": {
-        "summary": "Update specific fields of an existing project",
+        "summary": "Update specific fields of an existing group",
         "parameters": [
           {
             "in": "path",
-            "name": "project_id",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
-          },
-          {
-            "$ref": "#/components/parameters/If-Match"
           }
         ],
         "requestBody": {
@@ -179,24 +176,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProjectPatch"
+                "$ref": "#/components/schemas/GroupPatchRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "The patched project",
+            "description": "The patched group",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Project"
+                  "$ref": "#/components/schemas/GroupResponse"
                 }
               }
             }
           },
           "404": {
-            "description": "The project does not exist",
+            "description": "The group does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -209,57 +206,57 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["projects"]
+        "tags": ["groups"]
       },
       "delete": {
-        "summary": "Remove a project",
+        "summary": "Remove a group",
         "parameters": [
           {
             "in": "path",
-            "name": "project_id",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           }
         ],
         "responses": {
           "204": {
-            "description": "The project was removed or did not exist in the first place"
+            "description": "The group was removed or did not exist in the first place"
           },
           "default": {
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["projects"]
+        "tags": ["groups"]
       }
     },
-    "/projects/{project_id}/members": {
+    "/groups/{group_slug}/members": {
       "get": {
-        "summary": "Get all members of a project",
+        "summary": "Get all members of a group",
         "parameters": [
           {
             "in": "path",
-            "name": "project_id",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "The project's members",
+            "description": "The group's members",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectMemberListResponse"
+                  "$ref": "#/components/schemas/GroupMemberResponseList"
                 }
               }
             }
           },
           "404": {
-            "description": "The project does not exist",
+            "description": "The group does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -272,17 +269,17 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["projects"]
+        "tags": ["groups"]
       },
       "patch": {
-        "summary": "New members in the list are added to the project's members. If a member\nalready exists, then only the role is updated. No member will be deleted\nin this endpoint.\n",
+        "summary": "New members in the list are added to the group's members. If a member\nalready exists, then only the role is updated. No member will be deleted\nin this endpoint.\n",
         "parameters": [
           {
             "in": "path",
-            "name": "project_id",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           }
         ],
@@ -291,17 +288,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProjectMemberListPatchRequest"
+                "$ref": "#/components/schemas/GroupMemberPatchRequestList"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "The project's members were updated"
+            "description": "The group's members were updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupMemberPatchRequestList"
+                }
+              }
+            }
           },
           "404": {
-            "description": "The project does not exist",
+            "description": "The group does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -314,24 +318,24 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["projects"]
+        "tags": ["groups"]
       }
     },
-    "/projects/{project_id}/members/{member_id}": {
+    "/groups/{group_slug}/members/{user_id}": {
       "delete": {
-        "summary": "Remove a member from a project",
+        "summary": "Remove a member from a group",
         "parameters": [
           {
             "in": "path",
-            "name": "project_id",
+            "name": "group_slug",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Slug"
             }
           },
           {
             "in": "path",
-            "name": "member_id",
+            "name": "user_id",
             "description": "This is user's KeyCloak ID",
             "required": true,
             "schema": {
@@ -341,10 +345,10 @@
         ],
         "responses": {
           "204": {
-            "description": "The member was removed or wasn't part of project's members."
+            "description": "The member was removed or wasn't part of group's members."
           },
           "404": {
-            "description": "The project does not exist",
+            "description": "The group does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -357,32 +361,145 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["projects"]
+        "tags": ["groups"]
+      }
+    },
+    "/namespaces": {
+      "get": {
+        "summary": "Get all namespaces",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Result's page number starting from 1",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "description": "The number of results per page",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of namespaces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamespaceResponseList"
+                }
+              }
+            },
+            "headers": {
+              "page": {
+                "description": "The index of the current page (starting at 1).",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "per-page": {
+                "description": "The number of items per page.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total": {
+                "description": "The total number of items.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total-pages": {
+                "description": "The total number of pages.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["namespaces"]
+      }
+    },
+    "/namespaces/{group_slug}": {
+      "get": {
+        "summary": "Get a namespace",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "group_slug",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The namespace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamespaceResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The namespace does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["namespaces"]
       }
     }
   },
   "components": {
     "schemas": {
-      "ProjectsList": {
-        "description": "A list of Renku projects",
+      "GroupResponseList": {
+        "description": "A list of Renku groups",
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Project"
-        },
-        "minItems": 0
+          "$ref": "#/components/schemas/GroupResponse"
+        }
       },
-      "Project": {
-        "description": "A Renku native project definition and metadata",
+      "GroupResponse": {
+        "description": "A Renku group definition and metadata",
         "type": "object",
         "properties": {
           "id": {
             "$ref": "#/components/schemas/Ulid"
           },
           "name": {
-            "$ref": "#/components/schemas/Name"
-          },
-          "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/NamespaceName"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -391,92 +508,48 @@
             "$ref": "#/components/schemas/CreationDate"
           },
           "created_by": {
-            "$ref": "#/components/schemas/UserId"
-          },
-          "repositories": {
-            "$ref": "#/components/schemas/RepositoriesList"
-          },
-          "visibility": {
-            "$ref": "#/components/schemas/Visibility"
+            "$ref": "#/components/schemas/KeycloakId"
           },
           "description": {
             "$ref": "#/components/schemas/Description"
-          },
-          "etag": {
-            "$ref": "#/components/schemas/ETag"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "namespace",
-          "slug",
-          "created_by",
-          "creation_date",
-          "visibility"
-        ],
+        "required": ["id", "name", "slug", "created_by", "creation_date"],
         "example": {
           "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
-          "name": "Renku R Project",
-          "namespace": "our-projects",
+          "name": "R-Project Group",
           "slug": "r-project",
-          "created_by": {
-            "id": "owner-KC-id"
-          },
-          "visibility": "public",
-          "repositories": [
-            {
-              "url": "https://github.com/SwissDataScienceCenter/project-1.git"
-            },
-            {
-              "url": "git@github.com:SwissDataScienceCenter/project-2.git"
-            }
-          ]
+          "created_by": "owner-keycloak-id",
+          "creation_date": "2024-03-04T13:04:45Z"
         }
       },
-      "ProjectPost": {
-        "description": "Project metadata to be created in Renku",
+      "GroupPostRequest": {
+        "description": "Group metadata to be created in Renku",
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "name": {
-            "$ref": "#/components/schemas/Name"
-          },
-          "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/NamespaceName"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
           },
-          "repositories": {
-            "$ref": "#/components/schemas/RepositoriesList"
-          },
-          "visibility": {
-            "$ref": "#/components/schemas/Visibility",
-            "default": "private"
-          },
           "description": {
             "$ref": "#/components/schemas/Description"
           }
         },
-        "required": ["name", "namespace"]
+        "required": ["name", "slug"]
       },
-      "ProjectPatch": {
+      "GroupPatchRequest": {
         "type": "object",
-        "description": "Patch of a project",
+        "description": "Patch of a group",
         "additionalProperties": false,
         "properties": {
           "name": {
-            "$ref": "#/components/schemas/Name"
+            "$ref": "#/components/schemas/NamespaceName"
           },
-          "namespace": {
+          "slug": {
             "$ref": "#/components/schemas/Slug"
-          },
-          "repositories": {
-            "$ref": "#/components/schemas/RepositoriesList"
-          },
-          "visibility": {
-            "$ref": "#/components/schemas/Visibility"
           },
           "description": {
             "$ref": "#/components/schemas/Description"
@@ -491,107 +564,34 @@
         "pattern": "^[A-Z0-9]{26}$",
         "format": "ulid"
       },
-      "Name": {
-        "description": "Renku project name",
+      "NamespaceName": {
+        "description": "Renku group name",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
-        "example": "My Renku Project :)"
+        "example": "My Renku Group :)"
       },
       "Slug": {
-        "description": "A command-line friendly name for a project or namespace",
+        "description": "A command-line/url friendly name for a namespace",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
         "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-zA-Z0-9][a-zA-Z0-9\\-_.]*$",
-        "example": "my-renku-project"
+        "example": "my-renku-namespace"
       },
       "CreationDate": {
-        "description": "The date and time the project was created (time is always in UTC)",
+        "description": "The date and time the namespace was created (in UTC and ISO-8601 format)",
         "type": "string",
         "format": "date-time",
         "example": "2023-11-01T17:32:28Z"
       },
       "Description": {
-        "description": "A description for project",
+        "description": "A description for the group",
         "type": "string",
         "maxLength": 500
       },
-      "KeyCloakId": {
-        "description": "Member's KeyCloak ID",
-        "type": "string",
-        "pattern": "^[A-Za-z0-9-]+$",
-        "minLength": 1,
-        "example": "123-keycloak-user-id-456"
-      },
-      "RepositoriesList": {
-        "description": "A list of repositories",
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/Repository"
-        },
-        "minItems": 0,
-        "example": [
-          "https://github.com/SwissDataScienceCenter/project-1.git",
-          "git@github.com:SwissDataScienceCenter/project-2.git"
-        ]
-      },
-      "Repository": {
-        "description": "A project's repository",
-        "type": "string",
-        "example": "git@github.com:SwissDataScienceCenter/project-1.git"
-      },
-      "Visibility": {
-        "description": "Project's visibility levels",
-        "type": "string",
-        "enum": ["private", "public"]
-      },
-      "ProjectMemberListPatchRequest": {
-        "description": "List of members and their access level to the project",
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/ProjectMemberPatchRequest"
-        },
-        "minItems": 0,
-        "example": [
-          {
-            "id": "some-keycloak-user-id",
-            "role": "owner"
-          },
-          {
-            "id": "another-keycloak-user-id",
-            "role": "member"
-          }
-        ]
-      },
-      "ProjectMemberPatchRequest": {
-        "description": "A member and the access level to the project",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/UserId"
-          },
-          "role": {
-            "$ref": "#/components/schemas/Role"
-          }
-        },
-        "required": ["id", "role"],
-        "example": {
-          "id": "some-keycloak-user-id",
-          "role": "owner"
-        }
-      },
-      "ProjectMemberListResponse": {
-        "description": "List of members with full info and their access level to the project",
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/ProjectMemberResponse"
-        },
-        "minItems": 0
-      },
-      "ProjectMemberResponse": {
-        "description": "A member with full info (email, name, ...) and the access level to the project",
+      "GroupMemberResponse": {
+        "description": "A KeyCloak user that is member of a group",
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -608,15 +608,128 @@
             "$ref": "#/components/schemas/UserFirstLastName"
           },
           "role": {
-            "$ref": "#/components/schemas/Role"
+            "$ref": "#/components/schemas/GroupRole"
           }
         },
-        "required": ["id", "role"]
+        "required": ["id", "role"],
+        "example": {
+          "id": "some-keycloak-user-id",
+          "role": "owner"
+        }
       },
-      "Role": {
-        "description": "Possible roles of members in a project",
+      "GroupMemberPatchRequest": {
+        "description": "A KeyCloak user that is member of a group",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/UserId"
+          },
+          "role": {
+            "$ref": "#/components/schemas/GroupRole"
+          }
+        },
+        "required": ["id", "role"],
+        "example": {
+          "id": "some-keycloak-user-id",
+          "role": "owner"
+        }
+      },
+      "KeycloakId": {
+        "description": "Member's KeyCloak ID",
+        "type": "string",
+        "pattern": "^[A-Za-z0-9-]+$",
+        "minLength": 1,
+        "example": "123-keycloak-user-id-456"
+      },
+      "GroupMemberResponseList": {
+        "description": "List of members and their access level to the group",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GroupMemberResponse"
+        },
+        "minItems": 0,
+        "example": [
+          {
+            "id": "some-keycloak-user-id",
+            "role": "owner"
+          },
+          {
+            "id": "another-keycloak-user-id",
+            "role": "member",
+            "email": "user@email.com",
+            "first_name": "John",
+            "last_name": "Doe"
+          }
+        ]
+      },
+      "GroupMemberPatchRequestList": {
+        "description": "List of members and their access level to the group",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GroupMemberPatchRequest"
+        },
+        "minItems": 0,
+        "example": [
+          {
+            "id": "some-keycloak-user-id",
+            "role": "owner"
+          },
+          {
+            "id": "another-keycloak-user-id",
+            "role": "member"
+          }
+        ]
+      },
+      "GroupRole": {
+        "description": "Possible roles of members in a group",
         "type": "string",
         "enum": ["member", "owner"]
+      },
+      "NamespaceKind": {
+        "description": "Possible kinds of namespaces",
+        "type": "string",
+        "enum": ["group", "user"]
+      },
+      "NamespaceResponseList": {
+        "description": "A list of Renku groups",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/NamespaceResponse"
+        }
+      },
+      "NamespaceResponse": {
+        "description": "A Renku namespace definition and metadata",
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "name": {
+            "$ref": "#/components/schemas/NamespaceName"
+          },
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/KeycloakId"
+          },
+          "namespace_kind": {
+            "$ref": "#/components/schemas/NamespaceKind"
+          }
+        },
+        "required": ["id", "namespace_kind", "slug"],
+        "example": {
+          "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
+          "name": "R-Project Group",
+          "slug": "r-project",
+          "created_by": "owner-keycloak-id",
+          "creation_date": "2024-03-04T13:04:45Z",
+          "namespace_kind": "group"
+        }
       },
       "UserId": {
         "type": "string",
@@ -635,11 +748,6 @@
         "format": "email",
         "description": "User email",
         "example": "some-user@gmail.com"
-      },
-      "ETag": {
-        "type": "string",
-        "description": "Entity Tag",
-        "example": "9EE498F9D565D0C41E511377425F32F3"
       },
       "ErrorResponse": {
         "type": "object",
@@ -677,17 +785,6 @@
               "$ref": "#/components/schemas/ErrorResponse"
             }
           }
-        }
-      }
-    },
-    "parameters": {
-      "If-Match": {
-        "in": "header",
-        "name": "If-Match",
-        "description": "If-Match header, for avoiding mid-air collisions",
-        "required": false,
-        "schema": {
-          "$ref": "#/components/schemas/ETag"
         }
       }
     }

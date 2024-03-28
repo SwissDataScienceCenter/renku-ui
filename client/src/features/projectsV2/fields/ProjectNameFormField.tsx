@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-
-import { Controller } from "react-hook-form";
 import type { FieldValues } from "react-hook-form";
 
-import { FormText, Input, Label } from "reactstrap";
+import NameFormField from "./NameFormField";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 
 export default function ProjectNameFormField<T extends FieldValues>({
@@ -30,29 +27,11 @@ export default function ProjectNameFormField<T extends FieldValues>({
   name,
 }: GenericProjectFormFieldProps<T>) {
   return (
-    <div className="mb-3">
-      <Label className="form-label" for="project-name">
-        Name
-      </Label>
-      <Controller
-        control={control}
-        name={name}
-        render={({ field }) => (
-          <Input
-            aria-describedby="projectNameHelp"
-            className={cx("form-control", errors.name && "is-invalid")}
-            data-cy="project-name-input"
-            id="project-name"
-            type="text"
-            {...field}
-          />
-        )}
-        rules={{ required: true, maxLength: 99 }}
-      />
-      <div className="invalid-feedback">Please provide a name</div>
-      <FormText id="projectNameHelp" className="input-hint">
-        The name you will use to refer to the project
-      </FormText>
-    </div>
+    <NameFormField
+      control={control}
+      entityName="project"
+      errors={errors}
+      name={name}
+    />
   );
 }

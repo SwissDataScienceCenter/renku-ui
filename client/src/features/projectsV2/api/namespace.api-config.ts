@@ -16,22 +16,18 @@
  * limitations under the License.
  */
 
-import type { FieldValues } from "react-hook-form";
+// Run `npx @rtk-query/codegen-openapi namespace.api-config.ts` in this folder to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
 
-import DescriptionFormField from "./DescriptionFormField";
-import type { GenericProjectFormFieldProps } from "./formField.types";
+const config: ConfigFile = {
+  // Configure to inject endpoints into the projectV2Api
+  apiFile: "./projectV2.api.ts",
+  apiImport: "projectV2Api",
+  outputFile: "./namespace.api.ts",
+  exportName: "projectAndNamespaceApi",
+  hooks: true,
+  schemaFile: path.join(__dirname, "namespace.openapi.json"),
+};
 
-export default function ProjectDescriptionFormField<T extends FieldValues>({
-  control,
-  errors,
-  name,
-}: GenericProjectFormFieldProps<T>) {
-  return (
-    <DescriptionFormField
-      control={control}
-      entityName="project"
-      errors={errors}
-      name={name}
-    />
-  );
-}
+export default config;
