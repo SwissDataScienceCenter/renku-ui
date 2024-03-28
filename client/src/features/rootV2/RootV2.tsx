@@ -26,9 +26,9 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
-import LazyV2GroupList from "../projectsV2/LazyGroupList";
-import LazyV2GroupNew from "../projectsV2/LazyGroupNew";
-import LazyV2GroupShow from "../projectsV2/LazyGroupShow";
+import LazyGroupV2List from "../projectsV2/LazyGroupList";
+import LazyGroupV2New from "../projectsV2/LazyGroupNew";
+import LazyGroupV2Show from "../projectsV2/LazyGroupShow";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
@@ -106,9 +106,9 @@ export default function RootV2() {
 function GroupsV2Routes() {
   return (
     <Routes>
-      <Route path="/" element={<LazyV2GroupList />} />
-      <Route path="new" element={<LazyV2GroupNew />} />
-      <Route path=":slug" element={<LazyV2GroupShow />} />
+      <Route path="/" element={<LazyGroupV2List />} />
+      <Route path="new" element={<LazyGroupV2New />} />
+      <Route path=":slug" element={<LazyGroupV2Show />} />
     </Routes>
   );
 }

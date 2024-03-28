@@ -1,7 +1,7 @@
 {
   "id": "THEPROJECTULID26CHARACTERS",
-  "name": "test 2 v2-group",
-  "slug": "test-2-v2-group",
+  "name": "test 2 group-v2",
+  "slug": "test-2-group-v2",
   "creation_date": "2023-11-15T09:55:59Z",
   "created_by": { "id": "user1-uuid" },
   "description": "Group 2 description"

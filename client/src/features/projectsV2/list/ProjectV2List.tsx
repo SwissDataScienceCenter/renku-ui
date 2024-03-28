@@ -45,6 +45,7 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
         <h3>
           <Link to={projectUrl}>{project.name}</Link>
         </h3>
+        <div className="mb-2 fw-light">{project.namespace}/</div>
         <div className="mb-2">{project.description}</div>
         <div className={cx("align-items-baseline", "d-flex")}>
           <span className={cx("fst-italic", "me-3")}>{project.visibility}</span>

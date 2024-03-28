@@ -363,6 +363,123 @@
         },
         "tags": ["groups"]
       }
+    },
+    "/namespaces": {
+      "get": {
+        "summary": "Get all namespaces",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Result's page number starting from 1",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "description": "The number of results per page",
+            "name": "per_page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of namespaces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamespaceResponseList"
+                }
+              }
+            },
+            "headers": {
+              "page": {
+                "description": "The index of the current page (starting at 1).",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "per-page": {
+                "description": "The number of items per page.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total": {
+                "description": "The total number of items.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total-pages": {
+                "description": "The total number of pages.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["namespaces"]
+      }
+    },
+    "/namespaces/{group_slug}": {
+      "get": {
+        "summary": "Get a namespace",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "group_slug",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The namespace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamespaceResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The namespace does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["namespaces"]
+      }
     }
   },
   "components": {
@@ -382,7 +499,7 @@
             "$ref": "#/components/schemas/Ulid"
           },
           "name": {
-            "$ref": "#/components/schemas/GroupName"
+            "$ref": "#/components/schemas/NamespaceName"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -402,7 +519,8 @@
           "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
           "name": "R-Project Group",
           "slug": "r-project",
-          "created_by": "owner-keycloak-id"
+          "created_by": "owner-keycloak-id",
+          "creation_date": "2024-03-04T13:04:45Z"
         }
       },
       "GroupPostRequest": {
@@ -411,7 +529,7 @@
         "additionalProperties": false,
         "properties": {
           "name": {
-            "$ref": "#/components/schemas/GroupName"
+            "$ref": "#/components/schemas/NamespaceName"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -428,7 +546,7 @@
         "additionalProperties": false,
         "properties": {
           "name": {
-            "$ref": "#/components/schemas/GroupName"
+            "$ref": "#/components/schemas/NamespaceName"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -446,7 +564,7 @@
         "pattern": "^[A-Z0-9]{26}$",
         "format": "ulid"
       },
-      "GroupName": {
+      "NamespaceName": {
         "description": "Renku group name",
         "type": "string",
         "minLength": 1,
@@ -454,15 +572,15 @@
         "example": "My Renku Group :)"
       },
       "Slug": {
-        "description": "A command-line/url friendly name for a group",
+        "description": "A command-line/url friendly name for a namespace",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
-        "pattern": "^[a-z0-9]+[a-z0-9._-]*$",
-        "example": "my-renku-group"
+        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-zA-Z0-9][a-zA-Z0-9\\-_.]*$",
+        "example": "my-renku-namespace"
       },
       "CreationDate": {
-        "description": "The date and time the group was created (in UTC and ISO-8601 format)",
+        "description": "The date and time the namespace was created (in UTC and ISO-8601 format)",
         "type": "string",
         "format": "date-time",
         "example": "2023-11-01T17:32:28Z"
@@ -567,6 +685,51 @@
         "description": "Possible roles of members in a group",
         "type": "string",
         "enum": ["member", "owner"]
+      },
+      "NamespaceKind": {
+        "description": "Possible kinds of namespaces",
+        "type": "string",
+        "enum": ["group", "user"]
+      },
+      "NamespaceResponseList": {
+        "description": "A list of Renku groups",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/NamespaceResponse"
+        }
+      },
+      "NamespaceResponse": {
+        "description": "A Renku namespace definition and metadata",
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "name": {
+            "$ref": "#/components/schemas/NamespaceName"
+          },
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/KeycloakId"
+          },
+          "namespace_kind": {
+            "$ref": "#/components/schemas/NamespaceKind"
+          }
+        },
+        "required": ["id", "namespace_kind", "slug"],
+        "example": {
+          "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
+          "name": "R-Project Group",
+          "slug": "r-project",
+          "created_by": "owner-keycloak-id",
+          "creation_date": "2024-03-04T13:04:45Z",
+          "namespace_kind": "group"
+        }
       },
       "UserId": {
         "type": "string",

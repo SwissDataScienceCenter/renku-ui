@@ -31,7 +31,7 @@ import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
 
 import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
-import type { GroupPostRequest } from "../api/group.api";
+import type { GroupPostRequest } from "../api/namespace.api";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
@@ -83,7 +83,7 @@ function GroupBeingCreated({
     <>
       <div>Group created.</div>
       {"  "}
-      <Link to={Url.get(Url.pages.v2Groups.list)}>Go to group list</Link>
+      <Link to={Url.get(Url.pages.groupV2.list)}>Go to group list</Link>
     </>
   );
 }
@@ -150,7 +150,7 @@ function GroupMetadataForm() {
         <div className={cx("d-flex", "justify-content-between")}>
           <Link
             className={cx("btn", "btn-primary")}
-            to={Url.get(Url.pages.v2Groups.list)}
+            to={Url.get(Url.pages.groupV2.list)}
           >
             Cancel
           </Link>

@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
+import { Redirect } from "react-router-dom";
 
 import {
   Button,
@@ -43,7 +44,7 @@ import type {
   GroupMemberResponse,
   GroupResponse,
   GroupPatchRequest,
-} from "../api/group.api";
+} from "../api/namespace.api";
 
 import AddGroupMemberModal from "../fields/AddGroupMemberModal";
 
@@ -91,7 +92,9 @@ function GroupDeleteConfirmation({
           Are you absolutely sure?
         </h3>
         <p className="mb-0">
-          Deleted projects cannot be restored. Please type{" "}
+          Deleting a group{" "}
+          <strong>will also delete all projects in the group</strong>, and
+          deleted groups and projects cannot be restored. Please type{" "}
           <strong>{group.slug}</strong>, the slug of the group, to confirm.
         </p>
         <Input
@@ -165,7 +168,7 @@ export function GroupMetadataForm({
     },
   });
 
-  const [updateGroup, { isLoading, isError }] =
+  const [updateGroup, { data, isLoading, isError }] =
     usePatchGroupsByGroupSlugMutation();
 
   const isUpdating = isLoading;
@@ -173,19 +176,26 @@ export function GroupMetadataForm({
     setSettingEdit(null);
   }, [setSettingEdit]);
 
+  useEffect(() => {
+    if (data != null) {
+      setSettingEdit(null);
+    }
+  }, [data, setSettingEdit]);
+
   const onSubmit = useCallback(
     (data: GroupMetadata) => {
-      updateGroup({ groupSlug: group.slug ?? "", groupPatchRequest: data })
-        .unwrap()
-        .then(() => setSettingEdit(null));
+      updateGroup({ groupSlug: group.slug ?? "", groupPatchRequest: data });
     },
-    [group, updateGroup, setSettingEdit]
+    [group, updateGroup]
   );
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
+
+  if (data != null && data.slug !== group.slug)
+    return <Redirect to={`${data.slug}`} />;
 
   return (
     <div>

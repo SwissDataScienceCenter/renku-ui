@@ -44,6 +44,7 @@ function projectToProjectPost(
 ): ProjectPost {
   return {
     name: project.metadata.name,
+    namespace: project.metadata.namespace,
     slug: project.metadata.slug,
     description: project.metadata.description,
     visibility: project.access.visibility,
@@ -188,6 +189,10 @@ function ProjectV2NewReviewCreateStep({
       <div className="mb-3">
         <Label>Name</Label>
         <div className="fs-5">{newProject.name}</div>
+      </div>
+      <div className="mb-3">
+        <Label>Namespace</Label>
+        <div className="fs-5">{newProject.namespace}</div>
       </div>
       <div className="mb-3">
         <Label>Slug</Label>

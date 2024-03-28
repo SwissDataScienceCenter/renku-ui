@@ -48,7 +48,12 @@ export default function SlugFormField<T extends FieldValues>({
             {...field}
           />
         )}
-        rules={{ required: true, maxLength: 99, pattern: /^[a-z0-9-]+$/ }}
+        rules={{
+          required: true,
+          maxLength: 99,
+          pattern:
+            /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-zA-Z0-9][a-zA-Z0-9\-_.]*$/,
+        }}
       />
       <div className="invalid-feedback">
         Please provide a slug consisting of lowercase letters, numbers, and

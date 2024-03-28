@@ -26,7 +26,7 @@ import { TimeCaption } from "../../../components/TimeCaption";
 import { Url } from "../../../utils/helpers/url";
 
 import { useGetGroupsQuery } from "../api/projectV2.enhanced-api";
-import type { GroupResponse } from "../api/group.api";
+import type { GroupResponse } from "../api/namespace.api";
 import WipBadge from "../shared/WipBadge";
 
 import styles from "./projectV2List.module.scss";
@@ -35,7 +35,7 @@ interface GroupListGroupProps {
   group: GroupResponse;
 }
 function GroupListGroup({ group }: GroupListGroupProps) {
-  const groupUrl = Url.get(Url.pages.v2Groups.show, {
+  const groupUrl = Url.get(Url.pages.groupV2.show, {
     slug: group.slug,
   });
   return (
@@ -100,7 +100,7 @@ function GroupListDisplay() {
 }
 
 export default function GroupList() {
-  const newGroupUrl = Url.get(Url.pages.v2Groups.new);
+  const newGroupUrl = Url.get(Url.pages.groupV2.new);
   return (
     <FormSchema
       showHeader={true}

@@ -37,19 +37,22 @@ import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
 import type { UserWithId } from "../../user/dataServicesUser.api";
 
-import type { FullUsersWithRoles, MemberWithRole } from "../api/projectV2.api";
+import type {
+  ProjectMemberPatchRequest,
+  ProjectMemberResponse,
+} from "../api/projectV2.api";
 import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
 
 import AddEntityMemberEmailLookupForm from "./AddEntityMemberLookupForm";
 
 interface AddProjectMemberModalProps {
   isOpen: boolean;
-  members: FullUsersWithRoles;
+  members: ProjectMemberPatchRequest[];
   projectId: string;
   toggle: () => void;
 }
 
-interface ProjectMemberForAdd extends MemberWithRole {
+interface ProjectMemberForAdd extends ProjectMemberResponse {
   email: string;
 }
 
@@ -68,7 +71,7 @@ function AddProjectMemberAccessForm({
     usePatchProjectsByProjectIdMembersMutation();
   const { control, handleSubmit } = useForm<ProjectMemberForAdd>({
     defaultValues: {
-      member: { id: user.id },
+      id: user.id,
       email: user.email,
       role: "member",
     },
@@ -83,13 +86,16 @@ function AddProjectMemberAccessForm({
 
   const onSubmit = useCallback(
     (data: ProjectMemberForAdd) => {
-      const projectMembers = members.map((m) => ({
-        member: { id: m.member.id },
+      const projectMembers = members.map((m: ProjectMemberResponse) => ({
+        id: m.id,
         role: m.role,
       }));
-      projectMembers.push({ member: { id: data.member.id }, role: data.role });
+      projectMembers.push({ id: data.id, role: data.role });
 
-      patchProjectMembers({ projectId, membersWithRoles: projectMembers });
+      patchProjectMembers({
+        projectId,
+        projectMemberListPatchRequest: projectMembers,
+      });
     },
     [patchProjectMembers, projectId, members]
   );

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// Run `npx @rtk-query/codegen-openapi group.api-config.ts` in this folder to generate the API
+// Run `npx @rtk-query/codegen-openapi namespace.api-config.ts` in this folder to generate the API
 import type { ConfigFile } from "@rtk-query/codegen-openapi";
 import path from "path";
 
@@ -24,10 +24,10 @@ const config: ConfigFile = {
   // Configure to inject endpoints into the projectV2Api
   apiFile: "./projectV2.api.ts",
   apiImport: "projectV2Api",
-  outputFile: "./group.api.ts",
-  exportName: "projectAndGroupApi",
+  outputFile: "./namespace.api.ts",
+  exportName: "projectAndNamespaceApi",
   hooks: true,
-  schemaFile: path.join(__dirname, "group.openapi.json"),
+  schemaFile: path.join(__dirname, "namespace.openapi.json"),
 };
 
 export default config;
