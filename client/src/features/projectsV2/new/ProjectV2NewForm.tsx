@@ -40,6 +40,7 @@ import {
   setCurrentStep,
   setMetadata,
 } from "./projectV2New.slice";
+import { PlusLg } from "react-bootstrap-icons";
 
 interface ProjectV2NewFormProps {
   currentStep: NewProjectV2State["currentStep"];
@@ -194,20 +195,13 @@ function ProjectV2NewRepositoryStepForm({
   );
   return (
     <>
-      <div className={cx("d-flex", "justify-content-between")}>
-        <h4>Add repositories</h4>
-        <div>
-          <Button data-cy="project-add-repository" onClick={onAppend}>
-            Add
-          </Button>
-        </div>
-      </div>
+      <h4>Add Repositories</h4>
       <Form
         className="form-rk-green"
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="mb-3">
+        <div className="mb-5">
           {fields.map((f, i) => {
             return (
               <div key={f.id}>
@@ -222,6 +216,9 @@ function ProjectV2NewRepositoryStepForm({
               </div>
             );
           })}
+          <Button data-cy="project-add-repository" onClick={onAppend}>
+            <PlusLg /> repository
+          </Button>
         </div>
         <ProjectFormSubmitGroup currentStep={currentStep} />
       </Form>

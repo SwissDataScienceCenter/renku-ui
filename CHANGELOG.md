@@ -1,5 +1,43 @@
 # Changes
 
+## [3.21.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.2...3.21.0) (2024-03-26)
+
+### Features
+
+- change the url structure for Renku 2.0 projects ([#3026](https://github.com/SwissDataScienceCenter/renku-ui/pull/3026))
+- add an additional top bar for Renku 2.0 ([#3030](https://github.com/SwissDataScienceCenter/renku-ui/pull/3030))
+- ad-hoc feature flag for Renku 2.0 ([#3051](https://github.com/SwissDataScienceCenter/renku-ui/pull/3051))
+- adapt session storage to repository ([#3057](https://github.com/SwissDataScienceCenter/renku-ui/issues/3057), [#3058](https://github.com/SwissDataScienceCenter/renku-ui/pull/3058))
+- add support for entity tags on Renku 2.0 projects ([#3067](https://github.com/SwissDataScienceCenter/renku-ui/pull/3067))
+- add sessions for Renku 2.0 projects ([#3037](https://github.com/SwissDataScienceCenter/renku-ui/pull/3037))
+- add search for projects and users on Renku 2.0 ([#3032](https://github.com/SwissDataScienceCenter/renku-ui/pull/3032))
+
+### Bug Fixes
+
+- remove the `<ThrottledTooltip>` component ([#3022](https://github.com/SwissDataScienceCenter/renku-ui/pull/3022))
+- start migrating to `react-router@v6` ([#3028](https://github.com/SwissDataScienceCenter/renku-ui/pull/3028))
+- expand the readme to include a contribute section ([#3031](https://github.com/SwissDataScienceCenter/renku-ui/pull/3031))
+- add an action to automate releases ([#3035](https://github.com/SwissDataScienceCenter/renku-ui/pull/3035))
+- update the release action ([#3039](https://github.com/SwissDataScienceCenter/renku-ui/pull/3039))
+- some migration step for `react-router@v6` ([#3041](https://github.com/SwissDataScienceCenter/renku-ui/pull/3041))
+- update `tsconfig.json` ([#3066](https://github.com/SwissDataScienceCenter/renku-ui/pull/3066))
+- update appearance of copy button in file view ([#3078](https://github.com/SwissDataScienceCenter/renku-ui/pull/3078))
+- update footer links with Mastodon ([#3059](https://github.com/SwissDataScienceCenter/renku-ui/issues/3059), [#3081](https://github.com/SwissDataScienceCenter/renku-ui/pull/3081))
+- update `react-pdf` version and fix it ([#3006](https://github.com/SwissDataScienceCenter/renku-ui/issues/3006), [#3083](https://github.com/SwissDataScienceCenter/renku-ui/pull/3083))
+- improve session scheduling error messages ([#3036](https://github.com/SwissDataScienceCenter/renku-ui/issues/3036), [#3082](https://github.com/SwissDataScienceCenter/renku-ui/pull/3082))
+
+### BREAKING CHANGES
+
+- Requires renku-notebooks version >= 1.22.0
+- Requires renku-data services version >= 0.6.0
+- Requires renku >= 0.50.0 (New services: `solr`, `renku-search`)
+
+## [3.20.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.1...3.20.2) (2024-03-21)
+
+### Bug Fixes
+
+- fix Keycloak sync fallback by calling /user endpoint when logged in ([#3080](https://github.com/SwissDataScienceCenter/renku-ui/pull/3080))
+
 ## [3.20.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.0...3.20.1) (2024-02-08)
 
 ### Bug Fixes

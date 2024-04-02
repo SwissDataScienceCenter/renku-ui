@@ -34,6 +34,12 @@ export function getRunningSession({
     const annotations = NotebooksHelper.cleanAnnotations(
       session.annotations
     ) as Session["annotations"];
+
+    // Filter out Renku 2.0 sessions.
+    if (annotations["renkuVersion"] === "2.0") {
+      return false;
+    }
+
     const thisAutostartUrl = Url.get(Url.pages.project.session.autostart, {
       namespace: annotations.namespace,
       path: annotations.projectName,
@@ -44,4 +50,30 @@ export function getRunningSession({
     DateTime.fromISO(b.started).diff(DateTime.fromISO(a.started)).valueOf()
   );
   return sorted.at(0);
+}
+
+export function filterSessions(
+  sessions: Sessions,
+  predicate: (session: Session) => unknown
+) {
+  return Object.entries(sessions)
+    .filter(([, session]) => predicate(session))
+    .reduce(
+      (prev, [name, session]) => ({ ...prev, [name]: session }),
+      {} as Sessions
+    );
+}
+
+export function filterSessionsWithCleanedAnnotations<
+  T = Session["annotations"]
+>(
+  sessions: Sessions,
+  predicate: (item: { session: Session; annotations: T }) => unknown
+) {
+  return filterSessions(sessions, (session) => {
+    const annotations = NotebooksHelper.cleanAnnotations(
+      session.annotations
+    ) as T;
+    return predicate({ session, annotations });
+  });
 }
