@@ -36,12 +36,23 @@ export interface ServerOption<T extends number | string = number | string> {
   type: "enum" | "int" | "float" | "boolean";
 }
 
+export interface ServerOptionResponse<
+  T extends number | string = number | string
+> {
+  allow_any_value?: boolean;
+  default: T;
+  display_name: string;
+  options: T[];
+  order: number;
+  type: "enum" | "int" | "float" | "boolean";
+}
+
 export interface ServerOptions {
   defaultUrl: ServerOption<string>;
   legacyOptions: Record<string, ServerOption>;
 }
 
-export type ServerOptionsResponse = Record<string, ServerOption>;
+export type ServerOptionsResponse = Record<string, ServerOptionResponse>;
 
 export type Sessions = Record<string, Session>;
 

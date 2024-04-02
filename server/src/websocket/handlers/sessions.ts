@@ -24,7 +24,23 @@ import { WsMessage } from "../WsMessages";
 import { simpleHash, sortObjectProperties } from "../../utils";
 
 interface SessionsResult {
-  servers: Record<string, Session>;
+  servers: Record<string, SessionResponse>;
+}
+interface SessionResponse {
+  status: {
+    details: {
+      status: string;
+      step: string;
+    }[];
+    message?: string;
+    ready_num_containers: number;
+    state: {
+      pod_name: string;
+      [key: string]: unknown;
+    };
+    total_num_containers: number;
+    [key: string]: unknown;
+  };
 }
 
 interface Session {
@@ -74,16 +90,16 @@ function heartbeatRequestSessionStatus(
           const {
             details,
             message,
-            readyNumContainers,
+            ready_num_containers,
             state,
-            totalNumContainers,
+            total_num_containers,
           } = session.status;
           const cleanedStatus = {
             details: details ?? [],
             ...(message ? { message } : {}),
-            readyNumContainers: readyNumContainers ?? -1,
+            readyNumContainers: ready_num_containers ?? -1,
             state: state ?? { pod_name: "" },
-            totalNumContainers: totalNumContainers ?? -1,
+            totalNumContainers: total_num_containers ?? -1,
           };
           return [key, { status: cleanedStatus }] as const;
         }

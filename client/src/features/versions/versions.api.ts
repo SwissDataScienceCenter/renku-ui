@@ -142,10 +142,10 @@ export const versionsApi = createApi({
           name: response.name,
           version: singleVersion?.version ?? "unavailable",
           anonymousSessionsEnabled:
-            singleVersion?.data?.anonymousSessionsEnabled ?? false,
-          sshEnabled: singleVersion?.data?.sshEnabled ?? false,
+            singleVersion?.data?.anonymous_sessions_enabled ?? false,
+          sshEnabled: singleVersion?.data?.ssh_enabled ?? false,
           cloudStorageEnabled:
-            singleVersion?.data?.cloudstorageEnabled ?? false,
+            singleVersion?.data?.cloudstorage_enabled ?? false,
         };
       },
       transformErrorResponse: () => {
