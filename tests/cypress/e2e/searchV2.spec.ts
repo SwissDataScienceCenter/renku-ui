@@ -57,6 +57,6 @@ describe("Search V2", () => {
     cy.getDataCy("search-header").contains("sort:score-desc");
 
     cy.getDataCy("search-sorting-select").select("Date: recently created");
-    cy.getDataCy("search-header").contains("sort:date-desc");
+    cy.getDataCy("search-header").contains("sort:created-desc");
   });
 });
