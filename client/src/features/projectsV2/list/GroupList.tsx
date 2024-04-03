@@ -25,17 +25,19 @@ import { Pagination } from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { Url } from "../../../utils/helpers/url";
 
-import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
-import type { Project } from "../api/projectV2.api";
+import { useGetGroupsQuery } from "../api/projectV2.enhanced-api";
+import type { GroupResponse } from "../api/namespace.api";
 import WipBadge from "../shared/WipBadge";
 
 import styles from "./projectV2List.module.scss";
 
-interface ProjectV2ListProjectProps {
-  project: Project;
+interface GroupListGroupProps {
+  group: GroupResponse;
 }
-function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
-  const projectUrl = Url.get(Url.pages.v2Projects.show, { id: project.id });
+function GroupListGroup({ group }: GroupListGroupProps) {
+  const groupUrl = Url.get(Url.pages.groupV2.show, {
+    slug: group.slug,
+  });
   return (
     <div
       data-cy="list-card"
@@ -43,23 +45,21 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
     >
       <div className={cx("card", "card-entity", "p-3")}>
         <h3>
-          <Link to={projectUrl}>{project.name}</Link>
+          <Link to={groupUrl}>{group.name}</Link>
         </h3>
-        <div className="mb-2 fw-light">{project.namespace}/</div>
-        <div className="mb-2">{project.description}</div>
+        <div className="mb-2">{group.description}</div>
         <div className={cx("align-items-baseline", "d-flex")}>
-          <span className={cx("fst-italic", "me-3")}>{project.visibility}</span>
-          <TimeCaption datetime={project.creation_date} prefix="Created" />
+          <TimeCaption datetime={group.creation_date} prefix="Created" />
         </div>
       </div>
     </div>
   );
 }
 
-function ProjectList() {
+function GroupListDisplay() {
   const perPage = 10;
   const [page, setPage] = useState(1);
-  const { data, error, isLoading } = useGetProjectsQuery({
+  const { data, error, isLoading } = useGetGroupsQuery({
     page,
     perPage,
   });
@@ -69,19 +69,19 @@ function ProjectList() {
       <div className={cx("d-flex", "justify-content-center", "w-100")}>
         <div className={cx("d-flex", "flex-column")}>
           <Loader className="me-2" />
-          <div>Retrieving projects...</div>
+          <div>Retrieving groups...</div>
         </div>
       </div>
     );
-  if (error) return <div>Cannot show projects.</div>;
+  if (error) return <div>Cannot show groups.</div>;
 
-  if (data == null) return <div>No V2 projects.</div>;
+  if (data == null) return <div>No renku v2 groups.</div>;
 
   return (
     <>
       <div className="d-flex flex-wrap w-100">
-        {data.projects?.map((project) => (
-          <ProjectV2ListProject key={project.id} project={project} />
+        {data.groups?.map((group) => (
+          <GroupListGroup key={group.id} group={group} />
         ))}
       </div>
       <Pagination
@@ -99,26 +99,26 @@ function ProjectList() {
   );
 }
 
-export default function ProjectV2List() {
-  const newProjectUrl = Url.get(Url.pages.v2Projects.new);
+export default function GroupList() {
+  const newGroupUrl = Url.get(Url.pages.groupV2.new);
   return (
     <FormSchema
       showHeader={true}
-      title="List Projects (V2)"
+      title="List Groups"
       description={
         <>
           <div>
-            All visible projects <WipBadge />{" "}
+            All visible groups <WipBadge />{" "}
           </div>
           <div className="mt-3">
-            <Link className={cx("btn", "btn-secondary")} to={newProjectUrl}>
-              Create New Project
+            <Link className={cx("btn", "btn-secondary")} to={newGroupUrl}>
+              Create New Group
             </Link>
           </div>
         </>
       }
     >
-      <ProjectList />
+      <GroupListDisplay />
     </FormSchema>
   );
 }
