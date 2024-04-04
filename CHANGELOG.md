@@ -1,5 +1,15 @@
 # Changes
 
+## [3.22.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.21.0...3.22.0) (2024-04-04)
+
+### Features
+
+- initial support for renku v2 namespaces ([#3023](https://github.com/SwissDataScienceCenter/renku-ui/issues/3023), [#3027](https://github.com/SwissDataScienceCenter/renku-ui/pull/3027))
+
+### BREAKING CHANGES
+
+- Requires renku-data services version >= 0.8.2
+
 ## [3.21.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.2...3.21.0) (2024-03-26)
 
 ### Features
