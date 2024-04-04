@@ -21,6 +21,7 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
@@ -36,6 +37,7 @@ import Select, {
 
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -48,6 +50,7 @@ import { ProjectConfig } from "../../../project/project.types";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import { setSessionClass } from "../../startSessionOptionsSlice";
+import { computeStorageSizes } from "../../utils/sessionOptions.utils";
 
 import styles from "./SessionClassOption.module.scss";
 
@@ -59,6 +62,9 @@ export const SessionClassOption = () => {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
+  const statistics = useLegacySelector<ProjectStatistics | null | undefined>(
+    (state) => state.stateModel.project.statistics?.data
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
@@ -69,22 +75,26 @@ export const SessionClassOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const { branch: currentBranch, commit } = useAppSelector(
-    ({ startSessionOptions }) => startSessionOptions
-  );
+  const {
+    branch: currentBranch,
+    commit,
+    lfsAutoFetch,
+  } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
   const { data: projectConfig } = useGetConfigQuery(
-    {
-      apiVersion,
-      metadataVersion,
-      projectRepositoryUrl,
-      branch: currentBranch,
-      commit,
-    },
-    {
-      skip:
-        !backendAvailable || !coreSupportComputed || !currentBranch || !commit,
-    }
+    backendAvailable && coreSupportComputed && currentBranch && commit
+      ? {
+          apiVersion,
+          metadataVersion,
+          projectRepositoryUrl,
+          branch: currentBranch,
+          commit,
+        }
+      : skipToken
   );
+
+  // Get storage sizes based on repository statistics
+  const { minimumStorageGb, recommendedStorageGb } =
+    computeStorageSizes({ lfsAutoFetch, statistics }) ?? {};
 
   // Resource pools
   const {
@@ -92,14 +102,16 @@ export const SessionClassOption = () => {
     isLoading,
     isError,
   } = useGetResourcePoolsQuery(
-    {
-      cpuRequest: projectConfig?.config.sessions?.legacyConfig?.cpuRequest,
-      gpuRequest: projectConfig?.config.sessions?.legacyConfig?.gpuRequest,
-      memoryRequest:
-        projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
-      storageRequest: projectConfig?.config.sessions?.storage,
-    },
-    { skip: !projectConfig }
+    projectConfig
+      ? {
+          cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
+          gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
+          memoryRequest:
+            projectConfig.config.sessions?.legacyConfig?.memoryRequest,
+          storageRequest:
+            projectConfig.config.sessions?.storage ?? minimumStorageGb,
+        }
+      : skipToken
   );
 
   const defaultSessionClass = useMemo(
@@ -188,6 +200,8 @@ export const SessionClassOption = () => {
       <div className="form-label">Session class</div>
       <SessionRequirements
         currentSessionClass={currentSessionClass}
+        minimumStorageGb={minimumStorageGb}
+        recommendedStorageGb={recommendedStorageGb}
         resourcePools={resourcePools}
         projectConfig={projectConfig}
       />
@@ -204,13 +218,17 @@ export const SessionClassOption = () => {
 
 interface SessionRequirementsProps {
   currentSessionClass?: ResourceClass | undefined;
-  resourcePools: ResourcePool[];
+  minimumStorageGb: number | undefined;
   projectConfig: ProjectConfig | undefined;
+  recommendedStorageGb: number | undefined;
+  resourcePools: ResourcePool[];
 }
 
 function SessionRequirements({
   currentSessionClass,
+  minimumStorageGb,
   projectConfig,
+  recommendedStorageGb,
   resourcePools,
 }: SessionRequirementsProps) {
   if (!projectConfig) {
@@ -220,7 +238,8 @@ function SessionRequirements({
   const cpuRequest = projectConfig?.config.sessions?.legacyConfig?.cpuRequest;
   const memoryRequest =
     projectConfig?.config.sessions?.legacyConfig?.memoryRequest;
-  const storageRequest = projectConfig?.config.sessions?.storage;
+  const storageRequest =
+    projectConfig?.config.sessions?.storage ?? minimumStorageGb;
   const gpuRequest = projectConfig?.config.sessions?.legacyConfig?.gpuRequest;
 
   if (!cpuRequest && !memoryRequest && !storageRequest && !gpuRequest) {
@@ -261,7 +280,16 @@ function SessionRequirements({
         {storageRequest && (
           <>
             {" "}
-            <span className="me-3">{storageRequest} GB Disk</span>
+            <span className="me-3">
+              {storageRequest} GB Disk
+              {recommendedStorageGb &&
+                recommendedStorageGb > storageRequest && (
+                  <>
+                    {" ("}
+                    {recommendedStorageGb} GB recommended{")"}
+                  </>
+                )}
+            </span>
           </>
         )}
         {gpuRequest && (
@@ -275,10 +303,22 @@ function SessionRequirements({
         <WarnAlert className="mb-1">
           <p className="mb-0">
             It seems that no session class you have access to can match the
-            compute requirements to launch a session
+            compute requirements to launch a session.
           </p>
         </WarnAlert>
       )}
+      {minimumStorageGb &&
+        storageRequest &&
+        minimumStorageGb > storageRequest && (
+          <WarnAlert className="mb-1">
+            <p className="mb-0">
+              It seems that the configured storage for this project {"("}
+              {storageRequest} GB{")"} does not match the size of the repository{" "}
+              {"("}
+              {minimumStorageGb} GB{")"}.
+            </p>
+          </WarnAlert>
+        )}
     </>
   );
 }

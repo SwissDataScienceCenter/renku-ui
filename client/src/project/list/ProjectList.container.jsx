@@ -17,10 +17,13 @@
  */
 
 import { isEqual } from "lodash";
-import { useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router";
 
-import { ProjectList as ProjectListPresent } from "./ProjectList.present";
+import AppContext from "../../utils/context/appContext";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { Url, getSearchParams } from "../../utils/helpers/url";
+import { ProjectList as ProjectListPresent } from "./ProjectList.present";
 
 // *** Constants ***
 const PROJECT_NEW_URL = Url.get(Url.pages.project.new);
@@ -334,29 +337,45 @@ function useUserProjectSearch(
  * Buffer component to handle anonymous users redirects.
  * Check ProjectListRedirected for the functional component logic.
  */
-function ProjectList(props) {
-  // Redirect anonymous users when trying to perform an invalid search (manually modified link)
-  if (!props.user.logged) {
-    const section = getSection(props.location);
-    const searchParams = getSearchParams();
-    // Searching in own or starred projects
-    if (section !== SECTION_MAP.all) {
-      const newUrl = Url.get(Url.pages.projects.all, searchParams);
-      props.history.replace(newUrl);
-      return null;
+function ProjectList() {
+  const history = useHistory();
+
+  const { client } = useContext(AppContext);
+
+  const user = useLegacySelector((state) => state.stateModel.user);
+
+  useEffect(() => {
+    // Redirect anonymous users when trying to perform an invalid search (manually modified link)
+    if (!user.logged) {
+      const section = getSection(history.location);
+      const searchParams = getSearchParams();
+      // Searching in own or starred projects
+      if (section !== SECTION_MAP.all) {
+        const newUrl = Url.get(Url.pages.projects.all, searchParams);
+        history.replace(newUrl);
+        return;
+      }
+      // filtering per user or group
+      if (searchParams.searchIn !== SEARCH_IN_MAP.projects.value) {
+        const newParams = {
+          ...searchParams,
+          searchIn: SEARCH_IN_MAP.projects.value,
+        };
+        const newUrl = Url.get(Url.pages.projects.all, newParams);
+        history.replace(newUrl);
+        return;
+      }
     }
-    // filtering per user or group
-    if (searchParams.searchIn !== SEARCH_IN_MAP.projects.value) {
-      const newParams = {
-        ...searchParams,
-        searchIn: SEARCH_IN_MAP.projects.value,
-      };
-      const newUrl = Url.get(Url.pages.projects.all, newParams);
-      props.history.replace(newUrl);
-      return null;
-    }
-  }
-  return <ProjectListRedirected {...props} />;
+  }, [history, user.logged]);
+
+  return (
+    <ProjectListRedirected
+      user={user}
+      client={client}
+      location={history.location}
+      history={history}
+    />
+  );
 }
 
 /**
@@ -462,7 +481,7 @@ function ProjectListRedirected(props) {
   );
 }
 
-export { URL_MAP as urlMap, ProjectList };
+export { ProjectList, URL_MAP as urlMap };
 
 // test only
 const tests = {

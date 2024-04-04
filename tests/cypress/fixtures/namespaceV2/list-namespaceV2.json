@@ -1,0 +1,24 @@
+[
+  {
+    "id": "AB0134CD43Z3JF9DX88B7XB405N0",
+    "slug": "user1.uuid",
+    "created_by": "user1-uuid",
+    "namespace_kind": "user"
+  },
+  {
+    "id": "THEPROJECTULID26CHARACTERS",
+    "name": "test 2 group-v2",
+    "slug": "test-2-group-v2",
+    "creation_date": "2023-11-15T09:55:59Z",
+    "created_by": "user1-uuid",
+    "namespace_kind": "group"
+  },
+  {
+    "id": "01HF96BXZ3JF9DX88B7XB405S5",
+    "name": "test 1 group-v2",
+    "slug": "test-1-group-v2",
+    "creation_date": "2023-11-15T09:52:59Z",
+    "created_by": "user1-uuid",
+    "namespace_kind": "group"
+  }
+]

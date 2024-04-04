@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Progress } from "reactstrap";
@@ -45,11 +46,13 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
   // Set up the query
   const [pollingInterval, setPollingInterval] = useState(NO_POLLING);
   const { data, isError, isFetching, isLoading, isUninitialized, refetch } =
-    projectKgApi.useGetProjectIndexingStatusQuery(props.projectId, {
-      refetchOnMountOrArgChange: 20,
-      skip: !props.projectId,
-      pollingInterval,
-    });
+    projectKgApi.useGetProjectIndexingStatusQuery(
+      props.projectId ? props.projectId : skipToken,
+      {
+        refetchOnMountOrArgChange: 20,
+        pollingInterval,
+      }
+    );
 
   // Add polling for indexing projects
   useEffect(() => {

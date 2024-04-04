@@ -110,7 +110,7 @@ function BottomNav(props: AnonymousHomeConfig) {
                 url={Links.RENKU_BLOG}
               />
               <BottomNavExternalLink title="YouTube" url={Links.YOUTUBE} />
-              <BottomNavExternalLink title="Medium" url={Links.MEDIUM} />
+              <BottomNavExternalLink title="Mastodon" url={Links.MASTODON} />
             </BottomNavSection>
           </Col>
           <Col md={3}>

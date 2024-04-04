@@ -1,5 +1,4 @@
 [![Test and CI](https://github.com/SwissDataScienceCenter/renku-ui/actions/workflows/test-and-ci.yml/badge.svg)](https://github.com/SwissDataScienceCenter/renku-ui/actions/workflows/test-and-ci.yml)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org)
 [![Release](https://img.shields.io/github/tag/SwissDataScienceCenter/renku-ui.svg)](https://github.com/SwissDataScienceCenter/renku-ui/releases)
 
 # Renku UI
@@ -8,6 +7,27 @@ The Renku UI is the web-based UI for [Renku](https://github.com/SwissDataScience
 and it requires a RenkuLab deployment. You can check the
 [Administrator's Guide](https://renku.readthedocs.io/en/latest/how-to-guides/admin/deploying-renku.html)
 to get more information.
+
+## Table of Contents
+
+- [Architecture](#architecture)
+- [Development](#development)
+  - [Coding guidelines](#coding-guidelines)
+  - [Code Formatting](#code-formatting)
+  - [Additional tools](#additional-tools)
+  - [Contribute](#contribute)
+- [UI Client](#ui-client)
+  - [Tool Stack](#tool-stack)
+  - [Code structure](#code-structure)
+  - [Code splitting](#code-splitting)
+  - [Testing](#testing)
+  - [Utilities and additional information](#utilities-and-additional-information)
+  - [Navigation map](#navigation-map)
+- [UI Server](#ui-server)
+  - [Tool Stack](#tool-stack-1)
+  - [Code structure](#code-structure-1)
+  - [Testing](#testing-1)
+  - [Utilities and additional information](#utilities-and-additional-information-1)
 
 ## Architecture
 
@@ -56,7 +76,7 @@ since they were introduced later in the project. We are working on refactoring
 the codebase to make it consistent, and guidelines will be enforced for all new
 code.
 
-### Code Formating
+### Code Formatting
 
 We use [Prettier](https://prettier.io) to format the codebase to
 keep the syntax consistent. We enforce that by checking every pull request
@@ -94,6 +114,60 @@ Kubectl and telepresence will allow you to inject code running on your developme
 | -------------------------------- | ---------------------------- |
 | [docker](https://www.docker.com) | For building containers      |
 | [helm](https://helm.sh)          | For packaging things for K8s |
+
+### Contribute
+
+#### Commit
+
+We use [Conventional Commits](https://www.conventionalcommits.org) to format our
+commit messages. This allows us to automatically generate changelogs.
+
+When you commit, please follow the guidelines. Here is an example of a commit message:
+
+```
+feat: add a new feature (#345)
+
+This is a longer description of the feature that was added.
+
+BREAKING CHANGE: this commit breaks something
+
+fix #123
+```
+
+The first line always includes the type of change (please try to use `feat` and `fix`
+correctly cause they affect release notes), a short description of the change starting
+with a verb, and the pull request number. This last part is added automatically by GitHub
+when merging a PR.
+
+All the other sections are optional, but we encourage you to add a reference to the
+issue you are fixing and to mention any breaking changes.
+
+#### Tag
+
+We loosely follow the recommendations from [Semantic Versioning](https://semver.org)
+to tag our releases. Since we don't expose APIs, the distinction between `major` and
+`minor` is not always clear, but we try to follow the guidelines when it comes to
+tagging `patch` releases.
+
+In general, you can follow this rule:
+
+- When you need to urgently fix a bug, tag a patch release creating a new
+  branch from the previous tag (E.G. if you are tagging `3.22.1`, start from `3.22.0`).
+  You can later merge the same change to `main`.
+- When there are new features, tag a minor release from the `main` branch.
+
+Before merging, please make sure to:
+
+- Bump the version in the `package.json` and `package-lock.json` files on both the
+  client and the server folders.
+- Bump the version in the helm-chart `Chart.yaml` and `values.yaml` files.
+- Update the `CHANGELOG.md` file listing all the changes since the last release. We are
+  broadly following the layout of the auto-generated GitHub release notes. The easiest
+  way to generate them is to go to the
+  [New release](https://github.com/SwissDataScienceCenter/renku-ui/releases/new) page
+  and click on the `Generate release notes` button. Please remove chores and other
+  non-user-relevant changes from the list, and separate the remaining into `Features`
+  and `Bug Fixes` sections.
 
 ## UI Client
 
@@ -178,6 +252,10 @@ them when already touching the code for other changes.
 We use [CSS modules](https://github.com/css-modules/css-modules) to apply CSS styles
 locally and avoid leaking styles to the whole web application.
 No additional configuration is needed since Create React App [supports CSS modules out of the box](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet).
+
+#### **Use classnames for complex CSS class names**
+
+When a node has a class name that is either computed dynamically or is comprised of two or more classes, use the [classnames](https://www.npmjs.com/package/classnames) package (idiomatically imported typically as `cx`) to construct the class name string.
 
 ### Code splitting
 

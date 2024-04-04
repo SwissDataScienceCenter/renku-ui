@@ -1,4 +1,4 @@
-FROM node:18.17.1 AS builder
+FROM node:20.11.0 AS builder
 
 RUN apt-get update && apt-get upgrade --quiet --assume-yes
 
@@ -45,6 +45,11 @@ RUN chown nginx /usr/share/nginx/html/sitemap.xml
 RUN touch /usr/share/nginx/html/privacy-statement.md
 RUN chmod a+r /usr/share/nginx/html/privacy-statement.md
 RUN chown nginx /usr/share/nginx/html/privacy-statement.md
+
+RUN touch /usr/share/nginx/html/terms-of-use.md
+RUN chmod a+r /usr/share/nginx/html/terms-of-use.md
+RUN chown nginx /usr/share/nginx/html/terms-of-use.md
+
 USER nginx
 
 

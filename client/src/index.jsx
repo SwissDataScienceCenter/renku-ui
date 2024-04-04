@@ -1,6 +1,7 @@
+import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { connect, Provider } from "react-redux";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import "bootstrap";
 import "jquery";
@@ -13,35 +14,26 @@ import App from "./App";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
+import Router from "./components/router/Router";
+import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { Maintenance } from "./features/maintenance/Maintenance";
-import { StateModel, globalSchema } from "./model";
+import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
-import { Sentry } from "./utils/helpers/sentry";
-import { Url, createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
-import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { validatedAppParams } from "./utils/context/appParams.utils";
+import { Sentry } from "./utils/helpers/sentry";
+import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
+import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 
 const configFetch = fetch("/config.json");
-const privacyFetch = fetch("/privacy-statement.md");
 
-Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
-  const [configResp, privacyResp] = valuesRead;
+configFetch.then((valuesRead) => {
+  const configResp = valuesRead;
   const configRead = configResp.json();
-  const privacyRead = privacyResp.text();
 
-  Promise.all([configRead, privacyRead]).then((values) => {
+  configRead.then((params_) => {
     const container = document.getElementById("root");
     const root = createRoot(container);
-    const [params_, privacy] = values;
-
-    // map privacy statement to parameters
-    // ? checking DOCTYPE prevents setting content from bad answers on valid 2xx responses
-    if (!privacy || !privacy.length || privacy.startsWith("<!DOCTYPE html>")) {
-      params_["PRIVACY_STATEMENT"] = null;
-    } else {
-      params_["PRIVACY_STATEMENT"] = privacy;
-    }
 
     const params = validatedAppParams(params_);
 
@@ -109,20 +101,14 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
       <Provider store={model.reduxStore}>
         <Router>
           <AppErrorBoundary>
-            <Route
-              render={(props) => {
-                LoginHelper.handleLoginParams(props.history);
-                return (
-                  <VisibleApp
-                    client={client}
-                    coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
-                    params={params}
-                    model={model}
-                    location={props.location}
-                    statuspageId={statuspageId}
-                  />
-                );
-              }}
+            <LoginHandler />
+            <FeatureFlagHandler />
+            <VisibleApp
+              client={client}
+              coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
+              params={params}
+              model={model}
+              statuspageId={statuspageId}
             />
           </AppErrorBoundary>
         </Router>
@@ -130,3 +116,18 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     );
   });
 });
+
+function LoginHandler() {
+  const history = useHistory();
+
+  useEffect(() => {
+    LoginHelper.handleLoginParams(history);
+  }, [history]);
+
+  return null;
+}
+
+function FeatureFlagHandler() {
+  useFeatureFlagSync();
+  return null;
+}

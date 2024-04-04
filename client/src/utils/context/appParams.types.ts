@@ -31,8 +31,9 @@ export interface AppParams {
   MAINTENANCE: string;
   PREVIEW_THRESHOLD: PreviewThresholdParams;
   PRIVACY_BANNER_CONTENT: string;
+  PRIVACY_BANNER_ENABLED: boolean;
   PRIVACY_BANNER_LAYOUT: PrivacyBannerLayoutParams | null;
-  PRIVACY_ENABLED: boolean;
+  TERMS_PAGES_ENABLED: boolean;
   RENKU_CHART_VERSION: string;
   SENTRY_NAMESPACE: string;
   SENTRY_SAMPLE_RATE: string; // TODO: convert to number type

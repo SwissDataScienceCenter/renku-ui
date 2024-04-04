@@ -17,21 +17,30 @@
  */
 
 import { useEffect } from "react";
+
+import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { ProjectConfig } from "../../../project/project.types";
 import { setError } from "../../startSession.slice";
 import { setStorage } from "../../startSessionOptionsSlice";
-import { validateStorageAmount } from "../../utils/sessionOptions.utils";
+import {
+  computeRequestedStorageSize,
+  validateStorageAmount,
+} from "../../utils/sessionOptions.utils";
 
 interface UseDefaultStorageOptionArgs {
   currentSessionClass: ResourceClass | null;
+  lfsAutoFetch: boolean;
   projectConfig: ProjectConfig | undefined;
+  statistics: ProjectStatistics | null | undefined;
 }
 
 export default function useDefaultStorageOption({
   currentSessionClass,
+  lfsAutoFetch,
   projectConfig,
+  statistics,
 }: UseDefaultStorageOptionArgs): void {
   const dispatch = useAppDispatch();
 
@@ -41,10 +50,17 @@ export default function useDefaultStorageOption({
       return;
     }
 
+    const requestedStorage = computeRequestedStorageSize({
+      defaultStorage: currentSessionClass.default_storage,
+      lfsAutoFetch,
+      maxStorage: currentSessionClass.max_storage,
+      statistics,
+    });
+
     const desiredValue =
       projectConfig.config.sessions?.storage ??
       projectConfig.default.sessions?.storage ??
-      currentSessionClass.default_storage;
+      requestedStorage;
     const newValue = validateStorageAmount({
       value: desiredValue,
       maxValue: currentSessionClass.max_storage,
@@ -56,5 +72,5 @@ export default function useDefaultStorageOption({
     }
 
     dispatch(setStorage(newValue));
-  }, [currentSessionClass, dispatch, projectConfig]);
+  }, [currentSessionClass, dispatch, lfsAutoFetch, projectConfig, statistics]);
 }

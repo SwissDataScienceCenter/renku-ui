@@ -1,0 +1,237 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Renku data services.",
+    "description": "Endpoints that provide different information from different backends.\n",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api/data"
+    },
+    {
+      "url": "/ui-server/api/data"
+    }
+  ],
+  "paths": {
+    "/user": {
+      "get": {
+        "summary": "Get information about the currently logged in user",
+        "responses": {
+          "200": {
+            "description": "The currently logged in user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserWithId"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["users"]
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "List all users",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "exact_email",
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "description": "Return the user(s) with an exact match on the email provided"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of users in the service (this is a subset of what is in Keycloak)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsersWithId"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["users"]
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "summary": "Get a specific user by their Keycloak ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserWithId"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["users"]
+      }
+    },
+    "/error": {
+      "get": {
+        "summary": "Get a sample error response with status code 422",
+        "responses": {
+          "422": {
+            "description": "The error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "summary": "Get the version of the service",
+        "responses": {
+          "200": {
+            "description": "The error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserWithId": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/UserId"
+          },
+          "email": {
+            "$ref": "#/components/schemas/UserEmail"
+          },
+          "first_name": {
+            "$ref": "#/components/schemas/UserFirstLastName"
+          },
+          "last_name": {
+            "$ref": "#/components/schemas/UserFirstLastName"
+          }
+        },
+        "required": ["id"],
+        "example": {
+          "id": "some-random-keycloak-id",
+          "email": "user@gmail.com"
+        }
+      },
+      "UsersWithId": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/UserWithId"
+        },
+        "uniqueItems": true
+      },
+      "Version": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": ["version"]
+      },
+      "UserId": {
+        "type": "string",
+        "description": "Keycloak user ID",
+        "example": "f74a228b-1790-4276-af5f-25c2424e9b0c"
+      },
+      "UserFirstLastName": {
+        "type": "string",
+        "description": "First or last name of the user",
+        "example": "John",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "UserEmail": {
+        "type": "string",
+        "format": "email",
+        "description": "User email",
+        "example": "some-user@gmail.com"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "example": 1404
+              },
+              "detail": {
+                "type": "string",
+                "example": "A more detailed optional message showing what the problem was"
+              },
+              "message": {
+                "type": "string",
+                "example": "Something went wrong - please try again later"
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "The schema for all 4xx and 5xx responses",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "oidc": {
+        "type": "openIdConnect",
+        "openIdConnectUrl": "/auth/realms/Renku/.well-known/openid-configuration"
+      }
+    }
+  },
+  "security": [
+    {
+      "oidc": ["openid"]
+    }
+  ]
+}

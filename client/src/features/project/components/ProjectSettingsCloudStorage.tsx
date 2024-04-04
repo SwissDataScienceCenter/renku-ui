@@ -21,7 +21,7 @@ import { ReactNode } from "react";
 import { Col, Container, Row } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
-import { ErrorAlert, WarnAlert } from "../../../components/Alert";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { User } from "../../../model/renkuModels.types";
@@ -64,17 +64,6 @@ export default function ProjectSettingsCloudStorage() {
   const isFetching = storageIsFetching || versionIsFetching;
   const isLoading = storageIsLoading || versionIsLoading;
 
-  if (!logged) {
-    const textIntro =
-      "Only authenticated users can access cloud storage setting.";
-    const textPost = "to view cloud storage settings.";
-    return (
-      <CloudStorageSection>
-        <LoginAlert logged={logged} textIntro={textIntro} textPost={textPost} />
-      </CloudStorageSection>
-    );
-  }
-
   if (isLoading) {
     return (
       <CloudStorageSection>
@@ -101,20 +90,32 @@ export default function ProjectSettingsCloudStorage() {
 
   return (
     <CloudStorageSection isFetching={isFetching}>
+      {!devAccess && (
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-0">
+            Cloud storage settings can be accessed only by project owners,
+            maintainers and developers.
+          </p>
+          {!logged && (
+            <p className={cx("mt-3", "mb-0")}>
+              <LoginAlert
+                logged={false}
+                noWrapper={true}
+                textPre="You can"
+                textPost="here."
+              />
+            </p>
+          )}
+        </InfoAlert>
+      )}
       <CloudStorageSupportNotice notebooksVersion={notebooksVersion} />
 
-      {notebooksVersion.cloudStorageEnabled ? (
+      {notebooksVersion.cloudStorageEnabled && (
         <Row>
           <Col>
             <AddOrEditCloudStorageButton devAccess={devAccess} />
           </Col>
         </Row>
-      ) : (
-        <WarnAlert dismissible={false}>
-          <p className="mb-0">
-            Cloud storage is not enabled for this instance of RenkuLab.
-          </p>
-        </WarnAlert>
       )}
 
       <CloudStorageList

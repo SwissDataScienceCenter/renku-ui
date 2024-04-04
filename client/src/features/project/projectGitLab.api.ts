@@ -44,7 +44,6 @@ import {
   GitLabRepositoryCommit,
   GitLabRepositoryCommitList,
   GitlabProjectResponse,
-  Pagination,
   RetryPipelineParams,
   RunPipelineParams,
 } from "./GitLab.types";
@@ -62,6 +61,13 @@ const projectGitLabApi = createApi({
       query: (projectId: number) => {
         return {
           url: `${projectId}`,
+        };
+      },
+    }),
+    getProjectByPath: builder.query<GitlabProjectResponse, string>({
+      query: (projectPath: string) => {
+        return {
+          url: `${encodeURIComponent(projectPath)}`,
         };
       },
     }),
@@ -418,9 +424,7 @@ const projectGitLabApi = createApi({
           allCommits.push(...commits);
 
           const responseHeaders = result.meta?.response?.headers;
-          const pagination = processPaginationHeaders(
-            responseHeaders
-          ) as Pagination;
+          const pagination = processPaginationHeaders(responseHeaders);
 
           if (pagination.nextPage == null) {
             break;
@@ -447,6 +451,7 @@ const projectGitLabApi = createApi({
 export default projectGitLabApi;
 export const {
   useGetProjectByIdQuery,
+  useGetProjectByPathQuery,
   useGetPipelineJobByNameQuery,
   useGetPipelinesQuery,
   useRetryPipelineMutation,

@@ -1,0 +1,61 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.control {
+  background: var(--bs-rk-white);
+  --bs-border-color: var(--bs-rk-border-input);
+
+  cursor: pointer !important;
+
+  &:hover {
+    --bs-border-color: var(--bs-rk-green);
+  }
+
+  &IsOpen {
+    --bs-border-color: var(--bs-rk-green);
+  }
+}
+
+.menu {
+  background: var(--bs-rk-white);
+  --bs-border-color: var(--bs-rk-green);
+  z-index: 10 !important;
+}
+
+.option {
+  cursor: pointer !important;
+
+  &:hover,
+  &IsFocused {
+    background-color: #e4e7ea;
+  }
+
+  &IsSelected {
+    background-color: #e4e7ea80;
+  }
+}
+
+.option,
+.singleValue {
+  font-size: 0.875rem !important;
+
+  @include media-breakpoint-up(lg) {
+    font-size: 1rem !important;
+  }
+
+  & .slug {
+    @include media-breakpoint-up(sm) {
+      min-width: 80px;
+      width: 20em;
+    }
+  }
+  & .kind {
+    @include media-breakpoint-up(sm) {
+      min-width: 80px;
+      width: 5em;
+    }
+  }
+}

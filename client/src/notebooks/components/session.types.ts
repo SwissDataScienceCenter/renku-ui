@@ -37,6 +37,11 @@ export interface NotebookAnnotations {
   hibernationSynchronized: boolean;
   hibernatedSecondsThreshold: string;
 
+  // Annotations for Renku 2.0
+  renkuVersion?: string;
+  projectId?: string;
+  launcherId?: string;
+
   [key: string]: unknown;
 }
 
@@ -94,4 +99,9 @@ export interface ProjectMetadata {
   tagList: string[];
   title: string;
   visibility: "public" | "internal" | "private";
+}
+
+export interface ProjectStatistics {
+  lfs_objects_size?: number | null | undefined;
+  repository_size?: number | null | undefined;
 }

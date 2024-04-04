@@ -48,11 +48,11 @@ import {
 } from "../../../notebooks/components/Sidecar";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import {
-  GitStatusResult,
   useGitStatusQuery,
   useHealthQuery,
   useRenkuSaveMutation,
-} from "../sidecarApi";
+} from "../sidecar.api";
+import type { GitStatusResult } from "../sidecar.types";
 
 import styles from "./SessionModals.module.scss";
 

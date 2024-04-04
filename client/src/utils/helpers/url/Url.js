@@ -295,8 +295,10 @@ const Url = {
       base: "/help",
       documentation: "/help/docs",
       getting: "/help/getting",
+      privacy: "/help/privacy",
       release: "/help/release",
       status: "/help/status",
+      tos: "/help/tos",
     },
     login: {
       base: "/login",
@@ -490,6 +492,28 @@ const Url = {
     },
     searchEntities: {
       base: "/search",
+    },
+    groupV2: {
+      base: "/v2/groups",
+      new: "/v2/groups/new",
+      list: "/v2/groups",
+      show: new UrlRule((data) => `/v2/groups/${data.slug}`, ["slug"], null, [
+        "/v2/groups/slug",
+      ]),
+    },
+    v2Projects: {
+      base: "/v2/projects",
+      new: "/v2/projects/new",
+      list: "/v2/projects",
+      show: new UrlRule((data) => `/v2/projects/${data.id}`, ["id"], null, [
+        "/v2/projects/id",
+      ]),
+    },
+    v2Users: {
+      base: "/v2/users",
+      show: new UrlRule((data) => `/v2/users/${data.id}`, ["id"], null, [
+        "/v2/users/id",
+      ]),
     },
   },
 

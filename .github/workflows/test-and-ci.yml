@@ -18,7 +18,7 @@ jobs:
       - name: Set up node ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: "18.17.1"
+          node-version: "20.11.0"
       - name: Install client dependencies
         run: npm clean-install
         env:
@@ -27,6 +27,7 @@ jobs:
         run: npm run test
         env:
           CI: true
+        timeout-minutes: 1
       - name: Run format client
         run: npm run format-check
       - name: Run lint client
@@ -46,7 +47,7 @@ jobs:
       - name: Set up node ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: "18.17.1"
+          node-version: "20.11.0"
       - name: Install server dependencies
         run: npm clean-install
       - name: Build server
@@ -73,7 +74,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: "18.17.1"
+          node-version: "20.11.0"
       - name: Install dependencies
         run: npm clean-install
       - name: Install Playwright
@@ -91,7 +92,7 @@ jobs:
       - name: Set up node ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: "18.17.1"
+          node-version: "20.11.0"
       - name: Install project e2e dependencies
         run: npm clean-install
       - name: Run format e2e
@@ -151,12 +152,12 @@ jobs:
           echo "GIT_USER=Renku Bot" >> $GITHUB_ENV
           echo "GIT_EMAIL=renku@datascience.ch" >> $GITHUB_ENV
       - name: Push images
-        uses: SwissDataScienceCenter/renku-actions/publish-chartpress-images@v1.9.1
+        uses: SwissDataScienceCenter/renku-actions/publish-chartpress-images@v1.11.0
         env:
           DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
       - name: Update ui version
-        uses: SwissDataScienceCenter/renku-actions/update-component-version@v1.9.1
+        uses: SwissDataScienceCenter/renku-actions/update-component-version@v1.11.0
         env:
           GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
           COMPONENT_NAME: renku-ui

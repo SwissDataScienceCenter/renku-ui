@@ -59,7 +59,11 @@ export function validatedAppParams(params: unknown): AppParams {
 
   // Boolean params
   const ANONYMOUS_SESSIONS = validateBoolean(params_, "ANONYMOUS_SESSIONS");
-  const PRIVACY_ENABLED = validateBoolean(params_, "PRIVACY_ENABLED");
+  const PRIVACY_BANNER_ENABLED = validateBoolean(
+    params_,
+    "PRIVACY_BANNER_ENABLED"
+  );
+  const TERMS_PAGES_ENABLED = validateBoolean(params_, "TERMS_PAGES_ENABLED");
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -87,8 +91,9 @@ export function validatedAppParams(params: unknown): AppParams {
     MAINTENANCE,
     PREVIEW_THRESHOLD,
     PRIVACY_BANNER_CONTENT,
+    PRIVACY_BANNER_ENABLED,
     PRIVACY_BANNER_LAYOUT,
-    PRIVACY_ENABLED,
+    TERMS_PAGES_ENABLED,
     RENKU_CHART_VERSION,
     SENTRY_NAMESPACE,
     SENTRY_SAMPLE_RATE,

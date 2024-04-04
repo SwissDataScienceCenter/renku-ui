@@ -1,0 +1,50 @@
+@import "/src/styles/bootstrap/_custom_bootstrap_variables.scss";
+
+.templateLabel {
+  .templateCardImage {
+    height: 108px;
+  }
+
+  .templateCardName {
+    display: flex;
+    height: 74px;
+
+    & p {
+      display: -webkit-box;
+      line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+  }
+
+  .templateCardDescription,
+  .templateCardSsh {
+    display: none;
+    background-color: $rk-green-highlight;
+  }
+
+  &:hover,
+  input:focus-visible + & {
+    .templateCardImage,
+    .templateCardName {
+      display: none;
+    }
+
+    .templateCardDescription,
+    .templateCardSsh {
+      display: flex;
+    }
+  }
+
+  input:focus-visible + & {
+    box-shadow: var(--bs-focus-ring-x, 0) var(--bs-focus-ring-y, 0)
+      var(--bs-focus-ring-blur, 0) var(--bs-focus-ring-width)
+      var(--bs-focus-ring-color);
+  }
+}
+
+.templateCard {
+  max-height: 182px;
+}
