@@ -21,10 +21,12 @@ import { Suspense, lazy } from "react";
 import PageLoader from "../../components/PageLoader";
 
 const RootV2 = lazy(() => import("./RootV2"));
+const StylesV2 = lazy(() => import("./StylesV2"));
 
 export default function LazyRootV2() {
   return (
     <Suspense fallback={<PageLoader />}>
+      {StylesV2 && <StylesV2 />}
       <RootV2 />
     </Suspense>
   );
