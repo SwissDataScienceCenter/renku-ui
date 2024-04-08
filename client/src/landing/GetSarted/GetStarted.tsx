@@ -17,6 +17,7 @@
  */
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { useContext } from "react";
 
 import { ExternalDocsLink, ExternalLink } from "../../components/ExternalLinks";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
@@ -24,6 +25,8 @@ import EntityCardSkeleton from "../../components/list/EntityCardSkeleton";
 import ListCard from "../../components/list/ListCard";
 import { useProjectMetadataQuery } from "../../features/project/projectKg.api";
 import { Docs, RenkuContactEmail } from "../../utils/constants/Docs";
+import AppContext from "../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import { mapMetadataKgResultToEntity } from "../../utils/helpers/KgSearchFunctions";
 import { AnonymousHomeConfig } from "../anonymousHome.types";
 
@@ -34,7 +37,6 @@ interface GetStartedProps extends AnonymousHomeConfig {
 }
 export default function GetStarted(props: GetStartedProps) {
   const projectPath = props.homeCustomized.projectPath;
-  const contactEmail = RenkuContactEmail;
   const { sectionRef } = props;
   const projectMetadataQuery = useProjectMetadataQuery(
     projectPath ? { projectPath } : skipToken
@@ -91,18 +93,7 @@ export default function GetStarted(props: GetStartedProps) {
                 resources for researchers and instructors. Contact us to learn
                 more.
               </p>
-              <ExternalLink
-                className={cx(
-                  styles.btnContactUs,
-                  "align-self-start",
-                  "align-self-lg-center"
-                )}
-                color="outline-rk-green"
-                role="button"
-                id="Contact Us"
-                url={`mailto:${contactEmail}`}
-                title="Contact us"
-              />
+              <ContactUsLink />
             </div>
             <div>
               <p>
@@ -138,5 +129,45 @@ export default function GetStarted(props: GetStartedProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+function ContactUsLink() {
+  const { params } = useContext(AppContext);
+  const SESSION_CLASS_EMAIL_US =
+    params?.SESSION_CLASS_EMAIL_US ??
+    DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
+
+  const emailTo = SESSION_CLASS_EMAIL_US.enabled
+    ? SESSION_CLASS_EMAIL_US.email.to
+    : RenkuContactEmail;
+  const url = new URL(`mailto:${emailTo}`);
+
+  if (SESSION_CLASS_EMAIL_US.enabled && SESSION_CLASS_EMAIL_US.email.subject) {
+    url.searchParams.set("subject", SESSION_CLASS_EMAIL_US.email.subject);
+  }
+  if (SESSION_CLASS_EMAIL_US.enabled && SESSION_CLASS_EMAIL_US.email.body) {
+    const renderedBody = SESSION_CLASS_EMAIL_US.email.body.replace(
+      /[{][{]full_name[}][}]/g,
+      "<signature>"
+    );
+    url.searchParams.set("body", renderedBody);
+  }
+  const urlStr = url.toString().replace(/[+]/g, "%20");
+
+  return (
+    <ExternalLink
+      className={cx(
+        styles.btnContactUs,
+        "align-self-start",
+        "align-self-lg-center"
+      )}
+      color="outline-rk-green"
+      role="button"
+      id="Contact Us"
+      url={urlStr}
+    >
+      Contact Us
+    </ExternalLink>
   );
 }
