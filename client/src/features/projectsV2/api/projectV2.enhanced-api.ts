@@ -1,7 +1,7 @@
 import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
 
-import { projectV2Api as api } from "./projectV2.api";
+import { projectAndNamespaceApi as api } from "./namespace.api";
 import type {
   ErrorResponse,
   GetProjectsApiArg,
@@ -9,15 +9,81 @@ import type {
   ProjectsList,
 } from "./projectV2.api";
 
+import type {
+  GetGroupsApiArg,
+  GetGroupsApiResponse as GetGroupsApiResponseOrig,
+  GroupResponseList,
+  GetNamespacesApiArg,
+  GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
+  NamespaceResponseList,
+} from "./namespace.api";
+
+interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
+  groups: GetGroupsApiResponseOrig;
+}
+
+export interface GetNamespacesApiResponse extends AbstractKgPaginatedResponse {
+  namespaces: GetNamespacesApiResponseOrig;
+}
+
 interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
   projects: GetProjectsApiResponseOrig;
 }
 
 const injectedApi = api.injectEndpoints({
-  endpoints: (build) => ({
-    getProjectsPaged: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
+  endpoints: (builder) => ({
+    getGroupsPaged: builder.query<GetGroupsApiResponse, GetGroupsApiArg>({
       query: (queryArg) => ({
-        url: `/projects`,
+        url: "/groups",
+        params: { page: queryArg.page, per_page: queryArg.perPage },
+      }),
+      transformResponse: (response, meta, queryArg) => {
+        const groups = response as GroupResponseList;
+        const headers = meta?.response?.headers;
+        const headerResponse = processPaginationHeaders(
+          headers,
+          queryArg,
+          groups
+        );
+
+        return {
+          groups,
+          page: headerResponse.page,
+          perPage: headerResponse.perPage,
+          total: headerResponse.total,
+          totalPages: headerResponse.totalPages,
+        };
+      },
+    }),
+    getNamespacesPaged: builder.query<
+      GetNamespacesApiResponse,
+      GetNamespacesApiArg
+    >({
+      query: (queryArg) => ({
+        url: "/namespaces",
+        params: { page: queryArg.page ?? 1, per_page: queryArg.perPage ?? 20 },
+      }),
+      transformResponse: (response, meta, queryArg) => {
+        const namespaces = response as NamespaceResponseList;
+        const headers = meta?.response?.headers;
+        const headerResponse = processPaginationHeaders(
+          headers,
+          queryArg,
+          namespaces
+        );
+
+        return {
+          namespaces,
+          page: headerResponse.page,
+          perPage: headerResponse.perPage,
+          total: headerResponse.total,
+          totalPages: headerResponse.totalPages,
+        };
+      },
+    }),
+    getProjectsPaged: builder.query<GetProjectsApiResponse, GetProjectsApiArg>({
+      query: (queryArg) => ({
+        url: "/projects",
         params: { page: queryArg.page, per_page: queryArg.perPage },
       }),
       transformResponse: (response, meta, queryArg) => {
@@ -42,13 +108,43 @@ const injectedApi = api.injectEndpoints({
 });
 
 const enhancedApi = injectedApi.enhanceEndpoints({
-  addTagTypes: ["Project", "Members"],
+  addTagTypes: [
+    "Group",
+    "GroupMembers",
+    "Namespace",
+    "Project",
+    "ProjectMembers",
+  ],
   endpoints: {
+    deleteGroupsByGroupSlug: {
+      invalidatesTags: ["Group", "Namespace"],
+    },
+    deleteGroupsByGroupSlugMembersAndUserId: {
+      invalidatesTags: ["GroupMembers"],
+    },
     deleteProjectsByProjectId: {
       invalidatesTags: ["Project"],
     },
     deleteProjectsByProjectIdMembersAndMemberId: {
-      invalidatesTags: ["Members"],
+      invalidatesTags: ["ProjectMembers"],
+    },
+    getGroups: {
+      providesTags: ["Group"],
+    },
+    getGroupsByGroupSlug: {
+      providesTags: ["Group"],
+    },
+    getGroupsPaged: {
+      providesTags: ["Group"],
+    },
+    getGroupsByGroupSlugMembers: {
+      providesTags: ["GroupMembers"],
+    },
+    getNamespaces: {
+      providesTags: ["Namespace"],
+    },
+    getNamespacesPaged: {
+      providesTags: ["Namespace"],
     },
     // alternatively, define a function which is called with the endpoint definition as an argument
     getProjects: {
@@ -61,13 +157,22 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       providesTags: ["Project"],
     },
     getProjectsByProjectIdMembers: {
-      providesTags: ["Members"],
+      providesTags: ["ProjectMembers"],
+    },
+    patchGroupsByGroupSlug: {
+      invalidatesTags: ["Group", "Namespace"],
+    },
+    patchGroupsByGroupSlugMembers: {
+      invalidatesTags: ["GroupMembers"],
     },
     patchProjectsByProjectId: {
       invalidatesTags: ["Project"],
     },
     patchProjectsByProjectIdMembers: {
-      invalidatesTags: ["Members"],
+      invalidatesTags: ["ProjectMembers"],
+    },
+    postGroups: {
+      invalidatesTags: ["Group", "Namespace"],
     },
     postProjects: {
       invalidatesTags: ["Project"],
@@ -77,6 +182,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
 
 export { enhancedApi as projectV2Api };
 export const {
+  // project hooks
   useGetProjectsPagedQuery: useGetProjectsQuery,
   usePostProjectsMutation,
   useGetProjectsByProjectIdQuery,
@@ -85,6 +191,21 @@ export const {
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+
+  // group hooks
+  useGetGroupsPagedQuery: useGetGroupsQuery,
+  usePostGroupsMutation,
+  useGetGroupsByGroupSlugQuery,
+  usePatchGroupsByGroupSlugMutation,
+  useDeleteGroupsByGroupSlugMutation,
+  useGetGroupsByGroupSlugMembersQuery,
+  usePatchGroupsByGroupSlugMembersMutation,
+  useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
+
+  //namespace hooks
+  useGetNamespacesPagedQuery: useGetNamespacesQuery,
+  useLazyGetNamespacesPagedQuery: useLazyGetNamespacesQuery,
+  useGetNamespacesByGroupSlugQuery,
 } = enhancedApi;
 
 export function isErrorResponse(arg: unknown): arg is { data: ErrorResponse } {
