@@ -18,6 +18,9 @@
 
 set -e
 
+BOLD=$(tput bold)
+NORMAL=$(tput sgr0)
+
 # script directory
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
@@ -75,71 +78,70 @@ fi
 if [ -z "$HOMEPAGE_SHOW_PROJECTS" ]
 then
   HOMEPAGE_SHOWCASE='{"enabled": false}'
-  echo "HOMEPAGE_SHOWCASE is set to '${HOMEPAGE_SHOWCASE}'"
 else
   HOMEPAGE_SHOWCASE=`cat $SCRIPT_DIR/../dev/telepresence-showcase-projects.json`
   echo "HOMEPAGE_SHOWCASE is set to content of '$SCRIPT_DIR/../dev/telepresence-showcase-projects.json'"
 fi
 
-if [[ -n $PR ]]
+# Get the current context
+if [[ ! $CURRENT_CONTEXT ]]
 then
-  DEV_NAMESPACE=renku-ci-ui-${PR}
-  SERVICE_NAME=renku-ci-ui-${PR}-ui
-  echo "Deploying to environment for PR ${PR}: ($DEV_NAMESPACE.dev.renku.ch)"
-fi
-
-if [[ $CURRENT_CONTEXT == 'minikube' ]]
-then
-  echo "Exchanging k8s deployments using the following context: ${CURRENT_CONTEXT}"
-  if [[ $RENKU_DOMAIN ]]
-  then
-    # if using localhost.run, it should be http://<some-name>.localhost.run
-    BASE_URL=http://${RENKU_DOMAIN}
-  else
-    MINIKUBE_IP=`minikube ip`
-    BASE_URL=http://${MINIKUBE_IP}
-  fi
-  SERVICE_NAME=renku-ui
-  DEV_NAMESPACE=renku
-else
-  # if the target context is not dev, have the user confirm
-  if [[ $CURRENT_CONTEXT != 'switch-dev' ]]
-  then
-    echo "You are going to exchange k8s deployments using the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
-    read -p "Do you want to proceed? [y/n]"
-    if [[ ! $REPLY =~ ^[Yy]$ ]]
+  echo "No default k8s context found. Please set up your k8s context first, or type here the context you want to use: "
+  while [[ ! $CURRENT_CONTEXT ]]; do
+    read
+    if [[ $REPLY ]]
     then
-        exit 1
+      CURRENT_CONTEXT=$REPLY
+      echo ""
+    else
+      echo "No valid context provided. Please type a valid string: "
     fi
-  fi
+  done
+fi
 
-  if [[ ! $DEV_NAMESPACE ]]
+# Get the namespaces
+if [[ ! $DEV_NAMESPACE ]]
+then
+  while [[ ! $NAMESPACE ]]; do
+    read -p "Enter your k8s namespace. Numbers-only will be converted to the renku-ui PR deployment: "
+    NAMESPACE=$REPLY
+  done
+else
+  echo "You have a legacy default namespace set on your environment: ${DEV_NAMESPACE}"
+  echo "Press enter to use it or type a different namespace. Numbers-only will be converted to the renku-ui PR deployment: "
+  read
+  if [[ $REPLY ]]
   then
-    read -p "enter your k8s namespace: "
-    DEV_NAMESPACE=$REPLY
+    NAMESPACE=$REPLY
+    echo ""
   else
-    echo "Exchanging k8s deployments for the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
-  fi
-  BASE_URL=https://${DEV_NAMESPACE}.dev.renku.ch
-
-  if [[ ! $SERVICE_NAME ]]
-  then
-    SERVICE_NAME=${DEV_NAMESPACE}-renku-ui
+    NAMESPACE=$DEV_NAMESPACE
   fi
 fi
+
+if [[ $NAMESPACE =~ ^[0-9]+$ ]]; then
+  NAMESPACE=renku-ci-ui-${NAMESPACE}
+fi
+SERVICE=${NAMESPACE}-ui
+BASE_URL=https://${NAMESPACE}.dev.renku.ch
+echo "Exchanging k8s deployments for the following context/namespace: "
+echo "${BOLD}${CURRENT_CONTEXT}/${NAMESPACE}${NORMAL}"
+echo "The deployment URL is expected to be: "
+echo "${BOLD}${BASE_URL}${NORMAL}"
+echo ""
 
 DASHBOARD_MESSAGE_TEXT=$(echo "# Welcome to Renku! 🐸
-You are running **telepresence** on **${DEV_NAMESPACE}** 🔗" | node -e "let content = ''; process.stdin.setEncoding('utf-8').on('data', (chunk) => content += chunk).on('end', () => {console.log(JSON.stringify(content))})")
+You are running **telepresence** on **${NAMESPACE}** 🔗" | node -e "let content = ''; process.stdin.setEncoding('utf-8').on('data', (chunk) => content += chunk).on('end', () => {console.log(JSON.stringify(content))})")
 
-# set sentry dns if explicitly required by the user
+# Set sentry DNS when required
 if [[ $SENTRY = 1 ]]
 then
   SENTRY_URL="https://4c715ff0b37642618a8b2a048b4da4fd@sentry.dev.renku.ch/3"
-  SENTRY_NAMESPACE="${DEV_NAMESPACE}"
-  # set SENTRY_SAMPLE_RATE as a number between 0 and 1. (For example, to send 20% of transactions, set tracesSampleRate to 0.2.)
+  SENTRY_NAMESPACE="${NAMESPACE}"
   SENTRY_SAMPLE_RATE=1.0
 else
-  echo "Errors won't be sent to sentry by default. To enable sentry, use 'SENTRY=1 ./run-telepresence.sh'"
+  echo "Errors won't be sent to sentry by default. To enable Sentry, use 'SENTRY=1 ./run-telepresence.sh'"
+  echo ""
 fi
 
 tee > ./public/config.json << EOF
@@ -191,15 +193,15 @@ EOF
 ./scripts/generate_sitemap.sh "${BASE_URL}" "./public/sitemap.xml"
 
 CURRENT_TELEPRESENCE_NAMESPACE=$( telepresence status | grep "Namespace" | cut -d ":" -f2 | tr -d " " )
-if [[ $DEV_NAMESPACE != $CURRENT_TELEPRESENCE_NAMESPACE ]]
+if [[ $NAMESPACE != $CURRENT_TELEPRESENCE_NAMESPACE ]]
 then
   telepresence quit
-  telepresence connect --namespace ${DEV_NAMESPACE}
+  telepresence connect --namespace ${NAMESPACE}
 fi
 
 if [[ $SERVICE_CONSOLE_MODE == 1 ]]
 then
-  BROWSER=none telepresence intercept ${SERVICE_NAME} --port 3000:http -- bash
+  BROWSER=none telepresence intercept ${SERVICE} --port 3000:http -- bash
 else
-  BROWSER=none telepresence intercept ${SERVICE_NAME} --port 3000:http -- npm run start:strict-port -- --host
+  BROWSER=none telepresence intercept ${SERVICE} --port 3000:http -- npm run start:strict-port -- --host
 fi
