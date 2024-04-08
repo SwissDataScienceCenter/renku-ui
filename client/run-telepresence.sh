@@ -99,23 +99,26 @@ then
   done
 fi
 
-# Get the namespaces
-if [[ ! $DEV_NAMESPACE ]]
+# Get the namespaces when not set
+if [[ ! $NAMESPACE ]]
 then
-  while [[ ! $NAMESPACE ]]; do
-    read -p "Enter your k8s namespace. Numbers-only will be converted to the renku-ui PR deployment: "
-    NAMESPACE=$REPLY
-  done
-else
-  echo "You have a legacy default namespace set on your environment: ${DEV_NAMESPACE}"
-  echo "Press enter to use it or type a different namespace. Numbers-only will be converted to the renku-ui PR deployment: "
-  read
-  if [[ $REPLY ]]
+  if [[ ! $DEV_NAMESPACE ]]
   then
-    NAMESPACE=$REPLY
-    echo ""
+    while [[ ! $NAMESPACE ]]; do
+      read -p "Enter your k8s namespace. Numbers-only will be converted to the renku-ui PR deployment: "
+      NAMESPACE=$REPLY
+    done
   else
-    NAMESPACE=$DEV_NAMESPACE
+    echo "You have a legacy default namespace set on your environment: ${DEV_NAMESPACE}"
+    echo "Press enter to use it or type a different namespace. Numbers-only will be converted to the renku-ui PR deployment: "
+    read
+    if [[ $REPLY ]]
+    then
+      NAMESPACE=$REPLY
+      echo ""
+    else
+      NAMESPACE=$DEV_NAMESPACE
+    fi
   fi
 fi
 
