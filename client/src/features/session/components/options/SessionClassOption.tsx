@@ -23,7 +23,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import Select, {
   ClassNamesConfig,
@@ -36,8 +36,12 @@ import Select, {
 } from "react-select";
 
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import { User } from "../../../../model/renkuModels.types";
 import { ProjectStatistics } from "../../../../notebooks/components/session.types";
+import AppContext from "../../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -212,6 +216,7 @@ export const SessionClassOption = () => {
         onChange={onChange}
       />
       <SessionClassWarning currentSessionClass={currentSessionClass} />
+      <AskForComputeResources />
     </div>
   );
 };
@@ -346,6 +351,44 @@ function SessionClassWarning({
     >
       <FontAwesomeIcon icon={faExclamationTriangle} /> This session class does
       not match the compute requirements
+    </div>
+  );
+}
+
+function AskForComputeResources() {
+  const { params } = useContext(AppContext);
+  const SESSION_CLASS_EMAIL_US =
+    params?.SESSION_CLASS_EMAIL_US ??
+    DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
+
+  const user = useLegacySelector<User>((state) => state.stateModel.user);
+
+  if (!SESSION_CLASS_EMAIL_US.enabled) {
+    return null;
+  }
+
+  const { email } = SESSION_CLASS_EMAIL_US;
+
+  const url = new URL(`mailto:${email.to}`);
+  if (email.subject) {
+    url.searchParams.set("subject", email.subject);
+  }
+  if (email.body) {
+    const name = (user?.data as { name: string })?.name || "<signature>";
+    const renderedBody = email.body.replace(
+      /[{][{]full_name[}][}]/g,
+      `${name}`
+    );
+    url.searchParams.set("body", renderedBody);
+  }
+  const urlStr = url.toString().replace(/[+]/g, "%20");
+
+  return (
+    <div className="small">
+      Need more compute resources?{" "}
+      <ExternalLink role="link" url={urlStr}>
+        Email us!
+      </ExternalLink>
     </div>
   );
 }
