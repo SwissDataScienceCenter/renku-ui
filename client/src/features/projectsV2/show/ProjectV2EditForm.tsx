@@ -39,12 +39,17 @@ import {
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMutation,
 } from "../api/projectV2.enhanced-api";
-import type { Member, Project, ProjectPatch } from "../api/projectV2.api";
+import type {
+  Project,
+  ProjectMemberResponse,
+  ProjectPatch,
+} from "../api/projectV2.api";
 import type { Repository } from "../projectV2.types";
 
 import AddProjectMemberModal from "../fields/AddProjectMemberModal";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../fields/ProjectNameFormField";
+import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 
@@ -131,7 +136,7 @@ function ProjectEditSubmitGroup({
 }: ProjectEditSubmitGroupProps) {
   return (
     <div className={cx("d-flex", "justify-content-between")}>
-      <Button disabled={isUpdating} onClick={onCancel}>
+      <Button disabled={isUpdating} color="outline-rk-green" onClick={onCancel}>
         Cancel
       </Button>
       <div>
@@ -159,6 +164,7 @@ export function ProjectV2MetadataForm({
     defaultValues: {
       description: project.description,
       name: project.name,
+      namespace: project.namespace,
       visibility: project.visibility,
     },
   });
@@ -210,6 +216,12 @@ export function ProjectV2MetadataForm({
         onSubmit={handleSubmit(onSubmit)}
       >
         <ProjectNameFormField name="name" control={control} errors={errors} />
+        <ProjectNamespaceFormField
+          name="namespace"
+          control={control}
+          entityName="project"
+          errors={errors}
+        />
         <ProjectDescriptionFormField
           name="description"
           control={control}
@@ -245,7 +257,7 @@ export function ProjectV2MembersForm({
   }, [setSettingEdit]);
 
   const onDelete = useCallback(
-    (member: Member) => {
+    (member: ProjectMemberResponse) => {
       deleteMember({ projectId: project.id, memberId: member.id });
     },
     [deleteMember, project.id]
@@ -279,14 +291,14 @@ export function ProjectV2MembersForm({
         <tbody>
           {data.map((d, i) => {
             return (
-              <tr key={d.member.id}>
-                <td>{d.member.email ?? d.member.id}</td>
+              <tr key={d.id}>
+                <td>{d.email ?? d.id}</td>
                 <td>{d.role}</td>
                 <td>
                   <Button
                     color="outline-danger"
                     data-cy={`delete-member-${i}`}
-                    onClick={() => onDelete(d.member)}
+                    onClick={() => onDelete(d)}
                   >
                     Delete
                   </Button>
