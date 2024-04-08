@@ -17,13 +17,147 @@
  */
 
 import cx from "classnames";
-import { useMatch } from "react-router-dom-v5-compat";
-import { Nav, NavItem, Navbar } from "reactstrap";
+import { useCallback, useContext, useState } from "react";
+import {
+  BoxArrowInLeft,
+  List,
+  PlusCircleFill,
+  QuestionCircle,
+  Search,
+} from "react-bootstrap-icons";
+import { Link, useMatch } from "react-router-dom-v5-compat";
+import {
+  Collapse,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Nav,
+  NavItem,
+  Navbar,
+  NavbarToggler,
+} from "reactstrap";
 
+import AppContext from "../../utils/context/appContext";
+
+import { ExternalDocsLink } from "../../components/ExternalLinks";
+import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import WipBadge from "../projectsV2/shared/WipBadge";
+import { Links } from "../../utils/constants/Docs";
+import { Url } from "../../utils/helpers/url";
+
+const RENKU_ALPHA_LOGO = "/static/public/img/logo-yellow.svg";
+
+function NavbarItemPlus() {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
+
+  return (
+    <Dropdown isOpen={isOpen} toggle={toggleOpen} className="nav-item">
+      <DropdownToggle
+        className={cx("nav-link", "fs-5", "ps-sm-2", "pe-2")}
+        nav
+        caret
+        id="plus-dropdown"
+      >
+        <PlusCircleFill className="bi" id="createPlus" />
+      </DropdownToggle>
+      <DropdownMenu
+        aria-labelledby="plus-menu"
+        className={cx("plus-menu", "btn-with-menu-options", "z-3")}
+        end
+      >
+        <DropdownItem className="p-0">
+          <Link
+            className="dropdown-item"
+            data-cy="navbar-project-new"
+            to="/v2/projects/new"
+          >
+            Project
+          </Link>
+        </DropdownItem>
+        <DropdownItem className="p-0">
+          <Link
+            className="dropdown-item"
+            data-cy="navbar-group-new"
+            to="/v2/groups/new"
+          >
+            Group
+          </Link>
+        </DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+  );
+}
+
+function NavbarItemHelp() {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
+
+  return (
+    <Dropdown
+      data-cy="help-dropdown"
+      isOpen={isOpen}
+      toggle={toggleOpen}
+      className="nav-item"
+    >
+      <DropdownToggle
+        className={cx("nav-link", "fs-5", "px-2", "ps-sm-2")}
+        nav
+        caret
+      >
+        <QuestionCircle className="bi" id="helpDropdownToggle" />
+      </DropdownToggle>
+      <DropdownMenu
+        className={cx("help-menu", "btn-with-menu-options")}
+        key="help-bar"
+        aria-labelledby="help-menu"
+      >
+        <DropdownItem className="p-0">
+          <Link
+            data-cy="help-link"
+            className="dropdown-item"
+            to={Url.get(Url.pages.helpV2)}
+          >
+            Help
+          </Link>
+        </DropdownItem>
+        <DropdownItem divider />
+        <DropdownItem className="p-0">
+          <ExternalDocsLink
+            url={Links.DISCOURSE}
+            title="Forum"
+            className="dropdown-item"
+          />
+        </DropdownItem>
+        <DropdownItem className="p-0">
+          <ExternalDocsLink
+            url={Links.GITTER}
+            title="Gitter"
+            className="dropdown-item"
+          />
+        </DropdownItem>
+        <DropdownItem className="p-0">
+          <ExternalDocsLink
+            url={Links.GITHUB}
+            title="GitHub"
+            className="dropdown-item"
+          />
+        </DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+  );
+}
 
 export default function NavbarV2() {
+  const [isOpen, setIsOpen] = useState(false);
+  const { params } = useContext(AppContext);
+
+  const onToggle = useCallback(() => {
+    setIsOpen((isOpen) => !isOpen);
+  }, []);
+
   const matchesShowSessionPage = useMatch(
     "/v2/projects/:namespace/:slug/sessions/show/:session"
   );
@@ -33,29 +167,83 @@ export default function NavbarV2() {
   }
 
   return (
-    <header className={cx("px-4", "bg-rk-blue")}>
-      <Navbar className="px-2">
+    <header
+      className={cx(
+        "bg-rk-blue",
+        "navbar",
+        "navbar-expand-lg",
+        "navbar-dark",
+        "p-0",
+        "rk-navbar"
+      )}
+    >
+      <Navbar
+        color="primary"
+        className="container-fluid flex-wrap flex-lg-nowrap renku-container px-2"
+      >
         <div className={cx("text-white", "d-flex", "align-items-center")}>
-          <span className="me-1">Renku 2.0</span>
-          <WipBadge />
+          <RenkuNavLinkV2
+            id="link-home"
+            data-cy="link-home"
+            to="/v2/"
+            className="navbar-brand me-2 pb-0 pt-0"
+          >
+            <img
+              src={RENKU_ALPHA_LOGO}
+              alt="Renku v2 (alpha)"
+              className="pe-2"
+              height="50"
+            />
+          </RenkuNavLinkV2>
+          <WipBadge label="2.0 Alpha" />
+          <Link
+            className={cx(
+              "btn",
+              "btn-sm",
+              "btn-outline-warning",
+              "ms-2",
+              "text-decoration-none"
+            )}
+            to="/"
+          >
+            <BoxArrowInLeft className="bi" /> go back
+          </Link>
         </div>
-        <Nav className={cx("flex-row", "gap-4")} navbar>
-          <NavItem>
-            <RenkuNavLinkV2 end to="search" title="Search">
-              Search
-            </RenkuNavLinkV2>
-          </NavItem>
-          <NavItem>
-            <RenkuNavLinkV2 to="groups" title="Groups">
-              Groups
-            </RenkuNavLinkV2>
-          </NavItem>
-          <NavItem className="ms-2">
-            <RenkuNavLinkV2 end to="projects" title="Projects">
-              Projects
-            </RenkuNavLinkV2>
-          </NavItem>
-        </Nav>
+        <NavbarToggler onClick={onToggle} className="border-0">
+          <List className="bi text-rk-white" />
+        </NavbarToggler>
+        <Collapse isOpen={isOpen} navbar>
+          <Nav
+            className={cx(
+              "flex-row",
+              "flex-wrap",
+              "flex-sm-nowrap",
+              "align-items-center",
+              "ms-lg-auto"
+            )}
+            navbar
+          >
+            <NavItem>
+              <RenkuNavLinkV2 end to="search" title="Search">
+                <Search className="bi" /> Search
+              </RenkuNavLinkV2>
+            </NavItem>
+            <NavItem>
+              <RenkuNavLinkV2 end to="/v2/" title="Dashboard">
+                Dashboard
+              </RenkuNavLinkV2>
+            </NavItem>
+            <NavItem className="nav-item col-auto">
+              <NavbarItemPlus />
+            </NavItem>
+            <NavItem className="nav-item col-auto">
+              <NavbarItemHelp />
+            </NavItem>
+            <NavItem className="nav-item col-auto">
+              <RenkuToolbarItemUser params={params!} />
+            </NavItem>
+          </Nav>
+        </Collapse>
       </Navbar>
     </header>
   );

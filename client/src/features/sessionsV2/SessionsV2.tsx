@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
-import { useParams } from "react-router-dom-v5-compat";
+import { generatePath, useParams } from "react-router-dom-v5-compat";
 import {
   Card,
   CardBody,
@@ -312,6 +312,10 @@ function ActiveSessionV2({ session }: ActiveSessionV2Props) {
     ({ display }) => display.modals.sessionLogs
   );
 
+  const showSessionUrl = generatePath("sessions/show/:session", {
+    session: session.name,
+  });
+
   return (
     <div>
       <div
@@ -339,7 +343,7 @@ function ActiveSessionV2({ session }: ActiveSessionV2Props) {
         />
       </div>
 
-      <ActiveSessionButton session={session} />
+      <ActiveSessionButton session={session} showSessionUrl={showSessionUrl} />
       <EnvironmentLogs
         name={displayModal.targetServer}
         annotations={cleanAnnotations}
