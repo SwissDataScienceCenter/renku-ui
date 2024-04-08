@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-
-import { Controller } from "react-hook-form";
 import type { FieldValues } from "react-hook-form";
 
-import { FormText, Input, Label } from "reactstrap";
+import DescriptionFormField from "./DescriptionFormField";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 
 export default function ProjectDescriptionFormField<T extends FieldValues>({
@@ -30,29 +27,11 @@ export default function ProjectDescriptionFormField<T extends FieldValues>({
   name,
 }: GenericProjectFormFieldProps<T>) {
   return (
-    <div className="mb-3">
-      <Label className="form-label" for="project-slug">
-        Description
-      </Label>
-      <Controller
-        control={control}
-        name={name}
-        render={({ field }) => (
-          <Input
-            aria-describedby="projectDescriptionHelp"
-            className={cx("form-control", errors.description && "is-invalid")}
-            data-cy="project-description-input"
-            id="project-description"
-            type="textarea"
-            {...field}
-          />
-        )}
-        rules={{ maxLength: 500, required: false }}
-      />
-      <FormText id="projectDescriptionHelp" className="input-hint">
-        A brief (at most 500 character) description of the project.
-      </FormText>
-      <div className="invalid-feedback">Please provide a description</div>
-    </div>
+    <DescriptionFormField
+      control={control}
+      entityName="project"
+      errors={errors}
+      name={name}
+    />
   );
 }

@@ -35,129 +35,24 @@ import {
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
-import { useGetUsersQuery } from "../../user/dataServicesUser.api";
 import type { UserWithId } from "../../user/dataServicesUser.api";
 
-import type { FullUsersWithRoles, MemberWithRole } from "../api/projectV2.api";
+import type {
+  ProjectMemberPatchRequest,
+  ProjectMemberResponse,
+} from "../api/projectV2.api";
 import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
-import type { ProjectMember } from "../projectV2.types";
 
-const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+import AddEntityMemberEmailLookupForm from "./AddEntityMemberLookupForm";
 
 interface AddProjectMemberModalProps {
   isOpen: boolean;
-  members: FullUsersWithRoles;
+  members: ProjectMemberPatchRequest[];
   projectId: string;
   toggle: () => void;
 }
 
-type NewProjectMember = Pick<ProjectMember, "email">;
-
-interface AddProjectMemberEmailLookupFormProps
-  extends Pick<AddProjectMemberModalProps, "toggle"> {
-  setNewMember: (user: UserWithId) => void;
-}
-function AddProjectMemberEmailLookupForm({
-  setNewMember,
-  toggle,
-}: AddProjectMemberEmailLookupFormProps) {
-  const [lookupEmail, setLookupEmail] = useState<string | undefined>(undefined);
-  const [isUserNotFound, setIsUserNotFound] = useState(false);
-  const { data, isLoading } = useGetUsersQuery(
-    { exactEmail: lookupEmail },
-    { skip: lookupEmail == null }
-  );
-
-  useEffect(() => {
-    if (data == null) return;
-    if (data.length < 1) {
-      setIsUserNotFound(true);
-      return;
-    }
-    setNewMember(data[0]);
-  }, [data, setNewMember, setIsUserNotFound]);
-
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<NewProjectMember>({
-    defaultValues: {
-      email: "",
-    },
-  });
-
-  const onSubmit = useCallback(
-    (data: NewProjectMember) => {
-      setIsUserNotFound(false);
-      setLookupEmail(data.email);
-    },
-    [setLookupEmail]
-  );
-
-  return (
-    <>
-      <ModalBody>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div className="mb-3">
-            <Label className="form-label" for="addProjectMemberEmail">
-              Email
-            </Label>
-            <Controller
-              control={control}
-              name="email"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", errors.email && "is-invalid")}
-                  data-cy="add-project-member-email"
-                  disabled={isLoading}
-                  id="addProjectMemberEmail"
-                  placeholder="email"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true, pattern: emailRegex }}
-            />
-            <div className="invalid-feedback">
-              Please provide the email address for the member to add.
-            </div>
-            {isUserNotFound && <div>No user found for {lookupEmail}.</div>}
-          </div>
-          <div className={cx("d-flex", "flex-row-reverse")}>
-            <Button
-              className="btn-outline-rk-green"
-              disabled={isLoading}
-              type="submit"
-            >
-              Lookup
-            </Button>
-          </div>
-        </Form>
-      </ModalBody>
-      <ModalFooter>
-        <Button
-          className="btn-outline-rk-green"
-          onClick={toggle}
-          data-cy="user-lookup-close-button"
-        >
-          <XLg className={cx("bi", "me-1")} />
-          Close
-        </Button>
-        <Button disabled={true} onClick={handleSubmit(onSubmit)} type="submit">
-          <PlusLg className={cx("bi", "me-1")} />
-          Add Member
-        </Button>
-      </ModalFooter>
-    </>
-  );
-}
-
-interface ProjectMemberForAdd extends MemberWithRole {
+interface ProjectMemberForAdd extends ProjectMemberResponse {
   email: string;
 }
 
@@ -176,7 +71,7 @@ function AddProjectMemberAccessForm({
     usePatchProjectsByProjectIdMembersMutation();
   const { control, handleSubmit } = useForm<ProjectMemberForAdd>({
     defaultValues: {
-      member: { id: user.id },
+      id: user.id,
       email: user.email,
       role: "member",
     },
@@ -191,13 +86,16 @@ function AddProjectMemberAccessForm({
 
   const onSubmit = useCallback(
     (data: ProjectMemberForAdd) => {
-      const projectMembers = members.map((m) => ({
-        member: { id: m.member.id },
+      const projectMembers = members.map((m: ProjectMemberResponse) => ({
+        id: m.id,
         role: m.role,
       }));
-      projectMembers.push({ member: { id: data.member.id }, role: data.role });
+      projectMembers.push({ id: data.id, role: data.role });
 
-      patchProjectMembers({ projectId, membersWithRoles: projectMembers });
+      patchProjectMembers({
+        projectId,
+        projectMemberListPatchRequest: projectMembers,
+      });
     },
     [patchProjectMembers, projectId, members]
   );
@@ -273,7 +171,7 @@ export default function AddProjectMemberModal({
     >
       <ModalHeader toggle={toggle}>Add a project member</ModalHeader>
       {newMember == null && (
-        <AddProjectMemberEmailLookupForm
+        <AddEntityMemberEmailLookupForm
           setNewMember={setNewMember}
           toggle={toggleVisible}
         />

@@ -4,7 +4,7 @@
     "name": "test 1 v2-project",
     "slug": "test-1-v2-project",
     "creation_date": "2023-11-15T09:52:59Z",
-    "created_by": { "id": "user1-uuid" },
+    "created_by": "user1-uuid",
     "repositories": [],
     "visibility": "private",
     "description": "Project 1 description"

@@ -37,9 +37,10 @@ import { Terms } from "./terms";
 import { User } from "./user";
 import { UserPreferences } from "./user-preferences";
 import { Versions } from "./versions";
+import { NamespaceV2 } from "./namespaceV2";
 import { Workflows } from "./workflows";
 
-const Fixtures = NewProject(
+const V1Fixtures = NewProject(
   NewSession(
     Dashboard(
       Sessions(
@@ -68,6 +69,8 @@ const Fixtures = NewProject(
     )
   )
 );
+
+const Fixtures = ProjectV2(NamespaceV2(V1Fixtures));
 
 const fixtures = new Fixtures();
 export default fixtures;

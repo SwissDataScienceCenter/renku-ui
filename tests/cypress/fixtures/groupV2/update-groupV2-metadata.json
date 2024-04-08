@@ -1,0 +1,8 @@
+{
+  "id": "THEPROJECTULID26CHARACTERS",
+  "name": "new name",
+  "slug": "new-slug",
+  "creation_date": "2023-11-15T09:55:59Z",
+  "created_by": { "id": "user1-uuid" },
+  "description": "new description"
+}
