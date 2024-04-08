@@ -55,6 +55,7 @@ import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
+import LazySecrets from "./features/secrets/LazySecrets";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
@@ -218,6 +219,11 @@ function CentralContentContainer(props) {
               </ContainerWrap>
             </CompatRoute>
           )}
+          <CompatRoute path="/secrets">
+            <ContainerWrap>
+              <LazySecrets />
+            </ContainerWrap>
+          </CompatRoute>
           <Route path="/*">
             <LazyNotFound />
           </Route>
