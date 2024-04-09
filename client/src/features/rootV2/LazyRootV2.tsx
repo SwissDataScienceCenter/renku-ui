@@ -16,17 +16,18 @@
  * limitations under the License
  */
 
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 
 import PageLoader from "../../components/PageLoader";
 
 const RootV2 = lazy(() => import("./RootV2"));
-const StylesV2 = lazy(() => import("./StylesV2"));
 
 export default function LazyRootV2() {
+  useEffect(() => {
+    import("../../styles/indexV2.scss");
+  }, []);
   return (
     <Suspense fallback={<PageLoader />}>
-      {StylesV2 && <StylesV2 />}
       <RootV2 />
     </Suspense>
   );
