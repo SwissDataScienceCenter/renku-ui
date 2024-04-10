@@ -40,6 +40,14 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getProjectsByNamespaceAndSlug: build.query<
+      GetProjectsByNamespaceAndSlugApiResponse,
+      GetProjectsByNamespaceAndSlugApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg["namespace"]}/${queryArg.slug}`,
+      }),
+    }),
     getProjectsByProjectIdMembers: build.query<
       GetProjectsByProjectIdMembersApiResponse,
       GetProjectsByProjectIdMembersApiArg
@@ -99,6 +107,12 @@ export type DeleteProjectsByProjectIdApiResponse =
   /** status 204 The project was removed or did not exist in the first place */ void;
 export type DeleteProjectsByProjectIdApiArg = {
   projectId: string;
+};
+export type GetProjectsByNamespaceAndSlugApiResponse =
+  /** status 200 The project */ Project;
+export type GetProjectsByNamespaceAndSlugApiArg = {
+  namespace: string;
+  slug: string;
 };
 export type GetProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members */ ProjectMemberListResponse;
@@ -185,6 +199,7 @@ export const {
   useGetProjectsByProjectIdQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
+  useGetProjectsByNamespaceAndSlugQuery,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,

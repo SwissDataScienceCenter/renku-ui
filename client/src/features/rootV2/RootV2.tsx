@@ -133,6 +133,14 @@ function ProjectsV2Routes() {
         }
       />
       <Route
+        path=":namespace/:slug"
+        element={
+          <ContainerWrap>
+            <LazyProjectV2Show />
+          </ContainerWrap>
+        }
+      />
+      <Route
         path=":id"
         element={
           <ContainerWrap>

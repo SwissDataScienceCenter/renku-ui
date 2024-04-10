@@ -154,7 +154,7 @@ function ProjectV2BeingCreated({
       </div>
     );
   }
-  const projectList = Url.get(Url.pages.v2Projects.list);
+  const projectList = Url.get(Url.pages.projectV2.list);
   return (
     <>
       <div>Project created.</div>
