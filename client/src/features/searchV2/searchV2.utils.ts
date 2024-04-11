@@ -49,11 +49,11 @@ export const AVAILABLE_SORTING: SortingItems = {
   },
   dateDesc: {
     friendlyName: "Date: recently created",
-    sortingString: "date-desc",
+    sortingString: "created-desc",
   },
   dateAsc: {
     friendlyName: "Date: older",
-    sortingString: "date-asc",
+    sortingString: "created-asc",
   },
   titleAsc: {
     friendlyName: "Name: alphabetical",
