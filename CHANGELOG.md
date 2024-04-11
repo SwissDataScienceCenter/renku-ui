@@ -1,5 +1,11 @@
 # Changes
 
+## [3.23.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.22.0...3.23.0) (2024-04-08)
+
+### Features
+
+- add "email us" to the session class option ([#3073](https://github.com/SwissDataScienceCenter/renku-ui/pull/3073))
+
 ## [3.22.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.21.0...3.22.0) (2024-04-04)
 
 ### Features
