@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
@@ -32,6 +33,7 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import SessionLauncherFormContent, {
   SessionLauncherForm,
 } from "./SessionLauncherFormContent";
@@ -64,7 +66,11 @@ function AddSessionLauncherModal({
   isOpen,
   toggle,
 }: AddSessionLauncherModalProps) {
-  const { id: projectId } = useParams<"id">();
+  const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
+  const { data: project } = useGetProjectsByNamespaceAndSlugQuery(
+    namespace && slug ? { namespace, slug } : skipToken
+  );
+  const projectId = project?.id;
 
   const { data: environments } =
     sessionsV2Api.endpoints.getSessionEnvironments.useQueryState();

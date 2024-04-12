@@ -37,8 +37,8 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
 import { useGetAllRepositoryCommitsQuery } from "../project/projectGitLab.api";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import {
   useGetDockerImageQuery,
   useStartRenku2SessionMutation,
@@ -55,15 +55,18 @@ import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import { SessionRepository } from "./startSessionOptionsV2.types";
 
 export default function SessionStartPage() {
-  const { id: projectId, launcherId } = useParams<"id" | "launcherId">();
-
+  const { launcherId, namespace, slug } = useParams<
+    "launcherId" | "namespace" | "slug"
+  >();
   const {
     data: project,
     isLoading: isLoadingProject,
     error: projectError,
-  } = useGetProjectsByProjectIdQuery({
-    projectId: projectId ?? "",
-  });
+  } = useGetProjectsByNamespaceAndSlugQuery(
+    namespace && slug ? { namespace, slug } : skipToken
+  );
+  const projectId = project?.id ?? "";
+
   const {
     data: launchers,
     isLoading: isLoadingLaunchers,

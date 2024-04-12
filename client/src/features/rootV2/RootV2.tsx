@@ -148,7 +148,10 @@ function ProjectsV2Routes() {
           </ContainerWrap>
         }
       />
-      <Route path=":id/sessions/*" element={<ProjectSessionsRoutes />} />
+      <Route
+        path=":namespace/:slug/sessions/*"
+        element={<ProjectSessionsRoutes />}
+      />
     </Routes>
   );
 }
