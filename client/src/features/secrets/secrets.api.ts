@@ -35,22 +35,40 @@ const secretsApi = createApi({
       query: () => {
         return {
           url: "",
+          // ! TMP API - until APIs are deployed and responding
+          validateStatus: (response) => {
+            return response.status < 400 || response.status === 404;
+          },
         };
       },
       providesTags: ["Secrets"],
-      // ! Double check we don't need this anymore
-      // // validateStatus: (response, body) => { return response.status < 400 && !body.error?.code; },
+      // ! TMP API - until APIs are deployed and responding
+      transformResponse: () => {
+        return ["Secret1", "Secret2"];
+      },
     }),
     getSecretDetails: builder.query<SecretDetails, string>({
       query: (secretId) => {
         return {
           url: secretId,
+          // ! TMP API - until APIs are deployed and responding
+          validateStatus: (response) => {
+            return response.status < 400 || response.status === 404;
+          },
         };
       },
       providesTags: (result, _error, secretId) =>
         result && result.id === secretId
-          ? [{ type: "Secret" as const, id: secretId }]
+          ? [{ type: "Secret", id: secretId }]
           : [],
+      // ! TMP API - until APIs are deployed and responding
+      transformResponse: (_arg1, _arg2, arg3) => {
+        return {
+          id: "1234-1234-5678-abcd",
+          name: arg3,
+          modification_date: new Date(),
+        };
+      },
     }),
     addSecret: builder.mutation<SecretDetails, AddSecretParams>({
       query: (secret) => {
@@ -58,6 +76,10 @@ const secretsApi = createApi({
           url: "",
           method: "POST",
           body: secret,
+          // ! TMP API - until APIs are deployed and responding
+          validateStatus: (response) => {
+            return response.status < 400 || response.status === 404;
+          },
         };
       },
       invalidatesTags: ["Secrets"],
@@ -68,18 +90,31 @@ const secretsApi = createApi({
           url: secret.id,
           method: "PATCH",
           body: { value: secret.value },
+          // ! TMP API - until APIs are deployed and responding
+          validateStatus: (response) => {
+            return response.status < 400 || response.status === 404;
+          },
         };
       },
-      // ? We don't need to invalidate the secrets since we never get the values anyway
+      invalidatesTags: (_result, _error, params) => [
+        { type: "Secret", id: params.id },
+      ],
     }),
     deleteSecret: builder.mutation<void, string>({
       query: (secretId) => {
         return {
           url: secretId,
           method: "DELETE",
+          // ! TMP API - until APIs are deployed and responding
+          validateStatus: (response) => {
+            return response.status < 400 || response.status === 404;
+          },
         };
       },
-      invalidatesTags: ["Secrets"],
+      invalidatesTags: (_result, _error, param) => [
+        "Secrets",
+        { type: "Secret", id: param },
+      ],
     }),
   }),
 });

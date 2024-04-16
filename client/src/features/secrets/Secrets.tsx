@@ -18,18 +18,30 @@
 
 import { Col, Row } from "reactstrap";
 
+import SecretsList from "./SecretsList";
+import SecretNew from "./SecretNew";
+
 export default function Secrets() {
   return (
     <>
       <Row>
         <Col>
-          <h2>Secrets</h2>
+          <h2>User Secrets</h2>
+          <p>
+            Here you can add, edit and remove user secrets that you can mount
+            into your sessions (missing DOC REF).
+          </p>
         </Col>
       </Row>
       <Row>
-        <p>
-          <i>Work in progress...</i>
-        </p>
+        <Col>
+          <SecretNew />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <SecretsList />
+        </Col>
       </Row>
     </>
   );
