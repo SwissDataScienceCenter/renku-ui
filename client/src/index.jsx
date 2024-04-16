@@ -1,13 +1,16 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
+import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
+import { CompatRoute } from "react-router-dom-v5-compat";
 
 import "bootstrap";
 import "jquery";
 
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
-import "./styles/index.scss";
+import v1Styles from "./styles/index.scss?inline";
+import v2Styles from "./styles/indexV2.scss?inline";
 
 import App from "./App";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
@@ -21,9 +24,9 @@ import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
+import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import { Sentry } from "./utils/helpers/sentry";
 import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
-import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 
 const configFetch = fetch("/config.json");
 
@@ -60,6 +63,9 @@ configFetch.then((valuesRead) => {
     if (maintenance) {
       root.render(
         <Provider store={model.reduxStore}>
+          <Helmet>
+            <style type="text/css">{v1Styles}</style>
+          </Helmet>
           <Maintenance info={maintenance} />
         </Provider>
       );
@@ -103,6 +109,7 @@ configFetch.then((valuesRead) => {
           <AppErrorBoundary>
             <LoginHandler />
             <FeatureFlagHandler />
+            <StyleHandler />
             <VisibleApp
               client={client}
               coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
@@ -130,4 +137,21 @@ function LoginHandler() {
 function FeatureFlagHandler() {
   useFeatureFlagSync();
   return null;
+}
+
+function StyleHandler() {
+  return (
+    <Switch>
+      <CompatRoute path="/v2">
+        <Helmet>
+          <style type="text/css">{v2Styles}</style>
+        </Helmet>
+      </CompatRoute>
+      <Route path="*">
+        <Helmet>
+          <style type="text/css">{v1Styles}</style>
+        </Helmet>
+      </Route>
+    </Switch>
+  );
 }

@@ -57,7 +57,6 @@ import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
-import useV2PageReload from "./utils/customHooks/ReloadOnV2Navigation.hook";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { Url } from "./utils/helpers/url";
 import { setupWebSocket } from "./websocket";
@@ -233,7 +232,6 @@ function App(props) {
 
   const [webSocket, setWebSocket] = useState(null);
   const [notifications, setNotifications] = useState(null);
-  useV2PageReload();
 
   useEffect(() => {
     const getLocation = () => location;
