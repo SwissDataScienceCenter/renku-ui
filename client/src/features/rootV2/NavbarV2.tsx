@@ -25,7 +25,7 @@ import WipBadge from "../projectsV2/shared/WipBadge";
 
 export default function NavbarV2() {
   const matchesShowSessionPage = useMatch(
-    "/v2/projects/:id/sessions/show/:session"
+    "/v2/projects/:namespace/:slug/sessions/show/:session"
   );
 
   if (matchesShowSessionPage) {

@@ -63,7 +63,7 @@ function RenkuNavBarInner(props) {
   return (
     <Switch key="mainNav">
       <Route path={sessionShowUrl} />
-      <Route path="/v2/projects/:id/sessions/show/:server" />
+      <Route path="/v2/projects/:namespace/:slug/sessions/show/:server" />
       <Route>
         {user.logged ? (
           <LoggedInNavBar
