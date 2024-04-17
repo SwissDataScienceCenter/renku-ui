@@ -100,12 +100,14 @@ function AnonymousDeleteSessionModal({
   sessionName,
   toggleModal,
 }: AnonymousDeleteSessionModalProps) {
-  const { id: projectId_ } = useParams<"id">();
-  const projectId = projectId_ ?? "";
+  const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
 
   const navigate = useNavigate();
 
-  const backUrl = generatePath("../../:projectId", { projectId });
+  const backUrl = generatePath("../../:namespace/:slug", {
+    namespace: namespace ?? "",
+    slug: slug ?? "",
+  });
 
   const [stopSession, { isSuccess, error }] = useStopSessionMutation();
 
@@ -218,12 +220,14 @@ function PauseSessionModalBody({
   toggleAction,
   toggleModal,
 }: ModalBodyProps) {
-  const { id: projectId_ } = useParams<"id">();
-  const projectId = projectId_ ?? "";
+  const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
 
   const navigate = useNavigate();
 
-  const backUrl = generatePath("../../:projectId", { projectId });
+  const backUrl = generatePath("../../:namespace/:slug", {
+    namespace: namespace ?? "",
+    slug: slug ?? "",
+  });
 
   const [patchSession, { isSuccess, error }] = usePatchSessionMutation();
 
@@ -335,12 +339,14 @@ function DeleteSessionModalBody({
   toggleAction,
   toggleModal,
 }: ModalBodyProps) {
-  const { id: projectId_ } = useParams<"id">();
-  const projectId = projectId_ ?? "";
+  const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
 
   const navigate = useNavigate();
 
-  const backUrl = generatePath("../../:projectId", { projectId });
+  const backUrl = generatePath("../../:namespace/:slug", {
+    namespace: namespace ?? "",
+    slug: slug ?? "",
+  });
 
   const [stopSession, { isSuccess, error }] = useStopSessionMutation();
 

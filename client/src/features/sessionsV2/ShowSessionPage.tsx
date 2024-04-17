@@ -47,15 +47,19 @@ import styles from "../session/components/ShowSession.module.scss";
 const logo = "/static/public/img/logo.svg";
 
 export default function ShowSessionPage() {
-  const { id: projectId_, session: sessionName_ } = useParams<
-    "id" | "session"
-  >();
-  const projectId = projectId_ ?? "";
+  const {
+    namespace,
+    slug,
+    session: sessionName_,
+  } = useParams<"namespace" | "slug" | "session">();
   const sessionName = sessionName_ ?? "";
 
   const navigate = useNavigate();
 
-  const backUrl = generatePath("../../:projectId", { projectId });
+  const backUrl = generatePath("../../:namespace/:slug", {
+    namespace: namespace ?? "",
+    slug: slug ?? "",
+  });
 
   const { data: sessions, isLoading } = useGetSessionsQuery();
   const thisSession = useMemo(() => {

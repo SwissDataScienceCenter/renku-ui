@@ -162,6 +162,26 @@ describe("List v2 project", () => {
   });
 });
 
+describe("Navigate to project", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userTest().namespaces();
+    fixtures.projects().landingUserProjects().readProjectV2();
+  });
+
+  it("shows projects by namespace/slug", () => {
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.contains("test 2 v2-project").should("be.visible");
+  });
+
+  it("shows projects by project id", () => {
+    fixtures.readProjectV2ById();
+    cy.visit("/v2/projects/THEPROJECTULID26CHARACTERS");
+    cy.wait("@readProjectV2ById");
+    cy.contains("test 2 v2-project").should("be.visible");
+    cy.location("pathname").should("contain", "/user1-uuid/test-2-v2-project");
+  });
+});
+
 describe("Edit v2 project", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();

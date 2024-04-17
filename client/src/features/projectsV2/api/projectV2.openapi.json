@@ -3,7 +3,7 @@
   "info": {
     "title": "Renku Project Management Service",
     "description": "Service that allows creating, updating, deleting, and managing Renku native projects.\nAll errors have the same format as the schema called ErrorResponse.\n",
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "servers": [
     {
@@ -226,6 +226,55 @@
         "responses": {
           "204": {
             "description": "The project was removed or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
+    },
+    "/projects/{namespace}/{slug}": {
+      "get": {
+        "summary": "Get a project by namespace and project slug",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "default": {
             "$ref": "#/components/responses/Error"
@@ -499,21 +548,21 @@
         "example": "My Renku Project :)"
       },
       "Slug": {
-        "description": "A command-line friendly name for a project or namespace",
+        "description": "A command-line/url friendly name for a namespace",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
         "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-zA-Z0-9][a-zA-Z0-9\\-_.]*$",
-        "example": "my-renku-project"
+        "example": "a-slug-example"
       },
       "CreationDate": {
-        "description": "The date and time the project was created (time is always in UTC)",
+        "description": "The date and time the resource was created (in UTC and ISO-8601 format)",
         "type": "string",
         "format": "date-time",
         "example": "2023-11-01T17:32:28Z"
       },
       "Description": {
-        "description": "A description for project",
+        "description": "A description for the resource",
         "type": "string",
         "maxLength": 500
       },

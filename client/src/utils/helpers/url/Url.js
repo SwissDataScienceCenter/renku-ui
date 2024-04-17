@@ -501,11 +501,17 @@ const Url = {
         "/v2/groups/slug",
       ]),
     },
-    v2Projects: {
+    projectV2: {
       base: "/v2/projects",
       new: "/v2/projects/new",
       list: "/v2/projects",
-      show: new UrlRule((data) => `/v2/projects/${data.id}`, ["id"], null, [
+      show: new UrlRule(
+        (data) => `/v2/projects/${data.namespace}/${data.slug}`,
+        ["namespace", "slug"],
+        null,
+        ["/v2/projects/namespace/slug"]
+      ),
+      showId: new UrlRule((data) => `/v2/projects/${data.id}`, ["id"], null, [
         "/v2/projects/id",
       ]),
     },

@@ -133,6 +133,14 @@ function ProjectsV2Routes() {
         }
       />
       <Route
+        path=":namespace/:slug"
+        element={
+          <ContainerWrap>
+            <LazyProjectV2Show />
+          </ContainerWrap>
+        }
+      />
+      <Route
         path=":id"
         element={
           <ContainerWrap>
@@ -140,7 +148,10 @@ function ProjectsV2Routes() {
           </ContainerWrap>
         }
       />
-      <Route path=":id/sessions/*" element={<ProjectSessionsRoutes />} />
+      <Route
+        path=":namespace/:slug/sessions/*"
+        element={<ProjectSessionsRoutes />}
+      />
     </Routes>
   );
 }
