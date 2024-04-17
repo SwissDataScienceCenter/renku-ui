@@ -19,27 +19,127 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { useAddSecretMutation } from "./secrets.api";
+import { Controller, useForm } from "react-hook-form";
+import {
+  Button,
+  Form,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
+
+import secretsApi, { useAddSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "../../components/Loader";
+import { AddSecretForm } from "./secrets.types";
 
-export default function SecretsList() {
+export default function SecretsNew() {
+  // Set up the modal
   const [showModal, setShowModal] = useState(false);
-
   const toggleModal = useCallback(() => {
     setShowModal((showModal) => !showModal);
   }, []);
 
-  const [addSecretMutation, result] = useAddSecretMutation();
-  const addSecret = useCallback(() => {
-    addSecretMutation({ name: "TMP NEW SECRET", value: "TMP NEW VALUE" });
-  }, [addSecretMutation]);
+  // Set up the form
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<AddSecretForm>({
+    defaultValues: {
+      name: "",
+      value: "",
+    },
+    mode: "all",
+  });
 
+  // Handle fetching/posting data
+  const [getSecrets, secrets] = secretsApi.useLazyGetSecretsQuery();
+  const [addSecretMutation, result] = useAddSecretMutation();
+  const onSubmit = useCallback(
+    (newSecret: AddSecretForm) => {
+      addSecretMutation(newSecret);
+    },
+    [addSecretMutation]
+  );
+
+  // Force fetching the secrets when trying to add a new one to try to prevent duplicates
+  useEffect(() => {
+    if (showModal) {
+      getSecrets();
+    }
+  }, [getSecrets, showModal]);
+
+  // Automatically close the modal when the secret is added
   useEffect(() => {
     if (result.isSuccess) {
       toggleModal();
+      reset();
     }
-  }, [result.isSuccess, toggleModal]);
+  }, [reset, result.isSuccess, toggleModal]);
+
+  const modalBody = secrets.isLoading ? (
+    <Loader />
+  ) : (
+    <Form className="form-rk-green" onSubmit={handleSubmit(onSubmit)}>
+      <div className="mb-3">
+        <Label className="form-label" for="newSecretName">
+          Name
+        </Label>
+        <Controller
+          control={control}
+          name="name"
+          render={({ field }) => (
+            <Input
+              className={cx("form-control", errors.name && "is-invalid")}
+              id="newSecretName"
+              placeholder="Unique name"
+              type="text"
+              {...field}
+            />
+          )}
+          rules={{
+            required: "Please provide a name.",
+            validate: (value) =>
+              !secrets.data?.includes(value) ||
+              "This secret name already exists.",
+          }}
+        />
+        {errors.name && (
+          <div className="invalid-feedback">{errors.name.message}</div>
+        )}
+      </div>
+
+      <div className="mb-3">
+        <Label className="form-label" for="newSecretValue">
+          Value
+        </Label>
+        <Controller
+          control={control}
+          name="value"
+          render={({ field }) => (
+            <Input
+              className={cx("form-control", errors.value && "is-invalid")}
+              id="newSecretValue"
+              placeholder="Value"
+              type="text"
+              {...field}
+            />
+          )}
+          rules={{
+            required: "Please provide a value.",
+          }}
+        />
+        {errors.value && (
+          <div className="invalid-feedback">{errors.value.message}</div>
+        )}
+      </div>
+    </Form>
+  );
 
   return (
     <>
@@ -55,14 +155,18 @@ export default function SecretsList() {
       </div>
       <Modal isOpen={showModal} toggle={toggleModal}>
         <ModalHeader toggle={toggleModal}>Add New Secret</ModalHeader>
-        <ModalBody>
-          {result.isError && <RtkOrNotebooksError error={result.error} />}
-          <p>
-            <i>Work in progress</i>
-          </p>
-        </ModalBody>
+        <ModalBody>{modalBody}</ModalBody>
         <ModalFooter>
-          <Button disabled={result.isLoading} onClick={addSecret}>
+          {result.isError && (
+            <div className={cx("mb-2", "w-100")}>
+              <RtkOrNotebooksError error={result.error} />
+            </div>
+          )}
+          <Button
+            disabled={result.isLoading}
+            onClick={handleSubmit(onSubmit)}
+            type="submit"
+          >
             <PlusLg className={cx("bi", "me-1")} />
             Add
           </Button>

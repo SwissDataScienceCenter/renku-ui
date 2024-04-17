@@ -16,24 +16,6 @@
  * limitations under the License.
  */
 
-export interface SecretDetails {
-  id: string;
-  modification_date: Date;
-  name: string;
-}
+import { Docs } from "../../utils/constants/Docs";
 
-export interface AddSecretParams {
-  name: string;
-  value: string;
-}
-
-export interface EditSecretParams {
-  id: string;
-  value: string;
-}
-
-export type AddSecretForm = AddSecretParams;
-
-export interface EditSecretForm {
-  value: string;
-}
+export const DOCS_SECRETS_URL = Docs.rtdTopicGuide("secrets/secrets.html");

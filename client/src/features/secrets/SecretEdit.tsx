@@ -19,30 +19,60 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { PencilSquare, XLg } from "react-bootstrap-icons";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Controller, useForm } from "react-hook-form";
+import {
+  Button,
+  Form,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
+
 import { useEditSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-
+import { EditSecretForm } from "./secrets.types";
 interface SecretsEditProps {
   secretId: string;
 }
 export default function SecretEdit({ secretId }: SecretsEditProps) {
+  // Set up the modal
   const [showModal, setShowModal] = useState(false);
-
   const toggleModal = useCallback(() => {
     setShowModal((showModal) => !showModal);
   }, []);
 
-  const [editSecretMutation, result] = useEditSecretMutation();
-  const editSecret = useCallback(() => {
-    editSecretMutation({ id: secretId, value: "TMP NEW VALUE" });
-  }, [editSecretMutation, secretId]);
+  // Set up the form
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<EditSecretForm>({
+    defaultValues: {
+      value: "",
+    },
+    mode: "all",
+  });
 
+  // Handle posting data
+  const [editSecretMutation, result] = useEditSecretMutation();
+  const onSubmit = useCallback(
+    (newSecret: EditSecretForm) => {
+      editSecretMutation({ id: secretId, ...newSecret });
+    },
+    [editSecretMutation, secretId]
+  );
+
+  // Automatically close the modal when the secret is modified
   useEffect(() => {
     if (result.isSuccess) {
       toggleModal();
+      reset();
     }
-  }, [result.isSuccess, toggleModal]);
+  }, [reset, result.isSuccess, toggleModal]);
 
   return (
     <>
@@ -56,13 +86,44 @@ export default function SecretEdit({ secretId }: SecretsEditProps) {
           Edit Secret <code>{secretId}</code>
         </ModalHeader>
         <ModalBody>
-          {result.isError && <RtkOrNotebooksError error={result.error} />}
-          <p>
-            <i>Work in progress</i>
-          </p>
+          <Form className="form-rk-green" onSubmit={handleSubmit(onSubmit)}>
+            <div className="mb-3">
+              <Label className="form-label" for="editSecretValue">
+                Value
+              </Label>
+              <Controller
+                control={control}
+                name="value"
+                render={({ field }) => (
+                  <Input
+                    className={cx("form-control", errors.value && "is-invalid")}
+                    id="editSecretValue"
+                    placeholder="Value"
+                    type="text"
+                    {...field}
+                  />
+                )}
+                rules={{
+                  required: "Please provide a value.",
+                }}
+              />
+              {errors.value && (
+                <div className="invalid-feedback">{errors.value.message}</div>
+              )}
+            </div>
+          </Form>
         </ModalBody>
         <ModalFooter>
-          <Button disabled={result.isLoading} onClick={editSecret}>
+          {result.isError && (
+            <div className={cx("mb-2", "w-100")}>
+              <RtkOrNotebooksError error={result.error} />
+            </div>
+          )}
+          <Button
+            disabled={result.isLoading}
+            onClick={handleSubmit(onSubmit)}
+            type="submit"
+          >
             <PencilSquare className={cx("bi", "me-1")} />
             Edit
           </Button>

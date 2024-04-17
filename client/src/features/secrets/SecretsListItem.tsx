@@ -28,14 +28,11 @@ import { TimeCaption } from "../../components/TimeCaption";
 import SecretEdit from "./SecretEdit";
 import SecretDelete from "./SecretDelete";
 
-const NOT_AVAILABLE = "N/A";
-
 interface SecretsListItemProps {
   secretName: string;
 }
 export default function SecretsListItem({ secretName }: SecretsListItemProps) {
   const [showDetails, setShowDetails] = useState(false);
-
   const toggleDetails = useCallback(() => {
     setShowDetails((showDetails) => !showDetails);
   }, []);
@@ -72,7 +69,7 @@ function SecretListItemDetails({ secretName }: SecretsListItemProps) {
       <div className="mb-2">
         <p className={cx("mb-0", "text-rk-text-light")}>ID</p>
         <p className="mb-0">
-          {secretDetails.data?.id ? secretDetails.data.id : NOT_AVAILABLE}
+          {secretDetails.data?.id ? secretDetails.data.id : "N/A"}
         </p>
       </div>
       <div className="mb-2">

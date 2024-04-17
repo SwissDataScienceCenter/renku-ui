@@ -27,17 +27,19 @@ interface SecretsDeleteProps {
   secretId: string;
 }
 export default function SecretDelete({ secretId }: SecretsDeleteProps) {
+  // Set up the modal
   const [showModal, setShowModal] = useState(false);
-
   const toggleModal = useCallback(() => {
     setShowModal((showModal) => !showModal);
   }, []);
 
+  // Handle posting data
   const [deleteSecretMutation, result] = useDeleteSecretMutation();
   const deleteSecret = useCallback(() => {
     deleteSecretMutation(secretId);
   }, [deleteSecretMutation, secretId]);
 
+  // Automatically close the modal when the secret is modified
   useEffect(() => {
     if (result.isSuccess) {
       toggleModal();
