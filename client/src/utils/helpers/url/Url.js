@@ -514,6 +514,21 @@ const Url = {
       showId: new UrlRule((data) => `/v2/projects/${data.id}`, ["id"], null, [
         "/v2/projects/id",
       ]),
+      old: new UrlRule((data) => `/v2/projects/old/${data.id}`, ["id"], null, [
+        "/v2/projects/id",
+      ]),
+      settings: new UrlRule(
+        (data) => `/v2/projects/${data.id}/settings`,
+        ["id"],
+        null,
+        ["/v2/projects/1234/settings"]
+      ),
+      projectInfo: new UrlRule(
+        (data) => `/v2/projects/${data.id}/info`,
+        ["id"],
+        null,
+        ["/v2/projects/1234/info"]
+      ),
     },
     v2Users: {
       base: "/v2/users",

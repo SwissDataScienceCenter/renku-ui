@@ -1,0 +1,67 @@
+.ProjectPageNavbar {
+  display: inline-block;
+}
+.ProjectPageNavItemActive a {
+  font-weight: bold;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  padding: 0;
+  margin-bottom: 0;
+  color: var(--bs-rk-text);
+}
+.ProjectPageNavItem {
+  margin-bottom: 24px;
+}
+.ProjectPageNavItem a:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.ProjectPageNav {
+  display: flex;
+  flex-direction: column;
+}
+.ProjectInfoItem {
+  display: none;
+}
+.ProjectPageNavItem a {
+  color: var(--bs-rk-text);
+  padding: 0;
+  margin-bottom: 1px;
+  text-align: start;
+}
+
+.ProjectNavIcon {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  .ProjectPageNav {
+    flex-direction: row;
+  }
+  .ProjectInfoItem {
+    display: inline;
+  }
+  .ProjectNavIcon {
+    display: block;
+  }
+  .ProjectPageNavItem {
+    margin-bottom: 0;
+  }
+  .ProjectPageNavItem a {
+    color: var(--bs-rk-text-light);
+    padding: 0;
+    margin-bottom: 1px;
+    text-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .ProjectPageNavItemActive a {
+    color: var(--bs-rk-text);
+  }
+  .ProjectPageNavItem a:hover {
+    color: var(--bs-rk-text);
+  }
+}

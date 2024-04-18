@@ -1,0 +1,49 @@
+.ProjectInformationItem {
+  border-bottom: dotted 0.5px var(--bs-rk-text-light);
+  padding: 20px 0;
+  text-align: end;
+}
+.divider {
+  border-bottom: dotted 0.5px var(--bs-rk-text-light);
+  flex-grow: 1;
+}
+
+.projectPageImg {
+  width: 200px;
+  height: 115px;
+}
+
+.projectPageImgPlaceholder {
+  width: 200px;
+  height: 115px;
+  background-color: #6c757d;
+  background-image: url("../../../../styles/assets/projectImagePreview.svg");
+  border-radius: 4px;
+}
+
+.ProjectTimeLabel {
+  font-size: 16px;
+}
+.ProjectTimeLabel span {
+  font-weight: bold;
+}
+
+@media (max-width: 991px) {
+  .ProjectInformationItem {
+    padding: 30px 0;
+    text-align: start;
+    margin: 0 10px;
+  }
+  .projectPageImgPlaceholder,
+  .projectPageImg {
+    margin: auto;
+    width: 250px;
+    height: 153px;
+  }
+}
+
+@media (max-width: 576px) {
+  .ProjectInfoContainer {
+    padding-bottom: 80px;
+  }
+}

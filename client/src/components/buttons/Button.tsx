@@ -26,8 +26,8 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Fragment, useState } from "react";
-import { ChevronDown } from "react-bootstrap-icons";
+import { Fragment, useRef, useState } from "react";
+import { ArrowRight, ChevronDown, PencilSquare } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -39,6 +39,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import styles from "../../styles/components/_custom_buttons.module.scss";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
 
@@ -287,11 +288,55 @@ function RoundButtonGroup({ children }: { children: React.ReactNode[] }) {
   return <ButtonGroup className="round-button-group">{children}</ButtonGroup>;
 }
 
+/*
+ * underline Link with icon
+ */
+function UnderlineArrowLink({
+  to,
+  text,
+  title,
+}: {
+  text: string;
+  to: string;
+  title: string;
+}) {
+  const ref = useRef(null);
+  return (
+    <>
+      <span ref={ref} className={styles.LinkUnderline}>
+        <Link className="text-decoration-none" to={to}>
+          {text} <ArrowRight />
+        </Link>
+      </span>
+      <UncontrolledTooltip target={ref}>{title}</UncontrolledTooltip>
+    </>
+  );
+}
+
+/*
+ * Edit button
+ */
+function EditButtonLink({ to, title }: { to: string; title: string }) {
+  const ref = useRef(null);
+  return (
+    <>
+      <span ref={ref} className={styles.LinkIcon}>
+        <Link className="text-decoration-none" to={to}>
+          <PencilSquare />
+        </Link>
+      </span>
+      <UncontrolledTooltip target={ref}>{title}</UncontrolledTooltip>
+    </>
+  );
+}
+
 export {
   ButtonWithMenu,
   CardButton,
+  EditButtonLink,
   GoBackButton,
   InlineSubmitButton,
   RefreshButton,
   RoundButtonGroup,
+  UnderlineArrowLink,
 };

@@ -26,16 +26,19 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
+import ProjectPageContainer, {
+  ProjectPageContentType,
+} from "../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
 import LazyGroupV2List from "../projectsV2/LazyGroupList";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyGroupV2Show from "../projectsV2/LazyGroupShow";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
+import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import NavbarV2 from "./NavbarV2";
-import LazySearchV2 from "../searchV2/LazySearchV2";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -142,6 +145,36 @@ function ProjectsV2Routes() {
       />
       <Route
         path=":id"
+        element={
+          <ContainerWrap fullSize className="container-lg">
+            <ProjectPageContainer
+              contentPage={ProjectPageContentType.Overview}
+            />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path=":id/info"
+        element={
+          <ContainerWrap fullSize className="container-lg">
+            <ProjectPageContainer
+              contentPage={ProjectPageContentType.ProjectInfo}
+            />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path=":id/settings"
+        element={
+          <ContainerWrap fullSize className="container-lg">
+            <ProjectPageContainer
+              contentPage={ProjectPageContentType.Settings}
+            />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path="/old/:id"
         element={
           <ContainerWrap>
             <LazyProjectV2Show />

@@ -1,0 +1,84 @@
+.ProjectHeaderContainer {
+  height: 140px;
+  display: grid;
+  grid-template-columns: 200px 1fr 250px;
+  grid-template-rows: 0.5fr 1fr;
+  grid-auto-columns: 1fr;
+  grid-auto-rows: 1fr;
+  gap: 0 20px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "HeaderImgContainer HeaderTitleContainer HeaderBtnContainer"
+    "HeaderImgContainer HeaderDescContainer HeaderBtnContainer";
+}
+
+.HeaderImgContainer {
+  grid-area: HeaderImgContainer;
+  width: 200px;
+}
+
+.HeaderTitleContainer {
+  grid-area: HeaderTitleContainer;
+}
+
+.HeaderBtnContainer {
+  grid-area: HeaderBtnContainer;
+  text-align: end;
+}
+
+.HeaderDescContainer {
+  grid-area: HeaderDescContainer;
+}
+
+.HeaderActions {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 10px;
+}
+
+@media (max-width: 991px) {
+  .ProjectHeaderContainer {
+    height: 140px;
+    display: grid;
+    background-color: var(--bs-white);
+    grid-template-columns: 1fr 250px;
+    grid-template-rows: 1fr 1fr;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    gap: 10px 0;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "HeaderTitleContainer HeaderBtnContainer"
+      "HeaderDescContainer HeaderDescContainer";
+  }
+  .headerImgContainer {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .ProjectHeaderContainer {
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 0.1fr 0.5fr;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    gap: 10px 0;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "HeaderTitleContainer"
+      "HeaderDescContainer"
+      "HeaderBtnContainer";
+  }
+
+  .HeaderBtnContainer {
+    text-align: start;
+    justify-content: space-between;
+    padding-top: 20px;
+  }
+  .HeaderActions {
+    justify-content: start;
+  }
+}

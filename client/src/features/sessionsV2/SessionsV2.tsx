@@ -80,7 +80,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
 
       <h3 className="fs-5">Sessions</h3>
       <div>
-        <AddSessionLauncherButton />
+        <AddSessionLauncherButton styleBtn="iconTextBtn" />
       </div>
 
       {error && <RtkErrorAlert error={error} />}

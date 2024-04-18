@@ -1,0 +1,37 @@
+.ProjectPageOverviewBox {
+  border: 0.3px dashed var(--bs-rk-text-light);
+  background-color: var(--bs-white);
+  min-height: 180px;
+  border-radius: 4px;
+}
+
+.ProjectPageItemTitle {
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+.ProjectPageItemBtn {
+  min-width: 150px;
+  svg {
+    width: 24px;
+  }
+}
+
+.ProjectPageItems {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.ProjectPageItem {
+  padding: 15px 20px;
+}
+.ProjectPageItem:hover {
+  background-color: #f5f5f5;
+}
+
+@media (max-width: 576px) {
+  .ProjectPageOverviewBox {
+    padding-top: 20px;
+  }
+}

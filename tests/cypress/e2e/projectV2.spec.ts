@@ -183,6 +183,7 @@ describe("Navigate to project", () => {
 });
 
 describe("Edit v2 project", () => {
+  const projectId = "THEPROJECTULID26CHARACTERS";
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects().listProjectV2();
@@ -192,7 +193,8 @@ describe("Edit v2 project", () => {
   it("changes project metadata", () => {
     fixtures.readProjectV2().updateProjectV2().listNamespaceV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
+    cy.contains("test 2 v2-project").should("be.visible");
+    cy.getDataCy(`link-project-${projectId}`).click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.contains("Edit Settings").should("be.visible").click();
@@ -212,7 +214,7 @@ describe("Edit v2 project", () => {
   it("changes project namespace", () => {
     fixtures.readProjectV2().updateProjectV2().listManyNamespaceV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
+    cy.getDataCy(`link-project-${projectId}`).click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.contains("Edit Settings").should("be.visible").click();
@@ -243,7 +245,7 @@ describe("Edit v2 project", () => {
       fixture: "projectV2/update-projectV2-repositories.json",
     });
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
+    cy.getDataCy(`link-project-${projectId}`).click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.contains("Edit Settings").should("be.visible").click();
@@ -286,7 +288,7 @@ describe("Edit v2 project", () => {
       .listProjectV2Members()
       .readProjectV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
+    cy.getDataCy(`link-project-${projectId}`).click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.contains("Edit Settings").should("be.visible").click();
@@ -324,7 +326,7 @@ describe("Edit v2 project", () => {
   it("deletes project", () => {
     fixtures.readProjectV2().deleteProjectV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
+    cy.getDataCy(`link-project-${projectId}`).click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.contains("Edit Settings").should("be.visible").click();

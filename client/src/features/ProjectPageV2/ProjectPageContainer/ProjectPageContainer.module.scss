@@ -1,0 +1,22 @@
+.HeaderContainer {
+  padding: 40px 0;
+}
+
+@media (max-width: 991px) {
+  .HeaderContainer {
+    background-color: var(--bs-white);
+    padding: 40px 20px 40px 20px;
+  }
+  .NavContainer {
+    height: 80px;
+    display: grid;
+    align-items: center;
+    background-color: #e9ecef;
+  }
+}
+@media (max-width: 576px) {
+  .HeaderContainer {
+    background-color: var(--bs-white);
+    padding: 40px 20px 40px 20px;
+  }
+}

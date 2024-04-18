@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-import { ReactNode, useEffect, useRef, useState } from "react";
 import cx from "classnames";
 import { DateTime, Duration } from "luxon";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { UncontrolledTooltip } from "reactstrap";
 import {
   ensureDateTime,
@@ -92,9 +92,11 @@ export function TimeCaption({
       <span ref={ref} className={className}>
         {prefix}
         {prefix && " "}
-        {durationStr}
-        {suffix && !noSuffixSpace && " "}
-        {suffix}
+        <span className="timeText">
+          {durationStr}
+          {suffix && !noSuffixSpace && " "}
+          {suffix}
+        </span>
       </span>
       {enableTooltip && datetime?.isValid && (
         <UncontrolledTooltip target={ref}>
