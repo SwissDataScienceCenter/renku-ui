@@ -27,7 +27,7 @@ import WipBadge from "../projectsV2/shared/WipBadge";
 
 export default function Secrets() {
   return (
-    <>
+    <div data-cy="secrets-page">
       <Row>
         <Col>
           <div className={cx("d-flex", "mb-2")}>
@@ -66,6 +66,6 @@ export default function Secrets() {
           <SecretsList />
         </Col>
       </Row>
-    </>
+    </div>
   );
 }

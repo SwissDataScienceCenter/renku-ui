@@ -93,7 +93,11 @@ export default function SecretsNew() {
   const modalBody = secrets.isLoading ? (
     <Loader />
   ) : (
-    <Form className="form-rk-green" onSubmit={handleSubmit(onSubmit)}>
+    <Form
+      className="form-rk-green"
+      data-cy="secrets-new-form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="mb-3">
         <Label className="form-label" for="new-secret-name">
           Name
@@ -195,6 +199,7 @@ export default function SecretsNew() {
             </div>
           )}
           <Button
+            data-cy="secrets-new-add-button"
             disabled={result.isLoading}
             onClick={handleSubmit(onSubmit)}
             type="submit"
@@ -202,7 +207,11 @@ export default function SecretsNew() {
             <PlusLg className={cx("bi", "me-1")} />
             Add
           </Button>
-          <Button className="btn-outline-rk-green" onClick={toggleModal}>
+          <Button
+            className="btn-outline-rk-green"
+            data-cy="secrets-new-cancel-button"
+            onClick={toggleModal}
+          >
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>

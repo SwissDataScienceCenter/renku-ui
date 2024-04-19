@@ -100,7 +100,11 @@ export default function SecretEdit({ secretId }: SecretsEditProps) {
           Edit Secret <code>{secretId}</code>
         </ModalHeader>
         <ModalBody>
-          <Form className="form-rk-green" onSubmit={handleSubmit(onSubmit)}>
+          <Form
+            className="form-rk-green"
+            data-cy="secrets-edit-form"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <div className="mb-3">
               <Label className="form-label" for="edit-secret-value">
                 Value
@@ -158,6 +162,7 @@ export default function SecretEdit({ secretId }: SecretsEditProps) {
             </div>
           )}
           <Button
+            data-cy="secrets-edit-edit-button"
             disabled={result.isLoading}
             onClick={handleSubmit(onSubmit)}
             type="submit"
@@ -165,7 +170,11 @@ export default function SecretEdit({ secretId }: SecretsEditProps) {
             <PencilSquare className={cx("bi", "me-1")} />
             Edit
           </Button>
-          <Button className="btn-outline-rk-green" onClick={toggleModal}>
+          <Button
+            className="btn-outline-rk-green"
+            data-cy="secrets-edit-cancel-button"
+            onClick={toggleModal}
+          >
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>

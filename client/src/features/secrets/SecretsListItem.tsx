@@ -36,7 +36,7 @@ export default function SecretsListItem({ secret }: SecretsListItemProps) {
   }, []);
 
   return (
-    <Card className="border">
+    <Card className="border" data-cy="secrets-list-item">
       <CardBody className="p-0">
         <button
           className={cx("d-flex", "w-100", "p-3", "bg-transparent", "border-0")}

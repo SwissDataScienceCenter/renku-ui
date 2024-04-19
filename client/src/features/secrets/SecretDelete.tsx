@@ -65,12 +65,13 @@ export default function SecretDelete({ secretId }: SecretsDeleteProps) {
           </p>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={toggleModal}>
+          <Button data-cy="secrets-delete-cancel-button" onClick={toggleModal}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
           <Button
             color="outline-danger"
+            data-cy="secrets-delete-delete-button"
             disabled={result.isLoading}
             onClick={deleteSecret}
           >
