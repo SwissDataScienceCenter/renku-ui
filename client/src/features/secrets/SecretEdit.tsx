@@ -18,22 +18,30 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { PencilSquare, XLg } from "react-bootstrap-icons";
+import {
+  EyeFill,
+  EyeSlashFill,
+  PencilSquare,
+  XLg,
+} from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   Form,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
+  UncontrolledTooltip,
 } from "reactstrap";
 
 import { useEditSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { EditSecretForm } from "./secrets.types";
+
 interface SecretsEditProps {
   secretId: string;
 }
@@ -42,6 +50,12 @@ export default function SecretEdit({ secretId }: SecretsEditProps) {
   const [showModal, setShowModal] = useState(false);
   const toggleModal = useCallback(() => {
     setShowModal((showModal) => !showModal);
+  }, []);
+
+  // Hide/show the secret value
+  const [showPlainText, setShowPlainText] = useState(false);
+  const toggleShowPlainText = useCallback(() => {
+    setShowPlainText((showPlainText) => !showPlainText);
   }, []);
 
   // Set up the form
@@ -88,25 +102,49 @@ export default function SecretEdit({ secretId }: SecretsEditProps) {
         <ModalBody>
           <Form className="form-rk-green" onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-3">
-              <Label className="form-label" for="editSecretValue">
+              <Label className="form-label" for="edit-secret-value">
                 Value
               </Label>
-              <Controller
-                control={control}
-                name="value"
-                render={({ field }) => (
-                  <Input
-                    className={cx("form-control", errors.value && "is-invalid")}
-                    id="editSecretValue"
-                    placeholder="Value"
-                    type="text"
-                    {...field}
-                  />
-                )}
-                rules={{
-                  required: "Please provide a value.",
-                }}
-              />
+              <InputGroup>
+                <Controller
+                  control={control}
+                  name="value"
+                  render={({ field }) => (
+                    <Input
+                      className={cx(
+                        "form-control",
+                        "rounded-0",
+                        "rounded-start",
+                        errors.value && "is-invalid"
+                      )}
+                      id="edit-secret-value"
+                      placeholder="Value"
+                      type={showPlainText ? "text" : "password"}
+                      {...field}
+                    />
+                  )}
+                  rules={{
+                    required: "Please provide a value.",
+                  }}
+                />
+                <Button
+                  className="rounded-end"
+                  id="secret-new-show-value"
+                  onClick={() => toggleShowPlainText()}
+                >
+                  {showPlainText ? (
+                    <EyeFill className="bi" />
+                  ) : (
+                    <EyeSlashFill className="bi" />
+                  )}
+                  <UncontrolledTooltip
+                    placement="top"
+                    target="secret-new-show-value"
+                  >
+                    Hide/show secret value
+                  </UncontrolledTooltip>
+                </Button>
+              </InputGroup>
               {errors.value && (
                 <div className="invalid-feedback">{errors.value.message}</div>
               )}

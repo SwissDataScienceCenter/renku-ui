@@ -36,8 +36,8 @@ export default function SecretsList() {
 
   const secretsList = secrets.data?.map((secret) => {
     return (
-      <Col key={secret}>
-        <SecretsListItem secretName={secret} />
+      <Col key={secret.id}>
+        <SecretsListItem secret={secret} />
       </Col>
     );
   });

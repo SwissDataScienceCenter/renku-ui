@@ -18,17 +18,19 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { PlusLg, XLg } from "react-bootstrap-icons";
+import { EyeFill, EyeSlashFill, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   Form,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
+  UncontrolledTooltip,
 } from "reactstrap";
 
 import secretsApi, { useAddSecretMutation } from "./secrets.api";
@@ -41,6 +43,12 @@ export default function SecretsNew() {
   const [showModal, setShowModal] = useState(false);
   const toggleModal = useCallback(() => {
     setShowModal((showModal) => !showModal);
+  }, []);
+
+  // Hide/show the secret value
+  const [showPlainText, setShowPlainText] = useState(false);
+  const toggleShowPlainText = useCallback(() => {
+    setShowPlainText((showPlainText) => !showPlainText);
   }, []);
 
   // Set up the form
@@ -87,7 +95,7 @@ export default function SecretsNew() {
   ) : (
     <Form className="form-rk-green" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-3">
-        <Label className="form-label" for="newSecretName">
+        <Label className="form-label" for="new-secret-name">
           Name
         </Label>
         <Controller
@@ -96,7 +104,7 @@ export default function SecretsNew() {
           render={({ field }) => (
             <Input
               className={cx("form-control", errors.name && "is-invalid")}
-              id="newSecretName"
+              id="new-secret-name"
               placeholder="Unique name"
               type="text"
               {...field}
@@ -105,8 +113,11 @@ export default function SecretsNew() {
           rules={{
             required: "Please provide a name.",
             validate: (value) =>
-              !secrets.data?.includes(value) ||
-              "This secret name already exists.",
+              secrets.data?.map((s) => s.name).includes(value)
+                ? "This name is already used by another secret."
+                : !/^[a-zA-Z0-9_-]+$/.test(value)
+                ? "Only letters, numbers, underscores (_), and dashes (-)."
+                : undefined,
           }}
         />
         {errors.name && (
@@ -115,25 +126,46 @@ export default function SecretsNew() {
       </div>
 
       <div className="mb-3">
-        <Label className="form-label" for="newSecretValue">
+        <Label className="form-label" for="new-secret-value">
           Value
         </Label>
-        <Controller
-          control={control}
-          name="value"
-          render={({ field }) => (
-            <Input
-              className={cx("form-control", errors.value && "is-invalid")}
-              id="newSecretValue"
-              placeholder="Value"
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{
-            required: "Please provide a value.",
-          }}
-        />
+        <InputGroup>
+          <Controller
+            control={control}
+            name="value"
+            render={({ field }) => (
+              <Input
+                className={cx(
+                  "form-control",
+                  "rounded-0",
+                  "rounded-start",
+                  errors.value && "is-invalid"
+                )}
+                id="new-secret-value"
+                placeholder="Value"
+                type={showPlainText ? "text" : "password"}
+                {...field}
+              />
+            )}
+            rules={{
+              required: "Please provide a value.",
+            }}
+          />
+          <Button
+            className="rounded-end"
+            id="secret-new-show-value"
+            onClick={() => toggleShowPlainText()}
+          >
+            {showPlainText ? (
+              <EyeFill className="bi" />
+            ) : (
+              <EyeSlashFill className="bi" />
+            )}
+            <UncontrolledTooltip placement="top" target="secret-new-show-value">
+              Hide/show secret value
+            </UncontrolledTooltip>
+          </Button>
+        </InputGroup>
         {errors.value && (
           <div className="invalid-feedback">{errors.value.message}</div>
         )}

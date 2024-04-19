@@ -31,44 +31,24 @@ const secretsApi = createApi({
   }),
   tagTypes: ["Secrets", "Secret"],
   endpoints: (builder) => ({
-    getSecrets: builder.query<string[], void>({
+    getSecrets: builder.query<SecretDetails[], void>({
       query: () => {
         return {
           url: "",
-          // ! TMP API - until APIs are deployed and responding
-          validateStatus: (response) => {
-            return response.status < 400 || response.status === 404;
-          },
         };
       },
       providesTags: ["Secrets"],
-      // ! TMP API - until APIs are deployed and responding
-      transformResponse: () => {
-        return ["Secret1", "Secret2"];
-      },
     }),
     getSecretDetails: builder.query<SecretDetails, string>({
       query: (secretId) => {
         return {
           url: secretId,
-          // ! TMP API - until APIs are deployed and responding
-          validateStatus: (response) => {
-            return response.status < 400 || response.status === 404;
-          },
         };
       },
       providesTags: (result, _error, secretId) =>
         result && result.id === secretId
           ? [{ type: "Secret", id: secretId }]
           : [],
-      // ! TMP API - until APIs are deployed and responding
-      transformResponse: (_arg1, _arg2, arg3) => {
-        return {
-          id: "1234-1234-5678-abcd",
-          name: arg3,
-          modification_date: new Date(),
-        };
-      },
     }),
     addSecret: builder.mutation<SecretDetails, AddSecretParams>({
       query: (secret) => {
@@ -76,10 +56,6 @@ const secretsApi = createApi({
           url: "",
           method: "POST",
           body: secret,
-          // ! TMP API - until APIs are deployed and responding
-          validateStatus: (response) => {
-            return response.status < 400 || response.status === 404;
-          },
         };
       },
       invalidatesTags: ["Secrets"],
@@ -90,13 +66,10 @@ const secretsApi = createApi({
           url: secret.id,
           method: "PATCH",
           body: { value: secret.value },
-          // ! TMP API - until APIs are deployed and responding
-          validateStatus: (response) => {
-            return response.status < 400 || response.status === 404;
-          },
         };
       },
       invalidatesTags: (_result, _error, params) => [
+        "Secrets",
         { type: "Secret", id: params.id },
       ],
     }),
@@ -105,10 +78,6 @@ const secretsApi = createApi({
         return {
           url: secretId,
           method: "DELETE",
-          // ! TMP API - until APIs are deployed and responding
-          validateStatus: (response) => {
-            return response.status < 400 || response.status === 404;
-          },
         };
       },
       invalidatesTags: (_result, _error, param) => [

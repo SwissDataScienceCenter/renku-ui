@@ -20,18 +20,16 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Card, CardBody, Collapse } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import { useGetSecretDetailsQuery } from "./secrets.api";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { TimeCaption } from "../../components/TimeCaption";
 import SecretEdit from "./SecretEdit";
 import SecretDelete from "./SecretDelete";
+import { SecretDetails } from "./secrets.types";
 
 interface SecretsListItemProps {
-  secretName: string;
+  secret: SecretDetails;
 }
-export default function SecretsListItem({ secretName }: SecretsListItemProps) {
+export default function SecretsListItem({ secret }: SecretsListItemProps) {
   const [showDetails, setShowDetails] = useState(false);
   const toggleDetails = useCallback(() => {
     setShowDetails((showDetails) => !showDetails);
@@ -44,56 +42,38 @@ export default function SecretsListItem({ secretName }: SecretsListItemProps) {
           className={cx("d-flex", "w-100", "p-3", "bg-transparent", "border-0")}
           onClick={toggleDetails}
         >
-          <div>{secretName}</div>
+          <div>{secret.name}</div>
           <div className="ms-auto">
             <ChevronFlippedIcon flipped={showDetails} />
           </div>
         </button>
       </CardBody>
       <Collapse isOpen={showDetails} mountOnEnter>
-        <SecretListItemDetails secretName={secretName} />
+        <CardBody className={cx("border-top", "pb-0")}>
+          <div>
+            <div className="mb-2">
+              <p className={cx("mb-0", "text-rk-text-light")}>ID</p>
+              <p className="mb-0">{secret.id ? secret.id : "N/A"}</p>
+            </div>
+            <div className="mb-2">
+              <p className={cx("mb-0", "text-rk-text-light")}>Last modified</p>
+              <p className="mb-0">
+                <TimeCaption
+                  datetime={secret.modification_date}
+                  enableTooltip
+                  noCaption
+                  prefix=""
+                />
+              </p>
+            </div>
+          </div>
+        </CardBody>
+
+        <CardBody className={cx("d-flex", "justify-content-end", "pt-0")}>
+          <SecretEdit secretId={secret.id} />
+          <SecretDelete secretId={secret.id} />
+        </CardBody>
       </Collapse>
     </Card>
-  );
-}
-
-function SecretListItemDetails({ secretName }: SecretsListItemProps) {
-  const secretDetails = useGetSecretDetailsQuery(secretName);
-
-  if (secretDetails.isLoading) return <Loader />;
-
-  const detailSection = secretDetails.isError ? (
-    <RtkOrNotebooksError dismissible={false} error={secretDetails.error} />
-  ) : (
-    <div>
-      <div className="mb-2">
-        <p className={cx("mb-0", "text-rk-text-light")}>ID</p>
-        <p className="mb-0">
-          {secretDetails.data?.id ? secretDetails.data.id : "N/A"}
-        </p>
-      </div>
-      <div className="mb-2">
-        <p className={cx("mb-0", "text-rk-text-light")}>Last modified</p>
-        <p className="mb-0">
-          <TimeCaption
-            datetime={secretDetails.data?.modification_date}
-            enableTooltip
-            noCaption
-            prefix=""
-          />
-        </p>
-      </div>
-    </div>
-  );
-
-  return (
-    <>
-      <CardBody className={cx("border-top", "pb-0")}>{detailSection}</CardBody>
-
-      <CardBody className={cx("d-flex", "justify-content-end", "pt-0")}>
-        <SecretEdit secretId={secretName} />
-        <SecretDelete secretId={secretName} />
-      </CardBody>
-    </>
   );
 }

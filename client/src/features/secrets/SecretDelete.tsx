@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
 import { useDeleteSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 
