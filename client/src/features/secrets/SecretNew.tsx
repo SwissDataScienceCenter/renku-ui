@@ -179,16 +179,6 @@ export default function SecretsNew() {
 
   return (
     <>
-      <div className="mb-2">
-        <Button
-          id="new-secret-button"
-          className="btn-outline-rk-green"
-          onClick={toggleModal}
-        >
-          <PlusLg className={cx("bi", "me-1")} />
-          Add New Secret
-        </Button>
-      </div>
       <Modal isOpen={showModal} toggle={toggleModal}>
         <ModalHeader toggle={toggleModal}>Add New Secret</ModalHeader>
         <ModalBody>{modalBody}</ModalBody>
@@ -217,6 +207,16 @@ export default function SecretsNew() {
           </Button>
         </ModalFooter>
       </Modal>
+      <div className="mb-3">
+        <Button
+          id="new-secret-button"
+          className="btn-outline-rk-green"
+          onClick={toggleModal}
+        >
+          <PlusLg className={cx("bi", "me-1")} />
+          Add New Secret
+        </Button>
+      </div>
     </>
   );
 }

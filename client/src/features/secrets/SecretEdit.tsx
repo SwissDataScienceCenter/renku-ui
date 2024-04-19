@@ -90,7 +90,11 @@ export default function SecretEdit({ secretId }: SecretsEditProps) {
 
   return (
     <>
-      <Button className="btn-outline-rk-green" onClick={toggleModal}>
+      <Button
+        className="btn-outline-rk-green"
+        data-cy="secret-edit-button"
+        onClick={toggleModal}
+      >
         <PencilSquare className={cx("bi", "me-1")} />
         Edit
       </Button>

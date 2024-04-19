@@ -32,7 +32,7 @@ export default function SecretsList() {
   if (secrets.isError)
     return <RtkOrNotebooksError dismissible={false} error={secrets.error} />;
 
-  if (secrets.data?.length === 0) return <p>No secrets found</p>;
+  if (secrets.data?.length === 0) return null;
 
   const secretsList = secrets.data?.map((secret) => {
     return (

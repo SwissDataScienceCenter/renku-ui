@@ -49,7 +49,12 @@ export default function SecretDelete({ secretId }: SecretsDeleteProps) {
 
   return (
     <>
-      <Button className="ms-2" color="outline-danger" onClick={toggleModal}>
+      <Button
+        className="ms-2"
+        color="outline-danger"
+        data-cy="secret-delete-button"
+        onClick={toggleModal}
+      >
         <TrashFill className={cx("bi", "me-1")} />
         Delete
       </Button>
