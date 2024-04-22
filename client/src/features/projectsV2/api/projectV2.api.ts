@@ -179,7 +179,7 @@ export type ProjectPatch = {
 };
 export type UserEmail = string;
 export type UserFirstLastName = string;
-export type Role = "member" | "owner";
+export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
   id: UserId;
   email?: UserEmail;
