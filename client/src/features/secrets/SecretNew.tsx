@@ -169,10 +169,10 @@ export default function SecretsNew() {
               Hide/show secret value
             </UncontrolledTooltip>
           </Button>
+          {errors.value && (
+            <div className="invalid-feedback">{errors.value.message}</div>
+          )}
         </InputGroup>
-        {errors.value && (
-          <div className="invalid-feedback">{errors.value.message}</div>
-        )}
       </div>
     </Form>
   );

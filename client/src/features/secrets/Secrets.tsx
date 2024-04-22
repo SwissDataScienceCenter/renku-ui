@@ -24,8 +24,46 @@ import SecretNew from "./SecretNew";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { DOCS_SECRETS_URL } from "./secrets.utils";
 import WipBadge from "../projectsV2/shared/WipBadge";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { User } from "../../model/renkuModels.types";
+import { Loader } from "../../components/Loader";
+import LoginAlert from "../../components/loginAlert/LoginAlert";
 
 export default function Secrets() {
+  const user = useLegacySelector<User>((state) => state.stateModel.user);
+
+  if (!user.fetched) return <Loader />;
+
+  const pageInfo = user.logged ? (
+    <>
+      <p>
+        Here you can add, edit and remove secrets that you can mount into your
+        sessions. Please refer to the{" "}
+        <ExternalLink
+          role="text"
+          iconSup={true}
+          iconAfter={true}
+          title="documentation page Secrets in RenkuLab"
+          url={DOCS_SECRETS_URL}
+        />
+        .
+      </p>
+      <p>
+        Mind that you will need to click on the &quot;Start with options&quot;
+        menu entry on the Start Sessions dropdown button and manually select the
+        secrets you want to mount.
+      </p>
+    </>
+  ) : (
+    <>
+      <LoginAlert
+        logged={user.logged}
+        textIntro="Only authenticated users can create and manage Secrets."
+        textPost="to access this page."
+      />
+    </>
+  );
+
   return (
     <div data-cy="secrets-page">
       <Row>
@@ -36,36 +74,23 @@ export default function Secrets() {
               <WipBadge />
             </div>
           </div>
-
-          <p>
-            Here you can add, edit and remove secrets that you can mount into
-            your sessions. Please refer to the{" "}
-            <ExternalLink
-              role="text"
-              iconSup={true}
-              iconAfter={true}
-              title="documentation page Secrets in RenkuLab"
-              url={DOCS_SECRETS_URL}
-            />
-            .
-          </p>
-          <p>
-            Mind that you will need to click on the &quot;Start with
-            options&quot; menu entry on the Start Sessions dropdown button and
-            manually select the secrets you want to mount.
-          </p>
+          <div>{pageInfo}</div>
         </Col>
       </Row>
-      <Row>
-        <Col>
-          <SecretNew />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <SecretsList />
-        </Col>
-      </Row>
+      {user.logged && (
+        <>
+          <Row>
+            <Col>
+              <SecretNew />
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <SecretsList />
+            </Col>
+          </Row>
+        </>
+      )}
     </div>
   );
 }
