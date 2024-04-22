@@ -20,19 +20,30 @@ import fixtures from "../support/renkulab-fixtures";
 
 describe("Secrets", () => {
   beforeEach(() => {
-    fixtures.config().versions().userTest();
+    fixtures.config().versions();
   });
 
   it("Load and empty secrets page", () => {
-    fixtures.listSecrets();
+    fixtures.userTest().listSecrets();
     cy.visit("/secrets");
 
     cy.get("#new-secret-button").should("be.visible");
     cy.getDataCy("secrets-list").should("not.exist");
   });
 
-  it("Load page with secrets", () => {
-    fixtures.listSecrets({ numberOfSecrets: 5 });
+  it("Cannot load secrets when logged out", () => {
+    fixtures.userNone().listSecrets();
+    cy.visit("/secrets");
+
+    cy.getDataCy("secrets-list").should("not.exist");
+    cy.getDataCy("secrets-page")
+      .contains("Only authenticated users")
+      .should("be.visible");
+    cy.getDataCy("secrets-page").contains("Log in").should("be.visible");
+  });
+
+  it("Load page with secrets and create a new one", () => {
+    fixtures.userTest().listSecrets({ numberOfSecrets: 5 }).newSecret();
     cy.visit("/secrets");
 
     cy.get("#new-secret-button").should("be.visible");
@@ -47,10 +58,37 @@ describe("Secrets", () => {
       .find('[data-cy="secrets-list-item"]')
       .first()
       .contains("id_0");
+
+    cy.get("#new-secret-button").should("be.visible").click();
+    cy.getDataCy("secrets-new-add-button").should("be.visible").click();
+
+    cy.getDataCy("secrets-new-form")
+      .contains("Please provide a name.")
+      .should("be.visible");
+    cy.getDataCy("secrets-new-form")
+      .contains("Please provide a value.")
+      .should("be.visible");
+
+    cy.get("#new-secret-name").type("new secret");
+    cy.getDataCy("secrets-new-form")
+      .contains("Please provide a name.")
+      .should("not.exist");
+    cy.getDataCy("secrets-new-form")
+      .contains("Only letters, numbers,")
+      .should("be.visible");
+    cy.get("#new-secret-name").clear().type("new_secret");
+
+    cy.get("#new-secret-value").type("new_value");
+    cy.getDataCy("secrets-new-form")
+      .contains("Please provide a value.")
+      .should("not.exist");
+
+    cy.getDataCy("secrets-new-add-button").should("be.enabled").click();
+    cy.getDataCy("secrets-new-form").should("not.be.visible");
   });
 
   it("Edit secret", () => {
-    fixtures.listSecrets({ numberOfSecrets: 2 }).editSecret();
+    fixtures.userTest().listSecrets({ numberOfSecrets: 2 }).editSecret();
     cy.visit("/secrets");
 
     cy.getDataCy("secrets-list")
@@ -70,7 +108,7 @@ describe("Secrets", () => {
   });
 
   it("Delete secret", () => {
-    fixtures.listSecrets({ numberOfSecrets: 2 }).deleteSecret();
+    fixtures.userTest().listSecrets({ numberOfSecrets: 2 }).deleteSecret();
     cy.visit("/secrets");
 
     cy.getDataCy("secrets-list")
@@ -86,31 +124,4 @@ describe("Secrets", () => {
     cy.getDataCy("secrets-delete-delete-button").should("be.enabled").click();
     cy.getDataCy("secrets-delete-delete-button").should("not.be.visible");
   });
-
-  // ! TODO: finish test and inspect delay issue
-  // it("Create secret", () => {
-  //   fixtures.listSecrets();
-  //   cy.visit("/secrets");
-  //   cy.wait("@listSecrets");
-
-  //   // eslint-disable-next-line cypress/no-unnecessary-waiting
-  //   cy.wait(500); // ! something's off with showing the modal
-  //   cy.get("#new-secret-button").should("be.visible").click();
-  //   // cy.get("#new-secret-button").should("be.visible").click();
-
-  //   // cy.getDataCy("secrets-list")
-  //   //   .find('[data-cy="secrets-list-item"] button')
-  //   //   .first()
-  //   //   .contains("secret_0")
-  //   //   .click();
-  //   // cy.getDataCy("secrets-list")
-  //   //   .find('[data-cy="secret-edit-button"]')
-  //   //   .first()
-  //   //   .click();
-
-  //   // cy.getDataCy("secrets-edit-form").should("be.visible");
-  //   // cy.get("#edit-secret-value").type("new_value");
-  //   // cy.getDataCy("secrets-edit-edit-button").should("be.enabled").click();
-  //   // cy.getDataCy("secrets-edit-form").should("not.be.visible");
-  // });
 });

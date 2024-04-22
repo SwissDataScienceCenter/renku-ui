@@ -48,6 +48,21 @@ export function Secrets<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    newSecret(args?: NameOnlyFixture) {
+      const { name = "fake_id" } = args ?? {};
+      const response = {
+        body: {
+          id: "fake_id",
+          modification_date: new Date(),
+          name: "fake_secret",
+        },
+      };
+      cy.intercept("POST", "/ui-server/api/data/user/secrets", response).as(
+        name
+      );
+      return this;
+    }
+
     editSecret(args?: NameOnlyFixture) {
       const { name = "editSecret" } = args ?? {};
       const response = {
