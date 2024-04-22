@@ -71,6 +71,7 @@ import SessionCloudStorageOption from "./options/SessionCloudStorageOption";
 import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
+import SessionUserSecrets from "./options/SessionUserSecrets";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
 
 export default function StartNewSession() {
@@ -663,6 +664,7 @@ function StartNewSessionOptions() {
       <SessionCommitOption />
       <StartNotebookServerOptions />
       <SessionCloudStorageOption />
+      <SessionUserSecrets />
       <SessionEnvironmentVariables />
     </>
   );
