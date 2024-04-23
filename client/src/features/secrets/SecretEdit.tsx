@@ -40,12 +40,12 @@ import {
 
 import { useEditSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { EditSecretForm } from "./secrets.types";
+import { EditSecretForm, SecretDetails } from "./secrets.types";
 
 interface SecretsEditProps {
-  secretId: string;
+  secret: SecretDetails;
 }
-export default function SecretEdit({ secretId }: SecretsEditProps) {
+export default function SecretEdit({ secret }: SecretsEditProps) {
   // Set up the modal
   const [showModal, setShowModal] = useState(false);
   const toggleModal = useCallback(() => {
@@ -75,9 +75,9 @@ export default function SecretEdit({ secretId }: SecretsEditProps) {
   const [editSecretMutation, result] = useEditSecretMutation();
   const onSubmit = useCallback(
     (newSecret: EditSecretForm) => {
-      editSecretMutation({ id: secretId, ...newSecret });
+      editSecretMutation({ id: secret.id, ...newSecret });
     },
-    [editSecretMutation, secretId]
+    [editSecretMutation, secret.id]
   );
 
   // Automatically close the modal when the secret is modified
@@ -101,7 +101,7 @@ export default function SecretEdit({ secretId }: SecretsEditProps) {
 
       <Modal isOpen={showModal} toggle={toggleModal}>
         <ModalHeader toggle={toggleModal}>
-          Edit Secret <code>{secretId}</code>
+          Edit Secret <code>{secret.name}</code>
         </ModalHeader>
         <ModalBody>
           <Form

@@ -23,11 +23,12 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { useDeleteSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { SecretDetails } from "./secrets.types";
 
 interface SecretsDeleteProps {
-  secretId: string;
+  secret: SecretDetails;
 }
-export default function SecretDelete({ secretId }: SecretsDeleteProps) {
+export default function SecretDelete({ secret }: SecretsDeleteProps) {
   // Set up the modal
   const [showModal, setShowModal] = useState(false);
   const toggleModal = useCallback(() => {
@@ -37,8 +38,8 @@ export default function SecretDelete({ secretId }: SecretsDeleteProps) {
   // Handle posting data
   const [deleteSecretMutation, result] = useDeleteSecretMutation();
   const deleteSecret = useCallback(() => {
-    deleteSecretMutation(secretId);
-  }, [deleteSecretMutation, secretId]);
+    deleteSecretMutation(secret.id);
+  }, [deleteSecretMutation, secret.id]);
 
   // Automatically close the modal when the secret is modified
   useEffect(() => {
@@ -66,7 +67,7 @@ export default function SecretDelete({ secretId }: SecretsDeleteProps) {
           <p className="mb-0">
             Please confirm that you want to{" "}
             <span className="fw-bold">permanently</span> delete the secret{" "}
-            <code>{secretId}</code>.
+            <code>{secret.name}</code>.
           </p>
         </ModalBody>
         <ModalFooter>
