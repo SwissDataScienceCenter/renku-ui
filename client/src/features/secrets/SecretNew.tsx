@@ -107,6 +107,7 @@ export default function SecretsNew() {
           name="name"
           render={({ field }) => (
             <Input
+              autoComplete="new-password"
               className={cx("form-control", errors.name && "is-invalid")}
               id="new-secret-name"
               placeholder="Unique name"
@@ -139,6 +140,7 @@ export default function SecretsNew() {
             name="value"
             render={({ field }) => (
               <Input
+                autoComplete="new-password"
                 className={cx(
                   "form-control",
                   "rounded-0",
