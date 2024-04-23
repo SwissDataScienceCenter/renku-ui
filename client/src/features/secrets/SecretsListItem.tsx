@@ -70,8 +70,8 @@ export default function SecretsListItem({ secret }: SecretsListItemProps) {
         </CardBody>
 
         <CardBody className={cx("d-flex", "justify-content-end", "pt-0")}>
-          <SecretEdit secretId={secret.id} />
-          <SecretDelete secretId={secret.id} />
+          <SecretEdit secret={secret} />
+          <SecretDelete secret={secret} />
         </CardBody>
       </Collapse>
     </Card>
