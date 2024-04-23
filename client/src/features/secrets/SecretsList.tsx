@@ -43,7 +43,7 @@ export default function SecretsList() {
   });
   return (
     <Container className={cx("p-0", "mt-2")} data-cy="secrets-list" fluid>
-      <Row className={cx("gy-2", "row-cols-1", "row-cols-lg-2")}>
+      <Row className={cx("g-2", "row-cols-1", "row-cols-xl-2")}>
         {secretsList}
       </Row>
     </Container>

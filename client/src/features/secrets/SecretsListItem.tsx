@@ -17,10 +17,8 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
-import { Card, CardBody, Collapse } from "reactstrap";
+import { Card, CardBody } from "reactstrap";
 
-import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { TimeCaption } from "../../components/TimeCaption";
 import SecretEdit from "./SecretEdit";
 import SecretDelete from "./SecretDelete";
@@ -30,50 +28,38 @@ interface SecretsListItemProps {
   secret: SecretDetails;
 }
 export default function SecretsListItem({ secret }: SecretsListItemProps) {
-  const [showDetails, setShowDetails] = useState(false);
-  const toggleDetails = useCallback(() => {
-    setShowDetails((showDetails) => !showDetails);
-  }, []);
-
   return (
-    <Card className="border" data-cy="secrets-list-item">
-      <CardBody className="p-0">
-        <button
-          className={cx("d-flex", "w-100", "p-3", "bg-transparent", "border-0")}
-          onClick={toggleDetails}
+    <Card
+      className="border"
+      data-cy="secrets-list-item"
+      key={secret.id + secret.modification_date} // force re-render on updates
+    >
+      <CardBody>
+        <div
+          className={cx(
+            "d-flex",
+            "gap-3",
+            "flex-wrap",
+            "align-items-center",
+            "w-100"
+          )}
         >
-          <div>{secret.name}</div>
-          <div className="ms-auto">
-            <ChevronFlippedIcon flipped={showDetails} />
+          <span className="fw-bold">{secret.name}</span>
+          <span className="text-rk-text-light my-auto small">
+            Edited {+new Date(secret.modification_date) - +new Date() < 5_000}
+            <TimeCaption
+              datetime={secret.modification_date}
+              enableTooltip
+              noCaption
+              prefix=""
+            />
+          </span>
+          <div className={cx("ms-auto", "d-flex", "gap-2")}>
+            <SecretEdit secret={secret} />
+            <SecretDelete secret={secret} />
           </div>
-        </button>
+        </div>
       </CardBody>
-      <Collapse isOpen={showDetails} mountOnEnter>
-        <CardBody className={cx("border-top", "pb-0")}>
-          <div>
-            <div className="mb-2">
-              <p className={cx("mb-0", "text-rk-text-light")}>ID</p>
-              <p className="mb-0">{secret.id ? secret.id : "N/A"}</p>
-            </div>
-            <div className="mb-2">
-              <p className={cx("mb-0", "text-rk-text-light")}>Last modified</p>
-              <p className="mb-0">
-                <TimeCaption
-                  datetime={secret.modification_date}
-                  enableTooltip
-                  noCaption
-                  prefix=""
-                />
-              </p>
-            </div>
-          </div>
-        </CardBody>
-
-        <CardBody className={cx("d-flex", "justify-content-end", "pt-0")}>
-          <SecretEdit secret={secret} />
-          <SecretDelete secret={secret} />
-        </CardBody>
-      </Collapse>
     </Card>
   );
 }

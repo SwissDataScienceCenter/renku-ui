@@ -22,7 +22,7 @@ import { Col, Row } from "reactstrap";
 import SecretsList from "./SecretsList";
 import SecretNew from "./SecretNew";
 import { ExternalLink } from "../../components/ExternalLinks";
-import { DOCS_SECRETS_URL } from "./secrets.utils";
+import { SECRETS_DOCS_URL } from "./secrets.utils";
 import WipBadge from "../projectsV2/shared/WipBadge";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { User } from "../../model/renkuModels.types";
@@ -36,22 +36,25 @@ export default function Secrets() {
 
   const pageInfo = user.logged ? (
     <>
+      <p>Here you can store secrets to use in your sessions.</p>
+
       <p>
-        Here you can add, edit and remove secrets that you can mount into your
-        sessions. Please refer to the{" "}
+        To use secrets in a session, start a session via “Start with Options” in
+        the Session start drop down menu. Then scroll down to the User Secrets
+        section and select the secrets you would like to include in the session.
+        The secrets you select will be mounted in the session as files in a
+        directory of your choice as <code>secret-name.txt</code>.
+      </p>
+      <p>
+        For more information, please refer to{" "}
         <ExternalLink
           role="text"
           iconSup={true}
           iconAfter={true}
-          title="documentation page Secrets in RenkuLab"
-          url={DOCS_SECRETS_URL}
+          title="our documentation"
+          url={SECRETS_DOCS_URL}
         />
         .
-      </p>
-      <p>
-        Mind that you will need to click on the &quot;Start with options&quot;
-        menu entry on the Start Sessions dropdown button and manually select the
-        secrets you want to mount.
       </p>
     </>
   ) : (

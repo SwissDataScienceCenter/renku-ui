@@ -51,10 +51,11 @@ export default function SecretDelete({ secret }: SecretsDeleteProps) {
   return (
     <>
       <Button
-        className="ms-2"
+        className="text-nowrap"
         color="outline-danger"
         data-cy="secret-delete-button"
         onClick={toggleModal}
+        size="sm"
       >
         <TrashFill className={cx("bi", "me-1")} />
         Delete

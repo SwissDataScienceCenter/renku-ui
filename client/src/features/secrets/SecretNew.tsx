@@ -37,6 +37,7 @@ import secretsApi, { useAddSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { AddSecretForm } from "./secrets.types";
+import { BLUR_TEXT_STYLE, SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
 
 export default function SecretsNew() {
   // Set up the modal
@@ -93,90 +94,104 @@ export default function SecretsNew() {
   const modalBody = secrets.isLoading ? (
     <Loader />
   ) : (
-    <Form
-      className="form-rk-green"
-      data-cy="secrets-new-form"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div className="mb-3">
-        <Label className="form-label" for="new-secret-name">
-          Name
-        </Label>
-        <Controller
-          control={control}
-          name="name"
-          render={({ field }) => (
-            <Input
-              autoComplete="new-password"
-              className={cx("form-control", errors.name && "is-invalid")}
-              id="new-secret-name"
-              placeholder="Unique name"
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{
-            required: "Please provide a name.",
-            validate: (value) =>
-              secrets.data?.map((s) => s.name).includes(value)
-                ? "This name is already used by another secret."
-                : !/^[a-zA-Z0-9_-]+$/.test(value)
-                ? "Only letters, numbers, underscores (_), and dashes (-)."
-                : undefined,
-          }}
-        />
-        {errors.name && (
-          <div className="invalid-feedback">{errors.name.message}</div>
-        )}
-      </div>
-
-      <div className="mb-3">
-        <Label className="form-label" for="new-secret-value">
-          Value
-        </Label>
-        <InputGroup>
+    <>
+      <p>Here you can add a new secret to use in your sessions.</p>
+      <p>
+        Names must be unique and can contain only letters, numbers, underscores
+        (_), and dashes (-). Values are limited to 5000 characters.
+      </p>
+      <Form
+        className="form-rk-green"
+        data-cy="secrets-new-form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="mb-3">
+          <Label className="form-label" for="new-secret-name">
+            Name
+          </Label>
           <Controller
             control={control}
-            name="value"
+            name="name"
             render={({ field }) => (
               <Input
                 autoComplete="new-password"
-                className={cx(
-                  "form-control",
-                  "rounded-0",
-                  "rounded-start",
-                  errors.value && "is-invalid"
-                )}
-                id="new-secret-value"
-                placeholder="Value"
-                type={showPlainText ? "text" : "password"}
+                className={cx("form-control", errors.name && "is-invalid")}
+                id="new-secret-name"
+                placeholder="Unique name"
+                type="text"
                 {...field}
               />
             )}
             rules={{
-              required: "Please provide a value.",
+              required: "Please provide a name.",
+              validate: (value) =>
+                secrets.data?.map((s) => s.name).includes(value)
+                  ? "This name is already used by another secret."
+                  : !/^[a-zA-Z0-9_-]+$/.test(value)
+                  ? "Only letters, numbers, underscores (_), and dashes (-)."
+                  : undefined,
             }}
           />
-          <Button
-            className="rounded-end"
-            id="secret-new-show-value"
-            onClick={() => toggleShowPlainText()}
-          >
-            {showPlainText ? (
-              <EyeFill className="bi" />
-            ) : (
-              <EyeSlashFill className="bi" />
-            )}
-            <UncontrolledTooltip placement="top" target="secret-new-show-value">
-              Hide/show secret value
-            </UncontrolledTooltip>
-          </Button>
-          {errors.value && (
-            <div className="invalid-feedback">{errors.value.message}</div>
+          {errors.name && (
+            <div className="invalid-feedback">{errors.name.message}</div>
           )}
-        </InputGroup>
-      </div>
-    </Form>
+        </div>
+
+        <div className="mb-3">
+          <Label className="form-label" for="new-secret-value">
+            Value
+          </Label>
+          <InputGroup>
+            <Controller
+              control={control}
+              name="value"
+              render={({ field }) => (
+                <Input
+                  autoComplete="new-password"
+                  className={cx(
+                    "form-control",
+                    "rounded-0",
+                    "rounded-start",
+                    errors.value && "is-invalid"
+                  )}
+                  id="new-secret-value"
+                  style={showPlainText ? {} : BLUR_TEXT_STYLE}
+                  type="textarea"
+                  {...field}
+                />
+              )}
+              rules={{
+                required: "Please provide a value.",
+                validate: (value) =>
+                  value.length > SECRETS_VALUE_LENGTH_LIMIT
+                    ? `Value cannot exceed ${SECRETS_VALUE_LENGTH_LIMIT} characters.`
+                    : undefined,
+              }}
+            />
+            <Button
+              className="rounded-end"
+              id="secret-new-show-value"
+              onClick={() => toggleShowPlainText()}
+            >
+              {showPlainText ? (
+                <EyeFill className="bi" />
+              ) : (
+                <EyeSlashFill className="bi" />
+              )}
+              <UncontrolledTooltip
+                placement="top"
+                target="secret-new-show-value"
+              >
+                Hide/show secret value
+              </UncontrolledTooltip>
+            </Button>
+            {errors.value && (
+              <div className="invalid-feedback">{errors.value.message}</div>
+            )}
+          </InputGroup>
+        </div>
+      </Form>
+    </>
   );
 
   return (

@@ -41,6 +41,7 @@ import {
 import { useEditSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { EditSecretForm, SecretDetails } from "./secrets.types";
+import { BLUR_TEXT_STYLE, SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
 
 interface SecretsEditProps {
   secret: SecretDetails;
@@ -91,9 +92,10 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
   return (
     <>
       <Button
-        className="btn-outline-rk-green"
+        className={cx("btn-outline-rk-green", "text-nowrap")}
         data-cy="secret-edit-button"
         onClick={toggleModal}
+        size="sm"
       >
         <PencilSquare className={cx("bi", "me-1")} />
         Edit
@@ -104,6 +106,12 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
           Edit Secret <code>{secret.name}</code>
         </ModalHeader>
         <ModalBody>
+          <p>
+            Here you can replace the value. The change will apply only to new
+            sessions. If you need to rename, please delete the secret and create
+            a new one.
+          </p>
+          <p>Values are limited to 5000 characters.</p>
           <Form
             className="form-rk-green"
             data-cy="secrets-edit-form"
@@ -127,13 +135,18 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
                         errors.value && "is-invalid"
                       )}
                       id="edit-secret-value"
-                      placeholder="Value"
-                      type={showPlainText ? "text" : "password"}
+                      style={showPlainText ? {} : BLUR_TEXT_STYLE}
+                      // ! TODO: move style to a css file, and include `::selection` to prevent showing the text when highlighted
+                      type="textarea"
                       {...field}
                     />
                   )}
                   rules={{
                     required: "Please provide a value.",
+                    validate: (value) =>
+                      value.length > SECRETS_VALUE_LENGTH_LIMIT
+                        ? `Value cannot exceed ${SECRETS_VALUE_LENGTH_LIMIT} characters.`
+                        : undefined,
                   }}
                 />
                 <Button
@@ -173,7 +186,7 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
             type="submit"
           >
             <PencilSquare className={cx("bi", "me-1")} />
-            Edit
+            Replace
           </Button>
           <Button
             className="btn-outline-rk-green"
