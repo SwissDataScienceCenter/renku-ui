@@ -32,3 +32,12 @@ export interface Connection {
 export type ConnectionList = Connection[];
 
 export type ConnectionStatus = "pending" | "connected";
+
+export interface ConnectedAccount {
+  username: string;
+  web_url: string;
+}
+
+export interface GetConnectedAccountParams {
+  connectionId: string;
+}

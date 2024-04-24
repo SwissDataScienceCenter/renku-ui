@@ -18,14 +18,19 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import { ProviderList, ConnectionList } from "./connectedServices.types";
+import {
+  ProviderList,
+  ConnectionList,
+  ConnectedAccount,
+  GetConnectedAccountParams,
+} from "./connectedServices.types";
 
 const connectedServicesApi = createApi({
   reducerPath: "connectedServicesApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "/ui-server/api/data",
   }),
-  tagTypes: ["Provider", "Connection"],
+  tagTypes: ["Provider", "Connection", "ConnectedAccount"],
   endpoints: (builder) => ({
     getProviders: builder.query<ProviderList, void>({
       query: () => {
@@ -55,9 +60,31 @@ const connectedServicesApi = createApi({
             ]
           : ["Connection"],
     }),
+    getConnectedAccount: builder.query<
+      ConnectedAccount,
+      GetConnectedAccountParams
+    >({
+      query: ({ connectionId }) => {
+        return {
+          url: `oauth2/connections/${connectionId}/account`,
+        };
+      },
+      providesTags: (result, _error, { connectionId }) =>
+        result
+          ? [
+              {
+                type: "ConnectedAccount" as const,
+                id: `${connectionId}-${result.username}`,
+              },
+            ]
+          : [],
+    }),
   }),
 });
 
 export default connectedServicesApi;
-export const { useGetConnectionsQuery, useGetProvidersQuery } =
-  connectedServicesApi;
+export const {
+  useGetConnectedAccountQuery,
+  useGetConnectionsQuery,
+  useGetProvidersQuery,
+} = connectedServicesApi;
