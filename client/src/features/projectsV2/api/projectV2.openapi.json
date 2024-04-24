@@ -128,7 +128,7 @@
             "name": "project_id",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Ulid"
             }
           }
         ],
@@ -167,6 +167,7 @@
             "name": "project_id",
             "required": true,
             "schema": {
+              "$ref": "#/components/schemas/Ulid",
               "type": "string"
             }
           },
@@ -219,7 +220,7 @@
             "name": "project_id",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Ulid"
             }
           }
         ],
@@ -292,7 +293,7 @@
             "name": "project_id",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Ulid"
             }
           }
         ],
@@ -331,7 +332,7 @@
             "name": "project_id",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Ulid"
             }
           }
         ],
@@ -375,7 +376,7 @@
             "name": "project_id",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/Ulid"
             }
           },
           {
@@ -384,7 +385,7 @@
             "description": "This is user's KeyCloak ID",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/UserId"
             }
           }
         ],
@@ -428,7 +429,7 @@
             "$ref": "#/components/schemas/Ulid"
           },
           "name": {
-            "$ref": "#/components/schemas/Name"
+            "$ref": "#/components/schemas/ProjectName"
           },
           "namespace": {
             "$ref": "#/components/schemas/Slug"
@@ -489,7 +490,7 @@
         "additionalProperties": false,
         "properties": {
           "name": {
-            "$ref": "#/components/schemas/Name"
+            "$ref": "#/components/schemas/ProjectName"
           },
           "namespace": {
             "$ref": "#/components/schemas/Slug"
@@ -516,7 +517,7 @@
         "additionalProperties": false,
         "properties": {
           "name": {
-            "$ref": "#/components/schemas/Name"
+            "$ref": "#/components/schemas/ProjectName"
           },
           "namespace": {
             "$ref": "#/components/schemas/Slug"
@@ -540,7 +541,7 @@
         "pattern": "^[A-Z0-9]{26}$",
         "format": "ulid"
       },
-      "Name": {
+      "ProjectName": {
         "description": "Renku project name",
         "type": "string",
         "minLength": 1,
@@ -665,12 +666,13 @@
       "Role": {
         "description": "Possible roles of members in a project",
         "type": "string",
-        "enum": ["member", "owner"]
+        "enum": ["viewer", "editor", "owner"]
       },
       "UserId": {
         "type": "string",
         "description": "Keycloak user ID",
-        "example": "f74a228b-1790-4276-af5f-25c2424e9b0c"
+        "example": "f74a228b-1790-4276-af5f-25c2424e9b0c",
+        "pattern": "^[A-Za-z0-9]{1}[A-Za-z0-9-]+$"
       },
       "UserFirstLastName": {
         "type": "string",
@@ -734,7 +736,7 @@
         "in": "header",
         "name": "If-Match",
         "description": "If-Match header, for avoiding mid-air collisions",
-        "required": false,
+        "required": true,
         "schema": {
           "$ref": "#/components/schemas/ETag"
         }
