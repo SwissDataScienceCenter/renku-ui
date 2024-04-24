@@ -49,15 +49,7 @@ describe("Secrets", () => {
     cy.get("#new-secret-button").should("be.visible");
     cy.getDataCy("secrets-list").should("exist");
     cy.getDataCy("secrets-list-item").should("have.length", 5);
-    cy.getDataCy("secrets-list")
-      .find('[data-cy="secrets-list-item"] button')
-      .first()
-      .contains("secret_0")
-      .click();
-    cy.getDataCy("secrets-list")
-      .find('[data-cy="secrets-list-item"]')
-      .first()
-      .contains("id_0");
+    cy.getDataCy("secrets-list").first().contains("secret_0").click();
 
     cy.get("#new-secret-button").should("be.visible").click();
     cy.getDataCy("secrets-new-add-button").should("be.visible").click();
@@ -91,11 +83,7 @@ describe("Secrets", () => {
     fixtures.userTest().listSecrets({ numberOfSecrets: 2 }).editSecret();
     cy.visit("/secrets");
 
-    cy.getDataCy("secrets-list")
-      .find('[data-cy="secrets-list-item"] button')
-      .first()
-      .contains("secret_0")
-      .click();
+    cy.getDataCy("secrets-list").first().contains("secret_0").click();
     cy.getDataCy("secrets-list")
       .find('[data-cy="secret-edit-button"]')
       .first()
@@ -111,11 +99,7 @@ describe("Secrets", () => {
     fixtures.userTest().listSecrets({ numberOfSecrets: 2 }).deleteSecret();
     cy.visit("/secrets");
 
-    cy.getDataCy("secrets-list")
-      .find('[data-cy="secrets-list-item"] button')
-      .first()
-      .contains("secret_0")
-      .click();
+    cy.getDataCy("secrets-list").first().contains("secret_0").click();
     cy.getDataCy("secrets-list")
       .find('[data-cy="secret-delete-button"]')
       .first()
