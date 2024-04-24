@@ -41,11 +41,8 @@ export default function ConnectedServicesPage() {
     isLoading: isLoadingProviders,
     error: providersError,
   } = useGetProvidersQuery();
-  const {
-    data: connections,
-    isLoading: isLoadingConnections,
-    error: connectionsError,
-  } = useGetConnectionsQuery();
+  const { isLoading: isLoadingConnections, error: connectionsError } =
+    useGetConnectionsQuery();
 
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
@@ -78,10 +75,6 @@ export default function ConnectedServicesPage() {
         {providers.map((provider) => (
           <ConnectedServiceCard key={provider.id} provider={provider} />
         ))}
-      </div>
-      <div className="mt-3">
-        <pre>{JSON.stringify(providers, null, 2)}</pre>
-        <pre>{JSON.stringify(connections, null, 2)}</pre>
       </div>
     </>
   );
@@ -117,7 +110,7 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
             <ConnectButton id={id} connectionStatus={connection?.status} />
           </div>
         </CardTitle>
-        <CardText>Status: {status}</CardText>
+        <CardText className="mb-1">Status: {status}</CardText>
         {connection?.status === "connected" && (
           <ConnectedAccount connection={connection} />
         )}
@@ -178,7 +171,10 @@ function ConnectedAccount({ connection }: ConnectedAccountProps) {
 
   return (
     <CardText>
-      Account: <ExternalLink url={account.web_url}>{text}</ExternalLink>
+      Account:{" "}
+      <ExternalLink role="text" url={account.web_url}>
+        {text}
+      </ExternalLink>
     </CardText>
   );
 }
