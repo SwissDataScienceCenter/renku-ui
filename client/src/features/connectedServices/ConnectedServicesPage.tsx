@@ -58,10 +58,7 @@ export default function ConnectedServicesPage() {
         <div>
           {providers.map(({ id, display_name }) => (
             <p key={id}>
-              {display_name}{" "}
-              <a href={`/ui-server/api/data/oauth2/providers/${id}/authorize`}>
-                Connect
-              </a>
+              {display_name} <ConnectButton id={id} />
             </p>
           ))}
         </div>
@@ -72,4 +69,17 @@ export default function ConnectedServicesPage() {
       </div>
     </>
   );
+}
+
+interface ConnectButtonParams {
+  id: string;
+}
+
+function ConnectButton({ id }: ConnectButtonParams) {
+  const hereUrl = window.location.href;
+
+  const authorizeUrl = `/ui-server/api/data/oauth2/providers/${id}/authorize`;
+  const url = `${authorizeUrl}?next=${encodeURIComponent(hereUrl)}`;
+
+  return <a href={url}>Connect</a>;
 }
