@@ -37,7 +37,9 @@ import secretsApi, { useAddSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { AddSecretForm } from "./secrets.types";
-import { BLUR_TEXT_STYLE, SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
+import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
+
+import styles from "./secrets.module.scss";
 
 export default function SecretsNew() {
   // Set up the modal
@@ -152,10 +154,10 @@ export default function SecretsNew() {
                     "form-control",
                     "rounded-0",
                     "rounded-start",
+                    !showPlainText && styles.blurredText,
                     errors.value && "is-invalid"
                   )}
                   id="new-secret-value"
-                  style={showPlainText ? {} : BLUR_TEXT_STYLE}
                   type="textarea"
                   {...field}
                 />

@@ -21,8 +21,3 @@ import { Docs } from "../../utils/constants/Docs";
 export const SECRETS_DOCS_URL = Docs.rtdTopicGuide("secrets/secrets.html");
 
 export const SECRETS_VALUE_LENGTH_LIMIT = 5_000;
-
-export const BLUR_TEXT_STYLE = {
-  color: "transparent",
-  textShadow: "0 0 8px rgba(0,0,0,0.5)",
-};

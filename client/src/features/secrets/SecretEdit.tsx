@@ -41,7 +41,9 @@ import {
 import { useEditSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { EditSecretForm, SecretDetails } from "./secrets.types";
-import { BLUR_TEXT_STYLE, SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
+import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
+
+import styles from "./secrets.module.scss";
 
 interface SecretsEditProps {
   secret: SecretDetails;
@@ -132,11 +134,10 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
                         "form-control",
                         "rounded-0",
                         "rounded-start",
+                        !showPlainText && styles.blurredText,
                         errors.value && "is-invalid"
                       )}
                       id="edit-secret-value"
-                      style={showPlainText ? {} : BLUR_TEXT_STYLE}
-                      // ! TODO: move style to a css file, and include `::selection` to prevent showing the text when highlighted
                       type="textarea"
                       {...field}
                     />
