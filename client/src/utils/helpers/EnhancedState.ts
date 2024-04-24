@@ -31,6 +31,7 @@ import {
 import adminComputeResourcesApi from "../../features/admin/adminComputeResources.api";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import adminSessionsApi from "../../features/admin/adminSessions.api";
+import connectedServicesApi from "../../features/connectedServices/connectedServices.api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataServicesApi } from "../../features/dataServices/dataServices.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
@@ -89,6 +90,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [adminComputeResourcesApi.reducerPath]: adminComputeResourcesApi.reducer,
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
     [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
+    [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataServicesApi.reducerPath]: dataServicesApi.reducer,
     [dataServicesUserApi.reducerPath]: dataServicesUserApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
@@ -123,6 +125,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(adminComputeResourcesApi.middleware)
         .concat(adminKeycloakApi.middleware)
         .concat(adminSessionsApi.middleware)
+        .concat(connectedServicesApi.middleware)
         .concat(dataServicesApi.middleware)
         // this is causing some problems, and I do not know why
         .concat(dataServicesUserApi.middleware)

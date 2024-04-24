@@ -16,11 +16,60 @@
  * limitations under the License
  */
 
+import PageLoader from "../../components/PageLoader";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import {
+  useGetConnectionsQuery,
+  useGetProvidersQuery,
+} from "./connectedServices.api";
+
 export default function ConnectedServicesPage() {
+  const {
+    data: providers,
+    isLoading: isLoadingProviders,
+    error: providersError,
+  } = useGetProvidersQuery();
+  const {
+    data: connections,
+    isLoading: isLoadingConnections,
+    error: connectionsError,
+  } = useGetConnectionsQuery();
+
+  const isLoading = isLoadingProviders || isLoadingConnections;
+  const error = providersError || connectionsError;
+
+  if (isLoading) {
+    return <PageLoader />;
+  }
+
+  if (error) {
+    return (
+      <div>
+        <RtkErrorAlert error={error} dismissible={false} />
+      </div>
+    );
+  }
+
   return (
     <>
       <h1>Connected Services</h1>
       <p>TODO</p>
+      {providers && (
+        <div>
+          {providers.map(({ id, display_name }) => (
+            <p key={id}>
+              {display_name}{" "}
+              <a href={`/ui-server/api/data/oauth2/providers/${id}/authorize`}>
+                Connect
+              </a>
+            </p>
+          ))}
+        </div>
+      )}
+      <div>
+        <pre>{JSON.stringify(providers, null, 2)}</pre>
+        <pre>{JSON.stringify(connections, null, 2)}</pre>
+      </div>
     </>
   );
 }
