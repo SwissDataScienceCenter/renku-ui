@@ -1,353 +1,87 @@
-.entityTitleSlug {
-  font-size: 20px;
-  line-height: 24px;
-  margin-left: 20px;
-  color: var(--bs-rk-text);
-  font-weight: bold;
-}
-
-.entityTypeVisibility {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.listBarEntityDate {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.listBarTitle {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
-  white-space: nowrap;
-  margin: 0;
-  min-height: 30px;
-  width: 90%;
-}
-
 .containerEntityListBar {
-  --bs-card-title-spacer-y: 0.5rem;
   background-color: var(--bs-body-bg);
   display: grid;
-  grid-auto-flow: row;
-  gap: 0 20px;
-  margin: 0;
-  padding: 30px 15px 17px 15px;
-  grid-auto-rows: 1fr;
-  grid-template-columns: 26px fit-content(80px) auto auto 180px;
-  grid-template-rows: auto auto auto;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
   grid-template-areas:
-    "entity-image entityTitle entityTitle entityTitle entityAction"
-    "entity-image entityDescription entityDescription entityDescription entityAction"
-    "entity-image entityTypeVisibility entityCreators entityCreators entityDate";
-
-  .entityDescription {
-    height: 20px;
-  }
-
-  .entityDescription p {
-    line-height: 22px;
-  }
+    "entityTitle"
+    "entityIdentifier"
+    "entityCreators"
+    "entityDescription"
+    "entityTypeVisibility"
+    "entityDate";
 }
 
 .containerSessions {
   background-color: var(--bs-body-bg);
   display: grid;
-  grid-auto-rows: 1fr;
-  gap: 0 20px;
-  margin: 0;
-  padding: 30px 15px 17px 15px;
-  grid-auto-flow: row;
-  grid-template-columns:
-    26px fit-content(80px) fit-content(200px) auto auto fit-content(30px)
-    150px;
-  grid-template-rows: auto auto auto;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
   grid-template-areas:
-    "entity-image entityTitle entityTitle entityTitle sessionIcon sessionIcon entityAction"
-    "entity-image entityDescription entityDescription entityDescription session-resources session-resources session-resources"
-    "entity-image entityTypeVisibility entityCreators entityDate sessionTime sessionTime sessionTime";
+    "entityAction"
+    "entityTitle"
+    "sessionTime";
+}
 
-  .entityDescription {
-    height: 20px;
+.entityAction {
+  grid-area: entityAction;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.entityDate {
+  grid-area: entityDate;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.entityDescription {
+  grid-area: entityDescription;
+}
+.entityIdentifier {
+  grid-area: entityIdentifier;
+}
+.entityTitle {
+  grid-area: entityTitle;
+}
+.entityTypeVisibility {
+  grid-area: entityTypeVisibility;
+  display: flex;
+  align-items: center;
+}
+
+.sessionTime {
+  grid-area: sessionTime;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.sessionIcon {
+  grid-area: sessionIcon;
+}
+
+@media (min-width: 768px) {
+  .containerEntityListBar {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "entityTitle entityTitle entityIdentifier"
+      "entityDescription entityDescription entityDescription"
+      "entityTypeVisibility entityTypeVisibility entityDate";
   }
 
-  .entityDescription p {
-    line-height: 22px;
-  }
-
-  .session-resources,
-  .sessionTime,
-  .session-info,
-  .sessionIcon {
+  .entityIdentifier {
     display: flex;
     justify-content: flex-end;
     align-items: center;
   }
 
-  .listBarEntityDate {
-    justify-content: start;
-  }
-
-  .sessionIcon,
-  .sessionTime {
-    align-items: center;
-  }
-
-  .session-status-text {
-    width: 60px;
-  }
-}
-
-@media (max-width: 992px) {
-  .containerEntityListBar {
-    display: grid;
-    grid-auto-rows: 1fr;
-    grid-template-columns: 26px auto 180px;
-    grid-template-rows: auto auto auto auto;
-    gap: 0 20px;
-    grid-template-areas:
-      "entityTitle entityTitle entityAction"
-      "entity-image entityCreators entityCreators"
-      "entity-image entityDescription entityDescription"
-      "entity-image entityTypeVisibility entityDate";
-  }
   .containerSessions {
-    display: grid;
-    grid-auto-rows: 1fr;
-    grid-template-columns: 126px fit-content(80px) auto 160px;
-    grid-template-rows: auto auto auto auto;
-    gap: 0 20px;
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: auto;
     grid-template-areas:
-      "entityTitle entityTitle entityTitle entityAction"
-      "entity-image entityCreators sessionIcon sessionIcon"
-      "entity-image entityDescription session-resources session-resources"
-      "entity-image entityTypeVisibility sessionTime sessionTime";
-
-    .sessionIcon-details {
-      display: block;
-      margin-left: 5px;
-    }
-
-    .session-info,
-    .entityDate {
-      display: none;
-    }
-    .session-status-text {
-      width: 100%;
-    }
-    .sessionTime {
-      flex-direction: row-reverse;
-      gap: 5px;
-      justify-content: flex-start;
-    }
+      "entityTitle entityAction"
+      "entityDescription entityDescription"
+      "sessionIcon sessionTime";
   }
-}
-
-@media (max-width: 620px) {
-  .containerEntityListBar {
-    display: grid;
-    grid-auto-rows: 1fr;
-    grid-template-columns: 26px auto 140px;
-    grid-template-rows: auto auto auto auto auto;
-    gap: 0 10px;
-    margin: 0 15px;
-    padding: 30px 0;
-    grid-template-areas:
-      "entityTitle entityTitle entityTitle"
-      "entityTypeVisibility entityTypeVisibility entityAction"
-      "entity-image entityCreators entityCreators"
-      "entity-image entityDescription entityDescription"
-      "entity-image entityDate entityDate";
-
-    .entityTitle,
-    .entityTypeVisibility,
-    .entityAction {
-      margin-bottom: 10px;
-    }
-    .entityAction {
-      justify-content: end;
-    }
-    .entityTypeVisibility {
-      gap: 15px;
-    }
-    .card-title {
-      font-size: 20px;
-    }
-    .entityTitleSlug {
-      font-size: 18px;
-    }
-  }
-
-  .listBarEntityDate {
-    justify-content: start;
-    margin-top: 5px;
-  }
-
-  .listBarTitle {
-    width: 99%;
-  }
-
-  .containerSessions {
-    display: grid;
-    grid-auto-rows: 1fr;
-    grid-template-columns: 126px auto 140px;
-    grid-template-rows: auto auto auto auto auto;
-    gap: 0 10px;
-    padding: 20px 10px;
-    margin: 0 5px;
-    grid-template-areas:
-      "entityTitle entityTitle entityTitle"
-      "entityTypeVisibility entityTypeVisibility entityAction"
-      "entity-image sessionIcon sessionIcon"
-      "entity-image session-resources session-resources"
-      "entityCreators sessionTime sessionTime";
-
-    .entityTitle,
-    .entityTypeVisibility,
-    .entityAction {
-      margin-bottom: 10px;
-    }
-    .entityAction {
-      justify-content: end;
-    }
-    .entityTypeVisibility {
-      gap: 10px;
-    }
-    .card-title {
-      font-size: 20px;
-    }
-    .entityTitleSlug {
-      font-size: 18px;
-    }
-    .entityDescription,
-    .session-info {
-      display: none;
-    }
-    .listBarTitle {
-      width: 99%;
-    }
-    .session-resources {
-      display: none;
-    }
-    .session-status-text {
-      width: 100%;
-    }
-    .sessionTime {
-      flex-direction: row-reverse;
-      gap: 5px;
-      justify-content: flex-start;
-    }
-  }
-}
-
-@media (max-width: 370px) {
-  .container-entity-listBar {
-    display: grid;
-    grid-auto-rows: 1fr;
-    grid-template-columns: auto;
-    grid-template-rows: auto auto auto auto auto auto auto;
-    gap: 0 10px;
-    grid-template-areas:
-      "entityTitle"
-      "entityAction"
-      "entity-image"
-      "entityTypeVisibility"
-      "entityCreators"
-      "entityDescription"
-      "entityDate";
-
-    .entityTitle,
-    .entityAction,
-    .entity-image {
-      margin-bottom: 8px;
-    }
-    .entityTypeVisibility {
-      margin-bottom: 0;
-    }
-    .entityAction {
-      justify-content: start;
-    }
-  }
-
-  .listBarEntityDate {
-    justify-content: start;
-    margin-top: 5px;
-  }
-
-  .containerSessions {
-    display: grid;
-    grid-auto-rows: 1fr;
-    grid-template-columns: auto;
-    grid-template-rows: auto auto auto auto auto auto auto auto;
-    gap: 0 10px;
-    grid-template-areas:
-      "entityTitle"
-      "entityAction"
-      "sessionIcon"
-      "entity-image"
-      "entityTypeVisibility"
-      "entityCreators"
-      "session-resources"
-      "sessionTime";
-
-    .entityTitle,
-    .entityAction,
-    .entity-image,
-    .sessionIcon {
-      margin-bottom: 8px;
-    }
-    .entityTypeVisibility {
-      margin-bottom: 0;
-    }
-    .entityAction,
-    .sessionIcon,
-    .session-resources,
-    .sessionTime {
-      justify-content: start;
-    }
-    .session-resources,
-    .session-info {
-      display: none;
-    }
-    .session-status-text {
-      width: 100%;
-    }
-    .sessionTime {
-      flex-direction: row-reverse;
-      gap: 5px;
-      justify-content: flex-start;
-    }
-  }
-}
-
-.entityAction {
-  grid-area: entityAction;
-}
-.entityTitle {
-  grid-area: entityTitle;
-}
-.entityDescription {
-  grid-area: entityDescription;
-}
-.entityTypeVisibility {
-  grid-area: entityTypeVisibility;
-}
-.entityCreators {
-  grid-area: entityCreators;
-}
-.entityDate {
-  grid-area: entityDate;
-}
-
-.session-resources {
-  grid-area: session-resources;
-}
-.sessionTime {
-  grid-area: sessionTime;
-}
-.sessionIcon {
-  grid-area: sessionIcon;
 }

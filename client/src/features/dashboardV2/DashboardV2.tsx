@@ -48,7 +48,7 @@ type ListElement = Pick<
 
 export default function DashboardV2() {
   return (
-    <div className="rk-dashboard">
+    <div>
       <DashboardWelcome />
       <SessionsDashboard />
       <ProjectsDashboard />
@@ -67,7 +67,7 @@ function DashboardListElement({
   element,
 }: DashboardListElementProps) {
   return (
-    <div data-cy={dataCy} className={styles.containerEntityListBar}>
+    <div data-cy={dataCy} className={cx(styles.containerEntityListBar, "p-3")}>
       <div
         className={cx(styles.entityTitle, "text-truncate", "cursor-pointer")}
       >
@@ -76,13 +76,28 @@ function DashboardListElement({
           className="text-decoration-none"
           to={element.url}
         >
-          <div className={cx(styles.listBarTitle, "text-truncate")}>
+          <div className={cx("text-truncate")}>
             <span className={cx("card-title", "text-truncate")}>
               {element.name}
             </span>
-            <span className={cx(styles.entityTitleSlug, "text-truncate")}>
-              {element.readableId}
-            </span>
+          </div>
+        </Link>
+      </div>
+      <div
+        className={cx(
+          styles.entityIdentifier,
+          "text-truncate",
+          "cursor-pointer",
+          "mb-3"
+        )}
+      >
+        <Link
+          data-cy={`${dataCy}-link`}
+          className="text-decoration-none"
+          to={element.url}
+        >
+          <div className={cx("fst-italic", "text-truncate")}>
+            {element.readableId}
           </div>
         </Link>
       </div>
@@ -94,19 +109,11 @@ function DashboardListElement({
         </Link>
       </div>
       <div className={cx(styles.entityTypeVisibility, "align-items-baseline")}>
-        <span
-          className={cx(
-            "card-visibility-icon",
-            "d-flex",
-            "gap-2",
-            "align-items-center",
-            "text-rk-green"
-          )}
-        >
+        <span className={cx("text-rk-green")}>
           <VisibilityIcon visibility={element.visibility} />
         </span>
       </div>
-      <div className={cx(styles.entityDate, styles.listBarEntityDate)}>
+      <div className={cx(styles.entityDate)}>
         <TimeCaption datetime={element.creation_date} prefix="Created" />
       </div>
     </div>
@@ -118,9 +125,9 @@ function DashboardWelcome() {
     <>
       <Row className="mb-3">
         <Col md={7}>
-          <h1>
+          <h2>
             <b>Welcome to the Renku 2.0 alpha preview!</b>
-          </h1>
+          </h2>
           <p>
             <b>Learn more about Renku 2.0</b> on our{" "}
             <ExternalLink
@@ -145,9 +152,9 @@ function DashboardWelcome() {
       <Row>
         <Col>
           <WarnAlert timeout={0} dismissible={false}>
-            <h3>
+            <h4>
               Do not do any important work in the Renku 2.0 alpha preview!
-            </h3>
+            </h4>
             <p>
               The alpha is for testing only. We do not guarantee saving and
               persisting work in the alpha.
@@ -164,10 +171,12 @@ function DashboardWelcome() {
 
 function GroupsDashboard() {
   return (
-    <div className="rk-dashboard-project" data-cy="groups-container">
+    <div
+      className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
+      data-cy="groups-container"
+    >
       <div
         className={cx(
-          "rk-dashboard-section-header",
           "d-flex",
           "justify-content-between",
           "align-items-center",
@@ -175,18 +184,13 @@ function GroupsDashboard() {
           "pb-3"
         )}
       >
-        <h3 className="rk-dashboard-title">Groups</h3>
+        <h2>Groups</h2>
         <Link
-          className={cx(
-            "btn",
-            "btn-rk-green",
-            "btn-icon-text",
-            "rk-dashboard-link"
-          )}
+          className={cx("btn", "btn-rk-green", "btn-icon-text")}
           to="/v2/groups/new"
         >
           <PlusLg className="bi" id="createPlus" />
-          <span className="rk-dashboard-link--text">Create new group</span>
+          <span className="d-none d-sm-inline">Create new group</span>
         </Link>
       </div>
       <GroupsList />
@@ -252,10 +256,12 @@ function GroupsList() {
 
 function ProjectsDashboard() {
   return (
-    <div className="rk-dashboard-project" data-cy="projects-container">
+    <div
+      className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
+      data-cy="projects-container"
+    >
       <div
         className={cx(
-          "rk-dashboard-section-header",
           "d-flex",
           "justify-content-between",
           "align-items-center",
@@ -263,18 +269,13 @@ function ProjectsDashboard() {
           "pb-3"
         )}
       >
-        <h3 className="rk-dashboard-title">Projects</h3>
+        <h2>Projects</h2>
         <Link
-          className={cx(
-            "btn",
-            "btn-rk-green",
-            "btn-icon-text",
-            "rk-dashboard-link"
-          )}
+          className={cx("btn", "btn-rk-green", "btn-icon-text")}
           to="/v2/projects/new"
         >
           <PlusLg className="bi" id="createPlus" />
-          <span className="rk-dashboard-link--text">Create new project</span>
+          <span className="d-none d-sm-inline">Create new project</span>
         </Link>
       </div>
       <ProjectList />
@@ -340,17 +341,19 @@ function ProjectList() {
 
 function SessionsDashboard() {
   return (
-    <div className="rk-dashboard-project" data-cy="sessions-container">
+    <div
+      className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
+      data-cy="sessions-container"
+    >
       <div
         className={cx(
-          "rk-dashboard-section-header",
           "d-flex",
           "justify-content-between",
           "align-items-center",
           "flex-wrap"
         )}
       >
-        <h3 className="rk-dashboard-title">Sessions</h3>
+        <h2>Sessions</h2>
       </div>
       <DashboardV2Sessions />
     </div>

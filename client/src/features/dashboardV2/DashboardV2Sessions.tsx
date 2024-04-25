@@ -68,7 +68,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
   const details = { message: session.status.message };
 
   return (
-    <div data-cy="list-session" className={styles.containerSessions}>
+    <div data-cy="list-session" className={cx(styles.containerSessions, "p-3")}>
       <div
         className={cx(styles.entityTitle, "text-truncate", "cursor-pointer")}
       >
@@ -77,7 +77,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
           className="text-decoration-none"
           to={projectUrl}
         >
-          <div className={cx(styles.listBarTitle, "text-truncate")}>
+          <div className={cx("text-truncate")}>
             <span className={cx("card-title", "text-truncate")}>
               {project
                 ? project.namespace + "/" + project.slug
@@ -86,7 +86,24 @@ function DashboardSession({ session }: DashboardSessionProps) {
           </div>
         </Link>
       </div>
-      <div className={cx(styles.entityDescription, "cursor-pointer")}>
+      <div className={cx(styles.entityAction, "mb-3")}>
+        <ActiveSessionButton
+          session={session}
+          showSessionUrl={showSessionUrl}
+        />
+        <EnvironmentLogs
+          name={displayModal.targetServer}
+          annotations={annotations}
+        />
+      </div>
+      <div
+        className={cx(
+          styles.entityDescription,
+          "d-none",
+          "d-md-block",
+          "cursor-pointer"
+        )}
+      >
         <Link className="text-decoration-none" to={projectUrl}>
           <div className={cx("card-text", "text-rk-dark", "m-0")}>
             <div className="mb-0">
@@ -98,38 +115,29 @@ function DashboardSession({ session }: DashboardSessionProps) {
       <div
         className={cx(
           styles.sessionIcon,
-          "d-flex",
-          "flex-row",
-          "gap-2",
-          "align-items-center",
-          "mb-1"
+          "d-none",
+          "d-md-flex",
+          "align-items-center"
         )}
       >
-        <SessionListRowStatusIcon
-          annotations={annotations}
-          details={details}
-          image={image}
-          status={status.state}
-          uid={session.name}
-        />
-        <SessionListRowStatus
-          annotations={annotations}
-          details={details}
-          startTimestamp={started}
-          status={status.state}
-          uid={session.name}
-        />
-      </div>
-
-      <div className={cx(styles.entityAction)}>
-        <ActiveSessionButton
-          session={session}
-          showSessionUrl={showSessionUrl}
-        />
-        <EnvironmentLogs
-          name={displayModal.targetServer}
-          annotations={annotations}
-        />
+        <div className="me-2">
+          <SessionListRowStatusIcon
+            annotations={annotations}
+            details={details}
+            image={image}
+            status={status.state}
+            uid={session.name}
+          />
+        </div>
+        <div>
+          <SessionListRowStatus
+            annotations={annotations}
+            details={details}
+            startTimestamp={started}
+            status={status.state}
+            uid={session.name}
+          />
+        </div>
       </div>
       <div className={cx(styles.sessionTime)}>
         <TimeCaption datetime={session.started} prefix="Started" />
