@@ -23,13 +23,11 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { useContext } from "react";
 import { Route, Routes } from "react-router-dom-v5-compat";
-import { Col, Nav, NavItem, Row } from "reactstrap";
+import { Nav, NavItem } from "reactstrap";
 
-import { WarnAlert } from "../../components/Alert";
 import {
   ExternalDocsLink,
   ExternalIconLink,
-  ExternalLink,
 } from "../../components/ExternalLinks";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
@@ -62,11 +60,6 @@ function HelpNav({ statuspageId }: HelpNavProps) {
       <h4 className={cx("d-none", "d-lg-block")}>Help</h4>
       <NavItem>
         <RenkuNavLinkV2 end to=".">
-          Renku 2.0
-        </RenkuNavLinkV2>
-      </NavItem>
-      <NavItem>
-        <RenkuNavLinkV2 end to="contact">
           Getting Help
         </RenkuNavLinkV2>
       </NavItem>
@@ -89,49 +82,6 @@ function HelpNav({ statuspageId }: HelpNavProps) {
         </NavItem>
       )}
     </Nav>
-  );
-}
-
-function HelpInfo() {
-  return (
-    <Row className="mb-3">
-      <Col xs={6}>
-        <h1>Renku 2.0</h1>
-        <p>
-          <b>Welcome to the Renku 2.0 alpha preview!</b>
-        </p>
-        <WarnAlert timeout={0} dismissible={false}>
-          <p>
-            Do not do any important work in the Renku 2.0 alpha preview! The
-            alpha is for testing only. We do not guarantee saving and persisting
-            work in the alpha.
-          </p>
-        </WarnAlert>
-        <p>
-          To get back to normal Renku (v1), click the big “Go back” button at
-          the top from any page.
-        </p>
-        <p>
-          Want to learn more about Renku 2.0? Read more on our{" "}
-          <ExternalLink
-            className="me-2"
-            href="https://blog.renkulab.io/renku-2/"
-            iconAfter={true}
-            role="text"
-            title="blog"
-          />
-          and see what&rsquo;s ahead on our{" "}
-          <ExternalLink
-            href="https://github.com/SwissDataScienceCenter/renku-design-docs/blob/main/roadmap.md"
-            iconAfter={true}
-            role="text"
-            title="roadmap"
-          />
-          . Feedback?{" "}
-          <a href="mailto:hello@renku.io">We&rsquo;d love to hear it!</a>.
-        </p>
-      </Col>
-    </Row>
   );
 }
 
@@ -199,7 +149,7 @@ function HelpContent() {
   const { model } = useContext(AppContext);
   return (
     <Routes>
-      <Route path="/" element={<HelpInfo />} />
+      <Route path="/" element={<HelpGetting />} />
       <Route path="contact" element={<HelpGetting />} />
       <Route path="status" element={<StatuspageDisplay model={model} />} />
       <Route path="release" element={<HelpRelease />} />
