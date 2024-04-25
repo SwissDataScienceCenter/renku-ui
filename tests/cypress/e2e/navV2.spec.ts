@@ -31,16 +31,16 @@ describe("View v2 landing page", () => {
     cy.visit("/v2");
   });
 
-  it("view navbar", () => {
-    cy.contains("Sessions").should("be.visible");
-    cy.contains("Projects").should("be.visible");
-    cy.contains("Groups").should("be.visible");
-  });
-
   it("view help", () => {
     cy.getDataCy("help-dropdown").click();
     cy.getDataCy("help-link").click();
     cy.location("pathname").should("contain", "/v2/help");
+  });
+
+  it("view dashboard", () => {
+    cy.contains("Sessions").should("be.visible");
+    cy.contains("Projects").should("be.visible");
+    cy.contains("Groups").should("be.visible");
   });
 
   it("view sessions", () => {

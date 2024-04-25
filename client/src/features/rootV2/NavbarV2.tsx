@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { useCallback, useContext, useState } from "react";
 import {
-  BoxArrowInLeft,
   List,
   PlusCircleFill,
   QuestionCircle,
@@ -43,6 +42,7 @@ import AppContext from "../../utils/context/appContext";
 import { ExternalDocsLink } from "../../components/ExternalLinks";
 import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
+import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
 import { Links } from "../../utils/constants/Docs";
 import { Url } from "../../utils/helpers/url";
@@ -196,21 +196,10 @@ export default function NavbarV2() {
             />
           </RenkuNavLinkV2>
           <WipBadge label="2.0 Alpha" />
-          <Link
-            className={cx(
-              "btn",
-              "btn-sm",
-              "btn-outline-warning",
-              "ms-2",
-              "text-decoration-none"
-            )}
-            to="/"
-          >
-            <BoxArrowInLeft className="bi" /> go back
-          </Link>
+          <BackToV1Button outline={true} />
         </div>
         <NavbarToggler onClick={onToggle} className="border-0">
-          <List className="bi text-rk-white" />
+          <List className={cx("bi", "text-rk-white")} />
         </NavbarToggler>
         <Collapse isOpen={isOpen} navbar>
           <Nav
