@@ -179,14 +179,20 @@ export default function NavbarV2() {
     >
       <Navbar
         color="primary"
-        className="container-fluid flex-wrap flex-lg-nowrap renku-container px-2"
+        className={cx(
+          "container-fluid",
+          "flex-wrap",
+          "flex-lg-nowrap",
+          "renku-container",
+          "px-2"
+        )}
       >
         <div className={cx("text-white", "d-flex", "align-items-center")}>
           <RenkuNavLinkV2
             id="link-home"
             data-cy="link-home"
             to="/v2/"
-            className="navbar-brand me-2 pb-0 pt-0"
+            className={cx("navbar-brand", "me-2", "pb-0", "pt-0")}
           >
             <img
               src={RENKU_ALPHA_LOGO}
@@ -222,13 +228,13 @@ export default function NavbarV2() {
                 Dashboard
               </RenkuNavLinkV2>
             </NavItem>
-            <NavItem className="nav-item col-auto">
+            <NavItem className={cx("nav-item", "col-auto")}>
               <NavbarItemPlus />
             </NavItem>
-            <NavItem className="nav-item col-auto">
+            <NavItem className={cx("nav-item", "col-auto")}>
               <NavbarItemHelp />
             </NavItem>
-            <NavItem className="nav-item col-auto">
+            <NavItem className={cx("nav-item", "col-auto")}>
               <RenkuToolbarItemUser params={params!} />
             </NavItem>
           </Nav>

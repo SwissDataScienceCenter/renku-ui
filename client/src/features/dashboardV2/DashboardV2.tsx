@@ -88,7 +88,7 @@ function DashboardListElement({
       </div>
       <div className={cx(styles.entityDescription, "cursor-pointer")}>
         <Link className="text-decoration-none" to={element.url}>
-          <div className="card-text text-rk-dark m-0">
+          <div className={cx("card-text", "text-rk-dark", "m-0")}>
             {element.description}
           </div>
         </Link>
@@ -190,7 +190,7 @@ function GroupsDashboard() {
         </Link>
       </div>
       <GroupsList />
-      <div className="d-flex justify-content-center mt-2">
+      <div className={cx("d-flex", "justify-content-center", "mt-2")}>
         <Link
           to="/v2/groups"
           data-cy="view-my-groups-btn"
@@ -230,7 +230,7 @@ function GroupsList() {
   return (
     <div
       data-cy="dashboard-group-list"
-      className="d-flex flex-column gap-3 mb-sm-2 mb-md-4"
+      className={cx("d-flex", "flex-column", "gap-3", "mb-sm-2", "mb-md-4")}
     >
       {data.groups?.map((group) => (
         <DashboardListElement
@@ -278,7 +278,7 @@ function ProjectsDashboard() {
         </Link>
       </div>
       <ProjectList />
-      <div className="d-flex justify-content-center mt-2">
+      <div className={cx("d-flex", "justify-content-center", "mt-2")}>
         <Link
           to="/v2/projects"
           data-cy="view-my-projects-btn"
@@ -318,7 +318,7 @@ function ProjectList() {
   return (
     <div
       data-cy="dashboard-project-list"
-      className="d-flex flex-column gap-3 mb-sm-2 mb-md-4"
+      className={cx("d-flex", "flex-column", "gap-3", "mb-sm-2", "mb-md-4")}
     >
       {data.projects?.map((project) => (
         <DashboardListElement

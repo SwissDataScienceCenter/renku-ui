@@ -88,7 +88,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
       </div>
       <div className={cx(styles.entityDescription, "cursor-pointer")}>
         <Link className="text-decoration-none" to={projectUrl}>
-          <div className="card-text text-rk-dark m-0">
+          <div className={cx("card-text", "text-rk-dark", "m-0")}>
             <div className="mb-0">
               <b>Container image</b> {image}
             </div>
@@ -176,7 +176,7 @@ export default function DashboardV2Sessions() {
   return (
     <div
       data-cy="dashboard-session-list"
-      className="d-flex flex-column gap-3 mb-sm-2 mb-md-4"
+      className={cx("d-flex", "flex-column", "gap-3", "mb-sm-2", "mb-md-4")}
     >
       {Object.entries(v2Sessions).map(([key, session]) => (
         <DashboardSession key={key} session={session} />

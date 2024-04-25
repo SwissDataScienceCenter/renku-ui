@@ -59,7 +59,7 @@ function HelpNav({ statuspageId }: HelpNavProps) {
         "text-nowrap"
       )}
     >
-      <h4 className="d-none d-lg-block">Help</h4>
+      <h4 className={cx("d-none", "d-lg-block")}>Help</h4>
       <NavItem>
         <RenkuNavLinkV2 end to=".">
           Renku 2.0
@@ -139,13 +139,13 @@ function HelpGetting() {
   const flexBasis = "500px";
   return (
     <>
-      <div key="intro" className="d-flex mb-3">
+      <div key="intro" className={cx("d-flex", "mb-3")}>
         <div style={{ flex: "0 1", flexBasis }}>
           There are several channels available for getting help with RenkuLab.
           Depending on your needs, one or another may be better for you.
         </div>
       </div>
-      <div key="main1" className="d-flex mb-3 flex-wrap">
+      <div key="main1" className={cx("d-flex", "mb-3", "flex-wrap")}>
         <div className="me-4" style={{ flex: "0 1", flexBasis }}>
           <h3>
             <ExternalIconLink
@@ -215,7 +215,7 @@ export default function Help() {
     params?.STATUSPAGE_ID ?? DEFAULT_APP_PARAMS.STATUSPAGE_ID;
 
   return (
-    <div className="d-flex flex-column flex-lg-row">
+    <div className={cx("d-flex", "flex-column", "flex-lg-row")}>
       <div className="me-lg-5">
         <HelpNav statuspageId={statuspageId} />
       </div>
