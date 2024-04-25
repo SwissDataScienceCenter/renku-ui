@@ -125,14 +125,14 @@ function DashboardWelcome() {
             <b>Learn more about Renku 2.0</b> on our{" "}
             <ExternalLink
               className="me-2"
-              href="https://blog.renkulab.io/renku-2/"
+              url="https://blog.renkulab.io/renku-2/"
               iconAfter={true}
               role="text"
               title="blog"
             />
             and see what&rsquo;s ahead on our{" "}
             <ExternalLink
-              href="https://github.com/SwissDataScienceCenter/renku-design-docs/blob/main/roadmap.md"
+              url="https://github.com/SwissDataScienceCenter/renku-design-docs/blob/main/roadmap.md"
               iconAfter={true}
               role="text"
               title="roadmap"
