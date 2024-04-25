@@ -218,20 +218,20 @@ export default function NavbarV2() {
             )}
             navbar
           >
-            <NavItem>
+            <NavItem className="me-3 me-md-2">
               <RenkuNavLinkV2 end to="search" title="Search">
                 <Search className="bi" /> Search
               </RenkuNavLinkV2>
             </NavItem>
-            <NavItem>
+            <NavItem className="me-2">
               <RenkuNavLinkV2 end to="/v2/" title="Dashboard">
                 Dashboard
               </RenkuNavLinkV2>
             </NavItem>
-            <NavItem className={cx("nav-item", "col-auto")}>
+            <NavItem className={cx("me-2", "nav-item", "col-auto")}>
               <NavbarItemPlus />
             </NavItem>
-            <NavItem className={cx("nav-item", "col-auto")}>
+            <NavItem className={cx("me-2", "nav-item", "col-auto")}>
               <NavbarItemHelp />
             </NavItem>
             <NavItem className={cx("nav-item", "col-auto")}>
