@@ -100,12 +100,12 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
         size="sm"
       >
         <PencilSquare className={cx("bi", "me-1")} />
-        Edit
+        Replace
       </Button>
 
       <Modal isOpen={showModal} toggle={toggleModal}>
         <ModalHeader toggle={toggleModal}>
-          Edit Secret <code>{secret.name}</code>
+          Replace Secret <code>{secret.name}</code>
         </ModalHeader>
         <ModalBody>
           <p>
@@ -181,6 +181,14 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
             </div>
           )}
           <Button
+            className="btn-outline-rk-green"
+            data-cy="secrets-edit-cancel-button"
+            onClick={toggleModal}
+          >
+            <XLg className={cx("bi", "me-1")} />
+            Cancel
+          </Button>
+          <Button
             data-cy="secrets-edit-edit-button"
             disabled={result.isLoading}
             onClick={handleSubmit(onSubmit)}
@@ -188,14 +196,6 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
           >
             <PencilSquare className={cx("bi", "me-1")} />
             Replace
-          </Button>
-          <Button
-            className="btn-outline-rk-green"
-            data-cy="secrets-edit-cancel-button"
-            onClick={toggleModal}
-          >
-            <XLg className={cx("bi", "me-1")} />
-            Cancel
           </Button>
         </ModalFooter>
       </Modal>

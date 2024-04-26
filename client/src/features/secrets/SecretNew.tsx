@@ -208,6 +208,14 @@ export default function SecretsNew() {
             </div>
           )}
           <Button
+            className="btn-outline-rk-green"
+            data-cy="secrets-new-cancel-button"
+            onClick={toggleModal}
+          >
+            <XLg className={cx("bi", "me-1")} />
+            Cancel
+          </Button>
+          <Button
             data-cy="secrets-new-add-button"
             disabled={result.isLoading}
             onClick={handleSubmit(onSubmit)}
@@ -215,14 +223,6 @@ export default function SecretsNew() {
           >
             <PlusLg className={cx("bi", "me-1")} />
             Add
-          </Button>
-          <Button
-            className="btn-outline-rk-green"
-            data-cy="secrets-new-cancel-button"
-            onClick={toggleModal}
-          >
-            <XLg className={cx("bi", "me-1")} />
-            Cancel
           </Button>
         </ModalFooter>
       </Modal>
