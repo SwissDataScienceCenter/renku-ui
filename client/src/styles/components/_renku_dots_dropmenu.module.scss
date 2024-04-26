@@ -1,26 +1,12 @@
-.btn {
-  display: flex;
+.threeDots {
   font-size: 34px;
-  background-color: transparent;
-  border: none;
-  margin: 0;
-  padding: 0;
-  color: var(--bs-rk-green);
-}
-.btn:hover {
-  color: var(--bs-rk-green-hover);
-  background-color: transparent;
-  border: none;
-  margin: 0;
-  padding: 0;
-}
-.btn:first-child:active,
-.btn.active,
-.btn:focus {
-  color: var(--bs-rk-green-active);
-  border: none;
-  margin: 0;
-  padding: 0;
-  outline: none;
-  box-shadow: none;
+  color: var(--bs-rk-green) !important;
+  &:hover {
+    color: var(--bs-rk-green-hover) !important;
+  }
+  &:first-child:active,
+  &:active,
+  &:focus {
+    color: var(--bs-rk-green-active) !important;
+  }
 }

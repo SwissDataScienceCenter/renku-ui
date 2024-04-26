@@ -53,7 +53,17 @@ function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
   return (
     <>
       <UncontrolledDropdown>
-        <DropdownToggle cssModule={dotsDropdownStyles}>
+        <DropdownToggle
+          className={cx(
+            "m-0",
+            "p-0",
+            "bg-transparent",
+            "d-flex",
+            "border-0",
+            "shadow-none",
+            dotsDropdownStyles.threeDots
+          )}
+        >
           <ThreeDotsVertical className="fs-3" />
         </DropdownToggle>
         <DropdownMenu className={dropdownMenuStyles.DropdownMenu} end>
