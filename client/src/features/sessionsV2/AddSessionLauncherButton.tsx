@@ -34,7 +34,7 @@ import {
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import buttonStyles from "../../styles/components/_custom_buttons.module.scss";
+import buttonStyles from "../../components/buttons/Buttons.module.scss";
 import SessionLauncherFormContent, {
   SessionLauncherForm,
 } from "./SessionLauncherFormContent";

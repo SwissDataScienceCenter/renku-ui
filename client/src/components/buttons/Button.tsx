@@ -39,7 +39,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import styles from "../../styles/components/_custom_buttons.module.scss";
+import styles from "./Buttons.module.scss";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
 

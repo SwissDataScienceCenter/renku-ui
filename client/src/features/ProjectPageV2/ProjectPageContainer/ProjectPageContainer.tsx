@@ -53,9 +53,7 @@ export default function ProjectPageContainer({
           <Col>
             <div>
               Project does not exist, or you are not authorized to access it.{" "}
-              <Link to={Url.get(Url.pages.v2Projects.list)}>
-                Return to list
-              </Link>
+              <Link to={Url.get(Url.pages.projectV2.list)}>Return to list</Link>
             </div>
           </Col>
         </Row>

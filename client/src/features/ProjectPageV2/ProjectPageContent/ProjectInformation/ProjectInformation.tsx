@@ -34,7 +34,7 @@ export function ProjectImageView() {
 export default function ProjectInformation({ project }: { project: Project }) {
   const totalMembers = 0; //TODO get member list
   const totalKeywords = 0; //TODO get keyword list
-  const settingsUrl = Url.get(Url.pages.v2Projects.settings, {
+  const settingsUrl = Url.get(Url.pages.projectV2.settings, {
     id: project.id,
   });
 
@@ -71,10 +71,10 @@ export default function ProjectInformation({ project }: { project: Project }) {
       </div>
       <div className={styles.ProjectInformationItem}>
         <div>
+          Created{" "}
           <TimeCaption
             datetime={project.creation_date}
-            prefix="Created"
-            className={styles.ProjectTimeLabel}
+            className={cx(styles.ProjectTimeLabel)}
           />
         </div>
       </div>

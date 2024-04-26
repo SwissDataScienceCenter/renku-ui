@@ -92,11 +92,9 @@ export function TimeCaption({
       <span ref={ref} className={className}>
         {prefix}
         {prefix && " "}
-        <span className="timeText">
-          {durationStr}
-          {suffix && !noSuffixSpace && " "}
-          {suffix}
-        </span>
+        {durationStr}
+        {suffix && !noSuffixSpace && " "}
+        {suffix}
       </span>
       {enableTooltip && datetime?.isValid && (
         <UncontrolledTooltip target={ref}>

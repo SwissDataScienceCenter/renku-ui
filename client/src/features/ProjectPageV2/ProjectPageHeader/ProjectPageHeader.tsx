@@ -30,8 +30,8 @@ import {
   EditButtonLink,
   UnderlineArrowLink,
 } from "../../../components/buttons/Button.tsx";
-import DotsDropdownStyles from "../../../styles/components/_renku_dots_dropmenu.module.scss";
-import DropdownMenuStyles from "../../../styles/components/_renku_dropdown_menu.module.scss";
+import dotsDropdownStyles from "../../../styles/components/_renku_dots_dropmenu.module.scss";
+import dropdownMenuStyles from "../../../styles/components/_renku_dropdown_menu.module.scss";
 import { Url } from "../../../utils/helpers/url";
 import { Project } from "../../projectsV2/api/projectV2.api.ts";
 import { ProjectDeleteConfirmation } from "../../projectsV2/show/ProjectV2EditForm.tsx";
@@ -53,10 +53,10 @@ function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
   return (
     <>
       <UncontrolledDropdown>
-        <DropdownToggle cssModule={DotsDropdownStyles}>
+        <DropdownToggle cssModule={dotsDropdownStyles}>
           <ThreeDotsVertical className="fs-3" />
         </DropdownToggle>
-        <DropdownMenu className={DropdownMenuStyles.DropdownMenu} end>
+        <DropdownMenu className={dropdownMenuStyles.DropdownMenu} end>
           <DropdownItem>
             <Link
               className={cx(
@@ -105,7 +105,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
   } = useGetProjectSessionLaunchersQuery(
     project.id ? { projectId: project.id } : skipToken
   );
-  const settingsUrl = Url.get(Url.pages.v2Projects.settings, {
+  const settingsUrl = Url.get(Url.pages.projectV2.settings, {
     id: project.id,
   });
 

@@ -39,7 +39,7 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
     namespace: project.namespace,
     slug: project.slug,
   });
-  const oldUrl = Url.get(Url.pages.v2Projects.old, { id: project.id });
+  const oldUrl = Url.get(Url.pages.projectV2.old, { id: project.id });
   return (
     <div
       data-cy="list-card"

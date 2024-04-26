@@ -29,11 +29,11 @@ export default function ProjectPageNav({
   selectedContent: ProjectPageContentType;
   projectId: string;
 }) {
-  const projectUrl = Url.get(Url.pages.v2Projects.show, { id: projectId });
-  const projectSettingsUrl = Url.get(Url.pages.v2Projects.settings, {
+  const projectUrl = Url.get(Url.pages.projectV2.show, { id: projectId });
+  const projectSettingsUrl = Url.get(Url.pages.projectV2.settings, {
     id: projectId,
   });
-  const projectInfoUrl = Url.get(Url.pages.v2Projects.projectInfo, {
+  const projectInfoUrl = Url.get(Url.pages.projectV2.projectInfo, {
     id: projectId,
   });
 
