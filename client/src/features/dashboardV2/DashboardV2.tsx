@@ -124,10 +124,14 @@ function DashboardWelcome() {
   return (
     <>
       <Row className="mb-3">
-        <Col md={7}>
+        <Col>
           <h2>
             <b>Welcome to the Renku 2.0 alpha preview!</b>
           </h2>
+        </Col>
+      </Row>
+      <Row className="mb-3">
+        <Col md={7}>
           <p>
             <b>Learn more about Renku 2.0</b> on our{" "}
             <ExternalLink

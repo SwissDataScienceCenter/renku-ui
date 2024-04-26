@@ -213,17 +213,18 @@ export default function NavbarV2() {
               "flex-row",
               "flex-wrap",
               "flex-sm-nowrap",
+              "justify-content-end",
               "align-items-center",
               "ms-lg-auto"
             )}
             navbar
           >
-            <NavItem className="me-3 me-md-2">
+            <NavItem className="me-3">
               <RenkuNavLinkV2 end to="search" title="Search">
                 <Search className="bi" /> Search
               </RenkuNavLinkV2>
             </NavItem>
-            <NavItem className="me-2">
+            <NavItem className="me-3">
               <RenkuNavLinkV2 end to="/v2/" title="Dashboard">
                 Dashboard
               </RenkuNavLinkV2>

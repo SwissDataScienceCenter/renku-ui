@@ -184,7 +184,7 @@ export default function DashboardV2Sessions() {
   return (
     <div
       data-cy="dashboard-session-list"
-      className={cx("d-flex", "flex-column", "gap-3", "mb-sm-2", "mb-md-4")}
+      className={cx("d-flex", "flex-column")}
     >
       {Object.entries(v2Sessions).map(([key, session]) => (
         <DashboardSession key={key} session={session} />

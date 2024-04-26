@@ -62,18 +62,13 @@
 
 @media (min-width: 768px) {
   .containerEntityListBar {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
     grid-template-areas:
-      "entityTitle entityTitle entityIdentifier"
-      "entityDescription entityDescription entityDescription"
-      "entityTypeVisibility entityTypeVisibility entityDate";
-  }
-
-  .entityIdentifier {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+      "entityTitle entityTitle"
+      "entityIdentifier entityIdentifier"
+      "entityDescription entityDescription"
+      "entityTypeVisibility entityDate";
   }
 
   .containerSessions {
