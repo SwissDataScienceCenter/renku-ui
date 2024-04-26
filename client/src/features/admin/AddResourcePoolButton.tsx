@@ -84,6 +84,8 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       quotaCpu: 1,
       quotaMemory: 1,
       quotaGpu: 0,
+      idleThreshold: null,
+      hibernationThreshold: null,
     },
   });
   const onSubmit = useCallback(
@@ -108,6 +110,8 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           memory: data.quotaMemory,
           gpu: data.quotaGpu,
         },
+        idle_threshold: data.idleThreshold,
+        hibernation_threshold: data.hibernationThreshold,
       });
     },
     [addResourcePool, defaultSessionClass]
@@ -243,4 +247,6 @@ interface AddResourcePoolForm {
   quotaCpu: number;
   quotaMemory: number;
   quotaGpu: number;
+  idleThreshold: number|null;
+  hibernationThreshold: number|null;
 }

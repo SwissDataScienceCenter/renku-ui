@@ -153,7 +153,7 @@ interface ResourcePoolItemProps {
 }
 
 function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
-  const { name, default: isDefault, public: isPublic, quota } = resourcePool;
+  const { name, default: isDefault, public: isPublic, quota, idle_threshold: idleThreshold, hibernation_threshold: hibernationThreshold } = resourcePool;
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
@@ -194,6 +194,17 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
               ? "Public pool (everyone can use it)"
               : "Private pool (requires special access)"}
           </p>
+
+          {idleThreshold != null ? (
+            <p> Idle threshold: {idleThreshold}</p>
+          ) : (
+            <p>Default idle threshold</p>
+          )}
+          {hibernationThreshold != null ? (
+            <p> Hibernation threshold: {hibernationThreshold}</p>
+          ) : (
+            <p>Default hibernation threshold</p>
+          )}
           {quota != null ? (
             <div
               className={cx(

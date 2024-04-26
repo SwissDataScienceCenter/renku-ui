@@ -23,6 +23,8 @@ export interface ResourcePool {
   quota?: Resources;
   default: boolean;
   public: boolean;
+  idle_threshold: number|null;
+  hibernation_threshold: number|null;
 }
 
 export interface ResourceClass {

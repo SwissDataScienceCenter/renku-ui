@@ -31,6 +31,8 @@ export interface AddResourcePoolParams {
   public: boolean;
   classes: ResourceClassDefinition[];
   quota: Resources;
+  idle_threshold: number|null;
+  hibernation_threshold: number|null;
 }
 
 type ResourceClassDefinition = Omit<ResourceClass, "id" | "matching">;
@@ -42,6 +44,8 @@ export interface UpdateResourcePoolParams {
   public?: boolean;
   quota?: Resources;
   default?: boolean;
+  idleThreshold?: number;
+  hibernationThreshold?: number;
 }
 
 export interface DeleteResourcePoolParams {
