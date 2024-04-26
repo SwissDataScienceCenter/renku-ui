@@ -56,6 +56,7 @@ export function generateProjects(numberOfProjects: number, start: number) {
     const project = {
       id: `${id}`,
       name: `test ${id} v2-project`,
+      namespace: "user1-uuid",
       slug: `test-${id}-v2-project`,
       creation_date: "2023-11-15T09:55:59Z",
       created_by: "user1-uuid",
@@ -116,8 +117,8 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
     listManyProjectV2(args?: ListManyProjectArgs) {
       const { numberOfProjects = 50, name = "listProjectV2" } = args ?? {};
       cy.intercept("GET", `/ui-server/api/data/projects?*`, (req) => {
-        const page = (req.query["perPage"] as number) ?? 1;
-        const perPage = (req.query["perPage"] as number) ?? 20;
+        const page = +((req.query["page"] as number) ?? 1);
+        const perPage = +((req.query["per_page"] as number) ?? 20);
         const start = (page - 1) * perPage;
         const numToGen = Math.min(
           Math.max(numberOfProjects - start - perPage, 0),
