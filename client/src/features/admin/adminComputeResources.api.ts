@@ -86,13 +86,22 @@ const adminComputeResourcesApi = createApi({
       },
     }),
     addResourcePool: builder.mutation<ResourcePool, AddResourcePoolParams>({
-      query: ({ name, public: isPublic, classes, quota }) => {
+      query: ({
+        name,
+        public: isPublic,
+        classes,
+        quota,
+        idle_threshold: idleThreshold,
+        hibernation_threshold: hibernationThreshold,
+      }) => {
         const body = {
           name,
           public: isPublic,
           default: false,
           classes,
           quota,
+          idle_threshold: idleThreshold,
+          hibernation_threshold: hibernationThreshold,
         };
 
         return {

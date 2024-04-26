@@ -23,6 +23,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { useGetNotebooksVersionQuery } from "../../../../features/versions/versions.api";
 import { useCallback, useContext, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import Select, {
@@ -32,6 +33,7 @@ import Select, {
   SelectComponentsConfig,
   SingleValue,
   SingleValueProps,
+  GroupHeadingProps,
   components,
 } from "react-select";
 
@@ -57,6 +59,7 @@ import { setSessionClass } from "../../startSessionOptionsSlice";
 import { computeStorageSizes } from "../../utils/sessionOptions.utils";
 
 import styles from "./SessionClassOption.module.scss";
+import { toHumanDuration } from "../../../../utils/helpers/DurationUtils";
 
 export const SessionClassOption = () => {
   // Project options
@@ -200,7 +203,7 @@ export const SessionClassOption = () => {
   }
 
   return (
-    <div className="field-group">
+    <div className="field-group" data-cy="session-class">
       <div className="form-label">Session class</div>
       <SessionRequirements
         currentSessionClass={currentSessionClass}
@@ -220,6 +223,43 @@ export const SessionClassOption = () => {
     </div>
   );
 };
+
+interface SessionClassThresholdsProps {
+  defaultIdle?: number;
+  defaultHibernation?: number;
+  resourcePool?: ResourcePool;
+}
+
+function SessionClassThresholds({
+  defaultIdle,
+  defaultHibernation,
+  resourcePool,
+}: SessionClassThresholdsProps) {
+  if (!resourcePool) {
+    return null;
+  }
+  if (
+    (!resourcePool.idle_threshold && !defaultIdle) ||
+    (!resourcePool.hibernation_threshold && !defaultHibernation)
+  ) {
+    return null;
+  }
+
+  return (
+    <div className="form-text">
+      This session will automatically pause after{" "}
+      {toHumanDuration({
+        duration: (resourcePool.idle_threshold ?? defaultIdle) as number,
+      })}{" "}
+      of inactivity. If not resumed within{" "}
+      {toHumanDuration({
+        duration: (resourcePool.hibernation_threshold ??
+          defaultHibernation) as number,
+      })}
+      , the session will be deleted.
+    </div>
+  );
+}
 
 interface SessionRequirementsProps {
   currentSessionClass?: ResourceClass | undefined;
@@ -408,38 +448,62 @@ export const SessionClassSelector = ({
   onChange,
   disabled,
 }: SessionClassSelectorProps) => {
+  const { data: nbVersion } = useGetNotebooksVersionQuery();
   const options = useMemo(
-    () => makeGroupedOptions(resourcePools),
-    [resourcePools]
+    () =>
+      makeGroupedOptions(
+        resourcePools,
+        nbVersion?.registeredUsersIdleThreshold
+      ),
+    [resourcePools, nbVersion]
   );
 
   return (
-    <Select
-      options={options}
-      value={currentSessionClass}
-      defaultValue={defaultSessionClass}
-      getOptionValue={(option) => `${option.id}`}
-      getOptionLabel={(option) => option.name}
-      onChange={onChange}
-      isDisabled={disabled}
-      isClearable={false}
-      isSearchable={false}
-      unstyled
-      classNames={selectClassNames}
-      components={selectComponents}
-    />
+    <div data-cy="session-class-select">
+      <Select
+        classNames={selectClassNames}
+        components={selectComponents}
+        defaultValue={defaultSessionClass}
+        getOptionLabel={(option) => option.name}
+        getOptionValue={(option) => `${option.id}`}
+        isClearable={false}
+        isDisabled={disabled}
+        isSearchable={false}
+        onChange={onChange}
+        options={options}
+        unstyled
+        value={currentSessionClass}
+      />
+      <SessionClassThresholds
+        defaultHibernation={nbVersion?.registeredUsersHibernationThreshold}
+        defaultIdle={nbVersion?.registeredUsersIdleThreshold}
+        resourcePool={resourcePools.find(
+          (p) => p.id === currentSessionClass?.id
+        )}
+      />
+    </div>
   );
 };
 
 interface OptionGroup extends GroupBase<ResourceClass> {
   label: string;
   pool: ResourcePool;
+  maxIdle: string;
   options: readonly ResourceClass[];
 }
 
-const makeGroupedOptions = (resourcePools: ResourcePool[]): OptionGroup[] =>
+const makeGroupedOptions = (
+  resourcePools: ResourcePool[],
+  defaultIdleThreshold?: number
+): OptionGroup[] =>
   resourcePools.map((pool) => ({
     label: pool.name,
+    maxIdle:
+      !pool.idle_threshold && !defaultIdleThreshold
+        ? ""
+        : toHumanDuration({
+            duration: pool.idle_threshold ?? (defaultIdleThreshold as number),
+          }),
     pool,
     options: pool.classes,
   }));
@@ -454,7 +518,7 @@ const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
       menuIsOpen && styles.controlIsOpen
     ),
   dropdownIndicator: () => cx("pe-3"),
-  groupHeading: () => cx("pt-1", "px-3", "text-uppercase", styles.groupHeading),
+  groupHeading: () => cx("pt-1", "px-3", styles.groupHeading),
   menu: () =>
     cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
   menuList: () => cx("d-grid", "gap-2"),
@@ -498,6 +562,18 @@ const selectComponents: SelectComponentsConfig<
       <components.SingleValue {...props}>
         <OptionOrSingleValueContent sessionClass={sessionClass} />
       </components.SingleValue>
+    );
+  },
+  GroupHeading: (
+    props: GroupHeadingProps<ResourceClass, false, OptionGroup>
+  ) => {
+    return (
+      <components.GroupHeading {...props}>
+        <span className={cx("text-uppercase", "me-1")}>{props.data.label}</span>
+        {props.data.maxIdle && (
+          <span> (paused after {props.data.maxIdle} of inactivity)</span>
+        )}
+      </components.GroupHeading>
     );
   },
 };

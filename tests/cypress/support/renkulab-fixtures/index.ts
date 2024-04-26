@@ -36,7 +36,6 @@ import { Sessions } from "./sessions";
 import { Terms } from "./terms";
 import { User } from "./user";
 import { UserPreferences } from "./user-preferences";
-import { Versions } from "./versions";
 import { NamespaceV2 } from "./namespaceV2";
 import { Workflows } from "./workflows";
 
@@ -54,7 +53,7 @@ const V1Fixtures = NewProject(
                       Terms(
                         User(
                           UserPreferences(
-                            Versions(Workflows(KgSearch(Global(BaseFixtures))))
+                            Workflows(KgSearch(Global(BaseFixtures)))
                           )
                         )
                       )

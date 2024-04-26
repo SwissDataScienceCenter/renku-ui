@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
-import { DateTime, Duration } from "luxon";
+import { DateTime, Duration, DurationLikeObject } from "luxon";
 import { describe, expect, it } from "vitest";
 
 import {
   ensureDuration,
   getMostSignificantUnit,
+  toFullHumanDuration,
   toHumanDuration,
   toHumanRelativeDuration,
   toShortHumanDuration,
@@ -232,5 +233,24 @@ describe("toHumanRelativeDuration", () => {
     const relativeStr = toHumanRelativeDuration({ datetime, now });
 
     expect(relativeStr).toBe("just now");
+  });
+});
+
+describe("toFullHumanDuration", () => {
+  it("convert duration", () => {
+    const durationOneWeek = Duration.fromObject({ weeks: 1 });
+    const durationLong = Duration.fromObject({ years: 4, weeks: 1, days: 5 });
+    const unitsMaxDays: (keyof DurationLikeObject)[] = [
+      "days",
+      "hours",
+      "minutes",
+      "seconds",
+    ];
+
+    expect(toFullHumanDuration(durationOneWeek)).toBe("1w");
+    expect(toFullHumanDuration(durationOneWeek, unitsMaxDays)).toBe("7d");
+
+    expect(toFullHumanDuration(durationLong)).toBe("4y 1w 5d");
+    expect(toFullHumanDuration(durationLong, unitsMaxDays)).toBe("1472d");
   });
 });

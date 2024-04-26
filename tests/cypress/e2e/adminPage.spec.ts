@@ -118,6 +118,20 @@ describe("admin page", () => {
       .should("be.visible");
     cy.get(".modal").contains("button", "Close").should("be.visible").click();
 
+    // check public resource pool
+    cy.get(".card")
+      .contains("button", "Public pool")
+      .should("be.visible")
+      .click();
+    cy.get(".card")
+      .contains(".card", "Public pool")
+      .contains("Hibernate after 1d")
+      .should("be.visible");
+    cy.get(".card")
+      .contains(".card", "Public pool")
+      .contains("Delete after 3d")
+      .should("be.visible");
+
     // Check one of the private pools
     cy.get(".card")
       .contains("button", "Special GPU pool")
@@ -134,6 +148,15 @@ describe("admin page", () => {
       .contains("Quota")
       .siblings()
       .contains("500 GPUs")
+      .should("be.visible");
+
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("Hibernate after 1d 10h 17m 36s")
+      .should("be.visible");
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("Delete after 1w 4d 10h 20m 54s")
       .should("be.visible");
 
     cy.get(".card")

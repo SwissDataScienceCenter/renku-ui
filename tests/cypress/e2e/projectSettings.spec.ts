@@ -378,7 +378,7 @@ describe("Cloud storage settings page", () => {
     fixtures.getStorageSchema();
     fixtures
       .versions({
-        notebooks: { fixture: "version-notebooks-s3.json" },
+        notebooks: { fixture: "version-notebooks.json" },
       })
       .cloudStorage();
     fixtures.postCloudStorage().patchCloudStorage();
