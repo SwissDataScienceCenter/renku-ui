@@ -518,14 +518,14 @@ const Url = {
         "/v2/projects/id",
       ]),
       settings: new UrlRule(
-        (data) => `/v2/projects/${data.id}/settings`,
-        ["id"],
+        (data) => `/v2/projects/${data.namespace}/${data.slug}/settings`,
+        ["namespace", "slug"],
         null,
         ["/v2/projects/1234/settings"]
       ),
       projectInfo: new UrlRule(
-        (data) => `/v2/projects/${data.id}/info`,
-        ["id"],
+        (data) => `/v2/projects/${data.namespace}/${data.slug}/info`,
+        ["namespace", "slug"],
         null,
         ["/v2/projects/1234/info"]
       ),

@@ -19,11 +19,10 @@ import cx from "classnames";
 import { Link, useParams } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 import { Loader } from "../../../components/Loader.tsx";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert.tsx";
 import { Url } from "../../../utils/helpers/url";
-import {
-  isErrorResponse,
-  useGetProjectsByProjectIdQuery,
-} from "../../projectsV2/api/projectV2.enhanced-api.ts";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api.ts";
+import { isErrorResponse } from "../../projectsV2/api/projectV2.enhanced-api.ts";
 import ProjectInformation from "../ProjectPageContent/ProjectInformation/ProjectInformation.tsx";
 import ProjectPageContent from "../ProjectPageContent/ProjectPageContent.tsx";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader.tsx";
@@ -40,9 +39,14 @@ export default function ProjectPageContainer({
 }: {
   contentPage: ProjectPageContentType;
 }) {
-  const { id: projectId } = useParams<"id">();
-  const { data, isLoading, error } = useGetProjectsByProjectIdQuery({
-    projectId: projectId ?? "",
+  const { namespace, slug } = useParams<{
+    id: string | undefined;
+    namespace: string | undefined;
+    slug: string | undefined;
+  }>();
+  const { data, isLoading, error } = useGetProjectsByNamespaceAndSlugQuery({
+    namespace: namespace ?? "",
+    slug: slug ?? "",
   });
 
   if (isLoading) return <Loader />;
@@ -62,7 +66,8 @@ export default function ProjectPageContainer({
     return (
       <Row>
         <Col>
-          <div>Could not retrieve project</div>
+          <p>Could not retrieve project</p>
+          <RtkErrorAlert error={error} />
         </Col>
       </Row>
     );
@@ -77,13 +82,14 @@ export default function ProjectPageContainer({
     );
   return (
     <Row>
-      <Col sm={12} lg={12} className={styles.HeaderContainer}>
+      <Col sm={12} className={styles.HeaderContainer}>
         <ProjectPageHeader project={data}></ProjectPageHeader>
       </Col>
       <Col sm={12} lg={1} className={styles.NavContainer}>
         <ProjectPageNav
           selectedContent={contentPage}
-          projectId={data.id}
+          namespace={namespace}
+          slug={slug}
         ></ProjectPageNav>
       </Col>
       <Col sm={12} lg={9}>

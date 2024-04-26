@@ -31,7 +31,6 @@ import {
   UnderlineArrowLink,
 } from "../../../components/buttons/Button.tsx";
 import dotsDropdownStyles from "../../../styles/components/_renku_dots_dropmenu.module.scss";
-import dropdownMenuStyles from "../../../styles/components/_renku_dropdown_menu.module.scss";
 import { Url } from "../../../utils/helpers/url";
 import { Project } from "../../projectsV2/api/projectV2.api.ts";
 import { ProjectDeleteConfirmation } from "../../projectsV2/show/ProjectV2EditForm.tsx";
@@ -52,11 +51,11 @@ function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
 
   return (
     <>
-      <UncontrolledDropdown>
+      <UncontrolledDropdown className="">
         <DropdownToggle cssModule={dotsDropdownStyles}>
           <ThreeDotsVertical className="fs-3" />
         </DropdownToggle>
-        <DropdownMenu className={dropdownMenuStyles.DropdownMenu} end>
+        <DropdownMenu className={cx("mt-2", "mx-0", "text-end")} end>
           <DropdownItem>
             <Link
               className={cx(
@@ -106,7 +105,8 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
     project.id ? { projectId: project.id } : skipToken
   );
   const settingsUrl = Url.get(Url.pages.projectV2.settings, {
-    id: project.id,
+    namespace: project.namespace,
+    slug: project.slug,
   });
 
   const addSessionBtn =
@@ -146,7 +146,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
           </p>
         ) : (
           <UnderlineArrowLink
-            title="Add project description"
+            tooltip="Add project description"
             text="Add description"
             to={settingsUrl}
           />

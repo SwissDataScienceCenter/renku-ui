@@ -26,7 +26,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, ReactNode, useRef, useState } from "react";
 import { ArrowRight, ChevronDown, PencilSquare } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
@@ -39,9 +39,9 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import styles from "./Buttons.module.scss";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
+import styles from "./Buttons.module.scss";
 
 type ButtonWithMenuProps = {
   children?:
@@ -294,11 +294,11 @@ function RoundButtonGroup({ children }: { children: React.ReactNode[] }) {
 function UnderlineArrowLink({
   to,
   text,
-  title,
+  tooltip,
 }: {
   text: string;
   to: string;
-  title: string;
+  tooltip: ReactNode;
 }) {
   const ref = useRef(null);
   return (
@@ -308,7 +308,7 @@ function UnderlineArrowLink({
           {text} <ArrowRight />
         </Link>
       </span>
-      <UncontrolledTooltip target={ref}>{title}</UncontrolledTooltip>
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
     </>
   );
 }

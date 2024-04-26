@@ -24,27 +24,30 @@ import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageConta
 import styles from "./ProjectPageNav.module.scss";
 export default function ProjectPageNav({
   selectedContent,
-  projectId,
+  namespace,
+  slug,
 }: {
   selectedContent: ProjectPageContentType;
-  projectId: string;
+  namespace: string | undefined;
+  slug: string | undefined;
 }) {
-  const projectUrl = Url.get(Url.pages.projectV2.show, { id: projectId });
+  const projectUrl = Url.get(Url.pages.projectV2.show, { namespace, slug });
   const projectSettingsUrl = Url.get(Url.pages.projectV2.settings, {
-    id: projectId,
+    namespace,
+    slug,
   });
   const projectInfoUrl = Url.get(Url.pages.projectV2.projectInfo, {
-    id: projectId,
+    namespace,
+    slug,
   });
 
   return (
-    <Nav justified={true} className={styles.ProjectPageNav}>
+    <Nav justified className={styles.ProjectPageNav}>
       <NavItem
         className={cx(
           styles.ProjectPageNavItem,
-          selectedContent === ProjectPageContentType.Overview
-            ? styles.ProjectPageNavItemActive
-            : ""
+          selectedContent === ProjectPageContentType.Overview &&
+            styles.ProjectPageNavItemActive
         )}
       >
         <RenkuNavLinkV2 end to={projectUrl} title="Overview">

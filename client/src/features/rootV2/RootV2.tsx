@@ -138,8 +138,10 @@ function ProjectsV2Routes() {
       <Route
         path=":namespace/:slug"
         element={
-          <ContainerWrap>
-            <LazyProjectV2Show />
+          <ContainerWrap fullSize className="container-lg">
+            <ProjectPageContainer
+              contentPage={ProjectPageContentType.Overview}
+            />
           </ContainerWrap>
         }
       />
@@ -164,7 +166,7 @@ function ProjectsV2Routes() {
         }
       />
       <Route
-        path=":id/settings"
+        path=":namespace/:slug/settings"
         element={
           <ContainerWrap fullSize className="container-lg">
             <ProjectPageContainer

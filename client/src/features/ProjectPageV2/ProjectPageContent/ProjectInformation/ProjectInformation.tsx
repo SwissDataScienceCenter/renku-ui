@@ -35,7 +35,8 @@ export default function ProjectInformation({ project }: { project: Project }) {
   const totalMembers = 0; //TODO get member list
   const totalKeywords = 0; //TODO get keyword list
   const settingsUrl = Url.get(Url.pages.projectV2.settings, {
-    id: project.id,
+    namespace: project.namespace,
+    slug: project.slug,
   });
 
   return (
@@ -82,7 +83,7 @@ export default function ProjectInformation({ project }: { project: Project }) {
         <div>Members ({totalMembers})</div>
         {totalMembers === 0 && (
           <UnderlineArrowLink
-            title="Add project members"
+            tooltip="Add project members"
             text="Add members"
             to={settingsUrl}
           />
@@ -92,7 +93,7 @@ export default function ProjectInformation({ project }: { project: Project }) {
         <div>Keywords ({totalKeywords})</div>
         {totalKeywords === 0 && (
           <UnderlineArrowLink
-            title="Add project keywords"
+            tooltip="Add project keywords"
             text="Add keywords"
             to={settingsUrl}
           />
