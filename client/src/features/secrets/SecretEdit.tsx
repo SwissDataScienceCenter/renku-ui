@@ -129,7 +129,7 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
                   name="value"
                   render={({ field }) => (
                     <Input
-                      autoComplete="new-password"
+                      autoComplete="off"
                       className={cx(
                         "form-control",
                         "rounded-0",

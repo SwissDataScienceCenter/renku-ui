@@ -45,8 +45,8 @@ export default function SecretsListItem({ secret }: SecretsListItemProps) {
           )}
         >
           <span className="fw-bold">{secret.name}</span>
-          <span className="text-rk-text-light my-auto small">
-            Edited {+new Date(secret.modification_date) - +new Date() < 5_000}
+          <span className={cx("text-rk-text-light", "my-auto small")}>
+            Edited{" "}
             <TimeCaption
               datetime={secret.modification_date}
               enableTooltip
