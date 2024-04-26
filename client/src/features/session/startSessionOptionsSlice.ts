@@ -37,6 +37,8 @@ const initialState: StartSessionOptions = {
   lfsAutoFetch: false,
   pinnedDockerImage: "",
   sessionClass: 0,
+  secretsPath: "",
+  secretsList: [],
   storage: MIN_SESSION_STORAGE_GB,
 };
 
@@ -110,6 +112,12 @@ export const startSessionOptionsSlice = createSlice({
     setSessionClass: (state, action: PayloadAction<number>) => {
       state.sessionClass = action.payload;
     },
+    setSecretsList: (state, action: PayloadAction<string[]>) => {
+      state.secretsList = action.payload;
+    },
+    setSecretsPath: (state, action: PayloadAction<string>) => {
+      state.secretsPath = action.payload;
+    },
     setStorage: (state, action: PayloadAction<number>) => {
       state.storage = action.payload;
     },
@@ -147,6 +155,8 @@ export const {
   setLfsAutoFetch,
   setPinnedDockerImage,
   setSessionClass,
+  setSecretsList,
+  setSecretsPath,
   setStorage,
   updateCloudStorageItem,
   updateEnvironmentVariable,

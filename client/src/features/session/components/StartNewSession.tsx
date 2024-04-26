@@ -695,6 +695,8 @@ function StartSessionButton() {
     environmentVariables,
     lfsAutoFetch,
     pinnedDockerImage,
+    // secretsPath,
+    // secretsList,
     sessionClass,
     storage,
   } = useAppSelector(({ startSessionOptions }) => startSessionOptions);

@@ -17,12 +17,20 @@
  */
 
 import cx from "classnames";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Button, Card, CardBody, Collapse, Input, Label } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
 import { User } from "../../../../model/renkuModels.types";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
+import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
+import { useGetSecretsQuery } from "../../../secrets/secrets.api";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { setSecretsList, setSecretsPath } from "../../startSessionOptionsSlice";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 
 export default function SessionUserSecrets() {
   const secretsUrl = Url.get(Url.pages.secrets);
@@ -36,8 +44,8 @@ export default function SessionUserSecrets() {
         You can select secrets defined in the{" "}
         <Link to={secretsUrl}> User Secrets page</Link> and mount them as files
         in your session.
-        {/* <MountUserSecrets /> */}
       </div>
+      <SessionUserSecretsSection />
     </>
   ) : (
     <div className={cx("form-text", "my-1")}>
@@ -46,9 +54,165 @@ export default function SessionUserSecrets() {
   );
 
   return (
-    <div className="field-group">
+    <div className="field-group" data-cy="secrets-session">
       <div className="form-label">User Secrets</div>
       {content}
     </div>
+  );
+}
+
+function SessionUserSecretsSection() {
+  // Handle the collapse
+  const [isOpen, setIsOpen] = useState(true);
+  const toggleIsOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
+
+  // Fetch the secrets
+  const secrets = useGetSecretsQuery();
+
+  // Get current values from the store
+  const sessionOptions = useAppSelector((state) => state.startSessionOptions);
+
+  // Save data in the Redux store
+  const dispatch = useAppDispatch();
+  const changeSecretsPath = useCallback(
+    (newValue: string) => {
+      dispatch(setSecretsPath(newValue));
+    },
+    [dispatch]
+  );
+  const updateSecretsList = useCallback(
+    (secret: string) => {
+      if (sessionOptions.secretsList.includes(secret)) {
+        dispatch(
+          setSecretsList(sessionOptions.secretsList.filter((s) => s !== secret))
+        );
+      } else {
+        dispatch(setSecretsList([...sessionOptions.secretsList, secret]));
+      }
+    },
+    [dispatch, sessionOptions.secretsList]
+  );
+
+  // Set the default path on first load
+  useEffect(() => {
+    changeSecretsPath("/secrets");
+  }, [changeSecretsPath]);
+
+  // Do not show any code to select secrets unless we have some
+  if (secrets.isLoading) return <Loader />;
+  if (secrets.isError)
+    return <RtkOrNotebooksError dismissible={false} error={secrets.error} />;
+  if (secrets.data?.length === 0) return null;
+
+  return (
+    <Card className={cx("border", "border-dark-subtle")}>
+      <CardBody className={cx("px-0", "py-1")}>
+        <Button
+          className={cx(
+            "d-flex",
+            "w-100",
+            "px-3",
+            "py-2",
+            "bg-transparent",
+            "border-0"
+          )}
+          color="none"
+          onClick={toggleIsOpen}
+          size="sm"
+        >
+          <span>
+            Secrets to mount:{" "}
+            {sessionOptions.secretsList.length > 0 ? (
+              <span className="fw-bold">
+                {sessionOptions.secretsList.join(", ")}
+              </span>
+            ) : (
+              <span className="fw-bold">None</span>
+            )}
+          </span>
+          <div className="ms-auto">
+            <ChevronFlippedIcon flipped={isOpen} />
+          </div>
+        </Button>
+      </CardBody>
+      <Collapse isOpen={isOpen}>
+        <CardBody
+          className={cx("border-top", "border-dark-subtle", "small", "py-2")}
+        >
+          <div
+            className="form-rk-green my-1"
+            data-cy="secrets-session-selection"
+          >
+            <div className="mb-2">
+              <Label className="form-label" for="secrets-session-path">
+                Mount path
+              </Label>
+              <Input
+                className="border-dark-subtle"
+                id="secrets-session-path"
+                name="secrets-session-path"
+                placeholder="/path/to/secrets"
+                value={sessionOptions.secretsPath}
+                onChange={(e) => changeSecretsPath(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label className="form-label">Secrets</Label>
+              <div>
+                {secrets.data?.map((secret) => (
+                  <div
+                    className={cx("form-check", "form-switch", "d-flex")}
+                    key={secret.id}
+                  >
+                    <Input
+                      checked={sessionOptions.secretsList.includes(secret.name)}
+                      className={cx(
+                        "form-check-input",
+                        "rounded-pill",
+                        "my-auto",
+                        "me-2"
+                      )}
+                      name={`secrets-session-${secret.name}`}
+                      onChange={() => updateSecretsList(secret.name)}
+                      role="switch"
+                      type="checkbox"
+                    />
+                    <Label
+                      className={cx("form-check-label", "my-auto")}
+                      for={`secrets-session-${secret.name}`}
+                    >
+                      {secret.name}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+
+              {/* <Label className="form-label" for="secrets-session-path">
+                Secrets
+              </Label>
+              <div className="d-flex gap-2">
+                {secrets.data?.map((secret) => (
+                  // <Badge
+                  //   className="cursor-pointer rounded-pill fs-6 fw-normal text-primary border border-dark-subtle "
+                  //   color="none"
+                  //   key={secret.id}
+                  // >
+                  //   {secret.name}
+                  // </Badge>
+                  <Button
+                    className="btn-outline-rk-green"
+                    key={secret.id}
+                    size="sm"
+                    onClick={() => {}}
+                  >
+                    {secret.name}
+                  </Button>
+                ))}
+              </div> */}
+            </div>
+          </div>
+        </CardBody>
+      </Collapse>
+    </Card>
   );
 }
