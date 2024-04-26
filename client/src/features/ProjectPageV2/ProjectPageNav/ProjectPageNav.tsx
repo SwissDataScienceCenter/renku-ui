@@ -42,43 +42,105 @@ export default function ProjectPageNav({
   });
 
   return (
-    <Nav justified className={styles.ProjectPageNav}>
+    <Nav justified className={cx("d-flex", "flex-row", "flex-lg-column")}>
       <NavItem
         className={cx(
+          "mb-0",
+          "mb-lg-3",
+          "py-3",
+          "py-lg-0",
+          "d-flex",
           styles.ProjectPageNavItem,
           selectedContent === ProjectPageContentType.Overview &&
             styles.ProjectPageNavItemActive
         )}
       >
-        <RenkuNavLinkV2 end to={projectUrl} title="Overview">
-          <EyeFill className={styles.ProjectNavIcon} />
+        <RenkuNavLinkV2
+          end
+          to={projectUrl}
+          title="Overview"
+          className={cx(
+            "p-0",
+            "mb-1",
+            "text-center",
+            "text-lg-start",
+            "d-flex",
+            "flex-column",
+            "flex-lg-row",
+            "align-items-center",
+            "align-items-lg-start",
+            "gap-2"
+          )}
+        >
+          <EyeFill className={cx("d-block", "d-lg-none")} />
           Overview
         </RenkuNavLinkV2>
       </NavItem>
       <NavItem
         className={cx(
-          styles.ProjectInfoItem,
+          "d-inline",
+          "d-lg-none",
+          "mb-0",
+          "mb-lg-3",
+          "py-3",
+          "py-lg-0",
           styles.ProjectPageNavItem,
           selectedContent === ProjectPageContentType.ProjectInfo
             ? styles.ProjectPageNavItemActive
             : ""
         )}
       >
-        <RenkuNavLinkV2 end to={projectInfoUrl} title="Project Information">
-          <Folder2Open className={styles.ProjectNavIcon} />
+        <RenkuNavLinkV2
+          end
+          to={projectInfoUrl}
+          title="Project Information"
+          className={cx(
+            "p-0",
+            "mb-1",
+            "text-center",
+            "text-lg-start",
+            "d-flex",
+            "flex-column",
+            "flex-lg-row",
+            "align-items-center",
+            "align-items-lg-start",
+            "gap-2"
+          )}
+        >
+          <Folder2Open className={cx("d-block", "d-lg-none")} />
           Project Info
         </RenkuNavLinkV2>
       </NavItem>
       <NavItem
         className={cx(
+          "mb-0",
+          "mb-lg-3",
+          "py-3",
+          "py-lg-0",
           styles.ProjectPageNavItem,
           selectedContent === ProjectPageContentType.Settings
             ? styles.ProjectPageNavItemActive
             : ""
         )}
       >
-        <RenkuNavLinkV2 end to={projectSettingsUrl} title="Settings">
-          <PencilSquare className={styles.ProjectNavIcon} />
+        <RenkuNavLinkV2
+          end
+          to={projectSettingsUrl}
+          title="Settings"
+          className={cx(
+            "p-0",
+            "mb-1",
+            "text-center",
+            "text-lg-start",
+            "d-flex",
+            "flex-column",
+            "flex-lg-row",
+            "align-items-center",
+            "align-items-lg-start",
+            "gap-2"
+          )}
+        >
+          <PencilSquare className={cx("d-block", "d-lg-none")} />
           Settings
         </RenkuNavLinkV2>
       </NavItem>

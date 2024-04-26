@@ -21,23 +21,24 @@ import { useCallback, useState } from "react";
 import { PencilSquare, ThreeDotsVertical, Trash } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
+  Col,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Row,
   UncontrolledDropdown,
 } from "reactstrap";
 import {
   EditButtonLink,
   UnderlineArrowLink,
 } from "../../../components/buttons/Button.tsx";
-import dotsDropdownStyles from "../../../styles/components/_renku_dots_dropmenu.module.scss";
+import dotsDropdownStyles from "../../../components/buttons/ThreeDots.module.scss";
 import { Url } from "../../../utils/helpers/url";
 import { Project } from "../../projectsV2/api/projectV2.api.ts";
 import { ProjectDeleteConfirmation } from "../../projectsV2/show/ProjectV2EditForm.tsx";
 import AddSessionLauncherButton from "../../sessionsV2/AddSessionLauncherButton.tsx";
 import { useGetProjectSessionLaunchersQuery } from "../../sessionsV2/sessionsV2.api.ts";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation.tsx";
-import styles from "./ProjectPageHeader.module.scss";
 
 interface ProjectActionsProps {
   settingsUrl: string;
@@ -52,7 +53,17 @@ function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
   return (
     <>
       <UncontrolledDropdown className="">
-        <DropdownToggle cssModule={dotsDropdownStyles}>
+        <DropdownToggle
+          className={cx(
+            "m-0",
+            "p-0",
+            "bg-transparent",
+            "d-flex",
+            "border-0",
+            "shadow-none",
+            dotsDropdownStyles.threeDots
+          )}
+        >
           <ThreeDotsVertical className="fs-3" />
         </DropdownToggle>
         <DropdownMenu className={cx("mt-2", "mx-0", "text-end")} end>
@@ -118,40 +129,66 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
     ) : null;
 
   return (
-    <header className={cx(styles.ProjectHeaderContainer)}>
-      <div className={cx(styles.HeaderImgContainer, styles.headerImgContainer)}>
-        <ProjectImageView />
-      </div>
-      <div className={cx(styles.HeaderTitleContainer)}>
-        <h1 className="fw-bold">{project.name}</h1>
-      </div>
-      <div className={cx(styles.HeaderBtnContainer)}>
-        <div className={styles.HeaderActions}>
-          {addSessionBtn}
-          <div className={cx("d-none", "d-sm-none", "d-md-block")}>
-            <ProjectActions project={project} settingsUrl={settingsUrl} />
+    <header className={cx("px-4", "px-lg-0")}>
+      <Row>
+        <Col className="col-12 col-lg-2">
+          <div className={cx("d-none", "d-lg-block")}>
+            <ProjectImageView />
           </div>
-        </div>
-      </div>
-      <div className={cx(styles.HeaderDescContainer)}>
-        {project.description?.length ? (
-          <p>
-            {project.description}
-            <span className="mx-2">
-              <EditButtonLink
-                to={settingsUrl}
-                title="Modify project information"
-              />
-            </span>
-          </p>
-        ) : (
-          <UnderlineArrowLink
-            tooltip="Add project description"
-            text="Add description"
-            to={settingsUrl}
-          />
-        )}
-      </div>
+        </Col>
+        <Col className="col-12 col-lg-10">
+          <Row>
+            <Col className="col-12 col-sm-8">
+              <div className={cx("")}>
+                <h1 className="fw-bold">{project.name}</h1>
+              </div>
+            </Col>
+            <Col className="col-12 col-sm-4">
+              <div className={cx("")}>
+                <div
+                  className={cx(
+                    "d-none",
+                    "align-items-center",
+                    "justify-content-end",
+                    "gap-2",
+                    "d-sm-flex"
+                  )}
+                >
+                  {addSessionBtn}
+                  <div className={cx("d-none", "d-sm-none", "d-md-block")}>
+                    <ProjectActions
+                      project={project}
+                      settingsUrl={settingsUrl}
+                    />
+                  </div>
+                </div>
+              </div>
+            </Col>
+          </Row>
+          <Col className="col-12">
+            <div className={cx("")}>
+              {project.description?.length ? (
+                <p>
+                  {project.description}
+                  <span className="mx-2">
+                    <EditButtonLink
+                      to={settingsUrl}
+                      title="Modify project information"
+                    />
+                  </span>
+                </p>
+              ) : (
+                <UnderlineArrowLink
+                  tooltip="Add project description"
+                  text="Add description"
+                  to={settingsUrl}
+                />
+              )}
+            </div>
+          </Col>
+          <Col className="d-flex d-sm-none">{addSessionBtn}</Col>
+        </Col>
+      </Row>
     </header>
   );
 }

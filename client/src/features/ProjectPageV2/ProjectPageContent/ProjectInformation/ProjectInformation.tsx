@@ -23,12 +23,21 @@ import {
   UnderlineArrowLink,
 } from "../../../../components/buttons/Button.tsx";
 import VisibilityIcon from "../../../../components/entities/VisibilityIcon.tsx";
+import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import { Url } from "../../../../utils/helpers/url";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import styles from "./ProjectInformation.module.scss";
 
 export function ProjectImageView() {
-  return <div className={styles.projectPageImgPlaceholder}></div>;
+  return (
+    <div className={cx(styles.projectPageImgPlaceholder)}>
+      <img
+        src={projectPreviewImg}
+        className="rounded-2"
+        alt="Project image preview"
+      />
+    </div>
+  );
 }
 
 export default function ProjectInformation({ project }: { project: Project }) {
@@ -40,8 +49,16 @@ export default function ProjectInformation({ project }: { project: Project }) {
   });
 
   return (
-    <aside className={styles.ProjectInfoContainer}>
-      <div className={cx("my-4", "d-block", "d-lg-none", "d-sm-block")}>
+    <aside className={cx("px-3", "pb-5", "pb-lg-2")}>
+      <div
+        className={cx(
+          "my-4",
+          "d-block",
+          "d-lg-none",
+          "d-sm-block",
+          "text-center"
+        )}
+      >
         <ProjectImageView />
       </div>
       <div
@@ -52,14 +69,14 @@ export default function ProjectInformation({ project }: { project: Project }) {
           "gap-2"
         )}
       >
-        <div className={styles.divider}></div>
+        <div className={cx("flex-grow-1", "border-bottom")}></div>
         <EditButtonLink to={settingsUrl} title="Modify project information" />
       </div>
-      <div className={styles.ProjectInformationItem}>
+      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Namespace</div>
         <div className="fw-bold">{project.namespace}</div>
       </div>
-      <div className={styles.ProjectInformationItem}>
+      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Visibility</div>
         <VisibilityIcon
           className={cx(
@@ -70,16 +87,16 @@ export default function ProjectInformation({ project }: { project: Project }) {
           visibility={project.visibility}
         />
       </div>
-      <div className={styles.ProjectInformationItem}>
+      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>
           Created{" "}
           <TimeCaption
             datetime={project.creation_date}
-            className={cx(styles.ProjectTimeLabel)}
+            className={cx("fw-bold", "fs-6")}
           />
         </div>
       </div>
-      <div className={styles.ProjectInformationItem}>
+      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Members ({totalMembers})</div>
         {totalMembers === 0 && (
           <UnderlineArrowLink
@@ -89,7 +106,7 @@ export default function ProjectInformation({ project }: { project: Project }) {
           />
         )}
       </div>
-      <div className={styles.ProjectInformationItem}>
+      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Keywords ({totalKeywords})</div>
         {totalKeywords === 0 && (
           <UnderlineArrowLink

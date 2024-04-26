@@ -51,7 +51,7 @@ export default function ProjectPageContainer({
 
   if (isLoading) return <Loader />;
   if (error) {
-    if (isErrorResponse(error)) {
+    if (isErrorResponse(error) && error?.data?.error?.code == 404) {
       return (
         <Row>
           <Col>
@@ -82,10 +82,13 @@ export default function ProjectPageContainer({
     );
   return (
     <Row>
-      <Col sm={12} className={styles.HeaderContainer}>
+      <Col
+        sm={12}
+        className={cx("py-4", "px-0", "px-lg-2", styles.HeaderContainer)}
+      >
         <ProjectPageHeader project={data}></ProjectPageHeader>
       </Col>
-      <Col sm={12} lg={1} className={styles.NavContainer}>
+      <Col sm={12} lg={1} className={cx(styles.NavContainer)}>
         <ProjectPageNav
           selectedContent={contentPage}
           namespace={namespace}
