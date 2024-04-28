@@ -26,7 +26,6 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
-import LazyProjectPageV2Container from "../ProjectPageV2/LazyProjectPageV2Container.tsx";
 import { ProjectPageContentType } from "../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
 import LazyGroupV2List from "../projectsV2/LazyGroupList";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
@@ -38,6 +37,7 @@ import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import NavbarV2 from "./NavbarV2";
+import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Container";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -138,9 +138,7 @@ function ProjectsV2Routes() {
         path=":namespace/:slug"
         element={
           <ContainerWrap fullSize className="container-lg">
-            <LazyProjectPageV2Container
-              content={ProjectPageContentType.Overview}
-            />
+            <LazyProjectPageV2Show content={ProjectPageContentType.Overview} />
           </ContainerWrap>
         }
       />
@@ -148,9 +146,7 @@ function ProjectsV2Routes() {
         path=":id"
         element={
           <ContainerWrap fullSize className="container-lg">
-            <LazyProjectPageV2Container
-              content={ProjectPageContentType.Overview}
-            />
+            <LazyProjectPageV2Show content={ProjectPageContentType.Overview} />
           </ContainerWrap>
         }
       />
@@ -158,7 +154,7 @@ function ProjectsV2Routes() {
         path=":namespace/:slug/info"
         element={
           <ContainerWrap fullSize className="container-lg">
-            <LazyProjectPageV2Container
+            <LazyProjectPageV2Show
               content={ProjectPageContentType.ProjectInfo}
             />
           </ContainerWrap>
@@ -168,9 +164,7 @@ function ProjectsV2Routes() {
         path=":namespace/:slug/settings"
         element={
           <ContainerWrap fullSize className="container-lg">
-            <LazyProjectPageV2Container
-              content={ProjectPageContentType.Settings}
-            />
+            <LazyProjectPageV2Show content={ProjectPageContentType.Settings} />
           </ContainerWrap>
         }
       />

@@ -28,13 +28,14 @@ import ProjectPageContent from "../ProjectPageContent/ProjectPageContent.tsx";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader.tsx";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav.tsx";
 import styles from "./ProjectPageContainer.module.scss";
+import { ProjectV2ShowByProjectId } from "../../projectsV2/show/ProjectV2Show.tsx";
 
 export enum ProjectPageContentType {
   Overview = "Overview",
   Settings = "Settings",
   ProjectInfo = "ProjectInfo",
 }
-export default function ProjectPageContainer({
+export function ProjectPageContainer({
   contentPage,
 }: {
   contentPage: ProjectPageContentType;
@@ -106,4 +107,20 @@ export default function ProjectPageContainer({
       </Col>
     </Row>
   );
+}
+
+export default function ProjectPageV2Show({
+  contentPage,
+}: {
+  contentPage: ProjectPageContentType;
+}) {
+  const { id: projectId } = useParams<{
+    id: string | undefined;
+    namespace: string | undefined;
+    slug: string | undefined;
+  }>();
+  if (projectId != null) {
+    return <ProjectV2ShowByProjectId />;
+  }
+  return <ProjectPageContainer contentPage={contentPage} />;
 }
