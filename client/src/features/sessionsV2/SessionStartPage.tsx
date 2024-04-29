@@ -36,7 +36,7 @@ import ProgressStepsIndicator, {
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
-import { useGetAllRepositoryCommitsQuery } from "../project/projectGitLab.api";
+// import { useGetAllRepositoryCommitsQuery } from "../project/projectGitLab.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import {
@@ -52,7 +52,7 @@ import {
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-import { SessionRepository } from "./startSessionOptionsV2.types";
+// import { SessionRepository } from "./startSessionOptionsV2.types";
 
 export default function SessionStartPage() {
   const { launcherId, namespace, slug } = useParams<
@@ -142,9 +142,9 @@ function StartSessionFromLauncher({
       ? "unknown"
       : launcher.container_image;
 
-  const projectSupport = useAppSelector(
-    ({ sessionConfigV2 }) => sessionConfigV2.projectSupport[project.id]
-  );
+  // const projectSupport = useAppSelector(
+  //   ({ sessionConfigV2 }) => sessionConfigV2.projectSupport[project.id]
+  // );
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
@@ -183,11 +183,11 @@ function StartSessionFromLauncher({
     [resourcePools, startSessionOptionsV2.sessionClass]
   );
 
-  const headCommitKnownForAllRepositories = useMemo(
-    () =>
-      startSessionOptionsV2.repositories.every(({ commitSha }) => !!commitSha),
-    [startSessionOptionsV2.repositories]
-  );
+  // const headCommitKnownForAllRepositories = useMemo(
+  //   () =>
+  //     startSessionOptionsV2.repositories.every(({ commitSha }) => !!commitSha),
+  //   [startSessionOptionsV2.repositories]
+  // );
 
   const dispatch = useAppDispatch();
 
@@ -238,30 +238,34 @@ function StartSessionFromLauncher({
   ]);
 
   // Set the repositories
-  useEffect(() => {
-    if (!projectSupport || projectSupport.isLoading) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!projectSupport || projectSupport.isLoading) {
+  //     return;
+  //   }
 
-    const repositories = projectSupport.repositoriesConfig.flatMap(
-      ({ supportsSessions, sessionConfiguration }) => {
-        if (!supportsSessions) {
-          return [];
-        }
-        const { defaultBranch, namespace, projectName, repositoryMetadata } =
-          sessionConfiguration;
-        const repository: SessionRepository = {
-          branch: defaultBranch,
-          commitSha: "",
-          namespace,
-          project: projectName,
-          repositoryMetadata,
-        };
-        return [repository];
-      }
-    );
+  //   const repositories = projectSupport.repositoriesConfig.flatMap(
+  //     ({ supportsSessions, sessionConfiguration }) => {
+  //       if (!supportsSessions) {
+  //         return [];
+  //       }
+  //       const { defaultBranch, namespace, projectName, repositoryMetadata } =
+  //         sessionConfiguration;
+  //       const repository: SessionRepository = {
+  //         branch: defaultBranch,
+  //         commitSha: "",
+  //         namespace,
+  //         project: projectName,
+  //         repositoryMetadata,
+  //       };
+  //       return [repository];
+  //     }
+  //   );
+  //   dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
+  // }, [dispatch, projectSupport]);
+  useEffect(() => {
+    const repositories = (project.repositories ?? []).map((url) => ({ url }));
     dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
-  }, [dispatch, projectSupport]);
+  }, [dispatch, project.repositories]);
 
   // Select default session class
   useEffect(() => {
@@ -304,9 +308,9 @@ function StartSessionFromLauncher({
   // Request session
   useEffect(() => {
     if (
-      !projectSupport ||
-      projectSupport.isLoading ||
-      !headCommitKnownForAllRepositories ||
+      // !projectSupport ||
+      // projectSupport.isLoading ||
+      // !headCommitKnownForAllRepositories ||
       startSessionOptionsV2.dockerImageStatus !== "available" ||
       resourcePools == null ||
       startSessionOptionsV2.sessionClass == 0
@@ -317,14 +321,7 @@ function StartSessionFromLauncher({
     startSession({
       projectId: project.id,
       launcherId: launcher.id,
-      repositories: startSessionOptionsV2.repositories.map(
-        ({ branch, commitSha, namespace, project }) => ({
-          branch,
-          commitSha,
-          namespace,
-          project,
-        })
-      ),
+      repositories: startSessionOptionsV2.repositories,
       cloudStorage: [],
       defaultUrl: startSessionOptionsV2.defaultUrl,
       environmentVariables: {},
@@ -335,10 +332,10 @@ function StartSessionFromLauncher({
     });
   }, [
     containerImage,
-    headCommitKnownForAllRepositories,
+    // headCommitKnownForAllRepositories,
     launcher.id,
     project.id,
-    projectSupport,
+    // projectSupport,
     resourcePools,
     startSession,
     startSessionOptionsV2,
@@ -359,9 +356,9 @@ function StartSessionFromLauncher({
   // Update the loading steps UI
   useEffect(() => {
     if (
-      !projectSupport ||
-      projectSupport.isLoading ||
-      !headCommitKnownForAllRepositories ||
+      // !projectSupport ||
+      // projectSupport.isLoading ||
+      // !headCommitKnownForAllRepositories ||
       startSessionOptionsV2.dockerImageStatus !== "available" ||
       resourcePools == null ||
       startSessionOptionsV2.sessionClass == 0
@@ -399,9 +396,9 @@ function StartSessionFromLauncher({
     ]);
   }, [
     error,
-    headCommitKnownForAllRepositories,
+    // headCommitKnownForAllRepositories,
     isLoadingStartSession,
-    projectSupport,
+    // projectSupport,
     resourcePools,
     startSessionOptionsV2,
   ]);
@@ -410,13 +407,13 @@ function StartSessionFromLauncher({
     <div>
       {error && <RtkErrorAlert error={error} dismissible={false} />}
 
-      {startSessionOptionsV2.repositories.map((repository, index) => (
+      {/* {startSessionOptionsV2.repositories.map((repository, index) => (
         <SessionRepositoryLoader
           key={index}
           index={index}
           repository={repository}
         />
-      ))}
+      ))} */}
 
       <div className={cx("progress-box-small", "progress-box-small--steps")}>
         <ProgressStepsIndicator
@@ -431,61 +428,61 @@ function StartSessionFromLauncher({
   );
 }
 
-interface SessionRepositoryLoaderProps {
-  index: number;
-  repository: SessionRepository;
-}
+// interface SessionRepositoryLoaderProps {
+//   index: number;
+//   repository: SessionRepository;
+// }
 
-function SessionRepositoryLoader({
-  index,
-  repository,
-}: SessionRepositoryLoaderProps) {
-  const { branch, namespace, project, repositoryMetadata } = repository;
-  const gitLabProjectId = repositoryMetadata.id;
+// function SessionRepositoryLoader({
+//   index,
+//   repository,
+// }: SessionRepositoryLoaderProps) {
+//   const { branch, namespace, project, repositoryMetadata } = repository;
+//   const gitLabProjectId = repositoryMetadata.id;
 
-  const { data: commits } = useGetAllRepositoryCommitsQuery(
-    branch && gitLabProjectId
-      ? {
-          branch,
-          projectId: `${gitLabProjectId}`,
-        }
-      : skipToken
-  );
+//   const { data: commits } = useGetAllRepositoryCommitsQuery(
+//     branch && gitLabProjectId
+//       ? {
+//           branch,
+//           projectId: `${gitLabProjectId}`,
+//         }
+//       : skipToken
+//   );
 
-  const dispatch = useAppDispatch();
+//   const dispatch = useAppDispatch();
 
-  // Select the default commit
-  useEffect(() => {
-    if (commits == null) {
-      return;
-    }
+//   // Select the default commit
+//   useEffect(() => {
+//     if (commits == null) {
+//       return;
+//     }
 
-    if (commits.length == 0) {
-      // TODO: propagate error
-      return;
-    }
+//     if (commits.length == 0) {
+//       // TODO: propagate error
+//       return;
+//     }
 
-    dispatch(
-      startSessionOptionsV2Slice.actions.updateRepository({
-        index,
-        repository: {
-          branch,
-          namespace,
-          project,
-          repositoryMetadata,
-          commitSha: commits[0].id,
-        },
-      })
-    );
-  }, [
-    branch,
-    commits,
-    dispatch,
-    index,
-    namespace,
-    project,
-    repositoryMetadata,
-  ]);
+//     dispatch(
+//       startSessionOptionsV2Slice.actions.updateRepository({
+//         index,
+//         repository: {
+//           branch,
+//           namespace,
+//           project,
+//           repositoryMetadata,
+//           commitSha: commits[0].id,
+//         },
+//       })
+//     );
+//   }, [
+//     branch,
+//     commits,
+//     dispatch,
+//     index,
+//     namespace,
+//     project,
+//     repositoryMetadata,
+//   ]);
 
-  return null;
-}
+//   return null;
+// }
