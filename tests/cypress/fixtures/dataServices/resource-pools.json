@@ -4,6 +4,8 @@
     "name": "Public pool",
     "default": true,
     "public": true,
+    "idle_threshold": null,
+    "hibernation_threshold": null,
     "quota": {
       "cpu": 100,
       "memory": 1000,
@@ -40,6 +42,8 @@
     "name": "Special pool",
     "default": false,
     "public": false,
+    "idle_threshold": 3000,
+    "hibernation_threshold": 6000,
     "quota": {
       "cpu": 200,
       "memory": 8000,
@@ -98,6 +102,8 @@
     "name": "Special GPU pool",
     "default": false,
     "public": false,
+    "idle_threshold": 123456,
+    "hibernation_threshold": 987654,
     "quota": {
       "cpu": 200,
       "memory": 8000,
@@ -156,6 +162,8 @@
     "name": "High memory pool",
     "default": false,
     "public": false,
+    "idle_threshold": 99999,
+    "hibernation_threshold": 999999,
     "quota": {
       "cpu": 200,
       "memory": 64000,

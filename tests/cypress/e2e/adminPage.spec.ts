@@ -118,6 +118,20 @@ describe("admin page", () => {
       .should("be.visible");
     cy.get(".modal").contains("button", "Close").should("be.visible").click();
 
+    // check public resource pool
+    cy.get(".card")
+      .contains("button", "Public pool")
+      .should("be.visible")
+      .click();
+    cy.get(".card")
+      .contains(".card", "Public pool")
+      .contains("Default idle threshold")
+      .should("be.visible");
+    cy.get(".card")
+      .contains(".card", "Public pool")
+      .contains("Default hibernation threshold")
+      .should("be.visible");
+
     // Check one of the private pools
     cy.get(".card")
       .contains("button", "Special GPU pool")
@@ -134,6 +148,19 @@ describe("admin page", () => {
       .contains("Quota")
       .siblings()
       .contains("500 GPUs")
+      .should("be.visible");
+
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("Idle threshold: 123456")
+      .should("be.visible");
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("Hibernation threshold: 987654")
+      .should("be.visible");
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("button", "Update Resource Pool Thresholds")
       .should("be.visible");
 
     cy.get(".card")
