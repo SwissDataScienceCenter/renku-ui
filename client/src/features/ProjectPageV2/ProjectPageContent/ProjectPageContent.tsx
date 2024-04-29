@@ -17,31 +17,22 @@
  */
 import cx from "classnames";
 import { Project } from "../../projectsV2/api/projectV2.api.ts";
-import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageContainer.tsx";
 import ProjectInformation from "./ProjectInformation/ProjectInformation.tsx";
 import ProjectPageOverview from "./ProjectOverview/ProjectOverview.tsx";
 import ProjectPageSettings from "./Settings/ProjectSettings.tsx";
 
-export default function ProjectPageContent({
-  selectedContent,
-  project,
-}: {
-  selectedContent: ProjectPageContentType;
-  project: Project;
-}) {
+export default function ProjectPageContent({ project }: { project: Project }) {
+  const isSettingsPage = window.location.pathname.endsWith("/settings");
+  const isInfoPage = window.location.pathname.endsWith("/info");
   return (
     <main>
-      {selectedContent === ProjectPageContentType.Overview && (
-        <ProjectPageOverview />
-      )}
-      {selectedContent === ProjectPageContentType.Settings && (
-        <ProjectPageSettings projectId={project.id} />
-      )}
-      {selectedContent === ProjectPageContentType.ProjectInfo && (
+      {isSettingsPage && <ProjectPageSettings projectId={project.id} />}
+      {isInfoPage && (
         <div className={cx("d-block", "d-lg-none", "d-sm-block")}>
           <ProjectInformation project={project} />
         </div>
       )}
+      {!isInfoPage && !isInfoPage && <ProjectPageOverview />}
     </main>
   );
 }

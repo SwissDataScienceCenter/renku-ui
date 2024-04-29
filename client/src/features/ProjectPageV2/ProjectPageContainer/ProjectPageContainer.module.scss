@@ -5,15 +5,19 @@
 @import "~bootstrap/scss/mixins";
 .HeaderContainer {
   background-color: var(--bs-white);
+
+  @include media-breakpoint-up(lg) {
+    & {
+      background-color: transparent;
+    }
+  }
 }
 .NavContainer {
   background-color: var(--bs-gray-200);
-}
-@include media-breakpoint-up(lg) {
-  .HeaderContainer {
-    background-color: transparent;
-  }
-  .NavContainer {
-    background-color: transparent;
+
+  @include media-breakpoint-up(lg) {
+    & {
+      background-color: transparent;
+    }
   }
 }

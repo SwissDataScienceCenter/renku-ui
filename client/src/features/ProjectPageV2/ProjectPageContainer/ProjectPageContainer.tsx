@@ -30,16 +30,7 @@ import ProjectPageNav from "../ProjectPageNav/ProjectPageNav.tsx";
 import styles from "./ProjectPageContainer.module.scss";
 import { ProjectV2ShowByProjectId } from "../../projectsV2/show/ProjectV2Show.tsx";
 
-export enum ProjectPageContentType {
-  Overview = "Overview",
-  Settings = "Settings",
-  ProjectInfo = "ProjectInfo",
-}
-export function ProjectPageContainer({
-  contentPage,
-}: {
-  contentPage: ProjectPageContentType;
-}) {
+export function ProjectPageContainer() {
   const { namespace, slug } = useParams<{
     id: string | undefined;
     namespace: string | undefined;
@@ -90,17 +81,10 @@ export function ProjectPageContainer({
         <ProjectPageHeader project={data}></ProjectPageHeader>
       </Col>
       <Col sm={12} lg={1} className={cx(styles.NavContainer)}>
-        <ProjectPageNav
-          selectedContent={contentPage}
-          namespace={namespace}
-          slug={slug}
-        ></ProjectPageNav>
+        <ProjectPageNav namespace={namespace} slug={slug}></ProjectPageNav>
       </Col>
       <Col sm={12} lg={9}>
-        <ProjectPageContent
-          selectedContent={contentPage}
-          project={data}
-        ></ProjectPageContent>
+        <ProjectPageContent project={data}></ProjectPageContent>
       </Col>
       <Col sm={12} lg={2} className={cx("d-none", "d-lg-block", " d-sm-none")}>
         <ProjectInformation project={data}></ProjectInformation>
@@ -109,11 +93,7 @@ export function ProjectPageContainer({
   );
 }
 
-export default function ProjectPageV2Show({
-  contentPage,
-}: {
-  contentPage: ProjectPageContentType;
-}) {
+export default function ProjectPageV2Show() {
   const { id: projectId } = useParams<{
     id: string | undefined;
     namespace: string | undefined;
@@ -122,5 +102,5 @@ export default function ProjectPageV2Show({
   if (projectId != null) {
     return <ProjectV2ShowByProjectId />;
   }
-  return <ProjectPageContainer contentPage={contentPage} />;
+  return <ProjectPageContainer />;
 }

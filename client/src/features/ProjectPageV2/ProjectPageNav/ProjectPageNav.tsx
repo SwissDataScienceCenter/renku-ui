@@ -20,14 +20,11 @@ import { EyeFill, Folder2Open, PencilSquare } from "react-bootstrap-icons";
 import { Nav, NavItem } from "reactstrap";
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2.tsx";
 import { Url } from "../../../utils/helpers/url";
-import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageContainer.tsx";
 import styles from "./ProjectPageNav.module.scss";
 export default function ProjectPageNav({
-  selectedContent,
   namespace,
   slug,
 }: {
-  selectedContent: ProjectPageContentType;
   namespace: string | undefined;
   slug: string | undefined;
 }) {
@@ -43,18 +40,7 @@ export default function ProjectPageNav({
 
   return (
     <Nav justified className={cx("d-flex", "flex-row", "flex-lg-column")}>
-      <NavItem
-        className={cx(
-          "mb-0",
-          "mb-lg-3",
-          "py-3",
-          "py-lg-0",
-          "d-flex",
-          styles.ProjectPageNavItem,
-          selectedContent === ProjectPageContentType.Overview &&
-            styles.ProjectPageNavItemActive
-        )}
-      >
+      <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0", "d-flex")}>
         <RenkuNavLinkV2
           end
           to={projectUrl}
@@ -69,7 +55,8 @@ export default function ProjectPageNav({
             "flex-lg-row",
             "align-items-center",
             "align-items-lg-start",
-            "gap-2"
+            "gap-2",
+            styles.navLink
           )}
         >
           <EyeFill className={cx("d-block", "d-lg-none")} />
@@ -78,16 +65,12 @@ export default function ProjectPageNav({
       </NavItem>
       <NavItem
         className={cx(
-          "d-inline",
-          "d-lg-none",
           "mb-0",
           "mb-lg-3",
           "py-3",
           "py-lg-0",
-          styles.ProjectPageNavItem,
-          selectedContent === ProjectPageContentType.ProjectInfo
-            ? styles.ProjectPageNavItemActive
-            : ""
+          "d-flex",
+          "d-lg-none"
         )}
       >
         <RenkuNavLinkV2
@@ -104,25 +87,15 @@ export default function ProjectPageNav({
             "flex-lg-row",
             "align-items-center",
             "align-items-lg-start",
-            "gap-2"
+            "gap-2",
+            styles.navLink
           )}
         >
-          <Folder2Open className={cx("d-block", "d-lg-none")} />
+          <Folder2Open />
           Project Info
         </RenkuNavLinkV2>
       </NavItem>
-      <NavItem
-        className={cx(
-          "mb-0",
-          "mb-lg-3",
-          "py-3",
-          "py-lg-0",
-          styles.ProjectPageNavItem,
-          selectedContent === ProjectPageContentType.Settings
-            ? styles.ProjectPageNavItemActive
-            : ""
-        )}
-      >
+      <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0", "d-flex")}>
         <RenkuNavLinkV2
           end
           to={projectSettingsUrl}
@@ -137,7 +110,8 @@ export default function ProjectPageNav({
             "flex-lg-row",
             "align-items-center",
             "align-items-lg-start",
-            "gap-2"
+            "gap-2",
+            styles.navLink
           )}
         >
           <PencilSquare className={cx("d-block", "d-lg-none")} />

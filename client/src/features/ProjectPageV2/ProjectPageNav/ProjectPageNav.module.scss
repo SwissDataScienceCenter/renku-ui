@@ -4,32 +4,29 @@
 @import "~bootstrap/scss/maps";
 @import "~bootstrap/scss/mixins";
 
-.ProjectPageNavItemActive a {
-  font-weight: bold;
-  text-decoration: underline;
-  text-underline-offset: 5px;
-  padding: 0;
-  margin-bottom: 0;
+.navLink {
   color: var(--bs-rk-text);
-}
-
-.ProjectPageNavItem a {
-  color: var(--bs-rk-text);
-}
-.ProjectPageNavItem a:hover {
-  text-decoration: underline;
-  text-underline-offset: 5px;
-}
-
-@include media-breakpoint-up(lg) {
-  .ProjectPageNavItem a {
-    color: var(--bs-rk-text-light);
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
   }
-  .ProjectPageNavItem a:hover {
+  &:global(.active) {
+    font-weight: bold;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    padding: 0;
+    margin-bottom: 0;
     color: var(--bs-rk-text);
   }
-
-  .ProjectPageNavItemActive a {
-    color: var(--bs-rk-text);
+  @include media-breakpoint-up(lg) {
+    & {
+      color: var(--bs-rk-text-light);
+      &:hover {
+        color: var(--bs-rk-text);
+      }
+    }
+    &:global(.active) {
+      color: var(--bs-rk-text);
+    }
   }
 }

@@ -17,20 +17,15 @@
  */
 import { Suspense, lazy } from "react";
 import PageLoader from "../../components/PageLoader";
-import { ProjectPageContentType } from "./ProjectPageContainer/ProjectPageContainer.tsx";
 
 const ProjectPageV2Show = lazy(
   () => import("./ProjectPageContainer/ProjectPageContainer.tsx")
 );
 
-export default function LazyProjectPageV2Show({
-  content,
-}: {
-  content: ProjectPageContentType;
-}) {
+export default function LazyProjectPageV2Show() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <ProjectPageV2Show contentPage={content} />
+      <ProjectPageV2Show />
     </Suspense>
   );
 }

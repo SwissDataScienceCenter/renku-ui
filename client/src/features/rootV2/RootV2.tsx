@@ -26,7 +26,6 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
-import { ProjectPageContentType } from "../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
 import LazyGroupV2List from "../projectsV2/LazyGroupList";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyGroupV2Show from "../projectsV2/LazyGroupShow";
@@ -138,7 +137,7 @@ function ProjectsV2Routes() {
         path=":namespace/:slug"
         element={
           <ContainerWrap fullSize className="container-lg">
-            <LazyProjectPageV2Show content={ProjectPageContentType.Overview} />
+            <LazyProjectPageV2Show />
           </ContainerWrap>
         }
       />
@@ -146,7 +145,7 @@ function ProjectsV2Routes() {
         path=":id"
         element={
           <ContainerWrap fullSize className="container-lg">
-            <LazyProjectPageV2Show content={ProjectPageContentType.Overview} />
+            <LazyProjectPageV2Show />
           </ContainerWrap>
         }
       />
@@ -154,9 +153,7 @@ function ProjectsV2Routes() {
         path=":namespace/:slug/info"
         element={
           <ContainerWrap fullSize className="container-lg">
-            <LazyProjectPageV2Show
-              content={ProjectPageContentType.ProjectInfo}
-            />
+            <LazyProjectPageV2Show />
           </ContainerWrap>
         }
       />
@@ -164,7 +161,7 @@ function ProjectsV2Routes() {
         path=":namespace/:slug/settings"
         element={
           <ContainerWrap fullSize className="container-lg">
-            <LazyProjectPageV2Show content={ProjectPageContentType.Settings} />
+            <LazyProjectPageV2Show />
           </ContainerWrap>
         }
       />
