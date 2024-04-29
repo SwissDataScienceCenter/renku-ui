@@ -64,7 +64,7 @@ export default function SessionUserSecrets() {
 
 function SessionUserSecretsSection() {
   // Handle the collapse
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
   // Fetch the secrets
