@@ -140,7 +140,7 @@ const sessionsApi = createApi({
           namespace,
           project,
           resource_class_id: sessionClass,
-          secrets,
+          ...(secrets ? { user_secrets: secrets } : {}),
           storage,
         };
         return {

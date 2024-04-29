@@ -100,7 +100,7 @@ export interface StartSessionParams {
   lfsAutoFetch: boolean;
   namespace: string;
   project: string;
-  secrets: SessionUserSecret[];
+  secrets?: SessionUserSecrets;
   sessionClass: number;
   storage: number;
 }
@@ -136,9 +136,9 @@ export interface CloudStorageDefinitionForSessionApi {
   target_path: string;
 }
 
-export interface SessionUserSecret {
-  id: string;
-  path: string;
+export interface SessionUserSecrets {
+  mount_path: string;
+  user_secrets_ids: string[];
 }
 
 export interface NotebooksErrorContent {

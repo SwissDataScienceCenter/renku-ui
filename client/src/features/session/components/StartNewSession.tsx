@@ -748,10 +748,12 @@ function StartSessionButton() {
     const imageValidated =
       dockerImageStatus === "not-available" ? undefined : pinnedDockerImage;
 
-    const userSecrets = secretsList.map((secret) => ({
-      id: secret.id,
-      path: secretsPath,
-    }));
+    const userSecrets = secretsList.length
+      ? {
+          mount_path: secretsPath ? secretsPath : "/",
+          user_secrets_ids: secretsList.map((secret) => secret.id),
+        }
+      : undefined;
 
     dispatch(setStarting(true));
     dispatch(
