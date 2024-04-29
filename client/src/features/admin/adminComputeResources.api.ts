@@ -116,21 +116,11 @@ const adminComputeResourcesApi = createApi({
       ResourcePool,
       UpdateResourcePoolParams
     >({
-      query: ({
-        resourcePoolId,
-        idleThreshold,
-        hibernationThreshold,
-        ...params
-      }) => {
-        const body = {
-          idle_threshold: idleThreshold,
-          hibernation_threshold: hibernationThreshold,
-          ...params,
-        };
+      query: ({ resourcePoolId, ...params }) => {
         return {
           method: "PATCH",
           url: `resource_pools/${resourcePoolId}`,
-          body: body,
+          body: params,
         };
       },
       invalidatesTags: (_result, _error, { resourcePoolId }) => [

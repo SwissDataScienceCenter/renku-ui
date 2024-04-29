@@ -84,8 +84,8 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       quotaCpu: 1,
       quotaMemory: 1,
       quotaGpu: 0,
-      idleThreshold: null,
-      hibernationThreshold: null,
+      idleThreshold: undefined,
+      hibernationThreshold: undefined,
     },
   });
   const onSubmit = useCallback(
@@ -110,8 +110,12 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           memory: data.quotaMemory,
           gpu: data.quotaGpu,
         },
-        idle_threshold: data.idleThreshold,
-        hibernation_threshold: data.hibernationThreshold,
+        idle_threshold:
+          data.idleThreshold == undefined ? null : data.idleThreshold,
+        hibernation_threshold:
+          data.hibernationThreshold == undefined
+            ? null
+            : data.hibernationThreshold,
       });
     },
     [addResourcePool, defaultSessionClass]
@@ -168,6 +172,59 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               rules={{ required: true }}
             />
             <div className="invalid-feedback">Please provide a name</div>
+          </div>
+          <div className="mb-3">
+            <Label className="form-label" for="addResourcePoolIdleThreshold">
+              Idle Threshold (seconds)
+            </Label>
+            <Controller
+              control={control}
+              name="idleThreshold"
+              render={({ field }) => (
+                <Input
+                  className={cx(
+                    "form-control",
+                    errors.idleThreshold && "is-invalid"
+                  )}
+                  id="addResourcePoolIdleThreshold"
+                  placeholder="idle threshold"
+                  type="number"
+                  min="1"
+                  step="1"
+                  {...field}
+                />
+              )}
+              rules={{ required: false, min: 1 }}
+            />
+            <div className="invalid-feedback">Please provide a threshold</div>
+          </div>
+          <div className="mb-3">
+            <Label
+              className="form-label"
+              for="addResourcePoolHibernationThreshold"
+            >
+              Hibernation Threshold (seconds)
+            </Label>
+            <Controller
+              control={control}
+              name="hibernationThreshold"
+              render={({ field }) => (
+                <Input
+                  className={cx(
+                    "form-control",
+                    errors.hibernationThreshold && "is-invalid"
+                  )}
+                  id="addResourcePoolHibernationThreshold"
+                  placeholder="hibernation threshold"
+                  type="number"
+                  min="1"
+                  step="1"
+                  {...field}
+                />
+              )}
+              rules={{ required: false, min: 1 }}
+            />
+            <div className="invalid-feedback">Please provide a threshold</div>
           </div>
 
           <div>
@@ -247,6 +304,6 @@ interface AddResourcePoolForm {
   quotaCpu: number;
   quotaMemory: number;
   quotaGpu: number;
-  idleThreshold: number | null;
-  hibernationThreshold: number | null;
+  idleThreshold: number | undefined;
+  hibernationThreshold: number | undefined;
 }

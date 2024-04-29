@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
+import { PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -32,36 +32,27 @@ import {
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { ResourcePool } from "../dataServices/dataServices.types";
 import { useUpdateResourcePoolMutation } from "./adminComputeResources.api";
-
-interface UpdateResourcePoolQuotaButtonProps {
+import { ResourcePool } from "../dataServices/dataServices.types";
+interface UpdateResourcePoolThresholdsButtonProps {
   resourcePool: ResourcePool;
 }
 
-export default function UpdateResourcePoolQuotaButton({
+export default function UpdateResourcePoolThresholdsButton({
   resourcePool,
-}: UpdateResourcePoolQuotaButtonProps) {
+}: UpdateResourcePoolThresholdsButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
 
-  if (resourcePool.quota == null) {
-    return null;
-  }
-
   return (
     <>
-      <Button
-        className="btn-sm"
-        color="outline-rk-green"
-        disabled={resourcePool.quota == null}
-        onClick={toggle}
-      >
-        Update
+      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
+        <PlusLg className={cx("bi", "me-1")} />
+        Update Resource Pool Thresholds
       </Button>
-      <UpdateResourcePoolQuotaModal
+      <UpdateResourcePoolThresholdsModal
         isOpen={isOpen}
         resourcePool={resourcePool}
         toggle={toggle}
@@ -70,50 +61,77 @@ export default function UpdateResourcePoolQuotaButton({
   );
 }
 
-interface UpdateResourcePoolQuotaModalProps {
+interface UpdateResourcePoolThresholdsModalProps {
   isOpen: boolean;
   resourcePool: ResourcePool;
   toggle: () => void;
 }
 
-function UpdateResourcePoolQuotaModal({
+function UpdateResourcePoolThresholdsModal({
   isOpen,
   resourcePool,
   toggle,
-}: UpdateResourcePoolQuotaModalProps) {
-  const { id, name, quota, idle_threshold, hibernation_threshold } =
-    resourcePool;
+}: UpdateResourcePoolThresholdsModalProps) {
+  const { id, name } = resourcePool;
 
   const [updateResourcePool, result] = useUpdateResourcePoolMutation();
 
-  const { control, handleSubmit } = useForm<UpdateResourcePoolQuotaForm>({
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<UpdateResourcePoolThresholdsForm>({
     defaultValues: {
-      cpu: quota?.cpu,
-      memory: quota?.memory,
-      gpu: quota?.gpu,
+      idleThreshold:
+        resourcePool.idle_threshold == null
+          ? undefined
+          : resourcePool.idle_threshold,
+      hibernationThreshold:
+        resourcePool.hibernation_threshold == null
+          ? undefined
+          : resourcePool.hibernation_threshold,
     },
   });
   const onSubmit = useCallback(
-    (data: UpdateResourcePoolQuotaForm) => {
+    (data: UpdateResourcePoolThresholdsForm) => {
       updateResourcePool({
         resourcePoolId: id,
-        quota: { ...data },
-        idle_threshold: idle_threshold,
-        hibernation_threshold: hibernation_threshold,
+        idle_threshold:
+          data.idleThreshold == undefined ? null : data.idleThreshold,
+        hibernation_threshold:
+          data.hibernationThreshold == undefined
+            ? null
+            : data.hibernationThreshold,
       });
     },
-    [id, idle_threshold, hibernation_threshold, updateResourcePool]
+    [id, updateResourcePool]
   );
 
   useEffect(() => {
-    if (result.isSuccess) {
-      toggle();
+    if (!result.isSuccess) {
+      return;
     }
+    toggle();
   }, [result.isSuccess, toggle]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+      result.reset();
+    }
+  }, [isOpen, reset, result]);
+
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader toggle={toggle}>Update {name}&apos;s quota</ModalHeader>
+    <Modal
+      backdrop="static"
+      centered
+      fullscreen="lg"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
+      <ModalHeader toggle={toggle}>Update {name}&apos;s thresholds</ModalHeader>
       <ModalBody>
         <Form
           className="form-rk-green"
@@ -123,69 +141,59 @@ function UpdateResourcePoolQuotaModal({
           {result.error && <RtkErrorAlert error={result.error} />}
 
           <div className="mb-3">
-            <Label
-              className="form-label"
-              for={`updateResourcePoolQuotaCpu-${id}`}
-            >
-              CPUs
+            <Label className="form-label" for="updateResourcePoolIdleThreshold">
+              Idle Threshold (seconds)
             </Label>
             <Controller
               control={control}
-              name="cpu"
+              name="idleThreshold"
               render={({ field }) => (
                 <Input
-                  id={`updateResourcePoolQuotaCpu-${id}`}
+                  className={cx(
+                    "form-control",
+                    errors.idleThreshold && "is-invalid"
+                  )}
+                  id="updateResourcePoolIdleThreshold"
+                  placeholder="idle threshold"
                   type="number"
-                  min={0.1}
-                  step={0.1}
+                  min="1"
+                  step="1"
+                  required={false}
                   {...field}
                 />
               )}
+              rules={{ required: true }}
             />
+            <div className="invalid-feedback">Please provide a threshold</div>
           </div>
-
           <div className="mb-3">
             <Label
               className="form-label"
-              for={`updateResourcePoolQuotaMemory-${id}`}
+              for="updateResourcePoolHibernationThreshold"
             >
-              Memory (GB RAM)
+              Hibernation Threshold (seconds)
             </Label>
             <Controller
               control={control}
-              name="memory"
+              name="hibernationThreshold"
               render={({ field }) => (
                 <Input
-                  id={`updateResourcePoolQuotaMemory-${id}`}
+                  className={cx(
+                    "form-control",
+                    errors.hibernationThreshold && "is-invalid"
+                  )}
+                  id="updateResourcePoolHibernationThreshold"
+                  placeholder="hibernation threshold"
                   type="number"
-                  min={1}
-                  step={1}
+                  min="1"
+                  step="1"
+                  required={false}
                   {...field}
                 />
               )}
+              rules={{ required: true }}
             />
-          </div>
-
-          <div>
-            <Label
-              className="form-label"
-              for={`updateResourcePoolQuotaGpu-${id}`}
-            >
-              GPUs
-            </Label>
-            <Controller
-              control={control}
-              name="gpu"
-              render={({ field }) => (
-                <Input
-                  id={`updateResourcePoolQuotaGpu-${id}`}
-                  type="number"
-                  min={0}
-                  step={1}
-                  {...field}
-                />
-              )}
-            />
+            <div className="invalid-feedback">Please provide a threshold</div>
           </div>
         </Form>
       </ModalBody>
@@ -202,17 +210,16 @@ function UpdateResourcePoolQuotaModal({
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
-            <CheckLg className={cx("bi", "me-1")} />
+            <PlusLg className={cx("bi", "me-1")} />
           )}
-          Update quota
+          Update Resource Pool
         </Button>
       </ModalFooter>
     </Modal>
   );
 }
 
-interface UpdateResourcePoolQuotaForm {
-  cpu: number;
-  memory: number;
-  gpu: number;
+interface UpdateResourcePoolThresholdsForm {
+  idleThreshold: number | undefined;
+  hibernationThreshold: number | undefined;
 }

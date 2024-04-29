@@ -47,6 +47,7 @@ import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
+import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
 import {
   useDeleteResourcePoolMutation,
   useGetResourcePoolUsersQuery,
@@ -212,6 +213,9 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
           ) : (
             <p>Default hibernation threshold</p>
           )}
+          <div className={cx("col", "ms-auto")}>
+            <UpdateResourcePoolThresholdsButton resourcePool={resourcePool} />
+          </div>
           {quota != null ? (
             <div
               className={cx(
