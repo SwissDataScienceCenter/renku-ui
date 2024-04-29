@@ -74,7 +74,7 @@ export default function Secrets() {
           <div className={cx("d-flex", "mb-2")}>
             <h2 className={cx("mb-0", "me-2")}>User Secrets</h2>
             <div className="my-auto">
-              <WipBadge />
+              <WipBadge text="This feature is under development and certain pieces may not work correctly." />
             </div>
           </div>
           <div>{pageInfo}</div>

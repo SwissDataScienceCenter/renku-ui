@@ -21,9 +21,13 @@ import { Badge, UncontrolledTooltip } from "reactstrap";
 
 type WipBadeProps = {
   label?: string;
+  text?: string;
 };
 
-export default function WipBadge({ label = "Alpha" }: WipBadeProps) {
+export default function WipBadge({
+  label = "Alpha",
+  text = "Renku 2.0 is under active development and features may not work as expected.",
+}: WipBadeProps) {
   const ref = useRef<HTMLElement>(null);
 
   return (
@@ -31,10 +35,7 @@ export default function WipBadge({ label = "Alpha" }: WipBadeProps) {
       <Badge className="wip-badge" color="warning" innerRef={ref}>
         {label}
       </Badge>
-      <UncontrolledTooltip target={ref}>
-        Renku 2.0 is under active development and features may not work as
-        expected.
-      </UncontrolledTooltip>
+      <UncontrolledTooltip target={ref}>{text}</UncontrolledTooltip>
     </>
   );
 }
