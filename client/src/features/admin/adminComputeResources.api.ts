@@ -86,7 +86,14 @@ const adminComputeResourcesApi = createApi({
       },
     }),
     addResourcePool: builder.mutation<ResourcePool, AddResourcePoolParams>({
-      query: ({ name, public: isPublic, classes, quota, idle_threshold:idleThreshold, hibernation_threshold:hibernationThreshold }) => {
+      query: ({
+        name,
+        public: isPublic,
+        classes,
+        quota,
+        idle_threshold: idleThreshold,
+        hibernation_threshold: hibernationThreshold,
+      }) => {
         const body = {
           name,
           public: isPublic,
@@ -94,7 +101,7 @@ const adminComputeResourcesApi = createApi({
           classes,
           quota,
           idle_threshold: idleThreshold,
-          hibernation_threshold: hibernationThreshold
+          hibernation_threshold: hibernationThreshold,
         };
 
         return {
@@ -109,12 +116,16 @@ const adminComputeResourcesApi = createApi({
       ResourcePool,
       UpdateResourcePoolParams
     >({
-      query: ({ resourcePoolId, idleThreshold, hibernationThreshold, ...params }) => {
+      query: ({
+        resourcePoolId,
+        idleThreshold,
+        hibernationThreshold,
+        ...params
+      }) => {
         const body = {
           idle_threshold: idleThreshold,
           hibernation_threshold: hibernationThreshold,
-          ...params
-          
+          ...params,
         };
         return {
           method: "PATCH",

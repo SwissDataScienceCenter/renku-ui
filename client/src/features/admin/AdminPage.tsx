@@ -153,7 +153,14 @@ interface ResourcePoolItemProps {
 }
 
 function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
-  const { name, default: isDefault, public: isPublic, quota, idle_threshold: idleThreshold, hibernation_threshold: hibernationThreshold } = resourcePool;
+  const {
+    name,
+    default: isDefault,
+    public: isPublic,
+    quota,
+    idle_threshold: idleThreshold,
+    hibernation_threshold: hibernationThreshold,
+  } = resourcePool;
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {

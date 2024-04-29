@@ -31,8 +31,8 @@ export interface AddResourcePoolParams {
   public: boolean;
   classes: ResourceClassDefinition[];
   quota: Resources;
-  idle_threshold: number|null;
-  hibernation_threshold: number|null;
+  idle_threshold: number | null;
+  hibernation_threshold: number | null;
 }
 
 type ResourceClassDefinition = Omit<ResourceClass, "id" | "matching">;

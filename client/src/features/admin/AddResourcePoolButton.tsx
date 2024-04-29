@@ -247,6 +247,6 @@ interface AddResourcePoolForm {
   quotaCpu: number;
   quotaMemory: number;
   quotaGpu: number;
-  idleThreshold: number|null;
-  hibernationThreshold: number|null;
+  idleThreshold: number | null;
+  hibernationThreshold: number | null;
 }
