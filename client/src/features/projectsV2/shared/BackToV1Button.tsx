@@ -16,25 +16,28 @@
  * limitations under the License
  */
 
-import { useRef } from "react";
-import { Badge, UncontrolledTooltip } from "reactstrap";
+import cx from "classnames";
+import { BoxArrowInLeft } from "react-bootstrap-icons";
+import { Link } from "react-router-dom-v5-compat";
 
-type WipBadeProps = {
-  label?: string;
-};
-
-export default function WipBadge({ label = "Alpha" }: WipBadeProps) {
-  const ref = useRef<HTMLElement>(null);
-
+interface BackToV1ButtonProps {
+  outline?: boolean;
+}
+export default function BackToV1Button({
+  outline = false,
+}: BackToV1ButtonProps) {
   return (
-    <>
-      <Badge className="wip-badge" color="warning" innerRef={ref}>
-        {label}
-      </Badge>
-      <UncontrolledTooltip target={ref}>
-        Renku 2.0 is under active development and features may not work as
-        expected.
-      </UncontrolledTooltip>
-    </>
+    <Link
+      className={cx(
+        "btn",
+        "btn-sm",
+        outline ? "btn-outline-warning" : "btn-warning",
+        "ms-2",
+        "text-decoration-none"
+      )}
+      to="/"
+    >
+      <BoxArrowInLeft className="bi" /> Back to <b>Renku 1.0</b>
+    </Link>
   );
 }

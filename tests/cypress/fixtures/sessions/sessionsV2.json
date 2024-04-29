@@ -1,5 +1,77 @@
 {
   "servers": {
+    "renku-2-86688c93091df68dffdc594bfd022ce3": {
+      "annotations": {
+        "renku.io/branch": "",
+        "renku.io/commit-sha": "",
+        "renku.io/default_image_used": "False",
+        "renku.io/git-host": "gitlab.dev.renku.ch",
+        "renku.io/gitlabProjectId": "",
+        "renku.io/hibernatedSecondsThreshold": "259200",
+        "renku.io/hibernation": "",
+        "renku.io/hibernationBranch": "",
+        "renku.io/hibernationCommitSha": "",
+        "renku.io/hibernationDate": "",
+        "renku.io/hibernationDirty": "",
+        "renku.io/hibernationSynchronized": "",
+        "renku.io/idleSecondsThreshold": "86400",
+        "renku.io/lastActivityDate": "2024-04-19T09:45:45+00:00",
+        "renku.io/launcherId": "01HVTVWBGE2P5HSNKRYC2MG8B7",
+        "renku.io/namespace": "",
+        "renku.io/projectId": "THEPROJECTULID26CHARACTERS",
+        "renku.io/projectName": "",
+        "renku.io/renkuVersion": "2.0",
+        "renku.io/repository": "",
+        "renku.io/resourceClassId": "3",
+        "renku.io/servername": "renku-2-86688c93091df68dffdc594bfd022ce3",
+        "renku.io/username": "e2e@renku.ch"
+      },
+      "cloudstorage": [],
+      "image": "renku/renkulab-py:3.10-0.15.0",
+      "name": "renku-2-86688c93091df68dffdc594bfd022ce3",
+      "resources": {
+        "requests": {
+          "cpu": 0.1,
+          "memory": "1G",
+          "storage": "1G"
+        },
+        "usage": {}
+      },
+      "started": "2024-04-19T09:44:38+00:00",
+      "state": {
+        "pod_name": "renku-2-86688c93091df68dffdc594bfd022ce3-0"
+      },
+      "status": {
+        "details": [
+          {
+            "status": "ready",
+            "step": "Initialization"
+          },
+          {
+            "status": "ready",
+            "step": "Downloading server image"
+          },
+          {
+            "status": "ready",
+            "step": "Authentication and proxying services"
+          },
+          {
+            "status": "ready",
+            "step": "Starting session"
+          }
+        ],
+        "readyNumContainers": 4,
+        "state": "running",
+        "totalNumContainers": 4,
+        "warnings": [
+          {
+            "critical": false,
+            "message": "Server is idle and will be hibernated in 81093.401526 seconds."
+          }
+        ]
+      },
+      "url": "https://renku-ci-ui-3095.dev.renku.ch/sessions/renku-2-86688c93091df68dffdc594bfd022ce3"
+    },
     "e2e-40renk-local-2dtest-2dproject-84756d7d": {
       "annotations": {
         "renku.io/branch": "master",
