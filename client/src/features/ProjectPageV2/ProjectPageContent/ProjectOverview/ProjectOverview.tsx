@@ -17,5 +17,5 @@
  */
 
 export default function ProjectPageOverview() {
-  return <small>Project Overview</small>;
+  return <small>Project Page Overview</small>;
 }
