@@ -61,20 +61,7 @@ describe("Add new v2 project", () => {
       .click();
     cy.contains("user1.uuid").should("exist");
     cy.contains("Set Visibility").click();
-    cy.contains("Back").click();
-    cy.contains("user1.uuid").should("exist");
-  });
-
-  it("keeps namespace set after going back", () => {
-    cy.contains("New Project (V2)").should("be.visible");
-    cy.getDataCy("project-name-input").clear().type(newProjectTitle);
-    cy.getDataCy("project-slug-input").should("have.value", slug);
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
-      .first()
-      .click();
-    cy.contains("user1.uuid").should("exist");
-    cy.contains("Set Visibility").click();
-    cy.contains("Back").click();
+    cy.get(".rk-forms").contains("Back").click();
     cy.contains("user1.uuid").should("exist");
   });
 

@@ -501,6 +501,9 @@ const Url = {
         "/v2/groups/slug",
       ]),
     },
+    helpV2: {
+      base: "/v2/help",
+    },
     projectV2: {
       base: "/v2/projects",
       new: "/v2/projects/new",
@@ -511,9 +514,22 @@ const Url = {
         null,
         ["/v2/projects/namespace/slug"]
       ),
+      showSession: new UrlRule(
+        (data) =>
+          `/v2/projects/${data.namespace}/${data.slug}/sessions/show/${data.sessionId}`,
+        ["namespace", "slug", "sessionId"],
+        null,
+        ["/v2/projects/namespace/slug/sessions/show/sessionId"]
+      ),
       showId: new UrlRule((data) => `/v2/projects/${data.id}`, ["id"], null, [
         "/v2/projects/id",
       ]),
+      showSessionId: new UrlRule(
+        (data) => `/v2/projects/${data.id}/sessions/show/${data.sessionId}`,
+        ["id", "sessionId"],
+        null,
+        ["/v2/projects/id/sessions/show/sessionId"]
+      ),
     },
     v2Users: {
       base: "/v2/users",

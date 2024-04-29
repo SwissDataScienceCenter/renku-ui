@@ -15,26 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-import { useRef } from "react";
-import { Badge, UncontrolledTooltip } from "reactstrap";
+const DashboardV2 = lazy(() => import("./DashboardV2"));
 
-type WipBadeProps = {
-  label?: string;
-};
-
-export default function WipBadge({ label = "Alpha" }: WipBadeProps) {
-  const ref = useRef<HTMLElement>(null);
-
+export default function LazyDashboardV2() {
   return (
-    <>
-      <Badge className="wip-badge" color="warning" innerRef={ref}>
-        {label}
-      </Badge>
-      <UncontrolledTooltip target={ref}>
-        Renku 2.0 is under active development and features may not work as
-        expected.
-      </UncontrolledTooltip>
-    </>
+    <Suspense fallback={<PageLoader />}>
+      <DashboardV2 />
+    </Suspense>
   );
 }

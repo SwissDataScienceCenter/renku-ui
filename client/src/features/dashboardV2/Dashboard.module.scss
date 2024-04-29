@@ -1,0 +1,82 @@
+.containerEntityListBar {
+  background-color: var(--bs-body-bg);
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
+  grid-template-areas:
+    "entityTitle"
+    "entityIdentifier"
+    "entityCreators"
+    "entityDescription"
+    "entityTypeVisibility"
+    "entityDate";
+}
+
+.containerSessions {
+  background-color: var(--bs-body-bg);
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
+  grid-template-areas:
+    "entityAction"
+    "entityTitle"
+    "sessionTime";
+}
+
+.entityAction {
+  grid-area: entityAction;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.entityDate {
+  grid-area: entityDate;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.entityDescription {
+  grid-area: entityDescription;
+}
+.entityIdentifier {
+  grid-area: entityIdentifier;
+}
+.entityTitle {
+  grid-area: entityTitle;
+}
+.entityTypeVisibility {
+  grid-area: entityTypeVisibility;
+  display: flex;
+  align-items: center;
+}
+
+.sessionTime {
+  grid-area: sessionTime;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.sessionIcon {
+  grid-area: sessionIcon;
+}
+
+@media (min-width: 768px) {
+  .containerEntityListBar {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "entityTitle entityTitle"
+      "entityIdentifier entityIdentifier"
+      "entityDescription entityDescription"
+      "entityTypeVisibility entityDate";
+  }
+
+  .containerSessions {
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "entityTitle entityAction"
+      "entityDescription entityDescription"
+      "sessionIcon sessionTime";
+  }
+}
