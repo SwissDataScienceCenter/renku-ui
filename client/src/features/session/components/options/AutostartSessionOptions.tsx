@@ -426,6 +426,7 @@ function useAutostartSessionOptions(): void {
       namespace,
       project,
       sessionClass: currentSessionClassId,
+      secrets: [],
       storage,
     });
   }, [
