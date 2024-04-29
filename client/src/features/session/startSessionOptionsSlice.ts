@@ -23,6 +23,7 @@ import {
   DockerImageStatus,
   SessionCloudStorage,
   SessionEnvironmentVariable,
+  SessionSecrets,
   StartSessionOptions,
 } from "./startSessionOptions.types";
 
@@ -112,7 +113,7 @@ export const startSessionOptionsSlice = createSlice({
     setSessionClass: (state, action: PayloadAction<number>) => {
       state.sessionClass = action.payload;
     },
-    setSecretsList: (state, action: PayloadAction<string[]>) => {
+    setSecretsList: (state, action: PayloadAction<SessionSecrets[]>) => {
       state.secretsList = action.payload;
     },
     setSecretsPath: (state, action: PayloadAction<string>) => {

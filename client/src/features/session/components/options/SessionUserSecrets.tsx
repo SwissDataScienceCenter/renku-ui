@@ -31,6 +31,7 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { setSecretsList, setSecretsPath } from "../../startSessionOptionsSlice";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import { SessionSecrets } from "../../startSessionOptions.types";
 
 export default function SessionUserSecrets() {
   const secretsUrl = Url.get(Url.pages.secrets);
@@ -81,10 +82,12 @@ function SessionUserSecretsSection() {
     [dispatch]
   );
   const updateSecretsList = useCallback(
-    (secret: string) => {
-      if (sessionOptions.secretsList.includes(secret)) {
+    (secret: SessionSecrets) => {
+      if (sessionOptions.secretsList.map((s) => s.name).includes(secret.name)) {
         dispatch(
-          setSecretsList(sessionOptions.secretsList.filter((s) => s !== secret))
+          setSecretsList(
+            sessionOptions.secretsList.filter((s) => s.name !== secret.name)
+          )
         );
       } else {
         dispatch(setSecretsList([...sessionOptions.secretsList, secret]));
@@ -124,7 +127,12 @@ function SessionUserSecretsSection() {
             Secrets to mount:{" "}
             {sessionOptions.secretsList.length > 0 ? (
               <span className="fw-bold">
-                {sessionOptions.secretsList.join(", ")}
+                {[...sessionOptions.secretsList]
+                  .map((s) => s.name)
+                  .sort((a, b) => {
+                    return a.localeCompare(b); // localCompare is used to ignore case
+                  })
+                  .join(", ")}
               </span>
             ) : (
               <span className="fw-bold">None</span>
@@ -159,54 +167,58 @@ function SessionUserSecretsSection() {
             <div>
               <Label className="form-label">Secrets</Label>
               <div>
-                {secrets.data?.map((secret) => (
-                  <div
-                    className={cx("form-check", "form-switch", "d-flex")}
-                    key={secret.id}
-                  >
-                    <Input
-                      checked={sessionOptions.secretsList.includes(secret.name)}
-                      className={cx(
-                        "form-check-input",
-                        "rounded-pill",
-                        "my-auto",
-                        "me-2"
-                      )}
-                      name={`secrets-session-${secret.name}`}
-                      onChange={() => updateSecretsList(secret.name)}
-                      role="switch"
-                      type="checkbox"
-                    />
-                    <Label
-                      className={cx("form-check-label", "my-auto")}
-                      for={`secrets-session-${secret.name}`}
-                    >
-                      {secret.name}
-                    </Label>
-                  </div>
-                ))}
+                {secrets.data &&
+                  [...secrets.data]
+                    .sort((a, b) => {
+                      return a.name.localeCompare(b.name);
+                    })
+                    .map((secret) => (
+                      <div
+                        className={cx("form-check", "form-switch", "d-flex")}
+                        key={secret.id}
+                      >
+                        <Input
+                          checked={sessionOptions.secretsList
+                            .map((s) => s.name)
+                            .includes(secret.name)}
+                          className={cx(
+                            "form-check-input",
+                            "rounded-pill",
+                            "my-auto",
+                            "me-2"
+                          )}
+                          name={`secrets-session-${secret.name}`}
+                          onChange={() => updateSecretsList(secret)}
+                          role="switch"
+                          type="checkbox"
+                        />
+                        <Label
+                          className={cx("form-check-label", "my-auto")}
+                          for={`secrets-session-${secret.name}`}
+                        >
+                          {secret.name}
+                        </Label>
+                      </div>
+                    ))}
               </div>
 
-              {/* <Label className="form-label" for="secrets-session-path">
-                Secrets
-              </Label>
-              <div className="d-flex gap-2">
+              {/* <div className="d-flex gap-2 flex-wrap">
                 {secrets.data?.map((secret) => (
-                  // <Badge
-                  //   className="cursor-pointer rounded-pill fs-6 fw-normal text-primary border border-dark-subtle "
-                  //   color="none"
-                  //   key={secret.id}
-                  // >
-                  //   {secret.name}
-                  // </Badge>
-                  <Button
-                    className="btn-outline-rk-green"
+                  <Badge
+                    className="cursor-pointer rounded-pill fs-6 fw-normal text-primary border border-dark-subtle "
+                    color="none"
                     key={secret.id}
-                    size="sm"
-                    onClick={() => {}}
                   >
                     {secret.name}
-                  </Button>
+                  </Badge>
+                  // <Button
+                  //   className="btn-outline-rk-green"
+                  //   key={secret.id}
+                  //   size="sm"
+                  //   onClick={() => {}}
+                  // >
+                  //   {secret.name}
+                  // </Button>
                 ))}
               </div> */}
             </div>

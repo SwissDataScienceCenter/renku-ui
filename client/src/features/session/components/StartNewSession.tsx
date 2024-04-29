@@ -695,8 +695,8 @@ function StartSessionButton() {
     environmentVariables,
     lfsAutoFetch,
     pinnedDockerImage,
-    // secretsPath,
-    // secretsList,
+    secretsPath,
+    secretsList,
     sessionClass,
     storage,
   } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
@@ -748,6 +748,11 @@ function StartSessionButton() {
     const imageValidated =
       dockerImageStatus === "not-available" ? undefined : pinnedDockerImage;
 
+    const userSecrets = secretsList.map((secret) => ({
+      id: secret.id,
+      path: secretsPath,
+    }));
+
     dispatch(setStarting(true));
     dispatch(
       setSteps([
@@ -768,6 +773,7 @@ function StartSessionButton() {
       lfsAutoFetch,
       namespace,
       project,
+      secrets: userSecrets,
       sessionClass,
       storage,
     });
@@ -783,6 +789,8 @@ function StartSessionButton() {
     namespace,
     pinnedDockerImage,
     project,
+    secretsList,
+    secretsPath,
     sessionClass,
     startSession,
     storage,
