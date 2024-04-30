@@ -122,6 +122,7 @@ function SessionUserSecretsSection() {
             "py-2",
             "w-100"
           )}
+          data-cy="session-secrets-toggle"
           color="none"
           onClick={toggleIsOpen}
         >
