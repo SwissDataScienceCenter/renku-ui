@@ -55,7 +55,7 @@ export default function SessionUserSecrets() {
   );
 
   return (
-    <div className="field-group" data-cy="secrets-session">
+    <div className="field-group" data-cy="session-secrets">
       <div className="form-label">User Secrets</div>
       {content}
     </div>
@@ -105,23 +105,25 @@ function SessionUserSecretsSection() {
   if (secrets.isLoading) return <Loader />;
   if (secrets.isError)
     return <RtkOrNotebooksError dismissible={false} error={secrets.error} />;
-  if (secrets.data?.length === 0) return null;
+  if (secrets.data?.length === 0)
+    return (
+      <div className={cx("form-text", "my-1")}>No secrets defined yet.</div>
+    );
 
   return (
-    <Card className={cx("border", "border-dark-subtle")}>
-      <CardBody className={cx("px-0", "py-1")}>
+    <Card className={cx("border", "border-rk-border-input")}>
+      <CardBody className="p-0">
         <Button
           className={cx(
+            "bg-transparent",
+            "border-0",
             "d-flex",
-            "w-100",
             "px-3",
             "py-2",
-            "bg-transparent",
-            "border-0"
+            "w-100"
           )}
           color="none"
           onClick={toggleIsOpen}
-          size="sm"
         >
           <span>
             Secrets to mount:{" "}
@@ -145,28 +147,33 @@ function SessionUserSecretsSection() {
       </CardBody>
       <Collapse isOpen={isOpen}>
         <CardBody
-          className={cx("border-top", "border-dark-subtle", "small", "py-2")}
+          className={cx(
+            "border-rk-border-input",
+            "border-top",
+            "py-2",
+            "small"
+          )}
         >
           <div
             className="form-rk-green my-1"
-            data-cy="secrets-session-selection"
+            data-cy="session-secrets-selection"
           >
             <div className="mb-2">
               <Label className="form-label" for="secrets-session-path">
                 Mount path
               </Label>
               <Input
-                className="border-dark-subtle"
+                data-cy="session-secrets-mount-path"
                 id="secrets-session-path"
                 name="secrets-session-path"
+                onChange={(e) => changeSecretsPath(e.target.value)}
                 placeholder="/path/to/secrets"
                 value={sessionOptions.secretsPath}
-                onChange={(e) => changeSecretsPath(e.target.value)}
               />
             </div>
             <div>
               <Label className="form-label">Secrets</Label>
-              <div>
+              <div data-cy="session-secrets-checkbox-list">
                 {secrets.data &&
                   [...secrets.data]
                     .sort((a, b) => {
@@ -174,7 +181,7 @@ function SessionUserSecretsSection() {
                     })
                     .map((secret) => (
                       <div
-                        className={cx("form-check", "form-switch", "d-flex")}
+                        className={cx("d-flex", "form-check", "form-switch")}
                         key={secret.id}
                       >
                         <Input
@@ -183,10 +190,11 @@ function SessionUserSecretsSection() {
                             .includes(secret.name)}
                           className={cx(
                             "form-check-input",
-                            "rounded-pill",
+                            "me-2",
                             "my-auto",
-                            "me-2"
+                            "rounded-pill"
                           )}
+                          data-cy="session-secrets-checkbox"
                           name={`secrets-session-${secret.name}`}
                           onChange={() => updateSecretsList(secret)}
                           role="switch"
