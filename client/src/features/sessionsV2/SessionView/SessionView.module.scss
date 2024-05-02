@@ -1,0 +1,24 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+
+.SessionCard-warning {
+  border: solid 1px var(--#{$prefix}warning) !important;
+  border-left: solid 7px var(--#{$prefix}warning) !important;
+  background-color: var(--#{$prefix}rk-warning-50) !important;
+}
+.SessionCard-success {
+  border: solid 1px var(--#{$prefix}success) !important;
+  border-left: solid 7px var(--#{$prefix}success) !important;
+  background-color: var(--#{$prefix}rk-success-50) !important;
+}
+.SessionCard-danger {
+  border: solid 1px var(--#{$prefix}danger) !important;
+  border-left: solid 7px var(--#{$prefix}danger) !important;
+  background-color: var(--#{$prefix}rk-danger-50) !important;
+}
+.SessionCard-gray {
+  border: solid 1px var(--#{$prefix}gray) !important;
+  border-left: solid 7px var(--#{$prefix}gray) !important;
+  background-color: var(--#{$prefix}rk-gray-100) !important;
+}

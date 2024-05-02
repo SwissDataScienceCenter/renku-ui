@@ -16,6 +16,54 @@
  * limitations under the License.
  */
 
-export default function ProjectPageOverview() {
-  return <small>Project Overview</small>;
+import cx from "classnames";
+import { ReactNode } from "react";
+import { Col, Row } from "reactstrap";
+import { Project } from "../../../projectsV2/api/projectV2.api.ts";
+import { SessionLaunchersListDisplay } from "../../../sessionsV2/SessionsV2.tsx";
+import { CodeRepositoriesDisplay } from "../CodeRepositories/RepositoriesBox.tsx";
+import { DataSourcesDisplay } from "../DataSources/DataSourcesBox.tsx";
+import styles from "./ProjectOverview.module.scss";
+
+function OverviewBox({ children }: { children: ReactNode }) {
+  return (
+    <div
+      className={cx(
+        "border-1",
+        "border-rk-text-light",
+        "rounded-2",
+        "bg-white",
+        "mt-3",
+        "mt-lg-0",
+        styles.BorderDashed,
+        styles.ProjectPageOverviewBox
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+export default function ProjectPageOverview({ project }: { project: Project }) {
+  return (
+    <div className="mx-3 pb-5">
+      <Row className="g-5">
+        <Col sm={12}>
+          <OverviewBox>
+            <SessionLaunchersListDisplay project={project} />
+          </OverviewBox>
+        </Col>
+        <Col xl={6}>
+          <OverviewBox>
+            <DataSourcesDisplay />
+          </OverviewBox>
+        </Col>
+        <Col xl={6}>
+          <OverviewBox>
+            <CodeRepositoriesDisplay project={project} />
+          </OverviewBox>
+        </Col>
+      </Row>
+    </div>
+  );
 }

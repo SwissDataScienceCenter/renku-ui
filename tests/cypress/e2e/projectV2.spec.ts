@@ -333,13 +333,13 @@ describe("Edit v2 project", () => {
     cy.get("button").contains("Metadata").should("be.visible").click();
     cy.get("button").contains("Delete").should("be.visible").click();
     cy.get("button")
-      .contains("Yes, delete")
+      .contains("Delete project")
       .should("be.visible")
       .should("be.disabled");
     cy.contains("Please type test-2-v2-project").should("be.visible");
     cy.getDataCy("delete-confirmation-input").clear().type("test-2-v2-project");
     fixtures.postDeleteReadProjectV2();
-    cy.get("button").contains("Yes, delete").should("be.enabled").click();
+    cy.get("button").contains("Delete project").should("be.enabled").click();
     cy.wait("@deleteProjectV2");
     cy.wait("@postDeleteReadProjectV2");
 

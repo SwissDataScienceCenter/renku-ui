@@ -25,10 +25,12 @@
 import { Component } from "react";
 import { Alert } from "reactstrap";
 
-import rkDangerIcon from "../styles/icons/assets/danger.svg";
-import rkInfoIcon from "../styles/icons/assets/info.svg";
-import rkWarningIcon from "../styles/icons/assets/warning.svg";
-import rkSuccessIcon from "../styles/icons/assets/success.svg";
+import {
+  WarningIcon,
+  DangerIcon,
+  InfoIcon,
+  SuccessIcon,
+} from "./icons/AlertIcon.tsx";
 
 /**
  * Display a alert that can be dismissed.
@@ -84,13 +86,13 @@ class RenkuAlert extends Component {
 
   getIcon() {
     const icon = {
-      danger: <img alt="danger icon" src={rkDangerIcon} />,
-      info: <img alt="info icon" src={rkInfoIcon} />,
-      warning: <img alt="warning icon" src={rkWarningIcon} />,
-      success: <img alt="success icon" src={rkSuccessIcon} />,
+      danger: <DangerIcon />,
+      info: <InfoIcon />,
+      warning: <WarningIcon />,
+      success: <SuccessIcon />,
     }[this.props.color];
 
-    return icon ? <div className="alert-icon">{icon}</div> : "";
+    return icon || "";
   }
 
   render() {
@@ -106,7 +108,7 @@ class RenkuAlert extends Component {
         className={this.props.className}
         data-cy={this.props.dataCy}
       >
-        <div className="alert-content">
+        <div className="alert-content gap-3">
           {alertIcon}
           <div className="w-100 overflow-auto">{this.props.children}</div>
         </div>

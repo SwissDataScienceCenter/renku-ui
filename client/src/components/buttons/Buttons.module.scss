@@ -21,24 +21,42 @@
   }
 }
 .PlusIconButton {
-  color: var(--bs-rk-green);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 1000px;
-  border: solid 1px var(--bs-rk-green);
-  background-color: white;
-  padding: 0;
+  color: var(--bs-rk-green) !important;
 
   &:hover {
-    color: white;
-    background-color: var(--bs-rk-green-hover);
+    color: white !important;
+    background-color: var(--bs-rk-green-hover) !important;
   }
   &:active,
   &:focus {
-    color: white;
-    background-color: var(--bs-rk-green-active);
+    color: white !important;
+    background-color: var(--bs-rk-green-active) !important;
+  }
+}
+
+.EditButton {
+  color: var(--bs-gray-800) !important;
+}
+.EditButton:hover {
+  color: var(--bs-dark) !important;
+}
+.EditButton:first-child:active {
+  color: var(--bs-gray-700) !important;
+}
+.EditButton:focus,
+.EditButton:focus-visible {
+  color: var(--bs-gray-900) !important;
+}
+
+.EmptyButton {
+  &:hover {
+    color: var(--bs-rk-green-hover) !important;
+    border-style: solid !important;
+    border-color: var(--bs-rk-green-hover) !important;
+  }
+  &:active,
+  &:focus {
+    color: white !important;
+    background-color: var(--bs-rk-green-active) !important;
   }
 }

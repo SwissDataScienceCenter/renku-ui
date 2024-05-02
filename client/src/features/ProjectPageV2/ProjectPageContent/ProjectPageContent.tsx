@@ -39,7 +39,9 @@ export default function ProjectPageContent({
           <ProjectInformation project={project} />
         </div>
       )}
-      {!isSettingsPage && !isInfoPage && <ProjectPageOverview />}
+      {!isSettingsPage && !isInfoPage && (
+        <ProjectPageOverview project={project} />
+      )}
     </main>
   );
 }

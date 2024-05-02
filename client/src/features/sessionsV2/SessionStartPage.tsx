@@ -104,6 +104,7 @@ export default function SessionStartPage() {
 
   return (
     <>
+      <h5>Repository support for sessions</h5>
       <SessionConfig project={project} />
       <StartSessionFromLauncher launcher={launcher} project={project} />
     </>

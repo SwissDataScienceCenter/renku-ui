@@ -115,3 +115,17 @@ $list-group-bg: $transparent;
 
 // Breadcumb styles
 $breadcrumb-divider: quote(">");
+
+// Dropmenu styles
+$dropdown-border-color: none;
+$dropdown-link-hover-bg: #e9ecef;
+$dropdown-bg: $rk-white;
+$dropdown-border-width: 0.5px;
+$dropdown-border-radius: 8px;
+$dropdown-item-padding-y: 15px;
+$dropdown-divider-margin-y: 0px;
+$dropdown-padding-y: 0;
+$rk-dropdown-options-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+$rk-dropdown-options-margin: 5px 0;
+$rk-dropdown-bg-active: transparent;
+$rk-dropdown-option-text-align: start;

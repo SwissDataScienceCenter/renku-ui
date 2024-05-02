@@ -52,7 +52,7 @@ function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
 
   return (
     <>
-      <UncontrolledDropdown className="">
+      <UncontrolledDropdown>
         <DropdownToggle
           className={cx(
             "m-0",
@@ -66,7 +66,7 @@ function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
         >
           <ThreeDotsVertical className="fs-3" />
         </DropdownToggle>
-        <DropdownMenu className={cx("mt-2", "mx-0", "text-end")} end>
+        <DropdownMenu className={cx("mt-2", "mx-0", "text-start")} end>
           <DropdownItem>
             <Link
               className={cx(
@@ -74,7 +74,7 @@ function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
                 "d-flex",
                 "align-items-center",
                 "gap-2",
-                "justify-content-end"
+                "justify-content-start"
               )}
               to={settingsUrl}
             >
@@ -87,7 +87,7 @@ function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
               "d-flex",
               "align-items-center",
               "gap-2",
-              "justify-content-end"
+              "justify-content-start"
             )}
             onClick={toggleDelete}
           >
@@ -166,14 +166,14 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
             </Col>
           </Row>
           <Col className="col-12">
-            <div className={cx("")}>
+            <div>
               {project.description?.length ? (
                 <p>
                   {project.description}
                   <span className="mx-2">
                     <EditButtonLink
                       to={settingsUrl}
-                      title="Modify project information"
+                      tooltip="Modify project information"
                     />
                   </span>
                 </p>

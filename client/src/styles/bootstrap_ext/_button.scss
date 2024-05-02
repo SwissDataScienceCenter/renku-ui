@@ -350,12 +350,14 @@ $borderRadius: 1000px;
 }
 
 .btn-with-menu-options {
-  background: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  border: none;
+  background: $dropdown-bg;
+  box-shadow: $rk-dropdown-options-box-shadow;
+  border-radius: $dropdown-border-radius;
+  border-color: $dropdown-border-color;
+  border-width: $dropdown-border-width;
   color: $rk-dark;
-  margin: 5px 0;
+  margin: $rk-dropdown-options-margin;
+  text-align: $rk-dropdown-option-text-align;
 }
 
 .btn-with-menu-options a,
@@ -364,7 +366,7 @@ $borderRadius: 1000px;
 }
 .btn-with-menu-options button:focus,
 .btn-with-menu-options button:active {
-  background-color: transparent;
+  background-color: $rk-dropdown-bg-active;
 }
 
 .btn-group:not(.btn-with-menu, .round-button-group) {

@@ -15,36 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { PlusLg } from "react-bootstrap-icons";
-import { Button } from "reactstrap";
+import { Database } from "react-bootstrap-icons";
+import { Modal, ModalHeader } from "reactstrap";
+import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
 
-import { PlusRoundButton } from "../../components/buttons/Button.tsx";
-import { Step1AddSessionModal } from "./components/SessionModals/AddSession.tsx";
-
-export default function AddSessionLauncherButton({
-  styleBtn,
-}: {
-  styleBtn: "iconBtn" | "iconTextBtn";
-}) {
+export function DataSourcesDisplay() {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
-
   return (
     <>
-      {styleBtn === "iconTextBtn" ? (
-        <Button className="btn-rk-green" onClick={() => toggle()}>
-          <PlusLg className={cx("bi", "me-1")} />
-          Add session
-        </Button>
-      ) : (
+      <div className={cx("p-3", "d-flex", "justify-content-between")}>
+        <div className="fw-bold">
+          <Database size={20} className={cx("me-2")} />
+          Data Sources (0)
+        </div>
         <PlusRoundButton handler={toggle} />
-      )}
-      <Step1AddSessionModal isOpen={isOpen} toggleModal={toggle} />
+      </div>
+      <p className="px-3">
+        Add published datasets from data repositories, and connect to cloud
+        storage to read and write custom data.
+      </p>
+      <Modal isOpen={isOpen} toggle={toggle}>
+        <ModalHeader>Add Data source...</ModalHeader>
+      </Modal>
     </>
   );
 }

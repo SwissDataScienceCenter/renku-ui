@@ -70,7 +70,7 @@ export default function ProjectInformation({ project }: { project: Project }) {
         )}
       >
         <div className={cx("flex-grow-1", "border-bottom")}></div>
-        <EditButtonLink to={settingsUrl} title="Modify project information" />
+        <EditButtonLink to={settingsUrl} tooltip="Modify project information" />
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Namespace</div>

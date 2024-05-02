@@ -30,6 +30,7 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
+import ButtonStyles from "../../components/buttons/Buttons.module.scss";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
 import SessionEnvironmentFormContent, {
@@ -51,9 +52,17 @@ export default function UpdateSessionEnvironmentButton({
 
   return (
     <>
-      <Button className="btn-outline-rk-green" onClick={toggle}>
-        <PencilSquare className={cx("bi", "me-1")} />
-        Edit
+      <Button
+        className={cx(
+          "bg-transparent",
+          "shadow-none",
+          "border-0",
+          ButtonStyles.EditButton
+        )}
+        onClick={toggle}
+      >
+        <PencilSquare size={22} />
+        <span className="visually-hidden">Edit</span>
       </Button>
       <UpdateSessionEnvironmentModal
         environment={environment}

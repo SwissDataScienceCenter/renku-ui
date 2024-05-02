@@ -26,6 +26,19 @@ $rk-background-1: #ffffff;
 $rk-background-2: #f5f6fa;
 $rk-background-table: #ededf2;
 $rk-green-background: rgb(34, 53, 52);
+$rk-bg-info: #dbeafe;
+$rk-success-50: #f7fee7;
+$rk-danger-50: #fef2f2;
+$rk-warning-50: #fefce8;
+
+$rk-success-100: #ecfccb;
+$rk-danger-100: #fee2e2;
+$rk-warning-100: #fef9c3;
+
+$rk-gray-100: #f8f9fa;
+$rk-gray-200: #e9ecef;
+$rk-gray-600: #6c757d;
+
 $rk-white: #ffffff;
 $rk-hover: #f9f9f9;
 $rk-hover-blue: #99a3ab; //from bootraps mix https://codepen.io/emdeoh/pen/zYOQOPB
@@ -40,6 +53,10 @@ $rk-success-text: #009568;
 $rk-danger-text: #991b1b;
 $rk-warning-text: #854d0e;
 $rk-dark-bg: #c5cbcf;
+$rk-text-info: #172554;
+$rk-text-success: #1a2e05;
+$rk-text-danger: #450a0a;
+$rk-text-warning: #422006;
 
 $rk-danger-shadow: rgba(180, 10, 60, 0.5);
 $rk-table-border: #e4e7ea;
@@ -64,6 +81,20 @@ $rk-colors: (
   "rk-dark-bg": $rk-dark-bg,
   "rk-background-0": $rk-background-0,
   "rk-background-table": $rk-background-table,
+  "rk-bg-info": $rk-bg-info,
+  "rk-success-50": $rk-success-50,
+  "rk-danger-50": $rk-danger-50,
+  "rk-warning-50": $rk-warning-50,
+  "rk-success-100": $rk-success-100,
+  "rk-danger-100": $rk-danger-100,
+  "rk-warning-100": $rk-warning-100,
+  "rk-gray-100": $rk-gray-100,
+  "rk-gray-200": $rk-gray-200,
+  "rk-gray-600": $rk-gray-600,
+  "rk-text-info": $rk-text-info,
+  "rk-text-success": $rk-text-success,
+  "rk-text-danger": $rk-text-danger,
+  "rk-text-warning": $rk-text-warning,
   "rk-border-input": $rk-border-input,
   "rk-border-input-focus": $rk-border-input-focus,
   "rk-border-input-active": $rk-border-input-active,
@@ -131,6 +162,10 @@ $dropdown-border-radius: 4px;
 $dropdown-item-padding-y: 15px;
 $dropdown-divider-margin-y: 0px;
 $dropdown-padding-y: 0;
+$rk-dropdown-options-box-shadow: none;
+$rk-dropdown-options-margin: 5px 0;
+$rk-dropdown-bg-active: $rk-white;
+$rk-dropdown-option-text-align: start;
 
 // Override Bootstrap variables for font sizes
 $h1-font-size: 2.375rem;
@@ -139,7 +174,7 @@ $h3-font-size: 1.75rem;
 $h4-font-size: 1.5rem;
 $h5-font-size: 1.25rem;
 
-// Modal styles
+// Modal stylesF.alert-warning
 $modal-inner-padding: 2rem;
 $modal-content-bg: white;
 $modal-header-border-width: 0;
@@ -147,3 +182,8 @@ $modal-footer-border-width: 0;
 
 // Input values
 $input-padding-y: 10px;
+
+//off canvas
+$offcanvas-horizontal-width: 800px;
+
+//Alerts

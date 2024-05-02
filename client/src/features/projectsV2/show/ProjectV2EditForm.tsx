@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
+import { Trash, XLg } from "react-bootstrap-icons";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import {
@@ -28,6 +28,7 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
+  ModalHeader,
   Table,
 } from "reactstrap";
 
@@ -89,10 +90,10 @@ export function ProjectDeleteConfirmation({
 
   return (
     <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalHeader className={cx("text-danger", "fw-bold")}>
+        Delete project
+      </ModalHeader>
       <ModalBody>
-        <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
-          Are you absolutely sure?
-        </h3>
         <p className={cx("mb-0", "pb-3")}>
           Deleted projects cannot be restored. Please type{" "}
           <strong>{project.slug}</strong>, the slug of the project, to confirm.
@@ -104,7 +105,7 @@ export function ProjectDeleteConfirmation({
         />
       </ModalBody>
       <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+        <Button className="ms-2" color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
@@ -117,9 +118,9 @@ export function ProjectDeleteConfirmation({
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
-            <CheckLg className={cx("bi", "me-1")} />
+            <Trash className={cx("bi", "me-1")} />
           )}
-          Yes, delete project
+          Delete project
         </Button>
       </ModalFooter>
     </Modal>
