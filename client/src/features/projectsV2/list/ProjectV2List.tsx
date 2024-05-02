@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+import cx from "classnames";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import cx from "classnames";
 
 import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
@@ -25,8 +25,8 @@ import { Pagination } from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { Url } from "../../../utils/helpers/url";
 
-import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
 import type { Project } from "../api/projectV2.api";
+import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
 
 import styles from "./projectV2List.module.scss";
@@ -39,6 +39,10 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
     namespace: project.namespace,
     slug: project.slug,
   });
+  const oldUrl = Url.get(Url.pages.projectV2.old, {
+    namespace: project.namespace,
+    slug: project.slug,
+  });
   return (
     <div
       data-cy="list-card"
@@ -48,6 +52,13 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
         <h3>
           <Link to={projectUrl}>{project.name}</Link>
         </h3>
+        <Link
+          to={oldUrl}
+          className="btn btn-outline-rk-green"
+          data-cy={"link-project-" + project.id}
+        >
+          Old view
+        </Link>
         <div className="mb-2 fw-light">{project.namespace}/</div>
         <div className="mb-2">{project.description}</div>
         <div className={cx("align-items-baseline", "d-flex")}>

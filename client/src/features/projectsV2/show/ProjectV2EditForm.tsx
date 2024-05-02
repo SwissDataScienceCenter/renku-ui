@@ -33,17 +33,17 @@ import {
 
 import { Loader } from "../../../components/Loader";
 
-import {
-  useDeleteProjectsByProjectIdMutation,
-  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
-  useGetProjectsByProjectIdMembersQuery,
-  usePatchProjectsByProjectIdMutation,
-} from "../api/projectV2.enhanced-api";
 import type {
   Project,
   ProjectMemberResponse,
   ProjectPatch,
 } from "../api/projectV2.api";
+import {
+  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+  useDeleteProjectsByProjectIdMutation,
+  useGetProjectsByProjectIdMembersQuery,
+  usePatchProjectsByProjectIdMutation,
+} from "../api/projectV2.enhanced-api";
 import type { Repository } from "../projectV2.types";
 
 import AddProjectMemberModal from "../fields/AddProjectMemberModal";
@@ -53,8 +53,8 @@ import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 
-import { SettingEditOption } from "./projectV2Show.types";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { SettingEditOption } from "./projectV2Show.types";
 
 type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
 
@@ -64,7 +64,7 @@ interface ProjectDeleteConfirmationProps {
   project: Project;
 }
 
-function ProjectDeleteConfirmation({
+export function ProjectDeleteConfirmation({
   isOpen,
   toggle,
   project,
@@ -93,7 +93,7 @@ function ProjectDeleteConfirmation({
         <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
           Are you absolutely sure?
         </h3>
-        <p className="mb-0">
+        <p className={cx("mb-0", "pb-3")}>
           Deleted projects cannot be restored. Please type{" "}
           <strong>{project.slug}</strong>, the slug of the project, to confirm.
         </p>
