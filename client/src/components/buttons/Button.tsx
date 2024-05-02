@@ -27,7 +27,12 @@ import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Fragment, ReactNode, useRef, useState } from "react";
-import { ArrowRight, ChevronDown, PencilSquare } from "react-bootstrap-icons";
+import {
+  ArrowRight,
+  ChevronDown,
+  PencilSquare,
+  PlusLg,
+} from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -41,7 +46,10 @@ import {
 
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
-import styles from "./Buttons.module.scss";
+import {
+  default as buttonStyles,
+  default as styles,
+} from "./Buttons.module.scss";
 
 type ButtonWithMenuProps = {
   children?:
@@ -77,11 +85,15 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
     ? `btn-${bgColor}`
     : `btn-outline-${bgColor}`;
 
+  const classesNames = props.className?.length
+    ? props.className?.split(" ")
+    : [];
+
   const options = props.children ? (
     <>
       <DropdownToggle
         data-cy="more-menu"
-        className={`${props.className} ${classes}`}
+        className={cx(...classesNames, classes, "rounded-end-pill")}
         disabled={props.disabled}
       >
         <ChevronDown
@@ -99,7 +111,7 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
   return (
     <ButtonDropdown
       id={props.id}
-      className={`${props.className} btn-with-menu`}
+      className={cx("btn-with-menu", classesNames)}
       size={size}
       isOpen={dropdownOpen}
       toggle={toggleOpen}
@@ -316,7 +328,7 @@ function UnderlineArrowLink({
 /*
  * Edit button
  */
-function EditButtonLink({ to, title }: { to: string; title: string }) {
+function EditButtonLink({ to, tooltip }: { to: string; tooltip: ReactNode }) {
   const ref = useRef(null);
   return (
     <>
@@ -325,7 +337,40 @@ function EditButtonLink({ to, title }: { to: string; title: string }) {
           <PencilSquare />
         </Link>
       </span>
-      <UncontrolledTooltip target={ref}>{title}</UncontrolledTooltip>
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+    </>
+  );
+}
+
+export function PlusRoundButton({
+  handler,
+  tooltip,
+}: {
+  handler: () => void;
+  tooltip?: ReactNode;
+}) {
+  const ref = useRef(null);
+  return (
+    <>
+      <Button
+        className={cx(
+          "d-flex",
+          "justify-content-center",
+          "align-items-center",
+          "rounded-circle",
+          "border",
+          "border-rk-green",
+          "bg-white",
+          "p-1",
+          buttonStyles.PlusIconButton
+        )}
+        onClick={() => handler()}
+      >
+        <PlusLg size="16" />
+      </Button>
+      {tooltip && (
+        <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+      )}
     </>
   );
 }

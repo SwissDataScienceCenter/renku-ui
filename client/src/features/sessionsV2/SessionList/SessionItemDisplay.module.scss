@@ -1,0 +1,9 @@
+.ItemDisplaySessionRow:hover {
+  background-color: var(--bs-gray-200);
+}
+.ItemDisplaySessionName {
+  span:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+  }
+}

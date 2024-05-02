@@ -27,6 +27,7 @@ export interface GitlabProjectResponse {
   path: string;
   path_with_namespace: string;
   visibility: Visibilities;
+  created_at: string;
 }
 
 // GitLab Pipelines API

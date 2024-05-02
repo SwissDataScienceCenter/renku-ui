@@ -16,18 +16,20 @@
  * limitations under the License.
  */
 
-import {
-  faExternalLinkAlt,
-  faFileAlt,
-  faPlay,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
+import {
+  BoxArrowUpRight,
+  CheckLg,
+  FileEarmarkText,
+  Tools,
+  Trash,
+  XLg,
+} from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom-v5-compat";
 import { SingleValue } from "react-select";
 import {
@@ -41,30 +43,35 @@ import {
   Row,
 } from "reactstrap";
 
-import { ErrorAlert, WarnAlert } from "../../components/Alert";
-import { Loader } from "../../components/Loader";
-import { ButtonWithMenu } from "../../components/buttons/Button";
-import SessionPausedIcon from "../../components/icons/SessionPausedIcon";
-import { User } from "../../model/renkuModels.types";
-import { NotebooksHelper } from "../../notebooks";
-import { NotebookAnnotations } from "../../notebooks/components/session.types";
-import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
-import { NotificationsManager } from "../../notifications/notifications.types";
-import AppContext from "../../utils/context/appContext";
-import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
-import { ResourceClass } from "../dataServices/dataServices.types";
-import { toggleSessionLogsModal } from "../display/displaySlice";
-import { SessionRowResourceRequests } from "../session/components/SessionsList";
-import UnsavedWorkWarning from "../session/components/UnsavedWorkWarning";
-import { SessionClassSelector } from "../session/components/options/SessionClassOption";
+import { ErrorAlert, WarnAlert } from "../../../../components/Alert.jsx";
+import { Loader } from "../../../../components/Loader.tsx";
+import { ButtonWithMenu } from "../../../../components/buttons/Button.tsx";
+import SessionPausedIcon from "../../../../components/icons/SessionPausedIcon.tsx";
+import { User } from "../../../../model/renkuModels.types.ts";
+import { NotebooksHelper } from "../../../../notebooks";
+import { NotebookAnnotations } from "../../../../notebooks/components/session.types.ts";
+import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants.ts";
+import { NotificationsManager } from "../../../../notifications/notifications.types.ts";
+import AppContext from "../../../../utils/context/appContext.ts";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook.ts";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook.ts";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api.ts";
+import { ResourceClass } from "../../../dataServices/dataServices.types.ts";
+import { toggleSessionLogsModal } from "../../../display/displaySlice.ts";
+import { SessionRowResourceRequests } from "../../../session/components/SessionsList.tsx";
+import UnsavedWorkWarning from "../../../session/components/UnsavedWorkWarning.tsx";
+import { SessionClassSelector } from "../../../session/components/options/SessionClassOption.tsx";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
-} from "../session/sessions.api";
-import { Session, SessionStatusState } from "../session/sessions.types";
-import useWaitForSessionStatus from "../session/useWaitForSessionStatus.hook";
+} from "../../../session/sessions.api.ts";
+import {
+  Session,
+  SessionStatusState,
+} from "../../../session/sessions.types.ts";
+import useWaitForSessionStatus from "../../../session/useWaitForSessionStatus.hook.ts";
+import { EnvironmentLogs } from "../../../../components/Logs.tsx";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook.ts";
 
 interface ActiveSessionButtonProps {
   session: Session;
@@ -91,6 +98,14 @@ export default function ActiveSessionButton({
   const annotations = NotebooksHelper.cleanAnnotations(
     session.annotations
   ) as NotebookAnnotations;
+  const cleanAnnotations = useMemo(
+    () => NotebooksHelper.cleanAnnotations(annotations) as NotebookAnnotations,
+    [annotations]
+  );
+
+  const displayModal = useAppSelector(
+    ({ display }) => display.modals.sessionLogs
+  );
 
   // Handle resuming session
   const [isResuming, setIsResuming] = useState(false);
@@ -233,10 +248,11 @@ export default function ActiveSessionButton({
   const buttonClassName = cx(
     "btn",
     "btn-rk-green",
-    "btn-sm",
     "btn-icon-text",
     "start-session-button",
-    "session-link-group"
+    "session-link-group",
+    "py-1",
+    "px-2"
   );
 
   const defaultAction =
@@ -324,7 +340,7 @@ export default function ActiveSessionButton({
         onClick={onHibernateSession}
       >
         <SessionPausedIcon
-          className={cx("text-rk-green", "svg-inline--fa", "fa-fw", "me-2")}
+          className={cx("svg-inline--fa", "fa-fw", "me-2")}
           size={16}
         />
         Pause session
@@ -336,11 +352,7 @@ export default function ActiveSessionButton({
       data-cy="delete-session-button"
       onClick={logged ? toggleStopSession : onStopSession}
     >
-      <FontAwesomeIcon
-        className={cx("text-rk-green", "fa-w-14", "me-2")}
-        fixedWidth
-        icon={faTrash}
-      />
+      <Trash className={cx("svg-inline--fa", "fa-w-16", "me-2")} />
       Delete session
     </DropdownItem>
   );
@@ -353,7 +365,7 @@ export default function ActiveSessionButton({
         data-cy="modify-session-button"
         onClick={toggleModifySession}
       >
-        <Tools className={cx("bi", "text-rk-green", "me-2")} />
+        <Tools className={cx("bi", "me-2")} />
         Modify session
       </DropdownItem>
     );
@@ -361,33 +373,24 @@ export default function ActiveSessionButton({
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
     <DropdownItem href={session.url} target="_blank">
-      <FontAwesomeIcon
-        className={cx("text-rk-green", "fa-w-14", "me-2")}
-        fixedWidth
-        icon={faExternalLinkAlt}
-      />
+      <BoxArrowUpRight className={cx("svg-inline--fa", "fa-w-16", "me-2")} />
       Open in new tab
     </DropdownItem>
   );
 
   const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
-      <FontAwesomeIcon
-        className={cx("text-rk-green", "fa-w-14", "me-2")}
-        fixedWidth
-        icon={faFileAlt}
-      />
+      <FileEarmarkText className={cx("svg-inline--fa", "fa-w-16", "me-2")} />
       Get logs
     </DropdownItem>
   );
 
   return (
     <ButtonWithMenu
-      className="sessionsButton"
+      className="py-1"
       color="rk-green"
       default={defaultAction}
       isPrincipal
-      size="sm"
     >
       {hibernateAction}
       {deleteAction}
@@ -414,6 +417,10 @@ export default function ActiveSessionButton({
         resources={session.resources}
         status={status}
         toggleModal={toggleModifySession}
+      />
+      <EnvironmentLogs
+        name={displayModal.targetServer}
+        annotations={cleanAnnotations}
       />
     </ButtonWithMenu>
   );
@@ -444,8 +451,10 @@ function ConfirmDeleteModal({
   }, [onStopSession, toggleModal]);
 
   return (
-    <Modal centered isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
+    <Modal size="lg" centered isOpen={isOpen} toggle={toggleModal}>
+      <ModalHeader className="text-danger" toggle={toggleModal}>
+        Delete Session
+      </ModalHeader>
       <ModalBody>
         <Row>
           <Col>
@@ -460,27 +469,28 @@ function ConfirmDeleteModal({
               sessionName={sessionName}
               status={status}
             />
-            <div className="d-flex justify-content-end">
-              <Button
-                className={cx("float-right", "mt-1", "btn-outline-rk-green")}
-                disabled={isStopping}
-                onClick={toggleModal}
-              >
-                No, keep this session
-              </Button>
-              <Button
-                className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
-                data-cy="delete-session-modal-button"
-                disabled={isStopping}
-                type="submit"
-                onClick={onClick}
-              >
-                Yes, delete this session
-              </Button>
-            </div>
           </Col>
         </Row>
       </ModalBody>
+      <ModalFooter>
+        <Button
+          color="outline-danger"
+          disabled={isStopping}
+          onClick={toggleModal}
+        >
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="danger"
+          data-cy="delete-session-modal-button"
+          disabled={isStopping}
+          type="submit"
+          onClick={onClick}
+        >
+          <Trash className={cx("bi", "me-1")} /> Delete this session
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 }
@@ -625,7 +635,7 @@ function ModifySessionModalContent({
 
   return (
     <>
-      <ModalBody>
+      <ModalBody className="py-0">
         <Row>
           <Col>
             {message}

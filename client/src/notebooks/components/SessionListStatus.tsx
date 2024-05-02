@@ -46,7 +46,7 @@ interface SessionListRowStatusProps extends SessionListRowCoreProps {
   startTimestamp: string;
 }
 
-function SessionListRowStatusExtraDetails({
+export function SessionListRowStatusExtraDetails({
   details,
   status,
   uid,

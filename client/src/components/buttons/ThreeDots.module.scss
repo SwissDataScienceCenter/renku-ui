@@ -1,5 +1,4 @@
 .threeDots {
-  font-size: 34px;
   color: var(--bs-rk-green) !important;
 
   &:hover {
@@ -10,5 +9,18 @@
   &:active,
   &:focus {
     color: var(--bs-rk-green-active) !important;
+  }
+}
+.threeDotsDark {
+  color: var(--bs-dark) !important;
+
+  &:hover {
+    color: var(--bs-gray-700) !important;
+  }
+
+  &:first-child:active,
+  &:active,
+  &:focus {
+    color: var(--bs-gray-600) !important;
   }
 }

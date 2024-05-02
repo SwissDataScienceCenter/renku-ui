@@ -57,7 +57,7 @@ export interface Session {
   url: string;
 }
 
-interface SessionResources {
+export interface SessionResources {
   requests?: { cpu?: number; memory?: string; storage?: string };
   usage?: { cpu?: number; memory?: string; storage?: string };
 }
