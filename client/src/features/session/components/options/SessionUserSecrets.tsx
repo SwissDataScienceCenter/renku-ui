@@ -126,21 +126,7 @@ function SessionUserSecretsSection() {
           color="none"
           onClick={toggleIsOpen}
         >
-          <span>
-            Secrets to mount:{" "}
-            {sessionOptions.secretsList.length > 0 ? (
-              <span className="fw-bold">
-                {[...sessionOptions.secretsList]
-                  .map((s) => s.name)
-                  .sort((a, b) => {
-                    return a.localeCompare(b); // localCompare is used to ignore case
-                  })
-                  .join(", ")}
-              </span>
-            ) : (
-              <span className="fw-bold">None</span>
-            )}
-          </span>
+          <MountedSecrets secretsList={sessionOptions.secretsList} />
           <div className="ms-auto">
             <ChevronFlippedIcon flipped={isOpen} />
           </div>
@@ -174,66 +160,81 @@ function SessionUserSecretsSection() {
             </div>
             <div>
               <Label className="form-label">Secrets</Label>
-              <div data-cy="session-secrets-checkbox-list">
-                {secrets.data &&
-                  [...secrets.data]
-                    .sort((a, b) => {
-                      return a.name.localeCompare(b.name);
-                    })
-                    .map((secret) => (
-                      <div
-                        className={cx("d-flex", "form-check", "form-switch")}
-                        key={secret.id}
-                      >
-                        <Input
-                          checked={sessionOptions.secretsList
-                            .map((s) => s.name)
-                            .includes(secret.name)}
-                          className={cx(
-                            "form-check-input",
-                            "me-2",
-                            "my-auto",
-                            "rounded-pill"
-                          )}
-                          data-cy="session-secrets-checkbox"
-                          name={`secrets-session-${secret.name}`}
-                          onChange={() => updateSecretsList(secret)}
-                          role="switch"
-                          type="checkbox"
-                        />
-                        <Label
-                          className={cx("form-check-label", "my-auto")}
-                          for={`secrets-session-${secret.name}`}
-                        >
-                          {secret.name}
-                        </Label>
-                      </div>
-                    ))}
-              </div>
-
-              {/* <div className="d-flex gap-2 flex-wrap">
-                {secrets.data?.map((secret) => (
-                  <Badge
-                    className="cursor-pointer rounded-pill fs-6 fw-normal text-primary border border-dark-subtle "
-                    color="none"
-                    key={secret.id}
-                  >
-                    {secret.name}
-                  </Badge>
-                  // <Button
-                  //   className="btn-outline-rk-green"
-                  //   key={secret.id}
-                  //   size="sm"
-                  //   onClick={() => {}}
-                  // >
-                  //   {secret.name}
-                  // </Button>
-                ))}
-              </div> */}
+              <SecretsCheckboxList
+                secrets={secrets.data}
+                selectedSecrets={sessionOptions.secretsList}
+                updateSecretsList={updateSecretsList}
+              />
             </div>
           </div>
         </CardBody>
       </Collapse>
     </Card>
   );
+}
+
+interface SecretsCheckboxListProps {
+  secrets?: SessionSecrets[];
+  selectedSecrets?: SessionSecrets[];
+  updateSecretsList: (secret: SessionSecrets) => void;
+}
+function SecretsCheckboxList({
+  secrets,
+  selectedSecrets,
+  updateSecretsList,
+}: SecretsCheckboxListProps) {
+  if (!secrets || !secrets.length) return null;
+  const sortedSecrets = [...secrets].sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
+  const selectedSecretsNames =
+    selectedSecrets && selectedSecrets.length
+      ? selectedSecrets.map((s) => s.name)
+      : [];
+  return (
+    <div data-cy="session-secrets-checkbox-list">
+      {sortedSecrets.map((secret) => (
+        <div
+          className={cx("d-flex", "form-check", "form-switch")}
+          key={secret.id}
+        >
+          <Input
+            checked={selectedSecretsNames.includes(secret.name)}
+            className={cx(
+              "form-check-input",
+              "me-2",
+              "my-auto",
+              "rounded-pill"
+            )}
+            data-cy="session-secrets-checkbox"
+            name={`secrets-session-${secret.name}`}
+            onChange={() => updateSecretsList(secret)}
+            role="switch"
+            type="checkbox"
+          />
+          <Label
+            className={cx("form-check-label", "my-auto")}
+            for={`secrets-session-${secret.name}`}
+          >
+            {secret.name}
+          </Label>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+interface MountedSecretsProps {
+  secretsList: SessionSecrets[];
+}
+function MountedSecrets({ secretsList }: MountedSecretsProps) {
+  const content = !secretsList.length
+    ? "None"
+    : [...secretsList]
+        .map((s) => s.name)
+        .sort((a, b) => {
+          return a.localeCompare(b); // localCompare is used to ignore case
+        })
+        .join(", ");
+  return <span className="fw-bold">{content}</span>;
 }
