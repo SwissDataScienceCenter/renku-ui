@@ -1,0 +1,32 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.navLink {
+  color: var(--bs-rk-text);
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+  }
+  &:global(.active) {
+    font-weight: bold;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    padding: 0;
+    margin-bottom: 0;
+    color: var(--bs-rk-text);
+  }
+  @include media-breakpoint-up(lg) {
+    & {
+      color: var(--bs-rk-text-light);
+      &:hover {
+        color: var(--bs-rk-text);
+      }
+    }
+    &:global(.active) {
+      color: var(--bs-rk-text);
+    }
+  }
+}

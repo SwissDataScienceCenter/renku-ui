@@ -234,7 +234,7 @@ function ProjectV2ShowByNamespaceAndSlug() {
   );
 }
 
-function ProjectV2ShowByProjectId() {
+export function ProjectV2ShowByProjectId() {
   const { id: projectId } = useParams<{
     id: string | undefined;
     namespace: string | undefined;

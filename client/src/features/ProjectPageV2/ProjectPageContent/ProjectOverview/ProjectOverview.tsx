@@ -16,34 +16,6 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { PlayFill } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router-dom-v5-compat";
-
-interface StartSessionButtonProps {
-  namespace: string;
-  slug: string;
-  launcherId: string;
-}
-
-export default function StartSessionButton({
-  launcherId,
-  namespace,
-  slug,
-}: StartSessionButtonProps) {
-  const startUrl = generatePath(
-    "/v2/projects/:namespace/:slug/sessions/:launcherId/start",
-    {
-      launcherId,
-      namespace,
-      slug,
-    }
-  );
-
-  return (
-    <Link className={cx("btn", "btn-rk-green")} to={startUrl}>
-      <PlayFill size="24" />
-      Start
-    </Link>
-  );
+export default function ProjectPageOverview() {
+  return <small>Project Overview</small>;
 }

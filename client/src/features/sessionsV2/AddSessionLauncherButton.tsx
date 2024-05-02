@@ -34,13 +34,18 @@ import {
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import buttonStyles from "../../components/buttons/Buttons.module.scss";
 import SessionLauncherFormContent, {
   SessionLauncherForm,
 } from "./SessionLauncherFormContent";
 import sessionsV2Api, { useAddSessionLauncherMutation } from "./sessionsV2.api";
 import { SessionLauncherEnvironment } from "./sessionsV2.types";
 
-export default function AddSessionLauncherButton() {
+export default function AddSessionLauncherButton({
+  styleBtn,
+}: {
+  styleBtn: "iconBtn" | "iconTextBtn";
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -48,10 +53,16 @@ export default function AddSessionLauncherButton() {
 
   return (
     <>
-      <Button className="btn-outline-rk-green" onClick={toggle}>
-        <PlusLg className={cx("bi", "me-1")} />
-        Add Session
-      </Button>
+      {styleBtn === "iconTextBtn" ? (
+        <Button className="btn-rk-green" onClick={toggle}>
+          <PlusLg className={cx("bi", "me-1")} />
+          Add session
+        </Button>
+      ) : (
+        <Button className={buttonStyles.PlusIconButton} onClick={toggle}>
+          <PlusLg size="20" />
+        </Button>
+      )}
       <AddSessionLauncherModal isOpen={isOpen} toggle={toggle} />
     </>
   );
@@ -155,7 +166,9 @@ function AddSessionLauncherModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Add session</ModalHeader>
+        <ModalHeader toggle={toggle} className="pb-0">
+          Add session
+        </ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
 
@@ -165,7 +178,7 @@ function AddSessionLauncherModal({
             watch={watch}
           />
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className="pt-0">
           <Button className="btn-outline-rk-green" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel

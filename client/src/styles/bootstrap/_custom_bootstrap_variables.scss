@@ -3,6 +3,9 @@
 // RENKU UI COLORS
 $rk-blue: #01192d;
 $rk-green: #009568;
+$rk-green-active: #007a6c;
+$rk-green-hover: #007a6c;
+$rk-green-disabled: #31d869;
 $rk-green-highlight: #007a6c;
 $rk-pink: #ca4e86;
 $rk-pink-highlight: #aa2c61;
@@ -14,6 +17,9 @@ $rk-text-light: #545863; // contrast ratio 7:1 bg white
 $rk-light: #e4e7ea; // borders
 $rk-border-input: #8b93a7; // contrast ratio 3:1 for background-0
 //backgrounds
+$rk-border-input-focus: #ced4da;
+$rk-border-input-active: #ced4da;
+$rk-shadow-focus: rgba(0, 0, 0, 0.1);
 $rk-background-0: #f5f6fa;
 $rk-background-0-dark: #01192d;
 $rk-background-1: #ffffff;

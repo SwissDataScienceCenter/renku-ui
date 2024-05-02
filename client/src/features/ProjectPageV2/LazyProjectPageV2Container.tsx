@@ -13,37 +13,24 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
+import { ProjectPageContentType } from "./ProjectPageContainer/ProjectPageContainer.tsx";
 
-import cx from "classnames";
-import { PlayFill } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+const ProjectPageV2Show = lazy(
+  () => import("./ProjectPageContainer/ProjectPageContainer.tsx")
+);
 
-interface StartSessionButtonProps {
-  namespace: string;
-  slug: string;
-  launcherId: string;
-}
-
-export default function StartSessionButton({
-  launcherId,
-  namespace,
-  slug,
-}: StartSessionButtonProps) {
-  const startUrl = generatePath(
-    "/v2/projects/:namespace/:slug/sessions/:launcherId/start",
-    {
-      launcherId,
-      namespace,
-      slug,
-    }
-  );
-
+export default function LazyProjectPageV2Show({
+  contentPage,
+}: {
+  contentPage: ProjectPageContentType;
+}) {
   return (
-    <Link className={cx("btn", "btn-rk-green")} to={startUrl}>
-      <PlayFill size="24" />
-      Start
-    </Link>
+    <Suspense fallback={<PageLoader />}>
+      <ProjectPageV2Show contentPage={contentPage} />
+    </Suspense>
   );
 }

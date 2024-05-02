@@ -185,11 +185,11 @@ $borderRadius: 1000px;
   @extend .btn-rk;
   --#{$prefix}btn-active-color: white;
   --#{$prefix}btn-hover-color: white;
-  --#{$prefix}btn-hover-bg: #{$rk-green-highlight};
-  --#{$prefix}btn-hover-border-color: #{$rk-green-highlight};
+  --#{$prefix}btn-hover-bg: #{$rk-green-hover};
+  --#{$prefix}btn-hover-border-color: #{$rk-green-hover};
   --#{$prefix}btn-active-color: white;
-  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
-  --#{$prefix}btn-active-border-color: #{$rk-green-highlight};
+  --#{$prefix}btn-active-bg: #{$rk-green-active};
+  --#{$prefix}btn-active-border-color: #{$rk-green-active};
 }
 
 .btn-rk-over-green {
@@ -262,9 +262,12 @@ $borderRadius: 1000px;
   }
 }
 .btn-outline-rk-green {
+  --#{$prefix}btn-hover-color: white;
+  --#{$prefix}btn-hover-bg: #{$rk-green-hover};
+  --#{$prefix}btn-hover-border-color: #{$rk-green-hover};
   --#{$prefix}btn-active-color: white;
-  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
-  --#{$prefix}btn-active-border-color: #{$rk-green-highlight};
+  --#{$prefix}btn-active-bg: #{$rk-green-active};
+  --#{$prefix}btn-active-border-color: #{$rk-green-active};
   background-color: white;
   color: #{$rk-green};
 
@@ -272,9 +275,7 @@ $borderRadius: 1000px;
   &:focus,
   &:active,
   &.active {
-    background-color: #{$rk-green-highlight};
     color: white;
-    border-color: #{$rk-green-highlight};
   }
   &:disabled {
     color: $rk-green;

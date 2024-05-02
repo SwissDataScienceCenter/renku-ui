@@ -28,7 +28,7 @@ export default function WipBadge({ label = "Alpha" }: WipBadeProps) {
 
   return (
     <>
-      <Badge className="wip-badge" color="warning" innerRef={ref}>
+      <Badge className="wip-badge text-white" color="warning" innerRef={ref}>
         {label}
       </Badge>
       <UncontrolledTooltip target={ref}>
