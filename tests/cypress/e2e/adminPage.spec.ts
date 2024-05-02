@@ -125,11 +125,11 @@ describe("admin page", () => {
       .click();
     cy.get(".card")
       .contains(".card", "Public pool")
-      .contains("Default idle threshold")
+      .contains("Maximum Session Idle Time")
       .should("be.visible");
     cy.get(".card")
       .contains(".card", "Public pool")
-      .contains("Default hibernation threshold")
+      .contains("Maximum Session Hibernation Time")
       .should("be.visible");
 
     // Check one of the private pools
@@ -152,11 +152,11 @@ describe("admin page", () => {
 
     cy.get(".card")
       .contains(".card", "Special GPU pool")
-      .contains("Idle threshold: 123456")
+      .contains("Maximum Session Idle Time: 123456")
       .should("be.visible");
     cy.get(".card")
       .contains(".card", "Special GPU pool")
-      .contains("Hibernation threshold: 987654")
+      .contains("Maximum Session Hibernation Time: 987654")
       .should("be.visible");
     cy.get(".card")
       .contains(".card", "Special GPU pool")
