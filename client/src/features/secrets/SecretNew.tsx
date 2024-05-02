@@ -99,8 +99,8 @@ export default function SecretsNew() {
     <>
       <p>Here you can add a new secret to use in your sessions.</p>
       <p>
-        Names must be unique and can contain only letters, numbers, underscores
-        (_), and dashes (-). Values are limited to 5000 characters.
+        Names must be unique and can contain only letters, numbers, dots (.),
+        underscores (_), and dashes (-). Values are limited to 5000 characters.
       </p>
       <Form
         className="form-rk-green"
@@ -129,8 +129,10 @@ export default function SecretsNew() {
               validate: (value) =>
                 secrets.data?.map((s) => s.name).includes(value)
                   ? "This name is already used by another secret."
-                  : !/^[a-zA-Z0-9_-]+$/.test(value)
-                  ? "Only letters, numbers, underscores (_), and dashes (-)."
+                  : value && value.startsWith(".")
+                  ? "Name cannot start with a dot."
+                  : !/^[a-zA-Z0-9_.-]+$/.test(value)
+                  ? "Only letters, numbers, dots (.), underscores (_), and dashes (-)."
                   : undefined,
             }}
           />

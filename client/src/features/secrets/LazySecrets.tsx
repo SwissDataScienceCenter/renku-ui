@@ -18,7 +18,7 @@
 
 import { Suspense, lazy } from "react";
 
-import PageLoader from "./Secrets";
+import PageLoader from "../../components/PageLoader";
 
 const Secrets = lazy(() => import("./Secrets"));
 
