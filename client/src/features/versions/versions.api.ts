@@ -146,6 +146,14 @@ export const versionsApi = createApi({
           sshEnabled: singleVersion?.data?.sshEnabled ?? false,
           cloudStorageEnabled:
             singleVersion?.data?.cloudstorageEnabled ?? false,
+          registeredUsersIdleThreshold:
+            singleVersion?.data?.registeredUsersIdleThreshold ?? 86400,
+          registeredUsersHibernationThreshold:
+            singleVersion?.data?.registeredUsersHibernationThreshold ?? 86400,
+          anonymousUsersIdleThreshold:
+            singleVersion?.data?.anonymousUsersIdleThreshold ?? 86400,
+          anonymousUsersHibernationThreshold:
+            singleVersion?.data?.anonymousUsersHibernationThreshold ?? 86400,
         };
       },
       transformErrorResponse: () => {
@@ -155,6 +163,10 @@ export const versionsApi = createApi({
           anonymousSessionsEnabled: false,
           sshEnabled: false,
           cloudStorageEnabled: false,
+          registeredUsersIdleThreshold: 86400,
+          registeredUsersHibernationThreshold: 86400,
+          anonymousUsersIdleThreshold: 86400,
+          anonymousUsersHibernationThreshold: 86400,
         } as NotebooksVersion;
       },
       providesTags: (result) =>

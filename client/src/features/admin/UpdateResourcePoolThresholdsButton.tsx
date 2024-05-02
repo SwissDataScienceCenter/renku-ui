@@ -98,11 +98,11 @@ function UpdateResourcePoolThresholdsModal({
       updateResourcePool({
         resourcePoolId: id,
         idle_threshold:
-          data.idleThreshold == undefined ? null : data.idleThreshold,
+          data.idleThreshold == undefined ? null : data.idleThreshold * 60,
         hibernation_threshold:
           data.hibernationThreshold == undefined
             ? null
-            : data.hibernationThreshold,
+            : data.hibernationThreshold * 60,
       });
     },
     [id, updateResourcePool]
@@ -133,6 +133,10 @@ function UpdateResourcePoolThresholdsModal({
     >
       <ModalHeader toggle={toggle}>Update {name}&apos;s thresholds</ModalHeader>
       <ModalBody>
+        <p>
+          Please note that changes only affect new sessions, not already running
+          ones
+        </p>
         <Form
           className="form-rk-green"
           noValidate
@@ -142,7 +146,7 @@ function UpdateResourcePoolThresholdsModal({
 
           <div className="mb-3">
             <Label className="form-label" for="updateResourcePoolIdleThreshold">
-              Idle Threshold (seconds)
+              Maximum Session Idle Time(minutes)
             </Label>
             <Controller
               control={control}
@@ -171,7 +175,7 @@ function UpdateResourcePoolThresholdsModal({
               className="form-label"
               for="updateResourcePoolHibernationThreshold"
             >
-              Hibernation Threshold (seconds)
+              Maximum Session Hibernation Time(minutes)
             </Label>
             <Controller
               control={control}

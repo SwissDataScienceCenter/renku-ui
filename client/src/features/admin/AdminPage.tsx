@@ -35,6 +35,7 @@ import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
+import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
 import {
   ResourceClass,
   ResourcePool,
@@ -59,6 +60,7 @@ import { ResourcePoolUser } from "./adminComputeResources.types";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
+import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
 
 export default function AdminPage() {
   return (
@@ -167,6 +169,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
   const toggle = useCallback(() => {
     setIsOpen((isOpen) => !isOpen);
   }, []);
+  const { data } = useGetNotebooksVersionQuery();
 
   return (
     <Card className="mt-2">
@@ -203,16 +206,22 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
               : "Private pool (requires special access)"}
           </p>
 
-          {idleThreshold != null ? (
-            <p> Idle threshold: {idleThreshold}</p>
-          ) : (
-            <p>Default idle threshold</p>
-          )}
-          {hibernationThreshold != null ? (
-            <p> Hibernation threshold: {hibernationThreshold}</p>
-          ) : (
-            <p>Default hibernation threshold</p>
-          )}
+          <p>
+            Maximum Session Idle Time:
+            {toFullHumanDuration(
+              idleThreshold ?? data?.registeredUsersIdleThreshold ?? 86400,
+              ["years", "weeks", "days", "hours", "minutes"]
+            )}
+          </p>
+          <p>
+            Maximum Session Hibernation Time:
+            {toFullHumanDuration(
+              hibernationThreshold ??
+                data?.registeredUsersHibernationThreshold ??
+                86400,
+              ["years", "weeks", "days", "hours", "minutes"]
+            )}
+          </p>
           <div className={cx("col", "ms-auto")}>
             <UpdateResourcePoolThresholdsButton resourcePool={resourcePool} />
           </div>

@@ -111,11 +111,11 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           gpu: data.quotaGpu,
         },
         idle_threshold:
-          data.idleThreshold == undefined ? null : data.idleThreshold,
+          data.idleThreshold == undefined ? null : data.idleThreshold * 60,
         hibernation_threshold:
           data.hibernationThreshold == undefined
             ? null
-            : data.hibernationThreshold,
+            : data.hibernationThreshold * 60,
       });
     },
     [addResourcePool, defaultSessionClass]
@@ -175,7 +175,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           </div>
           <div className="mb-3">
             <Label className="form-label" for="addResourcePoolIdleThreshold">
-              Idle Threshold (seconds)
+              Maximum Session Idle Time(minutes)
             </Label>
             <Controller
               control={control}
@@ -203,7 +203,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               className="form-label"
               for="addResourcePoolHibernationThreshold"
             >
-              Hibernation Threshold (seconds)
+              Maximum Session Hibernation Time(minutes)
             </Label>
             <Controller
               control={control}

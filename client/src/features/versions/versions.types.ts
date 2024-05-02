@@ -70,6 +70,10 @@ interface NotebookComponent extends BaseVersion {
     anonymousSessionsEnabled: boolean;
     cloudstorageEnabled: boolean;
     sshEnabled: boolean;
+    registeredUsersIdleThreshold: number;
+    registeredUsersHibernationThreshold: number;
+    anonymousUsersIdleThreshold: number;
+    anonymousUsersHibernationThreshold: number;
   };
 }
 
@@ -83,5 +87,9 @@ export interface NotebooksVersion {
   cloudStorageEnabled: boolean;
   name: string;
   sshEnabled: boolean;
+  registeredUsersIdleThreshold: number;
+  registeredUsersHibernationThreshold: number;
+  anonymousUsersIdleThreshold: number;
+  anonymousUsersHibernationThreshold: number;
   version: string;
 }
