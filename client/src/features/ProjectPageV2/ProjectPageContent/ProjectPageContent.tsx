@@ -17,13 +17,20 @@
  */
 import cx from "classnames";
 import { Project } from "../../projectsV2/api/projectV2.api.ts";
+import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageContainer.tsx";
 import ProjectInformation from "./ProjectInformation/ProjectInformation.tsx";
 import ProjectPageOverview from "./ProjectOverview/ProjectOverview.tsx";
 import ProjectPageSettings from "./Settings/ProjectSettings.tsx";
 
-export default function ProjectPageContent({ project }: { project: Project }) {
-  const isSettingsPage = window.location.pathname.endsWith("/settings");
-  const isInfoPage = window.location.pathname.endsWith("/info");
+export default function ProjectPageContent({
+  project,
+  selectedContent,
+}: {
+  project: Project;
+  selectedContent: ProjectPageContentType;
+}) {
+  const isSettingsPage = selectedContent === ProjectPageContentType.Settings;
+  const isInfoPage = selectedContent === ProjectPageContentType.ProjectInfo;
   return (
     <main>
       {isSettingsPage && <ProjectPageSettings projectId={project.id} />}
@@ -32,7 +39,7 @@ export default function ProjectPageContent({ project }: { project: Project }) {
           <ProjectInformation project={project} />
         </div>
       )}
-      {!isInfoPage && !isInfoPage && <ProjectPageOverview />}
+      {!isSettingsPage && !isInfoPage && <ProjectPageOverview />}
     </main>
   );
 }
