@@ -23,6 +23,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { useGetNotebooksVersionQuery } from "../../../../features/versions/versions.api";
 import { useCallback, useContext, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import Select, {
@@ -32,6 +33,7 @@ import Select, {
   SelectComponentsConfig,
   SingleValue,
   SingleValueProps,
+  GroupHeadingProps,
   components,
 } from "react-select";
 
@@ -57,6 +59,7 @@ import { setSessionClass } from "../../startSessionOptionsSlice";
 import { computeStorageSizes } from "../../utils/sessionOptions.utils";
 
 import styles from "./SessionClassOption.module.scss";
+import { toFullHumanDuration } from "../../../../utils/helpers/DurationUtils";
 
 export const SessionClassOption = () => {
   // Project options
@@ -408,9 +411,15 @@ export const SessionClassSelector = ({
   onChange,
   disabled,
 }: SessionClassSelectorProps) => {
+  const { data: nbVersion } = useGetNotebooksVersionQuery();
   const options = useMemo(
-    () => makeGroupedOptions(resourcePools),
-    [resourcePools]
+    () =>
+      makeGroupedOptions(
+        resourcePools,
+        nbVersion?.registeredUsersIdleThreshold ?? 86400,
+        nbVersion?.registeredUsersHibernationThreshold ?? 86400
+      ),
+    [resourcePools, nbVersion]
   );
 
   return (
@@ -434,12 +443,22 @@ export const SessionClassSelector = ({
 interface OptionGroup extends GroupBase<ResourceClass> {
   label: string;
   pool: ResourcePool;
+  maxIdle: string;
+  maxHibernate: string;
   options: readonly ResourceClass[];
 }
 
-const makeGroupedOptions = (resourcePools: ResourcePool[]): OptionGroup[] =>
+const makeGroupedOptions = (
+  resourcePools: ResourcePool[],
+  defaultIdleThreshold: number,
+  defaultHibernationThreshold: number
+): OptionGroup[] =>
   resourcePools.map((pool) => ({
     label: pool.name,
+    maxIdle: toFullHumanDuration(pool.idle_threshold ?? defaultIdleThreshold),
+    maxHibernate: toFullHumanDuration(
+      pool.hibernation_threshold ?? defaultHibernationThreshold
+    ),
     pool,
     options: pool.classes,
   }));
@@ -454,7 +473,7 @@ const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
       menuIsOpen && styles.controlIsOpen
     ),
   dropdownIndicator: () => cx("pe-3"),
-  groupHeading: () => cx("pt-1", "px-3", "text-uppercase", styles.groupHeading),
+  groupHeading: () => cx("pt-1", "px-3", styles.groupHeading),
   menu: () =>
     cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
   menuList: () => cx("d-grid", "gap-2"),
@@ -498,6 +517,19 @@ const selectComponents: SelectComponentsConfig<
       <components.SingleValue {...props}>
         <OptionOrSingleValueContent sessionClass={sessionClass} />
       </components.SingleValue>
+    );
+  },
+  GroupHeading: (
+    props: GroupHeadingProps<ResourceClass, false, OptionGroup>
+  ) => {
+    return (
+      <components.GroupHeading {...props}>
+        <span className="text-uppercase me-2">{props.data.label}</span>
+        <span>
+          (Max Idle: {props.data.maxIdle}, Max Stopped:{" "}
+          {props.data.maxHibernate})
+        </span>
+      </components.GroupHeading>
     );
   },
 };

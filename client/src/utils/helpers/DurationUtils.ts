@@ -71,7 +71,7 @@ export function toFullHumanDuration(
   }
   const shiftedDuration = duration_.shiftTo(...units);
   const filteredDuration = {} as Record<string, number>;
-  for (const [key, value] of Object.entries(shiftedDuration)) {
+  for (const [key, value] of Object.entries(shiftedDuration.toObject())) {
     if (value != 0) {
       filteredDuration[key] = value;
     }

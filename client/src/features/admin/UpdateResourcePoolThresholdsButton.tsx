@@ -86,11 +86,11 @@ function UpdateResourcePoolThresholdsModal({
       idleThreshold:
         resourcePool.idle_threshold == null
           ? undefined
-          : resourcePool.idle_threshold,
+          : resourcePool.idle_threshold / 60,
       hibernationThreshold:
         resourcePool.hibernation_threshold == null
           ? undefined
-          : resourcePool.hibernation_threshold,
+          : resourcePool.hibernation_threshold / 60,
     },
   });
   const onSubmit = useCallback(
