@@ -47,6 +47,10 @@ export default function ProjectInformation({ project }: { project: Project }) {
     namespace: project.namespace,
     slug: project.slug,
   });
+  const membersUrl = Url.get(Url.pages.projectV2.members, {
+    namespace: project.namespace,
+    slug: project.slug,
+  });
 
   return (
     <aside className={cx("px-3", "pb-5", "pb-lg-2")}>
@@ -102,7 +106,7 @@ export default function ProjectInformation({ project }: { project: Project }) {
           <UnderlineArrowLink
             tooltip="Add project members"
             text="Add members"
-            to={settingsUrl}
+            to={membersUrl}
           />
         )}
       </div>

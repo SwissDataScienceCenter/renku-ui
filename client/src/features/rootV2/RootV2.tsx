@@ -191,6 +191,16 @@ function ProjectsV2Routes() {
         }
       />
       <Route
+        path=":namespace/:slug/settings/members"
+        element={
+          <ContainerWrap fullSize className="container-lg">
+            <LazyProjectPageV2Show
+              contentPage={ProjectPageContentType.Members}
+            />
+          </ContainerWrap>
+        }
+      />
+      <Route
         path=":namespace/:slug/settings"
         element={
           <ContainerWrap fullSize className="container-lg">

@@ -31,6 +31,7 @@ import ProjectPageNav from "../ProjectPageNav/ProjectPageNav.tsx";
 import styles from "./ProjectPageContainer.module.scss";
 
 export enum ProjectPageContentType {
+  Members = "Members",
   Overview = "Overview",
   Settings = "Settings",
   ProjectInfo = "ProjectInfo",

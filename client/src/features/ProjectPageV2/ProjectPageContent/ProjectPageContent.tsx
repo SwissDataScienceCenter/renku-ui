@@ -21,6 +21,7 @@ import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageConta
 import ProjectInformation from "./ProjectInformation/ProjectInformation.tsx";
 import ProjectPageOverview from "./ProjectOverview/ProjectOverview.tsx";
 import ProjectPageSettings from "./Settings/ProjectSettings.tsx";
+import ProjectPageSettingsMembers from "./Settings/ProjectSettingsMembers.tsx";
 
 export default function ProjectPageContent({
   project,
@@ -30,16 +31,18 @@ export default function ProjectPageContent({
   selectedContent: ProjectPageContentType;
 }) {
   const isSettingsPage = selectedContent === ProjectPageContentType.Settings;
+  const isMembersPage = selectedContent === ProjectPageContentType.Members;
   const isInfoPage = selectedContent === ProjectPageContentType.ProjectInfo;
   return (
     <main>
+      {isMembersPage && <ProjectPageSettingsMembers projectId={project.id} />}
       {isSettingsPage && <ProjectPageSettings projectId={project.id} />}
       {isInfoPage && (
         <div className={cx("d-block", "d-lg-none", "d-sm-block")}>
           <ProjectInformation project={project} />
         </div>
       )}
-      {!isSettingsPage && !isInfoPage && (
+      {!isSettingsPage && !isInfoPage && !isMembersPage && (
         <ProjectPageOverview project={project} />
       )}
     </main>

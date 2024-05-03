@@ -548,6 +548,13 @@ const Url = {
         null,
         ["/v2/projects/id/sessions/show/sessionId"]
       ),
+      members: new UrlRule(
+        (data) =>
+          `/v2/projects/${data.namespace}/${data.slug}/settings/members`,
+        ["namespace", "slug"],
+        null,
+        ["/v2/projects/1234/settings/members"]
+      ),
     },
     v2Users: {
       base: "/v2/users",
