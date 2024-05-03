@@ -19,21 +19,39 @@
 import cx from "classnames";
 import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
-import { PeopleFill } from "react-bootstrap-icons";
-import { Button, Col, Row, Table } from "reactstrap";
+import { PeopleFill, PencilSquare, Trash } from "react-bootstrap-icons";
+import { Button, Col, DropdownItem, Row } from "reactstrap";
 
-import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
+import {
+  ButtonWithMenu,
+  PlusRoundButton,
+} from "../../../../components/buttons/Button.tsx";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 
 import type { ProjectMemberResponse } from "../../../projectsV2/api/projectV2.api";
-import {
-  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
-  useGetProjectsByProjectIdMembersQuery,
-} from "../../../projectsV2/api/projectV2.enhanced-api";
+import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import AddProjectMemberModal from "../../../projectsV2/fields/AddProjectMemberModal";
+import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal.tsx";
+import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 
 import styles from "../ProjectOverview/ProjectOverview.module.scss";
+
+function roleCompare(a: string, b: string) {
+  if (a === "owner") {
+    return -1;
+  }
+  if (b === "owner") {
+    return 1;
+  }
+  if (a === "editor") {
+    return -1;
+  }
+  if (b === "editor") {
+    return 1;
+  }
+  return 0;
+}
 
 function OverviewBox({ children }: { children: ReactNode }) {
   return (
@@ -54,6 +72,60 @@ function OverviewBox({ children }: { children: ReactNode }) {
   );
 }
 
+interface ProjectPageSettingsMembersTableRowProps {
+  member: ProjectMemberResponse;
+  onRemove: () => void;
+  onEdit: () => void;
+}
+
+function ProjectPageSettingsMembersTableRow({
+  member,
+  onRemove,
+  onEdit,
+}: ProjectPageSettingsMembersTableRowProps) {
+  const defaultAction = (
+    <Button color="rk-green" onClick={onEdit}>
+      <PencilSquare className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Edit
+    </Button>
+  );
+  return (
+    <Row className={cx("px-0", "py-4", "py-xl-3", "m-0")}>
+      <Col
+        xl={6}
+        xs={12}
+        className={cx("d-flex", "align-items-center", "px-3")}
+      >
+        {member.email ?? member.id}
+      </Col>
+      <Col
+        xl={3}
+        sm={6}
+        xs={12}
+        className={cx("d-flex", "align-items-center", "px-2")}
+      >
+        {member.role}
+      </Col>
+      <Col
+        xl={3}
+        sm={6}
+        xs={12}
+        className={cx("d-flex", "align-items-center", "px-2")}
+      >
+        <ButtonWithMenu
+          className="py-1"
+          color="rk-green"
+          default={defaultAction}
+          isPrincipal
+        >
+          <DropdownItem onClick={onRemove}>
+            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+          </DropdownItem>
+        </ButtonWithMenu>
+      </Col>
+    </Row>
+  );
+}
+
 interface ProjectPageSettingsMembersTableProps
   extends ProjectPageSettingsMembersProps {
   members: ProjectMemberResponse[];
@@ -63,37 +135,86 @@ function ProjectPageSettingsMembersTable({
   members,
   projectId,
 }: ProjectPageSettingsMembersTableProps) {
-  const [deleteMember] =
-    useDeleteProjectsByProjectIdMembersAndMemberIdMutation();
+  const [isEditMemberModalOpen, setIsEditMemberModalOpen] = useState(false);
+  const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
+  const [memberToEdit, setMemberToEdit] = useState<ProjectMemberResponse>();
+  const sortedMembers = [...members].sort((a, b) => {
+    if (a.role !== b.role) {
+      return roleCompare(a.role, b.role);
+    }
+    if (a.email && b.email) {
+      return a.email.localeCompare(b.email);
+    }
+    return a.id < b.id ? -1 : 1;
+  });
 
-  const onDelete = useCallback(
-    (member: ProjectMemberResponse) => {
-      deleteMember({ projectId, memberId: member.id });
-    },
-    [deleteMember, projectId]
-  );
+  const headerClasses = [
+    "w-100",
+    "fst-italic",
+    "fs-small",
+    "text-rk-gray-600",
+    "border-0",
+    "border-bottom",
+    "border-rk-gray-200",
+    "rk-border-dotted",
+  ];
   return (
-    <Table>
-      <tbody>
-        {members.map((d, i) => {
-          return (
-            <tr key={d.id}>
-              <td>{d.email ?? d.id}</td>
-              <td>{d.role}</td>
-              <td>
-                <Button
-                  color="outline-danger"
-                  data-cy={`delete-member-${i}`}
-                  onClick={() => onDelete(d)}
-                >
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </Table>
+    <>
+      <Row className={cx("d-none", "d-xl-flex", "pt-3", "px-0", "m-0", "mb-1")}>
+        <Col
+          xl={6}
+          xs={12}
+          className={cx("d-flex", "align-items-center", "px-3")}
+        >
+          <span className={cx(headerClasses)}>User id</span>
+        </Col>
+        <Col
+          xl={3}
+          sm={6}
+          xs={12}
+          className={cx("d-flex", "align-items-center", "px-2")}
+        >
+          <span className={cx(headerClasses)}>Role</span>
+        </Col>
+        <Col
+          xl={3}
+          sm={6}
+          xs={12}
+          className={cx("d-flex", "align-items-center", "px-2")}
+        >
+          <span className={cx(headerClasses)}>Actions</span>
+        </Col>
+      </Row>
+      {sortedMembers.map((d) => {
+        return (
+          <ProjectPageSettingsMembersTableRow
+            key={d.id}
+            member={d}
+            onRemove={() => {
+              setMemberToEdit(d);
+              setIsRemoveMemberModalOpen(true);
+            }}
+            onEdit={() => {
+              setMemberToEdit(d);
+              setIsEditMemberModalOpen(true);
+            }}
+          />
+        );
+      })}
+      <EditProjectMemberModal
+        isOpen={isEditMemberModalOpen}
+        member={memberToEdit}
+        members={members}
+        projectId={projectId}
+        toggle={() => setIsEditMemberModalOpen((open) => !open)}
+      />
+      <RemoveProjectMemberModal
+        isOpen={isRemoveMemberModalOpen}
+        member={memberToEdit}
+        projectId={projectId}
+        toggle={() => setIsRemoveMemberModalOpen((open) => !open)}
+      />
+    </>
   );
 }
 
@@ -132,14 +253,13 @@ function ProjectPageSettingsMembersContent({
           <PeopleFill className={cx("rk-icon", "rk-icon-lg", "me-2")} />
           Members ({totalMembers})
         </div>
-        <PlusRoundButton
-          data-cy="project-add-member"
-          handler={toggleAddMemberModalOpen}
-        />
+        <div>
+          <PlusRoundButton
+            data-cy="project-add-member"
+            handler={toggleAddMemberModalOpen}
+          />
+        </div>
       </div>
-      <p className={cx("px-3", totalMembers > 1 && "d-none")}>
-        Add members to give them access to this project.
-      </p>
       <ProjectPageSettingsMembersTable
         members={members}
         projectId={projectId}
@@ -163,6 +283,14 @@ export default function ProjectPageSettingsMembers({
 }: ProjectPageSettingsMembersProps) {
   return (
     <div className="mx-3 pb-5">
+      <Row className="g-5">
+        <Col sm={12}>
+          <h4>
+            <b>Members of your project</b>
+          </h4>
+          <p>Maintain access permissions to your project</p>
+        </Col>
+      </Row>
       <Row className="g-5">
         <Col sm={12}>
           <OverviewBox>

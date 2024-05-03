@@ -189,8 +189,11 @@ describe("Navigate to project", () => {
       })
       .listProjectV2Members()
       .readProjectV2();
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
-    cy.contains("test 2 v2-project").should("be.visible");
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings/members");
+    cy.wait("@readProjectV2");
+    cy.contains("Members of your project").should("be.visible");
+    cy.contains("user1@email.com").should("be.visible");
+    cy.contains("user3-uuid").should("be.visible");
   });
 });
 
@@ -299,12 +302,9 @@ describe("Edit v2 project", () => {
       })
       .listProjectV2Members()
       .readProjectV2();
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.getDataCy(`link-project-${projectId}`).click();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings/members");
+    cy.contains("Members of your project").should("be.visible");
     cy.wait("@readProjectV2");
-    cy.contains("test 2 v2-project").should("be.visible");
-    cy.contains("Edit Settings").should("be.visible").click();
-    cy.get("button").contains("Members").should("be.visible").click();
     cy.contains("user1@email.com").should("be.visible");
     cy.contains("user3-uuid").should("be.visible");
     fixtures
