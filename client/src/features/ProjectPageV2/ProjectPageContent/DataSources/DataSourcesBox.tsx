@@ -23,10 +23,13 @@ import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
 import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api.ts";
+import AccessGuard from "../../utils/AccessGuard.tsx";
+import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
 import { DataSourceDisplay } from "./DataSourceDisplay.tsx";
 
 export function DataSourcesDisplay({ project }: { project: Project }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { userRole } = useProjectAccess({ projectId: project.id });
 
   const { data, isFetching, isLoading } = useGetStoragesV2Query({
     projectId: project.id,
@@ -51,7 +54,14 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
           <Database size={20} className={cx("me-2")} />
           Data Sources ({totalStorages})
         </div>
-        <PlusRoundButton handler={toggle} />
+        <AccessGuard
+          disabled={null}
+          enabled={
+            <PlusRoundButton data-cy="add-data-source" handler={toggle} />
+          }
+          minimumRole="editor"
+          role={userRole}
+        />
       </div>
       {!isLoading && !isFetching && totalStorages === 0 ? (
         <p className="px-3">

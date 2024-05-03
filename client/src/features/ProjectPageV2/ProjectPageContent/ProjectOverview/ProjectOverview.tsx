@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { ReactNode } from "react";
 import { Col, Row } from "reactstrap";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
+import type { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { SessionLaunchersListDisplay } from "../../../sessionsV2/SessionsV2.tsx";
 import { CodeRepositoriesDisplay } from "../CodeRepositories/RepositoriesBox.tsx";
 import { DataSourcesDisplay } from "../DataSources/DataSourcesBox.tsx";
