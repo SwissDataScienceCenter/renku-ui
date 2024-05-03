@@ -22,16 +22,20 @@ import { Nav, NavItem, NavLink } from "reactstrap";
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2.tsx";
 import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageContainer.tsx";
 import styles from "./ProjectPageNav.module.scss";
+import type { Project } from "../../projectsV2/api/projectV2.api.ts";
+
+import AccessGuard from "../utils/AccessGuard.tsx";
+import useProjectAccess from "../utils/useProjectAccess.hook.ts";
 
 export default function ProjectPageNav({
-  namespace,
-  slug,
+  project,
   selectedContent,
 }: {
-  namespace: string | undefined;
-  slug: string | undefined;
+  project: Project;
   selectedContent?: ProjectPageContentType;
 }) {
+  const { namespace, slug } = project;
+  const { userRole } = useProjectAccess({ projectId: project.id });
   const projectUrl = generatePath("/v2/projects/:namespace/:slug", {
     namespace: namespace || "",
     slug: slug || "",
@@ -118,7 +122,7 @@ export default function ProjectPageNav({
         <Nav className="d-none d-lg-flex">
           <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
             <NavLink
-              href={"#general"}
+              href="#general"
               className={cx(
                 navLinkClasses,
                 "mb-2",
@@ -132,7 +136,7 @@ export default function ProjectPageNav({
           </NavItem>
           <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
             <NavLink
-              href={"#delete"}
+              href="#members"
               className={cx(
                 navLinkClasses,
                 "mb-2",
@@ -141,9 +145,29 @@ export default function ProjectPageNav({
                 styles.navLink
               )}
             >
-              Delete
+              Members
             </NavLink>
           </NavItem>
+          <AccessGuard
+            disabled={null}
+            enabled={
+              <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
+                <NavLink
+                  href="#delete"
+                  className={cx(
+                    navLinkClasses,
+                    "mb-2",
+                    "ms-2",
+                    "ps-2",
+                    styles.navLink
+                  )}
+                >
+                  Delete
+                </NavLink>
+              </NavItem>
+            }
+            role={userRole}
+          />
         </Nav>
       )}
     </>

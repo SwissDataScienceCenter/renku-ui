@@ -164,12 +164,50 @@ describe("Navigate to project", () => {
     cy.contains("test 2 v2-project").should("be.visible");
     cy.location("pathname").should("contain", "/user1-uuid/test-2-v2-project");
   });
+
+  it("shows project members", () => {
+    fixtures
+      .exactUser({
+        name: "getExactUserSuccess",
+        exactEmailQueryString: "foo%40bar.com",
+        response: [
+          {
+            id: "user-id",
+            email: "foo@bar.com",
+            first_name: "Foo",
+            last_name: "Bar",
+          },
+        ],
+      })
+      .exactUser({
+        name: "getExactUserFail",
+        exactEmailQueryString: "noone%40bar.com",
+        response: [],
+      })
+      .listProjectV2Members()
+      .readProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
+    cy.wait("@readProjectV2");
+    cy.contains("Members of the project").should("be.visible");
+    cy.contains("user1@email.com").should("be.visible");
+    cy.contains("user3-uuid").should("be.visible");
+  });
 });
 
 describe("Edit v2 project", () => {
   const projectId = "THEPROJECTULID26CHARACTERS";
   beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "user1-uuid",
+          email: "user1@email.com",
+        },
+      })
+      .namespaces();
     fixtures.projects().landingUserProjects().listProjectV2();
     cy.visit("/v2/projects");
   });
@@ -248,10 +286,9 @@ describe("Edit v2 project", () => {
     cy.contains("https://domain.name/repo3.git").should("be.visible");
   });
 
-  it("changes project members", () => {
+  it("remove project members", () => {
     const projectMemberToRemove = "user3-uuid";
     fixtures
-      .deleteProjectV2Member({ memberId: projectMemberToRemove })
       .exactUser({
         name: "getExactUserSuccess",
         exactEmailQueryString: "foo%40bar.com",
@@ -271,20 +308,50 @@ describe("Edit v2 project", () => {
       })
       .listProjectV2Members()
       .readProjectV2();
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.getDataCy(`link-project-${projectId}`).click();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
+    cy.contains("Members of the project").should("be.visible");
     cy.wait("@readProjectV2");
-    cy.contains("test 2 v2-project").should("be.visible");
-    cy.contains("Edit Settings").should("be.visible").click();
-    cy.get("button").contains("Members").should("be.visible").click();
-    cy.contains("user1@email.com").should("be.visible");
     cy.contains("user3-uuid").should("be.visible");
     fixtures
       .deleteProjectV2Member({ memberId: projectMemberToRemove })
       .listProjectV2Members({ removeMemberId: projectMemberToRemove });
-    cy.getDataCy("delete-member-2").should("be.visible").click();
+    cy.getDataCy("project-member-actions-1")
+      .find('[data-cy="more-menu"]')
+      .click();
+    cy.getDataCy("project-member-actions-1").contains("Remove").click();
+    cy.getDataCy("remove-member-form").should("be.visible");
+    cy.contains("Remove member").should("be.visible").click();
+    cy.getDataCy("remove-member-form").should("not.be.visible");
     cy.contains("user3-uuid").should("not.exist");
-    cy.contains("Add").should("be.visible").click();
+  });
+
+  it("adds project members", () => {
+    fixtures
+      .exactUser({
+        name: "getExactUserSuccess",
+        exactEmailQueryString: "foo%40bar.com",
+        response: [
+          {
+            id: "user-id",
+            email: "foo@bar.com",
+            first_name: "Foo",
+            last_name: "Bar",
+          },
+        ],
+      })
+      .exactUser({
+        name: "getExactUserFail",
+        exactEmailQueryString: "noone%40bar.com",
+        response: [],
+      })
+      .listProjectV2Members()
+      .readProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
+    cy.contains("Members of the project").should("be.visible");
+    cy.wait("@readProjectV2");
+    cy.contains("user1@email.com").should("be.visible");
+
+    cy.getDataCy("project-add-member").click();
     cy.getDataCy("add-project-member-email").clear().type("foo@bar.com");
     cy.contains("Lookup").should("be.visible").click();
     cy.wait("@getExactUserSuccess");
@@ -294,17 +361,67 @@ describe("Edit v2 project", () => {
         email: "foo@bar.com",
         role: "editor",
       },
-      removeMemberId: projectMemberToRemove,
     });
     cy.get("button").contains("Add Member").should("be.visible").click();
     cy.contains("foo@bar.com").should("be.visible");
+  });
 
-    cy.get("button").contains("Add").should("be.visible").click();
+  it("cannot add non-existent user", () => {
+    fixtures
+      .exactUser({
+        name: "getExactUserSuccess",
+        exactEmailQueryString: "foo%40bar.com",
+        response: [
+          {
+            id: "user-id",
+            email: "foo@bar.com",
+            first_name: "Foo",
+            last_name: "Bar",
+          },
+        ],
+      })
+      .exactUser({
+        name: "getExactUserFail",
+        exactEmailQueryString: "noone%40bar.com",
+        response: [],
+      })
+      .listProjectV2Members()
+      .readProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
+    cy.contains("Members of the project").should("be.visible");
+    cy.wait("@readProjectV2");
+    cy.contains("user1@email.com").should("be.visible");
+
+    // Try to add a user
+    cy.getDataCy("project-add-member").click();
     cy.getDataCy("add-project-member-email").clear().type("noone@bar.com");
     cy.contains("Lookup").should("be.visible").click();
     cy.wait("@getExactUserFail");
     cy.contains("No user found for noone@bar.com").should("be.visible");
     cy.getDataCy("user-lookup-close-button").should("be.visible").click();
+  });
+
+  it("edits project members", () => {
+    const projectMemberToEdit = "user3-uuid";
+    fixtures
+      .listProjectV2Members()
+      .readProjectV2()
+      .patchProjectV2Member({ memberId: projectMemberToEdit });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
+    cy.contains("Members of the project").should("be.visible");
+    cy.wait("@readProjectV2");
+    cy.contains("user1@email.com").should("be.visible");
+
+    cy.getDataCy("project-member-edit-1").should("be.visible").click();
+    cy.getDataCy("member-role").select("Viewer");
+    fixtures.listProjectV2Members({
+      removeMemberId: projectMemberToEdit,
+      addMember: {
+        id: projectMemberToEdit,
+        role: "viewer",
+      },
+    });
+    cy.contains("button", "Change access").click();
   });
 
   it("deletes project", () => {
@@ -333,5 +450,93 @@ describe("Edit v2 project", () => {
     });
     cy.contains("List Projects (V2)");
     cy.contains("Project deleted").should("be.visible");
+  });
+});
+
+describe("Editor cannot maintain members", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "user3-uuid",
+        },
+      })
+      .namespaces();
+    fixtures
+      .projects()
+      .landingUserProjects()
+      .listProjectV2()
+      .readProjectV2()
+      .listProjectV2Members();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+  });
+
+  it("can change project metadata", () => {
+    cy.contains("test 2 v2-project").should("be.visible");
+    cy.getDataCy("project-settings-edit").should("be.visible").click();
+    cy.contains("a", "Overview").click();
+    cy.getDataCy("project-description-edit").should("be.visible").click();
+  });
+
+  it("can change project components", () => {
+    cy.contains("test 2 v2-project").should("be.visible");
+    cy.wait("@listProjectV2Members");
+    cy.wait("@getDataServicesUser");
+    cy.getDataCy("add-session-launcher").should("be.visible");
+    cy.getDataCy("add-data-source").should("be.visible");
+    cy.getDataCy("add-repository").should("be.visible");
+  });
+
+  it("cannot change project members", () => {
+    cy.contains("test 2 v2-project").should("be.visible");
+    cy.wait("@listProjectV2Members");
+    cy.contains("View members").click();
+    cy.getDataCy("project-member-edit-1").should("be.disabled");
+    cy.getDataCy("project-add-member").should("not.exist");
+  });
+});
+
+describe("Viewer cannot edit project", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "user2-uuid",
+        },
+      })
+      .namespaces();
+    fixtures
+      .projects()
+      .landingUserProjects()
+      .listProjectV2()
+      .readProjectV2()
+      .listProjectV2Members();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+  });
+
+  it("cannot change project metadata", () => {
+    cy.contains("test 2 v2-project").should("be.visible");
+    cy.wait("@listProjectV2Members");
+    cy.wait("@getDataServicesUser");
+    cy.getDataCy("project-settings-edit").should("not.exist");
+    cy.getDataCy("project-description-edit").should("not.exist");
+    cy.contains("View members").should("be.visible");
+  });
+
+  it("cannot change project components", () => {
+    cy.contains("test 2 v2-project").should("be.visible");
+    cy.wait("@listProjectV2Members");
+    cy.wait("@getDataServicesUser");
+    cy.getDataCy("add-session-launcher").should("not.exist");
+    cy.getDataCy("add-data-source").should("not.exist");
+    cy.getDataCy("add-repository").should("not.exist");
   });
 });

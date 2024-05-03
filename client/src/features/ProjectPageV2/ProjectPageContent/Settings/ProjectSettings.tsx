@@ -19,8 +19,9 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Pencil } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom-v5-compat";
-import { Button, Form } from "reactstrap";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
+import { Button, Input, Form, Label } from "reactstrap";
+
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert.jsx";
 import { Loader } from "../../../../components/Loader.tsx";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert.tsx";
@@ -29,14 +30,21 @@ import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.con
 import { NotificationsManager } from "../../../../notifications/notifications.types.ts";
 import AppContext from "../../../../utils/context/appContext.ts";
 import { Url } from "../../../../utils/helpers/url";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
+import type { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField.tsx";
 import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField.tsx";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField.tsx";
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField.tsx";
 import { ProjectV2Metadata } from "../../../projectsV2/show/ProjectV2EditForm.tsx";
+
+import AccessGuard from "../../utils/AccessGuard.tsx";
+import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
+
 import ProjectPageDelete from "./ProjectDelete.tsx";
+import ProjectPageSettingsMembers from "./ProjectSettingsMembers.tsx";
+
+const projectMetadataStringKeys = ["description", "name", "namespace"] as const;
 
 export function notificationProjectUpdated(
   notifications: NotificationsManager,
@@ -49,10 +57,49 @@ export function notificationProjectUpdated(
     </>
   );
 }
-interface ProjectSettingsFormProps {
-  project: Project;
+
+function ProjectReadOnlyNamespaceField({ namespace }: { namespace: string }) {
+  return (
+    <div className="mb-3">
+      <Label className="form-label" for="project-namespace">
+        Namespace
+      </Label>
+      <Input
+        className="form-control"
+        id="project-namespace"
+        type="text"
+        value={namespace}
+        disabled={true}
+        readOnly
+      />
+    </div>
+  );
 }
-export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
+
+function ProjectReadOnlyVisibilityField({
+  visibility,
+}: {
+  visibility: string;
+}) {
+  return (
+    <div className="mb-3">
+      <Label className="form-label" for="project-visibility">
+        Visibility
+      </Label>
+      <Input
+        className="form-control"
+        id="project-visibility"
+        type="text"
+        value={visibility}
+        disabled={true}
+        readOnly
+      />
+    </div>
+  );
+}
+
+export function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
+  const { userRole } = useProjectAccess({ projectId: project.id });
   const {
     control,
     formState: { errors, isDirty },
@@ -83,10 +130,15 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
   const onSubmit = useCallback(
     (data: ProjectV2Metadata) => {
       if (data.namespace !== project.namespace) setRedirectAfterUpdate(true);
+      const dataToSend: ProjectV2Metadata = {};
+      for (const key of projectMetadataStringKeys) {
+        if (data[key] !== project[key]) dataToSend[key] = data[key];
+      }
+      dataToSend.visibility = data.visibility;
       updateProject({
         "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
-        projectPatch: data,
+        projectPatch: dataToSend,
       });
     },
     [project, updateProject]
@@ -126,11 +178,19 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
         onSubmit={handleSubmit(onSubmit)}
       >
         <ProjectNameFormField name="name" control={control} errors={errors} />
-        <ProjectNamespaceFormField
-          name="namespace"
-          control={control}
-          entityName="project"
-          errors={errors}
+        <AccessGuard
+          disabled={
+            <ProjectReadOnlyNamespaceField namespace={project.namespace} />
+          }
+          enabled={
+            <ProjectNamespaceFormField
+              name="namespace"
+              control={control}
+              entityName="project"
+              errors={errors}
+            />
+          }
+          role={userRole}
         />
         {currentNamespace !== project.namespace && (
           <RenkuAlert color={"warning"} dismissible={false} timeout={0}>
@@ -138,10 +198,18 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
             change is saved, it will redirect to the updated project URL.
           </RenkuAlert>
         )}
-        <ProjectVisibilityFormField
-          name="visibility"
-          control={control}
-          errors={errors}
+        <AccessGuard
+          disabled={
+            <ProjectReadOnlyVisibilityField visibility={project.visibility} />
+          }
+          enabled={
+            <ProjectVisibilityFormField
+              name="visibility"
+              control={control}
+              errors={errors}
+            />
+          }
+          role={userRole}
         />
         <ProjectDescriptionFormField
           name="description"
@@ -175,24 +243,119 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     </div>
   );
 }
-export default function ProjectPageSettings({ project }: { project: Project }) {
+
+function ProjectSettingsDisplay({ project }: ProjectPageSettingsProps) {
+  const onSubmit = () => {};
+
+  return (
+    <div>
+      <Form className="form-rk-green" noValidate onSubmit={onSubmit}>
+        <div className="mb-3">
+          <Label className="form-label" for="project-name">
+            Name
+          </Label>
+          <Input
+            className="form-control"
+            id="project-name"
+            type="text"
+            value={project.name}
+            disabled={true}
+            readOnly
+          />
+        </div>
+        <ProjectReadOnlyNamespaceField namespace={project.namespace} />
+        <div className="mb-3">
+          <Label className="form-label" for="project-description">
+            Description
+          </Label>
+          <Input
+            className="form-control"
+            id="project-description"
+            type="textarea"
+            value={project.description}
+            disabled={true}
+            readOnly
+          />
+        </div>
+        <ProjectReadOnlyVisibilityField visibility={project.visibility} />
+      </Form>
+    </div>
+  );
+}
+
+function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
+  const { userRole } = useProjectAccess({ projectId: project.id });
+  return (
+    <>
+      <h4 className="fw-bold">General settings</h4>
+      <AccessGuard
+        disabled={null}
+        enabled={
+          <small>
+            Update your project title, description, visibility and namespace.
+          </small>
+        }
+        role={userRole}
+      />
+      <div
+        id="general"
+        className={cx("bg-white", "rounded-3", "mt-3", "p-3", "p-md-4")}
+      >
+        <AccessGuard
+          disabled={<ProjectSettingsDisplay project={project} />}
+          enabled={<ProjectSettingsEditForm project={project} />}
+          minimumRole="editor"
+          role={userRole}
+        />
+      </div>
+    </>
+  );
+}
+
+interface ProjectPageSettingsProps {
+  project: Project;
+}
+export default function ProjectPageSettings({
+  project,
+}: ProjectPageSettingsProps) {
+  const { hash } = useLocation();
+  const { userRole } = useProjectAccess({ projectId: project.id });
+
+  // Handle anchor links https://stackoverflow.com/a/61311926/5804638
+  useEffect(() => {
+    // if not a hash link, scroll to top
+    if (hash === "") {
+      window.scrollTo(0, 0);
+    }
+    // else scroll to id
+    else {
+      setTimeout(() => {
+        const id = hash.replace("#", "");
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView();
+        }
+      }, 0);
+    }
+  }, [hash]);
+
   return (
     <div className={cx("pb-5", "pt-0")}>
       <div id="general" className={cx("px-2", "px-md-5", "pt-4")}>
-        <h4 className="fw-bold">General settings</h4>
-        <small>
-          Update your project title, description, visibility and namespace.
-        </small>
-        <div
-          id={"general"}
-          className={cx("bg-white", "rounded-3", "mt-3", "p-3", "p-md-4")}
-        >
-          <ProjectSettingsForm project={project} />
-        </div>
+        <ProjectSettingsMetadata project={project} />
       </div>
-      <div id="delete" className={cx("px-2", "px-md-5", "pt-4")}>
-        <ProjectPageDelete project={project} />
+      <div id="members" className={cx("px-2", "px-md-5", "pt-4")}>
+        <ProjectPageSettingsMembers project={project} />
       </div>
+      <AccessGuard
+        disabled={null}
+        enabled={
+          <div id="delete" className={cx("px-2", "px-md-5", "pt-4")}>
+            <ProjectPageDelete project={project} />
+          </div>
+        }
+        role={userRole}
+      />
     </div>
   );
 }
