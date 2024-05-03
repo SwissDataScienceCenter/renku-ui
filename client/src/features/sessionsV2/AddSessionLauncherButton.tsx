@@ -25,8 +25,10 @@ import { PlusRoundButton } from "../../components/buttons/Button.tsx";
 import { Step1AddSessionModal } from "./components/SessionModals/AddSession.tsx";
 
 export default function AddSessionLauncherButton({
+  "data-cy": dataCy,
   styleBtn,
 }: {
+  "data-cy"?: string;
   styleBtn: "iconBtn" | "iconTextBtn";
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,12 +39,16 @@ export default function AddSessionLauncherButton({
   return (
     <>
       {styleBtn === "iconTextBtn" ? (
-        <Button className="btn-rk-green" onClick={() => toggle()}>
+        <Button
+          data-cy={dataCy}
+          className="btn-rk-green"
+          onClick={() => toggle()}
+        >
           <PlusLg className={cx("bi", "me-1")} />
           Add session
         </Button>
       ) : (
-        <PlusRoundButton handler={toggle} />
+        <PlusRoundButton data-cy={dataCy} handler={toggle} />
       )}
       <Step1AddSessionModal isOpen={isOpen} toggleModal={toggle} />
     </>

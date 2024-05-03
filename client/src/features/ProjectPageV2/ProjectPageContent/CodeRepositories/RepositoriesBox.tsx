@@ -22,9 +22,12 @@ import { CodeSquare } from "react-bootstrap-icons";
 import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal.tsx";
+import AccessGuard from "../../utils/AccessGuard.tsx";
+import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
 import { RepositoryItem } from "./CodeRepositoryDisplay.tsx";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
+  const { userRole } = useProjectAccess({ projectId: project.id });
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -38,7 +41,14 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
           <CodeSquare size={20} className={cx("me-2")} />
           Code Repositories ({project?.repositories?.length})
         </div>
-        <PlusRoundButton handler={toggle} />
+        <AccessGuard
+          disabled={null}
+          enabled={
+            <PlusRoundButton data-cy="add-repository" handler={toggle} />
+          }
+          minimumRole="editor"
+          role={userRole}
+        />
       </div>
       <p className={cx("px-3", totalRepositories > 0 ? "d-none" : "")}>
         Connect code repositories to save and share code.

@@ -69,6 +69,8 @@ import dotsDropdownStyles from "../../components/buttons/ThreeDots.module.scss";
 import "../../notebooks/Notebooks.css";
 
 import sessionItemStyles from "./SessionList/SessionItemDisplay.module.scss";
+import AccessGuard from "../ProjectPageV2/utils/AccessGuard.tsx";
+import useProjectAccess from "../ProjectPageV2/utils/useProjectAccess.hook.ts";
 
 export function getShowSessionUrlByProject(
   project: Project,
@@ -104,6 +106,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
 }
 
 export function SessionLaunchersListDisplay({ project }: SessionsV2Props) {
+  const { userRole } = useProjectAccess({ projectId: project.id });
   const projectId = project.id;
 
   const {
@@ -157,7 +160,17 @@ export function SessionLaunchersListDisplay({ project }: SessionsV2Props) {
           />
           Sessions ({totalSessions})
         </div>
-        <AddSessionLauncherButton styleBtn="iconBtn" />
+        <AccessGuard
+          disabled={null}
+          enabled={
+            <AddSessionLauncherButton
+              data-cy="add-session-launcher"
+              styleBtn="iconBtn"
+            />
+          }
+          minimumRole="editor"
+          role={userRole}
+        />
       </div>
       {loading}
       {errorAlert}
