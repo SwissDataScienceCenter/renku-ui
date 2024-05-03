@@ -20,7 +20,7 @@ import { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
 import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
 
-import ActiveSessionButton from "../sessionsV2/ActiveSessionButton";
+import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton.tsx";
 
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { Url } from "../../utils/helpers/url";

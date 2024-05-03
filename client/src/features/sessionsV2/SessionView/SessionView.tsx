@@ -43,7 +43,10 @@ import { Project } from "../../projectsV2/api/projectV2.api.ts";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList.tsx";
 import { Session, Sessions } from "../../session/sessions.types.ts";
 import SessionConfig from "../SessionConfig.tsx";
-import { SessionV2Actions } from "../SessionsV2.tsx";
+import {
+  getShowSessionUrlByProject,
+  SessionV2Actions,
+} from "../SessionsV2.tsx";
 import StartSessionButton from "../StartSessionButton.tsx";
 import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal.tsx";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton.tsx";
@@ -57,7 +60,13 @@ import sessionsV2Api from "../sessionsV2.api.ts";
 import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types.ts";
 import sessionViewStyles from "./SessionView.module.scss";
 
-function SessionCard({ session }: { session: Session }) {
+function SessionCard({
+  session,
+  project,
+}: {
+  session: Session;
+  project: Project;
+}) {
   return (
     <Card
       className={
@@ -91,7 +100,10 @@ function SessionCard({ session }: { session: Session }) {
               "py-2"
             )}
           >
-            <ActiveSessionButton session={session} />
+            <ActiveSessionButton
+              session={session}
+              showSessionUrl={getShowSessionUrlByProject(project, session.name)}
+            />
           </Col>
           <Col xs={12} className={cx("d-flex", "align-items-center", "py-2")}>
             <SessionStatusV2Description session={session} />
@@ -382,7 +394,7 @@ export function SessionView({
           Object.entries(sessions).map(([key, session]) => (
             <div key={key} className="py-2">
               <SessionStatusV2Title session={session} launcher={launcher} />
-              <SessionCard session={session} />
+              <SessionCard session={session} project={project} />
             </div>
           ))
         ) : (

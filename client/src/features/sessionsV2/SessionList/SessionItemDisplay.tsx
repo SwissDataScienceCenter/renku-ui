@@ -38,6 +38,7 @@ import {
 } from "../components/SessionStatus/SessionStatus.tsx";
 import { SessionLauncher } from "../sessionsV2.types.ts";
 import sessionItemStyles from "./SessionItemDisplay.module.scss";
+import { getShowSessionUrlByProject } from "../SessionsV2.tsx";
 
 export function SessionNameBox({
   children,
@@ -202,7 +203,13 @@ export function SessionItemDisplay({
               <SessionStatusV2Description key={key} session={session} />
             </SessionStatusLabelBox>
             <SessionBtnBox>
-              <ActiveSessionButton session={session} />
+              <ActiveSessionButton
+                session={session}
+                showSessionUrl={getShowSessionUrlByProject(
+                  project,
+                  session.name
+                )}
+              />
             </SessionBtnBox>
           </Row>
         ))

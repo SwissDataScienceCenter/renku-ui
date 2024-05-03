@@ -69,7 +69,18 @@ import {
   SessionStatusV2Description,
   SessionStatusV2Label,
 } from "./components/SessionStatus/SessionStatus.tsx";
+import { Url } from "../../utils/helpers/url";
 
+export function getShowSessionUrlByProject(
+  project: Project,
+  sessionName: string
+) {
+  return Url.get(Url.pages.projectV2.showSession, {
+    namespace: project.namespace,
+    slug: project.slug,
+    sessionId: sessionName,
+  });
+}
 interface SessionsV2Props {
   project: Project;
 }
@@ -115,27 +126,27 @@ export function SessionLaunchersListDisplay({ project }: { project: Project }) {
     () =>
       launchers != null && sessions != null
         ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
-          sessions,
-          ({ annotations }) =>
-            annotations["renkuVersion"] === "2.0" &&
-            annotations["projectId"] === projectId &&
-            launchers.every(({ id }) => annotations["launcherId"] !== id)
-        )
+            sessions,
+            ({ annotations }) =>
+              annotations["renkuVersion"] === "2.0" &&
+              annotations["projectId"] === projectId &&
+              launchers.every(({ id }) => annotations["launcherId"] !== id)
+          )
         : {},
-    [ launchers, projectId, sessions ]
+    [launchers, projectId, sessions]
   );
 
   if (isLoading) {
     return (
       <p>
-        <Loader className="bi" inline size={ 16 }/>
+        <Loader className="bi" inline size={16} />
         Loading sessions...
       </p>
     );
   }
 
   if (error) {
-    return <RtkErrorAlert error={ error }/>;
+    return <RtkErrorAlert error={error} />;
   }
 
   const totalSessions =
@@ -143,36 +154,36 @@ export function SessionLaunchersListDisplay({ project }: { project: Project }) {
     Object.entries(orphanSessions)?.length;
   return (
     <>
-      <div className={ cx("p-3", "d-flex", "justify-content-between") }>
+      <div className={cx("p-3", "d-flex", "justify-content-between")}>
         <div className="fw-bold">
           <img
-            src={ rkIconSessions }
-            className={ cx("rk-icon", "rk-icon-lg", "me-2") }
+            src={rkIconSessions}
+            className={cx("rk-icon", "rk-icon-lg", "me-2")}
           />
-          Sessions ({ totalSessions })
+          Sessions ({totalSessions})
         </div>
-        <AddSessionLauncherButton styleBtn="iconBtn"/>
+        <AddSessionLauncherButton styleBtn="iconBtn" />
       </div>
-      <p className={ cx("px-3", totalSessions > 0 && "d-none") }>
+      <p className={cx("px-3", totalSessions > 0 && "d-none")}>
         Define interactive environments in which to do your work and share it
         with others.
       </p>
-      <p className={ cx("px-3", totalSessions === 0 && "d-none") }>
+      <p className={cx("px-3", totalSessions === 0 && "d-none")}>
         Session launchers are available to everyone who can see the project.
         Running sessions are only accessible to you.
       </p>
-      <div className={ cx("py-0", "px-0", totalSessions === 0 ? "d-none" : "") }>
+      <div className={cx("py-0", "px-0", totalSessions === 0 ? "d-none" : "")}>
         <Row
-          className={ cx("d-none", "d-xl-flex", "pt-3", "px-0", "m-0", "mb-1") }
+          className={cx("d-none", "d-xl-flex", "pt-3", "px-0", "m-0", "mb-1")}
         >
           <Col
-            xl={ 3 }
-            sm={ 6 }
-            xs={ 12 }
-            className={ cx("d-flex", "align-items-center", "px-3") }
+            xl={3}
+            sm={6}
+            xs={12}
+            className={cx("d-flex", "align-items-center", "px-3")}
           >
             <span
-              className={ cx(
+              className={cx(
                 "w-100",
                 "fst-italic",
                 "fs-small",
@@ -181,18 +192,18 @@ export function SessionLaunchersListDisplay({ project }: { project: Project }) {
                 "border-bottom",
                 "border-rk-gray-200",
                 "rk-border-dotted"
-              ) }
+              )}
             >
               Session launcher
             </span>
           </Col>
           <Col
-            xl={ 3 }
-            xs={ 12 }
-            className={ cx("d-flex", "align-items-center", "px-2") }
+            xl={3}
+            xs={12}
+            className={cx("d-flex", "align-items-center", "px-2")}
           >
             <span
-              className={ cx(
+              className={cx(
                 "w-100",
                 "fst-italic",
                 "fs-small",
@@ -201,18 +212,18 @@ export function SessionLaunchersListDisplay({ project }: { project: Project }) {
                 "border-bottom",
                 "border-rk-gray-200",
                 "rk-border-dotted"
-              ) }
+              )}
             >
               Session state
             </span>
           </Col>
           <Col
-            xl={ 6 }
-            xs={ 12 }
-            className={ cx("d-flex", "align-items-center", "px-2") }
+            xl={6}
+            xs={12}
+            className={cx("d-flex", "align-items-center", "px-2")}
           >
             <span
-              className={ cx(
+              className={cx(
                 "w-100",
                 "fst-italic",
                 "fs-small",
@@ -221,26 +232,26 @@ export function SessionLaunchersListDisplay({ project }: { project: Project }) {
                 "border-bottom",
                 "border-rk-gray-200",
                 "rk-border-dotted"
-              ) }
+              )}
             >
               Session details
             </span>
           </Col>
         </Row>
-        { launchers?.map((launcher) => (
+        {launchers?.map((launcher) => (
           <SessionItemDisplay
-            key={ `launcher-${ launcher.id }` }
-            launcher={ launcher }
-            project={ project }
+            key={`launcher-${launcher.id}`}
+            launcher={launcher}
+            project={project}
           />
-        )) }
-        { Object.entries(orphanSessions).map(([ key, session ]) => (
+        ))}
+        {Object.entries(orphanSessions).map(([key, session]) => (
           <OrphanSession
-            key={ `orphan-${ key }` }
-            session={ session }
-            project={ project }
+            key={`orphan-${key}`}
+            session={session}
+            project={project}
           />
-        )) }
+        ))}
       </div>
     </>
   );
@@ -355,7 +366,10 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
           <SessionStatusV2Description session={session} />
         </SessionStatusLabelBox>
         <SessionBtnBox>
-          <ActiveSessionButton session={session} />
+          <ActiveSessionButton
+            session={session}
+            showSessionUrl={getShowSessionUrlByProject(project, session.name)}
+          />
         </SessionBtnBox>
       </Row>
       <SessionView
