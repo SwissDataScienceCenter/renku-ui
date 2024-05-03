@@ -19,11 +19,15 @@
 import { FixturesConstructor } from "./fixtures";
 import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
+interface DataServicesUserFixture extends NameOnlyFixture {
+  response: ExactUser;
+}
+
 interface ExactUser {
   id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
 }
 interface ExactUserFixture extends NameOnlyFixture {
   exactEmailQueryString: string;
@@ -58,6 +62,14 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("/ui-server/api/data/resource_pools/*/users", {
         fixture,
       });
+      return this;
+    }
+
+    dataServicesUser(args: DataServicesUserFixture) {
+      const { response, name = "getDataServicesUser" } = args;
+      cy.intercept("GET", "/ui-server/api/data/user", {
+        body: response,
+      }).as(name);
       return this;
     }
 
