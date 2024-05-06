@@ -39,7 +39,7 @@ export function DataSourcesDisplay() {
         Add published datasets from data repositories, and connect to cloud
         storage to read and write custom data.
       </p>
-      <Modal isOpen={isOpen} toggle={toggle}>
+      <Modal isOpen={isOpen} toggle={toggle} centered>
         <ModalHeader>Add Data source...</ModalHeader>
       </Modal>
     </>

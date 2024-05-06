@@ -46,6 +46,7 @@ import { EnvironmentKind, SessionEnvironment } from "./sessionsV2.types";
 import styles from "./SessionLauncherForm.module.scss";
 import rkIconGlobalEnv from "../../styles/assets/globalEnvironment.svg";
 import { useEffect, useState } from "react";
+import { WarnAlert } from "../../components/Alert.jsx";
 
 export interface SessionLauncherForm {
   name: string;
@@ -188,7 +189,7 @@ export default function SessionLauncherFormContent({
             name="environment_id"
             render={({ field }) => (
               <>
-                <Row className={cx("row-cols-2", "gy-4", "mb-3")}>
+                <Row className={cx("row-cols-2", "mb-3")}>
                   {environments.map((environment) => (
                     <SessionEnvironmentItem
                       key={environment.id}
@@ -417,6 +418,12 @@ export function ExistingEnvFormContent({
             rules={{ required: true }}
           />
         )}
+        {!isLoading && environments && environments.length === 0 && (
+          <WarnAlert dismissible={false}>
+            No existing environments are available. Please contact an admin to
+            update this list.
+          </WarnAlert>
+        )}
       </div>
     </>
   );
@@ -476,7 +483,7 @@ export function SessionEnvironmentItem({
           <CardBody
             className={cx(
               isSelected
-                ? "border border-rk-green border-3 rounded"
+                ? "border rounded border-rk-green bg-rk-green-50 border-2"
                 : "border rounded border-rk-gray-600",
               !isSelected && styles.environmentCard
             )}

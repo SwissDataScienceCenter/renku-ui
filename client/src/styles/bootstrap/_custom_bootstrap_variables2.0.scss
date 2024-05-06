@@ -1,6 +1,7 @@
 // RENKU UI COLORS
 $rk-blue: #01192d;
 $rk-green: #007a6c;
+$rk-green-50: #f2feec;
 $rk-green-highlight: #036063;
 $rk-green-active: #009568;
 $rk-green-hover: #036063;
@@ -69,6 +70,7 @@ $rk-colors: (
   "rk-yellow": $rk-yellow,
   "rk-pink": $rk-pink,
   "rk-green": $rk-green,
+  "rk-green-50": $rk-green-50,
   "rk-green-active": $rk-green-active,
   "rk-green-hover": $rk-green-hover,
   "rk-green-disabled": $rk-green-disabled,
@@ -174,7 +176,7 @@ $h3-font-size: 1.75rem;
 $h4-font-size: 1.5rem;
 $h5-font-size: 1.25rem;
 
-// Modal stylesF.alert-warning
+// Modal styles
 $modal-inner-padding: 2rem;
 $modal-content-bg: white;
 $modal-header-border-width: 0;

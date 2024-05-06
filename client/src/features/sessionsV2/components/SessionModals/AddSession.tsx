@@ -216,11 +216,12 @@ function AddSessionExistingEnvModal({
   return (
     <Modal
       backdrop="static"
+      centered
+      fullscreen="lg"
       isOpen={isOpen}
+      scrollable
       size="lg"
       toggle={toggle}
-      scrollable
-      fullscreen="lg"
     >
       <ModalHeader toggle={toggle} className="pb-0">
         <span>
@@ -239,7 +240,6 @@ function AddSessionExistingEnvModal({
             interactive session for your project.
           </p>
           {result.error && <RtkErrorAlert error={result.error} />}
-
           <ExistingEnvFormContent
             control={control}
             errors={errors}
@@ -260,11 +260,16 @@ function AddSessionExistingEnvModal({
           onClick={handleSubmit(onSubmit)}
         >
           {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
+            <>
+              <Loader className="me-1" inline size={16} />
+              Adding Session launcher
+            </>
           ) : (
-            <PlusLg className={cx("bi", "me-1")} />
+            <>
+              <PlusLg className={cx("bi", "me-1")} />
+              Add Session launcher
+            </>
           )}
-          Add Session launcher
         </Button>
       </ModalFooter>
     </Modal>

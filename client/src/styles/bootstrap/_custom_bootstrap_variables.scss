@@ -40,6 +40,7 @@ $rk-success-text: #009568;
 $rk-danger-text: #b40a3c;
 $rk-warning-text: #7e6d20; // contrast ratio 4.5:1 for background
 $rk-dark-bg: #c5cbcf;
+$rk-gray-200: #e9ecef;
 
 $rk-danger-shadow: rgba(180, 10, 60, 0.5);
 $rk-table-border: #e4e7ea;
@@ -56,6 +57,7 @@ $rk-colors: (
   "rk-text-light": $rk-text-light,
   "rk-green-background": $rk-green-background,
   "rk-white": $rk-white,
+  "rk-gray-200": $rk-gray-200,
   "rk-hover": $rk-hover,
   "rk-danger-shadow": $rk-danger-shadow,
   "rk-dark-bg": $rk-dark-bg,
@@ -118,14 +120,14 @@ $breadcrumb-divider: quote(">");
 
 // Dropmenu styles
 $dropdown-border-color: none;
-$dropdown-link-hover-bg: #e9ecef;
+$dropdown-link-hover-bg: $rk-gray-200;
 $dropdown-bg: $rk-white;
 $dropdown-border-width: 0.5px;
 $dropdown-border-radius: 8px;
-$dropdown-item-padding-y: 15px;
+$dropdown-item-padding-y: 16px;
 $dropdown-divider-margin-y: 0px;
 $dropdown-padding-y: 0;
 $rk-dropdown-options-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-$rk-dropdown-options-margin: 5px 0;
+$rk-dropdown-options-margin: 4px 0;
 $rk-dropdown-bg-active: transparent;
 $rk-dropdown-option-text-align: start;

@@ -1,4 +1,4 @@
-@import "/src/styles/bootstrap/_custom_bootstrap_variables.scss";
+@import "/src/styles/bootstrap/_custom_bootstrap_variables2.0.scss";
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/variables-dark";
@@ -8,7 +8,8 @@
 .environmentLabel {
   &:hover {
     .environmentCard {
-      border: solid 2px $rk-green-highlight !important;
+      border: solid 1px $rk-green-highlight !important;
+      background-color: $rk-green-50 !important;
     }
   }
 

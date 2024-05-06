@@ -353,6 +353,7 @@ export function PlusRoundButton({
   return (
     <>
       <Button
+        ref={ref}
         className={cx(
           "d-flex",
           "justify-content-center",
@@ -364,7 +365,7 @@ export function PlusRoundButton({
           "p-1",
           buttonStyles.PlusIconButton
         )}
-        onClick={() => handler()}
+        onClick={handler}
       >
         <PlusLg size="16" />
       </Button>
