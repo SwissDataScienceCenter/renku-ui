@@ -152,7 +152,7 @@ function AddCodeRepositoryStep2Modal({
       : [];
     repositories.push(url);
     updateProject({
-      "If-Match": project.etag ? project.etag : undefined,
+      "If-Match": project.etag ? project.etag : "",
       projectId: project.id,
       projectPatch: { repositories },
     })

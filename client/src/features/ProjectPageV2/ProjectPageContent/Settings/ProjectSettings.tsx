@@ -84,7 +84,7 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     (data: ProjectV2Metadata) => {
       if (data.namespace !== project.namespace) setRedirectAfterUpdate(true);
       updateProject({
-        "If-Match": project.etag ? project.etag : undefined,
+        "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
         projectPatch: data,
       });
