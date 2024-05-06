@@ -25,6 +25,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CloudFill,
+  Database,
   PencilSquare,
   PlusLg,
   XLg,
@@ -41,15 +42,16 @@ import {
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { StateModelProject } from "../../project.types";
 import {
   findSensitive,
   getCurrentStorageDetails,
   getSchemaProviders,
   hasProviderShortlist,
 } from "../../utils/projectCloudStorage.utils";
-import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
+import AddOrEditCloudStorage, {
+  AddOrEditCloudStorageV2,
+  AddStorageBreadcrumbNavbar,
+} from "./AddOrEditCloudStorage";
 import {
   useAddCloudStorageForProjectMutation,
   useGetCloudStorageSchemaQuery,
@@ -70,17 +72,28 @@ import {
   UpdateCloudStorageParams,
 } from "./projectCloudStorage.types";
 
+import {
+  CloudStorageGetRead,
+  CloudStoragePatch,
+  PostStoragesV2ApiArg,
+  RCloneConfig,
+  usePatchStoragesV2ByStorageIdMutation,
+  usePostStoragesV2Mutation,
+} from "../../../projectsV2/api/storagesV2.api.ts";
 import styles from "./CloudStorage.module.scss";
-
 interface CloudStorageModalProps {
-  currentStorage?: CloudStorage | null;
+  currentStorage?: CloudStorage | CloudStorageGetRead | null;
   isOpen: boolean;
   toggle: () => void;
+  projectId: string;
+  isV2: boolean;
 }
 export default function CloudStorageModal({
   currentStorage = null,
   isOpen,
   toggle: originalToggle,
+  projectId,
+  isV2 = false,
 }: CloudStorageModalProps) {
   const storageId = currentStorage?.storage.storage_id ?? null;
   // Fetch available schema when users open the modal
@@ -203,25 +216,29 @@ export default function CloudStorageModal({
   }, [currentStorage]);
 
   // Mutations
-  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
-    (state) => state.stateModel.project.metadata.id
-  );
   const [addCloudStorageForProject, addResult] =
     useAddCloudStorageForProjectMutation();
+  const [addCloudStorageForProjectV2, addResultV2] =
+    usePostStoragesV2Mutation();
   const [modifyCloudStorageForProject, modifyResult] =
     useUpdateCloudStorageMutation();
+  const [modifyCloudStorageV2ForProject, modifyResultV2] =
+    usePatchStoragesV2ByStorageIdMutation();
 
   const addOrEditStorage = useCallback(() => {
     storageDetails.options;
 
-    const storageParameters: AddCloudStorageForProjectParams = {
+    const storageParameters:
+      | AddCloudStorageForProjectParams
+      | CloudStorage
+      | CloudStoragePatch = {
       name: storageDetails.name as string,
-      private: false,
       readonly: storageDetails.readOnly ?? true,
       project_id: `${projectId}`,
       source_path: storageDetails.sourcePath ?? "/",
       target_path: storageDetails.mountPoint as string,
       configuration: { type: storageDetails.schema },
+      private: false,
     };
     // Add provider when required
     if (storageDetails.provider) {
@@ -261,30 +278,64 @@ export default function CloudStorageModal({
 
     // We manually set success only when we get an ID back. That's just to sho a success message
     if (storageId) {
-      const storageParametersWithId: UpdateCloudStorageParams = {
-        ...storageParameters,
-        storage_id: storageId as string,
-      };
-      modifyCloudStorageForProject(storageParametersWithId).then((result) => {
-        if ("data" in result && result.data.storage.storage_id) {
-          setSuccess(true);
-        }
-      });
+      // v1
+      if (isV2) {
+        const cloudStoragePatch: CloudStoragePatch = {
+          project_id: projectId,
+          name: storageParameters.name,
+          configuration: storageParameters.configuration as RCloneConfig,
+          source_path: storageParameters.source_path,
+          target_path: storageParameters.target_path,
+          readonly: storageParameters.readonly,
+        };
+        modifyCloudStorageV2ForProject({
+          storageId: storageId,
+          cloudStoragePatch,
+        }).then((result) => {
+          if ("data" in result && result.data.storage.storage_id) {
+            setSuccess(true);
+          }
+        });
+      } else {
+        const storageParametersWithId: UpdateCloudStorageParams = {
+          ...storageParameters,
+          storage_id: storageId as string,
+        };
+        modifyCloudStorageForProject(storageParametersWithId).then((result) => {
+          if ("data" in result && result.data.storage.storage_id) {
+            setSuccess(true);
+          }
+        });
+      }
     } else {
-      addCloudStorageForProject(storageParameters).then((result) => {
-        if ("data" in result && result.data.storage.storage_id) {
-          setSuccess(true);
-        }
-      });
+      if (isV2) {
+        const parameterV2 = {
+          body: storageParameters,
+        } as PostStoragesV2ApiArg;
+        addCloudStorageForProjectV2(parameterV2).then((result) => {
+          if ("data" in result && result.data.storage.storage_id) {
+            setSuccess(true);
+          }
+        });
+      } else {
+        addCloudStorageForProject(storageParameters).then((result) => {
+          if ("data" in result && result.data.storage.storage_id) {
+            setSuccess(true);
+          }
+        });
+      }
     }
   }, [
+    addCloudStorageForProject,
+    addCloudStorageForProjectV2,
+    currentStorage,
+    isV2,
+    modifyCloudStorageForProject,
+    modifyCloudStorageV2ForProject,
     projectId,
+    schema,
     storageDetails,
     storageId,
-    schema,
-    currentStorage,
-    addCloudStorageForProject,
-    modifyCloudStorageForProject,
   ]);
 
   const toggle = useCallback(() => {
@@ -316,14 +367,22 @@ export default function CloudStorageModal({
       (schemaRequiresProvider && !storageDetails.provider));
   const continueButtonId = "add-cloud-storage-next";
 
+  const isAddResultLoading = addResult.isLoading || addResultV2.isLoading;
+  const isModifyResultLoading =
+    modifyResult.isLoading || modifyResultV2.isLoading;
+  const addResultError = isV2 ? addResultV2.error : addResult.error;
+  const addResultStorageName = isV2
+    ? addResultV2?.data?.storage?.name
+    : addResult?.data?.storage?.name;
+
   const disableAddButton =
-    addResult.isLoading ||
-    modifyResult.isLoading ||
+    isAddResultLoading ||
+    isModifyResultLoading ||
     !storageDetails.name ||
     !storageDetails.mountPoint ||
     !storageDetails.schema ||
     (hasProviderShortlist(storageDetails.schema) && !storageDetails.provider);
-  const addButtonDisableReason = addResult.isLoading
+  const addButtonDisableReason = isAddResultLoading
     ? "Please wait, the storage is being added"
     : modifyResult.isLoading
     ? "Please wait, the storage is being modified"
@@ -345,7 +404,7 @@ export default function CloudStorageModal({
         disabled={disableAddButton}
         onClick={() => addOrEditStorage()}
       >
-        {addResult.isLoading || modifyResult.isLoading ? (
+        {isAddResultLoading || isModifyResultLoading ? (
           <Loader className="me-1" inline size={16} />
         ) : storageId ? (
           <PencilSquare className={cx("bi", "me-1")} />
@@ -392,7 +451,7 @@ export default function CloudStorageModal({
   );
 
   const backButton =
-    addResult.isLoading || modifyResult.isLoading ? null : state.step <= 1 ||
+    isAddResultLoading || isModifyResultLoading ? null : state.step <= 1 ||
       success ? (
       <Button
         className="btn-outline-rk-green"
@@ -417,8 +476,8 @@ export default function CloudStorageModal({
       </Button>
     );
 
-  const resetButton = !addResult.isLoading &&
-    !modifyResult.isLoading &&
+  const resetButton = !isAddResultLoading &&
+    !isModifyResultLoading &&
     !success && (
       <Button
         color="outline-danger"
@@ -431,18 +490,25 @@ export default function CloudStorageModal({
     );
 
   const errorMessage =
-    addResult.error || modifyResult.error ? (
+    addResultError || modifyResult.error ? (
       <div className="w-100">
-        <RtkOrNotebooksError error={addResult.error || modifyResult.error} />
+        <RtkOrNotebooksError error={addResultError || modifyResult.error} />
       </div>
     ) : null;
+
+  const description = isV2 && !storageId && (
+    <p>
+      Add published datasets from data repositories for use in your project. Or,
+      connect to cloud storage to read and write custom data.
+    </p>
+  );
 
   const bodyContent = redraw ? (
     <Loader />
   ) : success ? (
     <SuccessAlert dismissible={false} timeout={0}>
       <p className="p-0">
-        The storage {addResult?.data?.storage?.name} has been succesfully{" "}
+        The storage {addResultStorageName} has been succesfully{" "}
         {storageId ? "updated" : "added"}.
       </p>
     </SuccessAlert>
@@ -451,13 +517,27 @@ export default function CloudStorageModal({
   ) : schemaError ? (
     <RtkOrNotebooksError error={schemaError} />
   ) : (
-    <AddOrEditCloudStorage
-      schema={schema}
-      setState={setStateSafe}
-      setStorage={setStorageDetailsSafe}
-      state={state}
-      storage={storageDetails}
-    />
+    <>
+      {description}
+      {isV2 ? (
+        <AddOrEditCloudStorageV2
+          schema={schema}
+          setState={setStateSafe}
+          setStorage={setStorageDetailsSafe}
+          state={state}
+          storage={storageDetails}
+          isV2={isV2}
+        />
+      ) : (
+        <AddOrEditCloudStorage
+          schema={schema}
+          setState={setStateSafe}
+          setStorage={setStorageDetailsSafe}
+          state={state}
+          storage={storageDetails}
+        />
+      )}
+    </>
   );
 
   return (
@@ -475,14 +555,33 @@ export default function CloudStorageModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle} data-cy="cloud-storage-edit-header">
-        <CloudFill className={cx("bi", "me-2")} />
-        {storageId ? "Edit" : "Add"} Cloud Storage
+        {isV2 ? (
+          <>
+            <Database className={cx("bi", "me-2")} />
+            {storageId ? "Edit" : "Add"} data source
+          </>
+        ) : (
+          <>
+            <CloudFill className={cx("bi", "me-2")} />
+            {storageId ? "Edit" : "Add"} Cloud Storage
+          </>
+        )}
       </ModalHeader>
 
-      <ModalBody data-cy="cloud-storage-edit-body">{bodyContent}</ModalBody>
+      <ModalBody
+        data-cy="cloud-storage-edit-body"
+        className={isV2 ? "pt-0" : ""}
+      >
+        {bodyContent}
+      </ModalBody>
 
       <ModalFooter data-cy="cloud-storage-edit-footer">
         {errorMessage}
+        {isV2 && (
+          <div className={cx("d-flex", "flex-grow-1")}>
+            <AddStorageBreadcrumbNavbar state={state} setState={setStateSafe} />
+          </div>
+        )}
         {resetButton}
         {backButton}
         {continueButton}

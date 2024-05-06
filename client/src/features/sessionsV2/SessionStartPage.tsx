@@ -44,7 +44,10 @@ import {
   useStartRenku2SessionMutation,
 } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
-import { DockerImageStatus } from "../session/startSessionOptions.types";
+import {
+  DockerImageStatus,
+  SessionCloudStorage,
+} from "../session/startSessionOptions.types";
 import SessionConfig from "./SessionConfig";
 import {
   useGetProjectSessionLaunchersQuery,
@@ -53,6 +56,7 @@ import {
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import { SessionRepository } from "./startSessionOptionsV2.types";
+import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api.ts";
 
 export default function SessionStartPage() {
   const { launcherId, namespace, slug } = useParams<
@@ -135,6 +139,13 @@ function StartSessionFromLauncher({
       environments?.find((env) => env.id === launcher.environment_id),
     [environments, launcher]
   );
+  const {
+    data: storages,
+    isFetching: isFetchingStorages,
+    isLoading: isLoadingStorages,
+  } = useGetStoragesV2Query({
+    projectId: project.id,
+  });
 
   const containerImage =
     environment_kind === "global_environment" && environment
@@ -310,7 +321,9 @@ function StartSessionFromLauncher({
       !headCommitKnownForAllRepositories ||
       startSessionOptionsV2.dockerImageStatus !== "available" ||
       resourcePools == null ||
-      startSessionOptionsV2.sessionClass == 0
+      startSessionOptionsV2.sessionClass == 0 ||
+      isLoadingStorages ||
+      isFetchingStorages
     ) {
       return;
     }
@@ -326,7 +339,10 @@ function StartSessionFromLauncher({
           project,
         })
       ),
-      cloudStorage: [],
+      cloudStorage:
+        storages?.map(
+          (storage) => storage.storage as unknown as SessionCloudStorage
+        ) || [],
       defaultUrl: startSessionOptionsV2.defaultUrl,
       environmentVariables: {},
       image: containerImage,
@@ -337,12 +353,15 @@ function StartSessionFromLauncher({
   }, [
     containerImage,
     headCommitKnownForAllRepositories,
+    isFetchingStorages,
+    isLoadingStorages,
     launcher.id,
     project.id,
     projectSupport,
     resourcePools,
     startSession,
     startSessionOptionsV2,
+    storages,
   ]);
 
   // Navigate to the session page when it is ready

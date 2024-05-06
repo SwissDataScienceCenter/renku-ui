@@ -23,6 +23,8 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { CloudStorage } from "./projectCloudStorage.types";
 import AddCloudStorageModal from "./CloudStorageModal";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook.ts";
+import { StateModelProject } from "../../project.types.ts";
 
 interface AddOrEditCloudStorageButtonProps {
   currentStorage?: CloudStorage | null;
@@ -52,6 +54,9 @@ export default function AddOrEditCloudStorageButton({
       Add Cloud Storage
     </>
   );
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
+    (state) => state.stateModel.project.metadata.id
+  );
   const content = devAccess ? (
     <>
       <Button
@@ -66,6 +71,8 @@ export default function AddOrEditCloudStorageButton({
           currentStorage={currentStorage}
           isOpen={isOpen}
           toggle={toggle}
+          projectId={projectId}
+          isV2={false}
         />
       </div>
     </>

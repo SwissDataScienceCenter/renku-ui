@@ -127,7 +127,7 @@ export default function CloudStorageItem({
               </div>
               <div className={cx("small", "d-none", "d-sm-block")}>
                 <span className="text-rk-text-light">Storage type: </span>
-                <span>{storageType}</span>
+                <span>{String(storageType)}</span>
               </div>
               <div className={cx("small", "d-none", "d-sm-block")}>
                 <span className="text-rk-text-light">Mount point: </span>
@@ -293,7 +293,7 @@ function CloudStorageDetails({
   );
 }
 
-function CredentialMoreInfo({ help }: { help: string }) {
+export function CredentialMoreInfo({ help }: { help: string }) {
   const ref = useRef<HTMLSpanElement>(null);
 
   return (

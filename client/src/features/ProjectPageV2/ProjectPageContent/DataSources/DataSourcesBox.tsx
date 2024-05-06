@@ -18,30 +18,56 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Database } from "react-bootstrap-icons";
-import { Modal, ModalHeader } from "reactstrap";
 import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
+import { Project } from "../../../projectsV2/api/projectV2.api.ts";
+import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
+import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api.ts";
+import { DataSourceDisplay } from "./DataSourceDisplay.tsx";
 
-export function DataSourcesDisplay() {
+export function DataSourcesDisplay({ project }: { project: Project }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { data, isFetching, isLoading } = useGetStoragesV2Query({
+    projectId: project.id,
+  });
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
+
+  const totalStorages = !isLoading && !isFetching ? data?.length : 0;
+
   return (
     <>
       <div className={cx("p-3", "d-flex", "justify-content-between")}>
         <div className="fw-bold">
           <Database size={20} className={cx("me-2")} />
-          Data Sources (0)
+          Data Sources ({totalStorages})
         </div>
         <PlusRoundButton handler={toggle} />
       </div>
-      <p className="px-3">
-        Add published datasets from data repositories, and connect to cloud
-        storage to read and write custom data.
-      </p>
-      <Modal isOpen={isOpen} toggle={toggle} centered>
-        <ModalHeader>Add Data source...</ModalHeader>
-      </Modal>
+      {!isLoading && !isFetching && totalStorages === 0 ? (
+        <p className="px-3">
+          Add published datasets from data repositories, and connect to cloud
+          storage to read and write custom data.
+        </p>
+      ) : (
+        <div className={cx("p-0", "pb-0", "m-0")}>
+          {data?.map((storage, index) => (
+            <DataSourceDisplay
+              key={index}
+              storage={storage}
+              projectId={project.id}
+            />
+          ))}
+        </div>
+      )}
+      <AddCloudStorageModal
+        currentStorage={null}
+        isOpen={isOpen}
+        toggle={toggle}
+        projectId={project.id}
+        isV2={true}
+      />
     </>
   );
 }

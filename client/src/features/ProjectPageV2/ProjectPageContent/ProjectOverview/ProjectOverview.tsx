@@ -55,7 +55,7 @@ export default function ProjectPageOverview({ project }: { project: Project }) {
         </Col>
         <Col xl={6}>
           <OverviewBox>
-            <DataSourcesDisplay />
+            <DataSourcesDisplay project={project} />
           </OverviewBox>
         </Col>
         <Col xl={6}>

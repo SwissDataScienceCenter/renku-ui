@@ -129,7 +129,9 @@ export interface PatchSessionParams {
 }
 
 export interface CloudStorageDefinitionForSessionApi {
-  configuration: Record<string, boolean | number | string | undefined>;
+  configuration: {
+    [key: string]: number | (string | null) | boolean | object;
+  };
   readonly: boolean;
   source_path: string;
   target_path: string;
