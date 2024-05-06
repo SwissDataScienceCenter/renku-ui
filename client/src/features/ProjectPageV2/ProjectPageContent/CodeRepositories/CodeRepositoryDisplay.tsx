@@ -61,7 +61,7 @@ function CodeRepositoryDeleteModal({
       ? project?.repositories?.filter((repo) => repo !== repositoryUrl)
       : [];
     updateProject({
-      "If-Match": project.etag ? project.etag : undefined,
+      "If-Match": project.etag ? project.etag : "",
       projectId: project.id,
       projectPatch: { repositories },
     })
