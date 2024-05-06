@@ -7,10 +7,10 @@
   {
     "id": "user2-uuid",
     "email": "user2@email.com",
-    "role": "member"
+    "role": "viewer"
   },
   {
     "id": "user3-uuid",
-    "role": "member"
+    "role": "editor"
   }
 ]

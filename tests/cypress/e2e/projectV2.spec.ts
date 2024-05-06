@@ -295,7 +295,7 @@ describe("Edit v2 project", () => {
       addMember: {
         id: "foo-id",
         email: "foo@bar.com",
-        role: "member",
+        role: "editor",
       },
       removeMemberId: projectMemberToRemove,
     });

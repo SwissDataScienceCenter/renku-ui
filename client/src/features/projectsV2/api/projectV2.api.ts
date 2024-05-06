@@ -93,20 +93,20 @@ export type PostProjectsApiArg = {
 export type GetProjectsByProjectIdApiResponse =
   /** status 200 The project */ Project;
 export type GetProjectsByProjectIdApiArg = {
-  projectId: string;
+  projectId: Ulid;
 };
 export type PatchProjectsByProjectIdApiResponse =
   /** status 200 The patched project */ Project;
 export type PatchProjectsByProjectIdApiArg = {
-  projectId: string;
+  projectId: Ulid;
   /** If-Match header, for avoiding mid-air collisions */
-  "If-Match"?: ETag;
+  "If-Match": ETag;
   projectPatch: ProjectPatch;
 };
 export type DeleteProjectsByProjectIdApiResponse =
   /** status 204 The project was removed or did not exist in the first place */ void;
 export type DeleteProjectsByProjectIdApiArg = {
-  projectId: string;
+  projectId: Ulid;
 };
 export type GetProjectsByNamespaceAndSlugApiResponse =
   /** status 200 The project */ Project;
@@ -117,23 +117,23 @@ export type GetProjectsByNamespaceAndSlugApiArg = {
 export type GetProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members */ ProjectMemberListResponse;
 export type GetProjectsByProjectIdMembersApiArg = {
-  projectId: string;
+  projectId: Ulid;
 };
 export type PatchProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members were updated */ void;
 export type PatchProjectsByProjectIdMembersApiArg = {
-  projectId: string;
+  projectId: Ulid;
   projectMemberListPatchRequest: ProjectMemberListPatchRequest;
 };
 export type DeleteProjectsByProjectIdMembersAndMemberIdApiResponse =
   /** status 204 The member was removed or wasn't part of project's members. */ void;
 export type DeleteProjectsByProjectIdMembersAndMemberIdApiArg = {
-  projectId: string;
+  projectId: Ulid;
   /** This is user's KeyCloak ID */
-  memberId: string;
+  memberId: UserId;
 };
 export type Ulid = string;
-export type Name = string;
+export type ProjectName = string;
 export type Slug = string;
 export type CreationDate = string;
 export type UserId = string;
@@ -144,7 +144,7 @@ export type Description = string;
 export type ETag = string;
 export type Project = {
   id: Ulid;
-  name: Name;
+  name: ProjectName;
   namespace: Slug;
   slug: Slug;
   creation_date: CreationDate;
@@ -163,7 +163,7 @@ export type ErrorResponse = {
   };
 };
 export type ProjectPost = {
-  name: Name;
+  name: ProjectName;
   namespace: Slug;
   slug?: Slug;
   repositories?: RepositoriesList;
@@ -171,7 +171,7 @@ export type ProjectPost = {
   description?: Description;
 };
 export type ProjectPatch = {
-  name?: Name;
+  name?: ProjectName;
   namespace?: Slug;
   repositories?: RepositoriesList;
   visibility?: Visibility;
@@ -179,7 +179,7 @@ export type ProjectPatch = {
 };
 export type UserEmail = string;
 export type UserFirstLastName = string;
-export type Role = "member" | "owner";
+export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
   id: UserId;
   email?: UserEmail;
