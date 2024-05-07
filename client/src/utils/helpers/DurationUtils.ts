@@ -59,27 +59,32 @@ export function toHumanDuration({
  */
 export function toFullHumanDuration(
   duration: Duration | number,
-  units?: (keyof DurationLikeObject)[]
+  units: (keyof DurationLikeObject)[] = [
+    "years",
+    "weeks",
+    "days",
+    "hours",
+    "minutes",
+    "seconds",
+  ]
 ): string {
   const duration_ = ensureDuration(duration);
 
   if (!duration_.isValid) {
     return "invalid duration";
   }
-  if (units == undefined) {
-    units = ["years", "weeks", "days", "hours", "minutes", "seconds"];
-  }
   const shiftedDuration = duration_.shiftTo(...units);
-  const filteredDuration = {} as Record<string, number>;
-  for (const [key, value] of Object.entries(shiftedDuration.toObject())) {
-    if (value != 0) {
-      filteredDuration[key] = value;
-    }
-  }
-  return Duration.fromObject(filteredDuration).toHuman({
-    unitDisplay: "narrow",
-    maximumFractionDigits: 0,
-  });
+  const filteredDuration = Object.fromEntries(
+    Object.entries(shiftedDuration.toObject()).filter(
+      ([, value]) => value !== 0
+    )
+  );
+  return Duration.fromObject(filteredDuration)
+    .toHuman({
+      unitDisplay: "narrow",
+      maximumFractionDigits: 0,
+    })
+    .replace(/, /g, " ");
 }
 
 /**

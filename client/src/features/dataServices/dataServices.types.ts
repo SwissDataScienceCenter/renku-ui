@@ -17,39 +17,28 @@
  */
 
 export interface ResourcePool {
-  id: number;
-  name: string;
   classes: ResourceClass[];
-  quota?: Resources;
   default: boolean;
+  hibernation_threshold?: number;
+  id: number;
+  idle_threshold?: number;
+  name: string;
   public: boolean;
-  idle_threshold: number | null;
-  hibernation_threshold: number | null;
+  quota?: Resources;
 }
 
 export interface ResourceClass {
-  id: number;
-  name: string;
   cpu: number;
-
-  /** Memory (RAM) in Gigabytes */
-  memory: number;
-
-  gpu: number;
-
-  /** Max disk storage in Gigabytes */
-  max_storage: number;
-
-  /** Default disk storage in Gigabytes */
-  default_storage: number;
-
+  default_storage: number; // Default disk storage in Gigabytes
   default: boolean;
-
+  gpu: number;
+  id: number;
   matching: boolean;
-
-  tolerations?: string[];
-
+  max_storage: number; // Max disk storage in Gigabytes
+  memory: number; // Memory (RAM) in Gigabytes
+  name: string;
   node_affinities?: NodeAffinity[];
+  tolerations?: string[];
 }
 
 export interface NodeAffinity {

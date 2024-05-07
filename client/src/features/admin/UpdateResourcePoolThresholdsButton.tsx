@@ -31,9 +31,12 @@ import {
   ModalHeader,
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { useUpdateResourcePoolMutation } from "./adminComputeResources.api";
 import { ResourcePool } from "../dataServices/dataServices.types";
+import { UpdateResourcePoolThresholdsForm } from "./adminComputeResources.types";
+import { useGetNotebooksVersionQuery } from "../versions/versions.api";
+import { ResourcePoolDefaultThreshold } from "./AddResourcePoolButton";
 interface UpdateResourcePoolThresholdsButtonProps {
   resourcePool: ResourcePool;
 }
@@ -46,18 +49,23 @@ export default function UpdateResourcePoolThresholdsButton({
     setIsOpen((open) => !open);
   }, []);
 
+  // ? The key forces the component to re-render when the resource pool changes.
+  const localKey =
+    resourcePool.id.toString() +
+    resourcePool.hibernation_threshold +
+    resourcePool.idle_threshold;
+
   return (
-    <>
-      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
-        <PlusLg className={cx("bi", "me-1")} />
-        Update Resource Pool Thresholds
+    <div key={localKey}>
+      <Button className="btn-outline-rk-green" onClick={toggle} size="sm">
+        Update
       </Button>
       <UpdateResourcePoolThresholdsModal
         isOpen={isOpen}
         resourcePool={resourcePool}
         toggle={toggle}
       />
-    </>
+    </div>
   );
 }
 
@@ -74,8 +82,10 @@ function UpdateResourcePoolThresholdsModal({
 }: UpdateResourcePoolThresholdsModalProps) {
   const { id, name } = resourcePool;
 
-  const [updateResourcePool, result] = useUpdateResourcePoolMutation();
+  // Fetch default values
+  const notebookVersion = useGetNotebooksVersionQuery();
 
+  // Form state
   const {
     control,
     formState: { errors },
@@ -83,31 +93,33 @@ function UpdateResourcePoolThresholdsModal({
     reset,
   } = useForm<UpdateResourcePoolThresholdsForm>({
     defaultValues: {
-      idleThreshold:
-        resourcePool.idle_threshold == null
-          ? undefined
-          : resourcePool.idle_threshold / 60,
-      hibernationThreshold:
-        resourcePool.hibernation_threshold == null
-          ? undefined
-          : resourcePool.hibernation_threshold / 60,
+      idleThreshold: resourcePool.idle_threshold
+        ? resourcePool.idle_threshold / 60
+        : undefined,
+      hibernationThreshold: resourcePool.hibernation_threshold
+        ? resourcePool.hibernation_threshold / 60
+        : undefined,
     },
   });
+
+  // Handle invoking API to update resource pools
+  const [updateResourcePool, result] = useUpdateResourcePoolMutation();
   const onSubmit = useCallback(
     (data: UpdateResourcePoolThresholdsForm) => {
       updateResourcePool({
         resourcePoolId: id,
-        idle_threshold:
-          data.idleThreshold == undefined ? null : data.idleThreshold * 60,
-        hibernation_threshold:
-          data.hibernationThreshold == undefined
-            ? null
-            : data.hibernationThreshold * 60,
+        idle_threshold: data.idleThreshold
+          ? data.idleThreshold * 60
+          : undefined,
+        hibernation_threshold: data.hibernationThreshold
+          ? data.hibernationThreshold * 60
+          : undefined,
       });
     },
     [id, updateResourcePool]
   );
 
+  // Reset form and close modal on successful submissions
   useEffect(() => {
     if (!result.isSuccess) {
       return;
@@ -135,18 +147,18 @@ function UpdateResourcePoolThresholdsModal({
       <ModalBody>
         <p>
           Please note that changes only affect new sessions, not already running
-          ones
+          ones.
         </p>
         <Form
           className="form-rk-green"
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrNotebooksError error={result.error} />}
 
           <div className="mb-3">
             <Label className="form-label" for="updateResourcePoolIdleThreshold">
-              Maximum Session Idle Time(minutes)
+              Maximum idle time before hibernating (minutes)
             </Label>
             <Controller
               control={control}
@@ -160,22 +172,34 @@ function UpdateResourcePoolThresholdsModal({
                   id="updateResourcePoolIdleThreshold"
                   placeholder="idle threshold"
                   type="number"
-                  min="1"
+                  min="0"
                   step="1"
                   required={false}
                   {...field}
                 />
               )}
-              rules={{ required: true }}
+              rules={{ min: 0 }}
             />
-            <div className="invalid-feedback">Please provide a threshold</div>
+            <div className="invalid-feedback">
+              Please enter a number greater than 0 or leave blank.
+            </div>
+            <ResourcePoolDefaultThreshold
+              duration={notebookVersion.data?.registeredUsersIdleThreshold}
+              isError={notebookVersion.isError}
+              isLoading={notebookVersion.isLoading}
+            />
+            {resourcePool.idle_threshold && (
+              <Label className={cx("d-block", "form-text")}>
+                Use 0 to remove the current value and fallback to the default.
+              </Label>
+            )}
           </div>
           <div className="mb-3">
             <Label
               className="form-label"
               for="updateResourcePoolHibernationThreshold"
             >
-              Maximum Session Hibernation Time(minutes)
+              Maximum hibernation time before deleting (minutes)
             </Label>
             <Controller
               control={control}
@@ -189,15 +213,27 @@ function UpdateResourcePoolThresholdsModal({
                   id="updateResourcePoolHibernationThreshold"
                   placeholder="hibernation threshold"
                   type="number"
-                  min="1"
+                  min="0"
                   step="1"
                   required={false}
                   {...field}
                 />
               )}
-              rules={{ required: true }}
+              rules={{ min: 0 }}
             />
             <div className="invalid-feedback">Please provide a threshold</div>
+            <ResourcePoolDefaultThreshold
+              duration={
+                notebookVersion.data?.registeredUsersHibernationThreshold
+              }
+              isError={notebookVersion.isError}
+              isLoading={notebookVersion.isLoading}
+            />
+            {resourcePool.hibernation_threshold && (
+              <Label className={cx("d-block", "form-text")}>
+                Use 0 to remove the current value and fallback to the default.
+              </Label>
+            )}
           </div>
         </Form>
       </ModalBody>
@@ -221,9 +257,4 @@ function UpdateResourcePoolThresholdsModal({
       </ModalFooter>
     </Modal>
   );
-}
-
-interface UpdateResourcePoolThresholdsForm {
-  idleThreshold: number | undefined;
-  hibernationThreshold: number | undefined;
 }

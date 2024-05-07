@@ -59,7 +59,7 @@ import { setSessionClass } from "../../startSessionOptionsSlice";
 import { computeStorageSizes } from "../../utils/sessionOptions.utils";
 
 import styles from "./SessionClassOption.module.scss";
-import { toFullHumanDuration } from "../../../../utils/helpers/DurationUtils";
+import { toHumanDuration } from "../../../../utils/helpers/DurationUtils";
 
 export const SessionClassOption = () => {
   // Project options
@@ -218,11 +218,49 @@ export const SessionClassOption = () => {
         defaultSessionClass={defaultSessionClass}
         onChange={onChange}
       />
+      {/* <SessionClassThresholds currentSessionClass={currentSessionClass} /> */}
       <SessionClassWarning currentSessionClass={currentSessionClass} />
       <AskForComputeResources />
     </div>
   );
 };
+
+interface SessionClassThresholdsProps {
+  defaultIdle?: number;
+  defaultHibernation?: number;
+  resourcePool?: ResourcePool;
+}
+
+function SessionClassThresholds({
+  defaultIdle,
+  defaultHibernation,
+  resourcePool,
+}: SessionClassThresholdsProps) {
+  if (!resourcePool) {
+    return null;
+  }
+  if (
+    (!resourcePool.idle_threshold && !defaultIdle) ||
+    (!resourcePool.hibernation_threshold && !defaultHibernation)
+  ) {
+    return null;
+  }
+
+  return (
+    <div className="form-text">
+      This session will automatically pause after{" "}
+      {toHumanDuration({
+        duration: (resourcePool.idle_threshold ?? defaultIdle) as number,
+      })}{" "}
+      of inactivity. You can restart if within{" "}
+      {toHumanDuration({
+        duration: (resourcePool.hibernation_threshold ??
+          defaultHibernation) as number,
+      })}{" "}
+      before it is deleted.
+    </div>
+  );
+}
 
 interface SessionRequirementsProps {
   currentSessionClass?: ResourceClass | undefined;
@@ -416,27 +454,35 @@ export const SessionClassSelector = ({
     () =>
       makeGroupedOptions(
         resourcePools,
-        nbVersion?.registeredUsersIdleThreshold ?? 86400,
-        nbVersion?.registeredUsersHibernationThreshold ?? 86400
+        nbVersion?.registeredUsersIdleThreshold
       ),
     [resourcePools, nbVersion]
   );
 
   return (
-    <Select
-      options={options}
-      value={currentSessionClass}
-      defaultValue={defaultSessionClass}
-      getOptionValue={(option) => `${option.id}`}
-      getOptionLabel={(option) => option.name}
-      onChange={onChange}
-      isDisabled={disabled}
-      isClearable={false}
-      isSearchable={false}
-      unstyled
-      classNames={selectClassNames}
-      components={selectComponents}
-    />
+    <>
+      <Select
+        options={options}
+        value={currentSessionClass}
+        defaultValue={defaultSessionClass}
+        getOptionValue={(option) => `${option.id}`}
+        getOptionLabel={(option) => option.name}
+        onChange={onChange}
+        isDisabled={disabled}
+        isClearable={false}
+        isSearchable={false}
+        unstyled
+        classNames={selectClassNames}
+        components={selectComponents}
+      />
+      <SessionClassThresholds
+        resourcePool={resourcePools.find(
+          (p) => p.id === currentSessionClass?.id
+        )}
+        defaultIdle={nbVersion?.registeredUsersIdleThreshold}
+        defaultHibernation={nbVersion?.registeredUsersHibernationThreshold}
+      />
+    </>
   );
 };
 
@@ -444,21 +490,21 @@ interface OptionGroup extends GroupBase<ResourceClass> {
   label: string;
   pool: ResourcePool;
   maxIdle: string;
-  maxHibernate: string;
   options: readonly ResourceClass[];
 }
 
 const makeGroupedOptions = (
   resourcePools: ResourcePool[],
-  defaultIdleThreshold: number,
-  defaultHibernationThreshold: number
+  defaultIdleThreshold?: number
 ): OptionGroup[] =>
   resourcePools.map((pool) => ({
     label: pool.name,
-    maxIdle: toFullHumanDuration(pool.idle_threshold ?? defaultIdleThreshold),
-    maxHibernate: toFullHumanDuration(
-      pool.hibernation_threshold ?? defaultHibernationThreshold
-    ),
+    maxIdle:
+      !pool.idle_threshold && !defaultIdleThreshold
+        ? ""
+        : toHumanDuration({
+            duration: pool.idle_threshold ?? (defaultIdleThreshold as number),
+          }),
     pool,
     options: pool.classes,
   }));
@@ -524,11 +570,10 @@ const selectComponents: SelectComponentsConfig<
   ) => {
     return (
       <components.GroupHeading {...props}>
-        <span className="text-uppercase me-2">{props.data.label}</span>
-        <span>
-          (Max Idle: {props.data.maxIdle}, Max Stopped:{" "}
-          {props.data.maxHibernate})
-        </span>
+        <span className={cx("text-uppercase", "me-1")}>{props.data.label}</span>
+        {props.data.maxIdle && (
+          <span> (paused after {props.data.maxIdle} inactive)</span>
+        )}
       </components.GroupHeading>
     );
   },

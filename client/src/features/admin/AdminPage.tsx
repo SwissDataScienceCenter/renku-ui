@@ -156,20 +156,12 @@ interface ResourcePoolItemProps {
 }
 
 function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
-  const {
-    name,
-    default: isDefault,
-    public: isPublic,
-    quota,
-    idle_threshold: idleThreshold,
-    hibernation_threshold: hibernationThreshold,
-  } = resourcePool;
+  const { name, default: isDefault, public: isPublic, quota } = resourcePool;
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((isOpen) => !isOpen);
   }, []);
-  const { data } = useGetNotebooksVersionQuery();
 
   return (
     <Card className="mt-2">
@@ -200,62 +192,57 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
       </CardHeader>
       <Collapse isOpen={isOpen}>
         <CardBody className="pt-0">
-          <p>
-            {isPublic
-              ? "Public pool (everyone can use it)"
-              : "Private pool (requires special access)"}
-          </p>
-
-          <p>
-            Maximum Session Idle Time:
-            {toFullHumanDuration(
-              idleThreshold ?? data?.registeredUsersIdleThreshold ?? 86400,
-              ["years", "weeks", "days", "hours", "minutes"]
-            )}
-          </p>
-          <p>
-            Maximum Session Hibernation Time:
-            {toFullHumanDuration(
-              hibernationThreshold ??
-                data?.registeredUsersHibernationThreshold ??
-                86400,
-              ["years", "weeks", "days", "hours", "minutes"]
-            )}
-          </p>
-          <div className={cx("col", "ms-auto")}>
-            <UpdateResourcePoolThresholdsButton resourcePool={resourcePool} />
+          <div className={cx("border-bottom", "border-top", "py-2")}>
+            <p className="mb-0">
+              {isPublic
+                ? "Public pool (everyone can use it)"
+                : "Private pool (requires special access)"}
+            </p>
           </div>
-          {quota != null ? (
-            <div
-              className={cx(
-                "align-items-center",
-                "row",
-                "row-cols-1",
-                "row-cols-sm-4",
-                "row-cols-md-5",
-                "text-end"
-              )}
-            >
-              <div className={cx("col", "col-sm-12", "col-md", "text-start")}>
-                Quota:
+
+          <div className={cx("border-bottom", "py-2")}>
+            <ResourcePoolThresholds resourcePool={resourcePool} />
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            {quota != null ? (
+              <div
+                className={cx(
+                  "align-items-center",
+                  "row",
+                  "row-cols-1",
+                  "row-cols-sm-4",
+                  "row-cols-md-5",
+                  "text-end"
+                )}
+              >
+                <div className={cx("col", "col-sm-12", "col-md", "text-start")}>
+                  Quota:
+                </div>
+                <div className="col">{quota.cpu}&nbsp;CPUs</div>
+                <div className="col">{quota.memory}&nbsp;GB RAM</div>
+                <div className="col">{quota.gpu}&nbsp;GPUs</div>
+                <div className={cx("col", "ms-auto")}>
+                  <UpdateResourcePoolQuotaButton resourcePool={resourcePool} />
+                </div>
               </div>
-              <div className="col">{quota.cpu}&nbsp;CPUs</div>
-              <div className="col">{quota.memory}&nbsp;GB RAM</div>
-              <div className="col">{quota.gpu}&nbsp;GPUs</div>
-              <div className={cx("col", "ms-auto")}>
-                <UpdateResourcePoolQuotaButton resourcePool={resourcePool} />
-              </div>
+            ) : (
+              <p className="mb-0">No quota</p>
+            )}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            <ResourceClassList
+              classes={resourcePool.classes}
+              resourcePool={resourcePool}
+            />
+          </div>
+
+          {!isPublic && (
+            <div className={cx("border-bottom", "py-2")}>
+              <ResourcePoolUsers resourcePool={resourcePool} />
             </div>
-          ) : (
-            <p>No quota</p>
           )}
-
-          <ResourceClassList
-            classes={resourcePool.classes}
-            resourcePool={resourcePool}
-          />
-
-          {!isPublic && <ResourcePoolUsers resourcePool={resourcePool} />}
         </CardBody>
         <CardBody
           className={cx("d-flex", "flex-row", "justify-content-end", "pt-0")}
@@ -264,6 +251,63 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
         </CardBody>
       </Collapse>
     </Card>
+  );
+}
+
+function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
+  const {
+    idle_threshold: idleThreshold,
+    hibernation_threshold: hibernationThreshold,
+  } = resourcePool;
+
+  const { data, isError, isLoading } = useGetNotebooksVersionQuery();
+
+  return (
+    <div
+      className={cx(
+        "align-items-center",
+        "row",
+        "row-cols-1",
+        "row-cols-sm-3",
+        "row-cols-lg-4",
+        "text-end"
+      )}
+    >
+      <div className={cx("col", "col-sm-12", "text-start")}>
+        Session thresholds:
+      </div>
+      <div className="col">
+        Hibernate after{" "}
+        <span className="text-nowrap">
+          {idleThreshold
+            ? toFullHumanDuration(idleThreshold)
+            : isLoading
+            ? "(Loading...)"
+            : isError
+            ? "unavailable"
+            : data?.registeredUsersIdleThreshold
+            ? toFullHumanDuration(data.registeredUsersIdleThreshold)
+            : "unknown"}
+        </span>
+      </div>
+      <div className="col">
+        Delete after{" "}
+        <span className="text-nowrap">
+          {hibernationThreshold
+            ? toFullHumanDuration(hibernationThreshold)
+            : isLoading
+            ? "(Loading...)"
+            : isError
+            ? "unavailable"
+            : data?.registeredUsersHibernationThreshold
+            ? toFullHumanDuration(data.registeredUsersHibernationThreshold)
+            : "unknown"}
+        </span>
+      </div>
+      <div className={cx("col", "ms-auto")}>
+        <UpdateResourcePoolThresholdsButton resourcePool={resourcePool} />
+      </div>
+    </div>
   );
 }
 
@@ -592,7 +636,7 @@ function DeleteResourcePoolButton({
         onClick={toggle}
       >
         <TrashFill className={cx("bi", "me-1")} />
-        Delete
+        Delete resource pool
         {resourcePool.default && " (The default pool cannot be deleted)"}
       </Button>
       <DeleteResourcePoolModal
