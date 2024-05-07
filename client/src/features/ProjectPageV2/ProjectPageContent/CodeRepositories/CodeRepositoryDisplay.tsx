@@ -15,18 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
-  CheckCircleFill,
-  Clock,
   ThreeDotsVertical,
   Trash,
-  XCircleFill,
   XLg,
+  BoxArrowUpRight,
 } from "react-bootstrap-icons";
 import {
   Button,
@@ -40,19 +35,12 @@ import {
   ModalHeader,
   Row,
   UncontrolledDropdown,
-  UncontrolledTooltip,
 } from "reactstrap";
 import { ExternalLink } from "../../../../components/ExternalLinks.jsx";
 import { Loader } from "../../../../components/Loader.tsx";
-import { TimeCaption } from "../../../../components/TimeCaption.tsx";
 import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
-import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook.ts";
-import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook.ts";
-import { GitlabProjectResponse } from "../../../project/GitLab.types.ts";
-import { useGetProjectByPathQuery } from "../../../project/projectGitLab.api.ts";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
-import sessionConfigV2Slice from "../../../sessionsV2/sessionConfigV2.slice.ts";
 import RenkuFrogIcon from "../../../../components/icons/RenkuIcon.tsx";
 
 interface CodeRepositoryDeleteModalProps {
@@ -180,234 +168,35 @@ function CodeRepositoryActions({
     </>
   );
 }
-interface SessionRepositoryConfigProps {
+interface RepositoryItemProps {
   project: Project;
   url: string;
-  viewMode: "inline-view-mode" | "edit-mode";
 }
 
-export function SessionRepositoryConfig({
-  url,
-  viewMode,
-  project,
-}: SessionRepositoryConfigProps) {
-  const ref = useRef<HTMLSpanElement>(null);
-
+export function RepositoryItem({ url, project }: RepositoryItemProps) {
   const canonicalUrl = useMemo(() => `${url.replace(/.git$/i, "")}.git`, [url]);
-
-  const repository = useMemo(
-    () => matchRepositoryUrl(canonicalUrl),
-    [canonicalUrl]
-  );
-
-  const { currentData, isFetching, isError } = useGetProjectByPathQuery(
-    repository ? repository : skipToken
-  );
-
-  const matchedRepositoryMetadata = useMemo(
-    () =>
-      currentData != null
-        ? matchRepositoryMetadata(canonicalUrl, currentData)
-        : null,
-    [canonicalUrl, currentData]
-  );
-
-  const repositorySupport = useAppSelector(
-    ({ sessionConfigV2 }) => sessionConfigV2.repositorySupport[canonicalUrl]
-  );
-
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (repositorySupport == null) {
-      dispatch(sessionConfigV2Slice.actions.initializeRepository(canonicalUrl));
-    }
-  }, [canonicalUrl, dispatch, isFetching, repositorySupport]);
-
-  useEffect(() => {
-    if (!repository) {
-      dispatch(
-        sessionConfigV2Slice.actions.setRepositorySupport({
-          url: canonicalUrl,
-          isLoading: false,
-          supportsSessions: false,
-        })
-      );
-    }
-  }, [canonicalUrl, dispatch, repository]);
-
-  useEffect(() => {
-    if (isFetching) {
-      dispatch(sessionConfigV2Slice.actions.initializeRepository(canonicalUrl));
-    }
-  }, [canonicalUrl, dispatch, isFetching]);
-
-  useEffect(() => {
-    if (isError) {
-      dispatch(
-        sessionConfigV2Slice.actions.setRepositorySupport({
-          url: canonicalUrl,
-          isLoading: false,
-          supportsSessions: false,
-        })
-      );
-    }
-  }, [canonicalUrl, dispatch, isError]);
-
-  useEffect(() => {
-    if (currentData == null) {
-      return;
-    }
-
-    if (matchedRepositoryMetadata) {
-      const {
-        default_branch: defaultBranch,
-        namespace,
-        path: projectName,
-      } = matchedRepositoryMetadata;
-      dispatch(
-        sessionConfigV2Slice.actions.setRepositorySupport({
-          url: canonicalUrl,
-          isLoading: false,
-          supportsSessions: true,
-          sessionConfiguration: {
-            defaultBranch,
-            namespace: namespace.full_path,
-            projectName,
-            repositoryMetadata: matchedRepositoryMetadata,
-          },
-        })
-      );
-    } else {
-      dispatch(
-        sessionConfigV2Slice.actions.setRepositorySupport({
-          url: canonicalUrl,
-          isLoading: false,
-          supportsSessions: false,
-        })
-      );
-    }
-  }, [canonicalUrl, currentData, dispatch, matchedRepositoryMetadata]);
-
+  const title = canonicalUrl.split("/").pop();
   const urlDisplay = (
-    <div className={cx("d-flex", "align-items-center", "gap-1")}>
-      <RenkuFrogIcon className={cx("me-2", "flex-shrink-0")} size={24} />
+    <div className={cx("d-flex", "align-items-center", "gap-2")}>
+      <RenkuFrogIcon className={cx("flex-shrink-0")} size={24} />
       <ExternalLink
         url={canonicalUrl}
-        title={currentData?.path || canonicalUrl}
+        title={title || canonicalUrl}
         role="text"
         className="text-truncate"
       />
-      <FontAwesomeIcon icon={faExternalLinkAlt} size="sm" color="dark" />
+      <BoxArrowUpRight size={16} />
     </div>
   );
 
-  const statusDisplay = (
-    <>
-      <span ref={ref} tabIndex={0}>
-        {!repositorySupport || repositorySupport.isLoading ? (
-          <Loader className="bi" inline size={16} />
-        ) : repositorySupport.supportsSessions ? (
-          <div
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "gap-2",
-              "text-truncate"
-            )}
-          >
-            <CheckCircleFill className={cx("bi", "text-success")} />
-            Accessible
-          </div>
-        ) : (
-          <div
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "gap-2",
-              "text-truncate"
-            )}
-          >
-            <XCircleFill className={cx("bi", "text-danger")} />
-            Error
-          </div>
-        )}
-      </span>
-      {repositorySupport && !repositorySupport.isLoading && (
-        <UncontrolledTooltip target={ref} placement="top">
-          {repositorySupport.supportsSessions ? (
-            <>This repository will be mounted in sessions.</>
-          ) : (
-            <>This repository cannot be mounted in sessions.</>
-          )}
-        </UncontrolledTooltip>
-      )}
-    </>
-  );
-  const creationDateDisplay = (
-    <span className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock size="16" />
-      <TimeCaption
-        prefix="Created"
-        datetime={currentData?.created_at}
-        className="text-truncate"
-        enableTooltip={true}
-      />
-    </span>
-  );
-
-  return viewMode === "edit-mode" ? (
+  return (
     <Row className={cx("mb-4")}>
-      <Col xs={10} sm={6} className={cx("text-truncate", "col")}>
+      <Col xs={10} className={cx("text-truncate", "col")}>
         {urlDisplay}
       </Col>
-      <Col
-        xs={12}
-        sm={4}
-        className={cx("col-12", "order-3", "order-sm-2", "col-sm")}
-      >
-        {statusDisplay}
-      </Col>
-      <Col
-        xs={2}
-        className={cx("order-2", "order-xs-3", "d-flex", "justify-content-end")}
-      >
+      <Col xs={2} className={cx("d-flex", "justify-content-end")}>
         <CodeRepositoryActions project={project} url={url} />
       </Col>
-      <Col xs={12} className={cx("text-truncate", "order-4")}>
-        {creationDateDisplay}
-      </Col>
-    </Row>
-  ) : (
-    <Row>
-      <Col xs={6} sm={8} className={cx("text-truncate")}>
-        {urlDisplay}
-      </Col>
-      <Col xs={6} sm={4}>
-        {statusDisplay}
-      </Col>
     </Row>
   );
-}
-
-function matchRepositoryUrl(rawUrl: string) {
-  try {
-    const url = new URL(rawUrl);
-    const trimmedPath = url.pathname
-      .replace(/^[/]/gi, "")
-      .replace(/.git$/i, "");
-    return trimmedPath ? trimmedPath : null;
-  } catch (error) {
-    return null;
-  }
-}
-
-function matchRepositoryMetadata(
-  canonicalUrl: string,
-  data: GitlabProjectResponse
-) {
-  if (canonicalUrl !== data.http_url_to_repo) {
-    return null;
-  }
-  return data;
 }

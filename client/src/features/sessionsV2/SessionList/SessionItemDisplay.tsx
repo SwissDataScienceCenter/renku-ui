@@ -191,7 +191,7 @@ export function SessionItemDisplay({
           >
             <SessionNameBox handler={() => toggleSessionDetails()}>
               <LayoutSidebarInsetReverse
-                className={cx("flex-shrink-0", "me-0", "me-sm-2")}
+                className={cx("flex-shrink-0", "me-0")}
                 size="20"
               />
               <span className={cx("text-truncate")}>{name}</span>
@@ -225,16 +225,14 @@ export function SessionItemDisplay({
         >
           <SessionNameBox handler={() => toggleSessionDetails()}>
             <LayoutSidebarInsetReverse
-              className={cx("flex-shrink-0", "me-0", "me-sm-2")}
+              className={cx("flex-shrink-0", "me-0")}
               size="20"
             />
             <span className={cx("text-truncate")}>{name}</span>
           </SessionNameBox>
           <SessionStatusBadgeBox>
-            <SessionBadge
-              className={"border border-rk-gray-600 bg-rk-gray-200"}
-            >
-              <DashCircleFill className="text-rk-gray-600" size={16} />
+            <SessionBadge className={"border border-dark-subtle bg-light"}>
+              <DashCircleFill className="text-light-emphasis" size={16} />
               <span className="text-dark ml-2 ">Not Running</span>
             </SessionBadge>
           </SessionStatusBadgeBox>

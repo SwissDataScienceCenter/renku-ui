@@ -120,14 +120,20 @@ $breadcrumb-divider: quote(">");
 
 // Dropmenu styles
 $dropdown-border-color: none;
-$dropdown-link-hover-bg: $rk-gray-200;
+$dropdown-divider-bg: $rk-table-border;
 $dropdown-bg: $rk-white;
 $dropdown-border-width: 0.5px;
 $dropdown-border-radius: 8px;
 $dropdown-item-padding-y: 16px;
 $dropdown-divider-margin-y: 0px;
-$dropdown-padding-y: 0;
+$dropdown-padding-y: 0.5rem;
 $rk-dropdown-options-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 $rk-dropdown-options-margin: 4px 0;
 $rk-dropdown-bg-active: transparent;
 $rk-dropdown-option-text-align: start;
+
+//Define border color for the alert
+$rk-warning-border: $transparent;
+$rk-info-border: $transparent;
+$rk-danger-border: $transparent;
+$rk-success-border: $transparent;

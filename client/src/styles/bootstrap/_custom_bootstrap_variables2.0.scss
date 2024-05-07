@@ -35,24 +35,28 @@ $rk-warning-50: #fefce8;
 $rk-success-100: #ecfccb;
 $rk-danger-100: #fee2e2;
 $rk-warning-100: #fef9c3;
+$rk-info-100: #dbeafe;
 
 $rk-gray-100: #f8f9fa;
 $rk-gray-200: #e9ecef;
 $rk-gray-600: #6c757d;
+$rk-gray-700: #495057;
+$rk-gray-800: #343a40;
+$rk-gray-900: #212529;
 
 $rk-white: #ffffff;
 $rk-hover: #f9f9f9;
 $rk-hover-blue: #99a3ab; //from bootraps mix https://codepen.io/emdeoh/pen/zYOQOPB
 
-$rk-info: #1d4ed8;
-$rk-success: #3f6212;
-$rk-danger: #b91c1c;
-$rk-warning: #a16207;
+$rk-info: #1e40af;
+$rk-success: #4d7c0f;
+$rk-danger: #991b1b;
+$rk-warning: #854d0e;
 
 $rk-info-text: #1e40af; // contrast ratio 7:1 for blue bg (#cfe3ea)
-$rk-success-text: #009568;
-$rk-danger-text: #991b1b;
-$rk-warning-text: #854d0e;
+$rk-success-text: #1a2e05;
+$rk-danger-text: #450a0a;
+$rk-warning-text: #422006;
 $rk-dark-bg: #c5cbcf;
 $rk-text-info: #172554;
 $rk-text-success: #1a2e05;
@@ -70,10 +74,6 @@ $rk-colors: (
   "rk-yellow": $rk-yellow,
   "rk-pink": $rk-pink,
   "rk-green": $rk-green,
-  "rk-green-50": $rk-green-50,
-  "rk-green-active": $rk-green-active,
-  "rk-green-hover": $rk-green-hover,
-  "rk-green-disabled": $rk-green-disabled,
   "rk-text": $rk-text,
   "rk-text-light": $rk-text-light,
   "rk-green-background": $rk-green-background,
@@ -83,20 +83,6 @@ $rk-colors: (
   "rk-dark-bg": $rk-dark-bg,
   "rk-background-0": $rk-background-0,
   "rk-background-table": $rk-background-table,
-  "rk-bg-info": $rk-bg-info,
-  "rk-success-50": $rk-success-50,
-  "rk-danger-50": $rk-danger-50,
-  "rk-warning-50": $rk-warning-50,
-  "rk-success-100": $rk-success-100,
-  "rk-danger-100": $rk-danger-100,
-  "rk-warning-100": $rk-warning-100,
-  "rk-gray-100": $rk-gray-100,
-  "rk-gray-200": $rk-gray-200,
-  "rk-gray-600": $rk-gray-600,
-  "rk-text-info": $rk-text-info,
-  "rk-text-success": $rk-text-success,
-  "rk-text-danger": $rk-text-danger,
-  "rk-text-warning": $rk-text-warning,
   "rk-border-input": $rk-border-input,
   "rk-border-input-focus": $rk-border-input-focus,
   "rk-border-input-active": $rk-border-input-active,
@@ -157,15 +143,16 @@ $breadcrumb-divider: quote(">");
 
 // Dropmenu styles
 $dropdown-border-color: #000;
-$dropdown-link-hover-bg: #e9ecef;
+$dropdown-link-hover-bg: $rk-gray-200;
 $dropdown-bg: $rk-white;
+$dropdown-divider-bg: $rk-text-light;
 $dropdown-border-width: 0.5px;
 $dropdown-border-radius: 4px;
-$dropdown-item-padding-y: 15px;
+$dropdown-item-padding-y: 16px;
 $dropdown-divider-margin-y: 0px;
-$dropdown-padding-y: 0;
+$dropdown-padding-y: 0.5rem;
 $rk-dropdown-options-box-shadow: none;
-$rk-dropdown-options-margin: 5px 0;
+$rk-dropdown-options-margin: 6px 0;
 $rk-dropdown-bg-active: $rk-white;
 $rk-dropdown-option-text-align: start;
 
@@ -188,4 +175,19 @@ $input-padding-y: 10px;
 //off canvas
 $offcanvas-horizontal-width: 800px;
 
-//Alerts
+//alerts
+$success-bg-subtle: $rk-success-100;
+$alert-success-text-color: $rk-success-text;
+$rk-success-border: $rk-success-text;
+
+$warning-bg-subtle: $rk-warning-100;
+$alert-warning-text-color: $rk-warning-text;
+$rk-warning-border: $rk-warning-text;
+
+$danger-bg-subtle: $rk-danger-100;
+$alert-danger-text-color: $rk-danger-text;
+$rk-danger-border: $rk-danger-text;
+
+$info-bg-subtle: $rk-info-100;
+$alert-info-text-color: $rk-info-text;
+$rk-info-border: $rk-info-text;

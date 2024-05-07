@@ -187,10 +187,10 @@ export function SessionLaunchersListDisplay({ project }: { project: Project }) {
                 "w-100",
                 "fst-italic",
                 "fs-small",
-                "text-rk-gray-600",
+                "text-light-emphasis",
                 "border-0",
                 "border-bottom",
-                "border-rk-gray-200",
+                "border-dark-subtle",
                 "rk-border-dotted"
               )}
             >
@@ -207,10 +207,10 @@ export function SessionLaunchersListDisplay({ project }: { project: Project }) {
                 "w-100",
                 "fst-italic",
                 "fs-small",
-                "text-rk-gray-600",
+                "text-light-emphasis",
                 "border-0",
                 "border-bottom",
-                "border-rk-gray-200",
+                "border-dark-subtle",
                 "rk-border-dotted"
               )}
             >
@@ -227,10 +227,10 @@ export function SessionLaunchersListDisplay({ project }: { project: Project }) {
                 "w-100",
                 "fst-italic",
                 "fs-small",
-                "text-rk-gray-600",
+                "text-light-emphasis",
                 "border-0",
                 "border-bottom",
-                "border-rk-gray-200",
+                "border-dark-subtle",
                 "rk-border-dotted"
               )}
             >
@@ -346,7 +346,7 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
       >
         <SessionNameBox handler={openSessionDetails}>
           <LayoutSidebarInsetReverse
-            className={cx("flex-shrink-0", "me-0", "me-sm-2")}
+            className={cx("flex-shrink-0", "me-0")}
             size="20"
           />
           <span

@@ -21,8 +21,8 @@ import { CodeSquare } from "react-bootstrap-icons";
 
 import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { SessionRepositoryConfig } from "./CodeRepositoryDisplay.tsx";
 import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal.tsx";
+import { RepositoryItem } from "./CodeRepositoryDisplay.tsx";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,12 +45,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
       </p>
       <div className={cx("p-2", "ps-3", "pb-0")}>
         {project.repositories?.map((repositoryUrl, index) => (
-          <SessionRepositoryConfig
-            key={index}
-            project={project}
-            url={repositoryUrl}
-            viewMode="edit-mode"
-          />
+          <RepositoryItem key={index} project={project} url={repositoryUrl} />
         ))}
       </div>
       <AddCodeRepositoryStep1Modal

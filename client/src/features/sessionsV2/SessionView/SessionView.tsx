@@ -139,10 +139,8 @@ function SessionCardNotRunning({
               "py-2"
             )}
           >
-            <SessionBadge
-              className={"border border-rk-gray-600 bg-rk-gray-200"}
-            >
-              <DashCircleFill className="text-rk-gray-600" size={16} />
+            <SessionBadge className={"border border-dark-subtle bg-light"}>
+              <DashCircleFill className="text-light-emphasis" size={16} />
               <span className="text-dark ml-2 ">Not Running</span>
             </SessionBadge>
           </Col>
@@ -205,7 +203,7 @@ function EnvironmentCard({
   }, []);
   return (
     <>
-      <Card className="border bg-rk-gray-100">
+      <Card className={cx("border", sessionViewStyles.EnvironmentCard)}>
         <CardBody className={cx("d-flex", "flex-column")}>
           <Row>
             <Col
@@ -270,7 +268,24 @@ function EnvironmentCard({
                     "py-2"
                   )}
                 >
-                  <p>{launcher.description}</p>
+                  {environment?.description ? (
+                    <p>{environment.description}</p>
+                  ) : (
+                    <p className="fst-italic mb-0">No description</p>
+                  )}
+                </Col>
+                <Col
+                  xs={12}
+                  className={cx(
+                    "d-flex",
+                    "align-items-center",
+                    "justify-content-start",
+                    "gap-2",
+                    "py-0"
+                  )}
+                >
+                  <label>Container image:</label>
+                  <CommandCopy command={environment?.container_image || ""} />
                 </Col>
                 <Col
                   xs={12}

@@ -30,7 +30,7 @@ export default function RenkuFrogIcon({ className, size }: RenkuIconProps) {
       role="img"
       width={size}
       height={size}
-      viewBox="0 0 31 31"
+      viewBox={`0 0 ${size} ${size}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >

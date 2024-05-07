@@ -21,10 +21,10 @@ import { useEffect, useMemo } from "react";
 import { Loader } from "../../components/Loader";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { SessionRepositoryConfig } from "../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay.tsx";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import sessionConfigV2Slice from "./sessionConfigV2.slice";
 import { RepositorySupport } from "./sessionConfigV2.types";
+import { ExternalLink } from "../../components/ExternalLinks.jsx";
 
 interface SessionConfigProps {
   project: Project;
@@ -87,11 +87,12 @@ export default function SessionConfig({ project }: SessionConfigProps) {
       </h3>
       <ol className="list-unstyled">
         {repositories.map((url, idx) => (
-          <SessionRepositoryConfig
+          <ExternalLink
+            className="text-truncate"
             key={idx}
-            project={project}
+            role="text"
+            title={url}
             url={url}
-            viewMode="inline-view-mode"
           />
         ))}
       </ol>

@@ -43,10 +43,10 @@ import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
 import { EnvironmentKind, SessionEnvironment } from "./sessionsV2.types";
 
-import styles from "./SessionLauncherForm.module.scss";
-import rkIconGlobalEnv from "../../styles/assets/globalEnvironment.svg";
 import { useEffect, useState } from "react";
 import { WarnAlert } from "../../components/Alert.jsx";
+import rkIconGlobalEnv from "../../styles/assets/globalEnvironment.svg";
+import styles from "./SessionLauncherForm.module.scss";
 
 export interface SessionLauncherForm {
   name: string;
@@ -483,8 +483,8 @@ export function SessionEnvironmentItem({
           <CardBody
             className={cx(
               isSelected
-                ? "border rounded border-rk-green bg-rk-green-50 border-2"
-                : "border rounded border-rk-gray-600",
+                ? "border rounded border-rk-green bg-success-subtle"
+                : "border rounded border-dark-subtle",
               !isSelected && styles.environmentCard
             )}
           >

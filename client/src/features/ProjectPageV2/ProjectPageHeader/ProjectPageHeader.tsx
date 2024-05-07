@@ -81,7 +81,6 @@ function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
               <PencilSquare /> Edit project information
             </Link>
           </DropdownItem>
-          <DropdownItem divider />
           <DropdownItem
             className={cx(
               "d-flex",

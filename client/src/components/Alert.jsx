@@ -86,13 +86,13 @@ class RenkuAlert extends Component {
 
   getIcon() {
     const icon = {
-      danger: <DangerIcon />,
-      info: <InfoIcon />,
-      warning: <WarningIcon />,
-      success: <SuccessIcon />,
+      danger: <DangerIcon className="text-danger" />,
+      info: <InfoIcon className="text-info" />,
+      warning: <WarningIcon className="text-warning" />,
+      success: <SuccessIcon className="text-success" />,
     }[this.props.color];
 
-    return icon || "";
+    return icon ? <div className="alert-icon">{icon}</div> : "";
   }
 
   render() {

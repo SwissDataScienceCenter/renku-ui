@@ -114,10 +114,11 @@ export function AddCodeRepositoryStep1Modal({
                   className={cx(
                     "fst-italic",
                     "text-warning",
-                    "bg-rk-warning-50",
+                    "bg-warning-subtle",
                     "border",
                     "border-warning",
-                    "ms-2"
+                    "ms-2",
+                    "alert-warning"
                   )}
                   title="coming soon"
                 >
@@ -156,7 +157,10 @@ function AddCodeRepositoryStep2Modal({
       projectPatch: { repositories },
     })
       .unwrap()
-      .then(() => toggleModal());
+      .then(() => {
+        toggleModal();
+        setRepositoryUrl("");
+      });
   };
 
   return (
