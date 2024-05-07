@@ -17,7 +17,7 @@
  */
 import { useCallback, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
-import { Link, useParams } from "react-router-dom-v5-compat";
+import { Link, Navigate, useParams } from "react-router-dom-v5-compat";
 import {
   Dropdown,
   DropdownItem,
@@ -35,6 +35,7 @@ import SessionsV2 from "../../sessionsV2/SessionsV2";
 import type { Project } from "../api/projectV2.api";
 import {
   isErrorResponse,
+  useGetProjectsByNamespaceAndSlugQuery,
   useGetProjectsByProjectIdQuery,
 } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
@@ -56,7 +57,7 @@ function ProjectV2Header({
   setSettingEdit,
   settingEdit,
 }: ProjectV2HeaderProps) {
-  const projectListUrl = Url.get(Url.pages.v2Projects.list);
+  const projectListUrl = Url.get(Url.pages.projectV2.list);
   return (
     <>
       <div className="fw-medium">
@@ -172,10 +173,15 @@ export function ProjectV2DescriptionAndRepositories({
   );
 }
 
-export default function ProjectV2Show() {
-  const { id: projectId } = useParams<"id">();
-  const { data, isLoading, error } = useGetProjectsByProjectIdQuery({
-    projectId: projectId ?? "",
+function ProjectV2ShowByNamespaceAndSlug() {
+  const { namespace, slug } = useParams<{
+    id: string | undefined;
+    namespace: string | undefined;
+    slug: string | undefined;
+  }>();
+  const { data, isLoading, error } = useGetProjectsByNamespaceAndSlugQuery({
+    namespace: namespace ?? "",
+    slug: slug ?? "",
   });
 
   const [settingEdit, setSettingEdit] = useState<SettingEditOption>(null);
@@ -186,7 +192,7 @@ export default function ProjectV2Show() {
       return (
         <div>
           Project does not exist, or you are not authorized to access it.{" "}
-          <Link to={Url.get(Url.pages.v2Projects.list)}>Return to list</Link>
+          <Link to={Url.get(Url.pages.projectV2.list)}>Return to list</Link>
         </div>
       );
     }
@@ -226,4 +232,49 @@ export default function ProjectV2Show() {
       )}
     </FormSchema>
   );
+}
+
+function ProjectV2ShowByProjectId() {
+  const { id: projectId } = useParams<{
+    id: string | undefined;
+    namespace: string | undefined;
+    slug: string | undefined;
+  }>();
+  const { data, isLoading, error } = useGetProjectsByProjectIdQuery({
+    projectId: projectId ?? "",
+  });
+  if (isLoading) return <Loader />;
+  if (error) {
+    if (isErrorResponse(error)) {
+      return (
+        <div>
+          Project does not exist, or you are not authorized to access it.{" "}
+          <Link to={Url.get(Url.pages.projectV2.list)}>Return to list</Link>
+        </div>
+      );
+    }
+    return <div>Could not retrieve project</div>;
+  }
+  if (data == null) return <div>Could not retrieve project</div>;
+  return (
+    <Navigate
+      to={Url.get(Url.pages.projectV2.show, {
+        namespace: data.namespace,
+        slug: data.slug,
+      })}
+      replace
+    />
+  );
+}
+
+export default function ProjectV2Show() {
+  const { id: projectId } = useParams<{
+    id: string | undefined;
+    namespace: string | undefined;
+    slug: string | undefined;
+  }>();
+  if (projectId != null) {
+    return <ProjectV2ShowByProjectId />;
+  }
+  return <ProjectV2ShowByNamespaceAndSlug />;
 }

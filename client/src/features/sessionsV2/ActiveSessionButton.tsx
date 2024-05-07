@@ -28,7 +28,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
-import { Link, generatePath, useNavigate } from "react-router-dom-v5-compat";
+import { Link, useNavigate } from "react-router-dom-v5-compat";
 import { SingleValue } from "react-select";
 import {
   Button,
@@ -68,10 +68,12 @@ import useWaitForSessionStatus from "../session/useWaitForSessionStatus.hook";
 
 interface ActiveSessionButtonProps {
   session: Session;
+  showSessionUrl: string;
 }
 
 export default function ActiveSessionButton({
   session,
+  showSessionUrl,
 }: ActiveSessionButtonProps) {
   const { notifications } = useContext(AppContext);
 
@@ -89,9 +91,6 @@ export default function ActiveSessionButton({
   const annotations = NotebooksHelper.cleanAnnotations(
     session.annotations
   ) as NotebookAnnotations;
-  const showSessionUrl = generatePath("sessions/show/:session", {
-    session: session.name,
-  });
 
   // Handle resuming session
   const [isResuming, setIsResuming] = useState(false);

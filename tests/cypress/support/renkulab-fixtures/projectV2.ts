@@ -27,12 +27,12 @@ interface ListManyProjectArgs extends NameOnlyFixture {
   numberOfProjects?: number;
 }
 
-interface ListProjectV2MembersFixture extends ProjectV2Args {
+interface ListProjectV2MembersFixture extends ProjectV2IdArgs {
   removeMemberId?: string;
   addMember?: { id: string; email: string; role: string };
 }
 
-interface ProjectV2Args extends SimpleFixture {
+interface ProjectV2IdArgs extends SimpleFixture {
   projectId?: string;
 }
 
@@ -40,8 +40,13 @@ interface ProjectV2DeleteFixture extends NameOnlyFixture {
   projectId?: string;
 }
 
-interface ProjectV2DeleteMemberFixture extends ProjectV2Args {
+interface ProjectV2DeleteMemberFixture extends ProjectV2IdArgs {
   memberId?: string;
+}
+
+interface ProjectV2NameArgs extends SimpleFixture {
+  namespace?: string;
+  projectSlug?: string;
 }
 
 export function generateProjects(numberOfProjects: number, start: number) {
@@ -51,6 +56,7 @@ export function generateProjects(numberOfProjects: number, start: number) {
     const project = {
       id: `${id}`,
       name: `test ${id} v2-project`,
+      namespace: "user1-uuid",
       slug: `test-${id}-v2-project`,
       creation_date: "2023-11-15T09:55:59Z",
       created_by: "user1-uuid",
@@ -111,8 +117,8 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
     listManyProjectV2(args?: ListManyProjectArgs) {
       const { numberOfProjects = 50, name = "listProjectV2" } = args ?? {};
       cy.intercept("GET", `/ui-server/api/data/projects?*`, (req) => {
-        const page = (req.query["perPage"] as number) ?? 1;
-        const perPage = (req.query["perPage"] as number) ?? 20;
+        const page = +((req.query["page"] as number) ?? 1);
+        const perPage = +((req.query["per_page"] as number) ?? 20);
         const start = (page - 1) * perPage;
         const numToGen = Math.min(
           Math.max(numberOfProjects - start - perPage, 0),
@@ -179,16 +185,17 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    postDeleteReadProjectV2(args?: ProjectV2DeleteFixture) {
+    postDeleteReadProjectV2(args?: ProjectV2NameArgs) {
       const {
         name = "postDeleteReadProjectV2",
-        projectId = "THEPROJECTULID26CHARACTERS",
+        namespace = "user1-uuid",
+        projectSlug = "test-2-v2-project",
       } = args ?? {};
       const response = {
         body: {
           error: {
             code: 1404,
-            message: `Project with id ${projectId} does not exist.`,
+            message: `Project  ${namespace}/${projectSlug} does not exist.`,
           },
         },
         delay: 2000,
@@ -196,16 +203,32 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/projects/${projectId}`,
+        `/ui-server/api/data/projects/${namespace}/${projectSlug}`,
         response
       ).as(name);
       return this;
     }
 
-    readProjectV2(args?: ProjectV2Args) {
+    readProjectV2(args?: ProjectV2NameArgs) {
       const {
         fixture = "projectV2/read-projectV2.json",
         name = "readProjectV2",
+        namespace = "user1-uuid",
+        projectSlug = "test-2-v2-project",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/projects/${namespace}/${projectSlug}`,
+        response
+      ).as(name);
+      return this;
+    }
+
+    readProjectV2ById(args?: ProjectV2IdArgs) {
+      const {
+        fixture = "projectV2/read-projectV2.json",
+        name = "readProjectV2ById",
         projectId = "THEPROJECTULID26CHARACTERS",
       } = args ?? {};
       const response = { fixture };
@@ -217,7 +240,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    updateProjectV2(args?: ProjectV2Args) {
+    updateProjectV2(args?: ProjectV2IdArgs) {
       const {
         fixture = "projectV2/update-projectV2-metadata.json",
         name = "updateProjectV2",

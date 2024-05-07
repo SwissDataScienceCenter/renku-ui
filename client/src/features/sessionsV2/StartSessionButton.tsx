@@ -21,19 +21,22 @@ import { PlayFill } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 
 interface StartSessionButtonProps {
-  projectId: string;
+  namespace: string;
+  slug: string;
   launcherId: string;
 }
 
 export default function StartSessionButton({
-  projectId,
   launcherId,
+  namespace,
+  slug,
 }: StartSessionButtonProps) {
   const startUrl = generatePath(
-    "/v2/projects/:projectId/sessions/:launcherId/start",
+    "/v2/projects/:namespace/:slug/sessions/:launcherId/start",
     {
-      projectId,
       launcherId,
+      namespace,
+      slug,
     }
   );
 

@@ -61,20 +61,7 @@ describe("Add new v2 project", () => {
       .click();
     cy.contains("user1.uuid").should("exist");
     cy.contains("Set Visibility").click();
-    cy.contains("Back").click();
-    cy.contains("user1.uuid").should("exist");
-  });
-
-  it("keeps namespace set after going back", () => {
-    cy.contains("New Project (V2)").should("be.visible");
-    cy.getDataCy("project-name-input").clear().type(newProjectTitle);
-    cy.getDataCy("project-slug-input").should("have.value", slug);
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
-      .first()
-      .click();
-    cy.contains("user1.uuid").should("exist");
-    cy.contains("Set Visibility").click();
-    cy.contains("Back").click();
+    cy.get(".rk-forms").contains("Back").click();
     cy.contains("user1.uuid").should("exist");
   });
 
@@ -159,6 +146,26 @@ describe("List v2 project", () => {
     cy.contains("test 2 v2-project").should("be.visible").click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
+  });
+});
+
+describe("Navigate to project", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userTest().namespaces();
+    fixtures.projects().landingUserProjects().readProjectV2();
+  });
+
+  it("shows projects by namespace/slug", () => {
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.contains("test 2 v2-project").should("be.visible");
+  });
+
+  it("shows projects by project id", () => {
+    fixtures.readProjectV2ById();
+    cy.visit("/v2/projects/THEPROJECTULID26CHARACTERS");
+    cy.wait("@readProjectV2ById");
+    cy.contains("test 2 v2-project").should("be.visible");
+    cy.location("pathname").should("contain", "/user1-uuid/test-2-v2-project");
   });
 });
 

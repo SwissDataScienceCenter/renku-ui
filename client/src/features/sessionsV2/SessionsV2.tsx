@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
-import { useParams } from "react-router-dom-v5-compat";
+import { generatePath, useParams } from "react-router-dom-v5-compat";
 import {
   Card,
   CardBody,
@@ -47,6 +47,7 @@ import {
 } from "../../notebooks/components/SessionListStatus";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import sessionsApi, { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
@@ -92,8 +93,12 @@ export default function SessionsV2({ project }: SessionsV2Props) {
 }
 
 function SessionLaunchersListDisplay() {
-  const { id: projectId } = useParams<"id">();
+  const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
+  const { data: project } = useGetProjectsByNamespaceAndSlugQuery(
+    namespace && slug ? { namespace, slug } : skipToken
+  );
 
+  const projectId = project?.id;
   const {
     data: launchers,
     error: launchersError,
@@ -150,7 +155,9 @@ function SessionLaunchersListDisplay() {
           <SessionLauncherDisplay
             key={launcher.id}
             launcher={launcher}
+            namespace={namespace ?? ""}
             projectId={projectId ?? ""}
+            slug={slug ?? ""}
           />
         ))}
         {Object.entries(orphanSessions).map(([key, session]) => (
@@ -163,12 +170,16 @@ function SessionLaunchersListDisplay() {
 
 interface SessionLauncherDisplayProps {
   launcher: SessionLauncher;
+  namespace: string;
   projectId: string;
+  slug: string;
 }
 
 function SessionLauncherDisplay({
   launcher,
+  namespace,
   projectId,
+  slug,
 }: SessionLauncherDisplayProps) {
   const { creation_date, environment_kind, name, default_url, description } =
     launcher;
@@ -272,7 +283,8 @@ function SessionLauncherDisplay({
             <div className="mt-auto">
               <StartSessionButton
                 launcherId={launcher.id}
-                projectId={projectId}
+                namespace={namespace}
+                slug={slug}
               />
             </div>
           )}
@@ -299,6 +311,10 @@ function ActiveSessionV2({ session }: ActiveSessionV2Props) {
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
   );
+
+  const showSessionUrl = generatePath("sessions/show/:session", {
+    session: session.name,
+  });
 
   return (
     <div>
@@ -327,7 +343,7 @@ function ActiveSessionV2({ session }: ActiveSessionV2Props) {
         />
       </div>
 
-      <ActiveSessionButton session={session} />
+      <ActiveSessionButton session={session} showSessionUrl={showSessionUrl} />
       <EnvironmentLogs
         name={displayModal.targetServer}
         annotations={cleanAnnotations}

@@ -35,7 +35,10 @@ interface ProjectV2ListProjectProps {
   project: Project;
 }
 function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
-  const projectUrl = Url.get(Url.pages.v2Projects.show, { id: project.id });
+  const projectUrl = Url.get(Url.pages.projectV2.show, {
+    namespace: project.namespace,
+    slug: project.slug,
+  });
   return (
     <div
       data-cy="list-card"
@@ -100,7 +103,7 @@ function ProjectList() {
 }
 
 export default function ProjectV2List() {
-  const newProjectUrl = Url.get(Url.pages.v2Projects.new);
+  const newProjectUrl = Url.get(Url.pages.projectV2.new);
   return (
     <FormSchema
       showHeader={true}

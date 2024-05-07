@@ -26,9 +26,11 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
+import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyGroupV2List from "../projectsV2/LazyGroupList";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyGroupV2Show from "../projectsV2/LazyGroupShow";
+import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
@@ -74,6 +76,14 @@ export default function RootV2() {
             }
           />
           <Route
+            path="help/*"
+            element={
+              <ContainerWrap>
+                <HelpV2Routes />
+              </ContainerWrap>
+            }
+          />
+          <Route
             path="projects/*"
             element={
               // <ContainerWrap>
@@ -82,10 +92,18 @@ export default function RootV2() {
             }
           />
           <Route
-            path="search*"
+            path="search/*"
             element={
               <ContainerWrap>
                 <LazySearchV2 />
+              </ContainerWrap>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <ContainerWrap>
+                <LazyDashboardV2 />
               </ContainerWrap>
             }
           />
@@ -113,6 +131,14 @@ function GroupsV2Routes() {
   );
 }
 
+function HelpV2Routes() {
+  return (
+    <Routes>
+      <Route path="/*" element={<LazyHelpV2 />} />
+    </Routes>
+  );
+}
+
 function ProjectsV2Routes() {
   return (
     <Routes>
@@ -133,6 +159,14 @@ function ProjectsV2Routes() {
         }
       />
       <Route
+        path=":namespace/:slug"
+        element={
+          <ContainerWrap>
+            <LazyProjectV2Show />
+          </ContainerWrap>
+        }
+      />
+      <Route
         path=":id"
         element={
           <ContainerWrap>
@@ -140,7 +174,10 @@ function ProjectsV2Routes() {
           </ContainerWrap>
         }
       />
-      <Route path=":id/sessions/*" element={<ProjectSessionsRoutes />} />
+      <Route
+        path=":namespace/:slug/sessions/*"
+        element={<ProjectSessionsRoutes />}
+      />
     </Routes>
   );
 }
