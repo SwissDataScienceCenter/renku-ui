@@ -108,10 +108,9 @@ export interface StartRenku2SessionParams {
   projectId: string;
   launcherId: string;
   repositories: {
-    namespace: string;
-    project: string;
-    branch: string;
-    commitSha: string;
+    url: string;
+    branch?: string;
+    commitSha?: string;
   }[];
   cloudStorage: SessionCloudStorage[];
   defaultUrl: string;
