@@ -22,16 +22,18 @@ import { Link } from "react-router-dom-v5-compat";
 
 interface BackToV1ButtonProps {
   outline?: boolean;
+  color?: string;
 }
 export default function BackToV1Button({
   outline = false,
+  color = "light",
 }: BackToV1ButtonProps) {
   return (
     <Link
       className={cx(
         "btn",
         "btn-sm",
-        outline ? "btn-outline-warning" : "btn-warning",
+        outline ? `btn-outline-${color}` : `btn-${color}`,
         "ms-2",
         "text-decoration-none"
       )}

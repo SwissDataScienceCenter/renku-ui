@@ -18,9 +18,10 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Database } from "react-bootstrap-icons";
+import { Loader } from "../../../../components/Loader.tsx";
 import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
+import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api.ts";
 import { DataSourceDisplay } from "./DataSourceDisplay.tsx";
 
@@ -35,6 +36,13 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
   }, []);
 
   const totalStorages = !isLoading && !isFetching ? data?.length : 0;
+
+  const contentLoading = (isLoading || isFetching) && (
+    <div className="text-center">
+      <Loader className={cx("bi", "me-3", "mt-3")} inline size={16} />
+      <span className="fst-italic">Loading data sources</span>
+    </div>
+  );
 
   return (
     <>
@@ -59,6 +67,7 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
               projectId={project.id}
             />
           ))}
+          {contentLoading}
         </div>
       )}
       <AddCloudStorageModal

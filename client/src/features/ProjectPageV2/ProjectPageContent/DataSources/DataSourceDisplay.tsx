@@ -262,7 +262,11 @@ export function DataSourceDisplay({
           "order-3",
           "order-sm-2",
           "col-sm",
-          "cursor-pointer"
+          "cursor-pointer",
+          "ps-5",
+          "ps-md-0",
+          "pt-2",
+          "pt-md-0"
         )}
       >
         {storageTypeDisplay}

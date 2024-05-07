@@ -16,9 +16,9 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { Col, Row } from "reactstrap";
 import { PlusLg } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
+import { Col, Row } from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
@@ -34,9 +34,9 @@ import {
 } from "../projectsV2/api/projectV2.enhanced-api";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 
-import DashboardV2Sessions from "./DashboardV2Sessions";
 import "../dashboard/Dashboard.scss";
 import styles from "./Dashboard.module.scss";
+import DashboardV2Sessions from "./DashboardV2Sessions";
 
 type ListElement = Pick<
   Project,
@@ -164,7 +164,8 @@ function DashboardWelcome() {
               persisting work in the alpha.
             </p>
             <div>
-              You can go back to Renku 1.0 at any time. <BackToV1Button />
+              You can go back to Renku 1.0 at any time.{" "}
+              <BackToV1Button color="warning" />
             </div>
           </WarnAlert>
         </Col>

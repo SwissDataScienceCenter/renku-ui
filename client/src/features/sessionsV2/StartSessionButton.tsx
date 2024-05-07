@@ -51,7 +51,7 @@ export default function StartSessionButton({
       )}
       to={startUrl}
     >
-      <PlayFill size="24" />
+      <PlayFill size="20" />
       Launch
     </Link>
   );
