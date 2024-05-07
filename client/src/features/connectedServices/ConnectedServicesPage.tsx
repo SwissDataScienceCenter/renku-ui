@@ -71,7 +71,7 @@ export default function ConnectedServicesPage() {
   return (
     <>
       <h1>Connected Services</h1>
-      <div>
+      <div className={cx("row", "g-3")}>
         {providers.map((provider) => (
           <ConnectedServiceCard key={provider.id} provider={provider} />
         ))}
@@ -102,20 +102,22 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
       : "not-connected";
 
   return (
-    <Card>
-      <CardBody>
-        <CardTitle>
-          <div className={cx("d-flex", "align-items-center")}>
-            {display_name}
-            <ConnectButton id={id} connectionStatus={connection?.status} />
-          </div>
-        </CardTitle>
-        <CardText className="mb-1">Status: {status}</CardText>
-        {connection?.status === "connected" && (
-          <ConnectedAccount connection={connection} />
-        )}
-      </CardBody>
-    </Card>
+    <div className={cx("col-12", "col-lg-6")}>
+      <Card>
+        <CardBody>
+          <CardTitle>
+            <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
+              <span className="pe-2">{display_name}</span>
+              <ConnectButton id={id} connectionStatus={connection?.status} />
+            </div>
+          </CardTitle>
+          <CardText className="mb-1">Status: {status}</CardText>
+          {connection?.status === "connected" && (
+            <ConnectedAccount connection={connection} />
+          )}
+        </CardBody>
+      </Card>
+    </div>
   );
 }
 
