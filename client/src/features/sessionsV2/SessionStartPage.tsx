@@ -36,9 +36,8 @@ import ProgressStepsIndicator, {
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
-// import { useGetAllRepositoryCommitsQuery } from "../project/projectGitLab.api";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import type { Project } from "../projectsV2/api/projectV2.api";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import {
   useGetDockerImageQuery,
   useStartRenku2SessionMutation,
@@ -51,7 +50,6 @@ import {
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-// import { SessionRepository } from "./startSessionOptionsV2.types";
 
 export default function SessionStartPage() {
   const { launcherId, namespace, slug } = useParams<

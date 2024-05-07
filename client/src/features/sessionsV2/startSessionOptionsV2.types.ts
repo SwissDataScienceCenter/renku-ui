@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-// import type { GitlabProjectResponse } from "../project/GitLab.types";
 import type {
   DockerImageStatus,
   SessionCloudStorage,
@@ -33,14 +32,6 @@ export interface StartSessionOptionsV2 {
   sessionClass: number;
   storage: number;
 }
-
-// export interface SessionRepository {
-//   namespace: string;
-//   project: string;
-//   branch: string;
-//   commitSha: string;
-//   repositoryMetadata: GitlabProjectResponse;
-// }
 
 export interface SessionRepository {
   url: string;
