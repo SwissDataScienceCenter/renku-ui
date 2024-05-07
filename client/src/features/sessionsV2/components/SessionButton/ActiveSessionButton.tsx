@@ -26,6 +26,7 @@ import {
   BoxArrowUpRight,
   CheckLg,
   FileEarmarkText,
+  PlayFill,
   Tools,
   Trash,
   XLg,
@@ -250,9 +251,10 @@ export default function ActiveSessionButton({
     "btn-rk-green",
     "btn-icon-text",
     "start-session-button",
-    "session-link-group",
     "py-1",
-    "px-2"
+    "px-2",
+    "d-flex",
+    "align-items-center"
   );
 
   const defaultAction =
@@ -292,9 +294,8 @@ export default function ActiveSessionButton({
           </>
         ) : (
           <>
-            <FontAwesomeIcon
-              className={cx("rk-icon", "rk-icon-md", "me-2")}
-              icon={faPlay}
+            <PlayFill
+              className={cx("rk-icon", "rk-icon-md", "flex-shrink-0", "me-2")}
             />
             Resume
           </>
@@ -306,7 +307,9 @@ export default function ActiveSessionButton({
         data-cy="modify-session-button"
         onClick={toggleModifySession}
       >
-        <Tools className={cx("bi", "flex-shrink-0", "me-2")} />
+        <Tools
+          className={cx("rk-icon", "rk-icon-md", "flex-shrink-0", "me-2")}
+        />
         Modify
       </Button>
     ) : (

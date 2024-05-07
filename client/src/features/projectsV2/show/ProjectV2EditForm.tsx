@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
 import { useFieldArray, useForm } from "react-hook-form";
 
@@ -54,10 +54,14 @@ import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 
+import { useNavigate } from "react-router-dom-v5-compat";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import AppContext from "../../../utils/context/appContext.ts";
+import { Url } from "../../../utils/helpers/url";
+import { notificationProjectDeleted } from "../../ProjectPageV2/ProjectPageContent/Settings/ProjectDelete.tsx";
 import { SettingEditOption } from "./projectV2Show.types";
 
-type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
+export type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
 
 interface ProjectDeleteConfirmationProps {
   isOpen: boolean;
@@ -70,6 +74,8 @@ export function ProjectDeleteConfirmation({
   toggle,
   project,
 }: ProjectDeleteConfirmationProps) {
+  const navigate = useNavigate();
+  const { notifications } = useContext(AppContext);
   const [deleteProject, result] = useDeleteProjectsByProjectIdMutation();
   const onDelete = useCallback(() => {
     deleteProject({ projectId: project.id });
@@ -83,17 +89,29 @@ export function ProjectDeleteConfirmation({
   );
 
   useEffect(() => {
+    if (result.isSuccess) {
+      navigate(Url.get(Url.pages.projectV2.list));
+      if (notifications)
+        notificationProjectDeleted(notifications, project.name);
+    }
     if (result.isSuccess || result.isError) {
       toggle();
     }
-  }, [result.isError, result.isSuccess, toggle]);
+  }, [
+    result.isError,
+    result.isSuccess,
+    toggle,
+    navigate,
+    notifications,
+    project.name,
+  ]);
 
   return (
     <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader className={cx("text-danger", "fw-bold")}>
         Delete project
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className="pt-0">
         <p className={cx("mb-0", "pb-3")}>
           Deleted projects cannot be restored. Please type{" "}
           <strong>{project.slug}</strong>, the slug of the project, to confirm.

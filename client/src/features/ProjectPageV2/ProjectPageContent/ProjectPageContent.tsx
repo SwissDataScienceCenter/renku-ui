@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
+import { Col, Row } from "reactstrap";
 import { Project } from "../../projectsV2/api/projectV2.api.ts";
 import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageContainer.tsx";
 import ProjectInformation from "./ProjectInformation/ProjectInformation.tsx";
@@ -29,18 +30,29 @@ export default function ProjectPageContent({
   project: Project;
   selectedContent: ProjectPageContentType;
 }) {
-  const isSettingsPage = selectedContent === ProjectPageContentType.Settings;
-  const isInfoPage = selectedContent === ProjectPageContentType.ProjectInfo;
   return (
     <main>
-      {isSettingsPage && <ProjectPageSettings projectId={project.id} />}
-      {isInfoPage && (
-        <div className={cx("d-block", "d-lg-none", "d-sm-block")}>
+      {selectedContent === ProjectPageContentType.Settings && (
+        <ProjectPageSettings project={project} />
+      )}
+      {selectedContent === ProjectPageContentType.ProjectInfo && (
+        <div className={cx("d-block", "d-lg-none", "d-sm-block", "pt-4")}>
           <ProjectInformation project={project} />
         </div>
       )}
-      {!isSettingsPage && !isInfoPage && (
-        <ProjectPageOverview project={project} />
+      {selectedContent === ProjectPageContentType.Overview && (
+        <Row className="pt-4">
+          <Col sm={12} lg={10}>
+            <ProjectPageOverview project={project} />
+          </Col>
+          <Col
+            sm={12}
+            lg={2}
+            className={cx("d-none", "d-lg-block", " d-sm-none")}
+          >
+            <ProjectInformation project={project}></ProjectInformation>
+          </Col>
+        </Row>
       )}
     </main>
   );

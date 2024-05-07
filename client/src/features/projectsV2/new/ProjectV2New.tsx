@@ -16,13 +16,10 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import { FormEvent, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import { Button, Form, Label } from "reactstrap";
+import { Form, Label } from "reactstrap";
 
-import { Loader } from "../../../components/Loader";
 import FormSchema from "../../../components/formschema/FormSchema";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
@@ -33,11 +30,11 @@ import type { ProjectPost } from "../api/projectV2.api";
 import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2Show";
 
 import type { NewProjectV2State } from "./projectV2New.slice";
-import { projectWasCreated, setCurrentStep } from "./projectV2New.slice";
+import { setCurrentStep } from "./projectV2New.slice";
 import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
 import ProjectV2NewForm from "./ProjectV2NewForm";
 import WipBadge from "../shared/WipBadge";
-import { ArrowLeft } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom-v5-compat";
 
 function projectToProjectPost(
   project: NewProjectV2State["project"]
@@ -110,67 +107,13 @@ function ProjectV2NewRepositoryStepHeader() {
   );
 }
 
-function ProjectV2BeingCreatedLoader() {
-  return (
-    <div className={cx("d-flex", "justify-content-center", "w-100")}>
-      <div className={cx("d-flex", "flex-column")}>
-        <Loader className="me-2" />
-        <div>Creating project...</div>
-      </div>
-    </div>
-  );
-}
-
-function ProjectV2BeingCreated({
-  result,
-}: {
-  result: ReturnType<typeof usePostProjectsMutation>[1];
-}) {
-  const dispatch = useDispatch();
-
-  const previousStep = useCallback(() => {
-    dispatch(setCurrentStep(2));
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (result.isSuccess) {
-      dispatch(projectWasCreated());
-    }
-  }, [dispatch, result.isSuccess]);
-
-  if (result.isLoading) {
-    return <ProjectV2BeingCreatedLoader />;
-  }
-
-  if (result.isError || result.data == null) {
-    return (
-      <div>
-        <p>Something went wrong.</p>
-        <div className={cx("d-flex", "justify-content-between")}>
-          <Button onClick={previousStep}>
-            <ArrowLeft /> Back
-          </Button>
-        </div>
-      </div>
-    );
-  }
-  const projectList = Url.get(Url.pages.projectV2.list);
-  return (
-    <>
-      <div>Project created.</div>
-      {"  "}
-      <Link to={projectList}>Go to project list</Link>
-    </>
-  );
-}
-
 function ProjectV2NewReviewCreateStep({
   currentStep,
 }: Pick<NewProjectV2State, "currentStep">) {
   const { project } = useAppSelector((state) => state.newProjectV2);
   const [createProject, result] = usePostProjectsMutation();
   const newProject = projectToProjectPost(project);
-
+  const navigate = useNavigate();
   const onSubmit = useCallback(
     (e: FormEvent<HTMLElement>) => {
       e.preventDefault();
@@ -179,9 +122,19 @@ function ProjectV2NewReviewCreateStep({
     [createProject, newProject]
   );
 
-  if (result != null && !result.isUninitialized) {
-    return <ProjectV2BeingCreated result={result} />;
-  }
+  useEffect(() => {
+    if (
+      result.isSuccess &&
+      project.metadata.namespace &&
+      project.metadata.slug
+    ) {
+      const projectUrl = Url.get(Url.pages.projectV2.show, {
+        namespace: project.metadata.namespace,
+        slug: project.metadata.slug,
+      });
+      navigate(projectUrl);
+    }
+  }, [result, project, navigate]);
 
   return (
     <Form className="form-rk-green" noValidate onSubmit={onSubmit}>

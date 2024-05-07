@@ -24,7 +24,6 @@ import { Url } from "../../../utils/helpers/url";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api.ts";
 import { isErrorResponse } from "../../projectsV2/api/projectV2.enhanced-api.ts";
 import { ProjectV2ShowByProjectId } from "../../projectsV2/show/ProjectV2Show.tsx";
-import ProjectInformation from "../ProjectPageContent/ProjectInformation/ProjectInformation.tsx";
 import ProjectPageContent from "../ProjectPageContent/ProjectPageContent.tsx";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader.tsx";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav.tsx";
@@ -91,16 +90,19 @@ export function ProjectPageContainer({
         <ProjectPageHeader project={data}></ProjectPageHeader>
       </Col>
       <Col sm={12} lg={1} className={cx(styles.NavContainer)}>
-        <ProjectPageNav namespace={namespace} slug={slug}></ProjectPageNav>
+        <div className="sticky-top pt-2 pt-md-4">
+          <ProjectPageNav
+            namespace={namespace}
+            slug={slug}
+            selectedContent={contentPage}
+          ></ProjectPageNav>
+        </div>
       </Col>
-      <Col sm={12} lg={9}>
+      <Col sm={12} lg={11}>
         <ProjectPageContent
           project={data}
           selectedContent={contentPage}
         ></ProjectPageContent>
-      </Col>
-      <Col sm={12} lg={2} className={cx("d-none", "d-lg-block", " d-sm-none")}>
-        <ProjectInformation project={data}></ProjectInformation>
       </Col>
     </Row>
   );

@@ -294,6 +294,7 @@ function EnvironmentCard({
                   xs={12}
                   className={cx(
                     "d-flex",
+                    "flex-wrap",
                     "align-items-center",
                     "gap-2",
                     "py-2"

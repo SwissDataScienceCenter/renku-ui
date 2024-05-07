@@ -18,9 +18,10 @@
 
 import cx from "classnames";
 
-import { Controller } from "react-hook-form";
 import type { FieldValues } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
+import { Globe, Lock } from "react-bootstrap-icons";
 import { FormText, Input, Label } from "reactstrap";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 
@@ -39,16 +40,44 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
         control={control}
         name={name}
         render={({ field }) => (
-          <Input
-            className={cx("form-control", errors.visibility && "is-invalid")}
-            data-cy="project-visibility"
-            id="project-visibility"
-            type="select"
-            {...field}
-          >
-            <option value="public">Public</option>
-            <option value="private">Private</option>
-          </Input>
+          <div className="d-flex flex-row gap-5 my-3">
+            <div className="d-flex align-items-center gap-2">
+              <Input
+                type="radio"
+                className={cx(
+                  "form-control",
+                  errors.visibility && "is-invalid",
+                  "p-0",
+                  "mt-0"
+                )}
+                data-cy="project-visibility"
+                id="project-visibility-public"
+                {...field}
+                value="public"
+                checked={field.value === "public"}
+              />
+              <label className={"cursor-pointer"}>Public</label>
+              <Globe size={16} />
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <Input
+                type="radio"
+                className={cx(
+                  "form-control",
+                  errors.visibility && "is-invalid",
+                  "p-0",
+                  "mt-0"
+                )}
+                data-cy="project-visibility"
+                id="project-visibility-public"
+                {...field}
+                value="private"
+                checked={field.value === "private"}
+              />
+              <label className={"cursor-pointer"}>Private</label>
+              <Lock size={16} />
+            </div>
+          </div>
         )}
         rules={{ required: true }}
       />
