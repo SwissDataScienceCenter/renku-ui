@@ -34,6 +34,7 @@ import {
 import { useMemo } from "react";
 import { Loader } from "../../components/Loader";
 import { ExternalLink } from "../../components/ExternalLinks";
+import { BoxArrowUpRight } from "react-bootstrap-icons";
 
 export default function ConnectedServicesPage() {
   const {
@@ -85,7 +86,7 @@ interface ConnectedServiceCardProps {
 }
 
 function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
-  const { id, display_name } = provider;
+  const { id, display_name, url } = provider;
 
   const { data: connections } =
     connectedServicesApi.endpoints.getConnections.useQueryState();
@@ -111,6 +112,12 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
               <ConnectButton id={id} connectionStatus={connection?.status} />
             </div>
           </CardTitle>
+          <CardText className="mb-1">
+            <ExternalLink url={url} role="text">
+              <BoxArrowUpRight className={cx("bi", "me-1")} />
+              {url}
+            </ExternalLink>
+          </CardText>
           <CardText className="mb-1">Status: {status}</CardText>
           {connection?.status === "connected" && (
             <ConnectedAccount connection={connection} />

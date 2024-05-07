@@ -19,6 +19,7 @@
 export interface Provider {
   id: string;
   display_name: string;
+  url: string;
 }
 
 export type ProviderList = Provider[];
