@@ -45,7 +45,6 @@ import {
 } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
-import SessionConfig from "./SessionConfig";
 import {
   useGetProjectSessionLaunchersQuery,
   useGetSessionEnvironmentsQuery,
@@ -102,12 +101,7 @@ export default function SessionStartPage() {
     );
   }
 
-  return (
-    <>
-      <SessionConfig project={project} />
-      <StartSessionFromLauncher launcher={launcher} project={project} />
-    </>
-  );
+  return <StartSessionFromLauncher launcher={launcher} project={project} />;
 }
 
 interface StartSessionFromLauncherProps {
@@ -142,9 +136,6 @@ function StartSessionFromLauncher({
       ? "unknown"
       : launcher.container_image;
 
-  // const projectSupport = useAppSelector(
-  //   ({ sessionConfigV2 }) => sessionConfigV2.projectSupport[project.id]
-  // );
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
@@ -182,12 +173,6 @@ function StartSessionFromLauncher({
         .find((c) => c.id === startSessionOptionsV2.sessionClass) ?? null,
     [resourcePools, startSessionOptionsV2.sessionClass]
   );
-
-  // const headCommitKnownForAllRepositories = useMemo(
-  //   () =>
-  //     startSessionOptionsV2.repositories.every(({ commitSha }) => !!commitSha),
-  //   [startSessionOptionsV2.repositories]
-  // );
 
   const dispatch = useAppDispatch();
 
@@ -237,31 +222,6 @@ function StartSessionFromLauncher({
     startSessionOptionsV2.dockerImageStatus,
   ]);
 
-  // Set the repositories
-  // useEffect(() => {
-  //   if (!projectSupport || projectSupport.isLoading) {
-  //     return;
-  //   }
-
-  //   const repositories = projectSupport.repositoriesConfig.flatMap(
-  //     ({ supportsSessions, sessionConfiguration }) => {
-  //       if (!supportsSessions) {
-  //         return [];
-  //       }
-  //       const { defaultBranch, namespace, projectName, repositoryMetadata } =
-  //         sessionConfiguration;
-  //       const repository: SessionRepository = {
-  //         branch: defaultBranch,
-  //         commitSha: "",
-  //         namespace,
-  //         project: projectName,
-  //         repositoryMetadata,
-  //       };
-  //       return [repository];
-  //     }
-  //   );
-  //   dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
-  // }, [dispatch, projectSupport]);
   useEffect(() => {
     const repositories = (project.repositories ?? []).map((url) => ({ url }));
     dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
@@ -308,9 +268,6 @@ function StartSessionFromLauncher({
   // Request session
   useEffect(() => {
     if (
-      // !projectSupport ||
-      // projectSupport.isLoading ||
-      // !headCommitKnownForAllRepositories ||
       startSessionOptionsV2.dockerImageStatus !== "available" ||
       resourcePools == null ||
       startSessionOptionsV2.sessionClass == 0
@@ -332,10 +289,8 @@ function StartSessionFromLauncher({
     });
   }, [
     containerImage,
-    // headCommitKnownForAllRepositories,
     launcher.id,
     project.id,
-    // projectSupport,
     resourcePools,
     startSession,
     startSessionOptionsV2,
@@ -356,9 +311,6 @@ function StartSessionFromLauncher({
   // Update the loading steps UI
   useEffect(() => {
     if (
-      // !projectSupport ||
-      // projectSupport.isLoading ||
-      // !headCommitKnownForAllRepositories ||
       startSessionOptionsV2.dockerImageStatus !== "available" ||
       resourcePools == null ||
       startSessionOptionsV2.sessionClass == 0
@@ -394,26 +346,11 @@ function StartSessionFromLauncher({
         step: "Requesting session",
       },
     ]);
-  }, [
-    error,
-    // headCommitKnownForAllRepositories,
-    isLoadingStartSession,
-    // projectSupport,
-    resourcePools,
-    startSessionOptionsV2,
-  ]);
+  }, [error, isLoadingStartSession, resourcePools, startSessionOptionsV2]);
 
   return (
     <div>
       {error && <RtkErrorAlert error={error} dismissible={false} />}
-
-      {/* {startSessionOptionsV2.repositories.map((repository, index) => (
-        <SessionRepositoryLoader
-          key={index}
-          index={index}
-          repository={repository}
-        />
-      ))} */}
 
       <div className={cx("progress-box-small", "progress-box-small--steps")}>
         <ProgressStepsIndicator
@@ -427,62 +364,3 @@ function StartSessionFromLauncher({
     </div>
   );
 }
-
-// interface SessionRepositoryLoaderProps {
-//   index: number;
-//   repository: SessionRepository;
-// }
-
-// function SessionRepositoryLoader({
-//   index,
-//   repository,
-// }: SessionRepositoryLoaderProps) {
-//   const { branch, namespace, project, repositoryMetadata } = repository;
-//   const gitLabProjectId = repositoryMetadata.id;
-
-//   const { data: commits } = useGetAllRepositoryCommitsQuery(
-//     branch && gitLabProjectId
-//       ? {
-//           branch,
-//           projectId: `${gitLabProjectId}`,
-//         }
-//       : skipToken
-//   );
-
-//   const dispatch = useAppDispatch();
-
-//   // Select the default commit
-//   useEffect(() => {
-//     if (commits == null) {
-//       return;
-//     }
-
-//     if (commits.length == 0) {
-//       // TODO: propagate error
-//       return;
-//     }
-
-//     dispatch(
-//       startSessionOptionsV2Slice.actions.updateRepository({
-//         index,
-//         repository: {
-//           branch,
-//           namespace,
-//           project,
-//           repositoryMetadata,
-//           commitSha: commits[0].id,
-//         },
-//       })
-//     );
-//   }, [
-//     branch,
-//     commits,
-//     dispatch,
-//     index,
-//     namespace,
-//     project,
-//     repositoryMetadata,
-//   ]);
-
-//   return null;
-// }
