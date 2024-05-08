@@ -4,13 +4,14 @@
     {
       "data": {
         "anonymousSessionsEnabled": true,
-        "cloudstorageEnabled": {
-          "azure_blob": false,
-          "s3": false
-        },
+        "anonymousUsersHibernationThreshold": 1,
+        "anonymousUsersIdleThreshold": 43200,
+        "cloudstorageEnabled": true,
+        "registeredUsersHibernationThreshold": 259200,
+        "registeredUsersIdleThreshold": 86400,
         "sshEnabled": false
       },
-      "version": "1.15.2"
+      "version": "1.22.0"
     }
   ]
 }

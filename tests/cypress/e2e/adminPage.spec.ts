@@ -125,11 +125,11 @@ describe("admin page", () => {
       .click();
     cy.get(".card")
       .contains(".card", "Public pool")
-      .contains("Maximum Session Idle Time:1d")
+      .contains("Hibernate after 1d")
       .should("be.visible");
     cy.get(".card")
       .contains(".card", "Public pool")
-      .contains("Maximum Session Hibernation Time:1d")
+      .contains("Delete after 3d")
       .should("be.visible");
 
     // Check one of the private pools
@@ -152,15 +152,11 @@ describe("admin page", () => {
 
     cy.get(".card")
       .contains(".card", "Special GPU pool")
-      .contains("Maximum Session Idle Time:1d, 10h, 18m")
+      .contains("Hibernate after 1d 10h 17m 36s")
       .should("be.visible");
     cy.get(".card")
       .contains(".card", "Special GPU pool")
-      .contains("Maximum Session Hibernation Time:1w, 4d, 10h, 21m")
-      .should("be.visible");
-    cy.get(".card")
-      .contains(".card", "Special GPU pool")
-      .contains("button", "Update Resource Pool Thresholds")
+      .contains("Delete after 1w 4d 10h 20m 54s")
       .should("be.visible");
 
     cy.get(".card")

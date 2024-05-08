@@ -203,7 +203,7 @@ export const SessionClassOption = () => {
   }
 
   return (
-    <div className="field-group">
+    <div className="field-group" data-cy="session-class">
       <div className="form-label">Session class</div>
       <SessionRequirements
         currentSessionClass={currentSessionClass}
@@ -218,7 +218,6 @@ export const SessionClassOption = () => {
         defaultSessionClass={defaultSessionClass}
         onChange={onChange}
       />
-      {/* <SessionClassThresholds currentSessionClass={currentSessionClass} /> */}
       <SessionClassWarning currentSessionClass={currentSessionClass} />
       <AskForComputeResources />
     </div>
@@ -460,29 +459,29 @@ export const SessionClassSelector = ({
   );
 
   return (
-    <>
+    <div data-cy="session-class-select">
       <Select
-        options={options}
-        value={currentSessionClass}
-        defaultValue={defaultSessionClass}
-        getOptionValue={(option) => `${option.id}`}
-        getOptionLabel={(option) => option.name}
-        onChange={onChange}
-        isDisabled={disabled}
-        isClearable={false}
-        isSearchable={false}
-        unstyled
         classNames={selectClassNames}
         components={selectComponents}
+        defaultValue={defaultSessionClass}
+        getOptionLabel={(option) => option.name}
+        getOptionValue={(option) => `${option.id}`}
+        isClearable={false}
+        isDisabled={disabled}
+        isSearchable={false}
+        onChange={onChange}
+        options={options}
+        unstyled
+        value={currentSessionClass}
       />
       <SessionClassThresholds
+        defaultHibernation={nbVersion?.registeredUsersHibernationThreshold}
+        defaultIdle={nbVersion?.registeredUsersIdleThreshold}
         resourcePool={resourcePools.find(
           (p) => p.id === currentSessionClass?.id
         )}
-        defaultIdle={nbVersion?.registeredUsersIdleThreshold}
-        defaultHibernation={nbVersion?.registeredUsersHibernationThreshold}
       />
-    </>
+    </div>
   );
 };
 
