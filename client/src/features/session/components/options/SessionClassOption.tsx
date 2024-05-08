@@ -572,7 +572,7 @@ const selectComponents: SelectComponentsConfig<
       <components.GroupHeading {...props}>
         <span className={cx("text-uppercase", "me-1")}>{props.data.label}</span>
         {props.data.maxIdle && (
-          <span> (paused after {props.data.maxIdle} inactive)</span>
+          <span> (paused after {props.data.maxIdle} of inactivity)</span>
         )}
       </components.GroupHeading>
     );
