@@ -751,7 +751,7 @@ function StartSessionButton() {
     const userSecrets = secretsList.length
       ? {
           mount_path: secretsPath ? secretsPath : "/",
-          user_secrets_ids: secretsList.map((secret) => secret.id),
+          user_secret_ids: secretsList.map((secret) => secret.id),
         }
       : undefined;
 

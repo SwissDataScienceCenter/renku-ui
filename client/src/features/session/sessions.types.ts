@@ -138,7 +138,7 @@ export interface CloudStorageDefinitionForSessionApi {
 
 export interface SessionUserSecrets {
   mount_path: string;
-  user_secrets_ids: string[];
+  user_secret_ids: string[];
 }
 
 export interface NotebooksErrorContent {
