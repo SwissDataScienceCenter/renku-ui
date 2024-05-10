@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   LayoutSidebarInsetReverse,
   Pencil,
@@ -57,20 +57,24 @@ function DataSourceDeleteModal({
   toggleModal,
   isOpen,
 }: DataSourceDeleteModalProps) {
-  const [updateDataSources, { isLoading }] =
+  const [updateDataSources, { isLoading, isSuccess }] =
     useDeleteStoragesV2ByStorageIdMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      toggleModal();
+    }
+  }, [isSuccess, toggleModal]);
   const onDeleteDataSources = () => {
     updateDataSources({
       storageId: storage.storage.storage_id,
-    })
-      .unwrap()
-      .then(() => toggleModal());
+    });
   };
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <ModalHeader className="text-danger" toggle={toggleModal}>
-        Remove Data Sources
+        Remove Data Source
       </ModalHeader>
       <ModalBody className="py-0">
         <Row>
@@ -169,7 +173,7 @@ export function DataSourceActions({
             )}
             onClick={toggleEdit}
           >
-            <Pencil /> Edit data sources
+            <Pencil /> Edit data source
           </DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>
@@ -199,9 +203,9 @@ export function DataSourceDisplay({
 }: DataSourceDisplayProps) {
   const storageSensitive = storage.storage;
   const [toggleView, setToggleView] = useState(false);
-  const toggleDetails = () => {
+  const toggleDetails = useCallback(() => {
     setToggleView((open: boolean) => !open);
-  };
+  }, []);
 
   const nameDisplay = (
     <div
@@ -210,9 +214,10 @@ export function DataSourceDisplay({
         "align-items-center",
         "gap-1",
         "cursor-pointer",
+        "ps-2",
         sessionItemStyles.ItemDisplaySessionName
       )}
-      onClick={() => toggleDetails()}
+      onClick={toggleDetails}
     >
       <LayoutSidebarInsetReverse
         className={cx("flex-shrink-0", "me-0", "me-sm-2")}
