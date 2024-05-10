@@ -137,7 +137,7 @@ function ConnectButton({ id, connectionStatus }: ConnectButtonParams) {
   const hereUrl = window.location.href;
 
   const authorizeUrl = `/ui-server/api/data/oauth2/providers/${id}/authorize`;
-  const url = `${authorizeUrl}?next=${encodeURIComponent(hereUrl)}`;
+  const url = `${authorizeUrl}?next_url=${encodeURIComponent(hereUrl)}`;
 
   const text = connectionStatus === "connected" ? "Reconnect" : "Connect";
 
