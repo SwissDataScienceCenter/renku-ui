@@ -275,9 +275,14 @@ function CodeRepositoryActions({
 interface RepositoryItemProps {
   project: Project;
   url: string;
+  showMenu: boolean;
 }
 
-export function RepositoryItem({ url, project }: RepositoryItemProps) {
+export function RepositoryItem({
+  url,
+  project,
+  showMenu = true,
+}: RepositoryItemProps) {
   const canonicalUrl = useMemo(() => `${url.replace(/.git$/i, "")}.git`, [url]);
   const title = canonicalUrl.split("/").pop();
   const urlDisplay = (
@@ -295,12 +300,14 @@ export function RepositoryItem({ url, project }: RepositoryItemProps) {
 
   return (
     <Row className={cx("mb-4")}>
-      <Col xs={10} className={cx("text-truncate", "col")}>
+      <Col xs={showMenu ? 10 : 12} className={cx("text-truncate", "col")}>
         {urlDisplay}
       </Col>
-      <Col xs={2} className={cx("d-flex", "justify-content-end")}>
-        <CodeRepositoryActions project={project} url={url} />
-      </Col>
+      {showMenu && (
+        <Col xs={2} className={cx("d-flex", "justify-content-end")}>
+          <CodeRepositoryActions project={project} url={url} />
+        </Col>
+      )}
     </Row>
   );
 }
