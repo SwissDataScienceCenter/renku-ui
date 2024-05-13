@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { PlusLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -250,7 +250,7 @@ function UpdateResourcePoolThresholdsModal({
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
-            <PlusLg className={cx("bi", "me-1")} />
+            <CheckLg className={cx("bi", "me-1")} />
           )}
           Update Resource Pool
         </Button>
