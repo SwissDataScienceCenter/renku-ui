@@ -61,7 +61,7 @@ export function AddCodeRepositoryStep1Modal({
         <ModalHeader toggle={toggleModal}>
           <span className="d-flex align-items-center">
             <CodeSquare size={20} className="me-3 mb-1" />
-            <small>ADD CODE REPOSITORIES</small>
+            <small className="text-uppercase">Add code repositories</small>
           </span>
         </ModalHeader>
         <ModalBody className="pt-0">
