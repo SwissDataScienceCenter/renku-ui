@@ -25,7 +25,6 @@ describe("launch sessions", () => {
     fixtures
       .sessionAutosave()
       .sessionServersEmpty()
-      .sessionsVersion()
       .renkuIni()
       .sessionServerOptions()
       .resourcePoolsTest()
@@ -241,7 +240,6 @@ describe("launch sessions, outdated projects", () => {
     fixtures
       .sessionAutosave()
       .sessionServersEmpty()
-      .sessionsVersion()
       .renkuIni()
       .sessionServerOptions()
       .resourcePoolsTest()
