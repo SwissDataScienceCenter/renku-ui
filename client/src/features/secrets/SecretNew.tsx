@@ -160,6 +160,7 @@ export default function SecretsNew() {
                     errors.value && "is-invalid"
                   )}
                   id="new-secret-value"
+                  spellCheck="false"
                   type="textarea"
                   {...field}
                 />

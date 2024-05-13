@@ -138,6 +138,7 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
                         errors.value && "is-invalid"
                       )}
                       id="edit-secret-value"
+                      spellCheck="false"
                       type="textarea"
                       {...field}
                     />
