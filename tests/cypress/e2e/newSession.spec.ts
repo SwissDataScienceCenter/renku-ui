@@ -203,13 +203,13 @@ describe("launch sessions", () => {
       .contains("public class 2");
     cy.getDataCy("session-class")
       .contains("automatically pause after 50 minutes")
-      .contains("1 hour before it is deleted")
+      .contains("If not resumed within 1 hour, the session will be deleted")
       .should("be.visible");
     cy.getDataCy("session-class-select").click();
     cy.getDataCy("session-class-select").contains("special class 1").click();
     cy.getDataCy("session-class")
       .contains("automatically pause after 1 day")
-      .contains("1 week before it is deleted")
+      .contains("If not resumed within 1 week, the session will be deleted")
       .should("be.visible");
   });
 

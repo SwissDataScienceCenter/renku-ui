@@ -251,12 +251,12 @@ function SessionClassThresholds({
       {toHumanDuration({
         duration: (resourcePool.idle_threshold ?? defaultIdle) as number,
       })}{" "}
-      of inactivity. You can restart if within{" "}
+      of inactivity. If not resumed within{" "}
       {toHumanDuration({
         duration: (resourcePool.hibernation_threshold ??
           defaultHibernation) as number,
-      })}{" "}
-      before it is deleted.
+      })}
+      , the session will be deleted.
     </div>
   );
 }
