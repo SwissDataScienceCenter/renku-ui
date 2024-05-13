@@ -42,6 +42,7 @@ import {
   setMetadata,
 } from "./projectV2New.slice";
 import { PlusLg } from "react-bootstrap-icons";
+import { Visibility } from "../api/projectV2.api.ts";
 
 interface ProjectV2NewFormProps {
   currentStep: NewProjectV2State["currentStep"];
@@ -71,9 +72,15 @@ function ProjectV2NewAccessStepForm({ currentStep }: ProjectV2NewFormProps) {
     control,
     formState: { errors },
     handleSubmit,
+    setValue,
   } = useForm<NewProjectV2State["project"]["access"]>({
     defaultValues: project.access,
   });
+
+  const setVisibility = useCallback(
+    (value: Visibility) => setValue("visibility", value),
+    [setValue]
+  );
 
   const onSubmit = useCallback(
     (data: NewProjectV2State["project"]["access"]) => {
@@ -95,6 +102,7 @@ function ProjectV2NewAccessStepForm({ currentStep }: ProjectV2NewFormProps) {
           name="visibility"
           control={control}
           errors={errors}
+          setVisibility={setVisibility}
         />
         <div className="mb-3">
           <div className={cx("d-flex", "justify-content-between")}>

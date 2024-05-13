@@ -558,7 +558,10 @@ export default function CloudStorageModal({
         {isV2 ? (
           <>
             <Database className={cx("bi", "me-2")} />
-            {storageId ? "EDIT" : "ADD"} DATA SOURCE
+            <span className="text-uppercase">
+              {" "}
+              {storageId ? "Edit" : "Add"} data source{" "}
+            </span>
           </>
         ) : (
           <>

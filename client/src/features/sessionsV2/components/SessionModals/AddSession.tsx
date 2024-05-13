@@ -313,7 +313,7 @@ export function Step1AddSessionModal({
               src={rkIconSessions}
               className={cx("rk-icon", "rk-icon-lg", "me-2")}
             />
-            <small>ADD SESSION LAUNCHER</small>
+            <small className="text-uppercase">Add session launcher</small>
           </span>
         </ModalHeader>
         <ModalBody className="pt-0">

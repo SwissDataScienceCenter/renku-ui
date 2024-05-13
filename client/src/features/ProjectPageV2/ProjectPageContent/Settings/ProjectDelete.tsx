@@ -75,12 +75,12 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
         <small>
           Are you sure you want to delete this project?
           <br />
-          Deleting the project will remove its repository and all related
-          resources, including datasets, issues and merge requests.
+          Deleting the project will remove its repository, launcher sessions and
+          data sources.
         </small>
         <div
           id={"general"}
-          className={cx("bg-white", "rounded-3", "p-5", "mt-3")}
+          className={cx("bg-white", "rounded-3", "mt-3", "p-3", "p-md-4")}
         >
           <p className={cx("mb-0", "pb-3")}>
             Deleted projects cannot be restored. Please type{" "}

@@ -17,13 +17,13 @@
  */
 import cx from "classnames";
 import { useCallback } from "react";
-import { ArrowClockwise } from "react-bootstrap-icons";
+import { Pencil } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { Button, Form } from "reactstrap";
 import { SuccessAlert } from "../../../../components/Alert.jsx";
 import { Loader } from "../../../../components/Loader.tsx";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert.tsx";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
+import { Project, Visibility } from "../../../projectsV2/api/projectV2.api.ts";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField.tsx";
 import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField.tsx";
@@ -37,8 +37,9 @@ interface ProjectSettingsFormProps {
 export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
+    setValue,
   } = useForm<ProjectV2Metadata>({
     defaultValues: {
       description: project?.description,
@@ -52,6 +53,10 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     usePatchProjectsByProjectIdMutation();
 
   const isUpdating = isLoading;
+  const setVisibility = useCallback(
+    (value: Visibility) => setValue("visibility", value),
+    [setValue]
+  );
 
   const onSubmit = useCallback(
     (data: ProjectV2Metadata) => {
@@ -94,13 +99,18 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
           name="visibility"
           control={control}
           errors={errors}
+          setVisibility={setVisibility}
         />
         <div className={cx("d-flex", "justify-content-end")}>
-          <Button disabled={isUpdating} className="me-1" type="submit">
+          <Button
+            disabled={isUpdating || !isDirty}
+            className="me-1"
+            type="submit"
+          >
             {isUpdating ? (
-              <Loader inline={true} size={16} />
+              <Loader className="me-1" inline size={16} />
             ) : (
-              <ArrowClockwise size={16} className="me-1" />
+              <Pencil size={16} className={cx("bi", "me-1")} />
             )}
             Update project
           </Button>
@@ -111,22 +121,20 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
 }
 export default function ProjectPageSettings({ project }: { project: Project }) {
   return (
-    <div className="pb-5 pt-0">
-      <div id="general" className="px-2 px-md-5 pt-4">
+    <div className={cx("pb-5", "pt-0")}>
+      <div id="general" className={cx("px-2", "px-md-5", "pt-4")}>
         <h4 className="fw-bold">General settings</h4>
         <small>
-          {" "}
-          Update your project title, description, visibility, namespace and
-          keywords.{" "}
+          Update your project title, description, visibility and namespace.
         </small>
         <div
           id={"general"}
-          className={cx("bg-white", "rounded-3", "p-4", "p-md-5", "mt-3")}
+          className={cx("bg-white", "rounded-3", "mt-3", "p-3", "p-md-4")}
         >
           <ProjectSettingsForm project={project} />
         </div>
       </div>
-      <div id="delete" className="mt-5 px-2 px-md-5">
+      <div id="delete" className={cx("px-2", "px-md-5", "pt-4")}>
         <ProjectPageDelete project={project} />
       </div>
     </div>

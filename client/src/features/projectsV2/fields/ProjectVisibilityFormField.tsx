@@ -24,12 +24,18 @@ import { Controller } from "react-hook-form";
 import { Globe, Lock } from "react-bootstrap-icons";
 import { FormText, Input, Label } from "reactstrap";
 import type { GenericProjectFormFieldProps } from "./formField.types";
+import { Visibility } from "../api/projectV2.api.ts";
 
+export interface ExtendedGenericProjectFormFieldProps<T extends FieldValues>
+  extends GenericProjectFormFieldProps<T> {
+  setVisibility: (value: Visibility) => void;
+}
 export default function ProjectVisibilityFormField<T extends FieldValues>({
   control,
   errors,
   name,
-}: GenericProjectFormFieldProps<T>) {
+  setVisibility,
+}: ExtendedGenericProjectFormFieldProps<T>) {
   return (
     <div className="mb-3">
       <Label className="form-label" for="project-visibility">
@@ -56,8 +62,17 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 value="public"
                 checked={field.value === "public"}
               />
-              <label className={"cursor-pointer"}>Public</label>
-              <Globe size={16} />
+              <label
+                onClick={() => setVisibility("public")}
+                className={cx(
+                  "cursor-pointer",
+                  "d-flex",
+                  "align-items-center",
+                  "gap-1"
+                )}
+              >
+                Public <Globe size={16} />
+              </label>
             </div>
             <div className="d-flex align-items-center gap-2">
               <Input
@@ -74,8 +89,17 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 value="private"
                 checked={field.value === "private"}
               />
-              <label className={"cursor-pointer"}>Private</label>
-              <Lock size={16} />
+              <label
+                onClick={() => setVisibility("private")}
+                className={cx(
+                  "cursor-pointer",
+                  "d-flex",
+                  "align-items-center",
+                  "gap-1"
+                )}
+              >
+                Private <Lock size={16} />
+              </label>
             </div>
           </div>
         )}
