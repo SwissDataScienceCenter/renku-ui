@@ -4,8 +4,6 @@
     "name": "Public pool",
     "default": true,
     "public": true,
-    "idle_threshold": null,
-    "hibernation_threshold": null,
     "quota": {
       "cpu": 100,
       "memory": 1000,
