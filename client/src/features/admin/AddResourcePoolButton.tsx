@@ -88,8 +88,8 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       quotaCpu: 1,
       quotaMemory: 1,
       quotaGpu: 0,
-      idleThreshold: undefined,
-      hibernationThreshold: undefined,
+      idleThresholdMinutes: undefined,
+      hibernationThresholdMinutes: undefined,
     },
   });
 
@@ -117,11 +117,11 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           memory: data.quotaMemory,
           gpu: data.quotaGpu,
         },
-        idle_threshold: data.idleThreshold
-          ? data.idleThreshold * 60
+        idle_threshold: data.idleThresholdMinutes
+          ? data.idleThresholdMinutes * 60
           : undefined,
-        hibernation_threshold: data.hibernationThreshold
-          ? data.hibernationThreshold * 60
+        hibernation_threshold: data.hibernationThresholdMinutes
+          ? data.hibernationThresholdMinutes * 60
           : undefined,
       });
     },
@@ -187,12 +187,12 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
             </Label>
             <Controller
               control={control}
-              name="idleThreshold"
+              name="idleThresholdMinutes"
               render={({ field }) => (
                 <Input
                   className={cx(
                     "form-control",
-                    errors.idleThreshold && "is-invalid"
+                    errors.idleThresholdMinutes && "is-invalid"
                   )}
                   id="addResourcePoolIdleThreshold"
                   min="1"
@@ -222,12 +222,12 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
             </Label>
             <Controller
               control={control}
-              name="hibernationThreshold"
+              name="hibernationThresholdMinutes"
               render={({ field }) => (
                 <Input
                   className={cx(
                     "form-control",
-                    errors.hibernationThreshold && "is-invalid"
+                    errors.hibernationThresholdMinutes && "is-invalid"
                   )}
                   id="addResourcePoolHibernationThreshold"
                   placeholder="hibernation threshold"
