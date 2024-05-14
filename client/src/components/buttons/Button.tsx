@@ -353,7 +353,7 @@ export function PlusRoundButton({
   return (
     <>
       <Button
-        ref={ref}
+        innerRef={ref}
         className={cx(
           "d-flex",
           "justify-content-center",
