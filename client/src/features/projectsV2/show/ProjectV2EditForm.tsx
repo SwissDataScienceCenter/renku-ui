@@ -60,7 +60,6 @@ import AppContext from "../../../utils/context/appContext.ts";
 import { Url } from "../../../utils/helpers/url";
 import { notificationProjectDeleted } from "../../ProjectPageV2/ProjectPageContent/Settings/ProjectDelete.tsx";
 import { SettingEditOption } from "./projectV2Show.types";
-import { Visibility } from "../api/projectV2.api";
 
 export type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
 
@@ -180,7 +179,6 @@ export function ProjectV2MetadataForm({
     control,
     formState: { errors },
     handleSubmit,
-    setValue,
   } = useForm<ProjectV2Metadata>({
     defaultValues: {
       description: project.description,
@@ -194,10 +192,6 @@ export function ProjectV2MetadataForm({
     usePatchProjectsByProjectIdMutation();
 
   const isUpdating = isLoading;
-  const setVisibility = useCallback(
-    (value: Visibility) => setValue("visibility", value),
-    [setValue]
-  );
   const onCancel = useCallback(() => {
     setSettingEdit(null);
   }, [setSettingEdit]);
@@ -256,7 +250,6 @@ export function ProjectV2MetadataForm({
           name="visibility"
           control={control}
           errors={errors}
-          setVisibility={setVisibility}
         />
         <ProjectEditSubmitGroup isUpdating={isUpdating} onCancel={onCancel} />
       </Form>

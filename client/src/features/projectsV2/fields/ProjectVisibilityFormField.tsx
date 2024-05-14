@@ -24,18 +24,12 @@ import { Controller } from "react-hook-form";
 import { Globe, Lock } from "react-bootstrap-icons";
 import { FormText, Input, Label } from "reactstrap";
 import type { GenericProjectFormFieldProps } from "./formField.types";
-import { Visibility } from "../api/projectV2.api.ts";
 
-export interface ExtendedGenericProjectFormFieldProps<T extends FieldValues>
-  extends GenericProjectFormFieldProps<T> {
-  setVisibility: (value: Visibility) => void;
-}
 export default function ProjectVisibilityFormField<T extends FieldValues>({
   control,
   errors,
   name,
-  setVisibility,
-}: ExtendedGenericProjectFormFieldProps<T>) {
+}: GenericProjectFormFieldProps<T>) {
   return (
     <div className="mb-3">
       <Label className="form-label" for="project-visibility">
@@ -62,8 +56,8 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 value="public"
                 checked={field.value === "public"}
               />
-              <label
-                onClick={() => setVisibility("public")}
+              <Label
+                for="project-visibility-public"
                 className={cx(
                   "cursor-pointer",
                   "d-flex",
@@ -72,7 +66,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 )}
               >
                 Public <Globe size={16} />
-              </label>
+              </Label>
             </div>
             <div className="d-flex align-items-center gap-2">
               <Input
@@ -84,13 +78,13 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                   "mt-0"
                 )}
                 data-cy="project-visibility"
-                id="project-visibility-public"
+                id="project-visibility-private"
                 {...field}
                 value="private"
                 checked={field.value === "private"}
               />
-              <label
-                onClick={() => setVisibility("private")}
+              <Label
+                for="project-visibility-private"
                 className={cx(
                   "cursor-pointer",
                   "d-flex",
@@ -99,7 +93,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 )}
               >
                 Private <Lock size={16} />
-              </label>
+              </Label>
             </div>
           </div>
         )}
