@@ -216,6 +216,7 @@ describe("launch sessions", () => {
       .contains("automatically pause after 1 day")
       .contains("If not resumed within 1 week, the session will be deleted")
       .should("be.visible");
+  });
 
   it("new session page - select secrets", () => {
     // Check the output when no secrets are available
