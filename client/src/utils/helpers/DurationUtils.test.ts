@@ -240,17 +240,22 @@ describe("toFullHumanDuration", () => {
   it("convert duration", () => {
     const durationOneWeek = Duration.fromObject({ weeks: 1 });
     const durationLong = Duration.fromObject({ years: 4, weeks: 1, days: 5 });
-    const unitsMaxDays: (keyof DurationLikeObject)[] = [
-      "days",
+    const unitsMaxHours: (keyof DurationLikeObject)[] = [
       "hours",
       "minutes",
       "seconds",
     ];
+    const unitsMaxYears: (keyof DurationLikeObject)[] = [
+      "years",
+      "months",
+      "weeks",
+      "days",
+    ];
 
-    expect(toFullHumanDuration(durationOneWeek)).toBe("1w");
-    expect(toFullHumanDuration(durationOneWeek, unitsMaxDays)).toBe("7d");
+    expect(toFullHumanDuration(durationOneWeek)).toBe("7d");
+    expect(toFullHumanDuration(durationOneWeek, unitsMaxHours)).toBe("168h");
 
-    expect(toFullHumanDuration(durationLong)).toBe("4y 1w 5d");
-    expect(toFullHumanDuration(durationLong, unitsMaxDays)).toBe("1472d");
+    expect(toFullHumanDuration(durationLong)).toBe("1472d");
+    expect(toFullHumanDuration(durationLong, unitsMaxYears)).toBe("4y 1w 5d");
   });
 });

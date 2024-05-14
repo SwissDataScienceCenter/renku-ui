@@ -156,7 +156,7 @@ describe("admin page", () => {
       .should("be.visible");
     cy.get(".card")
       .contains(".card", "Special GPU pool")
-      .contains("Delete after 1w 4d 10h 20m 54s")
+      .contains("Delete after 11d 10h 20m 54s")
       .should("be.visible");
 
     cy.get(".card")

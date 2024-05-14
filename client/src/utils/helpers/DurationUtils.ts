@@ -59,14 +59,7 @@ export function toHumanDuration({
  */
 export function toFullHumanDuration(
   duration: Duration | number,
-  units: (keyof DurationLikeObject)[] = [
-    "years",
-    "weeks",
-    "days",
-    "hours",
-    "minutes",
-    "seconds",
-  ]
+  units: (keyof DurationLikeObject)[] = ["days", "hours", "minutes", "seconds"]
 ): string {
   const duration_ = ensureDuration(duration);
 
