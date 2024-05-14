@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { useCallback } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Pencil } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { Button, Form } from "reactstrap";
-import { SuccessAlert } from "../../../../components/Alert.jsx";
+import { RenkuAlert, SuccessAlert } from "../../../../components/Alert.jsx";
 import { Loader } from "../../../../components/Loader.tsx";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert.tsx";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
@@ -31,6 +31,23 @@ import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespa
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField.tsx";
 import { ProjectV2Metadata } from "../../../projectsV2/show/ProjectV2EditForm.tsx";
 import ProjectPageDelete from "./ProjectDelete.tsx";
+import { useNavigate } from "react-router-dom-v5-compat";
+import { Url } from "../../../../utils/helpers/url";
+import { NotificationsManager } from "../../../../notifications/notifications.types.ts";
+import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants.ts";
+import AppContext from "../../../../utils/context/appContext.ts";
+
+export function notificationProjectUpdated(
+  notifications: NotificationsManager,
+  projectName: string
+) {
+  notifications.addSuccess(
+    NOTIFICATION_TOPICS.PROJECT_UPDATED,
+    <>
+      Project <code>{projectName}</code> successfully updated.
+    </>
+  );
+}
 interface ProjectSettingsFormProps {
   project: Project;
 }
@@ -39,6 +56,7 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     control,
     formState: { errors, isDirty },
     handleSubmit,
+    watch,
   } = useForm<ProjectV2Metadata>({
     defaultValues: {
       description: project?.description,
@@ -47,6 +65,11 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
       visibility: project.visibility,
     },
   });
+  const currentNamespace = watch("namespace");
+  const currentName = watch("name");
+  const navigate = useNavigate();
+  const [redirectAfterUpdate, setRedirectAfterUpdate] = useState(false);
+  const { notifications } = useContext(AppContext);
 
   const [updateProject, { isLoading, error, isSuccess }] =
     usePatchProjectsByProjectIdMutation();
@@ -55,6 +78,7 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
 
   const onSubmit = useCallback(
     (data: ProjectV2Metadata) => {
+      if (data.namespace !== project.namespace) setRedirectAfterUpdate(true);
       updateProject({
         "If-Match": project.etag ? project.etag : undefined,
         projectId: project.id,
@@ -63,6 +87,25 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     },
     [project, updateProject]
   );
+  useEffect(() => {
+    if (isSuccess && redirectAfterUpdate) {
+      if (notifications && currentName)
+        notificationProjectUpdated(notifications, currentName);
+      const projectUrl = Url.get(Url.pages.projectV2.show, {
+        namespace: currentNamespace,
+        slug: project.slug,
+      });
+      navigate(projectUrl);
+    }
+  }, [
+    isSuccess,
+    redirectAfterUpdate,
+    navigate,
+    project.slug,
+    currentNamespace,
+    currentName,
+    notifications,
+  ]);
 
   return (
     <div>
@@ -85,6 +128,12 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
           entityName="project"
           errors={errors}
         />
+        {currentNamespace !== project.namespace && (
+          <RenkuAlert color={"warning"} dismissible={false} timeout={0}>
+            Modifying the namespace also change the project&apos;s URL. Once the
+            change is saved, it will redirect to the updated project URL.
+          </RenkuAlert>
+        )}
         <ProjectDescriptionFormField
           name="description"
           control={control}
