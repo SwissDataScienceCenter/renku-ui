@@ -43,7 +43,7 @@ export default function Secrets() {
         the Session start drop down menu. Then scroll down to the User Secrets
         section and select the secrets you would like to include in the session.
         The secrets you select will be mounted in the session as files in a
-        directory of your choice as <code>secret-name.txt</code>.
+        directory of your choice as <code>secret-name</code>.
       </p>
       <p>
         For more information, please refer to{" "}
