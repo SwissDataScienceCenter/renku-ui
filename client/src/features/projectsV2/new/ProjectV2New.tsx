@@ -25,16 +25,17 @@ import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 
-import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 import type { ProjectPost } from "../api/projectV2.api";
+import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2Show";
 
-import type { NewProjectV2State } from "./projectV2New.slice";
-import { setCurrentStep } from "./projectV2New.slice";
+import { useNavigate } from "react-router-dom-v5-compat";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert.tsx";
+import WipBadge from "../shared/WipBadge";
 import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
 import ProjectV2NewForm from "./ProjectV2NewForm";
-import WipBadge from "../shared/WipBadge";
-import { useNavigate } from "react-router-dom-v5-compat";
+import type { NewProjectV2State } from "./projectV2New.slice";
+import { setCurrentStep } from "./projectV2New.slice";
 
 function projectToProjectPost(
   project: NewProjectV2State["project"]
@@ -136,8 +137,11 @@ function ProjectV2NewReviewCreateStep({
     }
   }, [result, project, navigate]);
 
+  const errorAlert = result.error && <RtkErrorAlert error={result.error} />;
+
   return (
     <Form className="form-rk-green" noValidate onSubmit={onSubmit}>
+      {errorAlert}
       <h4>Review</h4>
       <div className="mb-3">
         <Label>Name</Label>
