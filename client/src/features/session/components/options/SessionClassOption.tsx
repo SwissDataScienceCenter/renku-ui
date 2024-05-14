@@ -225,22 +225,40 @@ export const SessionClassOption = () => {
 };
 
 interface SessionClassThresholdsProps {
-  defaultIdle?: number;
+  currentSessionClass?: ResourceClass;
   defaultHibernation?: number;
-  resourcePool?: ResourcePool;
+  defaultIdle?: number;
+  resourcePools: ResourcePool[];
 }
 
 function SessionClassThresholds({
-  defaultIdle,
+  currentSessionClass,
   defaultHibernation,
-  resourcePool,
+  defaultIdle,
+  resourcePools,
 }: SessionClassThresholdsProps) {
-  if (!resourcePool) {
-    return null;
-  }
+  const classesThresholds = useMemo(() => {
+    return resourcePools.flatMap((pool) =>
+      pool.classes.map((c) => ({
+        pollId: pool.id,
+        classId: c.id,
+        idleThreshold: pool.idle_threshold ?? defaultIdle ?? 0,
+        hibernationThreshold:
+          pool.hibernation_threshold ?? defaultHibernation ?? 0,
+      }))
+    );
+  }, [defaultHibernation, defaultIdle, resourcePools]);
+
+  const currentClassThresholds = useMemo(
+    () => classesThresholds.find((c) => c.classId === currentSessionClass?.id),
+    [classesThresholds, currentSessionClass]
+  );
+
   if (
-    (!resourcePool.idle_threshold && !defaultIdle) ||
-    (!resourcePool.hibernation_threshold && !defaultHibernation)
+    !currentSessionClass ||
+    !defaultHibernation ||
+    !defaultIdle ||
+    !resourcePools.length
   ) {
     return null;
   }
@@ -249,12 +267,11 @@ function SessionClassThresholds({
     <div className="form-text">
       This session will automatically pause after{" "}
       {toHumanDuration({
-        duration: (resourcePool.idle_threshold ?? defaultIdle) as number,
+        duration: currentClassThresholds?.idleThreshold as number,
       })}{" "}
       of inactivity. If not resumed within{" "}
       {toHumanDuration({
-        duration: (resourcePool.hibernation_threshold ??
-          defaultHibernation) as number,
+        duration: currentClassThresholds?.hibernationThreshold as number,
       })}
       , the session will be deleted.
     </div>
@@ -477,9 +494,11 @@ export const SessionClassSelector = ({
       <SessionClassThresholds
         defaultHibernation={nbVersion?.registeredUsersHibernationThreshold}
         defaultIdle={nbVersion?.registeredUsersIdleThreshold}
-        resourcePool={resourcePools.find(
-          (p) => p.id === currentSessionClass?.id
-        )}
+        currentSessionClass={currentSessionClass}
+        resourcePools={resourcePools}
+        // resourcePool={resourcePools.find(
+        //   (p) => p.id === currentSessionClass?.id
+        // )}
       />
     </div>
   );

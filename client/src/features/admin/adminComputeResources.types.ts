@@ -83,11 +83,11 @@ export interface AddResourcePoolForm {
   quotaCpu: number;
   quotaMemory: number;
   quotaGpu: number;
-  idleThreshold?: number;
-  hibernationThreshold?: number;
+  idleThresholdMinutes?: number;
+  hibernationThresholdMinutes?: number;
 }
 
 export interface UpdateResourcePoolThresholdsForm {
-  idleThreshold?: number;
-  hibernationThreshold?: number;
+  idleThresholdMinutes?: number;
+  hibernationThresholdMinutes?: number;
 }

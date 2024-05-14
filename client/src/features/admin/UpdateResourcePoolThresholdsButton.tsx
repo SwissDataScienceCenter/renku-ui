@@ -93,10 +93,10 @@ function UpdateResourcePoolThresholdsModal({
     reset,
   } = useForm<UpdateResourcePoolThresholdsForm>({
     defaultValues: {
-      idleThreshold: resourcePool.idle_threshold
+      idleThresholdMinutes: resourcePool.idle_threshold
         ? resourcePool.idle_threshold / 60
         : undefined,
-      hibernationThreshold: resourcePool.hibernation_threshold
+      hibernationThresholdMinutes: resourcePool.hibernation_threshold
         ? resourcePool.hibernation_threshold / 60
         : undefined,
     },
@@ -108,11 +108,11 @@ function UpdateResourcePoolThresholdsModal({
     (data: UpdateResourcePoolThresholdsForm) => {
       updateResourcePool({
         resourcePoolId: id,
-        idle_threshold: data.idleThreshold
-          ? data.idleThreshold * 60
+        idle_threshold: data.idleThresholdMinutes
+          ? data.idleThresholdMinutes * 60
           : undefined,
-        hibernation_threshold: data.hibernationThreshold
-          ? data.hibernationThreshold * 60
+        hibernation_threshold: data.hibernationThresholdMinutes
+          ? data.hibernationThresholdMinutes * 60
           : undefined,
       });
     },
@@ -162,12 +162,12 @@ function UpdateResourcePoolThresholdsModal({
             </Label>
             <Controller
               control={control}
-              name="idleThreshold"
+              name="idleThresholdMinutes"
               render={({ field }) => (
                 <Input
                   className={cx(
                     "form-control",
-                    errors.idleThreshold && "is-invalid"
+                    errors.idleThresholdMinutes && "is-invalid"
                   )}
                   id="updateResourcePoolIdleThreshold"
                   placeholder="idle threshold"
@@ -203,12 +203,12 @@ function UpdateResourcePoolThresholdsModal({
             </Label>
             <Controller
               control={control}
-              name="hibernationThreshold"
+              name="hibernationThresholdMinutes"
               render={({ field }) => (
                 <Input
                   className={cx(
                     "form-control",
-                    errors.hibernationThreshold && "is-invalid"
+                    errors.hibernationThresholdMinutes && "is-invalid"
                   )}
                   id="updateResourcePoolHibernationThreshold"
                   placeholder="hibernation threshold"
