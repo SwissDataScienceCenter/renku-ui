@@ -81,13 +81,17 @@ function RemoveProjectMemberAccessForm({
   return (
     <>
       <ModalBody>
-        <Form noValidate onSubmit={handleSubmit(onRemove)}>
+        <Form
+          noValidate
+          data-cy="remove-member-form"
+          onSubmit={handleSubmit(onRemove)}
+        >
           {result.error && <RtkErrorAlert error={result.error} />}
           <div
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
             <Label>
-              Remove <b>{member.email}</b> from project?
+              Remove <b>{member.email ?? member.id}</b> from project?
             </Label>
           </div>
         </Form>

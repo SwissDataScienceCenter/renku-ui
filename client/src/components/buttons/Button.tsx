@@ -343,16 +343,19 @@ function EditButtonLink({ to, tooltip }: { to: string; tooltip: ReactNode }) {
 }
 
 export function PlusRoundButton({
+  "data-cy": dataCy,
   handler,
   tooltip,
 }: {
   handler: () => void;
   tooltip?: ReactNode;
+  "data-cy"?: string;
 }) {
   const ref = useRef(null);
   return (
     <>
       <Button
+        data-cy={dataCy}
         innerRef={ref}
         className={cx(
           "d-flex",

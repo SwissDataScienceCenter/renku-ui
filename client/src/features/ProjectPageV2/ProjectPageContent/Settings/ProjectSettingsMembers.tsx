@@ -73,18 +73,24 @@ function OverviewBox({ children }: { children: ReactNode }) {
 }
 
 interface ProjectPageSettingsMembersTableRowProps {
+  index: number;
   member: ProjectMemberResponse;
   onRemove: () => void;
   onEdit: () => void;
 }
 
 function ProjectPageSettingsMembersTableRow({
+  index,
   member,
   onRemove,
   onEdit,
 }: ProjectPageSettingsMembersTableRowProps) {
   const defaultAction = (
-    <Button color="rk-green" onClick={onEdit}>
+    <Button
+      color="rk-green"
+      data-cy={`project-member-edit-${index}`}
+      onClick={onEdit}
+    >
       <PencilSquare className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Edit
     </Button>
   );
@@ -110,6 +116,7 @@ function ProjectPageSettingsMembersTableRow({
         sm={6}
         xs={12}
         className={cx("d-flex", "align-items-center", "px-2")}
+        data-cy={`project-member-actions-${index}`}
       >
         <ButtonWithMenu
           className="py-1"
@@ -185,9 +192,10 @@ function ProjectPageSettingsMembersTable({
           <span className={cx(headerClasses)}>Actions</span>
         </Col>
       </Row>
-      {sortedMembers.map((d) => {
+      {sortedMembers.map((d, i) => {
         return (
           <ProjectPageSettingsMembersTableRow
+            index={i}
             key={d.id}
             member={d}
             onRemove={() => {
@@ -206,13 +214,13 @@ function ProjectPageSettingsMembersTable({
         member={memberToEdit}
         members={members}
         projectId={projectId}
-        toggle={() => setIsEditMemberModalOpen((open) => !open)}
+        toggle={() => setIsEditMemberModalOpen(false)}
       />
       <RemoveProjectMemberModal
         isOpen={isRemoveMemberModalOpen}
         member={memberToEdit}
         projectId={projectId}
-        toggle={() => setIsRemoveMemberModalOpen((open) => !open)}
+        toggle={() => setIsRemoveMemberModalOpen(false)}
       />
     </>
   );

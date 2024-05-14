@@ -29,7 +29,7 @@ interface ListManyProjectArgs extends NameOnlyFixture {
 
 interface ListProjectV2MembersFixture extends ProjectV2IdArgs {
   removeMemberId?: string;
-  addMember?: { id: string; email: string; role: string };
+  addMember?: { id: string; email?: string; role: string };
 }
 
 interface ProjectV2IdArgs extends SimpleFixture {
@@ -40,13 +40,13 @@ interface ProjectV2DeleteFixture extends NameOnlyFixture {
   projectId?: string;
 }
 
-interface ProjectV2DeleteMemberFixture extends ProjectV2IdArgs {
-  memberId?: string;
-}
-
 interface ProjectV2NameArgs extends SimpleFixture {
   namespace?: string;
   projectSlug?: string;
+}
+
+interface ProjectV2PatchOrDeleteMemberFixture extends ProjectV2IdArgs {
+  memberId?: string;
 }
 
 export function generateProjects(numberOfProjects: number, start: number) {
@@ -98,7 +98,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    deleteProjectV2Member(args?: ProjectV2DeleteMemberFixture) {
+    deleteProjectV2Member(args?: ProjectV2PatchOrDeleteMemberFixture) {
       const {
         fixture = "projectV2/list-projectV2-members.json",
         name = "deleteProjectV2Members",
@@ -170,7 +170,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    patchProjectV2Member(args?: ProjectV2DeleteMemberFixture) {
+    patchProjectV2Member(args?: ProjectV2PatchOrDeleteMemberFixture) {
       const {
         fixture = "projectV2/list-projectV2-members.json",
         name = "patchProjectV2Members",

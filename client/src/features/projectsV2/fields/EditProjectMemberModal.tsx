@@ -113,7 +113,7 @@ function EditProjectMemberAccessForm({
           <div
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
-            <Label>{member.email}</Label>
+            <Label>{member.email ?? member.id}</Label>
             <Controller
               control={control}
               name="role"
@@ -143,7 +143,7 @@ function EditProjectMemberAccessForm({
         </Button>
         <Button onClick={handleSubmit(onSubmit)} type="submit">
           <PencilSquare className={cx("bi", "me-1")} />
-          Change Access
+          Change access
         </Button>
       </ModalFooter>
     </>
