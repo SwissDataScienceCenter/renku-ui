@@ -23,7 +23,7 @@ import { Button, Form } from "reactstrap";
 import { SuccessAlert } from "../../../../components/Alert.jsx";
 import { Loader } from "../../../../components/Loader.tsx";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert.tsx";
-import { Project, Visibility } from "../../../projectsV2/api/projectV2.api.ts";
+import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField.tsx";
 import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField.tsx";
@@ -39,7 +39,6 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     control,
     formState: { errors, isDirty },
     handleSubmit,
-    setValue,
   } = useForm<ProjectV2Metadata>({
     defaultValues: {
       description: project?.description,
@@ -53,10 +52,6 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     usePatchProjectsByProjectIdMutation();
 
   const isUpdating = isLoading;
-  const setVisibility = useCallback(
-    (value: Visibility) => setValue("visibility", value),
-    [setValue]
-  );
 
   const onSubmit = useCallback(
     (data: ProjectV2Metadata) => {
@@ -99,7 +94,6 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
           name="visibility"
           control={control}
           errors={errors}
-          setVisibility={setVisibility}
         />
         <div className={cx("d-flex", "justify-content-end")}>
           <Button
