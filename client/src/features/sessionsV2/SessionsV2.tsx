@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -33,18 +32,17 @@ import {
   Row,
   UncontrolledDropdown,
 } from "reactstrap";
-import rkIconSessions from "../../styles/icons/sessions.svg";
 
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
+import rkIconSessions from "../../styles/icons/sessions.svg";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
 import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
-import SessionConfig from "./SessionConfig";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import {
   useGetProjectSessionLaunchersQuery,
@@ -55,6 +53,7 @@ import { SessionLauncher } from "./sessionsV2.types";
 // Required for logs formatting
 import dotsDropdownStyles from "../../components/buttons/ThreeDots.module.scss";
 import "../../notebooks/Notebooks.css";
+import { Url } from "../../utils/helpers/url";
 import sessionItemStyles from "./SessionList/SessionItemDisplay.module.scss";
 import {
   SessionBtnBox,
@@ -69,7 +68,6 @@ import {
   SessionStatusV2Description,
   SessionStatusV2Label,
 } from "./components/SessionStatus/SessionStatus.tsx";
-import { Url } from "../../utils/helpers/url";
 
 export function getShowSessionUrlByProject(
   project: Project,
@@ -89,8 +87,6 @@ export default function SessionsV2({ project }: SessionsV2Props) {
   const { error } = useGetSessionEnvironmentsQuery();
   return (
     <div>
-      <SessionConfig project={project} />
-
       <h3 className="fs-5">Sessions</h3>
       <div>
         <AddSessionLauncherButton styleBtn="iconTextBtn" />
@@ -107,11 +103,12 @@ export default function SessionsV2({ project }: SessionsV2Props) {
 
 export function SessionLaunchersListDisplay({ project }: { project: Project }) {
   const projectId = project.id;
+
   const {
     data: launchers,
     error: launchersError,
     isLoading: isLoadingLaunchers,
-  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
+  } = useGetProjectSessionLaunchersQuery({ projectId });
 
   const {
     data: sessions,
