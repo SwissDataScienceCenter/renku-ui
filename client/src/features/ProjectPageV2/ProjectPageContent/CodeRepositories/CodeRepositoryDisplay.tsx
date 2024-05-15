@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  BoxArrowUpRight,
+  Pencil,
   ThreeDotsVertical,
   Trash,
   XLg,
-  BoxArrowUpRight,
 } from "react-bootstrap-icons";
 import {
   Button,
@@ -37,11 +38,92 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 import { ExternalLink } from "../../../../components/ExternalLinks.jsx";
+import FieldGroup from "../../../../components/FieldGroups.tsx";
 import { Loader } from "../../../../components/Loader.tsx";
 import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
+import RenkuFrogIcon from "../../../../components/icons/RenkuIcon.tsx";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
-import RenkuFrogIcon from "../../../../components/icons/RenkuIcon.tsx";
+
+interface EditCodeRepositoryModalProps {
+  project: Project;
+  isOpen: boolean;
+  toggleModal: () => void;
+  repositoryUrl: string;
+}
+function EditCodeRepositoryModal({
+  project,
+  toggleModal,
+  isOpen,
+  repositoryUrl,
+}: EditCodeRepositoryModalProps) {
+  const [repositoryUrlUpdated, setRepositoryUrlUpdated] =
+    useState(repositoryUrl);
+  const [updateProject, { isLoading, isSuccess }] =
+    usePatchProjectsByProjectIdMutation();
+  const onUpdateCodeRepository = (newRepositoryUrl: string) => {
+    if (
+      !newRepositoryUrl ||
+      !project.repositories ||
+      project.repositories.length === 0
+    )
+      return;
+    const repositories = project.repositories.map((url) =>
+      url === repositoryUrl ? newRepositoryUrl : url
+    );
+    updateProject({
+      "If-Match": project.etag ? project.etag : undefined,
+      projectId: project.id,
+      projectPatch: { repositories },
+    });
+  };
+
+  useEffect(() => {
+    if (isSuccess) toggleModal();
+  }, [isSuccess, toggleModal]);
+
+  return (
+    <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
+      <ModalHeader toggle={toggleModal}>
+        <RenkuFrogIcon className="me-2" size={30} />
+        Edit code repository
+      </ModalHeader>
+      <ModalBody className="py-0">
+        <p>Specify a code repository by its URL.</p>
+        <Row>
+          <Col>
+            <FieldGroup
+              id="url"
+              label="Repository URL"
+              value={repositoryUrlUpdated}
+              help={"https://github.com/my-repository"}
+              isRequired={true}
+              onChange={(e) => setRepositoryUrlUpdated(e.target.value)}
+            />
+          </Col>
+        </Row>
+        <ModalFooter className="px-0">
+          <Button
+            color="rk-green"
+            className={cx("float-right", "mt-1", "ms-2")}
+            data-cy="edit-code-repository-modal-button"
+            type="submit"
+            onClick={() => onUpdateCodeRepository(repositoryUrlUpdated)}
+          >
+            {isLoading ? (
+              <>
+                <Loader className="me-2" inline size={16} />
+                Edit code repository
+              </>
+            ) : (
+              <>Edit code repository</>
+            )}
+          </Button>
+        </ModalFooter>
+      </ModalBody>
+    </Modal>
+  );
+}
 
 interface CodeRepositoryDeleteModalProps {
   repositoryUrl: string;
@@ -128,6 +210,11 @@ function CodeRepositoryActions({
     setIsDeleteOpen((open) => !open);
   }, []);
 
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const toggleEdit = useCallback(() => {
+    setIsEditOpen((open) => !open);
+  }, []);
+
   return (
     <>
       <UncontrolledDropdown>
@@ -151,7 +238,18 @@ function CodeRepositoryActions({
               "d-flex",
               "align-items-center",
               "gap-2",
-              "justify-content-end"
+              "justify-content-start"
+            )}
+            onClick={toggleEdit}
+          >
+            <Pencil /> Edit code repository
+          </DropdownItem>
+          <DropdownItem
+            className={cx(
+              "d-flex",
+              "align-items-center",
+              "gap-2",
+              "justify-content-start"
             )}
             onClick={toggleDelete}
           >
@@ -164,6 +262,12 @@ function CodeRepositoryActions({
         isOpen={isDeleteOpen}
         toggleModal={toggleDelete}
         project={project}
+      />
+      <EditCodeRepositoryModal
+        toggleModal={toggleEdit}
+        isOpen={isEditOpen}
+        project={project}
+        repositoryUrl={url}
       />
     </>
   );
