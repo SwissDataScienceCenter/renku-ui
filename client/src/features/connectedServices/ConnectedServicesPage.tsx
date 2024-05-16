@@ -16,11 +16,15 @@
  * limitations under the License
  */
 
-import { Card, CardBody, CardText, CardTitle } from "reactstrap";
 import cx from "classnames";
+import { Card, CardBody, CardText, CardTitle } from "reactstrap";
 
+import { useMemo } from "react";
+import { BoxArrowUpRight } from "react-bootstrap-icons";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import connectedServicesApi, {
   useGetConnectedAccountQuery,
   useGetConnectionsQuery,
@@ -31,10 +35,6 @@ import {
   ConnectionStatus,
   Provider,
 } from "./connectedServices.types";
-import { useMemo } from "react";
-import { Loader } from "../../components/Loader";
-import { ExternalLink } from "../../components/ExternalLinks";
-import { BoxArrowUpRight } from "react-bootstrap-icons";
 
 export default function ConnectedServicesPage() {
   const {
