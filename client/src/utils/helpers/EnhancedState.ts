@@ -49,6 +49,7 @@ import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.sl
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import searchV2Api from "../../features/searchV2/searchV2.api";
 import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
+import secretsApi from "../../features/secrets/secrets.api";
 import sessionsApi from "../../features/session/sessions.api";
 import sessionSidecarApi from "../../features/session/sidecar.api";
 import startSessionSlice from "../../features/session/startSession.slice";
@@ -103,6 +104,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectV2Api.reducerPath]: projectV2Api.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
+    [secretsApi.reducerPath]: secretsApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
@@ -138,6 +140,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectV2Api.middleware)
         .concat(recentUserActivityApi.middleware)
         .concat(searchV2Api.middleware)
+        .concat(secretsApi.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionSidecarApi.middleware)

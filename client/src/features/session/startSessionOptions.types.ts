@@ -28,6 +28,8 @@ export interface StartSessionOptions {
   environmentVariables: SessionEnvironmentVariable[];
   lfsAutoFetch: boolean;
   pinnedDockerImage: string;
+  secretsPath: string;
+  secretsList: SessionSecrets[];
   sessionClass: number;
   storage: number;
 }
@@ -60,4 +62,9 @@ export type DockerImageStatus =
 export interface SessionEnvironmentVariable {
   name: string;
   value: string;
+}
+
+export interface SessionSecrets {
+  name: string;
+  id: string;
 }

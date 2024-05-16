@@ -218,6 +218,46 @@ describe("launch sessions", () => {
       .should("be.visible");
   });
 
+  it("new session page - select secrets", () => {
+    // Check the output when no secrets are available
+    fixtures.listSecrets({ numberOfSecrets: 0 }).userTest();
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.get(".form-label").contains("User Secrets").should("be.visible");
+    cy.getDataCy("session-secrets")
+      .contains("No secrets defined yet.")
+      .should("be.visible");
+
+    // Select some secrets
+    fixtures.listSecrets({ numberOfSecrets: 5 });
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.getDataCy("session-secrets")
+      .contains("No secrets defined yet.")
+      .should("not.exist");
+    cy.getDataCy("session-secrets-toggle").contains("None").click();
+    cy.getDataCy("session-secrets-checkbox").should("have.length", 5);
+
+    cy.getDataCy("session-secrets-checkbox")
+      .first()
+      .should("not.be.checked")
+      .siblings()
+      .contains("secret_0");
+    cy.getDataCy("session-secrets-checkbox")
+      .first()
+      .click()
+      .should("be.checked");
+    cy.getDataCy("session-secrets-checkbox")
+      .last()
+      .should("not.be.checked")
+      .siblings()
+      .contains("secret_4");
+    cy.getDataCy("session-secrets-checkbox")
+      .last()
+      .click()
+      .should("be.checked");
+    cy.getDataCy("session-secrets-toggle").contains("None").should("not.exist");
+    cy.getDataCy("session-secrets-toggle").contains("secret_0, secret_4");
+  });
+
   it('new session page - show "email us" link', () => {
     fixtures.config({ fixture: "config-session-class-email-us.json" });
     fixtures.userTest();

@@ -326,6 +326,10 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
           />
         </DropdownItem>
 
+        <Link to="/secrets" className="dropdown-item">
+          User Secrets
+        </Link>
+
         <AdminDropdownItem />
 
         {renku10Enabled && (

@@ -493,6 +493,9 @@ const Url = {
     searchEntities: {
       base: "/search",
     },
+    secrets: {
+      base: "/secrets",
+    },
     groupV2: {
       base: "/v2/groups",
       new: "/v2/groups/new",
