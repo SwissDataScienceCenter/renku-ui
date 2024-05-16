@@ -55,7 +55,7 @@ export default function ConnectedServicesPage() {
   if (error) {
     return (
       <div>
-        <RtkErrorAlert error={error} dismissible={false} />
+        <RtkOrNotebooksError error={error} dismissible={false} />
       </div>
     );
   }
@@ -169,7 +169,7 @@ function ConnectedAccount({ connection }: ConnectedAccountProps) {
   }
 
   if (error) {
-    return <RtkErrorAlert error={error} dismissible={false} />;
+    return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
   if (account == null) {

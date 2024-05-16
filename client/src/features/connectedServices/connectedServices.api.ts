@@ -28,7 +28,7 @@ import {
 const connectedServicesApi = createApi({
   reducerPath: "connectedServicesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/ui-server/api/data",
+    baseUrl: "/ui-server/api/data/oauth2",
   }),
   tagTypes: ["Provider", "Connection", "ConnectedAccount"],
   endpoints: (builder) => ({
