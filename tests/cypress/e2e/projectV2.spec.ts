@@ -46,9 +46,8 @@ describe("Add new v2 project", () => {
     cy.contains("button", "Review").click();
     cy.contains("button", "Create").click();
 
-    cy.contains("Creating project...").should("be.visible");
     cy.wait("@createProjectV2");
-    cy.contains("Project created").should("be.visible");
+    cy.location("pathname").should("eq", `/v2/projects/user1.uuid/${slug}`);
   });
 
   it("keeps namespace set after going back", () => {
@@ -83,7 +82,7 @@ describe("Add new v2 project", () => {
     cy.contains("Set Visibility").click();
 
     cy.contains("Define access").should("be.visible");
-    cy.getDataCy("project-visibility").select("Public");
+    cy.getDataCy("project-visibility-public").click();
     cy.contains("button", "Add repositories").click();
 
     cy.contains("button", "Review").click();
@@ -104,10 +103,8 @@ describe("Add new v2 project", () => {
     cy.contains("https://domain.name/repo1.git").should("be.visible");
 
     cy.contains("button", "Create").click();
-
-    cy.contains("Creating project...").should("be.visible");
     cy.wait("@createProjectV2");
-    cy.contains("Project created").should("be.visible");
+    cy.location("pathname").should("eq", `/v2/projects/user1.uuid/${slug}`);
   });
 });
 
@@ -334,6 +331,7 @@ describe("Edit v2 project", () => {
       fixture: "projectV2/list-projectV2-post-delete.json",
       name: "listProjectV2PostDelete",
     });
-    cy.contains("Return to list").click();
+    cy.contains("List Projects (V2)");
+    cy.contains("Project deleted").should("be.visible");
   });
 });

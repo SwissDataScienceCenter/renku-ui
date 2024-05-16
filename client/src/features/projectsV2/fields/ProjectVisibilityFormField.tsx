@@ -50,7 +50,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                   "p-0",
                   "mt-0"
                 )}
-                data-cy="project-visibility"
+                data-cy="project-visibility-public"
                 id="project-visibility-public"
                 {...field}
                 value="public"
@@ -77,7 +77,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                   "p-0",
                   "mt-0"
                 )}
-                data-cy="project-visibility"
+                data-cy="project-visibility-private"
                 id="project-visibility-private"
                 {...field}
                 value="private"
