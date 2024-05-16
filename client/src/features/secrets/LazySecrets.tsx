@@ -16,30 +16,16 @@
  * limitations under the License
  */
 
-import { useRef } from "react";
-import { Badge, UncontrolledTooltip } from "reactstrap";
+import { Suspense, lazy } from "react";
 
-type WipBadeProps = {
-  label?: string;
-  text?: string;
-};
+import PageLoader from "../../components/PageLoader";
 
-export default function WipBadge({
-  label = "Alpha",
-  text = "Renku 2.0 is under active development and features may not work as expected.",
-}: WipBadeProps) {
-  const ref = useRef<HTMLElement>(null);
+const Secrets = lazy(() => import("./Secrets"));
 
+export default function LazySecrets() {
   return (
-    <>
-      <Badge
-        className="wip-badge text-primary"
-        color="rk-yellow"
-        innerRef={ref}
-      >
-        {label}
-      </Badge>
-      <UncontrolledTooltip target={ref}>{text}</UncontrolledTooltip>
-    </>
+    <Suspense fallback={<PageLoader />}>
+      <Secrets />
+    </Suspense>
   );
 }

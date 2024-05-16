@@ -13,33 +13,27 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
-import { useRef } from "react";
-import { Badge, UncontrolledTooltip } from "reactstrap";
+export interface SecretDetails {
+  id: string;
+  modification_date: Date;
+  name: string;
+}
 
-type WipBadeProps = {
-  label?: string;
-  text?: string;
-};
+export interface AddSecretParams {
+  name: string;
+  value: string;
+}
 
-export default function WipBadge({
-  label = "Alpha",
-  text = "Renku 2.0 is under active development and features may not work as expected.",
-}: WipBadeProps) {
-  const ref = useRef<HTMLElement>(null);
+export interface EditSecretParams {
+  id: string;
+  value: string;
+}
 
-  return (
-    <>
-      <Badge
-        className="wip-badge text-primary"
-        color="rk-yellow"
-        innerRef={ref}
-      >
-        {label}
-      </Badge>
-      <UncontrolledTooltip target={ref}>{text}</UncontrolledTooltip>
-    </>
-  );
+export type AddSecretForm = AddSecretParams;
+
+export interface EditSecretForm {
+  value: string;
 }

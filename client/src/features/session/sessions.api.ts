@@ -122,6 +122,7 @@ const sessionsApi = createApi({
         lfsAutoFetch,
         namespace,
         project,
+        secrets,
         sessionClass,
         storage,
       }) => {
@@ -139,6 +140,7 @@ const sessionsApi = createApi({
           namespace,
           project,
           resource_class_id: sessionClass,
+          ...(secrets ? { user_secrets: secrets } : {}),
           storage,
         };
         return {

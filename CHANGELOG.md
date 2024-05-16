@@ -1,5 +1,22 @@
 # Changes
 
+## [3.24.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.23.0...3.24.0) (2024-05-15)
+
+### Features
+
+- add support for session secrets ([#3100](https://github.com/SwissDataScienceCenter/renku-ui/pull/3100), [#3101](https://github.com/SwissDataScienceCenter/renku-ui/pull/3101), [#3106](https://github.com/SwissDataScienceCenter/renku-ui/pull/3106), [#3109](https://github.com/SwissDataScienceCenter/renku-ui/pull/3109))
+- use namespace/slug to identify 2.0 projects ([#3096](https://github.com/SwissDataScienceCenter/renku-ui/pull/3096), [#3103](https://github.com/SwissDataScienceCenter/renku-ui/pull/3103))
+- rework renku 2.0 navigation ([#3095](https://github.com/SwissDataScienceCenter/renku-ui/pull/3095), [#3097](https://github.com/SwissDataScienceCenter/renku-ui/pull/3097))
+
+### Fixes
+
+- sort by date on the 2.0 search page ([#3088](https://github.com/SwissDataScienceCenter/renku-ui/pull/3088), [#3091](https://github.com/SwissDataScienceCenter/renku-ui/pull/3091))
+
+### BREAKING CHANGES
+
+- Requires renku-notebooks version >= 1.23.0
+- Requires renku-data-services version >= 0.10.0
+
 ## [3.23.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.22.0...3.23.0) (2024-04-08)
 
 ### Features
