@@ -35,7 +35,7 @@ const connectedServicesApi = createApi({
     getProviders: builder.query<ProviderList, void>({
       query: () => {
         return {
-          url: "oauth2/providers",
+          url: "providers",
         };
       },
       providesTags: (result) =>
@@ -49,7 +49,7 @@ const connectedServicesApi = createApi({
     getConnections: builder.query<ConnectionList, void>({
       query: () => {
         return {
-          url: "oauth2/connections",
+          url: "connections",
         };
       },
       providesTags: (result) =>
@@ -66,7 +66,7 @@ const connectedServicesApi = createApi({
     >({
       query: ({ connectionId }) => {
         return {
-          url: `oauth2/connections/${connectionId}/account`,
+          url: `connections/${connectionId}/account`,
         };
       },
       providesTags: (result, _error, { connectionId }) =>
