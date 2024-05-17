@@ -19,10 +19,16 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Pencil } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom-v5-compat";
 import { Button, Form } from "reactstrap";
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert.jsx";
 import { Loader } from "../../../../components/Loader.tsx";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert.tsx";
+import KeywordsInput from "../../../../components/form-field/KeywordsInput.tsx";
+import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants.ts";
+import { NotificationsManager } from "../../../../notifications/notifications.types.ts";
+import AppContext from "../../../../utils/context/appContext.ts";
+import { Url } from "../../../../utils/helpers/url";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField.tsx";
@@ -31,11 +37,6 @@ import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespa
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField.tsx";
 import { ProjectV2Metadata } from "../../../projectsV2/show/ProjectV2EditForm.tsx";
 import ProjectPageDelete from "./ProjectDelete.tsx";
-import { useNavigate } from "react-router-dom-v5-compat";
-import { Url } from "../../../../utils/helpers/url";
-import { NotificationsManager } from "../../../../notifications/notifications.types.ts";
-import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants.ts";
-import AppContext from "../../../../utils/context/appContext.ts";
 
 export function notificationProjectUpdated(
   notifications: NotificationsManager,
@@ -57,12 +58,14 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     formState: { errors, isDirty },
     handleSubmit,
     watch,
+    register,
   } = useForm<ProjectV2Metadata>({
     defaultValues: {
       description: project?.description,
       name: project.name,
       namespace: project.namespace,
       visibility: project.visibility,
+      keywords: project.keywords,
     },
   });
   const currentNamespace = watch("namespace");
@@ -70,6 +73,7 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
   const navigate = useNavigate();
   const [redirectAfterUpdate, setRedirectAfterUpdate] = useState(false);
   const { notifications } = useContext(AppContext);
+  const [areKeywordsDirty, setKeywordsDirty] = useState(false);
 
   const [updateProject, { isLoading, error, isSuccess }] =
     usePatchProjectsByProjectIdMutation();
@@ -134,15 +138,24 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
             change is saved, it will redirect to the updated project URL.
           </RenkuAlert>
         )}
+        <ProjectVisibilityFormField
+          name="visibility"
+          control={control}
+          errors={errors}
+        />
         <ProjectDescriptionFormField
           name="description"
           control={control}
           errors={errors}
         />
-        <ProjectVisibilityFormField
-          name="visibility"
-          control={control}
-          errors={errors}
+        <KeywordsInput
+          hasError={errors.keywords != null}
+          help="Keywords are used to describe the project. To add one, type a keyword and press enter."
+          label="Keywords"
+          name="keywords"
+          register={register("keywords", { validate: () => !areKeywordsDirty })}
+          setDirty={setKeywordsDirty}
+          value={project.keywords as string[]}
         />
         <div className={cx("d-flex", "justify-content-end")}>
           <Button

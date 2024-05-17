@@ -42,6 +42,7 @@ export function ProjectImageView() {
 
 export default function ProjectInformation({ project }: { project: Project }) {
   const totalMembers = 0; //TODO get member list
+  const totalKeywords = project.keywords?.length || 0;
   const settingsUrl = Url.get(Url.pages.projectV2.settings, {
     namespace: project.namespace,
     slug: project.slug,
@@ -103,6 +104,32 @@ export default function ProjectInformation({ project }: { project: Project }) {
             text="Add members"
             to={settingsUrl}
           />
+        )}
+      </div>
+      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
+        <div>Keywords ({totalKeywords})</div>
+        {totalKeywords == 0 ? (
+          <UnderlineArrowLink
+            tooltip="Add project keywords"
+            text="Add keywords"
+            to={settingsUrl}
+          />
+        ) : (
+          <div
+            className={cx(
+              "d-flex",
+              "flex-wrap",
+              "gap-2",
+              "justify-content-end",
+              "mt-2"
+            )}
+          >
+            {project.keywords?.map((keyword, index) => (
+              <span key={`keyword-${index}`} className={cx("fw-bold")}>
+                #{keyword}
+              </span>
+            ))}
+          </div>
         )}
       </div>
     </aside>
