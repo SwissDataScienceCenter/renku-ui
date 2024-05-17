@@ -1,8 +1,15 @@
 # Changes
 
-## [3.25.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.24.0...3.25.0) (YYYY-MM-DD)
+## [3.25.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.24.0...3.25.0) (2024-05-17)
 
-TODO: Update me here.
+### Features
+
+- add support for connected services in Renku 2.0 ([#3122](https://github.com/SwissDataScienceCenter/renku-ui/pull/3122))
+
+### BREAKING CHANGES
+
+- Requires renku-notebooks version >= 1.24.0
+- Requires renku-data-services version >= 0.11.0
 
 ## [3.24.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.23.0...3.24.0) (2024-05-15)
 
