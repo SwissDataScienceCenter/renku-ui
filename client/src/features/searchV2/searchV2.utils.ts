@@ -23,12 +23,16 @@ import {
   SearchV2State,
   SortingItems,
 } from "./searchV2.types";
+import type { Role } from "../projectsV2/api/projectV2.api";
+
+const ROLE_FILTER: { [key in Role]: string } = {
+  owner: "Owner",
+  editor: "Editor",
+  viewer: "Viewer",
+};
 
 export const AVAILABLE_FILTERS = {
-  role: {
-    owner: "Owner",
-    member: "Member",
-  },
+  role: ROLE_FILTER,
   type: {
     project: "Project",
     user: "User",

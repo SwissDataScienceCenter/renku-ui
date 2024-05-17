@@ -141,7 +141,10 @@ function SearchV2ResultProject({
   project,
   searchByUser,
 }: SearchV2ResultProjectProps) {
-  const url = Url.get(Url.pages.projectV2.showId, { id: project.id });
+  const url = Url.get(Url.pages.projectV2.show, {
+    namespace: project.namespace,
+    slug: project.slug,
+  });
   return (
     <SearchV2ResultsCard
       key={`project-${project.id}`}
