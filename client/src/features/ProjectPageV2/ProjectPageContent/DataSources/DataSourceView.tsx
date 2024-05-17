@@ -15,18 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo } from "react";
-import { Offcanvas, OffcanvasBody } from "reactstrap";
-import { ArrowLeft, Database } from "react-bootstrap-icons";
 import cx from "classnames";
+import { useMemo } from "react";
+import { ArrowLeft } from "react-bootstrap-icons";
+import { Offcanvas, OffcanvasBody } from "reactstrap";
+import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem.tsx";
+import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/components/cloudStorage/projectCloudStorage.constants.ts";
 import {
   CloudStorageGetRead,
   RCloneConfig,
   RCloneOption,
 } from "../../../projectsV2/api/storagesV2.api.ts";
 import { DataSourceActions } from "./DataSourceDisplay.tsx";
-import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/components/cloudStorage/projectCloudStorage.constants.ts";
-import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem.tsx";
 
 export interface CloudStorageOptions extends RCloneOption {
   requiredCredential: boolean;
@@ -102,16 +102,14 @@ export function DataSourceView({
         </div>
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div>
-            <label className="fst-italic fs-small">
-              <Database size={20} className={cx("me-2")} /> Data source
-            </label>
+            <label className="fst-italic fs-small">Data source</label>
             <h2 className="fw-bold">{storageDefinition.name}</h2>
           </div>
           <DataSourceActions storage={storage} projectId={projectId} />
         </div>
         <section data-cy="data-source-details-section">
           <div className="mt-3">
-            <div className="fs-small">
+            <div className={cx("fs-small", "fw-bold")}>
               Mount point {"("}this is where the storage will be mounted during
               sessions{")"}
             </div>
@@ -120,20 +118,20 @@ export function DataSourceView({
           {Object.keys(storageDefinition.configuration).map((key) => (
             <div className="mt-2" key={key}>
               <div>
-                <small className="text-capitalize">{key}</small>
+                <small className="text-capitalize fw-bold">{key}</small>
               </div>
               <div>{storageDefinition.configuration[key]?.toString()}</div>
             </div>
           ))}
           <div className="mt-3">
             <div>
-              <small>Source path</small>
+              <small className="fw-bold">Source path</small>
             </div>
             <div>{storageDefinition.source_path}</div>
           </div>
           <div className="mt-3">
             <div>
-              <small>Requires credentials</small>
+              <small className="fw-bold">Requires credentials</small>
             </div>
             <div>{anySensitiveField ? "Yes" : "No"}</div>
           </div>
@@ -142,7 +140,7 @@ export function DataSourceView({
             requiredCredentials.length > 0 && (
               <div className="mt-3">
                 <div>
-                  <small>Required credentials</small>
+                  <small className="fw-bold">Required credentials</small>
                 </div>
                 <ul className={cx("ps-4", "mb-0")}>
                   {requiredCredentials.map(({ name, help }, index) => (
@@ -156,7 +154,7 @@ export function DataSourceView({
             )}
           <div className="mt-3">
             <div>
-              <small>Access mode</small>
+              <small className="fw-bold">Access mode</small>
             </div>
             <div>
               {storageDefinition.readonly

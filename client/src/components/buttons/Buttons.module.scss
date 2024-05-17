@@ -32,6 +32,9 @@
     color: white !important;
     background-color: #{$rk-green-active} !important;
   }
+  &:focus {
+    box-shadow: 0 0 0 4px #{$rk-green-100} !important;
+  }
 }
 
 .EditButton {
