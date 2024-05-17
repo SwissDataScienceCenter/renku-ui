@@ -175,7 +175,7 @@ export type GroupPatchRequest = {
 export type UserId = string;
 export type UserEmail = string;
 export type UserFirstLastName = string;
-export type GroupRole = "member" | "owner";
+export type GroupRole = "editor" | "owner" | "viewer";
 export type GroupMemberResponse = {
   id: UserId;
   email?: UserEmail;
