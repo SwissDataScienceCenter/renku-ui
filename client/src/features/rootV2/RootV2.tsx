@@ -28,11 +28,12 @@ import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
 import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Container";
 import { ProjectPageContentType } from "../ProjectPageV2/ProjectPageContainer/ProjectPageContainer.tsx";
+import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
+import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupV2List from "../projectsV2/LazyGroupList";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyGroupV2Show from "../projectsV2/LazyGroupShow";
-import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
@@ -70,6 +71,14 @@ export default function RootV2() {
       <div className={cx("d-flex", "flex-grow-1", "h-100")}>
         <Routes>
           <Route
+            path="/"
+            element={
+              <ContainerWrap>
+                <LazyDashboardV2 />
+              </ContainerWrap>
+            }
+          />
+          <Route
             path="groups/*"
             element={
               <ContainerWrap>
@@ -77,20 +86,13 @@ export default function RootV2() {
               </ContainerWrap>
             }
           />
+          <Route path="projects/*" element={<ProjectsV2Routes />} />
           <Route
             path="help/*"
             element={
               <ContainerWrap>
                 <HelpV2Routes />
               </ContainerWrap>
-            }
-          />
-          <Route
-            path="projects/*"
-            element={
-              // <ContainerWrap>
-              <ProjectsV2Routes />
-              // </ContainerWrap>
             }
           />
           <Route
@@ -102,10 +104,10 @@ export default function RootV2() {
             }
           />
           <Route
-            path="/"
+            path="connected-services"
             element={
               <ContainerWrap>
-                <LazyDashboardV2 />
+                <LazyConnectedServicesPage />
               </ContainerWrap>
             }
           />

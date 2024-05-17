@@ -16,23 +16,24 @@
  * limitations under the License.
  */
 
-import type {
-  DockerImageStatus,
-  SessionCloudStorage,
-  SessionEnvironmentVariable,
-} from "../session/startSessionOptions.types";
-
-export interface StartSessionOptionsV2 {
-  cloudStorage: SessionCloudStorage[];
-  defaultUrl: string;
-  dockerImageStatus: DockerImageStatus;
-  environmentVariables: SessionEnvironmentVariable[];
-  lfsAutoFetch: boolean;
-  repositories: SessionRepository[];
-  sessionClass: number;
-  storage: number;
+export interface SecretDetails {
+  id: string;
+  modification_date: Date;
+  name: string;
 }
 
-export interface SessionRepository {
-  url: string;
+export interface AddSecretParams {
+  name: string;
+  value: string;
+}
+
+export interface EditSecretParams {
+  id: string;
+  value: string;
+}
+
+export type AddSecretForm = AddSecretParams;
+
+export interface EditSecretForm {
+  value: string;
 }

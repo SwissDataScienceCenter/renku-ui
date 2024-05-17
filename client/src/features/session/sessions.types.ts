@@ -100,6 +100,7 @@ export interface StartSessionParams {
   lfsAutoFetch: boolean;
   namespace: string;
   project: string;
+  secrets?: SessionUserSecrets;
   sessionClass: number;
   storage: number;
 }
@@ -108,10 +109,9 @@ export interface StartRenku2SessionParams {
   projectId: string;
   launcherId: string;
   repositories: {
-    namespace: string;
-    project: string;
-    branch: string;
-    commitSha: string;
+    url: string;
+    branch?: string;
+    commitSha?: string;
   }[];
   cloudStorage: SessionCloudStorage[];
   defaultUrl: string;
@@ -135,6 +135,11 @@ export interface CloudStorageDefinitionForSessionApi {
   readonly: boolean;
   source_path: string;
   target_path: string;
+}
+
+export interface SessionUserSecrets {
+  mount_path: string;
+  user_secret_ids: string[];
 }
 
 export interface NotebooksErrorContent {

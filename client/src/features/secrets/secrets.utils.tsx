@@ -16,35 +16,8 @@
  * limitations under the License.
  */
 
-import type { GitlabProjectResponse } from "../project/GitLab.types";
+import { Docs } from "../../utils/constants/Docs";
 
-export interface SessionConfigV2 {
-  repositorySupport: { [url: string]: RepositorySupport | undefined };
-  projectSupport: { [projectId: string]: ProjectSupport | undefined };
-}
+export const SECRETS_DOCS_URL = Docs.rtdTopicGuide("secrets/secrets.html");
 
-export type RepositorySupport = {
-  isLoading: boolean;
-} & (
-  | {
-      supportsSessions: false;
-      sessionConfiguration?: undefined;
-    }
-  | {
-      supportsSessions: true;
-      sessionConfiguration: SessionConfig;
-    }
-);
-
-interface SessionConfig {
-  defaultBranch: string;
-  namespace: string;
-  projectName: string;
-  repositoryMetadata: GitlabProjectResponse;
-}
-
-type ProjectSupport = {
-  isLoading: boolean;
-  repositories: string[];
-  repositoriesConfig: RepositorySupport[];
-};
+export const SECRETS_VALUE_LENGTH_LIMIT = 5_000;

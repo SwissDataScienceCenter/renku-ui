@@ -16,23 +16,29 @@
  * limitations under the License.
  */
 
-import type {
-  DockerImageStatus,
-  SessionCloudStorage,
-  SessionEnvironmentVariable,
-} from "../session/startSessionOptions.types";
-
-export interface StartSessionOptionsV2 {
-  cloudStorage: SessionCloudStorage[];
-  defaultUrl: string;
-  dockerImageStatus: DockerImageStatus;
-  environmentVariables: SessionEnvironmentVariable[];
-  lfsAutoFetch: boolean;
-  repositories: SessionRepository[];
-  sessionClass: number;
-  storage: number;
+export interface Provider {
+  id: string;
+  display_name: string;
+  url: string;
 }
 
-export interface SessionRepository {
-  url: string;
+export type ProviderList = Provider[];
+
+export interface Connection {
+  id: string;
+  provider_id: string;
+  status: ConnectionStatus;
+}
+
+export type ConnectionList = Connection[];
+
+export type ConnectionStatus = "pending" | "connected";
+
+export interface ConnectedAccount {
+  username: string;
+  web_url: string;
+}
+
+export interface GetConnectedAccountParams {
+  connectionId: string;
 }

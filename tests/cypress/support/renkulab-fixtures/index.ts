@@ -32,6 +32,7 @@ import { NewSession } from "./newSession";
 import { Projects } from "./projects";
 import { ProjectV2 } from "./projectV2";
 import { SearchV2 } from "./searchV2";
+import { Secrets } from "./secrets";
 import { Sessions } from "./sessions";
 import { Terms } from "./terms";
 import { User } from "./user";
@@ -51,10 +52,14 @@ const V1Fixtures = NewProject(
                 Projects(
                   ProjectV2(
                     SearchV2(
-                      Terms(
-                        User(
-                          UserPreferences(
-                            Versions(Workflows(KgSearch(Global(BaseFixtures))))
+                      Secrets(
+                        Terms(
+                          User(
+                            UserPreferences(
+                              Versions(
+                                Workflows(KgSearch(Global(BaseFixtures)))
+                              )
+                            )
                           )
                         )
                       )

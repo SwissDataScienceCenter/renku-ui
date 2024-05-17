@@ -71,6 +71,7 @@ import SessionCloudStorageOption from "./options/SessionCloudStorageOption";
 import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
+import SessionUserSecrets from "./options/SessionUserSecrets";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
 
 export default function StartNewSession() {
@@ -663,6 +664,7 @@ function StartNewSessionOptions() {
       <SessionCommitOption />
       <StartNotebookServerOptions />
       <SessionCloudStorageOption />
+      <SessionUserSecrets />
       <SessionEnvironmentVariables />
     </>
   );
@@ -693,6 +695,8 @@ function StartSessionButton() {
     environmentVariables,
     lfsAutoFetch,
     pinnedDockerImage,
+    secretsPath,
+    secretsList,
     sessionClass,
     storage,
   } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
@@ -744,6 +748,13 @@ function StartSessionButton() {
     const imageValidated =
       dockerImageStatus === "not-available" ? undefined : pinnedDockerImage;
 
+    const userSecrets = secretsList.length
+      ? {
+          mount_path: secretsPath ? secretsPath : "/",
+          user_secret_ids: secretsList.map((secret) => secret.id),
+        }
+      : undefined;
+
     dispatch(setStarting(true));
     dispatch(
       setSteps([
@@ -764,6 +775,7 @@ function StartSessionButton() {
       lfsAutoFetch,
       namespace,
       project,
+      secrets: userSecrets,
       sessionClass,
       storage,
     });
@@ -779,6 +791,8 @@ function StartSessionButton() {
     namespace,
     pinnedDockerImage,
     project,
+    secretsList,
+    secretsPath,
     sessionClass,
     startSession,
     storage,
