@@ -42,7 +42,6 @@ export function ProjectImageView() {
 
 export default function ProjectInformation({ project }: { project: Project }) {
   const totalMembers = 0; //TODO get member list
-  const totalKeywords = 0; //TODO get keyword list
   const settingsUrl = Url.get(Url.pages.projectV2.settings, {
     namespace: project.namespace,
     slug: project.slug,
@@ -102,16 +101,6 @@ export default function ProjectInformation({ project }: { project: Project }) {
           <UnderlineArrowLink
             tooltip="Add project members"
             text="Add members"
-            to={settingsUrl}
-          />
-        )}
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>Keywords ({totalKeywords})</div>
-        {totalKeywords === 0 && (
-          <UnderlineArrowLink
-            tooltip="Add project keywords"
-            text="Add keywords"
             to={settingsUrl}
           />
         )}

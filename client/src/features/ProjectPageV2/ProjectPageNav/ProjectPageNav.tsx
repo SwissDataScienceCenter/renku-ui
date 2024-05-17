@@ -17,16 +17,20 @@
  */
 import cx from "classnames";
 import { EyeFill, Folder2Open, PencilSquare } from "react-bootstrap-icons";
-import { Nav, NavItem } from "reactstrap";
+import { Nav, NavItem, NavLink } from "reactstrap";
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2.tsx";
 import { Url } from "../../../utils/helpers/url";
+import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageContainer.tsx";
 import styles from "./ProjectPageNav.module.scss";
+
 export default function ProjectPageNav({
   namespace,
   slug,
+  selectedContent,
 }: {
   namespace: string | undefined;
   slug: string | undefined;
+  selectedContent?: ProjectPageContentType;
 }) {
   const projectUrl = Url.get(Url.pages.projectV2.show, { namespace, slug });
   const projectSettingsUrl = Url.get(Url.pages.projectV2.settings, {
@@ -39,85 +43,143 @@ export default function ProjectPageNav({
   });
 
   return (
-    <Nav justified className={cx("d-flex", "flex-row", "flex-lg-column")}>
-      <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0", "d-flex")}>
-        <RenkuNavLinkV2
-          end
-          to={projectUrl}
-          title="Overview"
+    <>
+      <Nav justified className={cx("d-flex", "flex-row", "flex-lg-column")}>
+        <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0", "d-flex")}>
+          <RenkuNavLinkV2
+            end
+            to={projectUrl}
+            title="Overview"
+            className={cx(
+              "p-0",
+              "mb-1",
+              "text-center",
+              "text-lg-start",
+              "d-flex",
+              "flex-column",
+              "flex-lg-row",
+              "align-items-center",
+              "align-items-lg-start",
+              "gap-2",
+              "fs-small",
+              styles.navLink
+            )}
+          >
+            <EyeFill className={cx("d-block", "d-lg-none", "rk-icon-md")} />
+            Overview
+          </RenkuNavLinkV2>
+        </NavItem>
+        <NavItem
           className={cx(
-            "p-0",
-            "mb-1",
-            "text-center",
-            "text-lg-start",
+            "mb-0",
+            "mb-lg-3",
+            "py-3",
+            "py-lg-0",
             "d-flex",
-            "flex-column",
-            "flex-lg-row",
-            "align-items-center",
-            "align-items-lg-start",
-            "gap-2",
-            styles.navLink
+            "d-lg-none"
           )}
         >
-          <EyeFill className={cx("d-block", "d-lg-none")} />
-          Overview
-        </RenkuNavLinkV2>
-      </NavItem>
-      <NavItem
-        className={cx(
-          "mb-0",
-          "mb-lg-3",
-          "py-3",
-          "py-lg-0",
-          "d-flex",
-          "d-lg-none"
-        )}
-      >
-        <RenkuNavLinkV2
-          end
-          to={projectInfoUrl}
-          title="Project Information"
-          className={cx(
-            "p-0",
-            "mb-1",
-            "text-center",
-            "text-lg-start",
-            "d-flex",
-            "flex-column",
-            "flex-lg-row",
-            "align-items-center",
-            "align-items-lg-start",
-            "gap-2",
-            styles.navLink
-          )}
-        >
-          <Folder2Open />
-          Project Info
-        </RenkuNavLinkV2>
-      </NavItem>
-      <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0", "d-flex")}>
-        <RenkuNavLinkV2
-          end
-          to={projectSettingsUrl}
-          title="Settings"
-          className={cx(
-            "p-0",
-            "mb-1",
-            "text-center",
-            "text-lg-start",
-            "d-flex",
-            "flex-column",
-            "flex-lg-row",
-            "align-items-center",
-            "align-items-lg-start",
-            "gap-2",
-            styles.navLink
-          )}
-        >
-          <PencilSquare className={cx("d-block", "d-lg-none")} />
-          Settings
-        </RenkuNavLinkV2>
-      </NavItem>
-    </Nav>
+          <RenkuNavLinkV2
+            end
+            to={projectInfoUrl}
+            title="Project Information"
+            className={cx(
+              "p-0",
+              "mb-1",
+              "text-center",
+              "text-lg-start",
+              "d-flex",
+              "flex-column",
+              "flex-lg-row",
+              "align-items-center",
+              "align-items-lg-start",
+              "gap-2",
+              "fs-small",
+              styles.navLink
+            )}
+          >
+            <Folder2Open className="rk-icon-md" />
+            Project Info
+          </RenkuNavLinkV2>
+        </NavItem>
+        <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0", "d-flex")}>
+          <RenkuNavLinkV2
+            end
+            to={projectSettingsUrl}
+            title="Settings"
+            className={cx(
+              "p-0",
+              "mb-1",
+              "text-center",
+              "text-lg-start",
+              "d-flex",
+              "flex-column",
+              "flex-lg-row",
+              "align-items-center",
+              "align-items-lg-start",
+              "gap-2",
+              "fs-small",
+              selectedContent === ProjectPageContentType.Settings && "active",
+              styles.navLink
+            )}
+          >
+            <PencilSquare
+              className={cx("d-block", "d-lg-none", "rk-icon-md")}
+            />
+            Settings
+          </RenkuNavLinkV2>
+        </NavItem>
+      </Nav>
+      {selectedContent === ProjectPageContentType.Settings && (
+        <Nav className="d-none d-lg-flex">
+          <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
+            <NavLink
+              href={"#general"}
+              className={cx(
+                "p-0",
+                "mb-2",
+                "ps-2",
+                "ms-2",
+                "text-center",
+                "text-lg-start",
+                "d-flex",
+                "flex-column",
+                "flex-lg-row",
+                "align-items-center",
+                "align-items-lg-start",
+                "gap-2",
+                "fs-small",
+                styles.navLink
+              )}
+            >
+              General
+            </NavLink>
+          </NavItem>
+          <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
+            <NavLink
+              href={"#delete"}
+              className={cx(
+                "p-0",
+                "mb-2",
+                "ms-2",
+                "ps-2",
+                "text-center",
+                "text-lg-start",
+                "d-flex",
+                "flex-column",
+                "flex-lg-row",
+                "align-items-center",
+                "align-items-lg-start",
+                "gap-2",
+                "fs-small",
+                styles.navLink
+              )}
+            >
+              Delete
+            </NavLink>
+          </NavItem>
+        </Nav>
+      )}
+    </>
   );
 }

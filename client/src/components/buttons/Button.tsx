@@ -342,18 +342,10 @@ function EditButtonLink({ to, tooltip }: { to: string; tooltip: ReactNode }) {
   );
 }
 
-export function PlusRoundButton({
-  handler,
-  tooltip,
-}: {
-  handler: () => void;
-  tooltip?: ReactNode;
-}) {
-  const ref = useRef(null);
+export function PlusRoundButton({ handler }: { handler: () => void }) {
   return (
     <>
       <Button
-        ref={ref}
         className={cx(
           "d-flex",
           "justify-content-center",
@@ -369,9 +361,6 @@ export function PlusRoundButton({
       >
         <PlusLg size="16" />
       </Button>
-      {tooltip && (
-        <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
-      )}
     </>
   );
 }

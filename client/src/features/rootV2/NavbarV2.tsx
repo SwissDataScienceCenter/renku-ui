@@ -187,7 +187,15 @@ export default function NavbarV2() {
           "px-2"
         )}
       >
-        <div className={cx("text-white", "d-flex", "align-items-center")}>
+        <div
+          className={cx(
+            "text-white",
+            "d-flex",
+            "align-items-center",
+            "flex-wrap",
+            "gap-2"
+          )}
+        >
           <RenkuNavLinkV2
             id="link-home"
             data-cy="link-home"

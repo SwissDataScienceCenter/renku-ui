@@ -15,10 +15,171 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export default function ProjectPageSettings({
-  projectId,
-}: {
-  projectId: string;
-}) {
-  return <small>Settings {projectId}</small>;
+import cx from "classnames";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { Pencil } from "react-bootstrap-icons";
+import { useForm } from "react-hook-form";
+import { Button, Form } from "reactstrap";
+import { RenkuAlert, SuccessAlert } from "../../../../components/Alert.jsx";
+import { Loader } from "../../../../components/Loader.tsx";
+import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert.tsx";
+import { Project } from "../../../projectsV2/api/projectV2.api.ts";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
+import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField.tsx";
+import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField.tsx";
+import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField.tsx";
+import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField.tsx";
+import { ProjectV2Metadata } from "../../../projectsV2/show/ProjectV2EditForm.tsx";
+import ProjectPageDelete from "./ProjectDelete.tsx";
+import { useNavigate } from "react-router-dom-v5-compat";
+import { Url } from "../../../../utils/helpers/url";
+import { NotificationsManager } from "../../../../notifications/notifications.types.ts";
+import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants.ts";
+import AppContext from "../../../../utils/context/appContext.ts";
+
+export function notificationProjectUpdated(
+  notifications: NotificationsManager,
+  projectName: string
+) {
+  notifications.addSuccess(
+    NOTIFICATION_TOPICS.PROJECT_UPDATED,
+    <>
+      Project <code>{projectName}</code> successfully updated.
+    </>
+  );
+}
+interface ProjectSettingsFormProps {
+  project: Project;
+}
+export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
+  const {
+    control,
+    formState: { errors, isDirty },
+    handleSubmit,
+    watch,
+  } = useForm<ProjectV2Metadata>({
+    defaultValues: {
+      description: project?.description,
+      name: project.name,
+      namespace: project.namespace,
+      visibility: project.visibility,
+    },
+  });
+  const currentNamespace = watch("namespace");
+  const currentName = watch("name");
+  const navigate = useNavigate();
+  const [redirectAfterUpdate, setRedirectAfterUpdate] = useState(false);
+  const { notifications } = useContext(AppContext);
+
+  const [updateProject, { isLoading, error, isSuccess }] =
+    usePatchProjectsByProjectIdMutation();
+
+  const isUpdating = isLoading;
+
+  const onSubmit = useCallback(
+    (data: ProjectV2Metadata) => {
+      if (data.namespace !== project.namespace) setRedirectAfterUpdate(true);
+      updateProject({
+        "If-Match": project.etag ? project.etag : undefined,
+        projectId: project.id,
+        projectPatch: data,
+      });
+    },
+    [project, updateProject]
+  );
+  useEffect(() => {
+    if (isSuccess && redirectAfterUpdate) {
+      if (notifications && currentName)
+        notificationProjectUpdated(notifications, currentName);
+      const projectUrl = Url.get(Url.pages.projectV2.show, {
+        namespace: currentNamespace,
+        slug: project.slug,
+      });
+      navigate(projectUrl);
+    }
+  }, [
+    isSuccess,
+    redirectAfterUpdate,
+    navigate,
+    project.slug,
+    currentNamespace,
+    currentName,
+    notifications,
+  ]);
+
+  return (
+    <div>
+      {error && <RtkErrorAlert error={error} />}
+      {isSuccess && (
+        <SuccessAlert dismissible={false} timeout={0}>
+          <p className="p-0">The project has been successfully updated.</p>
+        </SuccessAlert>
+      )}
+
+      <Form
+        className="form-rk-green"
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <ProjectNameFormField name="name" control={control} errors={errors} />
+        <ProjectNamespaceFormField
+          name="namespace"
+          control={control}
+          entityName="project"
+          errors={errors}
+        />
+        {currentNamespace !== project.namespace && (
+          <RenkuAlert color={"warning"} dismissible={false} timeout={0}>
+            Modifying the namespace also change the project&apos;s URL. Once the
+            change is saved, it will redirect to the updated project URL.
+          </RenkuAlert>
+        )}
+        <ProjectDescriptionFormField
+          name="description"
+          control={control}
+          errors={errors}
+        />
+        <ProjectVisibilityFormField
+          name="visibility"
+          control={control}
+          errors={errors}
+        />
+        <div className={cx("d-flex", "justify-content-end")}>
+          <Button
+            disabled={isUpdating || !isDirty}
+            className="me-1"
+            type="submit"
+          >
+            {isUpdating ? (
+              <Loader className="me-1" inline size={16} />
+            ) : (
+              <Pencil size={16} className={cx("bi", "me-1")} />
+            )}
+            Update project
+          </Button>
+        </div>
+      </Form>
+    </div>
+  );
+}
+export default function ProjectPageSettings({ project }: { project: Project }) {
+  return (
+    <div className={cx("pb-5", "pt-0")}>
+      <div id="general" className={cx("px-2", "px-md-5", "pt-4")}>
+        <h4 className="fw-bold">General settings</h4>
+        <small>
+          Update your project title, description, visibility and namespace.
+        </small>
+        <div
+          id={"general"}
+          className={cx("bg-white", "rounded-3", "mt-3", "p-3", "p-md-4")}
+        >
+          <ProjectSettingsForm project={project} />
+        </div>
+      </div>
+      <div id="delete" className={cx("px-2", "px-md-5", "pt-4")}>
+        <ProjectPageDelete project={project} />
+      </div>
+    </div>
+  );
 }

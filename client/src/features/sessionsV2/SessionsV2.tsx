@@ -136,18 +136,14 @@ export function SessionLaunchersListDisplay({ project }: { project: Project }) {
     [launchers, projectId, sessions]
   );
 
-  if (isLoading) {
-    return (
-      <p>
-        <Loader className="bi" inline size={16} />
-        Loading sessions...
-      </p>
-    );
-  }
+  const loading = isLoading && (
+    <div className="text-center">
+      <Loader className={cx("bi", "me-3", "mt-3")} inline size={16} />
+      <span className="fst-italic">Loading sessions</span>
+    </div>
+  );
 
-  if (error) {
-    return <RtkErrorAlert error={error} />;
-  }
+  const errorAlert = error && <RtkErrorAlert error={error} />;
 
   const totalSessions =
     (launchers ? launchers?.length : 0) +
@@ -164,6 +160,8 @@ export function SessionLaunchersListDisplay({ project }: { project: Project }) {
         </div>
         <AddSessionLauncherButton styleBtn="iconBtn" />
       </div>
+      {loading}
+      {errorAlert}
       <p className={cx("px-3", totalSessions > 0 && "d-none")}>
         Define interactive environments in which to do your work and share it
         with others.
