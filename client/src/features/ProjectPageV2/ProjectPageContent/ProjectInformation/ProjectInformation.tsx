@@ -108,7 +108,7 @@ export default function ProjectInformation({ project }: { project: Project }) {
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Keywords ({totalKeywords})</div>
-        {totalKeywords === 0 ? (
+        {totalKeywords == 0 ? (
           <UnderlineArrowLink
             tooltip="Add project keywords"
             text="Add keywords"

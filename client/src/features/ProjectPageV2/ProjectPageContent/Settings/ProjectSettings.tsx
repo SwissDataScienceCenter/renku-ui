@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Pencil } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom-v5-compat";
@@ -73,7 +73,7 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
   const navigate = useNavigate();
   const [redirectAfterUpdate, setRedirectAfterUpdate] = useState(false);
   const { notifications } = useContext(AppContext);
-  const [areKeywordsDirty, setKeywordsDirty] = React.useState(false);
+  const [areKeywordsDirty, setKeywordsDirty] = useState(false);
 
   const [updateProject, { isLoading, error, isSuccess }] =
     usePatchProjectsByProjectIdMutation();
