@@ -16,35 +16,29 @@
  * limitations under the License.
  */
 
-import type { GitlabProjectResponse } from "../project/GitLab.types";
-
-export interface SessionConfigV2 {
-  repositorySupport: { [url: string]: RepositorySupport | undefined };
-  projectSupport: { [projectId: string]: ProjectSupport | undefined };
+export interface Provider {
+  id: string;
+  display_name: string;
+  url: string;
 }
 
-export type RepositorySupport = {
-  isLoading: boolean;
-} & (
-  | {
-      supportsSessions: false;
-      sessionConfiguration?: undefined;
-    }
-  | {
-      supportsSessions: true;
-      sessionConfiguration: SessionConfig;
-    }
-);
+export type ProviderList = Provider[];
 
-interface SessionConfig {
-  defaultBranch: string;
-  namespace: string;
-  projectName: string;
-  repositoryMetadata: GitlabProjectResponse;
+export interface Connection {
+  id: string;
+  provider_id: string;
+  status: ConnectionStatus;
 }
 
-type ProjectSupport = {
-  isLoading: boolean;
-  repositories: string[];
-  repositoriesConfig: RepositorySupport[];
-};
+export type ConnectionList = Connection[];
+
+export type ConnectionStatus = "pending" | "connected";
+
+export interface ConnectedAccount {
+  username: string;
+  web_url: string;
+}
+
+export interface GetConnectedAccountParams {
+  connectionId: string;
+}

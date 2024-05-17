@@ -333,9 +333,14 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
         <AdminDropdownItem />
 
         {renku10Enabled && (
-          <Link to="/v2/" className="dropdown-item">
-            Renku 2.0
-          </Link>
+          <>
+            <Link to="/v2/" className="dropdown-item">
+              Renku 2.0
+            </Link>
+            <Link to="/v2/connected-services" className="dropdown-item">
+              Renku 2.0 Settings
+            </Link>
+          </>
         )}
 
         <DropdownItem divider />
