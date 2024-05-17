@@ -21,7 +21,9 @@ import { useCallback, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Clock,
+  CodeSquare,
   DashCircleFill,
+  Database,
   Globe2,
   Link45deg,
   PencilSquare,
@@ -42,7 +44,6 @@ import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils.ts";
 import { Project } from "../../projectsV2/api/projectV2.api.ts";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList.tsx";
 import { Session, Sessions } from "../../session/sessions.types.ts";
-import SessionConfig from "../SessionConfig.tsx";
 import {
   getShowSessionUrlByProject,
   SessionV2Actions,
@@ -59,6 +60,8 @@ import {
 import sessionsV2Api from "../sessionsV2.api.ts";
 import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types.ts";
 import sessionViewStyles from "./SessionView.module.scss";
+import { useGetStoragesV2Query } from "../../projectsV2/api/storagesV2.api.ts";
+import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay.tsx";
 
 function SessionCard({
   session,
@@ -358,6 +361,10 @@ export function SessionView({
     return undefined;
   }, [environments, launcher]);
 
+  const { data: dataSources } = useGetStoragesV2Query({
+    projectId: project.id,
+  });
+
   const totalSession = sessions ? Object.keys(sessions).length : 0;
   const title = launcher ? launcher.name : "Orphan Session";
   const launcherMenu = launcher && (
@@ -446,10 +453,38 @@ export function SessionView({
           </div>
         </div>
         <div className="mt-5">
-          <label className="fw-bold">
-            Included Code Repositories ({project.repositories?.length || 0})
+          <label className={cx("fw-bold", "mb-3")}>
+            <Database size={20} className={cx("me-2")} /> Included Data Sources
+            ({dataSources?.length || 0})
           </label>
-          <SessionConfig project={project} />
+          <ul className="list-unstyled">
+            {dataSources?.map((storage, index) => (
+              <Row
+                key={`storage-${index}`}
+                className={cx("text-truncate", "ms-4")}
+              >
+                <Col xs={6}>{storage.storage.name}</Col>
+                <Col xs={6}>{storage.storage.storage_type}</Col>
+              </Row>
+            ))}
+          </ul>
+        </div>
+        <div className="mt-5">
+          <label className={cx("fw-bold", "mb-3")}>
+            <CodeSquare size={20} className={cx("me-2")} /> Included Code
+            Repositories ({project.repositories?.length || 0})
+          </label>
+          <ul className="list-unstyled">
+            {project.repositories?.map((repositoryUrl, index) => (
+              <li key={index} className="ms-4">
+                <RepositoryItem
+                  project={project}
+                  url={repositoryUrl}
+                  showMenu={false}
+                />
+              </li>
+            ))}
+          </ul>
         </div>
       </OffcanvasBody>
     </Offcanvas>

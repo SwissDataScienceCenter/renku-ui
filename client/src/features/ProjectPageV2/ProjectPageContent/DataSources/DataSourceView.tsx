@@ -17,7 +17,7 @@
  */
 import { useMemo } from "react";
 import { Offcanvas, OffcanvasBody } from "reactstrap";
-import { ArrowLeft } from "react-bootstrap-icons";
+import { ArrowLeft, Database } from "react-bootstrap-icons";
 import cx from "classnames";
 import {
   CloudStorageGetRead,
@@ -102,37 +102,37 @@ export function DataSourceView({
         </div>
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div>
-            <label className="fst-italic fs-small">Data source</label>
+            <label className="fst-italic fs-small">
+              <Database size={20} className={cx("me-2")} /> Data source
+            </label>
             <h2 className="fw-bold">{storageDefinition.name}</h2>
           </div>
           <DataSourceActions storage={storage} projectId={projectId} />
         </div>
         <section data-cy="data-source-details-section">
           <div className="mt-3">
-            <div className="text-rk-text-light">
-              <small>
-                Mount point {"("}this is where the storage will be mounted
-                during sessions{")"}
-              </small>
+            <div className="fs-small">
+              Mount point {"("}this is where the storage will be mounted during
+              sessions{")"}
             </div>
             <div>{storageDefinition.target_path}</div>
           </div>
           {Object.keys(storageDefinition.configuration).map((key) => (
             <div className="mt-2" key={key}>
-              <div className="text-rk-text-light">
+              <div>
                 <small className="text-capitalize">{key}</small>
               </div>
               <div>{storageDefinition.configuration[key]?.toString()}</div>
             </div>
           ))}
           <div className="mt-3">
-            <div className="text-rk-text-light">
+            <div>
               <small>Source path</small>
             </div>
             <div>{storageDefinition.source_path}</div>
           </div>
           <div className="mt-3">
-            <div className="text-rk-text-light">
+            <div>
               <small>Requires credentials</small>
             </div>
             <div>{anySensitiveField ? "Yes" : "No"}</div>
@@ -141,7 +141,7 @@ export function DataSourceView({
             requiredCredentials &&
             requiredCredentials.length > 0 && (
               <div className="mt-3">
-                <div className="text-rk-text-light">
+                <div>
                   <small>Required credentials</small>
                 </div>
                 <ul className={cx("ps-4", "mb-0")}>
@@ -155,7 +155,7 @@ export function DataSourceView({
               </div>
             )}
           <div className="mt-3">
-            <div className="text-rk-text-light">
+            <div>
               <small>Access mode</small>
             </div>
             <div>

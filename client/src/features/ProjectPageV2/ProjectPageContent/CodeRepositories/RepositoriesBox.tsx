@@ -45,7 +45,12 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
       </p>
       <div className={cx("p-2", "ps-3", "pb-0")}>
         {project.repositories?.map((repositoryUrl, index) => (
-          <RepositoryItem key={index} project={project} url={repositoryUrl} />
+          <RepositoryItem
+            key={index}
+            project={project}
+            url={repositoryUrl}
+            showMenu={true}
+          />
         ))}
       </div>
       <AddCodeRepositoryStep1Modal
