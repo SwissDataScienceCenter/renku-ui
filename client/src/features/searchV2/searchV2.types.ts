@@ -49,7 +49,9 @@ export interface ProjectSearchResult {
   id: string;
   members: UserV2[];
   name: string;
+  namespace: string;
   repositories: string[];
+  score: number;
   slug: string;
   type: "Project";
   visibility: string;
