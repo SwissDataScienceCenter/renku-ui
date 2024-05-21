@@ -170,12 +170,7 @@ function AddCodeRepositoryStep2Modal({
         Connect an existing code repository
       </ModalHeader>
       <ModalBody className="py-0">
-        <p>
-          Specify a code repository by its URL. <br /> Note that currently only
-          repositories from{" "}
-          <code className="text-rk-green">gitlab.renkulab.io</code> are
-          supported.
-        </p>
+        <p>Specify a code repository by its URL.</p>
         <Row>
           <Col>
             <FieldGroup

@@ -60,7 +60,7 @@ export type PatchStoragesV2ByStorageIdApiArg = {
   cloudStoragePatch: CloudStoragePatch;
 };
 export type DeleteStoragesV2ByStorageIdApiResponse =
-  /** status 204 The rcloud storage was removed or did not exist in the first place */ void;
+  /** status 204 The rCloud storage was removed or did not exist in the first place */ void;
 export type DeleteStoragesV2ByStorageIdApiArg = {
   /** the id of the storage */
   storageId: UlidId;

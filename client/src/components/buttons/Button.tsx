@@ -46,10 +46,7 @@ import {
 
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
-import {
-  default as buttonStyles,
-  default as styles,
-} from "./Buttons.module.scss";
+import buttonStyles from "./Buttons.module.scss";
 
 type ButtonWithMenuProps = {
   children?:
@@ -85,15 +82,11 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
     ? `btn-${bgColor}`
     : `btn-outline-${bgColor}`;
 
-  const classesNames = props.className?.length
-    ? props.className?.split(" ")
-    : [];
-
   const options = props.children ? (
     <>
       <DropdownToggle
         data-cy="more-menu"
-        className={cx(...classesNames, classes, "rounded-end-pill")}
+        className={cx(props.className || "", classes, "rounded-end-pill")}
         disabled={props.disabled}
       >
         <ChevronDown
@@ -111,7 +104,7 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
   return (
     <ButtonDropdown
       id={props.id}
-      className={cx("btn-with-menu", classesNames)}
+      className={cx(props.className, "btn-with-menu")}
       size={size}
       isOpen={dropdownOpen}
       toggle={toggleOpen}
@@ -315,7 +308,7 @@ function UnderlineArrowLink({
   const ref = useRef(null);
   return (
     <>
-      <span ref={ref} className={styles.LinkUnderline}>
+      <span ref={ref} className={buttonStyles.LinkUnderline}>
         <Link className="text-decoration-none" to={to}>
           {text} <ArrowRight />
         </Link>
@@ -332,7 +325,7 @@ function EditButtonLink({ to, tooltip }: { to: string; tooltip: ReactNode }) {
   const ref = useRef(null);
   return (
     <>
-      <span ref={ref} className={styles.LinkIcon}>
+      <span ref={ref} className={buttonStyles.LinkIcon}>
         <Link className="text-decoration-none" to={to}>
           <PencilSquare />
         </Link>

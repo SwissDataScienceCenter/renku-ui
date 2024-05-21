@@ -18,9 +18,10 @@
 
 import { SessionCloudStorage } from "./startSessionOptions.types";
 import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types.ts";
+import { CloudStorageWithIdRead } from "../projectsV2/api/storagesV2.api.ts";
 
 export function convertCloudStorageForSessionApi(
-  cloudStorage: SessionCloudStorage
+  cloudStorage: SessionCloudStorage | CloudStorageWithIdRead
 ): {
   readonly: boolean;
   configuration: CloudStorageDetailsOptions;
@@ -34,7 +35,7 @@ export function convertCloudStorageForSessionApi(
     configuration: configuration.type
       ? configuration
       : { ...configuration, type: storage_type },
-    readonly,
+    readonly: readonly || false,
     source_path,
     target_path,
   };

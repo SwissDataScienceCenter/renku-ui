@@ -8,19 +8,19 @@ import { EnvironmentLogs } from "../../components/Logs";
 import { TimeCaption } from "../../components/TimeCaption";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 
-import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { NotebooksHelper } from "../../notebooks";
 import {
   SessionListRowStatus,
   SessionListRowStatusIcon,
 } from "../../notebooks/components/SessionListStatus";
+import { NotebookAnnotations } from "../../notebooks/components/session.types";
 
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
 import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
 
-import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton.tsx";
+import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { Url } from "../../utils/helpers/url";

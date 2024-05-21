@@ -75,7 +75,7 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
         isOpen={isOpen}
         toggle={toggle}
         projectId={project.id}
-        isV2={true}
+        isV2
       />
     </>
   );

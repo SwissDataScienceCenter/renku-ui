@@ -82,38 +82,50 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
   const badge =
     state === "running" && defaultImage ? (
       <SessionBadge className="border border-warning bg-warning-subtle">
-        <ExclamationCircleFill className="text-warning" size={16} />
+        <ExclamationCircleFill
+          className={cx("bi", "me-1", "text-warning")}
+          size={16}
+        />
         <span className="rk-bg-warning">Running Session</span>
       </SessionBadge>
     ) : state === "running" ? (
       <SessionBadge className="border border-success bg-success-subtle">
-        <CheckCircleFill className="text-success" size={16} />
+        <CheckCircleFill
+          className={cx("bi", "me-1", "text-success")}
+          size={16}
+        />
         <span className="text-success-emphasis">Running Session</span>
       </SessionBadge>
     ) : state === "starting" ? (
       <SessionBadge className="border border-warning bg-warning-subtle">
-        <Loader size={16} className="text-warning" inline />
-        <span className="text-warning ml-2">Starting Session</span>
+        <Loader size={16} className={cx("bi", "me-1", "text-warning")} inline />
+        <span className="text-warning">Starting Session</span>
       </SessionBadge>
     ) : state === "stopping" ? (
       <SessionBadge className="border border-warning bg-warning-subtle">
-        <Loader size={16} className="text-warning" inline />
-        <span className="text-warning ml-2">Stopping Session</span>
+        <Loader size={16} className={cx("bi", "me-1", "text-warning")} inline />
+        <span className="text-warning">Stopping Session</span>
       </SessionBadge>
     ) : state === "hibernated" ? (
       <SessionBadge className={"border border-dark-subtle bg-light"}>
-        <PauseCircleFill className="text-light-emphasis" size={16} />
-        <span className="text-dark ml-2">Paused Session</span>
+        <PauseCircleFill
+          className={cx("bi", "me-1", "text-light-emphasis")}
+          size={16}
+        />
+        <span className="text-dark">Paused Session</span>
       </SessionBadge>
     ) : state === "failed" ? (
       <SessionBadge className={"border border-danger bg-danger-subtle"}>
-        <XCircleFill className="text-danger" size={16} />
-        <span className="text-danger ml-2">Error in Session</span>
+        <XCircleFill className={cx("bi", "me-1", "text-danger")} size={16} />
+        <span className="text-danger">Error in Session</span>
       </SessionBadge>
     ) : (
       <SessionBadge className="border border-warning bg-warning-subtle">
-        <ExclamationCircleFill className="text-warning" size={16} />
-        <span className="text-warning ml-2">Unknown status</span>
+        <ExclamationCircleFill
+          className={cx("bi", "me-1", "text-warning")}
+          size={16}
+        />
+        <span className="text-warning">Unknown status</span>
       </SessionBadge>
     );
 

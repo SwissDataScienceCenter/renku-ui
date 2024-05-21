@@ -31,7 +31,7 @@ export function WarningIcon({ className, width, height }: AlertIconProps) {
       role="img"
       width={width || "75"}
       height={height || "58"}
-      viewBox={`0 0 ${width || 75} ${height || 58}`}
+      viewBox={`0 0 75 58`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -76,7 +76,7 @@ export function DangerIcon({ className, width, height }: AlertIconProps) {
       role="img"
       width={width || "75"}
       height={height || "58"}
-      viewBox={`0 0 ${width || 75} ${height || 58}`}
+      viewBox={`0 0 75 58`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -122,7 +122,7 @@ export function SuccessIcon({ className, width, height }: AlertIconProps) {
       role="img"
       width={width || "59"}
       height={height || "59"}
-      viewBox={`0 0 ${width || 59} ${height || 59}`}
+      viewBox={`0 0 59 59`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -159,7 +159,7 @@ export function InfoIcon({ className, width, height }: AlertIconProps) {
       role="img"
       width={width || "60"}
       height={height || "58"}
-      viewBox={`0 0 ${width || 60} ${height || 58}`}
+      viewBox={`0 0 60 58`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >

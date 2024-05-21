@@ -61,22 +61,31 @@ function EditCodeRepositoryModal({
     useState(repositoryUrl);
   const [updateProject, { isLoading, isSuccess }] =
     usePatchProjectsByProjectIdMutation();
-  const onUpdateCodeRepository = (newRepositoryUrl: string) => {
-    if (
-      !newRepositoryUrl ||
-      !project.repositories ||
-      project.repositories.length === 0
-    )
-      return;
-    const repositories = project.repositories.map((url) =>
-      url === repositoryUrl ? newRepositoryUrl : url
-    );
-    updateProject({
-      "If-Match": project.etag ? project.etag : undefined,
-      projectId: project.id,
-      projectPatch: { repositories },
-    });
-  };
+  const onUpdateCodeRepository = useCallback(
+    (newRepositoryUrl: string) => {
+      if (
+        !newRepositoryUrl ||
+        !project.repositories ||
+        project.repositories.length === 0
+      )
+        return;
+      const repositories = project.repositories.map((url) =>
+        url === repositoryUrl ? newRepositoryUrl : url
+      );
+      updateProject({
+        "If-Match": project.etag ? project.etag : undefined,
+        projectId: project.id,
+        projectPatch: { repositories },
+      });
+    },
+    [
+      project.repositories,
+      updateProject,
+      project.etag,
+      project.id,
+      repositoryUrl,
+    ]
+  );
 
   useEffect(() => {
     if (isSuccess) toggleModal();

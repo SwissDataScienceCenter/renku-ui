@@ -17,9 +17,9 @@
  */
 import cx from "classnames";
 import { EyeFill, Folder2Open, PencilSquare } from "react-bootstrap-icons";
+import { generatePath } from "react-router-dom-v5-compat";
 import { Nav, NavItem, NavLink } from "reactstrap";
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2.tsx";
-import { Url } from "../../../utils/helpers/url";
 import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageContainer.tsx";
 import styles from "./ProjectPageNav.module.scss";
 
@@ -32,15 +32,35 @@ export default function ProjectPageNav({
   slug: string | undefined;
   selectedContent?: ProjectPageContentType;
 }) {
-  const projectUrl = Url.get(Url.pages.projectV2.show, { namespace, slug });
-  const projectSettingsUrl = Url.get(Url.pages.projectV2.settings, {
-    namespace,
-    slug,
+  const projectUrl = generatePath("/v2/projects/:namespace/:slug", {
+    namespace: namespace || "",
+    slug: slug || "",
   });
-  const projectInfoUrl = Url.get(Url.pages.projectV2.projectInfo, {
-    namespace,
-    slug,
+  const projectSettingsUrl = generatePath(
+    "/v2/projects/:namespace/:slug/settings",
+    {
+      namespace: namespace || "",
+      slug: slug || "",
+    }
+  );
+  const projectInfoUrl = generatePath("/v2/projects/:namespace/:slug/info", {
+    namespace: namespace || "",
+    slug: slug || "",
   });
+
+  const navLinkClasses = [
+    "p-0",
+    "mb-1",
+    "text-center",
+    "text-lg-start",
+    "d-flex",
+    "flex-column",
+    "flex-lg-row",
+    "align-items-center",
+    "align-items-lg-start",
+    "gap-2",
+    "fs-small",
+  ];
 
   return (
     <>
@@ -50,20 +70,7 @@ export default function ProjectPageNav({
             end
             to={projectUrl}
             title="Overview"
-            className={cx(
-              "p-0",
-              "mb-1",
-              "text-center",
-              "text-lg-start",
-              "d-flex",
-              "flex-column",
-              "flex-lg-row",
-              "align-items-center",
-              "align-items-lg-start",
-              "gap-2",
-              "fs-small",
-              styles.navLink
-            )}
+            className={cx(navLinkClasses, styles.navLink)}
           >
             <EyeFill className={cx("d-block", "d-lg-none", "rk-icon-md")} />
             Overview
@@ -83,20 +90,7 @@ export default function ProjectPageNav({
             end
             to={projectInfoUrl}
             title="Project Information"
-            className={cx(
-              "p-0",
-              "mb-1",
-              "text-center",
-              "text-lg-start",
-              "d-flex",
-              "flex-column",
-              "flex-lg-row",
-              "align-items-center",
-              "align-items-lg-start",
-              "gap-2",
-              "fs-small",
-              styles.navLink
-            )}
+            className={cx(navLinkClasses, styles.navLink)}
           >
             <Folder2Open className="rk-icon-md" />
             Project Info
@@ -108,17 +102,7 @@ export default function ProjectPageNav({
             to={projectSettingsUrl}
             title="Settings"
             className={cx(
-              "p-0",
-              "mb-1",
-              "text-center",
-              "text-lg-start",
-              "d-flex",
-              "flex-column",
-              "flex-lg-row",
-              "align-items-center",
-              "align-items-lg-start",
-              "gap-2",
-              "fs-small",
+              navLinkClasses,
               selectedContent === ProjectPageContentType.Settings && "active",
               styles.navLink
             )}
@@ -136,19 +120,10 @@ export default function ProjectPageNav({
             <NavLink
               href={"#general"}
               className={cx(
-                "p-0",
+                navLinkClasses,
                 "mb-2",
                 "ps-2",
                 "ms-2",
-                "text-center",
-                "text-lg-start",
-                "d-flex",
-                "flex-column",
-                "flex-lg-row",
-                "align-items-center",
-                "align-items-lg-start",
-                "gap-2",
-                "fs-small",
                 styles.navLink
               )}
             >
@@ -159,19 +134,10 @@ export default function ProjectPageNav({
             <NavLink
               href={"#delete"}
               className={cx(
-                "p-0",
+                navLinkClasses,
                 "mb-2",
                 "ms-2",
                 "ps-2",
-                "text-center",
-                "text-lg-start",
-                "d-flex",
-                "flex-column",
-                "flex-lg-row",
-                "align-items-center",
-                "align-items-lg-start",
-                "gap-2",
-                "fs-small",
                 styles.navLink
               )}
             >

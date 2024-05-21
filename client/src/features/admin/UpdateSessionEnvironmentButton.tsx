@@ -61,7 +61,7 @@ export default function UpdateSessionEnvironmentButton({
         )}
         onClick={toggle}
       >
-        <PencilSquare size={22} />
+        <PencilSquare size={24} />
         <span className="visually-hidden">Edit</span>
       </Button>
       <UpdateSessionEnvironmentModal

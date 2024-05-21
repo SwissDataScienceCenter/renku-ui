@@ -233,7 +233,7 @@ export function SessionItemDisplay({
           <SessionStatusBadgeBox>
             <SessionBadge className={"border border-dark-subtle bg-light"}>
               <DashCircleFill className="text-light-emphasis" size={16} />
-              <span className="text-dark ml-2 ">Not Running</span>
+              <span className="text-dark">Not Running</span>
             </SessionBadge>
           </SessionStatusBadgeBox>
           <SessionStatusLabelBox>

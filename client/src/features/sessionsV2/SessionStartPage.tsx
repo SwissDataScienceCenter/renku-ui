@@ -44,10 +44,7 @@ import {
   useStartRenku2SessionMutation,
 } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
-import {
-  DockerImageStatus,
-  SessionCloudStorage,
-} from "../session/startSessionOptions.types";
+import { DockerImageStatus } from "../session/startSessionOptions.types";
 import {
   useGetProjectSessionLaunchersQuery,
   useGetSessionEnvironmentsQuery,
@@ -292,7 +289,8 @@ function StartSessionFromLauncher({
       repositories: startSessionOptionsV2.repositories,
       cloudStorage:
         storages?.map(
-          (storage) => storage.storage as unknown as SessionCloudStorage
+          // (storage) => storage.storage as unknown as SessionCloudStorage
+          (storage) => storage.storage
         ) || [],
       defaultUrl: startSessionOptionsV2.defaultUrl,
       environmentVariables: {},

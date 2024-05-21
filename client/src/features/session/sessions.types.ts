@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { CloudStorageWithIdRead } from "../projectsV2/api/storagesV2.api.ts";
 import { SessionCloudStorage } from "./startSessionOptions.types";
 
 export interface DockerImage {
@@ -113,7 +114,7 @@ export interface StartRenku2SessionParams {
     branch?: string;
     commitSha?: string;
   }[];
-  cloudStorage: SessionCloudStorage[];
+  cloudStorage: SessionCloudStorage[] | CloudStorageWithIdRead[];
   defaultUrl: string;
   environmentVariables: Record<string, string>;
   image?: string;
@@ -130,7 +131,7 @@ export interface PatchSessionParams {
 
 export interface CloudStorageDefinitionForSessionApi {
   configuration: {
-    [key: string]: number | (string | null) | boolean | object;
+    [key: string]: number | string | boolean | object | null;
   };
   readonly: boolean;
   source_path: string;
