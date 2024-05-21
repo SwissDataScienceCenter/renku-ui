@@ -4,11 +4,17 @@
     {
       "data": {
         "anonymousSessionsEnabled": true,
-        "anonymousUsersHibernationThreshold": 1,
-        "anonymousUsersIdleThreshold": 43200,
         "cloudstorageEnabled": true,
-        "registeredUsersHibernationThreshold": 259200,
-        "registeredUsersIdleThreshold": 86400,
+        "defaultCullingThresholds": {
+          "registered": {
+            "idle": 86400,
+            "hibernation": 259200
+          },
+          "anonymous": {
+            "idle": 1,
+            "hibernation": 43200
+          }
+        },
         "sshEnabled": false
       },
       "version": "1.22.0"

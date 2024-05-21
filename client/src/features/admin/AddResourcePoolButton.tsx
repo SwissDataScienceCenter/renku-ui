@@ -208,7 +208,9 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               Please enter a number greater than 0 or leave blank.
             </div>
             <ResourcePoolDefaultThreshold
-              duration={notebookVersion.data?.registeredUsersIdleThreshold}
+              duration={
+                notebookVersion.data?.defaultCullingThresholds?.registered.idle
+              }
               isError={notebookVersion.isError}
               isLoading={notebookVersion.isLoading}
             />
@@ -244,7 +246,8 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
             </div>
             <ResourcePoolDefaultThreshold
               duration={
-                notebookVersion.data?.registeredUsersHibernationThreshold
+                notebookVersion.data?.defaultCullingThresholds?.registered
+                  .hibernation
               }
               isError={notebookVersion.isError}
               isLoading={notebookVersion.isLoading}

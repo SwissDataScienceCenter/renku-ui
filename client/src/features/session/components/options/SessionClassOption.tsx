@@ -470,7 +470,7 @@ export const SessionClassSelector = ({
     () =>
       makeGroupedOptions(
         resourcePools,
-        nbVersion?.registeredUsersIdleThreshold
+        nbVersion?.defaultCullingThresholds?.registered.idle
       ),
     [resourcePools, nbVersion]
   );
@@ -492,13 +492,12 @@ export const SessionClassSelector = ({
         value={currentSessionClass}
       />
       <SessionClassThresholds
-        defaultHibernation={nbVersion?.registeredUsersHibernationThreshold}
-        defaultIdle={nbVersion?.registeredUsersIdleThreshold}
+        defaultHibernation={
+          nbVersion?.defaultCullingThresholds?.registered?.hibernation
+        }
+        defaultIdle={nbVersion?.defaultCullingThresholds?.registered?.idle}
         currentSessionClass={currentSessionClass}
         resourcePools={resourcePools}
-        // resourcePool={resourcePools.find(
-        //   (p) => p.id === currentSessionClass?.id
-        // )}
       />
     </div>
   );

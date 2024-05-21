@@ -285,8 +285,8 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
             ? "(Loading...)"
             : isError
             ? "unavailable"
-            : data?.registeredUsersIdleThreshold
-            ? toFullHumanDuration(data.registeredUsersIdleThreshold)
+            : data?.defaultCullingThresholds?.registered.idle
+            ? toFullHumanDuration(data.defaultCullingThresholds.registered.idle)
             : "unknown"}
         </span>
       </div>
@@ -299,8 +299,10 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
             ? "(Loading...)"
             : isError
             ? "unavailable"
-            : data?.registeredUsersHibernationThreshold
-            ? toFullHumanDuration(data.registeredUsersHibernationThreshold)
+            : data?.defaultCullingThresholds?.registered.hibernation
+            ? toFullHumanDuration(
+                data.defaultCullingThresholds.registered.hibernation
+              )
             : "unknown"}
         </span>
       </div>

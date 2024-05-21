@@ -70,10 +70,16 @@ interface NotebookComponent extends BaseVersion {
     anonymousSessionsEnabled: boolean;
     cloudstorageEnabled: boolean;
     sshEnabled: boolean;
-    registeredUsersIdleThreshold: number;
-    registeredUsersHibernationThreshold: number;
-    anonymousUsersIdleThreshold: number;
-    anonymousUsersHibernationThreshold: number;
+    defaultCullingThresholds: {
+      registered: {
+        hibernation: number;
+        idle: number;
+      };
+      anonymous: {
+        hibernation: number;
+        idle: number;
+      };
+    };
   };
 }
 
@@ -85,11 +91,17 @@ export interface NotebooksVersionResponse extends BaseVersionResponse {
 export interface NotebooksVersion {
   anonymousSessionsEnabled: boolean;
   cloudStorageEnabled: boolean;
+  defaultCullingThresholds: {
+    registered: {
+      hibernation: number;
+      idle: number;
+    };
+    anonymous: {
+      hibernation: number;
+      idle: number;
+    };
+  };
   name: string;
   sshEnabled: boolean;
-  registeredUsersIdleThreshold: number;
-  registeredUsersHibernationThreshold: number;
-  anonymousUsersIdleThreshold: number;
-  anonymousUsersHibernationThreshold: number;
   version: string;
 }
