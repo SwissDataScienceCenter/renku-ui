@@ -37,13 +37,14 @@ import {
   Row,
   UncontrolledDropdown,
 } from "reactstrap";
-import { ExternalLink } from "../../../../components/ExternalLinks.jsx";
-import FieldGroup from "../../../../components/FieldGroups.tsx";
-import { Loader } from "../../../../components/Loader.tsx";
+
+import FieldGroup from "../../../../components/FieldGroups";
+import { Loader } from "../../../../components/Loader";
+import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
+import { Project } from "../../../projectsV2/api/projectV2.api";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+
 import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
-import RenkuFrogIcon from "../../../../components/icons/RenkuIcon.tsx";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -292,18 +293,27 @@ export function RepositoryItem({
   project,
   showMenu = true,
 }: RepositoryItemProps) {
-  const canonicalUrl = useMemo(() => `${url.replace(/.git$/i, "")}.git`, [url]);
-  const title = canonicalUrl.split("/").pop();
+  const canonicalUrlStr = useMemo(() => `${url.replace(/.git$/i, "")}`, [url]);
+  const canonicalUrl = useMemo(
+    () => new URL(canonicalUrlStr),
+    [canonicalUrlStr]
+  );
+
+  const title = canonicalUrl.pathname.split("/").pop();
+
   const urlDisplay = (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <RenkuFrogIcon className={cx("flex-shrink-0")} size={24} />
-      <ExternalLink
-        url={canonicalUrl}
-        title={title || canonicalUrl}
-        role="text"
-        className="text-truncate"
+      <RepositoryIcon
+        className="flex-shrink-0"
+        provider={canonicalUrl.origin}
       />
-      <BoxArrowUpRight size={16} />
+      <div className={cx("d-flex", "flex-column")}>
+        <span>{canonicalUrl.hostname}</span>
+        <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
+          {title || canonicalUrlStr}
+          <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
+        </a>
+      </div>
     </div>
   );
 
@@ -318,5 +328,23 @@ export function RepositoryItem({
         </Col>
       )}
     </Row>
+  );
+}
+
+interface RepositoryIconProps {
+  className?: string;
+  provider: string;
+}
+
+function RepositoryIcon({ className, provider }: RepositoryIconProps) {
+  // eslint-disable-next-line spellcheck/spell-checker
+  const iconUrl = new URL("/favicon.ico", provider);
+  return (
+    <img
+      className={className}
+      src={iconUrl.toString()}
+      width={24}
+      height={24}
+    />
   );
 }
