@@ -39,10 +39,6 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
     namespace: project.namespace,
     slug: project.slug,
   });
-  const oldUrl = Url.get(Url.pages.projectV2.old, {
-    namespace: project.namespace,
-    slug: project.slug,
-  });
   return (
     <div
       data-cy="list-card"
@@ -52,13 +48,6 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
         <h3>
           <Link to={projectUrl}>{project.name}</Link>
         </h3>
-        <Link
-          to={oldUrl}
-          className="btn btn-outline-rk-green"
-          data-cy={"link-project-" + project.id}
-        >
-          Old view
-        </Link>
         <div className="mb-2 fw-light">{project.namespace}/</div>
         <div className="mb-2">{project.description}</div>
         <div className={cx("align-items-baseline", "d-flex")}>
