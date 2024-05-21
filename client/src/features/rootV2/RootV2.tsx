@@ -36,7 +36,6 @@ import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyGroupV2Show from "../projectsV2/LazyGroupShow";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
-import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
 import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
@@ -199,14 +198,6 @@ function ProjectsV2Routes() {
             <LazyProjectPageV2Show
               contentPage={ProjectPageContentType.Settings}
             />
-          </ContainerWrap>
-        }
-      />
-      <Route
-        path="/old/:namespace/:slug"
-        element={
-          <ContainerWrap>
-            <LazyProjectV2Show />
           </ContainerWrap>
         }
       />

@@ -15,119 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useState } from "react";
-import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, Navigate, useParams } from "react-router-dom-v5-compat";
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Label,
-} from "reactstrap";
+import { Label } from "reactstrap";
 
-import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
-import { TimeCaption } from "../../../components/TimeCaption";
 import { Url } from "../../../utils/helpers/url";
 
-import SessionsV2 from "../../sessionsV2/SessionsV2";
 import type { Project } from "../api/projectV2.api";
 import {
   isErrorResponse,
-  useGetProjectsByNamespaceAndSlugQuery,
   useGetProjectsByProjectIdQuery,
 } from "../api/projectV2.enhanced-api";
-import WipBadge from "../shared/WipBadge";
-
-import {
-  ProjectV2MembersForm,
-  ProjectV2MetadataForm,
-  ProjectV2RepositoryForm,
-} from "./ProjectV2EditForm";
-import { SettingEditOption } from "./projectV2Show.types";
-
-interface ProjectV2HeaderProps {
-  project: Project;
-  setSettingEdit: (option: SettingEditOption) => void;
-  settingEdit: SettingEditOption;
-}
-function ProjectV2Header({
-  project,
-  setSettingEdit,
-  settingEdit,
-}: ProjectV2HeaderProps) {
-  const projectListUrl = Url.get(Url.pages.projectV2.list);
-  return (
-    <>
-      <div className="fw-medium">
-        <div className="mb-0">{project.namespace}/</div>
-        <div className="ms-2">
-          {"  "}
-          {project.slug}
-        </div>
-      </div>
-      <div className="fst-italic">{project.visibility}</div>
-      <TimeCaption datetime={project.creation_date} prefix="Created" />{" "}
-      <WipBadge />
-      <div className="my-2">
-        <Link to={projectListUrl}>
-          <ArrowLeft /> Back to list
-        </Link>
-      </div>
-      <hr className="my-2" />
-      <ProjectV2HeaderEditButtonGroup
-        project={project}
-        setSettingEdit={setSettingEdit}
-        settingEdit={settingEdit}
-      />
-    </>
-  );
-}
-
-function ProjectV2HeaderEditButtonGroup({
-  project,
-  setSettingEdit,
-  settingEdit,
-}: ProjectV2HeaderProps) {
-  const canEdit = project.slug != null;
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const toggle = useCallback(
-    () => setDropdownOpen((prev) => !prev),
-    [setDropdownOpen]
-  );
-  const onSetMetadata = useCallback(
-    () => setSettingEdit("metadata"),
-    [setSettingEdit]
-  );
-  const onSetMembers = useCallback(
-    () => setSettingEdit("members"),
-    [setSettingEdit]
-  );
-  const onSetRepositories = useCallback(
-    () => setSettingEdit("repositories"),
-    [setSettingEdit]
-  );
-
-  if (!canEdit) return null;
-
-  return (
-    <Dropdown
-      isOpen={dropdownOpen}
-      toggle={toggle}
-      disabled={settingEdit != null}
-    >
-      <DropdownToggle caret className="w-100">
-        Edit Settings
-      </DropdownToggle>
-      <DropdownMenu>
-        <DropdownItem onClick={onSetMetadata}>Metadata</DropdownItem>
-        <DropdownItem onClick={onSetMembers}>Members</DropdownItem>
-        <DropdownItem onClick={onSetRepositories}>Repositories</DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
-  );
-}
 
 function ProjectV2Description({ description }: Pick<Project, "description">) {
   const desc =
@@ -173,67 +71,6 @@ export function ProjectV2DescriptionAndRepositories({
   );
 }
 
-function ProjectV2ShowByNamespaceAndSlug() {
-  const { namespace, slug } = useParams<{
-    id: string | undefined;
-    namespace: string | undefined;
-    slug: string | undefined;
-  }>();
-  const { data, isLoading, error } = useGetProjectsByNamespaceAndSlugQuery({
-    namespace: namespace ?? "",
-    slug: slug ?? "",
-  });
-
-  const [settingEdit, setSettingEdit] = useState<SettingEditOption>(null);
-
-  if (isLoading) return <Loader />;
-  if (error) {
-    if (isErrorResponse(error)) {
-      return (
-        <div>
-          Project does not exist, or you are not authorized to access it.{" "}
-          <Link to={Url.get(Url.pages.projectV2.list)}>Return to list</Link>
-        </div>
-      );
-    }
-    return <div>Could not retrieve project</div>;
-  }
-  if (data == null) return <div>Could not retrieve project</div>;
-
-  return (
-    <FormSchema
-      showHeader={true}
-      title={data.name ?? "(unknown)"}
-      description={
-        <ProjectV2Header
-          project={data}
-          setSettingEdit={setSettingEdit}
-          settingEdit={settingEdit}
-        />
-      }
-    >
-      {settingEdit == null && (
-        <>
-          <ProjectV2DescriptionAndRepositories project={data} />
-          <SessionsV2 project={data} />
-        </>
-      )}
-      {settingEdit == "members" && (
-        <ProjectV2MembersForm project={data} setSettingEdit={setSettingEdit} />
-      )}
-      {settingEdit == "metadata" && (
-        <ProjectV2MetadataForm project={data} setSettingEdit={setSettingEdit} />
-      )}
-      {settingEdit == "repositories" && (
-        <ProjectV2RepositoryForm
-          project={data}
-          setSettingEdit={setSettingEdit}
-        />
-      )}
-    </FormSchema>
-  );
-}
-
 export function ProjectV2ShowByProjectId() {
   const { id: projectId } = useParams<{
     id: string | undefined;
@@ -265,16 +102,4 @@ export function ProjectV2ShowByProjectId() {
       replace
     />
   );
-}
-
-export default function ProjectV2Show() {
-  const { id: projectId } = useParams<{
-    id: string | undefined;
-    namespace: string | undefined;
-    slug: string | undefined;
-  }>();
-  if (projectId != null) {
-    return <ProjectV2ShowByProjectId />;
-  }
-  return <ProjectV2ShowByNamespaceAndSlug />;
 }

@@ -527,12 +527,6 @@ const Url = {
       showId: new UrlRule((data) => `/v2/projects/${data.id}`, ["id"], null, [
         "/v2/projects/id",
       ]),
-      old: new UrlRule(
-        (data) => `/v2/projects/old/${data.namespace}/${data.slug}`,
-        ["namespace", "slug"],
-        null,
-        ["/v2/projects/old/namespace/slug"]
-      ),
       settings: new UrlRule(
         (data) => `/v2/projects/${data.namespace}/${data.slug}/settings`,
         ["namespace", "slug"],
