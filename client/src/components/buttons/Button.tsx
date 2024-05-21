@@ -86,7 +86,7 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
     <>
       <DropdownToggle
         data-cy="more-menu"
-        className={cx(props.className || "", classes, "rounded-end-pill")}
+        className={cx(props.className, classes, "rounded-end-pill")}
         disabled={props.disabled}
       >
         <ChevronDown
@@ -310,7 +310,8 @@ function UnderlineArrowLink({
     <>
       <span ref={ref} className={buttonStyles.LinkUnderline}>
         <Link className="text-decoration-none" to={to}>
-          {text} <ArrowRight />
+          {text}
+          <ArrowRight className={cx("bi", "ms-1")} />
         </Link>
       </span>
       <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
