@@ -32,7 +32,7 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import {
   useAddResourcePoolMutation,
   useGetResourcePoolsQuery,
@@ -159,7 +159,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrNotebooksError error={result.error} />}
 
           <div className="mb-3">
             <Label className="form-label" for="addResourcePoolName">
