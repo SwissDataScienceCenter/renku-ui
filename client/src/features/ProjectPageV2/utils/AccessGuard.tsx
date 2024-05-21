@@ -18,7 +18,7 @@
 
 import type { Role } from "../../projectsV2/api/projectV2.api.ts";
 
-import { roleCompare } from "./roleUtils.ts";
+import { toNumericRole } from "./roleUtils.ts";
 
 type AccessGuardProps = {
   disabled: React.ReactNode;
@@ -34,6 +34,6 @@ export default function AccessGuard({
   role,
 }: AccessGuardProps) {
   if (role === "owner") return enabled;
-  if (roleCompare(role, minimumRole) > 0) return disabled;
+  if (toNumericRole(role) < toNumericRole(minimumRole)) return disabled;
   return enabled;
 }

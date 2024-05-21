@@ -39,7 +39,7 @@ import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMember
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 
 import MembershipGuard from "../../utils/MembershipGuard.tsx";
-import { roleCompare } from "../../utils/roleUtils.ts";
+import { toNumericRole } from "../../utils/roleUtils.ts";
 
 function OverviewBox({ children }: { children: ReactNode }) {
   return (
@@ -161,7 +161,7 @@ function ProjectPageSettingsMembersTable({
   const [memberToEdit, setMemberToEdit] = useState<ProjectMemberResponse>();
   const sortedMembers = [...members].sort((a, b) => {
     if (a.role !== b.role) {
-      return roleCompare(a.role, b.role);
+      return toNumericRole(b.role) - toNumericRole(a.role);
     }
     if (a.email && b.email) {
       return a.email.localeCompare(b.email);

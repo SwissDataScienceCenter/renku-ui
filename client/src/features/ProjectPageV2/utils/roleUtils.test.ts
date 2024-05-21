@@ -16,25 +16,21 @@
  * limitations under the License.
  */
 
-import type { Role } from "../../projectsV2/api/projectV2.api";
+import { describe, expect, it } from "vitest";
 
-export type RoleOrNone = Role | "none";
-const ROLE_MAP: Record<RoleOrNone, number> = {
-  owner: 30,
-  editor: 20,
-  viewer: 10,
-  none: 0,
-};
+import { toNumericRole } from "./roleUtils";
 
-function isRoleOrNone(role: string): role is RoleOrNone {
-  return role in ROLE_MAP;
-}
+describe("Test toNumericRole", () => {
+  it("ordering", () => {
+    expect(toNumericRole("owner")).toBeGreaterThan(toNumericRole("editor"));
+    expect(toNumericRole("owner")).toBeGreaterThan(toNumericRole("viewer"));
+    expect(toNumericRole("owner")).toBeGreaterThan(toNumericRole("none"));
+    expect(toNumericRole("editor")).toBeGreaterThan(toNumericRole("viewer"));
+    expect(toNumericRole("editor")).toBeGreaterThan(toNumericRole("none"));
+    expect(toNumericRole("viewer")).toBeGreaterThan(toNumericRole("none"));
+  });
 
-function stringToRoleOrNone(role: string): RoleOrNone {
-  return isRoleOrNone(role) ? role : "none";
-}
-
-export function toNumericRole(role: string): number {
-  const r = stringToRoleOrNone(role);
-  return ROLE_MAP[r];
-}
+  it("conversion", () => {
+    expect(toNumericRole("foo")).toEqual(toNumericRole("none"));
+  });
+});
