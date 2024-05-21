@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
-import { generatePath, useParams } from "react-router-dom-v5-compat";
+import { generatePath } from "react-router-dom-v5-compat";
 import {
   Card,
   CardBody,
@@ -47,7 +47,6 @@ import {
 } from "../../notebooks/components/SessionListStatus";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import sessionsApi, { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
@@ -55,7 +54,6 @@ import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils"
 import ActiveSessionButton from "./ActiveSessionButton";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
-import SessionConfig from "./SessionConfig";
 import StartSessionButton from "./StartSessionButton";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import sessionsV2Api, {
@@ -76,8 +74,6 @@ export default function SessionsV2({ project }: SessionsV2Props) {
 
   return (
     <div>
-      <SessionConfig project={project} />
-
       <h3 className="fs-5">Sessions</h3>
       <div>
         <AddSessionLauncherButton />
@@ -86,24 +82,20 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       {error && <RtkErrorAlert error={error} />}
 
       <div className="mt-2">
-        <SessionLaunchersListDisplay />
+        <SessionLaunchersListDisplay project={project} />
       </div>
     </div>
   );
 }
 
-function SessionLaunchersListDisplay() {
-  const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
-  const { data: project } = useGetProjectsByNamespaceAndSlugQuery(
-    namespace && slug ? { namespace, slug } : skipToken
-  );
+function SessionLaunchersListDisplay({ project }: SessionsV2Props) {
+  const projectId = project.id;
 
-  const projectId = project?.id;
   const {
     data: launchers,
     error: launchersError,
     isLoading: isLoadingLaunchers,
-  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
+  } = useGetProjectSessionLaunchersQuery({ projectId });
 
   const {
     data: sessions,
@@ -155,9 +147,9 @@ function SessionLaunchersListDisplay() {
           <SessionLauncherDisplay
             key={launcher.id}
             launcher={launcher}
-            namespace={namespace ?? ""}
+            namespace={project.namespace ?? ""}
             projectId={projectId ?? ""}
-            slug={slug ?? ""}
+            slug={project.slug ?? ""}
           />
         ))}
         {Object.entries(orphanSessions).map(([key, session]) => (
