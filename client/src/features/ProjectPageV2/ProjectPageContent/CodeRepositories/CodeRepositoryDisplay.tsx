@@ -19,12 +19,17 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
+  CheckCircleFill,
+  ExclamationCircleFill,
   Pencil,
+  SlashCircleFill,
   ThreeDotsVertical,
   Trash,
+  XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
 import {
+  Badge,
   Button,
   Col,
   DropdownItem,
@@ -44,7 +49,10 @@ import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
+import { ErrorAlert } from "../../../../components/Alert";
 import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { useGetRepositoryMetadataQuery } from "../../../connectedServices/connectedServices.api";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -319,8 +327,11 @@ export function RepositoryItem({
 
   return (
     <Row className={cx("mb-4")}>
-      <Col xs={showMenu ? 10 : 12} className={cx("text-truncate", "col")}>
+      <Col xs={showMenu ? 8 : 10} className="text-truncate">
         {urlDisplay}
+      </Col>
+      <Col xs={2} className="text-truncate">
+        <RepositoryPermissions repositoryUrl={url} />
       </Col>
       {showMenu && (
         <Col xs={2} className={cx("d-flex", "justify-content-end")}>
@@ -346,5 +357,207 @@ function RepositoryIcon({ className, provider }: RepositoryIconProps) {
       width={24}
       height={24}
     />
+  );
+}
+
+interface RepositoryPermissionsProps {
+  repositoryUrl: string;
+}
+
+function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
+  const {
+    data: repositoryProviderMatch,
+    isLoading,
+    error,
+  } = useGetRepositoryMetadataQuery({ repositoryUrl });
+
+  const permissions = useMemo(() => {
+    const { pull, push } = repositoryProviderMatch?.repository_metadata
+      ?.permissions ?? { pull: false, push: false };
+    return { pull, push };
+  }, [repositoryProviderMatch?.repository_metadata?.permissions]);
+
+  const canonicalUrlStr = useMemo(
+    () => `${repositoryUrl.replace(/.git$/i, "")}`,
+    [repositoryUrl]
+  );
+
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const toggleDetails = useCallback(() => {
+    setIsDetailsOpen((open) => !open);
+  }, []);
+
+  const isNotFound = error != null && "status" in error && error.status == 404;
+
+  const commonButtonClasses = [
+    "border",
+    "rounded-circle",
+    "fs-6",
+    "lh-1",
+    "p-2",
+  ];
+
+  const buttonContent = isLoading ? (
+    <>
+      <Loader className="bi" inline size={16} />
+    </>
+  ) : error != null ? (
+    <ExclamationCircleFill className="bi" />
+  ) : permissions.pull && permissions.push ? (
+    <CheckCircleFill className="bi" />
+  ) : permissions.pull ? (
+    <SlashCircleFill className="bi" />
+  ) : (
+    <XCircleFill className="bi" />
+  );
+
+  const buttonClasses = isLoading
+    ? ["border-dark-subtle", "bg-light", "text-dark"]
+    : error != null
+    ? ["border-danger", "bg-danger-subtle", "text-danger"]
+    : permissions.pull && permissions.push
+    ? ["border-success", "bg-success-subtle", "text-success"]
+    : permissions.pull
+    ? ["border-warning", "bg-warning-subtle", "text-warning"]
+    : ["border-danger", "bg-danger-subtle", "text-danger"];
+
+  return (
+    <>
+      <Button
+        className={cx(...commonButtonClasses, ...buttonClasses)}
+        onClick={toggleDetails}
+      >
+        {buttonContent}
+      </Button>
+      <Modal size="lg" isOpen={isDetailsOpen} toggle={toggleDetails} centered>
+        <ModalHeader toggle={toggleDetails}>Repository permissions</ModalHeader>
+        <ModalBody>
+          <Row className="gy-2">
+            <Col xs={12}>
+              Repository:{" "}
+              <a
+                href={canonicalUrlStr}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                {repositoryUrl}
+                <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
+              </a>
+            </Col>
+            {error != null && (
+              <Col xs={12}>
+                {isNotFound ? (
+                  <ErrorAlert className="mb-0" dismissible={false} timeout={0}>
+                    <p className="mb-1">
+                      No git provider found for this repository.
+                    </p>
+                    <p className={cx("mb-0", "fst-italic")}>
+                      You may still be able to clone and pull the repository if
+                      it is publicly available.
+                    </p>
+                  </ErrorAlert>
+                ) : (
+                  <RtkOrNotebooksError error={error} dismissible={false} />
+                )}
+              </Col>
+            )}
+            {error == null && !permissions.pull && (
+              <Col xs={12}>
+                <ErrorAlert className="mb-0" dismissible={false} timeout={0}>
+                  <p className="mb-1">
+                    This repository does not exist or you do not have access to
+                    it.
+                  </p>
+                </ErrorAlert>
+              </Col>
+            )}
+            <Col xs={12}>
+              <h6 className={cx("fs-5", "fw-bold", "mb-0")}>Permissions</h6>
+            </Col>
+            <Col className="mt-0" xs={6}>
+              Clone, Pull:{" "}
+              {isNotFound ? (
+                <UnknownBadge />
+              ) : permissions.pull ? (
+                <YesBadge />
+              ) : (
+                <NoBadge />
+              )}
+            </Col>
+            <Col className="mt-0" xs={6}>
+              Push: {permissions.push ? <YesBadge /> : <NoBadge />}
+            </Col>
+          </Row>
+        </ModalBody>
+        <ModalFooter>
+          <div className="d-flex justify-content-end">
+            <Button color="outline-danger" onClick={toggleDetails}>
+              <XLg className={cx("bi", "me-1")} />
+              Close
+            </Button>
+          </div>
+        </ModalFooter>
+      </Modal>
+    </>
+  );
+}
+
+function YesBadge() {
+  return (
+    <Badge
+      className={cx(
+        "border",
+        "rounded-pill",
+        "fs-6",
+        "lh-1",
+        "p-2",
+        "border-success",
+        "bg-success-subtle",
+        "text-success"
+      )}
+    >
+      <CheckCircleFill className={cx("bi", "me-1")} />
+      Yes
+    </Badge>
+  );
+}
+
+function NoBadge() {
+  return (
+    <Badge
+      className={cx(
+        "border",
+        "rounded-pill",
+        "fs-6",
+        "lh-1",
+        "p-2",
+        "border-danger",
+        "bg-danger-subtle",
+        "text-danger"
+      )}
+    >
+      <XCircleFill className={cx("bi", "me-1")} />
+      No
+    </Badge>
+  );
+}
+
+function UnknownBadge() {
+  return (
+    <Badge
+      className={cx(
+        "border",
+        "rounded-pill",
+        "fs-6",
+        "lh-1",
+        "p-2",
+        "border-dark-subtle",
+        "bg-light",
+        "text-dark"
+      )}
+    >
+      <SlashCircleFill className={cx("bi", "me-1")} />
+      Unknown
+    </Badge>
   );
 }

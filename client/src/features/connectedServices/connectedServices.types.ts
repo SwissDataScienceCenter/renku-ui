@@ -39,6 +39,27 @@ export interface ConnectedAccount {
   web_url: string;
 }
 
+export interface RepositoryProviderMatch {
+  provider_id: string;
+  connection_id?: string;
+  repository_metadata?: RepositoryMetadata;
+}
+
+export interface RepositoryMetadata {
+  git_http_url: string;
+  web_url: string;
+  permissions: RepositoryPermissions;
+}
+
+export interface RepositoryPermissions {
+  pull: boolean;
+  push: boolean;
+}
+
 export interface GetConnectedAccountParams {
   connectionId: string;
+}
+
+export interface GetRepositoryMetadataParams {
+  repositoryUrl: string;
 }

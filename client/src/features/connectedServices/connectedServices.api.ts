@@ -23,6 +23,8 @@ import {
   ConnectionList,
   ConnectedAccount,
   GetConnectedAccountParams,
+  GetRepositoryMetadataParams,
+  RepositoryProviderMatch,
 } from "./connectedServices.types";
 
 const connectedServicesApi = createApi({
@@ -30,7 +32,7 @@ const connectedServicesApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "/ui-server/api/data/oauth2",
   }),
-  tagTypes: ["Provider", "Connection", "ConnectedAccount"],
+  tagTypes: ["Provider", "Connection", "ConnectedAccount", "Repository"],
   endpoints: (builder) => ({
     getProviders: builder.query<ProviderList, void>({
       query: () => {
@@ -79,6 +81,18 @@ const connectedServicesApi = createApi({
             ]
           : [],
     }),
+    getRepositoryMetadata: builder.query<
+      RepositoryProviderMatch,
+      GetRepositoryMetadataParams
+    >({
+      query: ({ repositoryUrl }) => {
+        return {
+          url: `api/repository/${encodeURIComponent(repositoryUrl)}`,
+        };
+      },
+      providesTags: (result, _error, { repositoryUrl }) =>
+        result ? [{ type: "Repository" as const, id: repositoryUrl }] : [],
+    }),
   }),
 });
 
@@ -87,4 +101,5 @@ export const {
   useGetConnectedAccountQuery,
   useGetConnectionsQuery,
   useGetProvidersQuery,
+  useGetRepositoryMetadataQuery,
 } = connectedServicesApi;
