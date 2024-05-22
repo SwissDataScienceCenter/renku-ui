@@ -1,5 +1,16 @@
 # Changes
 
+## [3.26.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.25.0...3.26.0) (2024-05-23)
+
+### Features
+
+- rework Renku 2.0 project page ([#3108](https://github.com/SwissDataScienceCenter/renku-ui/pull/3108), [#3098](https://github.com/SwissDataScienceCenter/renku-ui/pull/3098))
+- handle custom resource pools culling times ([#3113](https://github.com/SwissDataScienceCenter/renku-ui/pull/3113))
+
+### BREAKING CHANGES
+
+- Requires renku-notebooks version >= 1.25.0
+
 ## [3.25.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.24.0...3.25.0) (2024-05-17)
 
 ### Features
