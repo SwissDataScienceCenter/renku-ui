@@ -26,8 +26,6 @@ import { FileNoPreview, StyledNotebook } from "./File.present";
 import LazyCodePreview from "./LazyCodePreview";
 import LazyPDFViewer from "./LazyPDFViewer";
 
-import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-
 /* eslint-disable spellcheck/spell-checker */
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
 const CODE_EXTENSIONS = [
