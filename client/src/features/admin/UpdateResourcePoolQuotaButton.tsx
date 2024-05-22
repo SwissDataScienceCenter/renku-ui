@@ -81,7 +81,8 @@ function UpdateResourcePoolQuotaModal({
   resourcePool,
   toggle,
 }: UpdateResourcePoolQuotaModalProps) {
-  const { id, name, quota } = resourcePool;
+  const { id, name, quota, idle_threshold, hibernation_threshold } =
+    resourcePool;
 
   const [updateResourcePool, result] = useUpdateResourcePoolMutation();
 
@@ -97,9 +98,11 @@ function UpdateResourcePoolQuotaModal({
       updateResourcePool({
         resourcePoolId: id,
         quota: { ...data },
+        idle_threshold: idle_threshold,
+        hibernation_threshold: hibernation_threshold,
       });
     },
-    [id, updateResourcePool]
+    [id, idle_threshold, hibernation_threshold, updateResourcePool]
   );
 
   useEffect(() => {

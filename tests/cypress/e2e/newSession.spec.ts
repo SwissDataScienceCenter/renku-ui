@@ -25,7 +25,6 @@ describe("launch sessions", () => {
     fixtures
       .sessionAutosave()
       .sessionServersEmpty()
-      .sessionsVersion()
       .renkuIni()
       .sessionServerOptions()
       .resourcePoolsTest()
@@ -194,6 +193,31 @@ describe("launch sessions", () => {
     cy.get("#cloud-storage-example-storage-active").should("be.checked");
   });
 
+  it("new session page - check session class", () => {
+    fixtures.userTest();
+    fixtures.newSessionImages();
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.getDataCy("session-class")
+      .should("be.visible")
+      .contains("public class 2");
+    cy.getDataCy("session-class")
+      .contains("automatically pause after 1 day")
+      .contains("If not resumed within 3 days, the session will be deleted")
+      .should("be.visible");
+    cy.getDataCy("session-class-select").click();
+    cy.getDataCy("session-class-select").contains("special class 1").click();
+    cy.getDataCy("session-class")
+      .contains("automatically pause after 50 minutes")
+      .contains("If not resumed within 1 hour, the session will be deleted")
+      .should("be.visible");
+    cy.getDataCy("session-class-select").click();
+    cy.getDataCy("session-class-select").contains("High-GPU class 1").click();
+    cy.getDataCy("session-class")
+      .contains("automatically pause after 1 day")
+      .contains("If not resumed within 1 week, the session will be deleted")
+      .should("be.visible");
+  });
+
   it("new session page - select secrets", () => {
     // Check the output when no secrets are available
     fixtures.listSecrets({ numberOfSecrets: 0 }).userTest();
@@ -262,7 +286,6 @@ describe("launch sessions, outdated projects", () => {
     fixtures
       .sessionAutosave()
       .sessionServersEmpty()
-      .sessionsVersion()
       .renkuIni()
       .sessionServerOptions()
       .resourcePoolsTest()
