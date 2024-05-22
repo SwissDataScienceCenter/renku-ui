@@ -142,6 +142,8 @@ export type RepositoriesList = Repository[];
 export type Visibility = "private" | "public";
 export type Description = string;
 export type ETag = string;
+export type Keyword = string;
+export type KeywordsList = Keyword[];
 export type Project = {
   id: Ulid;
   name: Name;
@@ -153,6 +155,7 @@ export type Project = {
   visibility: Visibility;
   description?: Description;
   etag?: ETag;
+  keywords?: KeywordsList;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {
@@ -169,6 +172,7 @@ export type ProjectPost = {
   repositories?: RepositoriesList;
   visibility?: Visibility;
   description?: Description;
+  keywords?: KeywordsList;
 };
 export type ProjectPatch = {
   name?: Name;
@@ -176,6 +180,7 @@ export type ProjectPatch = {
   repositories?: RepositoriesList;
   visibility?: Visibility;
   description?: Description;
+  keywords?: KeywordsList;
 };
 export type UserEmail = string;
 export type UserFirstLastName = string;

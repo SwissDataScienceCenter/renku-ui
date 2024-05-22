@@ -453,6 +453,9 @@
           },
           "etag": {
             "$ref": "#/components/schemas/ETag"
+          },
+          "keywords": {
+            "$ref": "#/components/schemas/KeywordsList"
           }
         },
         "required": [
@@ -480,7 +483,8 @@
             {
               "url": "git@github.com:SwissDataScienceCenter/project-2.git"
             }
-          ]
+          ],
+          "keywords": ["keyword 1", "keyword 2"]
         }
       },
       "ProjectPost": {
@@ -506,6 +510,9 @@
           },
           "description": {
             "$ref": "#/components/schemas/Description"
+          },
+          "keywords": {
+            "$ref": "#/components/schemas/KeywordsList"
           }
         },
         "required": ["name", "namespace"]
@@ -529,6 +536,9 @@
           },
           "description": {
             "$ref": "#/components/schemas/Description"
+          },
+          "keywords": {
+            "$ref": "#/components/schemas/KeywordsList"
           }
         }
       },
@@ -572,6 +582,22 @@
         "pattern": "^[A-Za-z0-9-]+$",
         "minLength": 1,
         "example": "123-keycloak-user-id-456"
+      },
+      "KeywordsList": {
+        "description": "Project keywords",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Keyword"
+        },
+        "minItems": 0,
+        "example": ["project", "keywords"]
+      },
+      "Keyword": {
+        "description": "A single keyword",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "pattern": "^[A-Za-z0-9\\s\\-_.]*$"
       },
       "RepositoriesList": {
         "description": "A list of repositories",

@@ -16,18 +16,16 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
-import { ThreeDotsVertical } from "react-bootstrap-icons";
-import { generatePath } from "react-router-dom-v5-compat";
 import {
-  Card,
-  CardBody,
-  CardText,
-  CardTitle,
+  LayoutSidebarInsetReverse,
+  PencilSquare,
+  ThreeDotsVertical,
+  Trash,
+} from "react-bootstrap-icons";
+import {
   Col,
-  Container,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -36,34 +34,52 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
-import { EnvironmentLogs } from "../../components/Logs";
-import { TimeCaption } from "../../components/TimeCaption";
-import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { NotebooksHelper } from "../../notebooks";
-import {
-  SessionListRowStatus,
-  SessionListRowStatusIcon,
-} from "../../notebooks/components/SessionListStatus";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import rkIconSessions from "../../styles/icons/sessions.svg";
+import { Url } from "../../utils/helpers/url";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import sessionsApi, { useGetSessionsQuery } from "../session/sessions.api";
+import { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
 import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
-import ActiveSessionButton from "./ActiveSessionButton";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
-import StartSessionButton from "./StartSessionButton";
+import {
+  SessionBtnBox,
+  SessionItemDisplay,
+  SessionNameBox,
+  SessionStatusBadgeBox,
+  SessionStatusLabelBox,
+} from "./SessionList/SessionItemDisplay.tsx";
+import { SessionView } from "./SessionView/SessionView.tsx";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
-import sessionsV2Api, {
+import ActiveSessionButton from "./components/SessionButton/ActiveSessionButton.tsx";
+import {
+  SessionStatusV2Description,
+  SessionStatusV2Label,
+} from "./components/SessionStatus/SessionStatus.tsx";
+import {
   useGetProjectSessionLaunchersQuery,
   useGetSessionEnvironmentsQuery,
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 
 // Required for logs formatting
+import dotsDropdownStyles from "../../components/buttons/ThreeDots.module.scss";
 import "../../notebooks/Notebooks.css";
+
+import sessionItemStyles from "./SessionList/SessionItemDisplay.module.scss";
+
+export function getShowSessionUrlByProject(
+  project: Project,
+  sessionName: string
+) {
+  return Url.get(Url.pages.projectV2.showSession, {
+    namespace: project.namespace,
+    slug: project.slug,
+    sessionId: sessionName,
+  });
+}
 
 interface SessionsV2Props {
   project: Project;
@@ -71,12 +87,11 @@ interface SessionsV2Props {
 
 export default function SessionsV2({ project }: SessionsV2Props) {
   const { error } = useGetSessionEnvironmentsQuery();
-
   return (
     <div>
       <h3 className="fs-5">Sessions</h3>
       <div>
-        <AddSessionLauncherButton />
+        <AddSessionLauncherButton styleBtn="iconTextBtn" />
       </div>
 
       {error && <RtkErrorAlert error={error} />}
@@ -88,7 +103,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
   );
 }
 
-function SessionLaunchersListDisplay({ project }: SessionsV2Props) {
+export function SessionLaunchersListDisplay({ project }: SessionsV2Props) {
   const projectId = project.id;
 
   const {
@@ -120,235 +135,133 @@ function SessionLaunchersListDisplay({ project }: SessionsV2Props) {
     [launchers, projectId, sessions]
   );
 
-  if (isLoading) {
-    return (
-      <p>
-        <Loader className="bi" inline size={16} />
-        Loading sessions...
-      </p>
-    );
-  }
+  const loading = isLoading && (
+    <div className="text-center">
+      <Loader className={cx("bi", "me-3", "mt-3")} inline size={16} />
+      <span className="fst-italic">Loading sessions</span>
+    </div>
+  );
 
-  if (error) {
-    return <RtkErrorAlert error={error} />;
-  }
+  const errorAlert = error && <RtkErrorAlert error={error} />;
 
-  if (
-    !launchers ||
-    (launchers.length == 0 && Object.keys(orphanSessions).length == 0)
-  ) {
-    return null;
-  }
-
+  const totalSessions =
+    (launchers ? launchers?.length : 0) +
+    Object.entries(orphanSessions)?.length;
   return (
-    <Container className="px-0" fluid>
-      <Row className="gy-4">
-        {launchers.map((launcher) => (
-          <SessionLauncherDisplay
-            key={launcher.id}
+    <>
+      <div className={cx("p-3", "d-flex", "justify-content-between")}>
+        <div className="fw-bold">
+          <img
+            src={rkIconSessions}
+            className={cx("rk-icon", "rk-icon-lg", "me-2")}
+          />
+          Sessions ({totalSessions})
+        </div>
+        <AddSessionLauncherButton styleBtn="iconBtn" />
+      </div>
+      {loading}
+      {errorAlert}
+      <p className={cx("px-3", totalSessions > 0 && "d-none")}>
+        Define interactive environments in which to do your work and share it
+        with others.
+      </p>
+      <p className={cx("px-3", totalSessions === 0 && "d-none")}>
+        Session launchers are available to everyone who can see the project.
+        Running sessions are only accessible to you.
+      </p>
+      <div className={cx("py-0", "px-0", totalSessions === 0 ? "d-none" : "")}>
+        <Row
+          className={cx("d-none", "d-xl-flex", "pt-3", "px-0", "m-0", "mb-1")}
+        >
+          <Col
+            xl={3}
+            sm={6}
+            xs={12}
+            className={cx("d-flex", "align-items-center", "px-3")}
+          >
+            <span
+              className={cx(
+                "w-100",
+                "fst-italic",
+                "fs-small",
+                "text-light-emphasis",
+                "border-0",
+                "border-bottom",
+                "border-dark-subtle",
+                "rk-border-dotted"
+              )}
+            >
+              Session launcher
+            </span>
+          </Col>
+          <Col
+            xl={3}
+            xs={12}
+            className={cx("d-flex", "align-items-center", "px-2")}
+          >
+            <span
+              className={cx(
+                "w-100",
+                "fst-italic",
+                "fs-small",
+                "text-light-emphasis",
+                "border-0",
+                "border-bottom",
+                "border-dark-subtle",
+                "rk-border-dotted"
+              )}
+            >
+              Session state
+            </span>
+          </Col>
+          <Col
+            xl={6}
+            xs={12}
+            className={cx("d-flex", "align-items-center", "px-2")}
+          >
+            <span
+              className={cx(
+                "w-100",
+                "fst-italic",
+                "fs-small",
+                "text-light-emphasis",
+                "border-0",
+                "border-bottom",
+                "border-dark-subtle",
+                "rk-border-dotted"
+              )}
+            >
+              Session details
+            </span>
+          </Col>
+        </Row>
+        {launchers?.map((launcher) => (
+          <SessionItemDisplay
+            key={`launcher-${launcher.id}`}
             launcher={launcher}
-            namespace={project.namespace ?? ""}
-            projectId={projectId ?? ""}
-            slug={project.slug ?? ""}
+            project={project}
           />
         ))}
         {Object.entries(orphanSessions).map(([key, session]) => (
-          <OrphanSession key={`orphan-${key}`} session={session} />
+          <OrphanSession
+            key={`orphan-${key}`}
+            session={session}
+            project={project}
+          />
         ))}
-      </Row>
-    </Container>
-  );
-}
-
-interface SessionLauncherDisplayProps {
-  launcher: SessionLauncher;
-  namespace: string;
-  projectId: string;
-  slug: string;
-}
-
-function SessionLauncherDisplay({
-  launcher,
-  namespace,
-  projectId,
-  slug,
-}: SessionLauncherDisplayProps) {
-  const { creation_date, environment_kind, name, default_url, description } =
-    launcher;
-
-  const { data: environments, isLoading } =
-    sessionsV2Api.endpoints.getSessionEnvironments.useQueryState(
-      environment_kind === "global_environment" ? undefined : skipToken
-    );
-  const environment = useMemo(
-    () =>
-      launcher.environment_kind === "global_environment" &&
-      environments?.find((env) => env.id === launcher.environment_id),
-    [environments, launcher]
-  );
-
-  const { data: sessions } = sessionsApi.endpoints.getSessions.useQueryState();
-  const filteredSessions = useMemo(
-    () =>
-      sessions != null
-        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
-            sessions,
-            ({ annotations }) =>
-              annotations["renkuVersion"] === "2.0" &&
-              annotations["projectId"] === projectId &&
-              annotations["launcherId"] === launcher.id
-          )
-        : {},
-    [launcher.id, projectId, sessions]
-  );
-  const filteredSessionsLength = useMemo(
-    () => Object.keys(filteredSessions).length,
-    [filteredSessions]
-  );
-
-  const container_image =
-    environment_kind === "global_environment" && environment
-      ? environment.container_image
-      : environment_kind === "global_environment"
-      ? "unknown"
-      : launcher.container_image;
-
-  return (
-    <Col className={cx("col-12", "col-sm-6")}>
-      <Card className="h-100">
-        <CardBody className={cx("d-flex", "flex-column")}>
-          <CardTitle
-            className={cx(
-              "d-flex",
-              "flex-row",
-              "justify-content-between",
-              "align-items-center"
-            )}
-          >
-            <h5 className={cx("mb-0", "fs-5")}>
-              {isLoading && (
-                <Loader className={cx("bi", "me-2")} inline size={20} />
-              )}
-              {name}
-            </h5>
-            <SessionV2Actions launcher={launcher} />
-          </CardTitle>
-          <CardText className="mb-0">
-            {description ? description : <i>No description</i>}
-          </CardText>
-          {environment && (
-            <CardText className="mb-0">
-              Uses the <b>{environment.name}</b> session environment.
-            </CardText>
-          )}
-          <CardText className="mb-0" tag="div">
-            <p className="mb-0">Container image:</p>
-            <CommandCopy command={container_image} noMargin />
-          </CardText>
-          <CardText className="mb-2">
-            Default URL:{" "}
-            <code>
-              {default_url
-                ? default_url
-                : environment && environment.default_url
-                ? environment.default_url
-                : "/lab"}
-            </code>
-          </CardText>
-          <CardText>
-            <TimeCaption
-              datetime={creation_date}
-              enableTooltip
-              prefix="Created"
-            />
-          </CardText>
-          {filteredSessionsLength > 0 ? (
-            <div className="mt-auto">
-              <p className="mb-0">
-                Active {filteredSessionsLength > 1 ? "sessions" : "session"}
-              </p>
-              {Object.entries(filteredSessions).map(([key, session]) => (
-                <ActiveSessionV2 key={key} session={session} />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-auto">
-              <StartSessionButton
-                launcherId={launcher.id}
-                namespace={namespace}
-                slug={slug}
-              />
-            </div>
-          )}
-        </CardBody>
-      </Card>
-    </Col>
-  );
-}
-
-interface ActiveSessionV2Props {
-  session: Session;
-}
-
-function ActiveSessionV2({ session }: ActiveSessionV2Props) {
-  const { annotations, image, started, status } = session;
-
-  const cleanAnnotations = useMemo(
-    () => NotebooksHelper.cleanAnnotations(annotations) as NotebookAnnotations,
-    [annotations]
-  );
-
-  const details = { message: session.status.message };
-
-  const displayModal = useAppSelector(
-    ({ display }) => display.modals.sessionLogs
-  );
-
-  const showSessionUrl = generatePath("sessions/show/:session", {
-    session: session.name,
-  });
-
-  return (
-    <div>
-      <div
-        className={cx(
-          "d-flex",
-          "flex-row",
-          "gap-2",
-          "align-items-center",
-          "mb-1"
-        )}
-      >
-        <SessionListRowStatusIcon
-          annotations={cleanAnnotations}
-          details={details}
-          image={image}
-          status={status.state}
-          uid={session.name}
-        />
-        <SessionListRowStatus
-          annotations={cleanAnnotations}
-          details={details}
-          startTimestamp={started}
-          status={status.state}
-          uid={session.name}
-        />
       </div>
-
-      <ActiveSessionButton session={session} showSessionUrl={showSessionUrl} />
-      <EnvironmentLogs
-        name={displayModal.targetServer}
-        annotations={cleanAnnotations}
-      />
-    </div>
+    </>
   );
 }
 
 interface SessionV2ActionsProps {
   launcher: SessionLauncher;
+  sessionsLength: number;
 }
-
-function SessionV2Actions({ launcher }: SessionV2ActionsProps) {
+export function SessionV2Actions({
+  launcher,
+  sessionsLength,
+}: SessionV2ActionsProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -363,17 +276,28 @@ function SessionV2Actions({ launcher }: SessionV2ActionsProps) {
     <>
       <UncontrolledDropdown>
         <DropdownToggle
-          className={cx("p-2", "rounded-circle")}
-          color="outline-rk-green"
+          className={cx(
+            "m-0",
+            "p-0",
+            "bg-transparent",
+            "d-flex",
+            "border-0",
+            "shadow-none",
+            dotsDropdownStyles.threeDotsDark
+          )}
         >
-          <div className="lh-1">
-            <ThreeDotsVertical className="bi" />
+          <div>
+            <ThreeDotsVertical size={24} />
             <span className="visually-hidden">Actions</span>
           </div>
         </DropdownToggle>
         <DropdownMenu className="btn-with-menu-options" end>
-          <DropdownItem onClick={toggleUpdate}>Edit</DropdownItem>
-          <DropdownItem onClick={toggleDelete}>Delete</DropdownItem>
+          <DropdownItem onClick={toggleUpdate}>
+            <PencilSquare /> Edit Launcher
+          </DropdownItem>
+          <DropdownItem onClick={toggleDelete}>
+            <Trash /> Delete Launcher
+          </DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>
 
@@ -386,6 +310,7 @@ function SessionV2Actions({ launcher }: SessionV2ActionsProps) {
         isOpen={isDeleteOpen}
         launcher={launcher}
         toggle={toggleDelete}
+        sessionsLength={sessionsLength}
       />
     </>
   );
@@ -393,34 +318,63 @@ function SessionV2Actions({ launcher }: SessionV2ActionsProps) {
 
 interface OrphanSessionProps {
   session: Session;
+  project: Project;
 }
 
-function OrphanSession({ session }: OrphanSessionProps) {
-  const { image } = session;
+function OrphanSession({ session, project }: OrphanSessionProps) {
+  const [toggleSessionView, setToggleSessionView] = useState(false);
+  const sessions = {
+    [session.name]: session,
+  };
+  const openSessionDetails = () => {
+    setToggleSessionView((open) => !open);
+  };
 
   return (
-    <Col className={cx("col-12", "col-sm-6")}>
-      <Card className="h-100">
-        <CardBody className={cx("d-flex", "flex-column")}>
-          <CardTitle
+    <>
+      <Row
+        className={cx(
+          "px-0",
+          "py-4",
+          "py-xl-3",
+          "m-0",
+          sessionItemStyles.ItemDisplaySessionRow
+        )}
+      >
+        <SessionNameBox handler={openSessionDetails}>
+          <LayoutSidebarInsetReverse
+            className={cx("flex-shrink-0", "me-0")}
+            size="20"
+          />
+          <span
             className={cx(
-              "d-flex",
-              "flex-row",
-              "justify-content-between",
-              "align-items-center"
+              "text-truncate",
+              "fst-italic",
+              sessionItemStyles.ItemDisplaySessionName
             )}
           >
-            <h5 className={cx("mb-0", "fs-5", "fst-italic")}>Orphan session</h5>
-          </CardTitle>
-          <CardText className="mb-0" tag="div">
-            <p className="mb-0">Container image:</p>
-            <CommandCopy command={image} noMargin />
-          </CardText>
-          <div className="mt-auto">
-            <ActiveSessionV2 session={session} />
-          </div>
-        </CardBody>
-      </Card>
-    </Col>
+            Orphan session
+          </span>
+        </SessionNameBox>
+        <SessionStatusBadgeBox>
+          <SessionStatusV2Label session={session} />
+        </SessionStatusBadgeBox>
+        <SessionStatusLabelBox>
+          <SessionStatusV2Description session={session} />
+        </SessionStatusLabelBox>
+        <SessionBtnBox>
+          <ActiveSessionButton
+            session={session}
+            showSessionUrl={getShowSessionUrlByProject(project, session.name)}
+          />
+        </SessionBtnBox>
+      </Row>
+      <SessionView
+        sessions={sessions}
+        project={project}
+        setToggleSessionView={openSessionDetails}
+        toggleSessionView={toggleSessionView}
+      />
+    </>
   );
 }

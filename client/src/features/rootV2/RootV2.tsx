@@ -26,12 +26,14 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
+import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Container";
+import { ProjectPageContentType } from "../ProjectPageV2/ProjectPageContainer/ProjectPageContainer.tsx";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
+import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupV2List from "../projectsV2/LazyGroupList";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyGroupV2Show from "../projectsV2/LazyGroupShow";
-import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2Show from "../projectsV2/LazyProjectV2Show";
@@ -163,13 +165,45 @@ function ProjectsV2Routes() {
       <Route
         path=":namespace/:slug"
         element={
-          <ContainerWrap>
-            <LazyProjectV2Show />
+          <ContainerWrap fullSize className="container-lg">
+            <LazyProjectPageV2Show
+              contentPage={ProjectPageContentType.Overview}
+            />
           </ContainerWrap>
         }
       />
       <Route
         path=":id"
+        element={
+          <ContainerWrap fullSize className="container-lg">
+            <LazyProjectPageV2Show
+              contentPage={ProjectPageContentType.Overview}
+            />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path=":namespace/:slug/info"
+        element={
+          <ContainerWrap fullSize className="container-lg">
+            <LazyProjectPageV2Show
+              contentPage={ProjectPageContentType.ProjectInfo}
+            />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path=":namespace/:slug/settings"
+        element={
+          <ContainerWrap fullSize className="container-lg">
+            <LazyProjectPageV2Show
+              contentPage={ProjectPageContentType.Settings}
+            />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path="/old/:namespace/:slug"
         element={
           <ContainerWrap>
             <LazyProjectV2Show />

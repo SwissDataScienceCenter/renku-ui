@@ -16,31 +16,19 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
-import { PlusLg, XLg } from "react-bootstrap-icons";
-import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom-v5-compat";
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { useCallback, useState } from "react";
+import { PlusLg } from "react-bootstrap-icons";
+import { Button } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import SessionLauncherFormContent, {
-  SessionLauncherForm,
-} from "./SessionLauncherFormContent";
-import sessionsV2Api, { useAddSessionLauncherMutation } from "./sessionsV2.api";
-import { SessionLauncherEnvironment } from "./sessionsV2.types";
+import { PlusRoundButton } from "../../components/buttons/Button.tsx";
+import { Step1AddSessionModal } from "./components/SessionModals/AddSession.tsx";
 
-export default function AddSessionLauncherButton() {
+export default function AddSessionLauncherButton({
+  styleBtn,
+}: {
+  styleBtn: "iconBtn" | "iconTextBtn";
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -48,138 +36,15 @@ export default function AddSessionLauncherButton() {
 
   return (
     <>
-      <Button className="btn-outline-rk-green" onClick={toggle}>
-        <PlusLg className={cx("bi", "me-1")} />
-        Add Session
-      </Button>
-      <AddSessionLauncherModal isOpen={isOpen} toggle={toggle} />
+      {styleBtn === "iconTextBtn" ? (
+        <Button className="btn-rk-green" onClick={() => toggle()}>
+          <PlusLg className={cx("bi", "me-1")} />
+          Add session
+        </Button>
+      ) : (
+        <PlusRoundButton handler={toggle} />
+      )}
+      <Step1AddSessionModal isOpen={isOpen} toggleModal={toggle} />
     </>
-  );
-}
-
-interface AddSessionLauncherModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-}
-
-function AddSessionLauncherModal({
-  isOpen,
-  toggle,
-}: AddSessionLauncherModalProps) {
-  const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
-  const { data: project } = useGetProjectsByNamespaceAndSlugQuery(
-    namespace && slug ? { namespace, slug } : skipToken
-  );
-  const projectId = project?.id;
-
-  const { data: environments } =
-    sessionsV2Api.endpoints.getSessionEnvironments.useQueryState();
-
-  const [addSessionLauncher, result] = useAddSessionLauncherMutation();
-
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    reset,
-    setValue,
-    watch,
-  } = useForm<SessionLauncherForm, unknown>({
-    defaultValues: {
-      name: "",
-      description: "",
-      environment_kind: "global_environment",
-      environment_id: "",
-      container_image: "",
-      default_url: "",
-    },
-  });
-  const onSubmit = useCallback(
-    (data: SessionLauncherForm) => {
-      const { default_url, description, name } = data;
-      const environment: SessionLauncherEnvironment =
-        data.environment_kind === "global_environment"
-          ? {
-              environment_kind: "global_environment",
-              environment_id: data.environment_id,
-            }
-          : {
-              environment_kind: "container_image",
-              container_image: data.container_image,
-            };
-      addSessionLauncher({
-        project_id: projectId ?? "",
-        name,
-        description: description.trim() ? description : undefined,
-        default_url: default_url.trim() ? default_url : undefined,
-        ...environment,
-      });
-    },
-    [addSessionLauncher, projectId]
-  );
-
-  useEffect(() => {
-    if (environments == null) {
-      return;
-    }
-    if (environments.length == 0) {
-      setValue("environment_kind", "container_image");
-    }
-  }, [environments, setValue]);
-
-  useEffect(() => {
-    if (!result.isSuccess) {
-      return;
-    }
-    toggle();
-  }, [result.isSuccess, toggle]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      reset();
-      result.reset();
-    }
-  }, [isOpen, reset, result]);
-
-  return (
-    <Modal
-      backdrop="static"
-      centered
-      fullscreen="lg"
-      isOpen={isOpen}
-      size="lg"
-      toggle={toggle}
-    >
-      <Form
-        className="form-rk-green"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <ModalHeader toggle={toggle}>Add session</ModalHeader>
-        <ModalBody>
-          {result.error && <RtkErrorAlert error={result.error} />}
-
-          <SessionLauncherFormContent
-            control={control}
-            errors={errors}
-            watch={watch}
-          />
-        </ModalBody>
-        <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
-            <XLg className={cx("bi", "me-1")} />
-            Cancel
-          </Button>
-          <Button disabled={result.isLoading} type="submit">
-            {result.isLoading ? (
-              <Loader className="me-1" inline size={16} />
-            ) : (
-              <PlusLg className={cx("bi", "me-1")} />
-            )}
-            Add Session
-          </Button>
-        </ModalFooter>
-      </Form>
-    </Modal>
   );
 }

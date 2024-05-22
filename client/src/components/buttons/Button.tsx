@@ -26,8 +26,13 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Fragment, useState } from "react";
-import { ChevronDown } from "react-bootstrap-icons";
+import { Fragment, ReactNode, useRef, useState } from "react";
+import {
+  ArrowRight,
+  ChevronDown,
+  PencilSquare,
+  PlusLg,
+} from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -41,6 +46,7 @@ import {
 
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
+import buttonStyles from "./Buttons.module.scss";
 
 type ButtonWithMenuProps = {
   children?:
@@ -80,7 +86,7 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
     <>
       <DropdownToggle
         data-cy="more-menu"
-        className={`${props.className} ${classes}`}
+        className={cx(props.className, classes, "rounded-end-pill")}
         disabled={props.disabled}
       >
         <ChevronDown
@@ -98,7 +104,7 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
   return (
     <ButtonDropdown
       id={props.id}
-      className={`${props.className} btn-with-menu`}
+      className={cx(props.className, "btn-with-menu")}
       size={size}
       isOpen={dropdownOpen}
       toggle={toggleOpen}
@@ -287,11 +293,79 @@ function RoundButtonGroup({ children }: { children: React.ReactNode[] }) {
   return <ButtonGroup className="round-button-group">{children}</ButtonGroup>;
 }
 
+/*
+ * underline Link with icon
+ */
+function UnderlineArrowLink({
+  to,
+  text,
+  tooltip,
+}: {
+  text: string;
+  to: string;
+  tooltip: ReactNode;
+}) {
+  const ref = useRef(null);
+  return (
+    <>
+      <span ref={ref} className={buttonStyles.LinkUnderline}>
+        <Link className="text-decoration-none" to={to}>
+          {text}
+          <ArrowRight className={cx("bi", "ms-1")} />
+        </Link>
+      </span>
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+    </>
+  );
+}
+
+/*
+ * Edit button
+ */
+function EditButtonLink({ to, tooltip }: { to: string; tooltip: ReactNode }) {
+  const ref = useRef(null);
+  return (
+    <>
+      <span ref={ref} className={buttonStyles.LinkIcon}>
+        <Link className="text-decoration-none" to={to}>
+          <PencilSquare />
+        </Link>
+      </span>
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+    </>
+  );
+}
+
+export function PlusRoundButton({ handler }: { handler: () => void }) {
+  return (
+    <>
+      <Button
+        className={cx(
+          "d-flex",
+          "justify-content-center",
+          "align-items-center",
+          "rounded-circle",
+          "border",
+          "border-rk-green",
+          "bg-white",
+          "p-1",
+          buttonStyles.PlusIconButton
+        )}
+        onClick={handler}
+      >
+        <PlusLg size="16" />
+      </Button>
+    </>
+  );
+}
+
 export {
   ButtonWithMenu,
   CardButton,
+  EditButtonLink,
   GoBackButton,
   InlineSubmitButton,
   RefreshButton,
   RoundButtonGroup,
+  UnderlineArrowLink,
 };

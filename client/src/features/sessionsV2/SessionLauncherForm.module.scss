@@ -1,13 +1,14 @@
-@import "/src/styles/bootstrap/_custom_bootstrap_variables.scss";
+@import "/src/styles/bootstrap/_custom_bootstrap_variables2.0.scss";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
 
 .environmentLabel {
   &:hover {
     .environmentCard {
-      background-color: $rk-green-highlight;
-      color: white;
-    }
-    .environmentCardText {
-      color: white;
+      background-color: $rk-gray-100 !important;
     }
   }
 

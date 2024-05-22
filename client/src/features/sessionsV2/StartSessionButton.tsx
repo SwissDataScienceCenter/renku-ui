@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { PlayFill } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-
 interface StartSessionButtonProps {
   namespace: string;
   slug: string;
@@ -41,9 +40,19 @@ export default function StartSessionButton({
   );
 
   return (
-    <Link className={cx("btn", "btn-sm", "btn-rk-green")} to={startUrl}>
-      <PlayFill className={cx("bi", "me-1")} />
-      Start
+    <Link
+      className={cx(
+        "btn",
+        "btn-rk-green",
+        "d-flex",
+        "align-items-center",
+        "py-1",
+        "px-2"
+      )}
+      to={startUrl}
+    >
+      <PlayFill size="20" />
+      Launch
     </Link>
   );
 }

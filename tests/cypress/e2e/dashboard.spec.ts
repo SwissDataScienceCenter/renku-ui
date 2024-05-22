@@ -279,7 +279,7 @@ describe("dashboard message", () => {
 
     cy.getDataCy("dashboard-message")
       .find(".alert-icon")
-      .find('img[alt="info icon"]')
+      .find(".text-info")
       .should("be.visible");
 
     cy.getDataCy("dashboard-message")
@@ -312,7 +312,7 @@ describe("dashboard message", () => {
 
     cy.getDataCy("dashboard-message")
       .find(".alert-icon")
-      .find('img[alt="success icon"]')
+      .find(".text-success")
       .should("be.visible");
 
     cy.getDataCy("dashboard-message")

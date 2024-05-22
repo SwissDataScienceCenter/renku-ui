@@ -13,16 +13,20 @@
 
 .alert-info {
   color: $rk-info-text;
+  border: 1px solid $rk-info-border;
 }
 
 .alert-success {
   color: $rk-success-text;
+  border: 1px solid $rk-success-border;
 }
 
 .alert-warning {
   color: $rk-warning-text;
+  border: 1px solid $rk-warning-border;
 }
 
 .alert-danger {
   color: $rk-danger-text;
+  border: 1px solid $rk-danger-border;
 }

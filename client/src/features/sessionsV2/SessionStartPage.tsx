@@ -38,6 +38,7 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api.ts";
 import {
   useGetDockerImageQuery,
   useStartRenku2SessionMutation,
@@ -126,6 +127,13 @@ function StartSessionFromLauncher({
       environments?.find((env) => env.id === launcher.environment_id),
     [environments, launcher]
   );
+  const {
+    data: storages,
+    isFetching: isFetchingStorages,
+    isLoading: isLoadingStorages,
+  } = useGetStoragesV2Query({
+    projectId: project.id,
+  });
 
   const containerImage =
     environment_kind === "global_environment" && environment
@@ -268,7 +276,9 @@ function StartSessionFromLauncher({
     if (
       startSessionOptionsV2.dockerImageStatus !== "available" ||
       resourcePools == null ||
-      startSessionOptionsV2.sessionClass == 0
+      startSessionOptionsV2.sessionClass == 0 ||
+      isLoadingStorages ||
+      isFetchingStorages
     ) {
       return;
     }
@@ -277,7 +287,11 @@ function StartSessionFromLauncher({
       projectId: project.id,
       launcherId: launcher.id,
       repositories: startSessionOptionsV2.repositories,
-      cloudStorage: [],
+      cloudStorage:
+        storages?.map(
+          // (storage) => storage.storage as unknown as SessionCloudStorage
+          (storage) => storage.storage
+        ) || [],
       defaultUrl: startSessionOptionsV2.defaultUrl,
       environmentVariables: {},
       image: containerImage,
@@ -287,11 +301,14 @@ function StartSessionFromLauncher({
     });
   }, [
     containerImage,
+    isFetchingStorages,
+    isLoadingStorages,
     launcher.id,
     project.id,
     resourcePools,
     startSession,
     startSessionOptionsV2,
+    storages,
   ]);
 
   // Navigate to the session page when it is ready
