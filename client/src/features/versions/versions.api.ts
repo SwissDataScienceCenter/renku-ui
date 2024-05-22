@@ -146,6 +146,11 @@ export const versionsApi = createApi({
           sshEnabled: singleVersion?.data?.sshEnabled ?? false,
           cloudStorageEnabled:
             singleVersion?.data?.cloudstorageEnabled ?? false,
+          defaultCullingThresholds: singleVersion?.data
+            ?.defaultCullingThresholds ?? {
+            registered: { hibernation: 0, idle: 0 },
+            anonymous: { hibernation: 0, idle: 0 },
+          },
         };
       },
       transformErrorResponse: () => {
@@ -155,6 +160,10 @@ export const versionsApi = createApi({
           anonymousSessionsEnabled: false,
           sshEnabled: false,
           cloudStorageEnabled: false,
+          defaultCullingThresholds: {
+            registered: { hibernation: 0, idle: 0 },
+            anonymous: { hibernation: 0, idle: 0 },
+          },
         } as NotebooksVersion;
       },
       providesTags: (result) =>
