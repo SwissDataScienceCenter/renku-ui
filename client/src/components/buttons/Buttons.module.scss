@@ -1,0 +1,65 @@
+@import "/src/styles/bootstrap/_custom_bootstrap_variables2.0.scss";
+.LinkUnderline {
+  border-bottom: solid 1px var(--bs-rk-text-light);
+
+  &:hover {
+    border-bottom: solid 1px var(--bs-rk-text);
+  }
+  a {
+    color: var(--bs-rk-text-light);
+  }
+  a:hover {
+    color: #000;
+  }
+}
+.LinkIcon {
+  a {
+    color: var(--bs-rk-text-light);
+    font-size: 20px;
+  }
+  a:hover {
+    color: #000;
+  }
+}
+.PlusIconButton {
+  color: var(--bs-rk-green) !important;
+
+  &:hover {
+    color: white !important;
+    background-color: #{$rk-green-hover} !important;
+  }
+  &:active {
+    color: white !important;
+    background-color: #{$rk-green-active} !important;
+  }
+  &:focus {
+    box-shadow: 0 0 0 4px #{$rk-green-100} !important;
+  }
+}
+
+.EditButton {
+  color: #{$rk-gray-800} !important;
+}
+.EditButton:hover {
+  color: var(--bs-dark) !important;
+}
+.EditButton:first-child:active {
+  color: #{$rk-gray-700} !important;
+}
+.EditButton:focus,
+.EditButton:focus-visible {
+  color: #{$rk-gray-900} !important;
+}
+
+.EmptyButton {
+  &:hover {
+    color: #{$rk-green-hover} !important;
+    border-style: solid !important;
+    border-color: #{$rk-green-hover} !important;
+  }
+  &:active,
+  &:focus {
+    color: white !important;
+    background-color: #{$rk-green-active} !important;
+  }
+}

@@ -1,0 +1,193 @@
+// RENKU UI COLORS
+$rk-blue: #01192d;
+$rk-green: #198754;
+$rk-green-50: #f0fdf6;
+$rk-green-100: #ddfbec;
+$rk-green-highlight: #186340;
+$rk-green-active: #19a061;
+$rk-green-hover: $rk-green-highlight;
+$rk-green-disabled: #4ddb98;
+
+$rk-pink: #ca4e86;
+$rk-pink-highlight: #aa2c61;
+$rk-yellow: #d1bb4c;
+$rk-dark: #000000; // titles
+
+$rk-text: $rk-dark;
+$rk-text-medium-light: #b3b3b3;
+$rk-text-light: #6c757d; // contrast ratio 7:1 bg white
+$rk-light: #e4e7ea; // borders
+$rk-border-input: #000;
+$rk-border-input-focus: $rk-green;
+$rk-border-input-active: $rk-green;
+$rk-shadow-focus: rgba(0, 0, 0, 0.1);
+//backgrounds
+$rk-background-0: #f8f9fa;
+$rk-background-0-dark: #01192d;
+$rk-background-1: #ffffff;
+$rk-background-2: #f5f6fa;
+$rk-background-table: #ededf2;
+$rk-green-background: rgb(34, 53, 52);
+$rk-bg-info: #dbeafe;
+$rk-success-50: #f7fee7;
+$rk-danger-50: #fef2f2;
+$rk-warning-50: #fefce8;
+$rk-success-100: #ecfccb;
+$rk-danger-100: #fee2e2;
+$rk-warning-100: #fef9c3;
+$rk-info-100: #dbeafe;
+
+$rk-gray-100: #f8f9fa;
+$rk-gray-200: #e9ecef;
+$rk-gray-600: #6c757d;
+$rk-gray-700: #495057;
+$rk-gray-800: #343a40;
+$rk-gray-900: #212529;
+
+$rk-white: #ffffff;
+$rk-hover: #f9f9f9;
+$rk-hover-blue: #99a3ab; //from bootraps mix https://codepen.io/emdeoh/pen/zYOQOPB
+
+$rk-info: #1e40af;
+$rk-success: #4d7c0f;
+$rk-danger: #991b1b;
+$rk-warning: #854d0e;
+
+$rk-info-text: #1e40af; // contrast ratio 7:1 for blue bg (#cfe3ea)
+$rk-success-text: #1a2e05;
+$rk-danger-text: #450a0a;
+$rk-warning-text: #422006;
+$rk-dark-bg: #c5cbcf;
+$rk-text-info: #172554;
+$rk-text-success: #1a2e05;
+$rk-text-danger: #450a0a;
+$rk-text-warning: #422006;
+
+$rk-danger-shadow: rgba(180, 10, 60, 0.5);
+$rk-table-border: #e4e7ea;
+
+$transparent: rgba(0, 0, 0, 0);
+
+// This will be added to the theme colors in custom_bootstrap
+$rk-colors: (
+  "rk-blue": $rk-blue,
+  "rk-yellow": $rk-yellow,
+  "rk-pink": $rk-pink,
+  "rk-green": $rk-green,
+  "rk-text": $rk-text,
+  "rk-text-light": $rk-text-light,
+  "rk-green-background": $rk-green-background,
+  "rk-white": $rk-white,
+  "rk-hover": $rk-hover,
+  "rk-danger-shadow": $rk-danger-shadow,
+  "rk-dark-bg": $rk-dark-bg,
+  "rk-background-0": $rk-background-0,
+  "rk-background-table": $rk-background-table,
+  "rk-border-input": $rk-border-input,
+  "rk-border-input-focus": $rk-border-input-focus,
+  "rk-border-input-active": $rk-border-input-active,
+  "rk-shadow-focus": $rk-shadow-focus,
+);
+
+// We overwrite bootstraps variables
+$primary: $rk-blue;
+$secondary: $rk-green;
+$success: $rk-success;
+$info: $rk-info;
+$warning: $rk-warning;
+$danger: $rk-danger;
+$light: $rk-light;
+$dark: $rk-dark;
+
+$theme-colors: (
+  "primary": $primary,
+  "secondary": $secondary,
+  "success": $success,
+  "info": $info,
+  "warning": $warning,
+  "danger": $danger,
+  "light": $light,
+  "dark": $dark,
+);
+
+$theme-colors: map-merge($theme-colors, $rk-colors);
+
+$enable-rounded: true;
+$input-bg: $rk-white;
+
+// Table styles
+$table-border-color: $rk-table-border;
+$table-bg: $transparent;
+
+// Body styles
+$body-bg: $rk-background-0;
+$body-color: $rk-dark;
+
+// Box shadow
+$rk-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
+
+// Card styles
+$card-bg: $rk-white;
+
+// Font styles
+$font-family-base: "Inter", sans-serif;
+
+// Popover styles
+$popover-bg: $rk-white;
+
+// List styles
+$list-group-bg: $transparent;
+
+// Breadcumb styles
+$breadcrumb-divider: quote(">");
+
+// Dropmenu styles
+$dropdown-border-color: #000;
+$dropdown-link-hover-bg: $rk-gray-200;
+$dropdown-bg: $rk-white;
+$dropdown-divider-bg: $rk-text-light;
+$dropdown-border-width: 0.5px;
+$dropdown-border-radius: 4px;
+$dropdown-item-padding-y: 16px;
+$dropdown-divider-margin-y: 0px;
+$dropdown-padding-y: 0.5rem;
+$rk-dropdown-options-box-shadow: none;
+$rk-dropdown-options-margin: 6px 0;
+$rk-dropdown-bg-active: $rk-white;
+$rk-dropdown-option-text-align: start;
+
+// Override Bootstrap variables for font sizes
+$h1-font-size: 2.375rem;
+$h2-font-size: 2rem;
+$h3-font-size: 1.75rem;
+$h4-font-size: 1.5rem;
+$h5-font-size: 1.25rem;
+
+// Modal styles
+$modal-inner-padding: 2rem;
+$modal-content-bg: white;
+$modal-header-border-width: 0;
+$modal-footer-border-width: 0;
+
+// Input values
+$input-padding-y: 10px;
+
+//off canvas
+$offcanvas-horizontal-width: 800px;
+
+//alerts
+$success-bg-subtle: $rk-success-100;
+$alert-success-text-color: $rk-success-text;
+$rk-success-border: $rk-success-text;
+
+$warning-bg-subtle: $rk-warning-100;
+$alert-warning-text-color: $rk-warning-text;
+$rk-warning-border: $rk-warning-text;
+
+$danger-bg-subtle: $rk-danger-100;
+$alert-danger-text-color: $rk-danger-text;
+$rk-danger-border: $rk-danger-text;
+
+$info-bg-subtle: $rk-info-100;
+$alert-info-text-color: $rk-info-text;
+$rk-info-border: $rk-info-text;

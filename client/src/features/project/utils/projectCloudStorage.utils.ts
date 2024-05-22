@@ -17,6 +17,10 @@
  */
 
 import {
+  CloudStorageGetRead,
+  RCloneConfig,
+} from "../../projectsV2/api/storagesV2.api.ts";
+import {
   CLOUD_OPTIONS_OVERRIDE,
   CLOUD_STORAGE_MOUNT_PATH_HELP,
   CLOUD_STORAGE_OVERRIDE,
@@ -85,16 +89,14 @@ export function getCredentialFieldDefinitions(
   const { configuration } = storage;
 
   const providedSensitiveFields = getProvidedSensitiveFields(configuration);
-  const credentialFieldDefinitions = sensitive_fields?.map((field) => ({
+  return sensitive_fields?.map((field) => ({
     ...field,
     requiredCredential: providedSensitiveFields.includes(field.name),
   }));
-
-  return credentialFieldDefinitions;
 }
 
 export function getProvidedSensitiveFields(
-  configuration: CloudStorageConfiguration["configuration"]
+  configuration: CloudStorageConfiguration["configuration"] | RCloneConfig
 ): string[] {
   return Object.entries(configuration)
     .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
@@ -362,7 +364,7 @@ export function getSourcePathHint(
 }
 
 export function getCurrentStorageDetails(
-  existingCloudStorage?: CloudStorage | null
+  existingCloudStorage?: CloudStorage | CloudStorageGetRead | null
 ): CloudStorageDetails {
   if (!existingCloudStorage) {
     return EMPTY_CLOUD_STORAGE_DETAILS;

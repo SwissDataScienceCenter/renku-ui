@@ -46,9 +46,8 @@ describe("Add new v2 project", () => {
     cy.contains("button", "Review").click();
     cy.contains("button", "Create").click();
 
-    cy.contains("Creating project...").should("be.visible");
     cy.wait("@createProjectV2");
-    cy.contains("Project created").should("be.visible");
+    cy.location("pathname").should("eq", `/v2/projects/user1.uuid/${slug}`);
   });
 
   it("keeps namespace set after going back", () => {
@@ -83,7 +82,7 @@ describe("Add new v2 project", () => {
     cy.contains("Set Visibility").click();
 
     cy.contains("Define access").should("be.visible");
-    cy.getDataCy("project-visibility").select("Public");
+    cy.getDataCy("project-visibility-public").click();
     cy.contains("button", "Add repositories").click();
 
     cy.contains("button", "Review").click();
@@ -104,10 +103,8 @@ describe("Add new v2 project", () => {
     cy.contains("https://domain.name/repo1.git").should("be.visible");
 
     cy.contains("button", "Create").click();
-
-    cy.contains("Creating project...").should("be.visible");
     cy.wait("@createProjectV2");
-    cy.contains("Project created").should("be.visible");
+    cy.location("pathname").should("eq", `/v2/projects/user1.uuid/${slug}`);
   });
 });
 
@@ -170,6 +167,7 @@ describe("Navigate to project", () => {
 });
 
 describe("Edit v2 project", () => {
+  const projectId = "THEPROJECTULID26CHARACTERS";
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects().listProjectV2();
@@ -179,7 +177,8 @@ describe("Edit v2 project", () => {
   it("changes project metadata", () => {
     fixtures.readProjectV2().updateProjectV2().listNamespaceV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
+    cy.contains("test 2 v2-project").should("be.visible");
+    cy.getDataCy(`link-project-${projectId}`).click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.contains("Edit Settings").should("be.visible").click();
@@ -199,7 +198,7 @@ describe("Edit v2 project", () => {
   it("changes project namespace", () => {
     fixtures.readProjectV2().updateProjectV2().listManyNamespaceV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
+    cy.getDataCy(`link-project-${projectId}`).click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.contains("Edit Settings").should("be.visible").click();
@@ -230,7 +229,7 @@ describe("Edit v2 project", () => {
       fixture: "projectV2/update-projectV2-repositories.json",
     });
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
+    cy.getDataCy(`link-project-${projectId}`).click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.contains("Edit Settings").should("be.visible").click();
@@ -273,7 +272,7 @@ describe("Edit v2 project", () => {
       .listProjectV2Members()
       .readProjectV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
+    cy.getDataCy(`link-project-${projectId}`).click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.contains("Edit Settings").should("be.visible").click();
@@ -311,20 +310,20 @@ describe("Edit v2 project", () => {
   it("deletes project", () => {
     fixtures.readProjectV2().deleteProjectV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
+    cy.getDataCy(`link-project-${projectId}`).click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.contains("Edit Settings").should("be.visible").click();
     cy.get("button").contains("Metadata").should("be.visible").click();
     cy.get("button").contains("Delete").should("be.visible").click();
     cy.get("button")
-      .contains("Yes, delete")
+      .contains("Delete project")
       .should("be.visible")
       .should("be.disabled");
     cy.contains("Please type test-2-v2-project").should("be.visible");
     cy.getDataCy("delete-confirmation-input").clear().type("test-2-v2-project");
     fixtures.postDeleteReadProjectV2();
-    cy.get("button").contains("Yes, delete").should("be.enabled").click();
+    cy.get("button").contains("Delete project").should("be.enabled").click();
     cy.wait("@deleteProjectV2");
     cy.wait("@postDeleteReadProjectV2");
 
@@ -332,6 +331,7 @@ describe("Edit v2 project", () => {
       fixture: "projectV2/list-projectV2-post-delete.json",
       name: "listProjectV2PostDelete",
     });
-    cy.contains("Return to list").click();
+    cy.contains("List Projects (V2)");
+    cy.contains("Project deleted").should("be.visible");
   });
 });

@@ -5,7 +5,7 @@
 @media (min-width: 1200px) {
   .col-xl-forms--header {
     position: absolute;
-    width: 250px;
+    width: 250px !important;
     flex: none;
   }
 
@@ -16,6 +16,6 @@
 
 @media (min-width: 1440px) {
   .col-xl-forms--header {
-    width: 300px;
+    width: 300px !important;
   }
 }

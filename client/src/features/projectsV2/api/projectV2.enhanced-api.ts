@@ -1,7 +1,7 @@
 import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
 
-import { projectAndNamespaceApi as api } from "./namespace.api";
+import { projectStoragesApi as api } from "./storagesV2.api";
 import type {
   ErrorResponse,
   GetProjectsApiArg,
@@ -17,6 +17,10 @@ import type {
   GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
   NamespaceResponseList,
 } from "./namespace.api";
+import {
+  GetStoragesV2ApiArg,
+  GetStoragesV2ApiResponse as GetStoragesV2ApiResponseOrig,
+} from "./storagesV2.api.ts";
 
 interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;
@@ -28,6 +32,10 @@ export interface GetNamespacesApiResponse extends AbstractKgPaginatedResponse {
 
 interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
   projects: GetProjectsApiResponseOrig;
+}
+
+interface GetStoragesV2ApiResponse extends AbstractKgPaginatedResponse {
+  storages: GetStoragesV2ApiResponseOrig;
 }
 
 const injectedApi = api.injectEndpoints({
@@ -104,6 +112,15 @@ const injectedApi = api.injectEndpoints({
         };
       },
     }),
+    getStoragesPaged: builder.query<
+      GetStoragesV2ApiResponse,
+      GetStoragesV2ApiArg
+    >({
+      query: (queryArg) => ({
+        url: "/storages",
+        params: { project_id: queryArg.projectId },
+      }),
+    }),
   }),
 });
 
@@ -114,6 +131,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "Namespace",
     "Project",
     "ProjectMembers",
+    "Storages",
   ],
   endpoints: {
     deleteGroupsByGroupSlug: {
@@ -127,6 +145,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     deleteProjectsByProjectIdMembersAndMemberId: {
       invalidatesTags: ["ProjectMembers"],
+    },
+    deleteStoragesV2ByStorageId: {
+      invalidatesTags: ["Storages"],
     },
     getGroups: {
       providesTags: ["Group"],
@@ -162,6 +183,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsByProjectIdMembers: {
       providesTags: ["ProjectMembers"],
     },
+    getStoragesV2: {
+      providesTags: ["Storages"],
+    },
     patchGroupsByGroupSlug: {
       invalidatesTags: ["Group", "Namespace"],
     },
@@ -174,11 +198,17 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     patchProjectsByProjectIdMembers: {
       invalidatesTags: ["ProjectMembers"],
     },
+    patchStoragesV2ByStorageId: {
+      invalidatesTags: ["Storages"],
+    },
     postGroups: {
       invalidatesTags: ["Group", "Namespace"],
     },
     postProjects: {
       invalidatesTags: ["Project"],
+    },
+    postStoragesV2: {
+      invalidatesTags: ["Storages"],
     },
   },
 });
@@ -210,6 +240,10 @@ export const {
   useGetNamespacesPagedQuery: useGetNamespacesQuery,
   useLazyGetNamespacesPagedQuery: useLazyGetNamespacesQuery,
   useGetNamespacesByGroupSlugQuery,
+
+  // storages hooks
+  useGetStoragesV2Query,
+  usePostStoragesV2Mutation,
 } = enhancedApi;
 
 export function isErrorResponse(arg: unknown): arg is { data: ErrorResponse } {

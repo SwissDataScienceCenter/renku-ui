@@ -34,7 +34,8 @@ import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import SessionLauncherFormContent, {
   SessionLauncherForm,
 } from "./SessionLauncherFormContent";
-import sessionsV2Api, {
+import {
+  useGetSessionEnvironmentsQuery,
   useUpdateSessionLauncherMutation,
 } from "./sessionsV2.api";
 import {
@@ -53,14 +54,12 @@ export default function UpdateSessionLauncherModal({
   launcher,
   toggle,
 }: UpdateSessionLauncherModalProps) {
-  const { data: environments } =
-    sessionsV2Api.endpoints.getSessionEnvironments.useQueryState();
-
+  const { data: environments } = useGetSessionEnvironmentsQuery();
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
 
   const {
     control,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, touchedFields },
     handleSubmit,
     reset,
     setValue,
@@ -153,37 +152,43 @@ export default function UpdateSessionLauncherModal({
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
+      scrollable
     >
-      <Form
-        className="form-rk-green"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <ModalHeader toggle={toggle}>Edit session {launcher.name}</ModalHeader>
-        <ModalBody>
+      <ModalHeader toggle={toggle}>Edit session {launcher.name}</ModalHeader>
+      <ModalBody>
+        <Form
+          className="form-rk-green"
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+        >
           {result.error && <RtkErrorAlert error={result.error} />}
 
           <SessionLauncherFormContent
             control={control}
             errors={errors}
             watch={watch}
+            touchedFields={touchedFields}
           />
-        </ModalBody>
-        <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
-            <XLg className={cx("bi", "me-1")} />
-            Cancel
-          </Button>
-          <Button disabled={result.isLoading || !isDirty} type="submit">
-            {result.isLoading ? (
-              <Loader className="me-1" inline size={16} />
-            ) : (
-              <CheckLg className={cx("bi", "me-1")} />
-            )}
-            Update session
-          </Button>
-        </ModalFooter>
-      </Form>
+        </Form>
+      </ModalBody>
+      <ModalFooter>
+        <Button className="btn-outline-rk-green" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          disabled={result.isLoading || !isDirty}
+          type="submit"
+          onClick={handleSubmit(onSubmit)}
+        >
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <CheckLg className={cx("bi", "me-1")} />
+          )}
+          Update session
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 }

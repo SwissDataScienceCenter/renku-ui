@@ -97,7 +97,7 @@ export default function SessionStatusText({
   );
 }
 
-function MissingHibernationInfo() {
+export function MissingHibernationInfo() {
   const ref = useRef<HTMLSpanElement>(null);
 
   return (

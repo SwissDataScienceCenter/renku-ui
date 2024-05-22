@@ -34,6 +34,7 @@ import {
 } from "react-bootstrap-icons";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import {
+  Badge,
   Breadcrumb,
   BreadcrumbItem,
   Button,
@@ -75,6 +76,7 @@ interface AddOrEditCloudStorageProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
+  isV2?: boolean;
 }
 
 export default function AddOrEditCloudStorage({
@@ -106,6 +108,38 @@ export default function AddOrEditCloudStorage({
   return <p>Error - not implemented yet</p>;
 }
 
+export function AddOrEditCloudStorageV2({
+  schema,
+  setStorage,
+  setState,
+  state,
+  storage,
+  isV2,
+}: AddOrEditCloudStorageProps) {
+  const ContentByStep =
+    state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
+      ? mapStepToElement[state.step]
+      : null;
+
+  if (ContentByStep)
+    return (
+      <>
+        <div className={cx("d-flex", "justify-content-end")}>
+          <AddStorageAdvancedToggle state={state} setState={setState} />
+        </div>
+        <ContentByStep
+          schema={schema}
+          state={state}
+          storage={storage}
+          setState={setState}
+          setStorage={setStorage}
+          isV2={isV2}
+        />
+      </>
+    );
+  return <p>Error - not implemented yet</p>;
+}
+
 // *** Navigation: breadcrumbs and advanced mode selector *** //
 
 interface AddStorageBreadcrumbNavbarProps {
@@ -113,7 +147,7 @@ interface AddStorageBreadcrumbNavbarProps {
   state: AddCloudStorageState;
 }
 
-function AddStorageBreadcrumbNavbar({
+export function AddStorageBreadcrumbNavbar({
   setState,
   state,
 }: AddStorageBreadcrumbNavbarProps) {
@@ -215,6 +249,7 @@ interface AddStorageStepProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
+  isV2?: boolean;
 }
 
 const mapStepToElement: {
@@ -594,6 +629,7 @@ function AddStorageType({
   storage,
   setState,
   setStorage,
+  isV2,
 }: AddStorageStepProps) {
   const providerRef: RefObject<HTMLDivElement> = useRef(null);
   const scrollToProvider = () => {
@@ -614,7 +650,7 @@ function AddStorageType({
   };
 
   const schemaItems = availableSchema.map((s, index) => {
-    const topBorder = index === 0 ? "rounded-top-3" : null;
+    const topBorder = index === 0 && !isV2 ? "rounded-top-3" : null;
     const itemActive =
       s.prefix === storage.schema ? styles.listGroupItemActive : null;
     return (
@@ -635,6 +671,37 @@ function AddStorageType({
     );
   });
   const finalSchemaItems = [
+    isV2 && (
+      <ListGroupItem
+        action
+        disabled
+        className={cx("cursor-pointer", "rounded-top-3")}
+        key="_Zenodo"
+        tag="div"
+      >
+        <div
+          className={cx("d-flex", "justify-content-between", "fw-bold", "py-2")}
+        >
+          Zenodo
+          <Badge
+            pill
+            className={cx(
+              "fst-italic",
+              "text-warning",
+              "bg-warning-subtle",
+              "border",
+              "border-warning",
+              "alert-warning",
+              "opacity-50"
+            )}
+            title="coming soon"
+          >
+            {" "}
+            coming soon{" "}
+          </Badge>
+        </div>
+      </ListGroupItem>
+    ),
     ...schemaItems,
     <ListGroupItem
       action
@@ -657,12 +724,16 @@ function AddStorageType({
 
   const finalSchema = (
     <div className="mt-3" data-cy="cloud-storage-edit-schema">
-      <h5>Storage type</h5>
-      <p>
-        Pick a storage from this list to start our guided procedure. You can
-        switch to the Advanced mode if you prefer to manually configure the
-        storage using an rclone configuration.
-      </p>
+      {!isV2 && (
+        <>
+          <h5>Storage type</h5>
+          <p>
+            Pick a storage from this list to start our guided procedure. You can
+            switch to the Advanced mode if you prefer to manually configure the
+            storage using an rclone configuration.
+          </p>
+        </>
+      )}
       {missingSchema}
       <ListGroup
         className={cx("bg-white", "rounded-3", "border", "border-rk-green")}

@@ -17,8 +17,8 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { Trash, XLg } from "react-bootstrap-icons";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import {
@@ -28,22 +28,23 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
+  ModalHeader,
   Table,
 } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 
-import {
-  useDeleteProjectsByProjectIdMutation,
-  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
-  useGetProjectsByProjectIdMembersQuery,
-  usePatchProjectsByProjectIdMutation,
-} from "../api/projectV2.enhanced-api";
 import type {
   Project,
   ProjectMemberResponse,
   ProjectPatch,
 } from "../api/projectV2.api";
+import {
+  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+  useDeleteProjectsByProjectIdMutation,
+  useGetProjectsByProjectIdMembersQuery,
+  usePatchProjectsByProjectIdMutation,
+} from "../api/projectV2.enhanced-api";
 import type { Repository } from "../projectV2.types";
 
 import AddProjectMemberModal from "../fields/AddProjectMemberModal";
@@ -53,10 +54,14 @@ import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 
-import { SettingEditOption } from "./projectV2Show.types";
+import { useNavigate } from "react-router-dom-v5-compat";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import AppContext from "../../../utils/context/appContext.ts";
+import { Url } from "../../../utils/helpers/url";
+import { notificationProjectDeleted } from "../../ProjectPageV2/ProjectPageContent/Settings/ProjectDelete.tsx";
+import { SettingEditOption } from "./projectV2Show.types";
 
-type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
+export type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
 
 interface ProjectDeleteConfirmationProps {
   isOpen: boolean;
@@ -64,11 +69,13 @@ interface ProjectDeleteConfirmationProps {
   project: Project;
 }
 
-function ProjectDeleteConfirmation({
+export function ProjectDeleteConfirmation({
   isOpen,
   toggle,
   project,
 }: ProjectDeleteConfirmationProps) {
+  const navigate = useNavigate();
+  const { notifications } = useContext(AppContext);
   const [deleteProject, result] = useDeleteProjectsByProjectIdMutation();
   const onDelete = useCallback(() => {
     deleteProject({ projectId: project.id });
@@ -82,18 +89,30 @@ function ProjectDeleteConfirmation({
   );
 
   useEffect(() => {
+    if (result.isSuccess) {
+      navigate(Url.get(Url.pages.projectV2.list));
+      if (notifications)
+        notificationProjectDeleted(notifications, project.name);
+    }
     if (result.isSuccess || result.isError) {
       toggle();
     }
-  }, [result.isError, result.isSuccess, toggle]);
+  }, [
+    result.isError,
+    result.isSuccess,
+    toggle,
+    navigate,
+    notifications,
+    project.name,
+  ]);
 
   return (
     <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalBody>
-        <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
-          Are you absolutely sure?
-        </h3>
-        <p className="mb-0">
+      <ModalHeader className={cx("text-danger", "fw-bold")}>
+        Delete project
+      </ModalHeader>
+      <ModalBody className="pt-0">
+        <p className={cx("mb-0", "pb-3")}>
           Deleted projects cannot be restored. Please type{" "}
           <strong>{project.slug}</strong>, the slug of the project, to confirm.
         </p>
@@ -104,7 +123,7 @@ function ProjectDeleteConfirmation({
         />
       </ModalBody>
       <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+        <Button className="ms-2" color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
@@ -117,9 +136,9 @@ function ProjectDeleteConfirmation({
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
-            <CheckLg className={cx("bi", "me-1")} />
+            <Trash className={cx("bi", "me-1")} />
           )}
-          Yes, delete project
+          Delete project
         </Button>
       </ModalFooter>
     </Modal>
