@@ -22,6 +22,7 @@ import {
   CheckCircleFill,
   ExclamationCircleFill,
   Pencil,
+  QuestionCircleFill,
   SlashCircleFill,
   ThreeDotsVertical,
   Trash,
@@ -429,7 +430,13 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
       >
         {buttonContent}
       </Button>
-      <Modal size="lg" isOpen={isDetailsOpen} toggle={toggleDetails} centered>
+      <Modal
+        size="lg"
+        fullscreen="sm"
+        isOpen={isDetailsOpen}
+        toggle={toggleDetails}
+        centered
+      >
         <ModalHeader toggle={toggleDetails}>Repository permissions</ModalHeader>
         <ModalBody>
           <Row className="gy-2">
@@ -461,7 +468,7 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
                 )}
               </Col>
             )}
-            {error == null && !permissions.pull && (
+            {error == null && !isLoading && !permissions.pull && (
               <Col xs={12}>
                 <ErrorAlert className="mb-0" dismissible={false} timeout={0}>
                   <p className="mb-1">
@@ -474,9 +481,11 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
             <Col xs={12}>
               <h6 className={cx("fs-5", "fw-bold", "mb-0")}>Permissions</h6>
             </Col>
-            <Col className="mt-0" xs={6}>
+            <Col className="mt-0" xs={12} sm={6}>
               Clone, Pull:{" "}
-              {isNotFound ? (
+              {isLoading ? (
+                <Loader className="bi" inline size={16} />
+              ) : isNotFound ? (
                 <UnknownBadge />
               ) : permissions.pull ? (
                 <YesBadge />
@@ -484,8 +493,15 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
                 <NoBadge />
               )}
             </Col>
-            <Col className="mt-0" xs={6}>
-              Push: {permissions.push ? <YesBadge /> : <NoBadge />}
+            <Col className={cx("mt-1", "mt-sm-0")} xs={12} sm={6}>
+              Push:{" "}
+              {isLoading ? (
+                <Loader className="bi" inline size={16} />
+              ) : permissions.push ? (
+                <YesBadge />
+              ) : (
+                <NoBadge />
+              )}
             </Col>
           </Row>
         </ModalBody>
@@ -556,7 +572,7 @@ function UnknownBadge() {
         "text-dark"
       )}
     >
-      <SlashCircleFill className={cx("bi", "me-1")} />
+      <QuestionCircleFill className={cx("bi", "me-1")} />
       Unknown
     </Badge>
   );
