@@ -53,7 +53,12 @@ import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/pro
 import { ErrorAlert } from "../../../../components/Alert";
 import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { useGetRepositoryMetadataQuery } from "../../../connectedServices/connectedServices.api";
+import connectedServicesApi, {
+  useGetProvidersQuery,
+  useGetRepositoryMetadataQuery,
+} from "../../../connectedServices/connectedServices.api";
+import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -371,6 +376,7 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
     isLoading,
     error,
   } = useGetRepositoryMetadataQuery({ repositoryUrl });
+  useGetProvidersQuery();
 
   const permissions = useMemo(() => {
     const { pull, push } = repositoryProviderMatch?.repository_metadata
@@ -503,6 +509,9 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
                 <NoBadge />
               )}
             </Col>
+            <Col xs={12}>
+              <RepositoryProviderDetails repositoryUrl={repositoryUrl} />
+            </Col>
           </Row>
         </ModalBody>
         <ModalFooter>
@@ -576,4 +585,79 @@ function UnknownBadge() {
       Unknown
     </Badge>
   );
+}
+
+function RepositoryProviderDetails({
+  repositoryUrl,
+}: RepositoryPermissionsProps) {
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
+  );
+
+  const {
+    data: repositoryProviderMatch,
+    isLoading: isLoadingRepositoryProviderMatch,
+    error: repositoryProviderMatchError,
+  } = connectedServicesApi.endpoints.getRepositoryMetadata.useQueryState({
+    repositoryUrl,
+  });
+  const {
+    data: providers,
+    isLoading: isLoadingProviders,
+    error: providersError,
+  } = connectedServicesApi.endpoints.getProviders.useQueryState();
+
+  const isLoading = isLoadingRepositoryProviderMatch || isLoadingProviders;
+  const error = repositoryProviderMatchError ?? providersError;
+
+  const isNotFound =
+    repositoryProviderMatchError != null &&
+    "status" in repositoryProviderMatchError &&
+    repositoryProviderMatchError.status == 404;
+
+  const provider = useMemo(
+    () =>
+      repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID
+        ? { id: INTERNAL_GITLAB_PROVIDER_ID, display_name: "Internal GitLab" }
+        : providers?.find(
+            ({ id }) => id === repositoryProviderMatch?.provider_id
+          ),
+    [providers, repositoryProviderMatch?.provider_id]
+  );
+
+  const status =
+    repositoryProviderMatch?.connection_id ||
+    (userLogged &&
+      repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID)
+      ? "Connected"
+      : "Not connected";
+
+  if (isLoading) {
+    return (
+      <>
+        <Loader inline className={cx("bi", "me-1")} size={16} />
+        Loading git provider details...
+      </>
+    );
+  }
+
+  if (error && isNotFound) {
+    return null;
+  }
+
+  if (error) {
+    return <RtkOrNotebooksError error={error} dismissible={false} />;
+  }
+
+  if (provider) {
+    return (
+      <>
+        <h6 className={cx("fs-5", "fw-bold", "mb-0")}>Git Provider</h6>
+        <p className="mb-0">{provider.display_name}</p>
+        <p className="mb-0">Status: {status}</p>
+      </>
+    );
+  }
+
+  return null;
 }
