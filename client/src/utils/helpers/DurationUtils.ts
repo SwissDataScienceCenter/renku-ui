@@ -16,7 +16,12 @@
  * limitations under the License.
  */
 
-import { DateTime, Duration, DurationObjectUnits } from "luxon";
+import {
+  DateTime,
+  Duration,
+  DurationLikeObject,
+  DurationObjectUnits,
+} from "luxon";
 import { ensureDateTime } from "./DateTimeUtils";
 
 /**
@@ -44,6 +49,35 @@ export function toHumanDuration({
 
   const unitStr = rescaled < 2 ? unit.slice(0, -1) : unit;
   return `${rescaled} ${unitStr}`;
+}
+
+/**
+ * Converts a duration-like object to a human-readable string without truncating to the most significant value.
+ * @param duration a Duration instance or a number of seconds
+ * @param units a list of units expected in the output representation, defaults to ["years","weeks","days","hours","minutes","seconds"]
+ * @returns a human-readable string
+ */
+export function toFullHumanDuration(
+  duration: Duration | number,
+  units: (keyof DurationLikeObject)[] = ["days", "hours", "minutes", "seconds"]
+): string {
+  const duration_ = ensureDuration(duration);
+
+  if (!duration_.isValid) {
+    return "invalid duration";
+  }
+  const shiftedDuration = duration_.shiftTo(...units);
+  const filteredDuration = Object.fromEntries(
+    Object.entries(shiftedDuration.toObject()).filter(
+      ([, value]) => value !== 0
+    )
+  );
+  return Duration.fromObject(filteredDuration)
+    .toHuman({
+      unitDisplay: "narrow",
+      maximumFractionDigits: 0,
+    })
+    .replace(/, /g, " ");
 }
 
 /**

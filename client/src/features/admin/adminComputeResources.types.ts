@@ -31,6 +31,8 @@ export interface AddResourcePoolParams {
   public: boolean;
   classes: ResourceClassDefinition[];
   quota: Resources;
+  idle_threshold?: number;
+  hibernation_threshold?: number;
 }
 
 type ResourceClassDefinition = Omit<ResourceClass, "id" | "matching">;
@@ -42,6 +44,8 @@ export interface UpdateResourcePoolParams {
   public?: boolean;
   quota?: Resources;
   default?: boolean;
+  idle_threshold?: number;
+  hibernation_threshold?: number;
 }
 
 export interface DeleteResourcePoolParams {
@@ -71,4 +75,19 @@ export interface AddUsersToResourcePoolParams {
 export interface RemoveUserFromResourcePoolParams {
   resourcePoolId: number;
   userId: string;
+}
+
+export interface AddResourcePoolForm {
+  name: string;
+  public: boolean;
+  quotaCpu: number;
+  quotaMemory: number;
+  quotaGpu: number;
+  idleThresholdMinutes?: number;
+  hibernationThresholdMinutes?: number;
+}
+
+export interface UpdateResourcePoolThresholdsForm {
+  idleThresholdMinutes?: number;
+  hibernationThresholdMinutes?: number;
 }

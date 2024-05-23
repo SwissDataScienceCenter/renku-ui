@@ -4,13 +4,20 @@
     {
       "data": {
         "anonymousSessionsEnabled": true,
-        "cloudstorageEnabled": {
-          "azure_blob": false,
-          "s3": false
+        "cloudstorageEnabled": true,
+        "defaultCullingThresholds": {
+          "registered": {
+            "idle": 86400,
+            "hibernation": 259200
+          },
+          "anonymous": {
+            "idle": 1,
+            "hibernation": 43200
+          }
         },
         "sshEnabled": false
       },
-      "version": "1.15.2"
+      "version": "1.22.0"
     }
   ]
 }

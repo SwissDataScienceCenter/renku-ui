@@ -69,7 +69,7 @@ describe("display version information", () => {
     cy.contains("Renku version 3.10.0").should("be.visible");
     cy.contains("UI: 3.10.0").should("be.visible");
     cy.contains("Core: v2.4.1").should("be.visible");
-    cy.contains("Notebooks: 1.15.2").should("be.visible");
+    cy.contains("Notebooks: 1.22.0").should("be.visible");
   });
 });
 
