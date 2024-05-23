@@ -16,15 +16,12 @@
  * limitations under the License
  */
 import cx from "classnames";
-import {
-  faDiscourse,
-  faGithub,
-  faGitter,
-} from "@fortawesome/free-brands-svg-icons";
+import { faDiscourse, faGitter } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Github } from "react-bootstrap-icons";
 import { useContext } from "react";
 import { Route, Routes } from "react-router-dom-v5-compat";
 import { Nav, NavItem } from "reactstrap";
-
 import {
   ExternalDocsLink,
   ExternalIconLink,
@@ -100,7 +97,7 @@ function HelpGetting() {
           <h3>
             <ExternalIconLink
               url={Links.DISCOURSE}
-              icon={faDiscourse}
+              icon={<FontAwesomeIcon icon={faDiscourse} color="dark" />}
               title="Forum"
             />
           </h3>
@@ -115,7 +112,7 @@ function HelpGetting() {
           <h3>
             <ExternalIconLink
               url={Links.GITTER}
-              icon={faGitter}
+              icon={<FontAwesomeIcon icon={faGitter} color="dark" />}
               title="Gitter"
             />
           </h3>
@@ -129,7 +126,7 @@ function HelpGetting() {
           <h3>
             <ExternalIconLink
               url={Links.GITHUB}
-              icon={faGithub}
+              icon={<Github className="bi" />}
               title="GitHub"
             />
           </h3>

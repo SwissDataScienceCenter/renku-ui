@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useState } from "react";
 import {
   Button,
@@ -37,7 +38,9 @@ import {
   Bookmarks,
   Calendar4,
   Diagram2,
+  FileCode,
   Journals,
+  Link45deg,
   People,
   XLg,
 } from "react-bootstrap-icons";
@@ -46,14 +49,13 @@ import {
   faArrowRight,
   faCheck,
   faExclamationTriangle,
-  faFileCode,
-  faLink,
   faSortAmountDown,
   faSortAmountUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { InfoAlert, WarnAlert } from "../components/Alert";
+
 import {
   ExternalDocsLink,
   ExternalLink,
@@ -1011,8 +1013,7 @@ function VisualizerDetailExpanded({
           {defaultValue}
           <IconLink
             tooltip="Go to file"
-            className="text-rk-yellow"
-            icon={faFileCode}
+            icon={<FileCode className={cx("bi", "text-rk-yellow")} />}
             to={fileUrl}
           />
         </span>
@@ -1114,8 +1115,7 @@ function VisualizerLocalResource({
     const link = (
       <IconLink
         tooltip="Open workflow"
-        className="text-rk-yellow"
-        icon={faLink}
+        icon={<Link45deg className={cx("bi", "text-rk-yellow")} />}
         to={url}
       />
     );

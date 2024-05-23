@@ -23,12 +23,10 @@
  *  Presentational components for help.
  */
 
-import {
-  faDiscourse,
-  faGithub,
-  faGitter,
-} from "@fortawesome/free-brands-svg-icons";
+import { faDiscourse, faGitter } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
+import { Github } from "react-bootstrap-icons";
 import { Route, Routes } from "react-router-dom-v5-compat";
 import { Col, Nav, NavItem, Row } from "reactstrap";
 
@@ -101,7 +99,7 @@ function HelpGetting() {
           <h3>
             <ExternalIconLink
               url={Links.DISCOURSE}
-              icon={faDiscourse}
+              icon={<FontAwesomeIcon icon={faDiscourse} color="dark" />}
               title="Forum"
             />
           </h3>
@@ -116,7 +114,7 @@ function HelpGetting() {
           <h3>
             <ExternalIconLink
               url={Links.GITTER}
-              icon={faGitter}
+              icon={<FontAwesomeIcon icon={faGitter} color="dark" />}
               title="Gitter"
             />
           </h3>
@@ -130,7 +128,7 @@ function HelpGetting() {
           <h3>
             <ExternalIconLink
               url={Links.GITHUB}
-              icon={faGithub}
+              icon={<Github className="bi" />}
               title="GitHub"
             />
           </h3>
