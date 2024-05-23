@@ -17,7 +17,7 @@
  */
 import { useCallback, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
-import { Link, Navigate, useParams } from "react-router-dom-v5-compat";
+import { Link, useParams } from "react-router-dom-v5-compat";
 import {
   Dropdown,
   DropdownItem,
@@ -26,17 +26,15 @@ import {
   Label,
 } from "reactstrap";
 
-import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
+import FormSchema from "../../../components/formschema/FormSchema";
 import { Url } from "../../../utils/helpers/url";
-
 import SessionsV2 from "../../sessionsV2/SessionsV2";
 import type { Project } from "../api/projectV2.api";
 import {
   isErrorResponse,
   useGetProjectsByNamespaceAndSlugQuery,
-  useGetProjectsByProjectIdQuery,
 } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
 
@@ -46,6 +44,7 @@ import {
   ProjectV2RepositoryForm,
 } from "./ProjectV2EditForm";
 import { SettingEditOption } from "./projectV2Show.types";
+import { ProjectV2ShowByProjectId } from "./ProjectV2ShowByProjectId";
 
 interface ProjectV2HeaderProps {
   project: Project;
@@ -231,39 +230,6 @@ function ProjectV2ShowByNamespaceAndSlug() {
         />
       )}
     </FormSchema>
-  );
-}
-
-export function ProjectV2ShowByProjectId() {
-  const { id: projectId } = useParams<{
-    id: string | undefined;
-    namespace: string | undefined;
-    slug: string | undefined;
-  }>();
-  const { data, isLoading, error } = useGetProjectsByProjectIdQuery({
-    projectId: projectId ?? "",
-  });
-  if (isLoading) return <Loader />;
-  if (error) {
-    if (isErrorResponse(error)) {
-      return (
-        <div>
-          Project does not exist, or you are not authorized to access it.{" "}
-          <Link to={Url.get(Url.pages.projectV2.list)}>Return to list</Link>
-        </div>
-      );
-    }
-    return <div>Could not retrieve project</div>;
-  }
-  if (data == null) return <div>Could not retrieve project</div>;
-  return (
-    <Navigate
-      to={Url.get(Url.pages.projectV2.show, {
-        namespace: data.namespace,
-        slug: data.slug,
-      })}
-      replace
-    />
   );
 }
 

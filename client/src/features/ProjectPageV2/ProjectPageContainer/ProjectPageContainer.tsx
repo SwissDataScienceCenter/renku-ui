@@ -18,24 +18,20 @@
 import cx from "classnames";
 import { Link, useParams } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
-import { Loader } from "../../../components/Loader.tsx";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert.tsx";
+import { Loader } from "../../../components/Loader";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import { Url } from "../../../utils/helpers/url";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api.ts";
-import { isErrorResponse } from "../../projectsV2/api/projectV2.enhanced-api.ts";
-import { ProjectV2ShowByProjectId } from "../../projectsV2/show/ProjectV2Show.tsx";
-import ProjectPageContent from "../ProjectPageContent/ProjectPageContent.tsx";
-import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader.tsx";
-import ProjectPageNav from "../ProjectPageNav/ProjectPageNav.tsx";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
+import { isErrorResponse } from "../../projectsV2/api/projectV2.enhanced-api";
+import { ProjectV2ShowByProjectId } from "../../projectsV2/show/ProjectV2ShowByProjectId";
+import ProjectPageContent from "../ProjectPageContent/ProjectPageContent";
+import { ProjectPageContentType } from "../ProjectPageContent/projectPageContentType.types";
+import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
+import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
+
 import styles from "./ProjectPageContainer.module.scss";
 
-export enum ProjectPageContentType {
-  Overview = "Overview",
-  Settings = "Settings",
-  ProjectInfo = "ProjectInfo",
-}
-
-export function ProjectPageContainer({
+function ProjectPageContainer({
   contentPage,
 }: {
   contentPage: ProjectPageContentType;
