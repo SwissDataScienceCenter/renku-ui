@@ -56,9 +56,11 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import connectedServicesApi, {
   useGetProvidersQuery,
   useGetRepositoryMetadataQuery,
+  useGetRepositoryProbeQuery,
 } from "../../../connectedServices/connectedServices.api";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -615,6 +617,10 @@ function RepositoryProviderDetails({
     "status" in repositoryProviderMatchError &&
     repositoryProviderMatchError.status == 404;
 
+  const { data: repositoryProbe } = useGetRepositoryProbeQuery(
+    isNotFound ? { repositoryUrl } : skipToken
+  );
+
   const provider = useMemo(
     () =>
       repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID
@@ -642,7 +648,11 @@ function RepositoryProviderDetails({
   }
 
   if (error && isNotFound) {
-    return null;
+    return (
+      <>
+        <p>Probe: {JSON.stringify(repositoryProbe)}</p>
+      </>
+    );
   }
 
   if (error) {

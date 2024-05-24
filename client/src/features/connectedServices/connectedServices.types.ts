@@ -63,3 +63,7 @@ export interface GetConnectedAccountParams {
 export interface GetRepositoryMetadataParams {
   repositoryUrl: string;
 }
+
+export interface GetRepositoryProbeParams {
+  repositoryUrl: string;
+}

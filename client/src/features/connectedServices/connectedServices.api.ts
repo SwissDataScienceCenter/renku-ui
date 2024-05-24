@@ -25,6 +25,7 @@ import {
   GetConnectedAccountParams,
   GetRepositoryMetadataParams,
   RepositoryProviderMatch,
+  GetRepositoryProbeParams,
 } from "./connectedServices.types";
 
 const connectedServicesApi = createApi({
@@ -32,7 +33,13 @@ const connectedServicesApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "/ui-server/api/data/oauth2",
   }),
-  tagTypes: ["Provider", "Connection", "ConnectedAccount", "Repository"],
+  tagTypes: [
+    "Provider",
+    "Connection",
+    "ConnectedAccount",
+    "Repository",
+    "RepositoryProbe",
+  ],
   endpoints: (builder) => ({
     getProviders: builder.query<ProviderList, void>({
       query: () => {
@@ -87,11 +94,32 @@ const connectedServicesApi = createApi({
     >({
       query: ({ repositoryUrl }) => {
         return {
-          url: `api/repository/${encodeURIComponent(repositoryUrl)}`,
+          url: `api/repositories/${encodeURIComponent(repositoryUrl)}`,
         };
       },
       providesTags: (result, _error, { repositoryUrl }) =>
         result ? [{ type: "Repository" as const, id: repositoryUrl }] : [],
+    }),
+    getRepositoryProbe: builder.query<boolean, GetRepositoryProbeParams>({
+      query: ({ repositoryUrl }) => {
+        return {
+          url: `api/repositories/${encodeURIComponent(repositoryUrl)}/probe`,
+          validateStatus: (response) => {
+            return (
+              (response.status >= 200 && response.status < 300) ||
+              response.status == 404
+            );
+          },
+        };
+      },
+      transformResponse(_result, meta) {
+        const status = meta?.response?.status;
+        return status != null && status >= 200 && status < 300;
+      },
+      providesTags: (result, _error, { repositoryUrl }) =>
+        result != null
+          ? [{ type: "RepositoryProbe" as const, id: repositoryUrl }]
+          : [],
     }),
   }),
 });
@@ -102,4 +130,5 @@ export const {
   useGetConnectionsQuery,
   useGetProvidersQuery,
   useGetRepositoryMetadataQuery,
+  useGetRepositoryProbeQuery,
 } = connectedServicesApi;
