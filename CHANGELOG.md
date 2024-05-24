@@ -1,8 +1,17 @@
 # Changes
 
-## [3.27.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.26.0...3.27.0) (YYYY-MM-DD)
+## [3.27.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.26.0...3.27.0) (2024-05-24)
 
-TODO: Update me here.
+### Features
+
+- allow editing of project settings based on access role ([#3119](https://github.com/SwissDataScienceCenter/renku-ui/issues/3119), [#3118](https://github.com/SwissDataScienceCenter/renku-ui/issues/3118))
+- changes to search UI to support new roles and response structure ([#3119](https://github.com/SwissDataScienceCenter/renku-ui/issues/3119), [#3118](https://github.com/SwissDataScienceCenter/renku-ui/issues/3118))
+- support new group member roles ([#3137](https://github.com/SwissDataScienceCenter/renku-ui/issues/3137), [#3146](https://github.com/SwissDataScienceCenter/renku-ui/issues/3146))
+- update project member names ([#3110](https://github.com/SwissDataScienceCenter/renku-ui/issues/3110), [#3118](https://github.com/SwissDataScienceCenter/renku-ui/issues/3118))
+
+### BREAKING CHANGES
+
+- Requires renku-data-services version >= 0.12.0
 
 ## [3.26.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.25.0...3.26.0) (2024-05-23)
 
