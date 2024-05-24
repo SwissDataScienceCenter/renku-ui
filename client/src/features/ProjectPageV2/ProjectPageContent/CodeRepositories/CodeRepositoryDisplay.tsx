@@ -49,7 +49,11 @@ import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { ErrorAlert } from "../../../../components/Alert";
+import {
+  ErrorAlert,
+  RenkuAlert,
+  WarnAlert,
+} from "../../../../components/Alert";
 import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -381,7 +385,6 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
 
   const { data: repositoryProbe, isLoading: isLoadingRepositoryProbe } =
     useGetRepositoryProbeQuery(isNotFound ? { repositoryUrl } : skipToken);
-  useGetProvidersQuery();
 
   const isLoading =
     isLoadingRepositoryProviderMatch || isLoadingRepositoryProbe;
@@ -398,11 +401,6 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
     repositoryProbe,
     repositoryProviderMatch?.repository_metadata?.permissions,
   ]);
-
-  const canonicalUrlStr = useMemo(
-    () => `${repositoryUrl.replace(/.git$/i, "")}`,
-    [repositoryUrl]
-  );
 
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const toggleDetails = useCallback(() => {
@@ -455,74 +453,7 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
         centered
       >
         <ModalHeader toggle={toggleDetails}>Repository permissions</ModalHeader>
-        <ModalBody>
-          <Row className="gy-2">
-            <Col xs={12}>
-              Repository:{" "}
-              <a
-                href={canonicalUrlStr}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                {repositoryUrl}
-                <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
-              </a>
-            </Col>
-            {error != null && (
-              <Col xs={12}>
-                {isNotFound ? (
-                  <ErrorAlert className="mb-0" dismissible={false} timeout={0}>
-                    <p className="mb-1">
-                      No git provider found for this repository.
-                    </p>
-                    <p className={cx("mb-0", "fst-italic")}>
-                      You may still be able to clone and pull the repository if
-                      it is publicly available.
-                    </p>
-                  </ErrorAlert>
-                ) : (
-                  <RtkOrNotebooksError error={error} dismissible={false} />
-                )}
-              </Col>
-            )}
-            {error == null && !isLoading && !permissions.pull && (
-              <Col xs={12}>
-                <ErrorAlert className="mb-0" dismissible={false} timeout={0}>
-                  <p className="mb-1">
-                    This repository does not exist or you do not have access to
-                    it.
-                  </p>
-                </ErrorAlert>
-              </Col>
-            )}
-            <Col xs={12}>
-              <h6 className={cx("fs-5", "fw-bold", "mb-0")}>Permissions</h6>
-            </Col>
-            <Col className="mt-0" xs={12} sm={6}>
-              Clone, Pull:{" "}
-              {isLoading ? (
-                <Loader className="bi" inline size={16} />
-              ) : permissions.pull ? (
-                <YesBadge />
-              ) : (
-                <NoBadge />
-              )}
-            </Col>
-            <Col className={cx("mt-1", "mt-sm-0")} xs={12} sm={6}>
-              Push:{" "}
-              {isLoading ? (
-                <Loader className="bi" inline size={16} />
-              ) : permissions.push ? (
-                <YesBadge />
-              ) : (
-                <NoBadge />
-              )}
-            </Col>
-            <Col xs={12}>
-              <RepositoryProviderDetails repositoryUrl={repositoryUrl} />
-            </Col>
-          </Row>
-        </ModalBody>
+        <RepositoryPermissionsModalContent repositoryUrl={repositoryUrl} />
         <ModalFooter>
           <div className="d-flex justify-content-end">
             <Button color="outline-danger" onClick={toggleDetails}>
@@ -534,6 +465,232 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
       </Modal>
     </>
   );
+}
+
+function RepositoryPermissionsModalContent({
+  repositoryUrl,
+}: RepositoryPermissionsProps) {
+  const {
+    data: repositoryProviderMatch,
+    isLoading: isLoadingRepositoryProviderMatch,
+    error,
+  } = connectedServicesApi.endpoints.getRepositoryMetadata.useQueryState({
+    repositoryUrl,
+  });
+  const { isLoading: isLoadingProviders, error: providersError } =
+    useGetProvidersQuery();
+
+  const isNotFound = error != null && "status" in error && error.status == 404;
+
+  const { data: repositoryProbe, isLoading: isLoadingRepositoryProbe } =
+    connectedServicesApi.endpoints.getRepositoryProbe.useQueryState(
+      isNotFound ? { repositoryUrl } : skipToken
+    );
+
+  const isLoading =
+    isLoadingRepositoryProviderMatch ||
+    isLoadingProviders ||
+    isLoadingRepositoryProbe;
+
+  const permissions = useMemo(() => {
+    if (isNotFound && repositoryProbe) {
+      return { pull: true, push: false };
+    }
+    const { pull, push } = repositoryProviderMatch?.repository_metadata
+      ?.permissions ?? { pull: false, push: false };
+    return { pull, push };
+  }, [
+    isNotFound,
+    repositoryProbe,
+    repositoryProviderMatch?.repository_metadata?.permissions,
+  ]);
+
+  const canonicalUrlStr = useMemo(
+    () => `${repositoryUrl.replace(/.git$/i, "")}`,
+    [repositoryUrl]
+  );
+
+  return (
+    <ModalBody>
+      <Row className="gy-2">
+        <Col xs={12}>
+          Repository:{" "}
+          <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
+            {repositoryUrl}
+            <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
+          </a>
+        </Col>
+        {providersError && (
+          <Col xs={12}>
+            <RtkOrNotebooksError error={providersError} dismissible={false} />
+          </Col>
+        )}
+        {error && !isNotFound && (
+          <Col xs={12}>
+            <RtkOrNotebooksError error={error} dismissible={false} />
+          </Col>
+        )}
+        {!isLoading && !permissions.push && (
+          <Col xs={12}>
+            <RepositoryPermissionsAlert repositoryUrl={repositoryUrl} />
+          </Col>
+        )}
+        <Col xs={12}>
+          <h6 className={cx("fs-5", "fw-bold", "mb-0")}>Permissions</h6>
+        </Col>
+        <Col className="mt-0" xs={12} sm={6}>
+          Clone, Pull:{" "}
+          {isLoading ? (
+            <Loader className="bi" inline size={16} />
+          ) : permissions.pull ? (
+            <YesBadge />
+          ) : (
+            <NoBadge />
+          )}
+        </Col>
+        <Col className={cx("mt-1", "mt-sm-0")} xs={12} sm={6}>
+          Push:{" "}
+          {isLoading ? (
+            <Loader className="bi" inline size={16} />
+          ) : permissions.push ? (
+            <YesBadge />
+          ) : (
+            <NoBadge />
+          )}
+        </Col>
+        <Col xs={12}>
+          <RepositoryProviderDetails repositoryUrl={repositoryUrl} />
+        </Col>
+      </Row>
+    </ModalBody>
+  );
+}
+
+function RepositoryPermissionsAlert({
+  repositoryUrl,
+}: RepositoryPermissionsProps) {
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
+  );
+
+  const { data: repositoryProviderMatch, error } =
+    connectedServicesApi.endpoints.getRepositoryMetadata.useQueryState({
+      repositoryUrl,
+    });
+  const { data: providers } =
+    connectedServicesApi.endpoints.getProviders.useQueryState();
+
+  const isNotFound = error != null && "status" in error && error.status == 404;
+
+  const { data: repositoryProbe } =
+    connectedServicesApi.endpoints.getRepositoryProbe.useQueryState(
+      isNotFound ? { repositoryUrl } : skipToken
+    );
+
+  const permissions = useMemo(() => {
+    if (isNotFound && repositoryProbe) {
+      return { pull: true, push: false };
+    }
+    const { pull, push } = repositoryProviderMatch?.repository_metadata
+      ?.permissions ?? { pull: false, push: false };
+    return { pull, push };
+  }, [
+    isNotFound,
+    repositoryProbe,
+    repositoryProviderMatch?.repository_metadata?.permissions,
+  ]);
+
+  const provider = useMemo(
+    () =>
+      repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID
+        ? { id: INTERNAL_GITLAB_PROVIDER_ID, display_name: "Internal GitLab" }
+        : providers?.find(
+            ({ id }) => id === repositoryProviderMatch?.provider_id
+          ),
+    [providers, repositoryProviderMatch?.provider_id]
+  );
+
+  const status =
+    repositoryProviderMatch?.connection_id ||
+    (userLogged &&
+      repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID)
+      ? "connected"
+      : "not-connected";
+
+  if (error && isNotFound) {
+    const color = permissions.pull ? "warning" : "danger";
+
+    return (
+      <Col xs={12}>
+        <RenkuAlert
+          color={color}
+          className="mb-0"
+          dismissible={false}
+          timeout={0}
+        >
+          <p className="mb-1">No git provider found for this repository.</p>
+          {permissions.pull ? (
+            <p className={cx("mb-0", "fst-italic")}>
+              This repository seems to be publicly available so you may be able
+              to clone and pull.
+            </p>
+          ) : (
+            <p className={cx("mb-0")}>
+              This repository does not exist or RenkuLab cannot access it.
+            </p>
+          )}
+        </RenkuAlert>
+      </Col>
+    );
+  }
+
+  if (error == null && !permissions.pull) {
+    return (
+      <Col xs={12}>
+        <ErrorAlert className="mb-0" dismissible={false} timeout={0}>
+          <p className="mb-0">
+            This repository does not exist or you do not have access to it.
+          </p>
+          {!userLogged ? (
+            <p className={cx("mt-1", "mb-0", "fst-italic")}>
+              As an anonymous user, you are not allowed to clone or pull private
+              repositories.
+            </p>
+          ) : provider && status === "not-connected" ? (
+            <p className={cx("mt-1", "mb-0", "fst-italic")}>
+              Your user account is not currently connected to{" "}
+              {provider.display_name}.
+            </p>
+          ) : null}
+        </ErrorAlert>
+      </Col>
+    );
+  }
+
+  if (error == null && !permissions.push) {
+    return (
+      <Col xs={12}>
+        <WarnAlert className="mb-0" dismissible={false} timeout={0}>
+          <p className="mb-0">
+            You are not allowed to push on this repository.
+          </p>
+          {!userLogged ? (
+            <p className={cx("mt-1", "mb-0", "fst-italic")}>
+              As an anonymous user, you are not allowed to perform pushes on git
+              repositories.
+            </p>
+          ) : provider && status === "not-connected" ? (
+            <p className={cx("mt-1", "mb-0", "fst-italic")}>
+              Your user account is not currently connected to{" "}
+              {provider.display_name}.
+            </p>
+          ) : null}
+        </WarnAlert>
+      </Col>
+    );
+  }
+
+  return null;
 }
 
 function YesBadge() {
@@ -604,10 +761,6 @@ function RepositoryProviderDetails({
     "status" in repositoryProviderMatchError &&
     repositoryProviderMatchError.status == 404;
 
-  const { data: repositoryProbe } = useGetRepositoryProbeQuery(
-    isNotFound ? { repositoryUrl } : skipToken
-  );
-
   const provider = useMemo(
     () =>
       repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID
@@ -635,11 +788,7 @@ function RepositoryProviderDetails({
   }
 
   if (error && isNotFound) {
-    return (
-      <>
-        <p>Probe: {JSON.stringify(repositoryProbe)}</p>
-      </>
-    );
+    return null;
   }
 
   if (error) {
