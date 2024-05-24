@@ -20,9 +20,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
   CheckCircleFill,
-  ExclamationCircleFill,
   Pencil,
-  QuestionCircleFill,
   SlashCircleFill,
   ThreeDotsVertical,
   Trash,
@@ -50,17 +48,17 @@ import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { ErrorAlert } from "../../../../components/Alert";
 import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import connectedServicesApi, {
   useGetProvidersQuery,
   useGetRepositoryMetadataQuery,
   useGetRepositoryProbeQuery,
 } from "../../../connectedServices/connectedServices.api";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -375,16 +373,31 @@ interface RepositoryPermissionsProps {
 function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
   const {
     data: repositoryProviderMatch,
-    isLoading,
+    isLoading: isLoadingRepositoryProviderMatch,
     error,
   } = useGetRepositoryMetadataQuery({ repositoryUrl });
+
+  const isNotFound = error != null && "status" in error && error.status == 404;
+
+  const { data: repositoryProbe, isLoading: isLoadingRepositoryProbe } =
+    useGetRepositoryProbeQuery(isNotFound ? { repositoryUrl } : skipToken);
   useGetProvidersQuery();
 
+  const isLoading =
+    isLoadingRepositoryProviderMatch || isLoadingRepositoryProbe;
+
   const permissions = useMemo(() => {
+    if (isNotFound && repositoryProbe) {
+      return { pull: true, push: false };
+    }
     const { pull, push } = repositoryProviderMatch?.repository_metadata
       ?.permissions ?? { pull: false, push: false };
     return { pull, push };
-  }, [repositoryProviderMatch?.repository_metadata?.permissions]);
+  }, [
+    isNotFound,
+    repositoryProbe,
+    repositoryProviderMatch?.repository_metadata?.permissions,
+  ]);
 
   const canonicalUrlStr = useMemo(
     () => `${repositoryUrl.replace(/.git$/i, "")}`,
@@ -395,8 +408,6 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
   const toggleDetails = useCallback(() => {
     setIsDetailsOpen((open) => !open);
   }, []);
-
-  const isNotFound = error != null && "status" in error && error.status == 404;
 
   const commonButtonClasses = [
     "border",
@@ -410,8 +421,6 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
     <>
       <Loader className="bi" inline size={16} />
     </>
-  ) : error != null ? (
-    <ExclamationCircleFill className="bi" />
   ) : permissions.pull && permissions.push ? (
     <CheckCircleFill className="bi" />
   ) : permissions.pull ? (
@@ -422,8 +431,6 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
 
   const buttonClasses = isLoading
     ? ["border-dark-subtle", "bg-light", "text-dark"]
-    : error != null
-    ? ["border-danger", "bg-danger-subtle", "text-danger"]
     : permissions.pull && permissions.push
     ? ["border-success", "bg-success-subtle", "text-success"]
     : permissions.pull
@@ -435,8 +442,10 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
       <Button
         className={cx(...commonButtonClasses, ...buttonClasses)}
         onClick={toggleDetails}
+        title="View repository permissions"
       >
         {buttonContent}
+        <span className="visually-hidden">View repository permissions</span>
       </Button>
       <Modal
         size="lg"
@@ -493,8 +502,6 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
               Clone, Pull:{" "}
               {isLoading ? (
                 <Loader className="bi" inline size={16} />
-              ) : isNotFound ? (
-                <UnknownBadge />
               ) : permissions.pull ? (
                 <YesBadge />
               ) : (
@@ -565,26 +572,6 @@ function NoBadge() {
     >
       <XCircleFill className={cx("bi", "me-1")} />
       No
-    </Badge>
-  );
-}
-
-function UnknownBadge() {
-  return (
-    <Badge
-      className={cx(
-        "border",
-        "rounded-pill",
-        "fs-6",
-        "lh-1",
-        "p-2",
-        "border-dark-subtle",
-        "bg-light",
-        "text-dark"
-      )}
-    >
-      <QuestionCircleFill className={cx("bi", "me-1")} />
-      Unknown
     </Badge>
   );
 }
