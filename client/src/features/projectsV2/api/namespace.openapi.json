@@ -677,14 +677,14 @@
           },
           {
             "id": "another-keycloak-user-id",
-            "role": "member"
+            "role": "editor"
           }
         ]
       },
       "GroupRole": {
         "description": "Possible roles of members in a group",
         "type": "string",
-        "enum": ["member", "owner"]
+        "enum": ["editor", "owner", "viewer"]
       },
       "NamespaceKind": {
         "description": "Possible kinds of namespaces",

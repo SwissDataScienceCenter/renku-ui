@@ -73,7 +73,7 @@ function AddGroupMemberAccessForm({
     defaultValues: {
       id: user.id,
       email: user.email,
-      role: "member",
+      role: "viewer",
     },
   });
 
@@ -125,7 +125,8 @@ function AddGroupMemberAccessForm({
                   style={{ maxWidth: "7em" }}
                   {...field}
                 >
-                  <option value="member">Member</option>
+                  <option value="viewer">Viewer</option>
+                  <option value="editor">Editor</option>
                   <option value="owner">Owner</option>
                 </Input>
               )}
@@ -169,7 +170,7 @@ export default function AddProjectMemberModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Add a project member</ModalHeader>
+      <ModalHeader toggle={toggle}>Add a group member</ModalHeader>
       {newMember == null && (
         <AddEntityMemberEmailLookupForm
           setNewMember={setNewMember}
