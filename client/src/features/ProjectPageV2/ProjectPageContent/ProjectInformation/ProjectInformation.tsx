@@ -25,7 +25,11 @@ import {
 import VisibilityIcon from "../../../../components/entities/VisibilityIcon.tsx";
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import { Url } from "../../../../utils/helpers/url";
-import type { Project } from "../../../projectsV2/api/projectV2.api.ts";
+import type {
+  Project,
+  ProjectMemberListResponse,
+  ProjectMemberResponse,
+} from "../../../projectsV2/api/projectV2.api.ts";
 import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 import MembershipGuard from "../../utils/MembershipGuard.tsx";
 import styles from "./ProjectInformation.module.scss";
@@ -39,6 +43,70 @@ export function ProjectImageView() {
         alt="Project image preview"
       />
     </div>
+  );
+}
+
+function ProjectInformationMember({
+  member,
+}: {
+  member: ProjectMemberResponse;
+}) {
+  const classNames = ["fw-bold", "mb-1"];
+  if (member.last_name != null) {
+    return (
+      <div className={cx(classNames)}>
+        {member.first_name ?? ""} {member.last_name}
+      </div>
+    );
+  }
+  if (member.email != null) {
+    return <div className={cx(classNames)}>{member.email}</div>;
+  }
+  return <div className={cx(classNames)}>{member.id}</div>;
+}
+
+interface ProjectInformationMembersProps {
+  members: ProjectMemberListResponse | undefined;
+  membersUrl: string;
+}
+
+const MAX_MEMBERS_DISPLAYED = 5;
+
+function ProjectInformationMembers({
+  members,
+  membersUrl,
+}: ProjectInformationMembersProps) {
+  if (members == null) return null;
+  if (members.length == 0) {
+    return (
+      <MembershipGuard
+        disabled={null}
+        enabled={
+          <UnderlineArrowLink
+            tooltip="Add project members"
+            text="Add members"
+            to={membersUrl}
+          />
+        }
+        members={members}
+        minimumRole="editor"
+      />
+    );
+  }
+
+  return (
+    <>
+      {members.slice(0, MAX_MEMBERS_DISPLAYED).map((member, index) => (
+        <ProjectInformationMember key={index} member={member} />
+      ))}
+      {members.length > MAX_MEMBERS_DISPLAYED && (
+        <UnderlineArrowLink
+          tooltip="View all project members"
+          text="All members"
+          to={membersUrl}
+        />
+      )}
+    </>
   );
 }
 
@@ -121,23 +189,7 @@ export default function ProjectInformation({ project }: { project: Project }) {
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Members ({totalMembers})</div>
-        <MembershipGuard
-          disabled={
-            <UnderlineArrowLink
-              tooltip="View project members"
-              text="View members"
-              to={membersUrl}
-            />
-          }
-          enabled={
-            <UnderlineArrowLink
-              tooltip="Edit project members"
-              text="Edit members"
-              to={membersUrl}
-            />
-          }
-          members={members}
-        />
+        <ProjectInformationMembers members={members} membersUrl={membersUrl} />
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Keywords ({totalKeywords})</div>

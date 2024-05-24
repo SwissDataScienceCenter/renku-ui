@@ -166,31 +166,29 @@ describe("Navigate to project", () => {
   });
 
   it("shows project members", () => {
-    fixtures
-      .exactUser({
-        name: "getExactUserSuccess",
-        exactEmailQueryString: "foo%40bar.com",
-        response: [
-          {
-            id: "user-id",
-            email: "foo@bar.com",
-            first_name: "Foo",
-            last_name: "Bar",
-          },
-        ],
-      })
-      .exactUser({
-        name: "getExactUserFail",
-        exactEmailQueryString: "noone%40bar.com",
-        response: [],
-      })
-      .listProjectV2Members()
-      .readProjectV2();
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
+    fixtures.listProjectV2Members().readProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.contains("Members of the project").should("be.visible");
     cy.contains("user1@email.com").should("be.visible");
     cy.contains("user3-uuid").should("be.visible");
+  });
+
+  it("shows at most 5 members", () => {
+    fixtures
+      .listProjectV2Members({
+        fixture: "projectV2/list-projectV2-members-many.json",
+      })
+      .readProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.contains("User One").should("be.visible");
+    cy.contains("User Two").should("be.visible");
+    cy.contains("User Three").should("be.visible");
+    cy.contains("user4@email.com").should("be.visible");
+    cy.contains("user5-uuid").should("be.visible");
+    cy.contains("user6-uuid").should("not.exist");
+    cy.contains("All members").should("be.visible").click();
+    cy.contains("user6-uuid").should("be.visible");
   });
 });
 
@@ -496,7 +494,7 @@ describe("Editor cannot maintain members", () => {
   it("cannot change project members", () => {
     cy.contains("test 2 v2-project").should("be.visible");
     cy.wait("@listProjectV2Members");
-    cy.contains("View members").click();
+    cy.get("a[title='Settings']").click();
     cy.getDataCy("project-member-edit-1").should("be.disabled");
     cy.getDataCy("project-add-member").should("not.exist");
   });
@@ -530,7 +528,8 @@ describe("Viewer cannot edit project", () => {
     cy.wait("@getDataServicesUser");
     cy.getDataCy("project-settings-edit").should("not.exist");
     cy.getDataCy("project-description-edit").should("not.exist");
-    cy.contains("View members").should("be.visible");
+    cy.get("a[title='Settings']").click();
+    cy.getDataCy("project-member-edit-0").should("be.disabled");
   });
 
   it("cannot change project components", () => {
