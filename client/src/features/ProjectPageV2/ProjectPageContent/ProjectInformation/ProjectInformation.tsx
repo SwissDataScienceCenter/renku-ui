@@ -170,7 +170,9 @@ export default function ProjectInformation() {
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Namespace</div>
-        <div className="fw-bold">{project.namespace}</div>
+        <div className="fw-bold" data-cy="project-namespace">
+          {project.namespace}
+        </div>
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Visibility</div>

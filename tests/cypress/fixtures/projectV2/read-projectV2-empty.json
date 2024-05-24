@@ -1,0 +1,11 @@
+{
+  "id": "THEPROJECTULID26CHARACTERS",
+  "name": "test 2 v2-project",
+  "slug": "test-2-v2-project",
+  "namespace": "user1-uuid",
+  "creation_date": "2023-11-15T09:55:59Z",
+  "created_by": "user1-uuid",
+  "repositories": [],
+  "visibility": "public",
+  "description": "Project 2 description"
+}

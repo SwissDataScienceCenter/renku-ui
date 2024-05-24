@@ -142,7 +142,11 @@ function AddSessionCustomImageModal({
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading} type="submit">
+          <Button
+            disabled={result.isLoading}
+            type="submit"
+            data-cy="add-launcher-custom-btn"
+          >
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
@@ -258,6 +262,7 @@ function AddSessionExistingEnvModal({
           disabled={result.isLoading}
           type="submit"
           onClick={handleSubmit(onSubmit)}
+          data-cy="add-session-launcher-btn"
         >
           {result.isLoading ? (
             <>
@@ -342,6 +347,7 @@ export function Step1AddSessionModal({
                   styles.BorderDashed,
                   stylesButton.EmptyButton
                 )}
+                data-cy="add-existing-environment"
               >
                 <EnvironmentIcon size={30} className="me-2" />
                 Select an existing environment
@@ -361,6 +367,7 @@ export function Step1AddSessionModal({
                   styles.BorderDashed,
                   stylesButton.EmptyButton
                 )}
+                data-cy="add-custom-image"
               >
                 <Link45deg className={cx("me-2", "rk-icon-lg")} />
                 Provide a custom image

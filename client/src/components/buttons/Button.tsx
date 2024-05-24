@@ -373,6 +373,7 @@ export function PlusRoundButton({
           buttonStyles.PlusIconButton
         )}
         onClick={handler}
+        data-cy="plus-button"
       >
         <PlusLg size="16" />
       </Button>

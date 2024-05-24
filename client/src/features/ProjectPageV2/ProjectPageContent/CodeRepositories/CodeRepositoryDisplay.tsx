@@ -238,11 +238,16 @@ function CodeRepositoryActions({
             "shadow-none",
             dotsDropdownStyles.threeDotsDark
           )}
+          data-cy="code-repository-actions"
         >
           <ThreeDotsVertical size={24} className="fs-3" />
           <span className="visually-hidden">Actions</span>
         </DropdownToggle>
-        <DropdownMenu className={cx("text-end", "mx-0", "mt-2")} end>
+        <DropdownMenu
+          className={cx("text-end", "mx-0", "mt-2")}
+          end
+          data-cy="code-repository-menu"
+        >
           <DropdownItem
             className={cx(
               "d-flex",
@@ -251,6 +256,7 @@ function CodeRepositoryActions({
               "justify-content-start"
             )}
             onClick={toggleEdit}
+            data-cy="code-repository-edit"
           >
             <Pencil /> Edit code repository
           </DropdownItem>
@@ -262,6 +268,7 @@ function CodeRepositoryActions({
               "justify-content-start"
             )}
             onClick={toggleDelete}
+            data-cy="code-repository-delete"
           >
             <Trash /> Remove code repository
           </DropdownItem>
@@ -308,7 +315,7 @@ export function RepositoryItem({
         provider={canonicalUrl.origin}
       />
       <div className={cx("d-flex", "flex-column")}>
-        <span>{canonicalUrl.hostname}</span>
+        <span data-cy="code-repository-title">{canonicalUrl.hostname}</span>
         <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
           {title || canonicalUrlStr}
           <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />

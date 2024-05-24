@@ -190,13 +190,16 @@ export function SessionItemDisplay({
               "m-0",
               sessionItemStyles.ItemDisplaySessionRow
             )}
+            data-cy="session-launcher-item"
           >
             <SessionNameBox handler={() => toggleSessionDetails()}>
               <LayoutSidebarInsetReverse
                 className={cx("flex-shrink-0", "me-0")}
                 size="20"
               />
-              <span className={cx("text-truncate")}>{name}</span>
+              <span className={cx("text-truncate")} data-cy="session-name">
+                {name}
+              </span>
             </SessionNameBox>
             <SessionStatusBadgeBox>
               <SessionStatusV2Label key={key} session={session} />
@@ -224,13 +227,16 @@ export function SessionItemDisplay({
             "m-0",
             sessionItemStyles.ItemDisplaySessionRow
           )}
+          data-cy="session-launcher-item"
         >
           <SessionNameBox handler={() => toggleSessionDetails()}>
             <LayoutSidebarInsetReverse
               className={cx("flex-shrink-0", "me-0")}
               size="20"
             />
-            <span className={cx("text-truncate")}>{name}</span>
+            <span className={cx("text-truncate")} data-cy="session-name">
+              {name}
+            </span>
           </SessionNameBox>
           <SessionStatusBadgeBox>
             <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
@@ -238,7 +244,7 @@ export function SessionItemDisplay({
                 className={cx("bi", "me-1", "text-light-emphasis")}
                 size={16}
               />
-              <span className="text-dark">Not Running</span>
+              <span className="text-dark" data-cy="session-status">Not Running</span>
             </SessionBadge>
           </SessionStatusBadgeBox>
           <SessionStatusLabelBox>
