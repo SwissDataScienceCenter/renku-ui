@@ -113,7 +113,6 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
         tests:
           - publicProject
@@ -122,6 +121,7 @@ jobs:
           - testDatasets
           - useSession
           - checkWorkflows
+          - rstudioSession
 
     steps:
       - name: Extract Renku repository reference
