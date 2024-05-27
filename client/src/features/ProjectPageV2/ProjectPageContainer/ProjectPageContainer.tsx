@@ -32,16 +32,7 @@ import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
 
 import styles from "./ProjectPageContainer.module.scss";
 
-// function ProjectPageContainer({
-// export enum ProjectPageContentType {
-//   Members = "Members",
-//   Overview = "Overview",
-//   Settings = "Settings",
-//   ProjectInfo = "ProjectInfo",
-// }
-
-// export function ProjectPageContainer({
-function ProjectPageContainer({
+function ProjectPageContainerInner({
   contentPage,
 }: {
   contentPage: ProjectPageContentType;
@@ -113,7 +104,7 @@ function ProjectPageContainer({
   );
 }
 
-export default function ProjectPageV2Show({
+export default function ProjectPageContainer({
   contentPage,
 }: {
   contentPage?: ProjectPageContentType;
@@ -127,7 +118,7 @@ export default function ProjectPageV2Show({
     return <ProjectV2ShowByProjectId />;
   }
   return (
-    <ProjectPageContainer
+    <ProjectPageContainerInner
       contentPage={contentPage || ProjectPageContentType.Overview}
     />
   );

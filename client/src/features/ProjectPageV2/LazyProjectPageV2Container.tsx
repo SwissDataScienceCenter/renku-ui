@@ -20,7 +20,7 @@ import PageLoader from "../../components/PageLoader";
 import { ProjectPageContentType } from "./ProjectPageContent/projectPageContentType.types";
 
 const ProjectPageV2Show = lazy(
-  () => import("./ProjectPageContainer/ProjectPageContainer.tsx")
+  () => import("./ProjectPageContainer/ProjectPageContainer")
 );
 
 export default function LazyProjectPageV2Show({
