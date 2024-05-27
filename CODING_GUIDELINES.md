@@ -22,6 +22,7 @@ Rules:
 - [R003: Avoid nested `if/else` blocks](#r003-avoid-nested-ifelse-blocks)
 - [R004: Include a default export when appropriate](#r004-include-a-default-export-when-appropriate)
 - [R005: File naming conventions](#r005-file-naming-conventions)
+- [R006: Use existing Bootstrap classes or import from CSS modules](#r006-use-existing-bootstrap-classes-or-import-from-scss-modules)
 
 ### R001: Use utility functions to create CSS class names
 
@@ -48,6 +49,18 @@ const className = "rounded" + (disabled ? " disabled" : "");
 Constructing CSS class names by hand leads to frequent mistakes, e.g.
 having `undefined` or `null` as one of the CSS classes of an HTML element.
 
+**💭 Tip**
+
+We agreed on using `cx` in every case, except when there is only
+_one_ class name as a string.
+
+```tsx
+<MyComponent className="stringyClass" />
+<MyComponent className={cx("stringyClass1", "stringyClass2")} />
+<MyComponent className={cx(classFromVariable)} />
+
+```
+
 ### R002: Avoid `condition ? true : false`
 
 **✅ DO**
@@ -67,7 +80,9 @@ const isActive = conditionA && x > y && conditionC ? true : false;
 The `? true : false` construct is unnecessary and may surprise the reader,
 leading to slower code reading.
 
-Tip: use double boolean negation to ensure the variable is of type `boolean`.
+**💭 Tip**
+
+Use double boolean negation to ensure the variable is of type `boolean`.
 
 ```ts
 const enabled = !!objMaybeUndefined?.field.length;
@@ -213,3 +228,42 @@ Test file names start with a lowercase letter and end with `.test.ts` for unit
 tests or with `.spec.ts` for Cypress tests.
 
 Example: `login.test.ts` or `datasets.spec.ts`
+
+### R006: Use existing Bootstrap classes or import from CSS modules
+
+**✅ DO**
+
+```tsx
+<Card className={cx("m-3", "py-2")} />
+```
+
+```tsx
+import styles from "SpecialCard.module.scss";
+
+<Card className={cx(styles.projectCard)} />;
+```
+
+**❌ DON'T**
+
+```tsx
+import "./SpecialCard.css";
+
+<Card className="my-special-card-class" />;
+```
+
+**💡 Rationale**
+
+We want to avoid an explosion of the number of CSS classes, as well as
+classes polluting the global namespace.
+Since everyone knows Bootstrap, it is a good idea to use it as much as
+possible. Should the need arise for very specific styling, we can always
+create a new class in a local (S)CSS module file and import it.
+
+**💭 Tip**
+
+We want to push for sticking to Bootstrap's utility classes as much as possible.
+This means we should discuss for deviations from a reference design when that
+only minimally impacts the interface.
+
+E.G. If a Figma design reference file shows a distance between components
+of 14.5px and `m-3` is 16px, we should use `m-3` instead.
