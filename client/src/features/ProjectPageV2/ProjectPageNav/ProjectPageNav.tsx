@@ -19,8 +19,10 @@ import cx from "classnames";
 import { EyeFill, Folder2Open, PencilSquare } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import { Nav, NavItem, NavLink } from "reactstrap";
-import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2.tsx";
-import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageContainer.tsx";
+
+import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2";
+import { ProjectPageContentType } from "../ProjectPageContent/projectPageContentType.types";
+
 import styles from "./ProjectPageNav.module.scss";
 import type { Project } from "../../projectsV2/api/projectV2.api.ts";
 

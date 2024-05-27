@@ -17,11 +17,11 @@
  */
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
-import type { Project } from "../../projectsV2/api/projectV2.api.ts";
-import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageContainer.tsx";
-import ProjectInformation from "./ProjectInformation/ProjectInformation.tsx";
-import ProjectPageOverview from "./ProjectOverview/ProjectOverview.tsx";
-import ProjectPageSettings from "./Settings/ProjectSettings.tsx";
+import type { Project } from "../../projectsV2/api/projectV2.api";
+import ProjectInformation from "./ProjectInformation/ProjectInformation";
+import ProjectPageOverview from "./ProjectOverview/ProjectOverview";
+import ProjectPageSettings from "./Settings/ProjectSettings";
+import { ProjectPageContentType } from "./projectPageContentType.types";
 
 export default function ProjectPageContent({
   project,
