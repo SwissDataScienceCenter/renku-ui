@@ -25,7 +25,9 @@ import {
 import VisibilityIcon from "../../../../components/entities/VisibilityIcon.tsx";
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import { Url } from "../../../../utils/helpers/url";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
+import type { Project } from "../../../projectsV2/api/projectV2.api.ts";
+import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
+import MembershipGuard from "../../utils/MembershipGuard.tsx";
 import styles from "./ProjectInformation.module.scss";
 
 export function ProjectImageView() {
@@ -41,12 +43,16 @@ export function ProjectImageView() {
 }
 
 export default function ProjectInformation({ project }: { project: Project }) {
-  const totalMembers = 0; //TODO get member list
+  const { data: members } = useGetProjectsByProjectIdMembersQuery({
+    projectId: project.id,
+  });
+  const totalMembers = members?.length ?? 0;
   const totalKeywords = project.keywords?.length || 0;
   const settingsUrl = Url.get(Url.pages.projectV2.settings, {
     namespace: project.namespace,
     slug: project.slug,
   });
+  const membersUrl = `${settingsUrl}#members`;
 
   return (
     <aside className={cx("px-3", "pb-5", "pb-lg-2")}>
@@ -70,7 +76,24 @@ export default function ProjectInformation({ project }: { project: Project }) {
         )}
       >
         <div className={cx("flex-grow-1", "border-bottom")}></div>
-        <EditButtonLink to={settingsUrl} tooltip="Modify project information" />
+        <MembershipGuard
+          disabled={
+            <EditButtonLink
+              disabled={true}
+              to={settingsUrl}
+              tooltip="Your role does not allow modifying project information"
+            />
+          }
+          enabled={
+            <EditButtonLink
+              data-cy="project-settings-edit"
+              to={settingsUrl}
+              tooltip="Modify project information"
+            />
+          }
+          members={members}
+          minimumRole="editor"
+        />
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Namespace</div>
@@ -98,21 +121,38 @@ export default function ProjectInformation({ project }: { project: Project }) {
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Members ({totalMembers})</div>
-        {totalMembers === 0 && (
-          <UnderlineArrowLink
-            tooltip="Add project members"
-            text="Add members"
-            to={settingsUrl}
-          />
-        )}
+        <MembershipGuard
+          disabled={
+            <UnderlineArrowLink
+              tooltip="View project members"
+              text="View members"
+              to={membersUrl}
+            />
+          }
+          enabled={
+            <UnderlineArrowLink
+              tooltip="Edit project members"
+              text="Edit members"
+              to={membersUrl}
+            />
+          }
+          members={members}
+        />
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Keywords ({totalKeywords})</div>
         {totalKeywords == 0 ? (
-          <UnderlineArrowLink
-            tooltip="Add project keywords"
-            text="Add keywords"
-            to={settingsUrl}
+          <MembershipGuard
+            disabled={null}
+            enabled={
+              <UnderlineArrowLink
+                tooltip="Add project keywords"
+                text="Add keywords"
+                to={settingsUrl}
+              />
+            }
+            members={members}
+            minimumRole="editor"
           />
         ) : (
           <div

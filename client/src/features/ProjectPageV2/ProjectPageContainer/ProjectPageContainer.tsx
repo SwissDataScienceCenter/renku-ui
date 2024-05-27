@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { Link, useParams } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
@@ -31,6 +32,15 @@ import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
 
 import styles from "./ProjectPageContainer.module.scss";
 
+// function ProjectPageContainer({
+// export enum ProjectPageContentType {
+//   Members = "Members",
+//   Overview = "Overview",
+//   Settings = "Settings",
+//   ProjectInfo = "ProjectInfo",
+// }
+
+// export function ProjectPageContainer({
 function ProjectPageContainer({
   contentPage,
 }: {
@@ -83,13 +93,12 @@ function ProjectPageContainer({
         sm={12}
         className={cx("py-4", "px-0", "px-lg-2", styles.HeaderContainer)}
       >
-        <ProjectPageHeader project={data}></ProjectPageHeader>
+        <ProjectPageHeader project={data} />
       </Col>
       <Col sm={12} lg={1} className={cx(styles.NavContainer)}>
         <div className="sticky-top pt-2 pt-md-4">
           <ProjectPageNav
-            namespace={namespace}
-            slug={slug}
+            project={data}
             selectedContent={contentPage}
           ></ProjectPageNav>
         </div>

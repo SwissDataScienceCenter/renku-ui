@@ -13,17 +13,28 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
-import { Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
 
-const ProjectV2Show = lazy(() => import("./show/ProjectV2Show"));
+import type { Role } from "../../projectsV2/api/projectV2.api";
 
-export default function LazyProjectV2Show() {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <ProjectV2Show />
-    </Suspense>
-  );
+export type RoleOrNone = Role | "none";
+const ROLE_MAP: Record<RoleOrNone, number> = {
+  owner: 30,
+  editor: 20,
+  viewer: 10,
+  none: 0,
+};
+
+function isRoleOrNone(role: string): role is RoleOrNone {
+  return role in ROLE_MAP;
+}
+
+function stringToRoleOrNone(role: string): RoleOrNone {
+  return isRoleOrNone(role) ? role : "none";
+}
+
+export function toNumericRole(role: string): number {
+  const r = stringToRoleOrNone(role);
+  return ROLE_MAP[r];
 }

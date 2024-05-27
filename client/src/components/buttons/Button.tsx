@@ -322,24 +322,45 @@ function UnderlineArrowLink({
 /*
  * Edit button
  */
-function EditButtonLink({ to, tooltip }: { to: string; tooltip: ReactNode }) {
+function EditButtonLink({
+  "data-cy": dataCy,
+  disabled = false,
+  to,
+  tooltip,
+}: {
+  "data-cy"?: string;
+  disabled?: boolean;
+  to: string;
+  tooltip: ReactNode;
+}) {
   const ref = useRef(null);
   return (
     <>
       <span ref={ref} className={buttonStyles.LinkIcon}>
-        <Link className="text-decoration-none" to={to}>
+        {disabled ? (
           <PencilSquare />
-        </Link>
+        ) : (
+          <Link className="text-decoration-none" data-cy={dataCy} to={to}>
+            <PencilSquare />
+          </Link>
+        )}
       </span>
       <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
     </>
   );
 }
 
-export function PlusRoundButton({ handler }: { handler: () => void }) {
+export function PlusRoundButton({
+  "data-cy": dataCy,
+  handler,
+}: {
+  handler: () => void;
+  "data-cy"?: string;
+}) {
   return (
     <>
       <Button
+        data-cy={dataCy}
         className={cx(
           "d-flex",
           "justify-content-center",

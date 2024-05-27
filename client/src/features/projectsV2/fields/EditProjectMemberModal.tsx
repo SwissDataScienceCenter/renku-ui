@@ -18,8 +18,8 @@
 
 import cx from "classnames";
 
-import { useCallback, useEffect, useState } from "react";
-import { PlusLg, XLg } from "react-bootstrap-icons";
+import { useCallback, useEffect } from "react";
+import { PencilSquare, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 
 import {
@@ -35,45 +35,43 @@ import {
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
-import type { UserWithId } from "../../user/dataServicesUser.api";
-
 import type {
-  GroupMemberResponseList,
-  GroupMemberPatchRequest,
-} from "../api/namespace.api";
-import { usePatchGroupsByGroupSlugMembersMutation } from "../api/projectV2.enhanced-api";
+  ProjectMemberPatchRequest,
+  ProjectMemberResponse,
+} from "../api/projectV2.api";
+import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
 
-import AddEntityMemberEmailLookupForm from "./AddEntityMemberLookupForm";
-
-interface AddGroupMemberModalProps {
+interface EditProjectMemberModalProps {
   isOpen: boolean;
-  members: GroupMemberResponseList;
-  groupSlug: string;
+  member: ProjectMemberResponse | undefined;
+  members: ProjectMemberPatchRequest[];
+  projectId: string;
   toggle: () => void;
 }
 
-interface GroupMemberForAdd extends GroupMemberPatchRequest {
-  email: string;
-}
+type ProjectMemberForEdit = ProjectMemberResponse;
 
-interface AddGroupMemberAccessFormProps
-  extends Pick<AddGroupMemberModalProps, "members" | "groupSlug" | "toggle"> {
-  user: UserWithId;
+interface EditProjectMemberAccessFormProps
+  extends Pick<
+    EditProjectMemberModalProps,
+    "members" | "projectId" | "toggle"
+  > {
+  member: ProjectMemberForEdit;
 }
-function AddGroupMemberAccessForm({
+function EditProjectMemberAccessForm({
   members,
-  groupSlug,
+  projectId,
   toggle,
-  user,
-}: AddGroupMemberAccessFormProps) {
+  member,
+}: EditProjectMemberAccessFormProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [patchGroupMembers, result] =
-    usePatchGroupsByGroupSlugMembersMutation();
-  const { control, handleSubmit } = useForm<GroupMemberForAdd>({
+  const [patchProjectMembers, result] =
+    usePatchProjectsByProjectIdMembersMutation();
+  const { control, handleSubmit } = useForm<ProjectMemberForEdit>({
     defaultValues: {
-      id: user.id,
-      email: user.email,
-      role: "viewer",
+      id: member.id,
+      email: member.email,
+      role: member.role,
     },
   });
 
@@ -85,19 +83,22 @@ function AddGroupMemberAccessForm({
   }, [result.isSuccess, toggle]);
 
   const onSubmit = useCallback(
-    (data: GroupMemberForAdd) => {
-      const groupMembers = members.map((m) => ({
-        id: m.id,
-        role: m.role,
-      }));
-      groupMembers.push({ id: data.id, role: data.role });
+    (data: ProjectMemberForEdit) => {
+      const projectMembers = members.map((m: ProjectMemberResponse) =>
+        m.id === member.id
+          ? {
+              id: m.id,
+              role: data.role,
+            }
+          : { id: m.id, role: m.role }
+      );
 
-      patchGroupMembers({
-        groupSlug,
-        groupMemberPatchRequestList: groupMembers,
+      patchProjectMembers({
+        projectId,
+        projectMemberListPatchRequest: projectMembers,
       });
     },
-    [patchGroupMembers, groupSlug, members]
+    [patchProjectMembers, projectId, members, member]
   );
 
   return (
@@ -112,7 +113,7 @@ function AddGroupMemberAccessForm({
           <div
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
-            <Label>{user.email}</Label>
+            <Label>{member.email ?? member.id}</Label>
             <Controller
               control={control}
               name="role"
@@ -141,48 +142,37 @@ function AddGroupMemberAccessForm({
           Close
         </Button>
         <Button onClick={handleSubmit(onSubmit)} type="submit">
-          <PlusLg className={cx("bi", "me-1")} />
-          Add Member
+          <PencilSquare className={cx("bi", "me-1")} />
+          Change access
         </Button>
       </ModalFooter>
     </>
   );
 }
 
-export default function AddProjectMemberModal({
+export default function EditProjectMemberModal({
   isOpen,
+  member,
   members,
-  groupSlug,
+  projectId,
   toggle,
-}: AddGroupMemberModalProps) {
-  const [newMember, setNewMember] = useState<UserWithId | undefined>(undefined);
-  const toggleVisible = useCallback(() => {
-    setNewMember(undefined);
-    toggle();
-  }, [setNewMember, toggle]);
-
+}: EditProjectMemberModalProps) {
   return (
     <Modal
       backdrop="static"
       centered
       fullscreen="lg"
-      isOpen={isOpen}
+      isOpen={isOpen && member != null}
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Add a group member</ModalHeader>
-      {newMember == null && (
-        <AddEntityMemberEmailLookupForm
-          setNewMember={setNewMember}
-          toggle={toggleVisible}
-        />
-      )}
-      {newMember != null && (
-        <AddGroupMemberAccessForm
+      <ModalHeader toggle={toggle}>Change access</ModalHeader>
+      {member != null && (
+        <EditProjectMemberAccessForm
           members={members}
-          groupSlug={groupSlug}
-          toggle={toggleVisible}
-          user={newMember}
+          projectId={projectId}
+          toggle={toggle}
+          member={member}
         />
       )}
     </Modal>

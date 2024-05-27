@@ -17,11 +17,11 @@
  */
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
-import { Project } from "../../projectsV2/api/projectV2.api.ts";
-import ProjectInformation from "./ProjectInformation/ProjectInformation.tsx";
-import ProjectPageOverview from "./ProjectOverview/ProjectOverview.tsx";
-import ProjectPageSettings from "./Settings/ProjectSettings.tsx";
-import { ProjectPageContentType } from "./projectPageContentType.types.ts";
+import type { Project } from "../../projectsV2/api/projectV2.api";
+import ProjectInformation from "./ProjectInformation/ProjectInformation";
+import ProjectPageOverview from "./ProjectOverview/ProjectOverview";
+import ProjectPageSettings from "./Settings/ProjectSettings";
+import { ProjectPageContentType } from "./projectPageContentType.types";
 
 export default function ProjectPageContent({
   project,
@@ -30,12 +30,12 @@ export default function ProjectPageContent({
   project: Project;
   selectedContent: ProjectPageContentType;
 }) {
+  const isSettingsPage = selectedContent === ProjectPageContentType.Settings;
+  const isInfoPage = selectedContent === ProjectPageContentType.ProjectInfo;
   return (
     <main>
-      {selectedContent === ProjectPageContentType.Settings && (
-        <ProjectPageSettings project={project} />
-      )}
-      {selectedContent === ProjectPageContentType.ProjectInfo && (
+      {isSettingsPage && <ProjectPageSettings project={project} />}
+      {isInfoPage && (
         <div className={cx("d-block", "d-lg-none", "d-sm-block", "pt-4")}>
           <ProjectInformation project={project} />
         </div>
@@ -50,7 +50,7 @@ export default function ProjectPageContent({
             lg={2}
             className={cx("d-none", "d-lg-block", " d-sm-none")}
           >
-            <ProjectInformation project={project}></ProjectInformation>
+            <ProjectInformation project={project} />
           </Col>
         </Row>
       )}
