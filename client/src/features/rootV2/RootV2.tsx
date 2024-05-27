@@ -27,7 +27,6 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
 import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Container";
-import { ProjectPageContentType } from "../ProjectPageV2/ProjectPageContainer/ProjectPageContainer.tsx";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
@@ -40,6 +39,7 @@ import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import NavbarV2 from "./NavbarV2";
+import { ProjectPageContentType } from "../ProjectPageV2/ProjectPageContent/projectPageContentType.types";
 
 export default function RootV2() {
   const navigate = useNavigate();
