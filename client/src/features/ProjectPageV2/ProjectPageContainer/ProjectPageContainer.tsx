@@ -119,7 +119,7 @@ export default function ProjectPageContainer({
   }
   return (
     <ProjectPageContainerInner
-      contentPage={contentPage || ProjectPageContentType.Overview}
+      contentPage={contentPage ?? ProjectPageContentType.Overview}
     />
   );
 }

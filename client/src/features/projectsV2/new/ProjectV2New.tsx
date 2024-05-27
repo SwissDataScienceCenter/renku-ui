@@ -18,6 +18,7 @@
 
 import { FormEvent, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom-v5-compat";
 import { Form, Label } from "reactstrap";
 
 import FormSchema from "../../../components/formschema/FormSchema";
@@ -27,11 +28,10 @@ import { Url } from "../../../utils/helpers/url";
 
 import type { ProjectPost } from "../api/projectV2.api";
 import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
-import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2Show";
 
-import { useNavigate } from "react-router-dom-v5-compat";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert.tsx";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import WipBadge from "../shared/WipBadge";
+import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2DescriptionAndRepositories";
 import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
 import ProjectV2NewForm from "./ProjectV2NewForm";
 import type { NewProjectV2State } from "./projectV2New.slice";

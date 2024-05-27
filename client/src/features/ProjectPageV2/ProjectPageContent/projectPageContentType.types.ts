@@ -19,5 +19,6 @@
 export enum ProjectPageContentType {
   Overview = "Overview",
   Settings = "Settings",
+  Members = "Members",
   ProjectInfo = "ProjectInfo",
 }
