@@ -22,7 +22,7 @@ Rules:
 - [R003: Avoid nested `if/else` blocks](#r003-avoid-nested-ifelse-blocks)
 - [R004: Include a default export when appropriate](#r004-include-a-default-export-when-appropriate)
 - [R005: File naming conventions](#r005-file-naming-conventions)
-- [R006: Use existing Bootstrap classes or import from CSS modules](#r006-use-existing-bootstrap-classes-or-import-from-scss-modules)
+- [R006: Use existing Bootstrap classes or import from CSS modules](#r006-use-existing-bootstrap-classes-or-import-from-css-modules)
 
 ### R001: Use utility functions to create CSS class names
 
