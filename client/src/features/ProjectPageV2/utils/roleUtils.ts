@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import type { Role } from "../../projectsV2/api/projectV2.api";
+import type {
+  ProjectMemberListResponse,
+  Role,
+} from "../../projectsV2/api/projectV2.api";
 
 export type RoleOrNone = Role | "none";
 const ROLE_MAP: Record<RoleOrNone, number> = {
@@ -37,4 +40,20 @@ function stringToRoleOrNone(role: string): RoleOrNone {
 export function toNumericRole(role: string): number {
   const r = stringToRoleOrNone(role);
   return ROLE_MAP[r];
+}
+
+/** Return a sorted copy of the members
+ *
+ * Lexicographic sort by role (descending), email (ascending), user_id (ascending).
+ */
+export function toSortedMembers(members: ProjectMemberListResponse) {
+  return [...members].sort((a, b) => {
+    if (a.role !== b.role) {
+      return toNumericRole(b.role) - toNumericRole(a.role);
+    }
+    if (a.email && b.email) {
+      return a.email.localeCompare(b.email);
+    }
+    return a.id < b.id ? -1 : 1;
+  });
 }

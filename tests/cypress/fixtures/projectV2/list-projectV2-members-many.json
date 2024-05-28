@@ -1,0 +1,35 @@
+[
+  {
+    "id": "user1-uuid",
+    "first_name": "User",
+    "last_name": "One",
+    "email": "user1@email.com",
+    "role": "owner"
+  },
+  {
+    "id": "user2-uuid",
+    "first_name": "User",
+    "last_name": "Two",
+    "email": "user2@email.com",
+    "role": "viewer"
+  },
+  {
+    "first_name": "User",
+    "last_name": "Three",
+    "id": "user3-uuid",
+    "role": "editor"
+  },
+  {
+    "id": "user4-uuid",
+    "email": "user4@email.com",
+    "role": "viewer"
+  },
+  {
+    "id": "user5-uuid",
+    "role": "viewer"
+  },
+  {
+    "id": "user6-uuid",
+    "role": "owner"
+  }
+]
