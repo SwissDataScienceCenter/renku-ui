@@ -55,8 +55,8 @@ We agreed on using `cx` in every case, except when there is only
 _one_ class name as a string.
 
 ```tsx
-<MyComponent className="stringyClass" />
-<MyComponent className={cx("stringyClass1", "stringyClass2")} />
+<MyComponent className="p-2" />
+<MyComponent className={cx("p-2", "text-danger")} />
 <MyComponent className={cx(classFromVariable)} />
 
 ```
