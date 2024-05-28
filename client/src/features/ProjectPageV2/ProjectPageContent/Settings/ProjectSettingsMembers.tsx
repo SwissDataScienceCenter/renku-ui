@@ -39,7 +39,7 @@ import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMember
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 
 import MembershipGuard from "../../utils/MembershipGuard.tsx";
-import { toNumericRole } from "../../utils/roleUtils.ts";
+import { toSortedMembers } from "../../utils/roleUtils.ts";
 
 function OverviewBox({ children }: { children: ReactNode }) {
   return <div className={cx("bg-white", "rounded-3", "mt-3")}>{children}</div>;
@@ -150,15 +150,7 @@ function ProjectPageSettingsMembersTable({
   const [isEditMemberModalOpen, setIsEditMemberModalOpen] = useState(false);
   const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState<ProjectMemberResponse>();
-  const sortedMembers = [...members].sort((a, b) => {
-    if (a.role !== b.role) {
-      return toNumericRole(b.role) - toNumericRole(a.role);
-    }
-    if (a.email && b.email) {
-      return a.email.localeCompare(b.email);
-    }
-    return a.id < b.id ? -1 : 1;
-  });
+  const sortedMembers = toSortedMembers(members);
 
   const headerClasses = [
     "w-100",
