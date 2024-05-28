@@ -42,7 +42,10 @@ export function toNumericRole(role: string): number {
   return ROLE_MAP[r];
 }
 
-/** Return a sorted copy of the members */
+/** Return a sorted copy of the members
+ *
+ * Lexicographic sort by role (descending), email (ascending), user_id (ascending).
+ */
 export function sortedMembers(members: ProjectMemberListResponse) {
   return [...members].sort((a, b) => {
     if (a.role !== b.role) {
