@@ -129,7 +129,7 @@ function CentralContentContainer(props) {
             </ContainerWrap>
           </CompatRoute>
           <CompatRoute path="/inactive-kg-projects">
-            {!props.user.logged ? (
+            {props.user.logged ? (
               <ContainerWrap>
                 <LazyInactiveKGProjectsPage />
               </ContainerWrap>
@@ -137,19 +137,14 @@ function CentralContentContainer(props) {
               <LazyNotFound />
             )}
           </CompatRoute>
-          <Route
-            exact
-            path={[
-              Url.get(Url.pages.projects),
-              Url.get(Url.pages.projects.starred),
-              Url.get(Url.pages.projects.all),
-            ]}
-          >
-            <ContainerWrap>
-              <LazyProjectList />
-            </ContainerWrap>
-          </Route>
-          <Route exact path={Url.get(Url.pages.project.new)}>
+          {["/projects", "/projects/starred", "/projects/all"].map((path) => (
+            <CompatRoute key={path} exact path={path}>
+              <ContainerWrap>
+                <LazyProjectList />
+              </ContainerWrap>
+            </CompatRoute>
+          ))}
+          <CompatRoute exact path="/projects/new">
             <ContainerWrap>
               <LazyNewProject
                 model={props.model}
@@ -157,7 +152,7 @@ function CentralContentContainer(props) {
                 client={props.client}
               />
             </ContainerWrap>
-          </Route>
+          </CompatRoute>
           <Route path="/projects/:subUrl+">
             <LazyProjectView
               client={props.client}
