@@ -23,7 +23,7 @@ import {
   useContext,
   useMemo,
 } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
 import {
   DateFilterTypes,
   DatesFilter,
@@ -65,7 +65,7 @@ export const KgSearchContextProvider = ({
   children,
 }: KgSearchContextProviderProps) => {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const kgSearchState = useMemo(() => {
     const state = searchStringToState(location.search);
@@ -81,7 +81,7 @@ export const KgSearchContextProvider = ({
         typeDate: dates.type ?? DateFilterTypes.all,
         page: 1,
       });
-      history.push({ search });
+      navigate({ search });
     },
     [history, kgSearchState]
   );
@@ -93,7 +93,7 @@ export const KgSearchContextProvider = ({
       phrase: "",
       page: 1,
     });
-    history.push({ search });
+    navigate({ search });
   }, [history, kgSearchState]);
   const setMyDatasets = useCallback(() => {
     const search = stateToSearchString({
@@ -103,7 +103,7 @@ export const KgSearchContextProvider = ({
       phrase: "",
       page: 1,
     });
-    history.push({ search });
+    navigate({ search });
   }, [history, kgSearchState]);
   const setPhrase = useCallback(
     (phrase: string) => {
@@ -112,28 +112,28 @@ export const KgSearchContextProvider = ({
         phrase,
         page: 1,
       });
-      history.push({ search });
+      navigate({ search });
     },
     [history, kgSearchState]
   );
   const setPage = useCallback(
     (page: number) => {
       const search = stateToSearchString({ ...kgSearchState, page });
-      history.push({ search });
+      navigate({ search });
     },
     [history, kgSearchState]
   );
   const setSort = useCallback(
     (sort: SortingOptions) => {
       const search = stateToSearchString({ ...kgSearchState, sort, page: 1 });
-      history.push({ search });
+      navigate({ search });
     },
     [history, kgSearchState]
   );
   const setType = useCallback(
     (type: TypeEntitySelection) => {
       const search = stateToSearchString({ ...kgSearchState, type, page: 1 });
-      history.push({ search });
+      navigate({ search });
     },
     [history, kgSearchState]
   );
@@ -144,7 +144,7 @@ export const KgSearchContextProvider = ({
         role,
         page: 1,
       });
-      history.push({ search });
+      navigate({ search });
     },
     [history, kgSearchState]
   );
@@ -155,13 +155,13 @@ export const KgSearchContextProvider = ({
         visibility,
         page: 1,
       });
-      history.push({ search });
+      navigate({ search });
     },
     [history, kgSearchState]
   );
   const reset = useCallback(() => {
     const search = stateToSearchString(defaultSearchState);
-    history.push({ search });
+    navigate({ search });
   }, [history]);
 
   const reducers = {

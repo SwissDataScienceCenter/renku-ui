@@ -122,15 +122,11 @@ function CentralContentContainer(props) {
               <LazyHelp />
             </ContainerWrap>
           </CompatRoute>
-          <Route path={Url.get(Url.pages.search)}>
+          <CompatRoute path="/search">
             <ContainerWrap>
-              <LazySearchPage
-                userName={props.user?.data?.name}
-                isLoggedUser={props.user.logged}
-                model={props.model}
-              />
+              <LazySearchPage />
             </ContainerWrap>
-          </Route>
+          </CompatRoute>
           <Route path={Url.get(Url.pages.inactiveKgProjects)}>
             {props.user.logged ? (
               <ContainerWrap>
