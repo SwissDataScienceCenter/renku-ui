@@ -55,9 +55,11 @@ We agreed on using `cx` in every case, except when there is only
 _one_ class name as a string.
 
 ```tsx
+const padding = someCondition ? "p-2" : "p-3";
+
 <MyComponent className="p-2" />
 <MyComponent className={cx("p-2", "text-danger")} />
-<MyComponent className={cx(classFromVariable)} />
+<MyComponent className={cx(padding)} />
 
 ```
 
