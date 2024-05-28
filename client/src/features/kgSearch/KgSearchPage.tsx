@@ -17,6 +17,7 @@
  */
 
 import { useState } from "react";
+import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
 import { DatesFilter } from "../../components/dateFilter/DateFilter";
 import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySearchFilter";
@@ -30,7 +31,6 @@ import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntit
 import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
 import { KgSearchContextProvider, useKgSearchContext } from "./KgSearchContext";
