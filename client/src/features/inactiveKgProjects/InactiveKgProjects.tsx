@@ -287,7 +287,7 @@ function ProjectsNotIndexedPage({ projectList }: ProjectsNotIndexedPageProps) {
           })
         );
         activateIndexing(projectId);
-        sendPullKgActivationStatus([projectId], socket as any);
+        sendPullKgActivationStatus([projectId], socket);
       }
     } else {
       setActivating(false);

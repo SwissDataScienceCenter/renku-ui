@@ -29,7 +29,7 @@ export interface AppContextType {
   model: unknown;
   notifications: NotificationsManager | undefined;
   params: AppParams | undefined;
-  webSocket: unknown;
+  webSocket: WebSocket | undefined;
 }
 
 const AppContext = React.createContext<AppContextType>({
