@@ -47,7 +47,7 @@ function OverviewBox({ children }: { children: ReactNode }) {
 
 type MemberActionMenuProps = Omit<
   ProjectPageSettingsMembersTableRowProps,
-  "member" | "members"
+  "member" | "members" | "numberOfOwners"
 > & { disabled?: boolean };
 
 function MemberActionMenu({
@@ -81,10 +81,59 @@ function MemberActionMenu({
   );
 }
 
+function ProjectMemberAction({
+  index,
+  member,
+  members,
+  numberOfOwners,
+  onRemove,
+  onEdit,
+}: ProjectPageSettingsMembersTableRowProps) {
+  if (member.role === "owner" && numberOfOwners < 2) {
+    return (
+      <MemberActionMenu
+        disabled={true}
+        index={index}
+        onRemove={onRemove}
+        onEdit={onEdit}
+      />
+    );
+  }
+  return (
+    <MembershipGuard
+      disabled={
+        <MemberActionMenu
+          disabled={true}
+          index={index}
+          onRemove={onRemove}
+          onEdit={onEdit}
+        />
+      }
+      enabled={
+        <MemberActionMenu index={index} onRemove={onRemove} onEdit={onEdit} />
+      }
+      members={members}
+      selfOverride={{
+        disabled: (
+          <Button
+            color="danger"
+            data-cy={`project-member-remove-${index}`}
+            onClick={onRemove}
+          >
+            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+          </Button>
+        ),
+        subject: member,
+      }}
+    />
+  );
+}
+
 interface ProjectPageSettingsMembersTableRowProps {
   index: number;
   member: ProjectMemberResponse;
   members: ProjectMemberResponse[];
+  numberOfOwners: number;
   onRemove: () => void;
   onEdit: () => void;
 }
@@ -93,6 +142,7 @@ function ProjectPageSettingsMembersTableRow({
   index,
   member,
   members,
+  numberOfOwners,
   onRemove,
   onEdit,
 }: ProjectPageSettingsMembersTableRowProps) {
@@ -115,23 +165,13 @@ function ProjectPageSettingsMembersTableRow({
         className={cx("d-flex", "align-items-center", "px-3", "px-md-2")}
         data-cy={`project-member-actions-${index}`}
       >
-        <MembershipGuard
-          disabled={
-            <MemberActionMenu
-              disabled={true}
-              index={index}
-              onRemove={onRemove}
-              onEdit={onEdit}
-            />
-          }
-          enabled={
-            <MemberActionMenu
-              index={index}
-              onRemove={onRemove}
-              onEdit={onEdit}
-            />
-          }
+        <ProjectMemberAction
+          index={index}
+          member={member}
           members={members}
+          numberOfOwners={numberOfOwners}
+          onRemove={onRemove}
+          onEdit={onEdit}
         />
       </Col>
     </Row>
@@ -151,6 +191,7 @@ function ProjectPageSettingsMembersTable({
   const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState<ProjectMemberResponse>();
   const sortedMembers = toSortedMembers(members);
+  const numberOfOwners = sortedMembers.filter((m) => m.role === "owner").length;
 
   const headerClasses = [
     "w-100",
@@ -197,6 +238,7 @@ function ProjectPageSettingsMembersTable({
             key={d.id}
             member={d}
             members={members}
+            numberOfOwners={numberOfOwners}
             onRemove={() => {
               setMemberToEdit(d);
               setIsRemoveMemberModalOpen(true);
