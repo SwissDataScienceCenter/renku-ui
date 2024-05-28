@@ -28,7 +28,8 @@ export interface AppContextType {
   location: unknown;
   model: unknown;
   notifications: NotificationsManager | undefined;
-  params: AppParams | null;
+  params: AppParams | undefined;
+  webSocket: unknown;
 }
 
 const AppContext = React.createContext<AppContextType>({
@@ -39,7 +40,8 @@ const AppContext = React.createContext<AppContextType>({
   location: undefined,
   model: undefined,
   notifications: undefined,
-  params: null,
+  params: undefined,
+  webSocket: undefined,
 });
 
 export default AppContext;

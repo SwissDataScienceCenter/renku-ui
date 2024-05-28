@@ -89,6 +89,7 @@ function CentralContentContainer(props) {
     model: props.model,
     notifications,
     params: props.params,
+    webSocket: socket,
   };
 
   // check anonymous sessions settings
@@ -127,15 +128,15 @@ function CentralContentContainer(props) {
               <LazySearchPage />
             </ContainerWrap>
           </CompatRoute>
-          <Route path={Url.get(Url.pages.inactiveKgProjects)}>
-            {props.user.logged ? (
+          <CompatRoute path="/inactive-kg-projects">
+            {!props.user.logged ? (
               <ContainerWrap>
-                <LazyInactiveKGProjectsPage socket={socket} />
+                <LazyInactiveKGProjectsPage />
               </ContainerWrap>
             ) : (
               <LazyNotFound />
             )}
-          </Route>
+          </CompatRoute>
           <Route
             exact
             path={[
