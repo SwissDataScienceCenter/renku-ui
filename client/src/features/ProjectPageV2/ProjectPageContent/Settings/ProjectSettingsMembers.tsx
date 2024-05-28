@@ -39,7 +39,7 @@ import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMember
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 
 import MembershipGuard from "../../utils/MembershipGuard.tsx";
-import { sortedMembers } from "../../utils/roleUtils.ts";
+import { toSortedMembers } from "../../utils/roleUtils.ts";
 
 function OverviewBox({ children }: { children: ReactNode }) {
   return <div className={cx("bg-white", "rounded-3", "mt-3")}>{children}</div>;
@@ -150,7 +150,7 @@ function ProjectPageSettingsMembersTable({
   const [isEditMemberModalOpen, setIsEditMemberModalOpen] = useState(false);
   const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState<ProjectMemberResponse>();
-  const membersSorted = sortedMembers(members);
+  const sortedMembers = toSortedMembers(members);
 
   const headerClasses = [
     "w-100",
@@ -190,7 +190,7 @@ function ProjectPageSettingsMembersTable({
           <span className={cx(headerClasses)}>Actions</span>
         </Col>
       </Row>
-      {membersSorted.map((d, i) => {
+      {sortedMembers.map((d, i) => {
         return (
           <ProjectPageSettingsMembersTableRow
             index={i}

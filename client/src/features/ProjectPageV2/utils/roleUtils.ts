@@ -46,7 +46,7 @@ export function toNumericRole(role: string): number {
  *
  * Lexicographic sort by role (descending), email (ascending), user_id (ascending).
  */
-export function sortedMembers(members: ProjectMemberListResponse) {
+export function toSortedMembers(members: ProjectMemberListResponse) {
   return [...members].sort((a, b) => {
     if (a.role !== b.role) {
       return toNumericRole(b.role) - toNumericRole(a.role);
