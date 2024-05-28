@@ -51,18 +51,16 @@ function ProjectInformationMember({
 }: {
   member: ProjectMemberResponse;
 }) {
-  const classNames = ["fw-bold", "mb-1"];
-  if (member.last_name != null) {
-    return (
-      <div className={cx(classNames)}>
-        {member.first_name ?? ""} {member.last_name}
-      </div>
-    );
-  }
-  if (member.email != null) {
-    return <div className={cx(classNames)}>{member.email}</div>;
-  }
-  return <div className={cx(classNames)}>{member.id}</div>;
+  const displayName =
+    member.first_name && member.last_name
+      ? `${member.first_name} ${member.last_name}`
+      : member.last_name
+      ? member.last_name
+      : member.email
+      ? member.email
+      : member.id;
+
+  return <div className={cx("fw-bold", "mb-1")}>{displayName}</div>;
 }
 
 interface ProjectInformationMembersProps {
