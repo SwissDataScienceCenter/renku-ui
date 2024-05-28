@@ -83,7 +83,7 @@ export const KgSearchContextProvider = ({
       });
       navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setMyProjects = useCallback(() => {
     const search = stateToSearchString({
@@ -94,7 +94,7 @@ export const KgSearchContextProvider = ({
       page: 1,
     });
     navigate({ search });
-  }, [history, kgSearchState]);
+  }, [kgSearchState, navigate]);
   const setMyDatasets = useCallback(() => {
     const search = stateToSearchString({
       ...kgSearchState,
@@ -104,7 +104,7 @@ export const KgSearchContextProvider = ({
       page: 1,
     });
     navigate({ search });
-  }, [history, kgSearchState]);
+  }, [kgSearchState, navigate]);
   const setPhrase = useCallback(
     (phrase: string) => {
       const search = stateToSearchString({
@@ -114,28 +114,28 @@ export const KgSearchContextProvider = ({
       });
       navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setPage = useCallback(
     (page: number) => {
       const search = stateToSearchString({ ...kgSearchState, page });
       navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setSort = useCallback(
     (sort: SortingOptions) => {
       const search = stateToSearchString({ ...kgSearchState, sort, page: 1 });
       navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setType = useCallback(
     (type: TypeEntitySelection) => {
       const search = stateToSearchString({ ...kgSearchState, type, page: 1 });
       navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setUserRole = useCallback(
     (role: UserRoles) => {
@@ -146,7 +146,7 @@ export const KgSearchContextProvider = ({
       });
       navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setVisibility = useCallback(
     (visibility: VisibilitiesFilter) => {
@@ -157,12 +157,12 @@ export const KgSearchContextProvider = ({
       });
       navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const reset = useCallback(() => {
     const search = stateToSearchString(defaultSearchState);
     navigate({ search });
-  }, [history]);
+  }, [navigate]);
 
   const reducers = {
     setDates,
