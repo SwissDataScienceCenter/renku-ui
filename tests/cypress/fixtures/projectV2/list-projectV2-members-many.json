@@ -30,6 +30,6 @@
   },
   {
     "id": "user6-uuid",
-    "role": "viewer"
+    "role": "owner"
   }
 ]

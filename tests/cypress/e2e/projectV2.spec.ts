@@ -173,7 +173,7 @@ describe("Navigate to project", () => {
     cy.contains("user3-uuid").should("be.visible");
   });
 
-  it("shows at most 5 members", () => {
+  it("shows at most 5 members, owners first", () => {
     fixtures
       .listProjectV2Members({
         fixture: "projectV2/list-projectV2-members-many.json",
@@ -185,10 +185,10 @@ describe("Navigate to project", () => {
     cy.contains("User Two").should("be.visible");
     cy.contains("User Three").should("be.visible");
     cy.contains("user4@email.com").should("be.visible");
-    cy.contains("user5-uuid").should("be.visible");
-    cy.contains("user6-uuid").should("not.exist");
-    cy.contains("All members").should("be.visible").click();
+    cy.contains("user5-uuid").should("not.exist");
     cy.contains("user6-uuid").should("be.visible");
+    cy.contains("All members").should("be.visible").click();
+    cy.contains("user5-uuid").should("be.visible");
   });
 });
 

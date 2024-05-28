@@ -32,6 +32,7 @@ import type {
 } from "../../../projectsV2/api/projectV2.api.ts";
 import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 import MembershipGuard from "../../utils/MembershipGuard.tsx";
+import { sortedMembers } from "../../utils/roleUtils.ts";
 import styles from "./ProjectInformation.module.scss";
 
 export function ProjectImageView() {
@@ -91,10 +92,10 @@ function ProjectInformationMembers({
       />
     );
   }
-
+  const membersSorted = sortedMembers(members);
   return (
     <>
-      {members.slice(0, MAX_MEMBERS_DISPLAYED).map((member, index) => (
+      {membersSorted.slice(0, MAX_MEMBERS_DISPLAYED).map((member, index) => (
         <ProjectInformationMember key={index} member={member} />
       ))}
       {members.length > MAX_MEMBERS_DISPLAYED && (
