@@ -24,18 +24,10 @@
  */
 
 import { createMemoryHistory } from "history";
-import { createRoot } from "react-dom/client";
-import { act } from "react-dom/test-utils";
-import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
-import { testClient as client } from "../../api-client";
-import { StateModel, globalSchema } from "../../model";
-import { generateFakeUser } from "../../user/User.test";
-import AppContext from "../../utils/context/appContext";
 import { btoaUTF8 } from "../../utils/helpers/Encoding";
-import { NewProject, getDataFromParams } from "./ProjectNew.container";
+import { getDataFromParams } from "./ProjectNew.container";
 import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
 import { checkTitleDuplicates, validateTitle } from "./index";
 
