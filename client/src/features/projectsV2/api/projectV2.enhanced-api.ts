@@ -3,7 +3,6 @@ import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.ut
 
 import { projectStoragesApi as api } from "./storagesV2.api";
 import type {
-  ErrorResponse,
   GetProjectsApiArg,
   GetProjectsApiResponse as GetProjectsApiResponseOrig,
   ProjectsList,
