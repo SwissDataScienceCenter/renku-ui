@@ -189,6 +189,7 @@ describe("Edit v2 group", () => {
       fixture: "groupV2/list-groupV2-post-delete.json",
       name: "listGroupV2PostDelete",
     });
-    cy.contains("Return to list").click();
+    cy.contains("Group with slug test-2-group-v2 does not exist");
+    cy.contains("return to groups list").click();
   });
 });
