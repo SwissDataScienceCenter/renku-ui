@@ -27,7 +27,8 @@ import AccessGuard from "./AccessGuard.tsx";
 import { toNumericRole } from "./roleUtils.ts";
 
 interface SelfOverride {
-  disabled: React.ReactNode;
+  disabled: React.ReactNode | undefined;
+  enabled: React.ReactNode | undefined;
   subject: ProjectMemberResponse;
 }
 
@@ -61,10 +62,19 @@ export default function MembershipGuard({
   // If the user themselves is the target of this guard and there is an applicable override, use it
   if (
     userMember === selfOverride?.subject &&
-    toNumericRole(userMember.role) < toNumericRole(minimumRole)
+    toNumericRole(userMember.role) < toNumericRole(minimumRole) &&
+    selfOverride.disabled
   ) {
     return selfOverride.disabled;
   }
+  if (
+    userMember === selfOverride?.subject &&
+    toNumericRole(userMember.role) >= toNumericRole(minimumRole) &&
+    selfOverride.enabled
+  ) {
+    return selfOverride.enabled;
+  }
+
   return (
     <AccessGuard
       disabled={disabled}

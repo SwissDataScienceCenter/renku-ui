@@ -18,9 +18,15 @@
 
 import cx from "classnames";
 import type { ReactNode } from "react";
-import { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import { PeopleFill, PencilSquare, Trash } from "react-bootstrap-icons";
-import { Button, Col, DropdownItem, Row } from "reactstrap";
+import {
+  Button,
+  Col,
+  DropdownItem,
+  Row,
+  UncontrolledTooltip,
+} from "reactstrap";
 
 import {
   ButtonWithMenu,
@@ -48,14 +54,16 @@ function OverviewBox({ children }: { children: ReactNode }) {
 type MemberActionMenuProps = Omit<
   ProjectPageSettingsMembersTableRowProps,
   "member" | "members" | "numberOfOwners"
-> & { disabled?: boolean };
+> & { disabled?: boolean; tooltip?: React.ReactNode };
 
 function MemberActionMenu({
   disabled,
   index,
   onRemove,
   onEdit,
+  tooltip,
 }: MemberActionMenuProps) {
+  const ref = useRef(null);
   const defaultAction = (
     <Button
       color="rk-green"
@@ -67,17 +75,24 @@ function MemberActionMenu({
     </Button>
   );
   return (
-    <ButtonWithMenu
-      className="py-1"
-      color="rk-green"
-      default={defaultAction}
-      disabled={disabled}
-      isPrincipal
-    >
-      <DropdownItem onClick={onRemove}>
-        <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
-      </DropdownItem>
-    </ButtonWithMenu>
+    <>
+      <span ref={ref}>
+        <ButtonWithMenu
+          className="py-1"
+          color="rk-green"
+          default={defaultAction}
+          disabled={disabled}
+          isPrincipal
+        >
+          <DropdownItem onClick={onRemove}>
+            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+          </DropdownItem>
+        </ButtonWithMenu>
+      </span>
+      {tooltip && (
+        <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+      )}
+    </>
   );
 }
 
@@ -89,16 +104,6 @@ function ProjectMemberAction({
   onRemove,
   onEdit,
 }: ProjectPageSettingsMembersTableRowProps) {
-  if (member.role === "owner" && numberOfOwners < 2) {
-    return (
-      <MemberActionMenu
-        disabled={true}
-        index={index}
-        onRemove={onRemove}
-        onEdit={onEdit}
-      />
-    );
-  }
   return (
     <MembershipGuard
       disabled={
@@ -107,6 +112,7 @@ function ProjectMemberAction({
           index={index}
           onRemove={onRemove}
           onEdit={onEdit}
+          tooltip={"Only project owners can modify access to the project."}
         />
       }
       enabled={
@@ -123,6 +129,16 @@ function ProjectMemberAction({
             <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
           </Button>
         ),
+        enabled:
+          member.role === "owner" && numberOfOwners < 2 ? (
+            <MemberActionMenu
+              disabled={true}
+              index={index}
+              onRemove={onRemove}
+              onEdit={onEdit}
+              tooltip={"A project requires at least one owner."}
+            />
+          ) : undefined,
         subject: member,
       }}
     />
