@@ -341,8 +341,6 @@ function ProjectsNotIndexedPage({ projectList }: ProjectsNotIndexedPageProps) {
 }
 
 function InactiveKGProjectsPage() {
-  // { socket }: InactiveKGProjectsPageProps
-
   const user = useLegacySelector((state) => state.stateModel.user);
   const { data, isFetching, isLoading, error } = useGetInactiveProjects(
     user?.data?.id
