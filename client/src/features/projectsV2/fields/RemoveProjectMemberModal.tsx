@@ -32,7 +32,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 
 import type { UserWithId } from "../../user/dataServicesUser.api";
 
@@ -86,7 +86,7 @@ function RemoveProjectMemberAccessForm({
           data-cy="remove-member-form"
           onSubmit={handleSubmit(onRemove)}
         >
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrNotebooksError error={result.error} />}
           <div
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
