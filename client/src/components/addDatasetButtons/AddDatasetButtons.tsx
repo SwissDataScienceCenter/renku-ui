@@ -27,7 +27,7 @@ import { Button, ButtonGroup } from "reactstrap";
 
 export interface AddDatasetButtonsProps {
   optionSelected: "addDataset" | "importDataset";
-  toggleNewDataset?: () => void;
+  toggleNewDataset?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const AddDatasetButtons = ({
