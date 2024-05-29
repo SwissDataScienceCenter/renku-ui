@@ -17,8 +17,9 @@
  */
 
 import { useRef } from "react";
+import { UncontrolledTooltip } from "reactstrap";
+
 import { toShortHumanDuration } from "../../utils/helpers/DurationUtils";
-import { UncontrolledTooltip } from "../../utils/ts-wrappers";
 
 export interface EntityDurationProps {
   duration: number | null;

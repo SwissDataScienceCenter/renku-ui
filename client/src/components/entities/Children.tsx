@@ -15,17 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Badge, UncontrolledTooltip } from "reactstrap";
 
 import { EntityType } from "./entities.types";
-import { Badge, UncontrolledTooltip } from "../../utils/ts-wrappers";
-// import { stylesByItemType } from "../../helpers/HelperFunctions";
-
-/**
- *  renku-ui
- *
- *  Entity Children.tsx
- *  Entity Children component
- */
 
 interface EntityChildrenProps {
   childrenElements?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any

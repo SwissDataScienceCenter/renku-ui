@@ -23,11 +23,11 @@
  *  AddDatasetButtons components.
  */
 
-import { Button, ButtonGroup } from "../../utils/ts-wrappers";
+import { Button, ButtonGroup } from "reactstrap";
 
 export interface AddDatasetButtonsProps {
   optionSelected: "addDataset" | "importDataset";
-  toggleNewDataset?: Function; // eslint-disable-line @typescript-eslint/ban-types
+  toggleNewDataset?: () => void;
 }
 
 const AddDatasetButtons = ({
