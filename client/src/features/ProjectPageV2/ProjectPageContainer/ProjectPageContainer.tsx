@@ -20,10 +20,9 @@ import cx from "classnames";
 import { Link, useParams } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 import { Loader } from "../../../components/Loader";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Url } from "../../../utils/helpers/url";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
-import { isErrorResponse } from "../../projectsV2/api/projectV2.enhanced-api";
 import { ProjectV2ShowByProjectId } from "../../projectsV2/show/ProjectV2ShowByProjectId";
 import ProjectPageContent from "../ProjectPageContent/ProjectPageContent";
 import { ProjectPageContentType } from "../ProjectPageContent/projectPageContentType.types";
@@ -48,36 +47,26 @@ function ProjectPageContainerInner({
   });
 
   if (isLoading) return <Loader />;
-  if (error) {
-    if (isErrorResponse(error) && error?.data?.error?.code == 404) {
-      return (
-        <Row>
-          <Col>
-            <div>
-              Project does not exist, or you are not authorized to access it.{" "}
-              <Link to={Url.get(Url.pages.projectV2.list)}>Return to list</Link>
-            </div>
-          </Col>
-        </Row>
-      );
-    }
+  if (error || data == null) {
     return (
-      <Row>
+      <Row className="mt-3">
         <Col>
-          <p>Could not retrieve project</p>
-          <RtkErrorAlert error={error} />
+          {error ? (
+            <RtkOrNotebooksError error={error} />
+          ) : (
+            <p>Could not retrieve the project.</p>
+          )}
+          <p>
+            Click here to{" "}
+            <Link to={Url.get(Url.pages.projectV2.list)}>
+              return to projects list
+            </Link>
+            .
+          </p>
         </Col>
       </Row>
     );
   }
-  if (data == null)
-    return (
-      <Row>
-        <Col>
-          <div>Could not retrieve project</div>
-        </Col>
-      </Row>
-    );
   return (
     <Row>
       <Col

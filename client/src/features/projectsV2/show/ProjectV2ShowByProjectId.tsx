@@ -20,10 +20,9 @@ import { Link, Navigate, useParams } from "react-router-dom-v5-compat";
 import { Loader } from "../../../components/Loader";
 import { Url } from "../../../utils/helpers/url";
 
-import {
-  isErrorResponse,
-  useGetProjectsByProjectIdQuery,
-} from "../api/projectV2.enhanced-api";
+import { useGetProjectsByProjectIdQuery } from "../api/projectV2.enhanced-api";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { Col, Row } from "reactstrap";
 
 export function ProjectV2ShowByProjectId() {
   const { id: projectId } = useParams<{
@@ -36,22 +35,29 @@ export function ProjectV2ShowByProjectId() {
   });
   if (isLoading) return <Loader />;
   if (error) {
-    if (isErrorResponse(error)) {
-      return (
-        <div>
-          Project does not exist, or you are not authorized to access it.{" "}
-          <Link to={Url.get(Url.pages.projectV2.list)}>Return to list</Link>
-        </div>
-      );
-    }
-    return <div>Could not retrieve project</div>;
+    return (
+      <Row className="mt-3">
+        <Col>
+          <RtkOrNotebooksError error={error} />
+          <p>
+            Project does not exist, or you are not authorized to access it.{" "}
+          </p>
+          <p>
+            Click here to{" "}
+            <Link to={Url.get(Url.pages.projectV2.list)}>
+              return to projects list
+            </Link>
+            .
+          </p>
+        </Col>
+      </Row>
+    );
   }
-  if (data == null) return <div>Could not retrieve project</div>;
   return (
     <Navigate
       to={Url.get(Url.pages.projectV2.show, {
-        namespace: data.namespace,
-        slug: data.slug,
+        namespace: data?.namespace ?? "",
+        slug: data?.slug ?? "",
       })}
       replace
     />
