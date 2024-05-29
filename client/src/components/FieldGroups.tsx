@@ -23,7 +23,8 @@
  *  FieldGroup component.
  */
 
-import { FormGroup, FormText, Input, Label } from "../utils/ts-wrappers";
+import { FormGroup, FormText, Input, Label } from "reactstrap";
+
 import { ErrorLabel, InputLabel } from "./formlabels/FormLabels";
 
 interface FieldGroupProps {

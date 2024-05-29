@@ -16,26 +16,7 @@
  * limitations under the License.
  */
 
-import {
-  faArrowRight,
-  faCheck,
-  faExclamationTriangle,
-  faFileCode,
-  faLink,
-  faSortAmountDown,
-  faSortAmountUp,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import {
-  Bookmarks,
-  Calendar4,
-  Diagram2,
-  Journals,
-  People,
-  XLg,
-} from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
 import {
   Button,
   ButtonDropdown,
@@ -50,7 +31,28 @@ import {
   Label,
   Row,
   Table,
+  UncontrolledTooltip,
 } from "reactstrap";
+import {
+  Bookmarks,
+  Calendar4,
+  Diagram2,
+  Journals,
+  People,
+  XLg,
+} from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
+import {
+  faArrowRight,
+  faCheck,
+  faExclamationTriangle,
+  faFileCode,
+  faLink,
+  faSortAmountDown,
+  faSortAmountUp,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { InfoAlert, WarnAlert } from "../components/Alert";
 import {
   ExternalDocsLink,
@@ -69,7 +71,7 @@ import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
 import { toShortHumanDuration } from "../utils/helpers/DurationUtils";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
-import { UncontrolledTooltip } from "../utils/ts-wrappers";
+
 import "./Workflows.scss";
 
 /** BROWSER **/

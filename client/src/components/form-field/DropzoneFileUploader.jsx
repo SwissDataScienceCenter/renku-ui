@@ -22,6 +22,7 @@ import {
   Card,
   CardBody,
   FormGroup,
+  FormText,
   Input,
   InputGroup,
   Progress,
@@ -43,7 +44,6 @@ import {
 import { formatBytes, isValidURL } from "../../utils/helpers/HelperFunctions";
 import FileExplorer, { getFilesTree } from "../FileExplorer";
 import { ErrorLabel, InputLabel } from "../formlabels/FormLabels";
-import { FormText } from "../../utils/ts-wrappers";
 import AppContext from "../../utils/context/appContext";
 
 const FILE_STATUS = {
