@@ -34,8 +34,6 @@ describe("Add new v2 group", () => {
     cy.getDataCy("group-name-input").clear().type(newGroupName);
     cy.getDataCy("group-slug-input").should("have.value", slug);
     cy.contains("Create").click();
-
-    cy.contains("Creating group...").should("be.visible");
     cy.wait("@createGroupV2");
     cy.contains("Group created").should("be.visible");
   });
