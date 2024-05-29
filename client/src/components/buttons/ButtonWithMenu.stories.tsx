@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-import { userEvent } from "@storybook/testing-library";
+import { Button, DropdownItem } from "reactstrap";
 import { expect } from "@storybook/jest";
-import { ButtonWithMenu } from "./Button";
 import { StoryObj } from "@storybook/react";
-import { DropdownItem } from "reactstrap";
-import { Button } from "../../utils/ts-wrappers";
+import { userEvent } from "@storybook/testing-library";
+
+import { ButtonWithMenu } from "./Button";
 
 export default {
   component: ButtonWithMenu,

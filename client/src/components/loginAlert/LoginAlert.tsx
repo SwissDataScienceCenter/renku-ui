@@ -23,9 +23,9 @@
  *  LoginAlert component
  */
 
+import { Alert } from "reactstrap";
 import { Link, useLocation } from "react-router-dom";
 
-import { Alert } from "../../utils/ts-wrappers";
 import { Url } from "../../utils/helpers/url";
 
 export interface LoginAlertProps {

@@ -17,15 +17,8 @@
  */
 
 import React, { ChangeEvent, useState } from "react";
+import { Input } from "reactstrap";
 import { DateTime, Duration } from "luxon";
-import { Input } from "../../utils/ts-wrappers";
-
-/**
- *  renku-ui
- *
- *  DateFilter.tsx
- *  Date filter component
- */
 
 export interface DateFilterProps {
   dates: DatesFilter;
@@ -98,6 +91,7 @@ const DateFilter = ({ onDatesChange, dates }: DateFilterProps) => {
     { title: "Older", value: DateFilterTypes.older },
     { title: "Custom", value: DateFilterTypes.custom },
   ];
+  const max = now.toISODate() || "";
   const datesInput = dates.type === DateFilterTypes.custom && (
     <>
       <div>
@@ -105,7 +99,7 @@ const DateFilter = ({ onDatesChange, dates }: DateFilterProps) => {
         <Input
           type="date"
           name="start"
-          max={now.toISODate()}
+          max={max}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             onDatesChange({ ...dates, since: e.target.value })
           }
@@ -117,7 +111,7 @@ const DateFilter = ({ onDatesChange, dates }: DateFilterProps) => {
         <Input
           type="date"
           name="end"
-          max={now.toISODate()}
+          max={max}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             onDatesChange({ ...dates, until: e.target.value })
           }

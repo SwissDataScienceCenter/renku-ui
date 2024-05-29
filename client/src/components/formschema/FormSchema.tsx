@@ -23,8 +23,8 @@
  *  FormSchema component.
  */
 
-import { Col, Row } from "../../utils/ts-wrappers";
 import { ReactNode } from "react";
+import { Col, Row } from "reactstrap";
 
 import "./FormSchema.css";
 
