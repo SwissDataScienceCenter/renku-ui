@@ -245,7 +245,3 @@ export const {
   useGetStoragesV2Query,
   usePostStoragesV2Mutation,
 } = enhancedApi;
-
-export function isErrorResponse(arg: unknown): arg is { data: ErrorResponse } {
-  return (arg as { data: ErrorResponse }).data?.error != null;
-}
