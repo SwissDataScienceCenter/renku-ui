@@ -146,11 +146,7 @@ function CentralContentContainer(props) {
           ))}
           <CompatRoute exact path="/projects/new">
             <ContainerWrap>
-              <LazyNewProject
-                model={props.model}
-                user={props.user}
-                client={props.client}
-              />
+              <LazyNewProject />
             </ContainerWrap>
           </CompatRoute>
           <Route path="/projects/:subUrl+">
