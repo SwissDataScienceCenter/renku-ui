@@ -39,7 +39,6 @@ fakeHistory.push({
   pathname: "/projects",
   search: "?page=1",
 });
-const fakeLocation = { pathname: "" };
 
 describe("helper functions", () => {
   it("validateTitle", () => {
