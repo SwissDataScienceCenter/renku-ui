@@ -79,7 +79,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         fixture = "projectV2/create-projectV2.json",
         name = "createProjectV2",
       } = args ?? {};
-      const response = { fixture, delay: 2000, statusCode: 201 };
+      const response = { fixture, statusCode: 201 };
       cy.intercept("POST", "/ui-server/api/data/projects", response).as(name);
       return this;
     }
@@ -89,7 +89,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         name = "deleteProjectV2",
         projectId = "THEPROJECTULID26CHARACTERS",
       } = args ?? {};
-      const response = { delay: 2000, statusCode: 204 };
+      const response = { statusCode: 204 };
       cy.intercept(
         "DELETE",
         `/ui-server/api/data/projects/${projectId}`,
@@ -142,7 +142,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         fixture = "projectV2/list-projectV2.json",
         name = "listProjectV2",
       } = args ?? {};
-      const response = { fixture, delay: 2000 };
+      const response = { fixture };
       cy.intercept("GET", `/ui-server/api/data/projects?*`, response).as(name);
       return this;
     }
@@ -198,7 +198,6 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
             message: `Project  ${namespace}/${projectSlug} does not exist.`,
           },
         },
-        delay: 2000,
         statusCode: 404,
       };
       cy.intercept(
@@ -246,7 +245,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         name = "updateProjectV2",
         projectId = "THEPROJECTULID26CHARACTERS",
       } = args ?? {};
-      const response = { fixture, delay: 2000 };
+      const response = { fixture };
       cy.intercept(
         "PATCH",
         `/ui-server/api/data/projects/${projectId}`,
