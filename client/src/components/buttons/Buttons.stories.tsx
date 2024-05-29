@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Button } from "../../utils/ts-wrappers";
+import { Button } from "reactstrap";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Meta, StoryObj } from "@storybook/react";

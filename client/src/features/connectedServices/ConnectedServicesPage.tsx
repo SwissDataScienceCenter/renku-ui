@@ -100,11 +100,11 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
       ? "connected"
       : connection?.status === "pending"
       ? "pending"
-      : "not-connected";
+      : "not connected";
 
   return (
     <div className={cx("col-12", "col-lg-6")}>
-      <Card>
+      <Card className="h-100">
         <CardBody>
           <CardTitle>
             <div className={cx("d-flex", "flex-wrap", "align-items-center")}>

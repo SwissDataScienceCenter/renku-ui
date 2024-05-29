@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { Button } from "reactstrap";
 import Masonry from "react-masonry-css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSadCry } from "@fortawesome/free-solid-svg-icons";
@@ -34,7 +35,6 @@ import {
 import { Loader } from "../Loader";
 import ListCard from "../list/ListCard";
 import { Pagination } from "../Pagination";
-import { Button } from "../../utils/ts-wrappers";
 import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 
 interface SearchResultProps {
