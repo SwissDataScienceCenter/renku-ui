@@ -89,6 +89,7 @@ function CentralContentContainer(props) {
     model: props.model,
     notifications,
     params: props.params,
+    webSocket: socket,
   };
 
   // check anonymous sessions settings
@@ -122,45 +123,32 @@ function CentralContentContainer(props) {
               <LazyHelp />
             </ContainerWrap>
           </CompatRoute>
-          <Route path={Url.get(Url.pages.search)}>
+          <CompatRoute path="/search">
             <ContainerWrap>
-              <LazySearchPage
-                userName={props.user?.data?.name}
-                isLoggedUser={props.user.logged}
-                model={props.model}
-              />
+              <LazySearchPage />
             </ContainerWrap>
-          </Route>
-          <Route path={Url.get(Url.pages.inactiveKgProjects)}>
+          </CompatRoute>
+          <CompatRoute path="/inactive-kg-projects">
             {props.user.logged ? (
               <ContainerWrap>
-                <LazyInactiveKGProjectsPage socket={socket} />
+                <LazyInactiveKGProjectsPage />
               </ContainerWrap>
             ) : (
               <LazyNotFound />
             )}
-          </Route>
-          <Route
-            exact
-            path={[
-              Url.get(Url.pages.projects),
-              Url.get(Url.pages.projects.starred),
-              Url.get(Url.pages.projects.all),
-            ]}
-          >
+          </CompatRoute>
+          {["/projects", "/projects/starred", "/projects/all"].map((path) => (
+            <CompatRoute key={path} exact path={path}>
+              <ContainerWrap>
+                <LazyProjectList />
+              </ContainerWrap>
+            </CompatRoute>
+          ))}
+          <CompatRoute exact path="/projects/new">
             <ContainerWrap>
-              <LazyProjectList />
+              <LazyNewProject />
             </ContainerWrap>
-          </Route>
-          <Route exact path={Url.get(Url.pages.project.new)}>
-            <ContainerWrap>
-              <LazyNewProject
-                model={props.model}
-                user={props.user}
-                client={props.client}
-              />
-            </ContainerWrap>
-          </Route>
+          </CompatRoute>
           <Route path="/projects/:subUrl+">
             <LazyProjectView
               client={props.client}

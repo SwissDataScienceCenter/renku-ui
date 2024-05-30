@@ -24,10 +24,10 @@
  */
 
 import {
-  Component,
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -347,21 +347,31 @@ function getDataFromParams(params) {
   return data;
 }
 
-// temporal solution to include coordinator
-class NewProjectWrapper extends Component {
-  constructor(props) {
-    super(props);
-    this.coordinator = new NewProjectCoordinator(
-      this.props.client,
-      this.props.model.subModel("newProject"),
-      this.props.model.subModel("projects")
-    );
-  }
+function NewProjectWrapper(props) {
+  const { client, model } = useContext(AppContext);
 
-  render() {
-    if (!this.props.client || !this.props.model) return <Loader />;
-    return <NewProject {...this.props} coordinator={this.coordinator} />;
-  }
+  const user = useLegacySelector((state) => state.stateModel.user);
+
+  const coordinator = useMemo(
+    () =>
+      new NewProjectCoordinator(
+        client,
+        model.subModel("newProject"),
+        model.subModel("projects")
+      ),
+    [client, model]
+  );
+
+  if (!client || !model) return <Loader />;
+  return (
+    <NewProject
+      {...props}
+      model={model}
+      user={user}
+      client={client}
+      coordinator={coordinator}
+    />
+  );
 }
 
 function NewProject(props) {

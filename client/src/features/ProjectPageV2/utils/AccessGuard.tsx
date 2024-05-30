@@ -20,12 +20,12 @@ import type { Role } from "../../projectsV2/api/projectV2.api.ts";
 
 import { toNumericRole } from "./roleUtils.ts";
 
-type AccessGuardProps = {
+interface AccessGuardProps {
   disabled: React.ReactNode;
   enabled: React.ReactNode;
   minimumRole?: Role;
   role: Role;
-};
+}
 
 export default function AccessGuard({
   disabled,
