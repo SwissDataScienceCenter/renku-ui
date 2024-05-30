@@ -92,7 +92,7 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
 
           {error && (
             <>
-              <div className="mt-3">
+              <div className={cx("mt-3", "mb-1")}>
                 <Button color="link" className="p-0" onClick={onClickDetails}>
                   Show error details
                 </Button>
