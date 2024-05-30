@@ -21,7 +21,7 @@ import { Link, useParams } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import { Url } from "../../../utils/helpers/url";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
 import { ProjectV2ShowByProjectId } from "../../projectsV2/show/ProjectV2ShowByProjectId";
 import ProjectPageContent from "../ProjectPageContent/ProjectPageContent";
@@ -58,7 +58,7 @@ function ProjectPageContainerInner({
           )}
           <p>
             Click here to{" "}
-            <Link to={Url.get(Url.pages.projectV2.list)}>
+            <Link to={ABSOLUTE_ROUTES.v2.projects.root}>
               return to projects list
             </Link>
             .

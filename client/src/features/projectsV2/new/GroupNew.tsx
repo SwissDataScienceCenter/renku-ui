@@ -20,7 +20,6 @@ import cx from "classnames";
 
 import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
 import { Button, Form } from "reactstrap";
 
 import FormSchema from "../../../components/formschema/FormSchema";
@@ -28,7 +27,6 @@ import { Loader } from "../../../components/Loader";
 
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
-import { Url } from "../../../utils/helpers/url";
 
 import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
 import type { GroupPostRequest } from "../api/namespace.api";
@@ -37,6 +35,8 @@ import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
 
 import WipBadge from "../shared/WipBadge";
+import { Link } from "react-router-dom-v5-compat";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 function GroupNewHeader() {
   return (
@@ -83,7 +83,7 @@ function GroupBeingCreated({
     <>
       <div>Group created.</div>
       {"  "}
-      <Link to={Url.get(Url.pages.groupV2.list)}>Go to group list</Link>
+      <Link to={ABSOLUTE_ROUTES.v2.groups.root}>Go to group list</Link>
     </>
   );
 }
@@ -150,7 +150,7 @@ function GroupMetadataForm() {
         <div className={cx("d-flex", "justify-content-between")}>
           <Link
             className={cx("btn", "btn-primary")}
-            to={Url.get(Url.pages.groupV2.list)}
+            to={ABSOLUTE_ROUTES.v2.groups.root}
           >
             Cancel
           </Link>
