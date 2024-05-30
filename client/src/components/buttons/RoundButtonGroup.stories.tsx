@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button } from "../../utils/ts-wrappers";
-import { RoundButtonGroup } from "./Button";
+import { Button } from "reactstrap";
 import { Meta, StoryObj } from "@storybook/react";
 
+import { RoundButtonGroup } from "./Button";
+
 const meta: Meta<typeof Button> = {
-  component: RoundButtonGroup,
   title: "components/Buttons/RoundButtonGroup",
   parameters: {
     docs: {

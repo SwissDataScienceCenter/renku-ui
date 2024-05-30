@@ -17,6 +17,7 @@
  */
 
 import { useContext, useState } from "react";
+import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
 import { DatesFilter } from "../../components/dateFilter/DateFilter";
 import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySearchFilter";
@@ -30,19 +31,11 @@ import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntit
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import {
-  Col,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Row,
-} from "../../utils/ts-wrappers";
+
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
 import { KgSearchContextProvider, useKgSearchContext } from "./KgSearchContext";
 import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
-
-/* eslint-disable @typescript-eslint/ban-types */
 
 interface SearchPageProps {
   isLoggedUser: boolean;
@@ -55,9 +48,9 @@ interface ModalFilterProps {
   role: UserRoles;
   visibility: VisibilitiesFilter;
   sort: SortingOptions;
-  handleSort: Function;
+  handleSort: (value: SortingOptions) => void;
   isOpen: boolean;
-  onToggle: Function;
+  onToggle: () => void;
   isLoggedUser: boolean;
   valuesDate: DatesFilter;
 }
