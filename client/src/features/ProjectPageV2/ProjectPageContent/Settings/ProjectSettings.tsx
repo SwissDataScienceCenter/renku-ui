@@ -19,30 +19,34 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Pencil } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom-v5-compat";
+import {
+  generatePath,
+  useLocation,
+  useNavigate,
+} from "react-router-dom-v5-compat";
 import { Button, Input, Form, Label } from "reactstrap";
 
-import { RenkuAlert, SuccessAlert } from "../../../../components/Alert.jsx";
-import { Loader } from "../../../../components/Loader.tsx";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert.tsx";
-import KeywordsInput from "../../../../components/form-field/KeywordsInput.tsx";
-import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants.ts";
-import { NotificationsManager } from "../../../../notifications/notifications.types.ts";
-import AppContext from "../../../../utils/context/appContext.ts";
-import { Url } from "../../../../utils/helpers/url";
-import type { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
-import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField.tsx";
-import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField.tsx";
-import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField.tsx";
-import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField.tsx";
-import { ProjectV2Metadata } from "../../../projectsV2/show/ProjectV2EditForm.tsx";
+import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
+import { Loader } from "../../../../components/Loader";
+import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import KeywordsInput from "../../../../components/form-field/KeywordsInput";
+import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
+import { NotificationsManager } from "../../../../notifications/notifications.types";
+import AppContext from "../../../../utils/context/appContext";
+import type { Project } from "../../../projectsV2/api/projectV2.api";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField";
+import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField";
+import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
+import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
+import { ProjectV2Metadata } from "../../../projectsV2/show/ProjectV2EditForm";
 
-import AccessGuard from "../../utils/AccessGuard.tsx";
-import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
+import AccessGuard from "../../utils/AccessGuard";
+import useProjectAccess from "../../utils/useProjectAccess.hook";
 
-import ProjectPageDelete from "./ProjectDelete.tsx";
-import ProjectPageSettingsMembers from "./ProjectSettingsMembers.tsx";
+import ProjectPageDelete from "./ProjectDelete";
+import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 
 const projectMetadataStringKeys = ["description", "name", "namespace"] as const;
 
@@ -106,9 +110,9 @@ export function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
     handleSubmit,
     watch,
     register,
-  } = useForm<ProjectV2Metadata>({
+  } = useForm<Required<ProjectV2Metadata>>({
     defaultValues: {
-      description: project?.description,
+      description: project.description,
       name: project.name,
       namespace: project.namespace,
       visibility: project.visibility,
@@ -147,7 +151,7 @@ export function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
     if (isSuccess && redirectAfterUpdate) {
       if (notifications && currentName)
         notificationProjectUpdated(notifications, currentName);
-      const projectUrl = Url.get(Url.pages.projectV2.show, {
+      const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: currentNamespace,
         slug: project.slug,
       });

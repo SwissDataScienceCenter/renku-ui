@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
 import { useFieldArray, useForm } from "react-hook-form";
-
+import { useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
   Form,
@@ -33,6 +33,11 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import AppContext from "../../../utils/context/appContext";
+
+import { notificationProjectDeleted } from "../../ProjectPageV2/ProjectPageContent/Settings/ProjectDelete";
 
 import type {
   Project,
@@ -46,6 +51,7 @@ import {
   usePatchProjectsByProjectIdMutation,
 } from "../api/projectV2.enhanced-api";
 import type { Repository } from "../projectV2.types";
+import { SettingEditOption } from "./projectV2Show.types";
 
 import AddProjectMemberModal from "../fields/AddProjectMemberModal";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
@@ -53,13 +59,6 @@ import ProjectNameFormField from "../fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
-
-import { useNavigate } from "react-router-dom-v5-compat";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import AppContext from "../../../utils/context/appContext.ts";
-import { Url } from "../../../utils/helpers/url";
-import { notificationProjectDeleted } from "../../ProjectPageV2/ProjectPageContent/Settings/ProjectDelete.tsx";
-import { SettingEditOption } from "./projectV2Show.types";
 
 export type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
 
@@ -90,7 +89,7 @@ export function ProjectDeleteConfirmation({
 
   useEffect(() => {
     if (result.isSuccess) {
-      navigate(Url.get(Url.pages.projectV2.list));
+      navigate(ABSOLUTE_ROUTES.v2.projects.root);
       if (notifications)
         notificationProjectDeleted(notifications, project.name);
     }

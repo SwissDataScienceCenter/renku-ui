@@ -28,18 +28,18 @@ import {
   Row,
 } from "reactstrap";
 
-import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
-import { Url } from "../../../utils/helpers/url";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import FormSchema from "../../../components/formschema/FormSchema";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
-import { useGetGroupsByGroupSlugQuery } from "../api/projectV2.enhanced-api";
 import type { GroupResponse } from "../api/namespace.api";
+import { useGetGroupsByGroupSlugQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
 
-import { SettingEditOption } from "./groupShow.types";
 import { GroupMembersForm, GroupMetadataForm } from "./groupEditForms";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { SettingEditOption } from "./groupShow.types";
 
 interface GroupHeaderProps {
   group: GroupResponse;
@@ -47,7 +47,7 @@ interface GroupHeaderProps {
   settingEdit: SettingEditOption;
 }
 function GroupHeader({ group, setSettingEdit, settingEdit }: GroupHeaderProps) {
-  const groupListUrl = Url.get(Url.pages.groupV2.list);
+  const groupListUrl = ABSOLUTE_ROUTES.v2.groups.root;
   return (
     <>
       <div>{group.slug}</div>
@@ -155,7 +155,7 @@ export default function GroupShow() {
           )}
           <p>
             Click here to{" "}
-            <Link to={Url.get(Url.pages.groupV2.list)}>
+            <Link to={ABSOLUTE_ROUTES.v2.groups.root}>
               return to groups list
             </Link>
             .

@@ -24,6 +24,7 @@ import {
   ThreeDotsVertical,
   Trash,
 } from "react-bootstrap-icons";
+import { generatePath } from "react-router-dom-v5-compat";
 import {
   Col,
   DropdownItem,
@@ -36,8 +37,10 @@ import {
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import rkIconSessions from "../../styles/icons/sessions.svg";
-import { Url } from "../../utils/helpers/url";
+import AccessGuard from "../ProjectPageV2/utils/AccessGuard";
+import useProjectAccess from "../ProjectPageV2/utils/useProjectAccess.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
@@ -50,14 +53,14 @@ import {
   SessionNameBox,
   SessionStatusBadgeBox,
   SessionStatusLabelBox,
-} from "./SessionList/SessionItemDisplay.tsx";
-import { SessionView } from "./SessionView/SessionView.tsx";
+} from "./SessionList/SessionItemDisplay";
+import { SessionView } from "./SessionView/SessionView";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
-import ActiveSessionButton from "./components/SessionButton/ActiveSessionButton.tsx";
+import ActiveSessionButton from "./components/SessionButton/ActiveSessionButton";
 import {
   SessionStatusV2Description,
   SessionStatusV2Label,
-} from "./components/SessionStatus/SessionStatus.tsx";
+} from "./components/SessionStatus/SessionStatus";
 import {
   useGetProjectSessionLaunchersQuery,
   useGetSessionEnvironmentsQuery,
@@ -65,21 +68,19 @@ import {
 import { SessionLauncher } from "./sessionsV2.types";
 
 // Required for logs formatting
-import dotsDropdownStyles from "../../components/buttons/ThreeDots.module.scss";
 import "../../notebooks/Notebooks.css";
 
+import dotsDropdownStyles from "../../components/buttons/ThreeDots.module.scss";
 import sessionItemStyles from "./SessionList/SessionItemDisplay.module.scss";
-import AccessGuard from "../ProjectPageV2/utils/AccessGuard.tsx";
-import useProjectAccess from "../ProjectPageV2/utils/useProjectAccess.hook.ts";
 
 export function getShowSessionUrlByProject(
   project: Project,
   sessionName: string
 ) {
-  return Url.get(Url.pages.projectV2.showSession, {
+  return generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
     namespace: project.namespace,
     slug: project.slug,
-    sessionId: sessionName,
+    session: sessionName,
   });
 }
 
