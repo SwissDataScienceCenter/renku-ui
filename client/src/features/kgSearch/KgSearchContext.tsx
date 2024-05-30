@@ -23,7 +23,7 @@ import {
   useContext,
   useMemo,
 } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
 import {
   DateFilterTypes,
   DatesFilter,
@@ -65,7 +65,7 @@ export const KgSearchContextProvider = ({
   children,
 }: KgSearchContextProviderProps) => {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const kgSearchState = useMemo(() => {
     const state = searchStringToState(location.search);
@@ -81,9 +81,9 @@ export const KgSearchContextProvider = ({
         typeDate: dates.type ?? DateFilterTypes.all,
         page: 1,
       });
-      history.push({ search });
+      navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setMyProjects = useCallback(() => {
     const search = stateToSearchString({
@@ -93,8 +93,8 @@ export const KgSearchContextProvider = ({
       phrase: "",
       page: 1,
     });
-    history.push({ search });
-  }, [history, kgSearchState]);
+    navigate({ search });
+  }, [kgSearchState, navigate]);
   const setMyDatasets = useCallback(() => {
     const search = stateToSearchString({
       ...kgSearchState,
@@ -103,8 +103,8 @@ export const KgSearchContextProvider = ({
       phrase: "",
       page: 1,
     });
-    history.push({ search });
-  }, [history, kgSearchState]);
+    navigate({ search });
+  }, [kgSearchState, navigate]);
   const setPhrase = useCallback(
     (phrase: string) => {
       const search = stateToSearchString({
@@ -112,30 +112,30 @@ export const KgSearchContextProvider = ({
         phrase,
         page: 1,
       });
-      history.push({ search });
+      navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setPage = useCallback(
     (page: number) => {
       const search = stateToSearchString({ ...kgSearchState, page });
-      history.push({ search });
+      navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setSort = useCallback(
     (sort: SortingOptions) => {
       const search = stateToSearchString({ ...kgSearchState, sort, page: 1 });
-      history.push({ search });
+      navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setType = useCallback(
     (type: TypeEntitySelection) => {
       const search = stateToSearchString({ ...kgSearchState, type, page: 1 });
-      history.push({ search });
+      navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setUserRole = useCallback(
     (role: UserRoles) => {
@@ -144,9 +144,9 @@ export const KgSearchContextProvider = ({
         role,
         page: 1,
       });
-      history.push({ search });
+      navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const setVisibility = useCallback(
     (visibility: VisibilitiesFilter) => {
@@ -155,14 +155,14 @@ export const KgSearchContextProvider = ({
         visibility,
         page: 1,
       });
-      history.push({ search });
+      navigate({ search });
     },
-    [history, kgSearchState]
+    [kgSearchState, navigate]
   );
   const reset = useCallback(() => {
     const search = stateToSearchString(defaultSearchState);
-    history.push({ search });
-  }, [history]);
+    navigate({ search });
+  }, [navigate]);
 
   const reducers = {
     setDates,
