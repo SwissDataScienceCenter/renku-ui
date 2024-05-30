@@ -413,11 +413,49 @@ describe("Edit v2 project", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
     cy.contains("Members of the project").should("be.visible");
     cy.wait("@readProjectV2");
-    cy.contains("user1@email.com").should("be.visible");
-
+    cy.contains(projectMemberToEdit).should("be.visible");
     cy.getDataCy("project-member-edit-1").should("be.visible").click();
     cy.getDataCy("member-role").select("Viewer");
     fixtures.listProjectV2Members({
+      removeMemberId: projectMemberToEdit,
+      addMember: {
+        id: projectMemberToEdit,
+        role: "viewer",
+      },
+    });
+    cy.contains("button", "Change access").click();
+  });
+
+  it("cannot edit last owner", () => {
+    const projectMemberToEdit = "user3-uuid";
+    fixtures
+      .listProjectV2Members()
+      .readProjectV2()
+      .patchProjectV2Member({ memberId: projectMemberToEdit });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
+    cy.contains("Members of the project").should("be.visible");
+    cy.wait("@readProjectV2");
+    cy.contains("user1@email.com").should("be.visible");
+    cy.getDataCy("project-member-edit-0").should("be.disabled");
+  });
+
+  it("can edit when there are multiple owners", () => {
+    const projectMemberToEdit = "user6-uuid";
+    fixtures
+      .listProjectV2Members({
+        fixture: "projectV2/list-projectV2-members-many.json",
+      })
+      .readProjectV2()
+      .patchProjectV2Member({ memberId: projectMemberToEdit });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
+    cy.contains("Members of the project").should("be.visible");
+    cy.wait("@readProjectV2");
+    cy.getDataCy("project-member-edit-0").should("be.enabled");
+    cy.getDataCy("project-member-edit-1").should("be.enabled");
+    cy.getDataCy("project-member-edit-1").should("be.visible").click();
+    cy.getDataCy("member-role").select("Viewer");
+    fixtures.listProjectV2Members({
+      fixture: "projectV2/list-projectV2-members-many.json",
       removeMemberId: projectMemberToEdit,
       addMember: {
         id: projectMemberToEdit,
@@ -491,12 +529,13 @@ describe("Editor cannot maintain members", () => {
     cy.getDataCy("add-repository").should("be.visible");
   });
 
-  it("cannot change project members", () => {
+  it("cannot change project members except self", () => {
     cy.contains("test 2 v2-project").should("be.visible");
     cy.wait("@listProjectV2Members");
     cy.get("a[title='Settings']").click();
-    cy.getDataCy("project-member-edit-1").should("be.disabled");
-    cy.getDataCy("project-add-member").should("not.exist");
+    cy.getDataCy("project-member-edit-2").should("be.disabled");
+    // TODO: can edit self
+    cy.getDataCy("project-member-remove-1").should("be.enabled");
   });
 });
 
