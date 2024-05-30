@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
 import { DatesFilter } from "../../components/dateFilter/DateFilter";
@@ -28,20 +28,12 @@ import SortingEntities, {
   SortingOptions,
 } from "../../components/sortingEntities/SortingEntities";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
-import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
 import { KgSearchContextProvider, useKgSearchContext } from "./KgSearchContext";
-import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
-
-interface SearchPageProps {
-  isLoggedUser: boolean;
-  userName?: string;
-  model: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-}
 
 interface ModalFilterProps {
   type: TypeEntitySelection;
@@ -91,7 +83,12 @@ const ModalFilter = ({
   );
 };
 
-function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
+function SearchPage() {
+  const user = useLegacySelector((state) => state.stateModel.user);
+
+  const isLoggedUser = !!user.logged;
+  const userName: string | undefined = user?.data?.name;
+
   const {
     kgSearchState,
     reducers: { setPage, setSort, reset },
@@ -111,8 +108,6 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
 
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);
-  const { client } = useContext(AppContext);
-  const user = useLegacySelector((state) => state.stateModel.user);
   const searchRequest = {
     phrase,
     sort,
@@ -151,9 +146,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     </>
   );
 
-  // eslint-disable-next-line
-  // @ts-ignore
-  const searchNav = <QuickNav client={client} model={model} user={user} />;
+  const searchNav = <QuickNav user={user} />;
   return (
     <>
       <Row>
@@ -206,12 +199,10 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   );
 }
 
-const SearchPageWrapped = (props: SearchPageProps) => {
+export default function SearchPageWrapped() {
   return (
     <KgSearchContextProvider>
-      <SearchPage {...props} />
+      <SearchPage />
     </KgSearchContextProvider>
   );
-};
-
-export default SearchPageWrapped;
+}
