@@ -29,7 +29,6 @@ import ContainerWrap from "../../../components/container/ContainerWrap";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
 import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
-// import { ProjectPageContentType } from "../ProjectPageContent/projectPageContentType.types";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
 
