@@ -24,6 +24,7 @@ import { SessionLaunchersListDisplay } from "../../../sessionsV2/SessionsV2.tsx"
 import { CodeRepositoriesDisplay } from "../CodeRepositories/RepositoriesBox.tsx";
 import { DataSourcesDisplay } from "../DataSources/DataSourcesBox.tsx";
 import styles from "./ProjectOverview.module.scss";
+import { useProject } from "../../ProjectPageContainer/ProjectPageContainer.tsx";
 
 function OverviewBox({ children }: { children: ReactNode }) {
   return (
@@ -44,7 +45,9 @@ function OverviewBox({ children }: { children: ReactNode }) {
   );
 }
 
-export default function ProjectPageOverview({ project }: { project: Project }) {
+export default function ProjectPageOverview() {
+  const { project } = useProject();
+
   return (
     <div className="mx-3 pb-5">
       <Row className="g-5">

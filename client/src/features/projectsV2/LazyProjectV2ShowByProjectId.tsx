@@ -15,10 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-export enum ProjectPageContentType {
-  Overview = "Overview",
-  Settings = "Settings",
-  Members = "Members",
-  ProjectInfo = "ProjectInfo",
+const ProjectV2ShowByProjectId = lazy(
+  () => import("./show/ProjectV2ShowByProjectId")
+);
+
+export default function LazyProjectV2ShowByProjectId() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <ProjectV2ShowByProjectId />
+    </Suspense>
+  );
 }

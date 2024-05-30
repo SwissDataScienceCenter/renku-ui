@@ -15,22 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import { Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
-import { ProjectPageContentType } from "./ProjectPageContent/projectPageContentType.types";
+import PageLoader from "../../../components/PageLoader";
 
-const ProjectPageV2Show = lazy(
-  () => import("./ProjectPageContainer/ProjectPageContainer")
-);
+const ProjectOverviewPage = lazy(() => import("./ProjectOverviewPage"));
 
-export default function LazyProjectPageV2Show({
-  contentPage,
-}: {
-  contentPage: ProjectPageContentType;
-}) {
+export default function LazyProjectPageOverview() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <ProjectPageV2Show contentPage={contentPage} />
+      <ProjectOverviewPage />
     </Suspense>
   );
 }

@@ -15,53 +15,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { useEffect } from "react";
 import {
-  Link,
-  Navigate,
   generatePath,
+  useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
-import { Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { useGetProjectsByProjectIdQuery } from "../api/projectV2.enhanced-api";
+import ProjectNotFound from "../notFound/ProjectNotFound";
 
-export function ProjectV2ShowByProjectId() {
+export default function ProjectV2ShowByProjectId() {
   const { id: projectId } = useParams<{
     id: string | undefined;
-    namespace: string | undefined;
-    slug: string | undefined;
   }>();
-  const { data, isLoading, error } = useGetProjectsByProjectIdQuery({
+
+  const navigate = useNavigate();
+
+  const {
+    data: project,
+    isLoading,
+    error,
+  } = useGetProjectsByProjectIdQuery({
     projectId: projectId ?? "",
   });
-  if (isLoading) return <Loader />;
-  if (error) {
-    return (
-      <Row className="mt-3">
-        <Col>
-          <RtkOrNotebooksError error={error} />
-          <p>Project does not exist, or you are not authorized to access it.</p>
-          <p>
-            Click here to{" "}
-            <Link to={ABSOLUTE_ROUTES.v2.projects.root}>
-              return to projects list
-            </Link>
-            .
-          </p>
-        </Col>
-      </Row>
-    );
-  }
-  return (
-    <Navigate
-      to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace: data?.namespace ?? "",
-        slug: data?.slug ?? "",
-      })}
-      replace
-    />
-  );
+
+  useEffect(() => {
+    if (project && project.namespace && project.slug) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: project.namespace,
+          slug: project.slug,
+        }),
+        { replace: true }
+      );
+    }
+  }, [navigate, project]);
+
+  if (isLoading) return <Loader className="align-self-center" />;
+
+  return <ProjectNotFound error={error} />;
 }

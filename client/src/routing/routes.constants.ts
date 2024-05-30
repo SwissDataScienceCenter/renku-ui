@@ -52,3 +52,40 @@ export const ABSOLUTE_ROUTES = {
     connectedServices: "/v2/connected-services",
   },
 } as const;
+
+export const RELATIVE_ROUTES = {
+  root: "/",
+  v2: {
+    root: "v2/*",
+    groups: {
+      root: "groups/*",
+      new: "new",
+      show: ":slug",
+    },
+    projects: {
+      root: "projects/*",
+      new: "new",
+      show: {
+        root: ":namespace/:slug/*",
+        info: "info",
+        settings: "settings/*",
+        sessions: {
+          root: "sessions",
+          show: "show/:session",
+          start: ":launcherId/start",
+        },
+      },
+      showById: ":id",
+    },
+    help: {
+      root: "help/*",
+      contact: "contact",
+      status: "status",
+      release: "release",
+      tos: "tos",
+      privacy: "privacy",
+    },
+    search: "search",
+    connectedServices: "connected-services",
+  },
+} as const;
