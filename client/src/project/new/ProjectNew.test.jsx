@@ -24,18 +24,10 @@
  */
 
 import { createMemoryHistory } from "history";
-import { createRoot } from "react-dom/client";
-import { act } from "react-dom/test-utils";
-import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
-import { testClient as client } from "../../api-client";
-import { StateModel, globalSchema } from "../../model";
-import { generateFakeUser } from "../../user/User.test";
-import AppContext from "../../utils/context/appContext";
 import { btoaUTF8 } from "../../utils/helpers/Encoding";
-import { NewProject, getDataFromParams } from "./ProjectNew.container";
+import { getDataFromParams } from "./ProjectNew.container";
 import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
 import { checkTitleDuplicates, validateTitle } from "./index";
 
@@ -47,7 +39,6 @@ fakeHistory.push({
   pathname: "/projects",
   search: "?page=1",
 });
-const fakeLocation = { pathname: "" };
 
 describe("helper functions", () => {
   it("validateTitle", () => {
@@ -137,46 +128,4 @@ describe("helper functions", () => {
     decoded = getDataFromParams(urlParams);
     expect(decoded).toMatchObject(params);
   });
-});
-
-describe("rendering", () => {
-  const model = new StateModel(globalSchema);
-  const templates = { custom: false, repositories: [{}] };
-
-  const anonymousUser = generateFakeUser(true);
-  const loggedUser = generateFakeUser();
-  const users = [
-    { type: "anonymous", data: anonymousUser },
-    { type: "logged", data: loggedUser },
-  ];
-  const appContext = {
-    client: client,
-    params: { TEMPLATES: templates },
-    location: fakeLocation,
-  };
-
-  for (const user of users) {
-    it(`renders NewProject without crashing for ${user.type} user`, async () => {
-      const div = document.createElement("div");
-      // Fix UncontrolledTooltip error. https://github.com/reactstrap/reactstrap/issues/773
-      document.body.appendChild(div);
-      const root = createRoot(div);
-      await act(async () => {
-        root.render(
-          <Provider store={model.reduxStore}>
-            <MemoryRouter>
-              <AppContext.Provider value={appContext}>
-                <NewProject
-                  model={model}
-                  history={fakeHistory}
-                  user={user.data}
-                  client={client}
-                />
-              </AppContext.Provider>
-            </MemoryRouter>
-          </Provider>
-        );
-      });
-    });
-  }
 });

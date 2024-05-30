@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
 
 import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 import {
@@ -73,7 +73,8 @@ export const defaultAnonymousSuggestionQuickBar = {
 };
 
 export function QuickNavContainer({ user }) {
-  const history = useHistory();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const {
     kgSearchState,
@@ -131,8 +132,8 @@ export function QuickNavContainer({ user }) {
     e.preventDefault();
     setPhrase(currentPhrase);
     refetchLastQueries(e.currentTarget);
-    if (history.location.pathname === "/search") return;
-    history.push("/search");
+    if (location.pathname === "/search") return;
+    navigate("/search");
   };
 
   const onSuggestionsFetchRequested = () => {
