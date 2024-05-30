@@ -18,9 +18,15 @@
 
 import cx from "classnames";
 import type { ReactNode } from "react";
-import { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import { PeopleFill, PencilSquare, Trash } from "react-bootstrap-icons";
-import { Button, Col, DropdownItem, Row } from "reactstrap";
+import {
+  Button,
+  Col,
+  DropdownItem,
+  Row,
+  UncontrolledTooltip,
+} from "reactstrap";
 
 import {
   ButtonWithMenu,
@@ -47,15 +53,17 @@ function OverviewBox({ children }: { children: ReactNode }) {
 
 type MemberActionMenuProps = Omit<
   ProjectPageSettingsMembersTableRowProps,
-  "member" | "members"
-> & { disabled?: boolean };
+  "member" | "members" | "numberOfOwners"
+> & { disabled?: boolean; tooltip?: React.ReactNode };
 
 function MemberActionMenu({
   disabled,
   index,
   onRemove,
   onEdit,
+  tooltip,
 }: MemberActionMenuProps) {
+  const ref = useRef(null);
   const defaultAction = (
     <Button
       color="rk-green"
@@ -67,17 +75,73 @@ function MemberActionMenu({
     </Button>
   );
   return (
-    <ButtonWithMenu
-      className="py-1"
-      color="rk-green"
-      default={defaultAction}
-      disabled={disabled}
-      isPrincipal
-    >
-      <DropdownItem onClick={onRemove}>
-        <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
-      </DropdownItem>
-    </ButtonWithMenu>
+    <>
+      <span ref={ref}>
+        <ButtonWithMenu
+          className="py-1"
+          color="rk-green"
+          default={defaultAction}
+          disabled={disabled}
+          isPrincipal
+        >
+          <DropdownItem onClick={onRemove}>
+            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+          </DropdownItem>
+        </ButtonWithMenu>
+      </span>
+      {tooltip && (
+        <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+      )}
+    </>
+  );
+}
+
+function ProjectMemberAction({
+  index,
+  member,
+  members,
+  numberOfOwners,
+  onRemove,
+  onEdit,
+}: ProjectPageSettingsMembersTableRowProps) {
+  return (
+    <MembershipGuard
+      disabled={
+        <MemberActionMenu
+          disabled={true}
+          index={index}
+          onRemove={onRemove}
+          onEdit={onEdit}
+          tooltip={"Only project owners can modify access to the project."}
+        />
+      }
+      enabled={
+        <MemberActionMenu index={index} onRemove={onRemove} onEdit={onEdit} />
+      }
+      members={members}
+      selfOverride={{
+        disabled: (
+          <Button
+            color="danger"
+            data-cy={`project-member-remove-${index}`}
+            onClick={onRemove}
+          >
+            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+          </Button>
+        ),
+        enabled:
+          member.role === "owner" && numberOfOwners < 2 ? (
+            <MemberActionMenu
+              disabled={true}
+              index={index}
+              onRemove={onRemove}
+              onEdit={onEdit}
+              tooltip={"A project requires at least one owner."}
+            />
+          ) : undefined,
+        subject: member,
+      }}
+    />
   );
 }
 
@@ -85,6 +149,7 @@ interface ProjectPageSettingsMembersTableRowProps {
   index: number;
   member: ProjectMemberResponse;
   members: ProjectMemberResponse[];
+  numberOfOwners: number;
   onRemove: () => void;
   onEdit: () => void;
 }
@@ -93,6 +158,7 @@ function ProjectPageSettingsMembersTableRow({
   index,
   member,
   members,
+  numberOfOwners,
   onRemove,
   onEdit,
 }: ProjectPageSettingsMembersTableRowProps) {
@@ -115,23 +181,13 @@ function ProjectPageSettingsMembersTableRow({
         className={cx("d-flex", "align-items-center", "px-3", "px-md-2")}
         data-cy={`project-member-actions-${index}`}
       >
-        <MembershipGuard
-          disabled={
-            <MemberActionMenu
-              disabled={true}
-              index={index}
-              onRemove={onRemove}
-              onEdit={onEdit}
-            />
-          }
-          enabled={
-            <MemberActionMenu
-              index={index}
-              onRemove={onRemove}
-              onEdit={onEdit}
-            />
-          }
+        <ProjectMemberAction
+          index={index}
+          member={member}
           members={members}
+          numberOfOwners={numberOfOwners}
+          onRemove={onRemove}
+          onEdit={onEdit}
         />
       </Col>
     </Row>
@@ -151,6 +207,7 @@ function ProjectPageSettingsMembersTable({
   const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState<ProjectMemberResponse>();
   const sortedMembers = toSortedMembers(members);
+  const numberOfOwners = sortedMembers.filter((m) => m.role === "owner").length;
 
   const headerClasses = [
     "w-100",
@@ -197,6 +254,7 @@ function ProjectPageSettingsMembersTable({
             key={d.id}
             member={d}
             members={members}
+            numberOfOwners={numberOfOwners}
             onRemove={() => {
               setMemberToEdit(d);
               setIsRemoveMemberModalOpen(true);

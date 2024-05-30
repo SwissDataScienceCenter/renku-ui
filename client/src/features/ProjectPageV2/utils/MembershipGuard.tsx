@@ -21,15 +21,21 @@ import { useGetUserQuery } from "../../../features/user/dataServicesUser.api";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import type {
   ProjectMemberListResponse,
-  Role,
+  ProjectMemberResponse,
 } from "../../projectsV2/api/projectV2.api.ts";
 import AccessGuard from "./AccessGuard.tsx";
+import { toNumericRole } from "./roleUtils.ts";
 
-type MembershipGuardProps = {
-  disabled: React.ReactNode;
-  enabled: React.ReactNode;
+interface SelfOverride {
+  disabled: React.ReactNode | undefined;
+  enabled: React.ReactNode | undefined;
+  subject: ProjectMemberResponse;
+}
+
+type MembershipGuardProps = Omit<Parameters<typeof AccessGuard>[0], "role"> & {
   members: ProjectMemberListResponse | undefined;
-  minimumRole?: Role;
+  /** A node to show if the user themselves is in the project, but below the minimum role  */
+  selfOverride?: SelfOverride;
 };
 
 export default function MembershipGuard({
@@ -37,6 +43,7 @@ export default function MembershipGuard({
   enabled,
   members,
   minimumRole = "owner",
+  selfOverride,
 }: MembershipGuardProps) {
   const logged = useLegacySelector((state) => state.stateModel.user.logged);
   const {
@@ -50,14 +57,30 @@ export default function MembershipGuard({
   if (!user) return null;
   if (!members) return disabled;
   // Find the user is a member of the project
-  const member = members.find((member) => member.id === user.id);
-  if (!member) return disabled;
+  const userMember = members.find((member) => member.id === user.id);
+  if (!userMember) return disabled;
+  // If the user themselves is the target of this guard and there is an applicable override, use it
+  if (
+    userMember === selfOverride?.subject &&
+    toNumericRole(userMember.role) < toNumericRole(minimumRole) &&
+    selfOverride.disabled
+  ) {
+    return selfOverride.disabled;
+  }
+  if (
+    userMember === selfOverride?.subject &&
+    toNumericRole(userMember.role) >= toNumericRole(minimumRole) &&
+    selfOverride.enabled
+  ) {
+    return selfOverride.enabled;
+  }
+
   return (
     <AccessGuard
       disabled={disabled}
       enabled={enabled}
       minimumRole={minimumRole}
-      role={member.role}
+      role={userMember.role}
     />
   );
 }
