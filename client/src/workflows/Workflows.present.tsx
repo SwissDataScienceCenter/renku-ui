@@ -56,11 +56,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { InfoAlert, WarnAlert } from "../components/Alert";
 
-import {
-  ExternalDocsLink,
-  ExternalLink,
-  IconLink,
-} from "../components/ExternalLinks";
+import { ExternalDocsLink, ExternalLink } from "../components/ExternalLinks";
+import LinkWithTooltip from "../components/LinkWithTooltip";
 import InformativeIcon from "../components/InformativeIcon";
 import { Loader } from "../components/Loader";
 import { TreeBrowser, TreeDetails, TreeElement } from "../components/Tree";
@@ -1011,11 +1008,9 @@ function VisualizerDetailExpanded({
       defaultValue = (
         <span>
           {defaultValue}
-          <IconLink
-            tooltip="Go to file"
-            icon={<FileCode className={cx("bi", "text-rk-yellow")} />}
-            to={fileUrl}
-          />
+          <LinkWithTooltip tooltip="Go to file" to={fileUrl}>
+            <FileCode className={cx("bi", "text-rk-yellow")} />
+          </LinkWithTooltip>
         </span>
       );
     } else {
@@ -1113,11 +1108,9 @@ function VisualizerLocalResource({
     const newName = `${subItem.replace("/", " #")}  @ `;
     const url = targetWorkflow.url;
     const link = (
-      <IconLink
-        tooltip="Open workflow"
-        icon={<Link45deg className={cx("bi", "text-rk-yellow")} />}
-        to={url}
-      />
+      <LinkWithTooltip tooltip="Open workflow" to={url}>
+        <Link45deg className={cx("bi", "text-rk-yellow")} />
+      </LinkWithTooltip>
     );
     return (
       <span key={simpleHash(data.id + data.name)}>

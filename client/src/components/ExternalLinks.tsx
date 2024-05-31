@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { BoxArrowUpRight } from "react-bootstrap-icons";
 import { useRef } from "react";
-import { Link } from "react-router-dom";
 import { UncontrolledTooltip } from "reactstrap";
 
 type ExternalLinkButtonProps = Pick<
@@ -174,31 +173,6 @@ interface ExternalDocsLinkProps {
 export function ExternalDocsLink(props: ExternalDocsLinkProps) {
   const role = "link";
   return <ExternalLink role={role} {...props} />;
-}
-
-interface IconLinkProps {
-  /** An icon to display */
-  icon: React.ReactNode;
-  /** The URL to link to */
-  to: string;
-  /** The text of the tooltip */
-  tooltip: string;
-}
-/**
- * IconLink
- * Internal application link that is shown as a font-awesome icon
- */
-export function IconLink(props: IconLinkProps) {
-  const ref = useRef(null);
-
-  return (
-    <span>
-      <Link ref={ref} to={props.to}>
-        {props.icon}
-      </Link>
-      <UncontrolledTooltip target={ref}>{props.tooltip}</UncontrolledTooltip>
-    </span>
-  );
 }
 
 interface ExternalIconLinkProps {
