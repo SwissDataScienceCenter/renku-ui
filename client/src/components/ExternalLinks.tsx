@@ -207,7 +207,7 @@ interface ExternalIconLinkProps {
   /** An icon to display */
   icon: React.ReactNode;
   /** The text to show for the link */
-  title: React.ReactNode;
+  text: React.ReactNode;
   /** The text of the tooltip */
   tooltip?: React.ReactNode;
   /** The URL to link to */
@@ -216,7 +216,7 @@ interface ExternalIconLinkProps {
 export function ExternalIconLink({
   className,
   icon,
-  title,
+  text,
   tooltip,
   url,
 }: ExternalIconLinkProps) {
@@ -233,7 +233,7 @@ export function ExternalIconLink({
         rel="noreferrer noopener"
       >
         {icon}
-        {title}
+        {text}
       </a>
       {tooltip && (
         <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>

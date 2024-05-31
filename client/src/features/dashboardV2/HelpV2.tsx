@@ -98,7 +98,7 @@ function HelpGetting() {
             <ExternalIconLink
               url={Links.DISCOURSE}
               icon={<FontAwesomeIcon icon={faDiscourse} color="dark" />}
-              title="Forum"
+              text="Forum"
             />
           </h3>
           <p>
@@ -113,7 +113,7 @@ function HelpGetting() {
             <ExternalIconLink
               url={Links.GITTER}
               icon={<FontAwesomeIcon icon={faGitter} color="dark" />}
-              title="Gitter"
+              text="Gitter"
             />
           </h3>
           <p>
@@ -127,7 +127,7 @@ function HelpGetting() {
             <ExternalIconLink
               url={Links.GITHUB}
               icon={<Github className="bi" />}
-              title="GitHub"
+              text="GitHub"
             />
           </h3>
           <p>
