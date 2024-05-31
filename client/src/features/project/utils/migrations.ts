@@ -66,7 +66,7 @@ export function getReleaseUrl(version?: string): string | null {
 export function getCompareUrl(
   projectVersion?: string,
   latestVersion?: string
-): React.ReactNode {
+): string | null {
   if (!projectVersion || !latestVersion || projectVersion === latestVersion)
     return null;
   const cleanedProjectVersion = cleanVersion(projectVersion);

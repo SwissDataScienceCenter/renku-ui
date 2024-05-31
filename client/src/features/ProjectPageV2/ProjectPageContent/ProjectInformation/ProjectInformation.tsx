@@ -17,22 +17,25 @@
  */
 
 import cx from "classnames";
-import { TimeCaption } from "../../../../components/TimeCaption.tsx";
+import { generatePath } from "react-router-dom-v5-compat";
+import { TimeCaption } from "../../../../components/TimeCaption";
 import {
   EditButtonLink,
   UnderlineArrowLink,
-} from "../../../../components/buttons/Button.tsx";
-import VisibilityIcon from "../../../../components/entities/VisibilityIcon.tsx";
-import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
-import { Url } from "../../../../utils/helpers/url";
+} from "../../../../components/buttons/Button";
+import VisibilityIcon from "../../../../components/entities/VisibilityIcon";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import type {
   Project,
   ProjectMemberListResponse,
   ProjectMemberResponse,
-} from "../../../projectsV2/api/projectV2.api.ts";
-import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
-import MembershipGuard from "../../utils/MembershipGuard.tsx";
-import { toSortedMembers } from "../../utils/roleUtils.ts";
+} from "../../../projectsV2/api/projectV2.api";
+import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+import MembershipGuard from "../../utils/MembershipGuard";
+import { toSortedMembers } from "../../utils/roleUtils";
+
+import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
+
 import styles from "./ProjectInformation.module.scss";
 
 export function ProjectImageView() {
@@ -115,7 +118,7 @@ export default function ProjectInformation({ project }: { project: Project }) {
   });
   const totalMembers = members?.length ?? 0;
   const totalKeywords = project.keywords?.length || 0;
-  const settingsUrl = Url.get(Url.pages.projectV2.settings, {
+  const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
     namespace: project.namespace,
     slug: project.slug,
   });

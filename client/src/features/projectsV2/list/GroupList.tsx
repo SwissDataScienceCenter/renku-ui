@@ -15,18 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import { useState } from "react";
-import { Link } from "react-router-dom";
 import cx from "classnames";
+import { useState } from "react";
+import { generatePath, Link } from "react-router-dom-v5-compat";
 
 import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
 import { Pagination } from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
-import { Url } from "../../../utils/helpers/url";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
-import { useGetGroupsQuery } from "../api/projectV2.enhanced-api";
 import type { GroupResponse } from "../api/namespace.api";
+import { useGetGroupsQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
 
 import styles from "./projectV2List.module.scss";
@@ -35,7 +35,7 @@ interface GroupListGroupProps {
   group: GroupResponse;
 }
 function GroupListGroup({ group }: GroupListGroupProps) {
-  const groupUrl = Url.get(Url.pages.groupV2.show, {
+  const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
     slug: group.slug,
   });
   return (
@@ -100,7 +100,7 @@ function GroupListDisplay() {
 }
 
 export default function GroupList() {
-  const newGroupUrl = Url.get(Url.pages.groupV2.new);
+  const newGroupUrl = ABSOLUTE_ROUTES.v2.groups.new;
   return (
     <FormSchema
       showHeader={true}

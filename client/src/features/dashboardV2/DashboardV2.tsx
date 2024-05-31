@@ -17,7 +17,7 @@
  */
 import cx from "classnames";
 import { PlusLg } from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
+import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
@@ -25,8 +25,7 @@ import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import VisibilityIcon from "../../components/entities/VisibilityIcon";
-import { Url } from "../../utils/helpers/url";
-
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import {
   useGetGroupsQuery,
@@ -34,9 +33,10 @@ import {
 } from "../projectsV2/api/projectV2.enhanced-api";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 
+import DashboardV2Sessions from "./DashboardV2Sessions";
+
 import "../dashboard/Dashboard.scss";
 import styles from "./Dashboard.module.scss";
-import DashboardV2Sessions from "./DashboardV2Sessions";
 
 type ListElement = Pick<
   Project,
@@ -249,7 +249,7 @@ function GroupsList() {
             ...group,
             readableId: group.slug,
             visibility: "public",
-            url: Url.get(Url.pages.groupV2.show, {
+            url: generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
               slug: group.slug,
             }),
           }}
@@ -333,7 +333,7 @@ function ProjectList() {
           element={{
             ...project,
             readableId: `${project.namespace}/${project.slug}`,
-            url: Url.get(Url.pages.projectV2.show, {
+            url: generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
               namespace: project.namespace,
               slug: project.slug,
             }),

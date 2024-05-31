@@ -20,9 +20,9 @@ import { Component } from "react";
 import { Badge, CardBody, Card, CardHeader } from "reactstrap";
 import * as dagreD3 from "dagre-d3-es";
 import * as d3 from "d3";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
+import { Download } from "react-bootstrap-icons";
 
+import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import FileAndLineageSwitch from "./FileAndLineageComponents";
 import { ExternalIconLink } from "../components/ExternalLinks";
@@ -310,7 +310,7 @@ class FileLineage extends Component {
     let buttonGit = (
       <ExternalIconLink
         tooltip="Open in GitLab"
-        icon={faGitlab}
+        icon={<BootstrapGitLabIcon className="bi" />}
         to={externalFileUrl}
       />
     );
@@ -328,7 +328,7 @@ class FileLineage extends Component {
       fileInfo && fileInfo.type === "tree" ? null : (
         <ExternalIconLink
           tooltip="Download File"
-          icon={faDownload}
+          icon={<Download className="bi" />}
           // TODO: change this!!!
           to={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
         />

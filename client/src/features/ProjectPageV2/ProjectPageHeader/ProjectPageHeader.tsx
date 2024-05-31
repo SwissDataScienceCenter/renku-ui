@@ -24,7 +24,7 @@ import {
   ThreeDotsVertical,
   Trash,
 } from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
+import { Link, generatePath } from "react-router-dom-v5-compat";
 import {
   Col,
   DropdownItem,
@@ -33,19 +33,21 @@ import {
   Row,
   UncontrolledDropdown,
 } from "reactstrap";
+
 import {
   EditButtonLink,
   UnderlineArrowLink,
-} from "../../../components/buttons/Button.tsx";
+} from "../../../components/buttons/Button";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import { Project } from "../../projectsV2/api/projectV2.api";
+import { ProjectDeleteConfirmation } from "../../projectsV2/show/ProjectV2EditForm";
+import AddSessionLauncherButton from "../../sessionsV2/AddSessionLauncherButton";
+import { useGetProjectSessionLaunchersQuery } from "../../sessionsV2/sessionsV2.api";
+import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
+import AccessGuard from "../utils/AccessGuard";
+import useProjectAccess from "../utils/useProjectAccess.hook";
+
 import dotsDropdownStyles from "../../../components/buttons/ThreeDots.module.scss";
-import { Url } from "../../../utils/helpers/url";
-import { Project } from "../../projectsV2/api/projectV2.api.ts";
-import { ProjectDeleteConfirmation } from "../../projectsV2/show/ProjectV2EditForm.tsx";
-import AddSessionLauncherButton from "../../sessionsV2/AddSessionLauncherButton.tsx";
-import { useGetProjectSessionLaunchersQuery } from "../../sessionsV2/sessionsV2.api.ts";
-import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation.tsx";
-import AccessGuard from "../utils/AccessGuard.tsx";
-import useProjectAccess from "../utils/useProjectAccess.hook.ts";
 
 interface ProjectActionsProps extends ProjectPageHeaderProps {
   settingsUrl: string;
@@ -150,7 +152,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
   } = useGetProjectSessionLaunchersQuery(
     project.id ? { projectId: project.id } : skipToken
   );
-  const settingsUrl = Url.get(Url.pages.projectV2.settings, {
+  const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
     namespace: project.namespace,
     slug: project.slug,
   });
