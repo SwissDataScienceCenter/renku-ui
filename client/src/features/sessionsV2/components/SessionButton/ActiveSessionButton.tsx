@@ -248,25 +248,23 @@ export default function ActiveSessionButton({
     "btn-icon-text",
     "start-session-button",
     "py-1",
-    "px-2",
-    "d-flex",
-    "align-items-center"
+    "px-2"
   );
 
   const defaultAction =
     status === "stopping" || isStopping ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        <Loader className={cx("bi", "me-1")} inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Deleting
       </Button>
     ) : isHibernating ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        <Loader className={cx("bi", "me-1")} inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Pausing
       </Button>
     ) : status === "starting" || status === "running" ? (
       <Link
-        className={buttonClassName}
+        className={cx(buttonClassName, "d-inline-flex")}
         data-cy="open-session"
         to={showSessionUrl}
       >
@@ -285,7 +283,7 @@ export default function ActiveSessionButton({
       >
         {isResuming ? (
           <>
-            <Loader className={cx("bi", "me-1")} inline size={16} />
+            <Loader className="me-1" inline size={16} />
             Resuming
           </>
         ) : (

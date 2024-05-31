@@ -42,7 +42,7 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
 
   const contentLoading = (isLoading || isFetching) && (
     <div className="text-center">
-      <Loader className={cx("bi", "me-3", "mt-3")} inline size={16} />
+      <Loader className={cx("me-3", "mt-3")} inline size={16} />
       <span className="fst-italic">Loading data sources</span>
     </div>
   );
