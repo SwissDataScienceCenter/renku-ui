@@ -26,7 +26,7 @@ import {
 import { Link } from "react-router-dom";
 import { Col } from "reactstrap";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
-import IconLink from "./IconLink";
+import LinkWithTooltip from "./LinkWithTooltip";
 import { EntityChildrenDot } from "./entities/Children";
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityDuration from "./entities/Duration";
@@ -321,11 +321,9 @@ function TreeElement({
           <EntityDuration duration={duration} />
           {embed && !isComposite ? (
             <span className="ms-2">
-              <IconLink
-                tooltip="Open workflow"
-                icon={<Link45deg className={cx("bi", "text-rk-yellow")} />}
-                to={url}
-              />
+              <LinkWithTooltip tooltip="Open workflow" to={url}>
+                <Link45deg className={cx("bi", "text-rk-yellow")} />
+              </LinkWithTooltip>
             </span>
           ) : null}
         </Col>
