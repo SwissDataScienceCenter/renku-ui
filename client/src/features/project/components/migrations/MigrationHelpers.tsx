@@ -21,7 +21,6 @@ import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Button, UncontrolledTooltip } from "reactstrap";
-import type { ExternalLinkRole } from "../../../../components/ExternalLinks";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
