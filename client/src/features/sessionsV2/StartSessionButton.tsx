@@ -19,6 +19,9 @@
 import cx from "classnames";
 import { PlayFill } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
+
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+
 interface StartSessionButtonProps {
   namespace: string;
   slug: string;
@@ -31,7 +34,7 @@ export default function StartSessionButton({
   slug,
 }: StartSessionButtonProps) {
   const startUrl = generatePath(
-    "/v2/projects/:namespace/:slug/sessions/:launcherId/start",
+    ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
     {
       launcherId,
       namespace,

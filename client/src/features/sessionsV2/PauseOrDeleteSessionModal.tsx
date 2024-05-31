@@ -35,6 +35,7 @@ import { NotebooksHelper } from "../../notebooks";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../notifications/notifications.types";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { toHumanDuration } from "../../utils/helpers/DurationUtils";
@@ -104,7 +105,7 @@ function AnonymousDeleteSessionModal({
 
   const navigate = useNavigate();
 
-  const backUrl = generatePath("../../:namespace/:slug", {
+  const backUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: namespace ?? "",
     slug: slug ?? "",
   });
@@ -224,7 +225,7 @@ function PauseSessionModalBody({
 
   const navigate = useNavigate();
 
-  const backUrl = generatePath("../../:namespace/:slug", {
+  const backUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: namespace ?? "",
     slug: slug ?? "",
   });
@@ -343,7 +344,7 @@ function DeleteSessionModalBody({
 
   const navigate = useNavigate();
 
-  const backUrl = generatePath("../../:namespace/:slug", {
+  const backUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: namespace ?? "",
     slug: slug ?? "",
   });
