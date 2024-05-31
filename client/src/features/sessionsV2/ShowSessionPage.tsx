@@ -43,6 +43,7 @@ import { useGetSessionsQuery } from "../session/sessions.api";
 import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
 
 import styles from "../session/components/ShowSession.module.scss";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -56,7 +57,7 @@ export default function ShowSessionPage() {
 
   const navigate = useNavigate();
 
-  const backUrl = generatePath("../../:namespace/:slug", {
+  const backUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: namespace ?? "",
     slug: slug ?? "",
   });

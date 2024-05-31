@@ -19,6 +19,8 @@
 import cx from "classnames";
 import {
   Outlet,
+  useMatch,
+  useOutlet,
   useOutletContext,
   useParams,
 } from "react-router-dom-v5-compat";
@@ -26,6 +28,8 @@ import { Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
+import LazyNotFound from "../../../not-found/LazyNotFound";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
 import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
@@ -45,10 +49,24 @@ export default function ProjectPageContainer() {
     slug: slug ?? "",
   });
 
+  const outlet = useOutlet();
+
+  const isSessions = useMatch(
+    `${ABSOLUTE_ROUTES.v2.projects.show.sessions.root}/*`
+  );
+
   if (isLoading) return <Loader className="align-self-center" />;
 
   if (error || data == null) {
     return <ProjectNotFound error={error} />;
+  }
+
+  if (outlet == null) {
+    return <LazyNotFound />;
+  }
+
+  if (isSessions) {
+    return <Outlet />;
   }
 
   return (

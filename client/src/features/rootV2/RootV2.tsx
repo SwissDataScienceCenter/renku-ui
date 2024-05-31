@@ -22,10 +22,7 @@ import { Route, Routes, useNavigate } from "react-router-dom-v5-compat";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
-import {
-  ABSOLUTE_ROUTES,
-  RELATIVE_ROUTES,
-} from "../../routing/routes.constants";
+import { RELATIVE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
@@ -47,8 +44,6 @@ import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import NavbarV2 from "./NavbarV2";
-
-ABSOLUTE_ROUTES;
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -186,14 +181,14 @@ function ProjectsV2Routes() {
           path={RELATIVE_ROUTES.v2.projects.show.settings}
           element={<LazyProjectPageSettings />}
         />
+        <Route
+          path={RELATIVE_ROUTES.v2.projects.show.sessions.root}
+          element={<ProjectSessionsRoutes />}
+        />
       </Route>
       <Route
         path={RELATIVE_ROUTES.v2.projects.showById}
         element={<LazyProjectV2ShowByProjectId />}
-      />
-      <Route
-        path=":namespace/:slug/sessions/*"
-        element={<ProjectSessionsRoutes />}
       />
     </Routes>
   );

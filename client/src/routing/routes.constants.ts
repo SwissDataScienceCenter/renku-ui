@@ -70,7 +70,7 @@ export const RELATIVE_ROUTES = {
         info: "info",
         settings: "settings/*",
         sessions: {
-          root: "sessions",
+          root: "sessions/*",
           show: "show/:session",
           start: ":launcherId/start",
         },
