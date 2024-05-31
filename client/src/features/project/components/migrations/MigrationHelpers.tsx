@@ -227,7 +227,7 @@ export function DetailsSection({
   if (titleInfo) {
     const externalLinkStyles = {
       className: "text-rk-white",
-      role: "text" as ExternalLinkRole,
+      role: "text" as const,
       iconSup: true,
       iconAfter: true,
     };
