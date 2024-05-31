@@ -227,7 +227,7 @@ export function ExternalIconLink({
       <a
         href={url}
         role="button"
-        className={cx("btn-icon-text", "icon-link", className)}
+        className={cx("btn-icon-text", tooltip && "icon-link", className)}
         ref={ref}
         target="_blank"
         rel="noreferrer noopener"
