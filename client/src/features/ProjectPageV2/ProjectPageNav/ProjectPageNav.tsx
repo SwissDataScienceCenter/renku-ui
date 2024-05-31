@@ -107,11 +107,7 @@ export default function ProjectPageNav({
             end
             to={projectSettingsUrl}
             title="Settings"
-            className={cx(
-              navLinkClasses,
-              selectedContent === ProjectPageContentType.Settings && "active",
-              styles.navLink
-            )}
+            className={cx(navLinkClasses, styles.navLink)}
           >
             <PencilSquare
               className={cx("d-block", "d-lg-none", "rk-icon-md")}
