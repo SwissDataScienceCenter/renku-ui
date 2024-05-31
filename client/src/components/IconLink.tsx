@@ -16,31 +16,24 @@
  * limitations under the License.
  */
 
-import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { ReactNode, useRef } from "react";
+import { Link, LinkProps } from "react-router-dom-v5-compat";
 import { UncontrolledTooltip } from "reactstrap";
 
-interface IconLinkProps {
-  /** An icon to display */
-  icon: React.ReactNode;
-  /** The URL to link to */
-  to: string;
-  /** The text of the tooltip */
-  tooltip: string;
-}
-/**
- * IconLink
- * Internal application link that is shown as a font-awesome icon
- */
-export default function IconLink(props: IconLinkProps) {
-  const ref = useRef(null);
+type LinkWithTooltipProps = LinkProps & {
+  tooltip?: ReactNode;
+};
+
+export default function LinkWithTooltip({
+  tooltip,
+  ...props
+}: LinkWithTooltipProps) {
+  const ref = useRef<HTMLAnchorElement>(null);
 
   return (
-    <span>
-      <Link ref={ref} to={props.to}>
-        {props.icon}
-      </Link>
-      <UncontrolledTooltip target={ref}>{props.tooltip}</UncontrolledTooltip>
-    </span>
+    <>
+      <Link ref={ref} {...props} />
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+    </>
   );
 }
