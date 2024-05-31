@@ -245,18 +245,39 @@ interface ExternalIconLinkProps {
   /** [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item' */
   className?: string;
   /** An icon to display */
-  icon: React.ReactNode;
+  icon: ReactNode;
   /** The text to show for the link */
-  title: string;
+  title: ReactNode;
   /** The text of the tooltip */
-  tooltip?: string;
+  tooltip?: ReactNode;
   /** The URL to link to */
   url: string;
 }
-export function ExternalIconLink(props: ExternalIconLinkProps) {
-  return props.tooltip ? (
-    <ExternalIconLinkWithTooltip {...props} />
-  ) : (
-    <ExternalIconLinkWithoutTooltip {...props} />
+export function ExternalIconLink({
+  className,
+  icon,
+  title,
+  tooltip,
+  url,
+}: ExternalIconLinkProps) {
+  const ref = useRef<HTMLAnchorElement>(null);
+
+  return (
+    <>
+      <a
+        href={url}
+        role="button"
+        className={cx("btn-icon-text", "icon-link", className)}
+        ref={ref}
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        {icon}
+        {title}
+      </a>
+      {tooltip && (
+        <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+      )}
+    </>
   );
 }
