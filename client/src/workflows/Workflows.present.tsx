@@ -56,11 +56,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { InfoAlert, WarnAlert } from "../components/Alert";
 
-import {
-  ExternalDocsLink,
-  ExternalLink,
-  IconLink,
-} from "../components/ExternalLinks";
+import { ExternalDocsLink, ExternalLink } from "../components/ExternalLinks";
+import IconLink from "../components/IconLink";
 import InformativeIcon from "../components/InformativeIcon";
 import { Loader } from "../components/Loader";
 import { TreeBrowser, TreeDetails, TreeElement } from "../components/Tree";

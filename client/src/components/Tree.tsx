@@ -26,7 +26,7 @@ import {
 import { Link } from "react-router-dom";
 import { Col } from "reactstrap";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
-import { IconLink } from "./ExternalLinks";
+import IconLink from "./IconLink";
 import { EntityChildrenDot } from "./entities/Children";
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityDuration from "./entities/Duration";
