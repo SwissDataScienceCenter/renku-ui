@@ -75,19 +75,13 @@ function ProjectPageContainerInner({
       >
         <ProjectPageHeader project={data} />
       </Col>
-      <Col sm={12} lg={1} className={cx(styles.NavContainer)}>
-        <div className="sticky-top pt-2 pt-md-4">
-          <ProjectPageNav
-            project={data}
-            selectedContent={contentPage}
-          ></ProjectPageNav>
+      <Col sm={12} lg={1} className={styles.NavContainer}>
+        <div className={cx("sticky-lg-top", "z-1", "pt-2", "pt-md-4")}>
+          <ProjectPageNav project={data} selectedContent={contentPage} />
         </div>
       </Col>
       <Col sm={12} lg={11}>
-        <ProjectPageContent
-          project={data}
-          selectedContent={contentPage}
-        ></ProjectPageContent>
+        <ProjectPageContent project={data} selectedContent={contentPage} />
       </Col>
     </Row>
   );

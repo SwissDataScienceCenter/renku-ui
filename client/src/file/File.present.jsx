@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import DOMPurify from "dompurify";
 import { isEqual } from "lodash";
@@ -36,8 +34,11 @@ import {
   ListGroup,
   ListGroupItem,
 } from "reactstrap";
+import { Download } from "react-bootstrap-icons";
 import { Clipboard } from "../components/clipboard/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
+
+import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
 import LazyNotebookPreview from "../components/notebook/LazyNotebookRender";
@@ -165,7 +166,7 @@ class ShowFile extends React.Component {
     const buttonGit = (
       <ExternalIconLink
         tooltip="Open in GitLab"
-        icon={faGitlab}
+        icon={<BootstrapGitLabIcon className="bi" />}
         to={`${this.props.externalUrl}/blob/${branch}/${gitLabFilePath}`}
       />
     );
@@ -224,7 +225,7 @@ class ShowFile extends React.Component {
     const buttonDownload = (
       <ExternalIconLink
         tooltip="Download File"
-        icon={faDownload}
+        icon={<Download className="bi" />}
         to={downloadLink}
       />
     );
@@ -264,7 +265,7 @@ class FileNoPreview extends React.Component {
         showLinkIcon={true}
         iconAfter={true}
         url={this.props.url}
-        customIcon={faDownload}
+        customIcon={<Download className="bi" />}
       />
     );
 
