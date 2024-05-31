@@ -20,8 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { Navigate } from "react-router-dom-v5-compat";
-
+import { Navigate, generatePath } from "react-router-dom-v5-compat";
 import {
   Button,
   Form,
@@ -33,27 +32,26 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
-import { Url } from "../../../utils/helpers/url";
 
+import type {
+  GroupMemberResponse,
+  GroupPatchRequest,
+  GroupResponse,
+} from "../api/namespace.api";
 import {
-  useDeleteGroupsByGroupSlugMutation,
   useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
+  useDeleteGroupsByGroupSlugMutation,
   useGetGroupsByGroupSlugMembersQuery,
   usePatchGroupsByGroupSlugMutation,
 } from "../api/projectV2.enhanced-api";
-import type {
-  GroupMemberResponse,
-  GroupResponse,
-  GroupPatchRequest,
-} from "../api/namespace.api";
 
 import AddGroupMemberModal from "../fields/AddGroupMemberModal";
-
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
 
 import { SettingEditOption } from "./groupShow.types";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 type GroupMetadata = Omit<GroupPatchRequest, "repositories">;
 
@@ -198,7 +196,7 @@ export function GroupMetadataForm({
   if (data != null && data.slug !== group.slug)
     return (
       <Navigate
-        to={Url.get(Url.pages.groupV2.show, { slug: data.slug })}
+        to={generatePath(ABSOLUTE_ROUTES.v2.groups.show, { slug: data.slug })}
         replace
       />
     );

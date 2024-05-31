@@ -15,14 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link, Navigate, useParams } from "react-router-dom-v5-compat";
+import {
+  Link,
+  Navigate,
+  generatePath,
+  useParams,
+} from "react-router-dom-v5-compat";
+import { Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
-import { Url } from "../../../utils/helpers/url";
-
-import { useGetProjectsByProjectIdQuery } from "../api/projectV2.enhanced-api";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import { Col, Row } from "reactstrap";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import { useGetProjectsByProjectIdQuery } from "../api/projectV2.enhanced-api";
 
 export function ProjectV2ShowByProjectId() {
   const { id: projectId } = useParams<{
@@ -39,12 +43,10 @@ export function ProjectV2ShowByProjectId() {
       <Row className="mt-3">
         <Col>
           <RtkOrNotebooksError error={error} />
-          <p>
-            Project does not exist, or you are not authorized to access it.{" "}
-          </p>
+          <p>Project does not exist, or you are not authorized to access it.</p>
           <p>
             Click here to{" "}
-            <Link to={Url.get(Url.pages.projectV2.list)}>
+            <Link to={ABSOLUTE_ROUTES.v2.projects.root}>
               return to projects list
             </Link>
             .
@@ -55,7 +57,7 @@ export function ProjectV2ShowByProjectId() {
   }
   return (
     <Navigate
-      to={Url.get(Url.pages.projectV2.show, {
+      to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: data?.namespace ?? "",
         slug: data?.slug ?? "",
       })}

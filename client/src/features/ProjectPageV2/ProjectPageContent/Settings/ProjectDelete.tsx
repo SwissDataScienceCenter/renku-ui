@@ -17,17 +17,18 @@
  */
 
 import cx from "classnames";
-import { Button, Input } from "reactstrap";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { useDeleteProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Loader } from "../../../../components/Loader.tsx";
 import { Trash } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom-v5-compat";
-import { Url } from "../../../../utils/helpers/url";
-import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants.ts";
-import AppContext from "../../../../utils/context/appContext.ts";
-import { NotificationsManager } from "../../../../notifications/notifications.types.ts";
+import { Button, Input } from "reactstrap";
+
+import { Loader } from "../../../../components/Loader";
+import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
+import { NotificationsManager } from "../../../../notifications/notifications.types";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
+import AppContext from "../../../../utils/context/appContext";
+import { Project } from "../../../projectsV2/api/projectV2.api";
+import { useDeleteProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
 export function notificationProjectDeleted(
   notifications: NotificationsManager,
@@ -54,7 +55,7 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
 
   useEffect(() => {
     if (result.isSuccess) {
-      navigate(Url.get(Url.pages.projectV2.list));
+      navigate(ABSOLUTE_ROUTES.v2.projects.root);
       if (notifications)
         notificationProjectDeleted(notifications, project.name);
     }

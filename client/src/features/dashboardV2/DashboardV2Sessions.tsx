@@ -1,29 +1,25 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, generatePath } from "react-router-dom-v5-compat";
 
 import { Loader } from "../../components/Loader";
 import { EnvironmentLogs } from "../../components/Logs";
 import { TimeCaption } from "../../components/TimeCaption";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-
 import { NotebooksHelper } from "../../notebooks";
 import {
   SessionListRowStatus,
   SessionListRowStatusIcon,
 } from "../../notebooks/components/SessionListStatus";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
-
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
 import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
-
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
-
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { Url } from "../../utils/helpers/url";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
@@ -47,23 +43,22 @@ function DashboardSession({ session }: DashboardSessionProps) {
   );
 
   const projectUrl = project
-    ? Url.get(Url.pages.projectV2.show, {
+    ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: project.namespace,
         slug: project.slug,
       })
-    : Url.get(Url.pages.projectV2.showId, {
+    : projectId
+    ? generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
         id: projectId,
-      });
+      })
+    : ABSOLUTE_ROUTES.v2.projects.root;
   const showSessionUrl = project
-    ? Url.get(Url.pages.projectV2.showSession, {
+    ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
         namespace: project.namespace,
         slug: project.slug,
-        sessionId: session.name,
+        session: session.name,
       })
-    : Url.get(Url.pages.projectV2.showSessionId, {
-        id: projectId,
-        sessionId: session.name,
-      });
+    : ABSOLUTE_ROUTES.v2.projects.root;
 
   const details = { message: session.status.message };
 
