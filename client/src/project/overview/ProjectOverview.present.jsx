@@ -39,7 +39,8 @@ import fileSize from "filesize";
 import qs from "query-string";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
+
+import BootstrapGitLabIcon from "../../components/icons/BootstrapGitLabIcon";
 
 import { StatusHelper } from "../../model/Model";
 import { CommitsView } from "../../components/commits/Commits";
@@ -215,7 +216,7 @@ class OverviewCommits extends Component {
         <ExternalLink
           role="link"
           id="commitLink"
-          title={<FontAwesomeIcon icon={faGitlab} />}
+          title={<BootstrapGitLabIcon className="bi" />}
           url={gitlabCommitsUrl}
           className="text-primary btn p-0 ms-2"
         />
