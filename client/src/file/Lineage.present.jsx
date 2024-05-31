@@ -18,8 +18,7 @@
 
 import { Component } from "react";
 import { Badge, CardBody, Card, CardHeader } from "reactstrap";
-import graphlib from "graphlib";
-import dagreD3 from "dagre-d3";
+import * as dagreD3 from "dagre-d3-es";
 import * as d3 from "d3";
 import { Download } from "react-bootstrap-icons";
 
@@ -147,7 +146,7 @@ class FileLineageGraph extends Component {
   subGraph() {
     const graph = this.props.graph;
     const NODE_COUNT = this.props.graph.length;
-    const subGraph = new graphlib.Graph()
+    const subGraph = new dagreD3.graphlib.Graph()
       .setGraph({ nodesep: 20, ranksep: 80, marginx: 20, marginy: 20 }) // eslint-disable-line
       .setDefaultEdgeLabel(function () {
         return {};
@@ -201,8 +200,8 @@ class FileLineageGraph extends Component {
     render(svgGroup, g);
 
     // Set up zoom support
-    const zoom = d3.zoom().on("zoom", function () {
-      svgGroup.attr("transform", d3.event.transform);
+    const zoom = d3.zoom().on("zoom", function (event) {
+      svgGroup.attr("transform", event.transform);
     });
     svg.call(zoom);
 
