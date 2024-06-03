@@ -149,7 +149,7 @@ function CentralContentContainer(props) {
               <LazyNewProject />
             </ContainerWrap>
           </CompatRoute>
-          <Route path="/projects/:subUrl+">
+          <CompatRoute Route path="/projects/:subUrl+">
             <LazyProjectView
               client={props.client}
               params={props.params}
@@ -159,7 +159,7 @@ function CentralContentContainer(props) {
               notifications={notifications}
               socket={socket}
             />
-          </Route>
+          </CompatRoute>
           <Route exact path={Url.get(Url.pages.sessions)}>
             {!user.logged ? <LazyAnonymousSessionsList /> : <Redirect to="/" />}
           </Route>

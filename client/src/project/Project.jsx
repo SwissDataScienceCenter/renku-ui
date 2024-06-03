@@ -172,7 +172,7 @@ function mapProjectStateToProps(state, ownProps) {
   const settingsReadOnly = accessLevel < ACCESS_LEVELS.MAINTAINER;
   const externalUrl = projectCoordinator.get("metadata.externalUrl");
   const canCreateMR = accessLevel >= ACCESS_LEVELS.DEVELOPER;
-  const pathname = ownProps.history.location.pathname;
+  const pathname = ownProps.location.pathname;
   const isOnDatasetEditPage =
     pathname.endsWith("datasets/new") || pathname.endsWith("modify");
 
@@ -344,7 +344,7 @@ class View extends Component {
     this.props.client
       .getProjectById(projectId)
       .then((project) => {
-        this.props.history.push(
+        this.props.navigate(
           "/projects/" + project.data.metadata.core.path_with_namespace
         );
       })
@@ -361,7 +361,7 @@ class View extends Component {
     this.props.client
       .getProjectById(projectPathWithNamespace.split("/")[0])
       .then((project) => {
-        this.props.history.push(
+        this.props.navigate(
           "/projects/" +
             project.data.metadata.core.path_with_namespace +
             urlInsideProject
