@@ -59,10 +59,12 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import connectedServicesApi, {
   useGetProvidersQuery,
-  useGetRepositoryMetadataQuery,
-  useGetRepositoryProbeQuery,
 } from "../../../connectedServices/connectedServices.api";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
+import repositoriesApi, {
+  useGetRepositoryMetadataQuery,
+  useGetRepositoryProbeQuery,
+} from "../../../repositories/repositories.api";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -312,21 +314,27 @@ export function RepositoryItem({
   showMenu = true,
 }: RepositoryItemProps) {
   const canonicalUrlStr = useMemo(() => `${url.replace(/.git$/i, "")}`, [url]);
-  const canonicalUrl = useMemo(
-    () => new URL(canonicalUrlStr),
-    [canonicalUrlStr]
-  );
+  const canonicalUrl = useMemo(() => {
+    try {
+      return new URL(canonicalUrlStr);
+    } catch (error) {
+      if (error instanceof TypeError) {
+        return null;
+      }
+      throw error;
+    }
+  }, [canonicalUrlStr]);
 
-  const title = canonicalUrl.pathname.split("/").pop();
+  const title = canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
 
   const urlDisplay = (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <RepositoryIcon
         className="flex-shrink-0"
-        provider={canonicalUrl.origin}
+        provider={canonicalUrl?.origin}
       />
       <div className={cx("d-flex", "flex-column")}>
-        <span>{canonicalUrl.hostname}</span>
+        {canonicalUrl?.hostname && <span>{canonicalUrl.hostname}</span>}
         <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
           {title || canonicalUrlStr}
           <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
@@ -354,10 +362,14 @@ export function RepositoryItem({
 
 interface RepositoryIconProps {
   className?: string;
-  provider: string;
+  provider?: string | null;
 }
 
 function RepositoryIcon({ className, provider }: RepositoryIconProps) {
+  if (provider == null) {
+    return null;
+  }
+
   // eslint-disable-next-line spellcheck/spell-checker
   const iconUrl = new URL("/favicon.ico", provider);
   return (
@@ -474,7 +486,7 @@ function RepositoryPermissionsModalContent({
     data: repositoryProviderMatch,
     isLoading: isLoadingRepositoryProviderMatch,
     error,
-  } = connectedServicesApi.endpoints.getRepositoryMetadata.useQueryState({
+  } = repositoriesApi.endpoints.getRepositoryMetadata.useQueryState({
     repositoryUrl,
   });
   const { isLoading: isLoadingProviders, error: providersError } =
@@ -483,7 +495,7 @@ function RepositoryPermissionsModalContent({
   const isNotFound = error != null && "status" in error && error.status == 404;
 
   const { data: repositoryProbe, isLoading: isLoadingRepositoryProbe } =
-    connectedServicesApi.endpoints.getRepositoryProbe.useQueryState(
+    repositoriesApi.endpoints.getRepositoryProbe.useQueryState(
       isNotFound ? { repositoryUrl } : skipToken
     );
 
@@ -574,7 +586,7 @@ function RepositoryPermissionsAlert({
   );
 
   const { data: repositoryProviderMatch, error } =
-    connectedServicesApi.endpoints.getRepositoryMetadata.useQueryState({
+    repositoriesApi.endpoints.getRepositoryMetadata.useQueryState({
       repositoryUrl,
     });
   const { data: providers } =
@@ -583,7 +595,7 @@ function RepositoryPermissionsAlert({
   const isNotFound = error != null && "status" in error && error.status == 404;
 
   const { data: repositoryProbe } =
-    connectedServicesApi.endpoints.getRepositoryProbe.useQueryState(
+    repositoriesApi.endpoints.getRepositoryProbe.useQueryState(
       isNotFound ? { repositoryUrl } : skipToken
     );
 
@@ -744,7 +756,7 @@ function RepositoryProviderDetails({
     data: repositoryProviderMatch,
     isLoading: isLoadingRepositoryProviderMatch,
     error: repositoryProviderMatchError,
-  } = connectedServicesApi.endpoints.getRepositoryMetadata.useQueryState({
+  } = repositoriesApi.endpoints.getRepositoryMetadata.useQueryState({
     repositoryUrl,
   });
   const {

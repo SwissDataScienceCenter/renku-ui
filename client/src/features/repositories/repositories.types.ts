@@ -16,29 +16,27 @@
  * limitations under the License.
  */
 
-export interface Provider {
-  id: string;
-  display_name: string;
-  url: string;
-}
-
-export type ProviderList = Provider[];
-
-export interface Connection {
-  id: string;
+export interface RepositoryProviderMatch {
   provider_id: string;
-  status: ConnectionStatus;
+  connection_id?: string;
+  repository_metadata?: RepositoryMetadata;
 }
 
-export type ConnectionList = Connection[];
-
-export type ConnectionStatus = "pending" | "connected";
-
-export interface ConnectedAccount {
-  username: string;
+export interface RepositoryMetadata {
+  git_http_url: string;
   web_url: string;
+  permissions: RepositoryPermissions;
 }
 
-export interface GetConnectedAccountParams {
-  connectionId: string;
+export interface RepositoryPermissions {
+  pull: boolean;
+  push: boolean;
+}
+
+export interface GetRepositoryMetadataParams {
+  repositoryUrl: string;
+}
+
+export interface GetRepositoryProbeParams {
+  repositoryUrl: string;
 }

@@ -48,6 +48,7 @@ import { projectsApi } from "../../features/projects/projects.api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
+import repositoriesApi from "../../features/repositories/repositories.api";
 import searchV2Api from "../../features/searchV2/searchV2.api";
 import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import secretsApi from "../../features/secrets/secrets.api";
@@ -103,6 +104,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectV2Api.reducerPath]: projectV2Api.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
+    [repositoriesApi.reducerPath]: repositoriesApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
     [secretsApi.reducerPath]: secretsApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
@@ -140,6 +142,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectsApi.middleware)
         .concat(projectV2Api.middleware)
         .concat(recentUserActivityApi.middleware)
+        .concat(repositoriesApi.middleware)
         .concat(searchV2Api.middleware)
         .concat(secretsApi.middleware)
         .concat(sessionsApi.middleware)
