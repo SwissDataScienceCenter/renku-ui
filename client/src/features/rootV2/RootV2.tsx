@@ -139,6 +139,14 @@ function GroupsV2Routes() {
         path={RELATIVE_ROUTES.v2.groups.show}
         element={<LazyGroupV2Show />}
       />
+      <Route
+        path="*"
+        element={
+          <ContainerWrap fullSize>
+            <LazyNotFound />
+          </ContainerWrap>
+        }
+      />
     </Routes>
   );
 }

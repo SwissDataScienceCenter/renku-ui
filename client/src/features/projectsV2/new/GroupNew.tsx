@@ -164,7 +164,11 @@ function GroupMetadataForm() {
 export default function GroupNew() {
   const user = useLegacySelector((state) => state.stateModel.user);
   if (!user.logged) {
-    return <h2>Please log in to create a group.</h2>;
+    return (
+      <ContainerWrap>
+        <h2>Please log in to create a group.</h2>
+      </ContainerWrap>
+    );
   }
   return (
     <ContainerWrap>
