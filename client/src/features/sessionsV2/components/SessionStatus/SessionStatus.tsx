@@ -26,18 +26,16 @@ import {
   XCircleFill,
 } from "react-bootstrap-icons";
 import { Badge } from "reactstrap";
-import { Loader } from "../../../../components/Loader.tsx";
-import { TimeCaption } from "../../../../components/TimeCaption.tsx";
+
+import { Loader } from "../../../../components/Loader";
+import { TimeCaption } from "../../../../components/TimeCaption";
 import { NotebooksHelper } from "../../../../notebooks";
-import { SessionListRowStatusExtraDetails } from "../../../../notebooks/components/SessionListStatus.tsx";
-import { NotebookAnnotations } from "../../../../notebooks/components/session.types.ts";
-import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils.ts";
-import { MissingHibernationInfo } from "../../../session/components/status/SessionStatusText.tsx";
-import {
-  Session,
-  SessionStatusState,
-} from "../../../session/sessions.types.ts";
-import { SessionLauncher } from "../../sessionsV2.types.ts";
+import { SessionListRowStatusExtraDetails } from "../../../../notebooks/components/SessionListStatus";
+import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
+import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";
+import { MissingHibernationInfo } from "../../../session/components/status/SessionStatusText";
+import { Session, SessionStatusState } from "../../../session/sessions.types";
+import { SessionLauncher } from "../../sessionsV2.types";
 
 export function SessionBadge({
   children,
@@ -47,17 +45,7 @@ export function SessionBadge({
   className: string;
 }) {
   return (
-    <Badge
-      className={cx(
-        "d-flex",
-        "align-items-center",
-        "gap-2",
-        "fs-small",
-        "fw-normal",
-        className
-      )}
-      pill={true}
-    >
+    <Badge className={cx("border", "fs-small", "fw-normal", className)} pill>
       {children}
     </Badge>
   );
@@ -81,15 +69,15 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
 
   const badge =
     state === "running" && defaultImage ? (
-      <SessionBadge className="border border-warning bg-warning-subtle">
+      <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
         <ExclamationCircleFill
           className={cx("bi", "me-1", "text-warning")}
           size={16}
         />
-        <span className="rk-bg-warning">Running Session</span>
+        <span className="text-warning">Running Session</span>
       </SessionBadge>
     ) : state === "running" ? (
-      <SessionBadge className="border border-success bg-success-subtle">
+      <SessionBadge className={cx("border-success", "bg-success-subtle")}>
         <CheckCircleFill
           className={cx("bi", "me-1", "text-success")}
           size={16}
@@ -97,17 +85,17 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
         <span className="text-success-emphasis">Running Session</span>
       </SessionBadge>
     ) : state === "starting" ? (
-      <SessionBadge className="border border-warning bg-warning-subtle">
-        <Loader size={16} className={cx("bi", "me-1", "text-warning")} inline />
+      <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
+        <Loader size={16} className={cx("me-1", "text-warning")} inline />
         <span className="text-warning">Starting Session</span>
       </SessionBadge>
     ) : state === "stopping" ? (
-      <SessionBadge className="border border-warning bg-warning-subtle">
-        <Loader size={16} className={cx("bi", "me-1", "text-warning")} inline />
+      <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
+        <Loader size={16} className={cx("me-1", "text-warning")} inline />
         <span className="text-warning">Stopping Session</span>
       </SessionBadge>
     ) : state === "hibernated" ? (
-      <SessionBadge className={"border border-dark-subtle bg-light"}>
+      <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
         <PauseCircleFill
           className={cx("bi", "me-1", "text-light-emphasis")}
           size={16}
@@ -115,12 +103,12 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
         <span className="text-dark">Paused Session</span>
       </SessionBadge>
     ) : state === "failed" ? (
-      <SessionBadge className={"border border-danger bg-danger-subtle"}>
+      <SessionBadge className={cx("border-danger", "bg-danger-subtle")}>
         <XCircleFill className={cx("bi", "me-1", "text-danger")} size={16} />
         <span className="text-danger">Error in Session</span>
       </SessionBadge>
     ) : (
-      <SessionBadge className="border border-warning bg-warning-subtle">
+      <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
         <ExclamationCircleFill
           className={cx("bi", "me-1", "text-warning")}
           size={16}
