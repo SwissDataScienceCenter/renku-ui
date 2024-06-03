@@ -90,7 +90,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         fixture = "groupV2/create-groupV2.json",
         name = "createGroupV2",
       } = args ?? {};
-      const response = { fixture, delay: 2000, statusCode: 201 };
+      const response = { fixture, statusCode: 201 };
       cy.intercept("POST", "/ui-server/api/data/groups", response).as(name);
       return this;
     }
@@ -98,7 +98,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
     deleteGroupV2(args?: GroupV2DeleteFixture) {
       const { name = "deleteGroupV2", groupSlug = "test-2-group-v2" } =
         args ?? {};
-      const response = { delay: 2000, statusCode: 204 };
+      const response = { statusCode: 204 };
       cy.intercept(
         "DELETE",
         `/ui-server/api/data/groups/${groupSlug}`,
@@ -176,7 +176,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
     listGroupV2(args?: SimpleFixture) {
       const { fixture = "groupV2/list-groupV2.json", name = "listGroupV2" } =
         args ?? {};
-      const response = { fixture, delay: 2000 };
+      const response = { fixture };
       cy.intercept("GET", `/ui-server/api/data/groups?*`, response).as(name);
       return this;
     }
@@ -186,7 +186,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         fixture = "namespaceV2/list-namespaceV2.json",
         name = "listNamespaceV2",
       } = args ?? {};
-      const response = { fixture, delay: 2000 };
+      const response = { fixture };
       cy.intercept("GET", `/ui-server/api/data/namespaces?*`, response).as(
         name
       );
@@ -241,7 +241,6 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
             message: `Group with slug ${groupSlug} does not exist.`,
           },
         },
-        delay: 2000,
         statusCode: 404,
       };
       cy.intercept(
@@ -273,7 +272,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         name = "updateGroupV2",
         groupSlug = "test-2-group-v2",
       } = args ?? {};
-      const response = { fixture, delay: 2000 };
+      const response = { fixture };
       cy.intercept(
         "PATCH",
         `/ui-server/api/data/groups/${groupSlug}`,

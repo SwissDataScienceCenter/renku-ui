@@ -19,27 +19,27 @@ import { useCallback, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router-dom-v5-compat";
 import {
+  Col,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
   Label,
+  Row,
 } from "reactstrap";
 
-import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
-import { Url } from "../../../utils/helpers/url";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import FormSchema from "../../../components/formschema/FormSchema";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
-import {
-  isErrorResponse,
-  useGetGroupsByGroupSlugQuery,
-} from "../api/projectV2.enhanced-api";
 import type { GroupResponse } from "../api/namespace.api";
+import { useGetGroupsByGroupSlugQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
 
-import { SettingEditOption } from "./groupShow.types";
 import { GroupMembersForm, GroupMetadataForm } from "./groupEditForms";
+import { SettingEditOption } from "./groupShow.types";
 
 interface GroupHeaderProps {
   group: GroupResponse;
@@ -47,7 +47,7 @@ interface GroupHeaderProps {
   settingEdit: SettingEditOption;
 }
 function GroupHeader({ group, setSettingEdit, settingEdit }: GroupHeaderProps) {
-  const groupListUrl = Url.get(Url.pages.groupV2.list);
+  const groupListUrl = ABSOLUTE_ROUTES.v2.groups.root;
   return (
     <>
       <div>{group.slug}</div>
@@ -144,19 +144,26 @@ export default function GroupShow() {
   const [settingEdit, setSettingEdit] = useState<SettingEditOption>(null);
 
   if (isLoading) return <Loader />;
-  if (groupSlug == null) return <div>Could not retrieve group</div>;
-  if (error) {
-    if (isErrorResponse(error)) {
-      return (
-        <div>
-          Group does not exist, or you are not authorized to access it.{" "}
-          <Link to={Url.get(Url.pages.groupV2.list)}>Return to list</Link>
-        </div>
-      );
-    }
-    return <div>Could not retrieve group</div>;
+  if (error || data == null) {
+    return (
+      <Row>
+        <Col>
+          {error ? (
+            <RtkOrNotebooksError error={error} />
+          ) : (
+            <p>Could not retrieve the group.</p>
+          )}
+          <p>
+            Click here to{" "}
+            <Link to={ABSOLUTE_ROUTES.v2.groups.root}>
+              return to groups list
+            </Link>
+            .
+          </p>
+        </Col>
+      </Row>
+    );
   }
-  if (data == null) return <div>Could not retrieve group</div>;
 
   return (
     <FormSchema

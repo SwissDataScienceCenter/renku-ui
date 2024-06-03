@@ -92,7 +92,7 @@ function EditCodeRepositoryModal({
         url === repositoryUrl ? newRepositoryUrl : url
       );
       updateProject({
-        "If-Match": project.etag ? project.etag : undefined,
+        "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
         projectPatch: { repositories },
       });
@@ -171,7 +171,7 @@ function CodeRepositoryDeleteModal({
       ? project?.repositories?.filter((repo) => repo !== repositoryUrl)
       : [];
     updateProject({
-      "If-Match": project.etag ? project.etag : undefined,
+      "If-Match": project.etag ? project.etag : "",
       projectId: project.id,
       projectPatch: { repositories },
     })

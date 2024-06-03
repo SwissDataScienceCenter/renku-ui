@@ -3,6 +3,7 @@
     "id": "01HF96BXZ3JF9DX88B7XB405S5",
     "name": "test 1 v2-project",
     "slug": "test-1-v2-project",
+    "namespace": "user1-uuid",
     "creation_date": "2023-11-15T09:52:59Z",
     "created_by": "user1-uuid",
     "repositories": [],

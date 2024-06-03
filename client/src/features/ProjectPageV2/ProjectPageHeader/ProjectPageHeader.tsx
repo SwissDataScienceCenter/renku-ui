@@ -18,8 +18,13 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { PencilSquare, ThreeDotsVertical, Trash } from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
+import {
+  Binoculars,
+  PencilSquare,
+  ThreeDotsVertical,
+  Trash,
+} from "react-bootstrap-icons";
+import { Link, generatePath } from "react-router-dom-v5-compat";
 import {
   Col,
   DropdownItem,
@@ -28,23 +33,27 @@ import {
   Row,
   UncontrolledDropdown,
 } from "reactstrap";
+
 import {
   EditButtonLink,
   UnderlineArrowLink,
-} from "../../../components/buttons/Button.tsx";
-import dotsDropdownStyles from "../../../components/buttons/ThreeDots.module.scss";
-import { Url } from "../../../utils/helpers/url";
-import { Project } from "../../projectsV2/api/projectV2.api.ts";
-import { ProjectDeleteConfirmation } from "../../projectsV2/show/ProjectV2EditForm.tsx";
-import AddSessionLauncherButton from "../../sessionsV2/AddSessionLauncherButton.tsx";
-import { useGetProjectSessionLaunchersQuery } from "../../sessionsV2/sessionsV2.api.ts";
-import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation.tsx";
+} from "../../../components/buttons/Button";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import { Project } from "../../projectsV2/api/projectV2.api";
+import { ProjectDeleteConfirmation } from "../../projectsV2/show/ProjectV2EditForm";
+import AddSessionLauncherButton from "../../sessionsV2/AddSessionLauncherButton";
+import { useGetProjectSessionLaunchersQuery } from "../../sessionsV2/sessionsV2.api";
+import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
+import AccessGuard from "../utils/AccessGuard";
+import useProjectAccess from "../utils/useProjectAccess.hook";
 
-interface ProjectActionsProps {
+import dotsDropdownStyles from "../../../components/buttons/ThreeDots.module.scss";
+
+interface ProjectActionsProps extends ProjectPageHeaderProps {
   settingsUrl: string;
-  project: Project;
 }
-function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
+function ProjectActions({ project, settingsUrl }: ProjectActionsProps) {
+  const { userRole } = useProjectAccess({ projectId: project.id });
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
@@ -67,31 +76,59 @@ function ProjectActions({ settingsUrl, project }: ProjectActionsProps) {
           <ThreeDotsVertical className="fs-3" />
         </DropdownToggle>
         <DropdownMenu className={cx("mt-2", "mx-0", "text-start")} end>
-          <DropdownItem>
-            <Link
-              className={cx(
-                "text-decoration-none",
-                "d-flex",
-                "align-items-center",
-                "gap-2",
-                "justify-content-start"
-              )}
-              to={settingsUrl}
-            >
-              <PencilSquare /> Edit project information
-            </Link>
-          </DropdownItem>
-          <DropdownItem
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "gap-2",
-              "justify-content-start"
-            )}
-            onClick={toggleDelete}
-          >
-            <Trash /> Delete this project
-          </DropdownItem>
+          <AccessGuard
+            disabled={
+              <DropdownItem>
+                <Link
+                  className={cx(
+                    "text-decoration-none",
+                    "d-flex",
+                    "align-items-center",
+                    "gap-2",
+                    "justify-content-start"
+                  )}
+                  to={settingsUrl}
+                >
+                  <Binoculars /> View project information
+                </Link>
+              </DropdownItem>
+            }
+            enabled={
+              <DropdownItem>
+                <Link
+                  className={cx(
+                    "text-decoration-none",
+                    "d-flex",
+                    "align-items-center",
+                    "gap-2",
+                    "justify-content-start"
+                  )}
+                  to={settingsUrl}
+                >
+                  <PencilSquare /> Edit project information
+                </Link>
+              </DropdownItem>
+            }
+            minimumRole="editor"
+            role={userRole}
+          />
+          <AccessGuard
+            disabled={null}
+            enabled={
+              <DropdownItem
+                className={cx(
+                  "d-flex",
+                  "align-items-center",
+                  "gap-2",
+                  "justify-content-start"
+                )}
+                onClick={toggleDelete}
+              >
+                <Trash /> Delete this project
+              </DropdownItem>
+            }
+            role={userRole}
+          />
         </DropdownMenu>
       </UncontrolledDropdown>
       <ProjectDeleteConfirmation
@@ -107,6 +144,7 @@ interface ProjectPageHeaderProps {
   project: Project;
 }
 export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
+  const { userRole } = useProjectAccess({ projectId: project.id });
   const {
     data: launchers,
     error: launchersError,
@@ -114,7 +152,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
   } = useGetProjectSessionLaunchersQuery(
     project.id ? { projectId: project.id } : skipToken
   );
-  const settingsUrl = Url.get(Url.pages.projectV2.settings, {
+  const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
     namespace: project.namespace,
     slug: project.slug,
   });
@@ -124,7 +162,12 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
     !isLoadingLaunchers &&
     launchers &&
     launchers?.length <= 0 ? (
-      <AddSessionLauncherButton styleBtn="iconTextBtn" />
+      <AccessGuard
+        disabled={null}
+        enabled={<AddSessionLauncherButton styleBtn="iconTextBtn" />}
+        minimumRole="editor"
+        role={userRole}
+      />
     ) : null;
 
   return (
@@ -170,9 +213,17 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
                 <p>
                   {project.description}
                   <span className="mx-2">
-                    <EditButtonLink
-                      to={settingsUrl}
-                      tooltip="Modify project information"
+                    <AccessGuard
+                      disabled={null}
+                      enabled={
+                        <EditButtonLink
+                          data-cy="project-description-edit"
+                          to={settingsUrl}
+                          tooltip="Modify project information"
+                        />
+                      }
+                      minimumRole="editor"
+                      role={userRole}
                     />
                   </span>
                 </p>

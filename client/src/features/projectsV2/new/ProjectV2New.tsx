@@ -18,20 +18,20 @@
 
 import { FormEvent, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import { Form, Label } from "reactstrap";
 
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import FormSchema from "../../../components/formschema/FormSchema";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { Url } from "../../../utils/helpers/url";
 
 import type { ProjectPost } from "../api/projectV2.api";
 import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
-import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2Show";
 
-import { useNavigate } from "react-router-dom-v5-compat";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert.tsx";
 import WipBadge from "../shared/WipBadge";
+import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2DescriptionAndRepositories";
 import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
 import ProjectV2NewForm from "./ProjectV2NewForm";
 import type { NewProjectV2State } from "./projectV2New.slice";
@@ -129,7 +129,7 @@ function ProjectV2NewReviewCreateStep({
       project.metadata.namespace &&
       project.metadata.slug
     ) {
-      const projectUrl = Url.get(Url.pages.projectV2.show, {
+      const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: project.metadata.namespace,
         slug: project.metadata.slug,
       });

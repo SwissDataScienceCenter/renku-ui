@@ -15,20 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import cx from "classnames";
-import { Link } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Button, Card, CardBody, Col, Row } from "reactstrap";
+import cx from "classnames";
 import { useDispatch } from "react-redux";
+import { Link, generatePath } from "react-router-dom-v5-compat";
+import { Button, Card, CardBody, Col, Row } from "reactstrap";
 
-import searchV2Api from "../searchV2.api";
 import { Loader } from "../../../components/Loader";
-import { TimeCaption } from "../../../components/TimeCaption";
-import { Url } from "../../../utils/helpers/url/Url";
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { ProjectSearchResult, UserSearchResult } from "../searchV2.types";
 import { Pagination } from "../../../components/Pagination";
+import { TimeCaption } from "../../../components/TimeCaption";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import searchV2Api from "../searchV2.api";
 import { setCreatedBy, setPage } from "../searchV2.slice";
+import { ProjectSearchResult, UserSearchResult } from "../searchV2.types";
 
 export default function SearchV2Results() {
   const searchState = useAppSelector((state) => state.searchV2);
@@ -141,7 +141,10 @@ function SearchV2ResultProject({
   project,
   searchByUser,
 }: SearchV2ResultProjectProps) {
-  const url = Url.get(Url.pages.projectV2.showId, { id: project.id });
+  const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace: project.namespace,
+    slug: project.slug,
+  });
   return (
     <SearchV2ResultsCard
       key={`project-${project.id}`}

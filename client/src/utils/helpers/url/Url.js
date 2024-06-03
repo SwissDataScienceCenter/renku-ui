@@ -496,68 +496,6 @@ const Url = {
     secrets: {
       base: "/secrets",
     },
-    groupV2: {
-      base: "/v2/groups",
-      new: "/v2/groups/new",
-      list: "/v2/groups",
-      show: new UrlRule((data) => `/v2/groups/${data.slug}`, ["slug"], null, [
-        "/v2/groups/slug",
-      ]),
-    },
-    helpV2: {
-      base: "/v2/help",
-    },
-    projectV2: {
-      base: "/v2/projects",
-      new: "/v2/projects/new",
-      list: "/v2/projects",
-      show: new UrlRule(
-        (data) => `/v2/projects/${data.namespace}/${data.slug}`,
-        ["namespace", "slug"],
-        null,
-        ["/v2/projects/namespace/slug"]
-      ),
-      showSession: new UrlRule(
-        (data) =>
-          `/v2/projects/${data.namespace}/${data.slug}/sessions/show/${data.sessionId}`,
-        ["namespace", "slug", "sessionId"],
-        null,
-        ["/v2/projects/namespace/slug/sessions/show/sessionId"]
-      ),
-      showId: new UrlRule((data) => `/v2/projects/${data.id}`, ["id"], null, [
-        "/v2/projects/id",
-      ]),
-      old: new UrlRule(
-        (data) => `/v2/projects/old/${data.namespace}/${data.slug}`,
-        ["namespace", "slug"],
-        null,
-        ["/v2/projects/old/namespace/slug"]
-      ),
-      settings: new UrlRule(
-        (data) => `/v2/projects/${data.namespace}/${data.slug}/settings`,
-        ["namespace", "slug"],
-        null,
-        ["/v2/projects/1234/settings"]
-      ),
-      projectInfo: new UrlRule(
-        (data) => `/v2/projects/${data.namespace}/${data.slug}/info`,
-        ["namespace", "slug"],
-        null,
-        ["/v2/projects/1234/info"]
-      ),
-      showSessionId: new UrlRule(
-        (data) => `/v2/projects/${data.id}/sessions/show/${data.sessionId}`,
-        ["id", "sessionId"],
-        null,
-        ["/v2/projects/id/sessions/show/sessionId"]
-      ),
-    },
-    v2Users: {
-      base: "/v2/users",
-      show: new UrlRule((data) => `/v2/users/${data.id}`, ["id"], null, [
-        "/v2/users/id",
-      ]),
-    },
   },
 
   setBaseUrl: setBaseUrl,

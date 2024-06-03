@@ -17,36 +17,37 @@
  */
 import cx from "classnames";
 import { EyeFill, Folder2Open, PencilSquare } from "react-bootstrap-icons";
-import { generatePath } from "react-router-dom-v5-compat";
+import { generatePath, useMatch } from "react-router-dom-v5-compat";
 import { Nav, NavItem, NavLink } from "reactstrap";
-import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2.tsx";
-import { ProjectPageContentType } from "../ProjectPageContainer/ProjectPageContainer.tsx";
+
+import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import type { Project } from "../../projectsV2/api/projectV2.api";
+import AccessGuard from "../utils/AccessGuard";
+import useProjectAccess from "../utils/useProjectAccess.hook";
+
 import styles from "./ProjectPageNav.module.scss";
 
-export default function ProjectPageNav({
-  namespace,
-  slug,
-  selectedContent,
-}: {
-  namespace: string | undefined;
-  slug: string | undefined;
-  selectedContent?: ProjectPageContentType;
-}) {
-  const projectUrl = generatePath("/v2/projects/:namespace/:slug", {
-    namespace: namespace || "",
-    slug: slug || "",
+export default function ProjectPageNav({ project }: { project: Project }) {
+  const { namespace, slug } = project;
+  const { userRole } = useProjectAccess({ projectId: project.id });
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace,
+    slug,
   });
   const projectSettingsUrl = generatePath(
-    "/v2/projects/:namespace/:slug/settings",
+    ABSOLUTE_ROUTES.v2.projects.show.settings,
     {
-      namespace: namespace || "",
-      slug: slug || "",
+      namespace,
+      slug,
     }
   );
-  const projectInfoUrl = generatePath("/v2/projects/:namespace/:slug/info", {
-    namespace: namespace || "",
-    slug: slug || "",
+  const projectInfoUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.info, {
+    namespace,
+    slug,
   });
+
+  const isSettings = useMatch(projectSettingsUrl);
 
   const navLinkClasses = [
     "p-0",
@@ -101,11 +102,7 @@ export default function ProjectPageNav({
             end
             to={projectSettingsUrl}
             title="Settings"
-            className={cx(
-              navLinkClasses,
-              selectedContent === ProjectPageContentType.Settings && "active",
-              styles.navLink
-            )}
+            className={cx(navLinkClasses, styles.navLink)}
           >
             <PencilSquare
               className={cx("d-block", "d-lg-none", "rk-icon-md")}
@@ -114,11 +111,11 @@ export default function ProjectPageNav({
           </RenkuNavLinkV2>
         </NavItem>
       </Nav>
-      {selectedContent === ProjectPageContentType.Settings && (
+      {isSettings && (
         <Nav className="d-none d-lg-flex">
           <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
             <NavLink
-              href={"#general"}
+              href="#general"
               className={cx(
                 navLinkClasses,
                 "mb-2",
@@ -132,7 +129,7 @@ export default function ProjectPageNav({
           </NavItem>
           <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
             <NavLink
-              href={"#delete"}
+              href="#members"
               className={cx(
                 navLinkClasses,
                 "mb-2",
@@ -141,9 +138,29 @@ export default function ProjectPageNav({
                 styles.navLink
               )}
             >
-              Delete
+              Members
             </NavLink>
           </NavItem>
+          <AccessGuard
+            disabled={null}
+            enabled={
+              <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
+                <NavLink
+                  href="#delete"
+                  className={cx(
+                    navLinkClasses,
+                    "mb-2",
+                    "ms-2",
+                    "ps-2",
+                    styles.navLink
+                  )}
+                >
+                  Delete
+                </NavLink>
+              </NavItem>
+            }
+            role={userRole}
+          />
         </Nav>
       )}
     </>

@@ -13,17 +13,27 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
-import { Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
 
-const ProjectV2Show = lazy(() => import("./show/ProjectV2Show"));
+import { ReactNode, useRef } from "react";
+import { Link, LinkProps } from "react-router-dom-v5-compat";
+import { UncontrolledTooltip } from "reactstrap";
 
-export default function LazyProjectV2Show() {
+type LinkWithTooltipProps = LinkProps & {
+  tooltip?: ReactNode;
+};
+
+export default function LinkWithTooltip({
+  tooltip,
+  ...props
+}: LinkWithTooltipProps) {
+  const ref = useRef<HTMLAnchorElement>(null);
+
   return (
-    <Suspense fallback={<PageLoader />}>
-      <ProjectV2Show />
-    </Suspense>
+    <>
+      <Link ref={ref} {...props} />
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+    </>
   );
 }

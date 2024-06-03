@@ -49,7 +49,7 @@ function GitLabConnectButton(props: GitLabConnectButtonProps) {
     <ExternalLink
       id="open-in-gitlab"
       className="btn-outline-rk-green"
-      url={props.externalUrl}
+      url={externalUrl}
       title="GitLab"
       showLinkIcon
       iconSize={size}

@@ -15,31 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
-import { Link, useParams } from "react-router-dom-v5-compat";
+import {
+  Outlet,
+  useMatch,
+  useOutlet,
+  useOutletContext,
+  useParams,
+} from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
-import { Loader } from "../../../components/Loader.tsx";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert.tsx";
-import { Url } from "../../../utils/helpers/url";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api.ts";
-import { isErrorResponse } from "../../projectsV2/api/projectV2.enhanced-api.ts";
-import { ProjectV2ShowByProjectId } from "../../projectsV2/show/ProjectV2Show.tsx";
-import ProjectPageContent from "../ProjectPageContent/ProjectPageContent.tsx";
-import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader.tsx";
-import ProjectPageNav from "../ProjectPageNav/ProjectPageNav.tsx";
+
+import { Loader } from "../../../components/Loader";
+import ContainerWrap from "../../../components/container/ContainerWrap";
+import LazyNotFound from "../../../not-found/LazyNotFound";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import type { Project } from "../../projectsV2/api/projectV2.api";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
+import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
+import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
+import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
+
 import styles from "./ProjectPageContainer.module.scss";
 
-export enum ProjectPageContentType {
-  Overview = "Overview",
-  Settings = "Settings",
-  ProjectInfo = "ProjectInfo",
-}
-
-export function ProjectPageContainer({
-  contentPage,
-}: {
-  contentPage: ProjectPageContentType;
-}) {
+export default function ProjectPageContainer() {
   const { namespace, slug } = useParams<{
     id: string | undefined;
     namespace: string | undefined;
@@ -50,80 +49,52 @@ export function ProjectPageContainer({
     slug: slug ?? "",
   });
 
-  if (isLoading) return <Loader />;
-  if (error) {
-    if (isErrorResponse(error) && error?.data?.error?.code == 404) {
-      return (
-        <Row>
-          <Col>
-            <div>
-              Project does not exist, or you are not authorized to access it.{" "}
-              <Link to={Url.get(Url.pages.projectV2.list)}>Return to list</Link>
-            </div>
-          </Col>
-        </Row>
-      );
-    }
-    return (
-      <Row>
-        <Col>
-          <p>Could not retrieve project</p>
-          <RtkErrorAlert error={error} />
-        </Col>
-      </Row>
-    );
+  const outlet = useOutlet();
+
+  const isSessions = useMatch(
+    `${ABSOLUTE_ROUTES.v2.projects.show.sessions.root}/*`
+  );
+
+  if (isLoading) return <Loader className="align-self-center" />;
+
+  if (error || data == null) {
+    return <ProjectNotFound error={error} />;
   }
-  if (data == null)
-    return (
+
+  if (outlet == null) {
+    return <LazyNotFound />;
+  }
+
+  if (isSessions) {
+    return <Outlet />;
+  }
+
+  return (
+    <ContainerWrap fullSize className="container-lg">
       <Row>
-        <Col>
-          <div>Could not retrieve project</div>
+        <Col
+          sm={12}
+          className={cx("py-4", "px-0", "px-lg-2", styles.HeaderContainer)}
+        >
+          <ProjectPageHeader project={data} />
+        </Col>
+        <Col sm={12} lg={1} className={cx(styles.NavContainer)}>
+          <div className="sticky-top pt-2 pt-md-4">
+            <ProjectPageNav project={data} />
+          </div>
+        </Col>
+        <Col sm={12} lg={11}>
+          <main>
+            <Outlet context={{ project: data } satisfies ContextType} />
+          </main>
         </Col>
       </Row>
-    );
-  return (
-    <Row>
-      <Col
-        sm={12}
-        className={cx("py-4", "px-0", "px-lg-2", styles.HeaderContainer)}
-      >
-        <ProjectPageHeader project={data}></ProjectPageHeader>
-      </Col>
-      <Col sm={12} lg={1} className={cx(styles.NavContainer)}>
-        <div className="sticky-top pt-2 pt-md-4">
-          <ProjectPageNav
-            namespace={namespace}
-            slug={slug}
-            selectedContent={contentPage}
-          ></ProjectPageNav>
-        </div>
-      </Col>
-      <Col sm={12} lg={11}>
-        <ProjectPageContent
-          project={data}
-          selectedContent={contentPage}
-        ></ProjectPageContent>
-      </Col>
-    </Row>
+    </ContainerWrap>
   );
 }
 
-export default function ProjectPageV2Show({
-  contentPage,
-}: {
-  contentPage?: ProjectPageContentType;
-}) {
-  const { id: projectId } = useParams<{
-    id: string | undefined;
-    namespace: string | undefined;
-    slug: string | undefined;
-  }>();
-  if (projectId != null) {
-    return <ProjectV2ShowByProjectId />;
-  }
-  return (
-    <ProjectPageContainer
-      contentPage={contentPage || ProjectPageContentType.Overview}
-    />
-  );
+type ContextType = { project: Project };
+
+export function useProject() {
+  return useOutletContext<ContextType>();
 }

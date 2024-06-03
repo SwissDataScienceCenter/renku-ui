@@ -17,13 +17,13 @@
  */
 import cx from "classnames";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { generatePath, Link } from "react-router-dom-v5-compat";
 
 import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
 import { Pagination } from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
-import { Url } from "../../../utils/helpers/url";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 import type { Project } from "../api/projectV2.api";
 import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
@@ -35,11 +35,7 @@ interface ProjectV2ListProjectProps {
   project: Project;
 }
 function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
-  const projectUrl = Url.get(Url.pages.projectV2.show, {
-    namespace: project.namespace,
-    slug: project.slug,
-  });
-  const oldUrl = Url.get(Url.pages.projectV2.old, {
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: project.namespace,
     slug: project.slug,
   });
@@ -52,13 +48,6 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
         <h3>
           <Link to={projectUrl}>{project.name}</Link>
         </h3>
-        <Link
-          to={oldUrl}
-          className="btn btn-outline-rk-green"
-          data-cy={"link-project-" + project.id}
-        >
-          Old view
-        </Link>
         <div className="mb-2 fw-light">{project.namespace}/</div>
         <div className="mb-2">{project.description}</div>
         <div className={cx("align-items-baseline", "d-flex")}>
@@ -114,7 +103,7 @@ function ProjectList() {
 }
 
 export default function ProjectV2List() {
-  const newProjectUrl = Url.get(Url.pages.projectV2.new);
+  const newProjectUrl = ABSOLUTE_ROUTES.v2.projects.new;
   return (
     <FormSchema
       showHeader={true}

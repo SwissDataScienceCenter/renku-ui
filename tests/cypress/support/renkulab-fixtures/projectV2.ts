@@ -29,7 +29,7 @@ interface ListManyProjectArgs extends NameOnlyFixture {
 
 interface ListProjectV2MembersFixture extends ProjectV2IdArgs {
   removeMemberId?: string;
-  addMember?: { id: string; email: string; role: string };
+  addMember?: { id: string; email?: string; role: string };
 }
 
 interface ProjectV2IdArgs extends SimpleFixture {
@@ -40,13 +40,13 @@ interface ProjectV2DeleteFixture extends NameOnlyFixture {
   projectId?: string;
 }
 
-interface ProjectV2DeleteMemberFixture extends ProjectV2IdArgs {
-  memberId?: string;
-}
-
 interface ProjectV2NameArgs extends SimpleFixture {
   namespace?: string;
   projectSlug?: string;
+}
+
+interface ProjectV2PatchOrDeleteMemberFixture extends ProjectV2IdArgs {
+  memberId?: string;
 }
 
 export function generateProjects(numberOfProjects: number, start: number) {
@@ -79,7 +79,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         fixture = "projectV2/create-projectV2.json",
         name = "createProjectV2",
       } = args ?? {};
-      const response = { fixture, delay: 2000, statusCode: 201 };
+      const response = { fixture, statusCode: 201 };
       cy.intercept("POST", "/ui-server/api/data/projects", response).as(name);
       return this;
     }
@@ -89,7 +89,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         name = "deleteProjectV2",
         projectId = "THEPROJECTULID26CHARACTERS",
       } = args ?? {};
-      const response = { delay: 2000, statusCode: 204 };
+      const response = { statusCode: 204 };
       cy.intercept(
         "DELETE",
         `/ui-server/api/data/projects/${projectId}`,
@@ -98,7 +98,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    deleteProjectV2Member(args?: ProjectV2DeleteMemberFixture) {
+    deleteProjectV2Member(args?: ProjectV2PatchOrDeleteMemberFixture) {
       const {
         fixture = "projectV2/list-projectV2-members.json",
         name = "deleteProjectV2Members",
@@ -142,7 +142,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         fixture = "projectV2/list-projectV2.json",
         name = "listProjectV2",
       } = args ?? {};
-      const response = { fixture, delay: 2000 };
+      const response = { fixture };
       cy.intercept("GET", `/ui-server/api/data/projects?*`, response).as(name);
       return this;
     }
@@ -170,7 +170,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    patchProjectV2Member(args?: ProjectV2DeleteMemberFixture) {
+    patchProjectV2Member(args?: ProjectV2PatchOrDeleteMemberFixture) {
       const {
         fixture = "projectV2/list-projectV2-members.json",
         name = "patchProjectV2Members",
@@ -198,7 +198,6 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
             message: `Project  ${namespace}/${projectSlug} does not exist.`,
           },
         },
-        delay: 2000,
         statusCode: 404,
       };
       cy.intercept(
@@ -246,7 +245,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         name = "updateProjectV2",
         projectId = "THEPROJECTULID26CHARACTERS",
       } = args ?? {};
-      const response = { fixture, delay: 2000 };
+      const response = { fixture };
       cy.intercept(
         "PATCH",
         `/ui-server/api/data/projects/${projectId}`,
