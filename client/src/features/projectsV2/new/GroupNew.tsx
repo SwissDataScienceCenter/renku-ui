@@ -17,27 +17,24 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom-v5-compat";
 import { Button, Form } from "reactstrap";
 
-import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
-
+import ContainerWrap from "../../../components/container/ContainerWrap";
+import FormSchema from "../../../components/formschema/FormSchema";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
-import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
 import type { GroupPostRequest } from "../api/namespace.api";
+import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
-
 import WipBadge from "../shared/WipBadge";
-import { Link } from "react-router-dom-v5-compat";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import ContainerWrap from "../../../components/container/ContainerWrap";
 
 function GroupNewHeader() {
   return (

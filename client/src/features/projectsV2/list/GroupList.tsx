@@ -19,6 +19,7 @@ import cx from "classnames";
 import { useState } from "react";
 import { generatePath, Link } from "react-router-dom-v5-compat";
 
+import ContainerWrap from "../../../components/container/ContainerWrap";
 import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
 import { Pagination } from "../../../components/Pagination";
@@ -30,7 +31,6 @@ import { useGetGroupsQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
 
 import styles from "./projectV2List.module.scss";
-import ContainerWrap from "../../../components/container/ContainerWrap";
 
 interface GroupListGroupProps {
   group: GroupResponse;
