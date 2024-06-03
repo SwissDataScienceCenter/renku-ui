@@ -146,7 +146,10 @@ function CentralContentContainer(props) {
               <LazyNewProject />
             </ContainerWrap>
           </CompatRoute>
-          <CompatRoute Route path="/projects/:subUrl+">
+          <CompatRoute
+            //  path="/projects/:subUrl+"
+            path="/projects"
+          >
             <LazyProjectView />
           </CompatRoute>
           <Route exact path={Url.get(Url.pages.sessions)}>

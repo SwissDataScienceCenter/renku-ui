@@ -167,7 +167,8 @@ function refreshTrigger(thing) {
 
 function mapProjectStateToProps(state, ownProps) {
   const projectCoordinator = ownProps.projectCoordinator;
-  const pathComponents = splitProjectSubRoute(ownProps.match.url);
+  // const pathComponents = splitProjectSubRoute(ownProps.match.url);
+  const pathComponents = splitProjectSubRoute(ownProps.subUrl);
   const accessLevel = projectCoordinator.get("metadata.accessLevel");
   const settingsReadOnly = accessLevel < ACCESS_LEVELS.MAINTAINER;
   const externalUrl = projectCoordinator.get("metadata.externalUrl");
@@ -211,7 +212,8 @@ class View extends Component {
   }
 
   componentDidMount() {
-    const pathComponents = splitProjectSubRoute(this.props.match.url);
+    // const pathComponents = splitProjectSubRoute(this.props.match.url);
+    const pathComponents = splitProjectSubRoute(this.props.subUrl);
     if (
       pathComponents.projectPathWithNamespace == null &&
       pathComponents.projectId != null
@@ -255,8 +257,10 @@ class View extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const prevPathComps = splitProjectSubRoute(prevProps.match.url);
-    const pathComps = splitProjectSubRoute(this.props.match.url);
+    // const prevPathComps = splitProjectSubRoute(prevProps.match.url);
+    const prevPathComps = splitProjectSubRoute(prevProps.subUrl);
+    // const pathComps = splitProjectSubRoute(this.props.match.url);
+    const pathComps = splitProjectSubRoute(this.props.subUrl);
     if (
       prevPathComps.projectPathWithNamespace !==
       pathComps.projectPathWithNamespace
@@ -270,7 +274,8 @@ class View extends Component {
 
   async fetchProject() {
     // fetch the main project data, fetch branches and commits (exception for auto-starting links)
-    const pathComponents = splitProjectSubRoute(this.props.match.url);
+    // const pathComponents = splitProjectSubRoute(this.props.match.url);
+    const pathComponents = splitProjectSubRoute(this.props.subUrl);
     const projectData = await this.projectCoordinator.fetchProject(
       this.props.client,
       pathComponents.projectPathWithNamespace
@@ -329,7 +334,8 @@ class View extends Component {
 
   async fetchAll() {
     // Get the project main data
-    const pathComponents = splitProjectSubRoute(this.props.match.url);
+    // const pathComponents = splitProjectSubRoute(this.props.match.url);
+    const pathComponents = splitProjectSubRoute(this.props.subUrl);
     let projectData = null;
     if (pathComponents.projectPathWithNamespace)
       projectData = await this.fetchProject();
@@ -383,8 +389,8 @@ class View extends Component {
   }
 
   getSubUrls() {
-    const match = this.props.match;
-    const pathComponents = splitProjectSubRoute(match.url);
+    // const match = this.props.match;
+    const pathComponents = splitProjectSubRoute(this.props.subUrl);
     const baseUrl = pathComponents.baseUrl;
     const filesUrl = `${baseUrl}/files`;
     const fileContentUrl = `${filesUrl}/blob`;
