@@ -64,7 +64,7 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
     () => NotebooksHelper.cleanAnnotations(annotations) as NotebookAnnotations,
     [annotations]
   );
-  let state = status.state;
+  const state = status.state;
   const defaultImage = cleanAnnotations.default_image_used;
 
   const badge =
