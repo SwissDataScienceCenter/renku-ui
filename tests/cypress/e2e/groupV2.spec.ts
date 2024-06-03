@@ -188,6 +188,6 @@ describe("Edit v2 group", () => {
       name: "listGroupV2PostDelete",
     });
     cy.contains("Group with slug test-2-group-v2 does not exist");
-    cy.contains("return to groups list").click();
+    cy.contains("Return to the groups list").click();
   });
 });
