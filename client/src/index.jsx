@@ -6,7 +6,6 @@ import { Route, Switch, useHistory } from "react-router-dom";
 import { CompatRoute } from "react-router-dom-v5-compat";
 
 import "bootstrap";
-import "jquery";
 
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import v1Styles from "./styles/index.scss?inline";
