@@ -56,7 +56,7 @@ export function SessionBadge({
         "fw-normal",
         className
       )}
-      pill={true}
+      pill
     >
       {children}
     </Badge>
