@@ -1,12 +1,7 @@
 import cx from "classnames";
 import React, { Component, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFile,
-  faFolder,
-  faFolderOpen,
-} from "@fortawesome/free-solid-svg-icons";
+import { FileEarmark, FolderFill, Folder2Open } from "react-bootstrap-icons";
 import { Loader } from "./Loader";
 
 type HashElt = {
@@ -205,12 +200,12 @@ class TreeNode extends Component<TreeNodeProps, TreeNodeState> {
   render() {
     const icon = this.props.node.children.length ? (
       this.state.childrenOpen === false ? (
-        <FontAwesomeIcon className="link-primary" icon={faFolder} />
+        <FolderFill className="link-primary" />
       ) : (
-        <FontAwesomeIcon className="link-primary" icon={faFolderOpen} />
+        <Folder2Open className="link-primary" />
       )
     ) : (
-      <FontAwesomeIcon className="link-rk-text" icon={faFile} />
+      <FileEarmark className="link-rk-text" />
     );
 
     const children = this.props.node.children

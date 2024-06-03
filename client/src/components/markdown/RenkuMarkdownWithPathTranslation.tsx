@@ -1,5 +1,4 @@
-import { faFile } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FileEarmark } from "react-bootstrap-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import { Card, CardBody } from "reactstrap";
@@ -131,7 +130,7 @@ function FileAndWrapper(props: FileAndWrapperProps) {
       <Card>
         <CardBody className="p-2">
           <label className="mb-0 p-1">
-            <FontAwesomeIcon className="icon-gray me-1" icon={faFile} />
+            <FileEarmark className="icon-gray me-1" />
             {props.block.data?.file_name}
           </label>
           <label
