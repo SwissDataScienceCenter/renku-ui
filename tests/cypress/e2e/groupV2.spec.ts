@@ -25,17 +25,19 @@ describe("Add new v2 group", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects();
-    fixtures.createGroupV2().readGroupV2();
+    fixtures.createGroupV2().readGroupV2({ groupSlug: slug });
     cy.visit("/v2/groups/new");
   });
 
-  it("create a new group", () => {
+  it.only("create a new group", () => {
     cy.contains("New Group").should("be.visible");
     cy.getDataCy("group-name-input").clear().type(newGroupName);
     cy.getDataCy("group-slug-input").should("have.value", slug);
     cy.contains("Create").click();
     cy.wait("@createGroupV2");
-    cy.contains("Group created").should("be.visible");
+    cy.wait("@readGroupV2");
+    cy.url().should("contain", `v2/groups/${slug}`);
+    cy.contains("test 2 group-v2").should("be.visible");
   });
 });
 

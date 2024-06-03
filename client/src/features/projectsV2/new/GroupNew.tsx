@@ -35,8 +35,9 @@ import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
 
 import WipBadge from "../shared/WipBadge";
-import { Link } from "react-router-dom-v5-compat";
+import { generatePath, Link, useNavigate } from "react-router-dom-v5-compat";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 
 function GroupNewHeader() {
   return (
@@ -65,26 +66,29 @@ function GroupBeingCreated({
 }: {
   result: ReturnType<typeof usePostGroupsMutation>[1];
 }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (result.isSuccess && result.data.slug) {
+      const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
+        slug: result.data.slug,
+      });
+      navigate(groupUrl);
+    }
+  }, [result, navigate]);
+
   if (result.isLoading) {
     return <GroupBeingCreatedLoader />;
   }
 
-  if (result.isError || result.data == null) {
-    return (
-      <div>
-        <p>Something went wrong.</p>
-        <div className={cx("d-flex", "justify-content-between")}>
-          <Button onClick={() => window.location.reload()}>Back</Button>
-        </div>
-      </div>
-    );
-  }
   return (
-    <>
-      <div>Group created.</div>
-      {"  "}
-      <Link to={ABSOLUTE_ROUTES.v2.groups.root}>Go to group list</Link>
-    </>
+    <div>
+      <p>Something went wrong.</p>
+      {result.error && <RtkOrNotebooksError error={result.error} />}
+      <div className={cx("d-flex", "justify-content-between")}>
+        <Button onClick={() => window.location.reload()}>Back</Button>
+      </div>
+    </div>
   );
 }
 
