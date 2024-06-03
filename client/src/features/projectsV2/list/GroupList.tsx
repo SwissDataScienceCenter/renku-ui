@@ -30,6 +30,7 @@ import { useGetGroupsQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
 
 import styles from "./projectV2List.module.scss";
+import ContainerWrap from "../../../components/container/ContainerWrap";
 
 interface GroupListGroupProps {
   group: GroupResponse;
@@ -102,23 +103,25 @@ function GroupListDisplay() {
 export default function GroupList() {
   const newGroupUrl = ABSOLUTE_ROUTES.v2.groups.new;
   return (
-    <FormSchema
-      showHeader={true}
-      title="List Groups"
-      description={
-        <>
-          <div>
-            All visible groups <WipBadge />{" "}
-          </div>
-          <div className="mt-3">
-            <Link className={cx("btn", "btn-secondary")} to={newGroupUrl}>
-              Create New Group
-            </Link>
-          </div>
-        </>
-      }
-    >
-      <GroupListDisplay />
-    </FormSchema>
+    <ContainerWrap>
+      <FormSchema
+        showHeader={true}
+        title="List Groups"
+        description={
+          <>
+            <div>
+              All visible groups <WipBadge />{" "}
+            </div>
+            <div className="mt-3">
+              <Link className={cx("btn", "btn-secondary")} to={newGroupUrl}>
+                Create New Group
+              </Link>
+            </div>
+          </>
+        }
+      >
+        <GroupListDisplay />
+      </FormSchema>
+    </ContainerWrap>
   );
 }

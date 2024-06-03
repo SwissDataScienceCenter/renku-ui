@@ -37,6 +37,7 @@ import SlugFormField from "../fields/SlugFormField";
 import WipBadge from "../shared/WipBadge";
 import { Link } from "react-router-dom-v5-compat";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import ContainerWrap from "../../../components/container/ContainerWrap";
 
 function GroupNewHeader() {
   return (
@@ -169,12 +170,14 @@ export default function GroupNew() {
     return <h2>Please log in to create a group.</h2>;
   }
   return (
-    <FormSchema
-      showHeader={true}
-      title="New Group"
-      description={<GroupNewHeader />}
-    >
-      <GroupMetadataForm />
-    </FormSchema>
+    <ContainerWrap>
+      <FormSchema
+        showHeader={true}
+        title="New Group"
+        description={<GroupNewHeader />}
+      >
+        <GroupMetadataForm />
+      </FormSchema>
+    </ContainerWrap>
   );
 }

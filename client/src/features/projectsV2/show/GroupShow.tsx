@@ -40,6 +40,7 @@ import WipBadge from "../shared/WipBadge";
 
 import { GroupMembersForm, GroupMetadataForm } from "./groupEditForms";
 import { SettingEditOption } from "./groupShow.types";
+import ContainerWrap from "../../../components/container/ContainerWrap";
 
 interface GroupHeaderProps {
   group: GroupResponse;
@@ -166,24 +167,26 @@ export default function GroupShow() {
   }
 
   return (
-    <FormSchema
-      showHeader={true}
-      title={data.name ?? "(unknown)"}
-      description={
-        <GroupHeader
-          group={data}
-          setSettingEdit={setSettingEdit}
-          settingEdit={settingEdit}
-        />
-      }
-    >
-      {settingEdit == null && <GroupDescription group={data} />}
-      {settingEdit == "members" && (
-        <GroupMembersForm group={data} setSettingEdit={setSettingEdit} />
-      )}
-      {settingEdit == "metadata" && (
-        <GroupMetadataForm group={data} setSettingEdit={setSettingEdit} />
-      )}
-    </FormSchema>
+    <ContainerWrap>
+      <FormSchema
+        showHeader={true}
+        title={data.name ?? "(unknown)"}
+        description={
+          <GroupHeader
+            group={data}
+            setSettingEdit={setSettingEdit}
+            settingEdit={settingEdit}
+          />
+        }
+      >
+        {settingEdit == null && <GroupDescription group={data} />}
+        {settingEdit == "members" && (
+          <GroupMembersForm group={data} setSettingEdit={setSettingEdit} />
+        )}
+        {settingEdit == "metadata" && (
+          <GroupMetadataForm group={data} setSettingEdit={setSettingEdit} />
+        )}
+      </FormSchema>
+    </ContainerWrap>
   );
 }

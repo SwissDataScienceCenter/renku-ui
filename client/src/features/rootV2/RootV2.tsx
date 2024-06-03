@@ -82,11 +82,11 @@ export default function RootV2() {
             }
           />
           <Route
-            path="groups/*"
+            path={RELATIVE_ROUTES.v2.groups.root}
             element={
-              <ContainerWrap>
-                <GroupsV2Routes />
-              </ContainerWrap>
+              // <ContainerWrap>
+              <GroupsV2Routes />
+              // </ContainerWrap>
             }
           />
           <Route
