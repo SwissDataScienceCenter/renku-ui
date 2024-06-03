@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { generatePath } from "react-router-dom-v5-compat";
+
 import { TimeCaption } from "../../../../components/TimeCaption";
 import {
   EditButtonLink,
@@ -26,11 +27,11 @@ import {
 import VisibilityIcon from "../../../../components/entities/VisibilityIcon";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import type {
-  Project,
   ProjectMemberListResponse,
   ProjectMemberResponse,
 } from "../../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import MembershipGuard from "../../utils/MembershipGuard";
 import { toSortedMembers } from "../../utils/roleUtils";
 
@@ -112,7 +113,9 @@ function ProjectInformationMembers({
   );
 }
 
-export default function ProjectInformation({ project }: { project: Project }) {
+export default function ProjectInformation() {
+  const { project } = useProject();
+
   const { data: members } = useGetProjectsByProjectIdMembersQuery({
     projectId: project.id,
   });

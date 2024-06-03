@@ -17,25 +17,28 @@
  */
 
 import cx from "classnames";
-import { Link, useParams } from "react-router-dom-v5-compat";
+import {
+  Outlet,
+  useMatch,
+  useOutlet,
+  useOutletContext,
+  useParams,
+} from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import ContainerWrap from "../../../components/container/ContainerWrap";
+import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
-import { ProjectV2ShowByProjectId } from "../../projectsV2/show/ProjectV2ShowByProjectId";
-import ProjectPageContent from "../ProjectPageContent/ProjectPageContent";
-import { ProjectPageContentType } from "../ProjectPageContent/projectPageContentType.types";
+import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
 
 import styles from "./ProjectPageContainer.module.scss";
 
-function ProjectPageContainerInner({
-  contentPage,
-}: {
-  contentPage: ProjectPageContentType;
-}) {
+export default function ProjectPageContainer() {
   const { namespace, slug } = useParams<{
     id: string | undefined;
     namespace: string | undefined;
@@ -46,63 +49,52 @@ function ProjectPageContainerInner({
     slug: slug ?? "",
   });
 
-  if (isLoading) return <Loader />;
+  const outlet = useOutlet();
+
+  const isSessions = useMatch(
+    `${ABSOLUTE_ROUTES.v2.projects.show.sessions.root}/*`
+  );
+
+  if (isLoading) return <Loader className="align-self-center" />;
+
   if (error || data == null) {
-    return (
-      <Row className="mt-3">
-        <Col>
-          {error ? (
-            <RtkOrNotebooksError error={error} />
-          ) : (
-            <p>Could not retrieve the project.</p>
-          )}
-          <p>
-            Click here to{" "}
-            <Link to={ABSOLUTE_ROUTES.v2.projects.root}>
-              return to projects list
-            </Link>
-            .
-          </p>
+    return <ProjectNotFound error={error} />;
+  }
+
+  if (outlet == null) {
+    return <LazyNotFound />;
+  }
+
+  if (isSessions) {
+    return <Outlet />;
+  }
+
+  return (
+    <ContainerWrap fullSize className="container-lg">
+      <Row>
+        <Col
+          sm={12}
+          className={cx("py-4", "px-0", "px-lg-2", styles.HeaderContainer)}
+        >
+          <ProjectPageHeader project={data} />
+        </Col>
+        <Col sm={12} lg={1} className={cx(styles.NavContainer)}>
+          <div className="sticky-top pt-2 pt-md-4">
+            <ProjectPageNav project={data} />
+          </div>
+        </Col>
+        <Col sm={12} lg={11}>
+          <main>
+            <Outlet context={{ project: data } satisfies ContextType} />
+          </main>
         </Col>
       </Row>
-    );
-  }
-  return (
-    <Row>
-      <Col
-        sm={12}
-        className={cx("py-4", "px-0", "px-lg-2", styles.HeaderContainer)}
-      >
-        <ProjectPageHeader project={data} />
-      </Col>
-      <Col sm={12} lg={1} className={styles.NavContainer}>
-        <div className={cx("sticky-lg-top", "z-1", "pt-2", "pt-md-4")}>
-          <ProjectPageNav project={data} selectedContent={contentPage} />
-        </div>
-      </Col>
-      <Col sm={12} lg={11}>
-        <ProjectPageContent project={data} selectedContent={contentPage} />
-      </Col>
-    </Row>
+    </ContainerWrap>
   );
 }
 
-export default function ProjectPageContainer({
-  contentPage,
-}: {
-  contentPage?: ProjectPageContentType;
-}) {
-  const { id: projectId } = useParams<{
-    id: string | undefined;
-    namespace: string | undefined;
-    slug: string | undefined;
-  }>();
-  if (projectId != null) {
-    return <ProjectV2ShowByProjectId />;
-  }
-  return (
-    <ProjectPageContainerInner
-      contentPage={contentPage ?? ProjectPageContentType.Overview}
-    />
-  );
+type ContextType = { project: Project };
+
+export function useProject() {
+  return useOutletContext<ContextType>();
 }

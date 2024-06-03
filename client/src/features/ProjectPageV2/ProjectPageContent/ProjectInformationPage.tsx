@@ -13,24 +13,16 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
-import { Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
-import { ProjectPageContentType } from "./ProjectPageContent/projectPageContentType.types";
 
-const ProjectPageV2Show = lazy(
-  () => import("./ProjectPageContainer/ProjectPageContainer")
-);
+import cx from "classnames";
+import ProjectInformation from "./ProjectInformation/ProjectInformation";
 
-export default function LazyProjectPageV2Show({
-  contentPage,
-}: {
-  contentPage: ProjectPageContentType;
-}) {
+export default function ProjectInformationPage() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <ProjectPageV2Show contentPage={contentPage} />
-    </Suspense>
+    <div className={cx("d-block", "d-lg-none", "d-sm-block", "pt-4")}>
+      <ProjectInformation />
+    </div>
   );
 }

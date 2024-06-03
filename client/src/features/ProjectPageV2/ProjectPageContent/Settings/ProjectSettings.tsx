@@ -47,6 +47,7 @@ import useProjectAccess from "../../utils/useProjectAccess.hook";
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
+import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 
 const projectMetadataStringKeys = ["description", "name", "namespace"] as const;
 
@@ -319,9 +320,9 @@ function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
 interface ProjectPageSettingsProps {
   project: Project;
 }
-export default function ProjectPageSettings({
-  project,
-}: ProjectPageSettingsProps) {
+export default function ProjectPageSettings() {
+  const { project } = useProject();
+
   const { hash } = useLocation();
   const { userRole } = useProjectAccess({ projectId: project.id });
 

@@ -17,42 +17,37 @@
  */
 import cx from "classnames";
 import { EyeFill, Folder2Open, PencilSquare } from "react-bootstrap-icons";
-import { generatePath } from "react-router-dom-v5-compat";
+import { generatePath, useMatch } from "react-router-dom-v5-compat";
 import { Nav, NavItem, NavLink } from "reactstrap";
 
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2";
-import { ProjectPageContentType } from "../ProjectPageContent/projectPageContentType.types";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import type { Project } from "../../projectsV2/api/projectV2.api";
+import AccessGuard from "../utils/AccessGuard";
+import useProjectAccess from "../utils/useProjectAccess.hook";
 
 import styles from "./ProjectPageNav.module.scss";
-import type { Project } from "../../projectsV2/api/projectV2.api.ts";
 
-import AccessGuard from "../utils/AccessGuard.tsx";
-import useProjectAccess from "../utils/useProjectAccess.hook.ts";
-
-export default function ProjectPageNav({
-  project,
-  selectedContent,
-}: {
-  project: Project;
-  selectedContent?: ProjectPageContentType;
-}) {
+export default function ProjectPageNav({ project }: { project: Project }) {
   const { namespace, slug } = project;
   const { userRole } = useProjectAccess({ projectId: project.id });
-  const projectUrl = generatePath("/v2/projects/:namespace/:slug", {
-    namespace: namespace || "",
-    slug: slug || "",
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace,
+    slug,
   });
   const projectSettingsUrl = generatePath(
-    "/v2/projects/:namespace/:slug/settings",
+    ABSOLUTE_ROUTES.v2.projects.show.settings,
     {
-      namespace: namespace || "",
-      slug: slug || "",
+      namespace,
+      slug,
     }
   );
-  const projectInfoUrl = generatePath("/v2/projects/:namespace/:slug/info", {
-    namespace: namespace || "",
-    slug: slug || "",
+  const projectInfoUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.info, {
+    namespace,
+    slug,
   });
+
+  const isSettings = useMatch(projectSettingsUrl);
 
   const navLinkClasses = [
     "p-0",
@@ -116,7 +111,7 @@ export default function ProjectPageNav({
           </RenkuNavLinkV2>
         </NavItem>
       </Nav>
-      {selectedContent === ProjectPageContentType.Settings && (
+      {isSettings && (
         <Nav className="d-none d-lg-flex">
           <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
             <NavLink
