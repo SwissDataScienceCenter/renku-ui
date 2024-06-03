@@ -16,9 +16,24 @@
  * limitations under the License.
  */
 
-export enum ProjectPageContentType {
-  Overview = "Overview",
-  Settings = "Settings",
-  Members = "Members",
-  ProjectInfo = "ProjectInfo",
+import { ReactNode, useRef } from "react";
+import { Link, LinkProps } from "react-router-dom-v5-compat";
+import { UncontrolledTooltip } from "reactstrap";
+
+type LinkWithTooltipProps = LinkProps & {
+  tooltip?: ReactNode;
+};
+
+export default function LinkWithTooltip({
+  tooltip,
+  ...props
+}: LinkWithTooltipProps) {
+  const ref = useRef<HTMLAnchorElement>(null);
+
+  return (
+    <>
+      <Link ref={ref} {...props} />
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+    </>
+  );
 }

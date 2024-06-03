@@ -51,6 +51,7 @@ import {
 } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
 
 export default function SessionStartPage() {
   const { launcherId, namespace, slug } = useParams<
@@ -314,14 +315,16 @@ function StartSessionFromLauncher({
   // Navigate to the session page when it is ready
   useEffect(() => {
     if (session != null) {
-      const url = generatePath("../show/:session", {
+      const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
+        namespace: project.namespace,
+        slug: project.slug,
         session: session.name,
       });
       navigate(url, {
         state: { redirectFromStartServer: true, fromLanding: false },
       });
     }
-  }, [navigate, session]);
+  }, [navigate, project.namespace, project.slug, session]);
 
   // Update the loading steps UI
   useEffect(() => {

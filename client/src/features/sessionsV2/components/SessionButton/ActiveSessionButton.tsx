@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
@@ -29,6 +27,7 @@ import {
   PlayFill,
   Tools,
   Trash,
+  TrashFill,
   XLg,
 } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom-v5-compat";
@@ -44,35 +43,32 @@ import {
   Row,
 } from "reactstrap";
 
-import { ErrorAlert, WarnAlert } from "../../../../components/Alert.jsx";
-import { Loader } from "../../../../components/Loader.tsx";
-import { ButtonWithMenu } from "../../../../components/buttons/Button.tsx";
-import SessionPausedIcon from "../../../../components/icons/SessionPausedIcon.tsx";
-import { User } from "../../../../model/renkuModels.types.ts";
+import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
+import { Loader } from "../../../../components/Loader";
+import { EnvironmentLogs } from "../../../../components/Logs";
+import { ButtonWithMenu } from "../../../../components/buttons/Button";
+import SessionPausedIcon from "../../../../components/icons/SessionPausedIcon";
+import { User } from "../../../../model/renkuModels.types";
 import { NotebooksHelper } from "../../../../notebooks";
-import { NotebookAnnotations } from "../../../../notebooks/components/session.types.ts";
-import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants.ts";
-import { NotificationsManager } from "../../../../notifications/notifications.types.ts";
-import AppContext from "../../../../utils/context/appContext.ts";
-import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook.ts";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook.ts";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api.ts";
-import { ResourceClass } from "../../../dataServices/dataServices.types.ts";
-import { toggleSessionLogsModal } from "../../../display/displaySlice.ts";
-import { SessionRowResourceRequests } from "../../../session/components/SessionsList.tsx";
-import UnsavedWorkWarning from "../../../session/components/UnsavedWorkWarning.tsx";
-import { SessionClassSelector } from "../../../session/components/options/SessionClassOption.tsx";
+import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
+import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
+import { NotificationsManager } from "../../../../notifications/notifications.types";
+import AppContext from "../../../../utils/context/appContext";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
+import { ResourceClass } from "../../../dataServices/dataServices.types";
+import { toggleSessionLogsModal } from "../../../display/displaySlice";
+import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
+import UnsavedWorkWarning from "../../../session/components/UnsavedWorkWarning";
+import { SessionClassSelector } from "../../../session/components/options/SessionClassOption";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
-} from "../../../session/sessions.api.ts";
-import {
-  Session,
-  SessionStatusState,
-} from "../../../session/sessions.types.ts";
-import useWaitForSessionStatus from "../../../session/useWaitForSessionStatus.hook.ts";
-import { EnvironmentLogs } from "../../../../components/Logs.tsx";
-import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook.ts";
+} from "../../../session/sessions.api";
+import { Session, SessionStatusState } from "../../../session/sessions.types";
+import useWaitForSessionStatus from "../../../session/useWaitForSessionStatus.hook";
 
 interface ActiveSessionButtonProps {
   session: Session;
@@ -252,30 +248,28 @@ export default function ActiveSessionButton({
     "btn-icon-text",
     "start-session-button",
     "py-1",
-    "px-2",
-    "d-flex",
-    "align-items-center"
+    "px-2"
   );
 
   const defaultAction =
     status === "stopping" || isStopping ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Deleting
       </Button>
     ) : isHibernating ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Pausing
       </Button>
     ) : status === "starting" || status === "running" ? (
       <Link
-        className={buttonClassName}
+        className={cx(buttonClassName, "d-inline-flex")}
         data-cy="open-session"
         to={showSessionUrl}
       >
         <img
-          className={cx("rk-icon", "rk-icon-md", "me-2")}
+          className={cx("rk-icon", "rk-icon-md", "me-1")}
           src="/connect.svg"
         />
         Open
@@ -289,14 +283,12 @@ export default function ActiveSessionButton({
       >
         {isResuming ? (
           <>
-            <Loader className="me-2" inline size={16} />
+            <Loader className="me-1" inline size={16} />
             Resuming
           </>
         ) : (
           <>
-            <PlayFill
-              className={cx("rk-icon", "rk-icon-md", "flex-shrink-0", "me-2")}
-            />
+            <PlayFill className={cx("bi", "me-1")} />
             Resume
           </>
         )}
@@ -307,9 +299,7 @@ export default function ActiveSessionButton({
         data-cy="modify-session-button"
         onClick={toggleModifySession}
       >
-        <Tools
-          className={cx("rk-icon", "rk-icon-md", "flex-shrink-0", "me-2")}
-        />
+        <Tools className={cx("bi", "me-1")} />
         Modify
       </Button>
     ) : (
@@ -323,10 +313,7 @@ export default function ActiveSessionButton({
             <SessionPausedIcon size={16} />
           </span>
         ) : (
-          <FontAwesomeIcon
-            className={cx("rk-icon", "rk-icon-md", "me-2")}
-            icon={faTrash}
-          />
+          <TrashFill className={cx("bi", "me-1")} />
         )}
         {logged ? "Pause" : "Delete"}
       </Button>
@@ -342,10 +329,7 @@ export default function ActiveSessionButton({
         disabled={status === "starting"}
         onClick={onHibernateSession}
       >
-        <SessionPausedIcon
-          className={cx("svg-inline--fa", "fa-fw", "me-2")}
-          size={16}
-        />
+        <SessionPausedIcon className={cx("bi", "me-1")} size={16} />
         Pause session
       </DropdownItem>
     );
@@ -355,7 +339,7 @@ export default function ActiveSessionButton({
       data-cy="delete-session-button"
       onClick={logged ? toggleStopSession : onStopSession}
     >
-      <Trash className={cx("svg-inline--fa", "fa-w-16", "me-2")} />
+      <Trash className={cx("bi", "me-1")} />
       Delete session
     </DropdownItem>
   );
@@ -368,7 +352,7 @@ export default function ActiveSessionButton({
         data-cy="modify-session-button"
         onClick={toggleModifySession}
       >
-        <Tools className={cx("bi", "me-2")} />
+        <Tools className={cx("bi", "me-1")} />
         Modify session
       </DropdownItem>
     );
@@ -376,14 +360,14 @@ export default function ActiveSessionButton({
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
     <DropdownItem href={session.url} target="_blank">
-      <BoxArrowUpRight className={cx("svg-inline--fa", "fa-w-16", "me-2")} />
+      <BoxArrowUpRight className={cx("bi", "me-1")} />
       Open in new tab
     </DropdownItem>
   );
 
   const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
-      <FileEarmarkText className={cx("svg-inline--fa", "fa-w-16", "me-2")} />
+      <FileEarmarkText className={cx("bi", "me-1")} />
       Get logs
     </DropdownItem>
   );
@@ -669,7 +653,8 @@ function ModifySessionModalContent({
             onClick={onClick({ resumeSession: true })}
             type="submit"
           >
-            <FontAwesomeIcon icon={faPlay} /> Modify and resume session
+            <PlayFill className={cx("bi", "me-1")} />
+            Modify and resume session
           </Button>
         )}
         <Button
