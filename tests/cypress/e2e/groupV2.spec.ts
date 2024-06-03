@@ -29,7 +29,7 @@ describe("Add new v2 group", () => {
     cy.visit("/v2/groups/new");
   });
 
-  it.only("create a new group", () => {
+  it("create a new group", () => {
     cy.contains("New Group").should("be.visible");
     cy.getDataCy("group-name-input").clear().type(newGroupName);
     cy.getDataCy("group-slug-input").should("have.value", slug);
