@@ -74,7 +74,7 @@ export default function RootV2() {
       <div className={cx("d-flex", "flex-grow-1", "h-100")}>
         <Routes>
           <Route
-            path="/"
+            index
             element={
               <ContainerWrap>
                 <LazyDashboardV2 />
@@ -83,11 +83,7 @@ export default function RootV2() {
           />
           <Route
             path={RELATIVE_ROUTES.v2.groups.root}
-            element={
-              // <ContainerWrap>
-              <GroupsV2Routes />
-              // </ContainerWrap>
-            }
+            element={<GroupsV2Routes />}
           />
           <Route
             path={RELATIVE_ROUTES.v2.projects.root}
@@ -134,9 +130,15 @@ export default function RootV2() {
 function GroupsV2Routes() {
   return (
     <Routes>
-      <Route path="/" element={<LazyGroupV2List />} />
-      <Route path="new" element={<LazyGroupV2New />} />
-      <Route path=":slug" element={<LazyGroupV2Show />} />
+      <Route index element={<LazyGroupV2List />} />
+      <Route
+        path={RELATIVE_ROUTES.v2.groups.new}
+        element={<LazyGroupV2New />}
+      />
+      <Route
+        path={RELATIVE_ROUTES.v2.groups.show}
+        element={<LazyGroupV2Show />}
+      />
     </Routes>
   );
 }
@@ -168,22 +170,29 @@ function ProjectsV2Routes() {
           </ContainerWrap>
         }
       />
-      <Route
-        path={RELATIVE_ROUTES.v2.projects.show.root}
-        element={<LazyProjectPageV2Show />}
-      >
-        <Route index element={<LazyProjectPageOverview />} />
-        <Route
-          path={RELATIVE_ROUTES.v2.projects.show.info}
-          element={<LazyProjectInformation />}
-        />
-        <Route
-          path={RELATIVE_ROUTES.v2.projects.show.settings}
-          element={<LazyProjectPageSettings />}
-        />
+      <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
+        <Route element={<LazyProjectPageV2Show />}>
+          <Route index element={<LazyProjectPageOverview />} />
+          <Route
+            path={RELATIVE_ROUTES.v2.projects.show.info}
+            element={<LazyProjectInformation />}
+          />
+          <Route
+            path={RELATIVE_ROUTES.v2.projects.show.settings}
+            element={<LazyProjectPageSettings />}
+          />
+        </Route>
         <Route
           path={RELATIVE_ROUTES.v2.projects.show.sessions.root}
           element={<ProjectSessionsRoutes />}
+        />
+        <Route
+          path="*"
+          element={
+            <ContainerWrap fullSize>
+              <LazyNotFound />
+            </ContainerWrap>
+          }
         />
       </Route>
       <Route
