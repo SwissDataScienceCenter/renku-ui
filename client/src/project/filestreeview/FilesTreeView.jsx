@@ -1,3 +1,4 @@
+import cx from "classnames";
 import { Component } from "react";
 import { Link } from "react-router-dom";
 import { FileEarmark, FolderFill, Folder2Open } from "react-bootstrap-icons";
@@ -63,12 +64,12 @@ class TreeNode extends Component {
     const icon =
       this.props.node.type === "tree" ? (
         this.state.childrenOpen === false ? (
-          <FolderFill className="link-primary" />
+          <FolderFill className={cx("bi", "link-primary")} />
         ) : (
-          <Folder2Open className="link-primary" />
+          <Folder2Open className={cx("bi", "link-primary")} />
         )
       ) : (
-        <FileEarmark className="link-rk-text" />
+        <FileEarmark className={cx("bi", "link-rk-text")} />
       );
 
     const order =

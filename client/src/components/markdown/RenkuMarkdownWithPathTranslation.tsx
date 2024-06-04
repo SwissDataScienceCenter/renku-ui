@@ -1,3 +1,4 @@
+import cx from "classnames";
 import { FileEarmark } from "react-bootstrap-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
@@ -130,7 +131,7 @@ function FileAndWrapper(props: FileAndWrapperProps) {
       <Card>
         <CardBody className="p-2">
           <label className="mb-0 p-1">
-            <FileEarmark className="icon-gray me-1" />
+            <FileEarmark className={cx("bi", "icon-gray me-1")} />
             {props.block.data?.file_name}
           </label>
           <label

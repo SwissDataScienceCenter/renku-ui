@@ -47,7 +47,7 @@ export default function FileAndLineageSwitch({
           active={insideFile}
           innerRef={fileIconRef}
         >
-          <FileEarmark />
+          <FileEarmark className="bi" />
         </Button>
         <UncontrolledTooltip target={fileIconRef}>
           File content view
@@ -57,7 +57,7 @@ export default function FileAndLineageSwitch({
           onClick={performSwitch}
           active={!insideFile}
         >
-          <Diagram2 />
+          <Diagram2 className="bi" />
         </Button>
         <UncontrolledTooltip target={lineageIconRef}>
           File lineage view

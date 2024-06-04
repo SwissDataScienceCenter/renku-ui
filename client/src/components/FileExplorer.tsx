@@ -200,12 +200,12 @@ class TreeNode extends Component<TreeNodeProps, TreeNodeState> {
   render() {
     const icon = this.props.node.children.length ? (
       this.state.childrenOpen === false ? (
-        <FolderFill className="link-primary" />
+        <FolderFill className={cx("bi", "link-primary")} />
       ) : (
-        <Folder2Open className="link-primary" />
+        <Folder2Open className={cx("bi", "link-primary")} />
       )
     ) : (
-      <FileEarmark className="link-rk-text" />
+      <FileEarmark className={cx("bi", "link-rk-text")} />
     );
 
     const children = this.props.node.children
