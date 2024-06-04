@@ -1,11 +1,11 @@
+import cx from "classnames";
 import { Component } from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faFile,
-  faFolder as faFolderClosed,
-  faFolderOpen,
-} from "@fortawesome/free-solid-svg-icons";
+  FileEarmarkFill,
+  FolderFill,
+  Folder2Open,
+} from "react-bootstrap-icons";
 import { Button, ButtonGroup } from "reactstrap";
 
 import "./treeviewstyle.css";
@@ -68,12 +68,12 @@ class TreeNode extends Component {
     const icon =
       this.props.node.type === "tree" ? (
         this.state.childrenOpen === false ? (
-          <FontAwesomeIcon className="link-primary" icon={faFolderClosed} />
+          <FolderFill className={cx("bi", "link-primary")} />
         ) : (
-          <FontAwesomeIcon className="link-primary" icon={faFolderOpen} />
+          <Folder2Open className={cx("bi", "link-primary")} />
         )
       ) : (
-        <FontAwesomeIcon className="link-rk-text" icon={faFile} />
+        <FileEarmarkFill className={cx("bi", "link-rk-text")} />
       );
 
     const order =
