@@ -18,7 +18,7 @@
 
 import { faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { isEmpty, groupBy } from "lodash";
+import { isEmpty, groupBy } from "lodash-es";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useHistory } from "react-router-dom";

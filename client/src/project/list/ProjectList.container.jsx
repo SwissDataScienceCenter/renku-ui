@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 
