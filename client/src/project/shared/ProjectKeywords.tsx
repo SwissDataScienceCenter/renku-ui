@@ -24,7 +24,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { trim } from "lodash";
+import { trim } from "lodash-es";
 import { useCallback, useEffect, useState } from "react";
 
 import {

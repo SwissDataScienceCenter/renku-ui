@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { isEmpty } from "lodash";
+import { isEmpty } from "lodash-es";
 import { useState } from "react";
 import { Button, ButtonGroup, Col, Row, Table } from "reactstrap";
 
