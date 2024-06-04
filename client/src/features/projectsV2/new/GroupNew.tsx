@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom-v5-compat";
+import { Link, generatePath, useNavigate } from "react-router-dom-v5-compat";
 import { Button, Form } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -29,6 +29,7 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import type { GroupPostRequest } from "../api/namespace.api";
 import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
 import DescriptionFormField from "../fields/DescriptionFormField";
@@ -63,26 +64,29 @@ function GroupBeingCreated({
 }: {
   result: ReturnType<typeof usePostGroupsMutation>[1];
 }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (result.isSuccess && result.data.slug) {
+      const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
+        slug: result.data.slug,
+      });
+      navigate(groupUrl);
+    }
+  }, [result, navigate]);
+
   if (result.isLoading) {
     return <GroupBeingCreatedLoader />;
   }
 
-  if (result.isError || result.data == null) {
-    return (
-      <div>
-        <p>Something went wrong.</p>
-        <div className={cx("d-flex", "justify-content-between")}>
-          <Button onClick={() => window.location.reload()}>Back</Button>
-        </div>
-      </div>
-    );
-  }
   return (
-    <>
-      <div>Group created.</div>
-      {"  "}
-      <Link to={ABSOLUTE_ROUTES.v2.groups.root}>Go to group list</Link>
-    </>
+    <div>
+      <p>Something went wrong.</p>
+      {result.error && <RtkOrNotebooksError error={result.error} />}
+      <div className={cx("d-flex", "justify-content-between")}>
+        <Button onClick={() => window.location.reload()}>Back</Button>
+      </div>
+    </div>
   );
 }
 
