@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowCounterclockwise,

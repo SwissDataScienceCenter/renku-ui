@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import DOMPurify from "dompurify";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import styles from "./File.module.scss";
 
 import React, { memo, useState } from "react";
