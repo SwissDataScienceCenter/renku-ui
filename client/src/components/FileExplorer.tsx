@@ -1,7 +1,11 @@
 import cx from "classnames";
 import React, { Component, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FileEarmark, FolderFill, Folder2Open } from "react-bootstrap-icons";
+import {
+  FileEarmarkFill,
+  FolderFill,
+  Folder2Open,
+} from "react-bootstrap-icons";
 import { Loader } from "./Loader";
 
 type HashElt = {
@@ -205,7 +209,7 @@ class TreeNode extends Component<TreeNodeProps, TreeNodeState> {
         <Folder2Open className={cx("bi", "link-primary")} />
       )
     ) : (
-      <FileEarmark className={cx("bi", "link-rk-text")} />
+      <FileEarmarkFill className={cx("bi", "link-rk-text")} />
     );
 
     const children = this.props.node.children

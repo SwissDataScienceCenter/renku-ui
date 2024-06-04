@@ -18,7 +18,7 @@
 
 import { useRef } from "react";
 import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
-import { FileEarmark, Diagram2 } from "react-bootstrap-icons";
+import { FileEarmarkFill, Diagram2 } from "react-bootstrap-icons";
 
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
 import { useHistory } from "react-router-dom";
@@ -47,7 +47,7 @@ export default function FileAndLineageSwitch({
           active={insideFile}
           innerRef={fileIconRef}
         >
-          <FileEarmark className="bi" />
+          <FileEarmarkFill className="bi" />
         </Button>
         <UncontrolledTooltip target={fileIconRef}>
           File content view
