@@ -19,23 +19,22 @@ import { useCallback, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router-dom-v5-compat";
 import {
-  Col,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
   Label,
-  Row,
 } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import ContainerWrap from "../../../components/container/ContainerWrap";
 import FormSchema from "../../../components/formschema/FormSchema";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 import type { GroupResponse } from "../api/namespace.api";
 import { useGetGroupsByGroupSlugQuery } from "../api/projectV2.enhanced-api";
+import GroupNotFound from "../notFound/GroupNotFound";
 import WipBadge from "../shared/WipBadge";
 
 import { GroupMembersForm, GroupMetadataForm } from "./groupEditForms";
@@ -133,7 +132,7 @@ export function GroupDescription({ group }: GroupDisplayProps) {
 }
 
 export default function GroupShow() {
-  const { slug: groupSlug } = useParams<"slug">();
+  const { slug: groupSlug } = useParams<{ slug: string }>();
   const { data, isLoading, error } = useGetGroupsByGroupSlugQuery(
     {
       groupSlug: groupSlug ?? "",
@@ -143,47 +142,33 @@ export default function GroupShow() {
 
   const [settingEdit, setSettingEdit] = useState<SettingEditOption>(null);
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loader className="align-self-center" />;
+
   if (error || data == null) {
-    return (
-      <Row>
-        <Col>
-          {error ? (
-            <RtkOrNotebooksError error={error} />
-          ) : (
-            <p>Could not retrieve the group.</p>
-          )}
-          <p>
-            Click here to{" "}
-            <Link to={ABSOLUTE_ROUTES.v2.groups.root}>
-              return to groups list
-            </Link>
-            .
-          </p>
-        </Col>
-      </Row>
-    );
+    return <GroupNotFound error={error} />;
   }
 
   return (
-    <FormSchema
-      showHeader={true}
-      title={data.name ?? "(unknown)"}
-      description={
-        <GroupHeader
-          group={data}
-          setSettingEdit={setSettingEdit}
-          settingEdit={settingEdit}
-        />
-      }
-    >
-      {settingEdit == null && <GroupDescription group={data} />}
-      {settingEdit == "members" && (
-        <GroupMembersForm group={data} setSettingEdit={setSettingEdit} />
-      )}
-      {settingEdit == "metadata" && (
-        <GroupMetadataForm group={data} setSettingEdit={setSettingEdit} />
-      )}
-    </FormSchema>
+    <ContainerWrap>
+      <FormSchema
+        showHeader={true}
+        title={data.name ?? "(unknown)"}
+        description={
+          <GroupHeader
+            group={data}
+            setSettingEdit={setSettingEdit}
+            settingEdit={settingEdit}
+          />
+        }
+      >
+        {settingEdit == null && <GroupDescription group={data} />}
+        {settingEdit == "members" && (
+          <GroupMembersForm group={data} setSettingEdit={setSettingEdit} />
+        )}
+        {settingEdit == "metadata" && (
+          <GroupMetadataForm group={data} setSettingEdit={setSettingEdit} />
+        )}
+      </FormSchema>
+    </ContainerWrap>
   );
 }

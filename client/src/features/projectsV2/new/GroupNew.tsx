@@ -17,27 +17,25 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { Link, generatePath, useNavigate } from "react-router-dom-v5-compat";
 import { Button, Form } from "reactstrap";
 
-import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
-
+import ContainerWrap from "../../../components/container/ContainerWrap";
+import FormSchema from "../../../components/formschema/FormSchema";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
-import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import type { GroupPostRequest } from "../api/namespace.api";
+import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
-
 import WipBadge from "../shared/WipBadge";
-import { generatePath, Link, useNavigate } from "react-router-dom-v5-compat";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 
 function GroupNewHeader() {
   return (
@@ -170,15 +168,21 @@ function GroupMetadataForm() {
 export default function GroupNew() {
   const user = useLegacySelector((state) => state.stateModel.user);
   if (!user.logged) {
-    return <h2>Please log in to create a group.</h2>;
+    return (
+      <ContainerWrap>
+        <h2>Please log in to create a group.</h2>
+      </ContainerWrap>
+    );
   }
   return (
-    <FormSchema
-      showHeader={true}
-      title="New Group"
-      description={<GroupNewHeader />}
-    >
-      <GroupMetadataForm />
-    </FormSchema>
+    <ContainerWrap>
+      <FormSchema
+        showHeader={true}
+        title="New Group"
+        description={<GroupNewHeader />}
+      >
+        <GroupMetadataForm />
+      </FormSchema>
+    </ContainerWrap>
   );
 }
