@@ -1,5 +1,9 @@
 # Changes
 
+## [3.27.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.27.0...3.27.1) (YYYY-MM-DD)
+
+TODO: Update me here.
+
 ## [3.27.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.26.0...3.27.0) (2024-05-24)
 
 ### Features
