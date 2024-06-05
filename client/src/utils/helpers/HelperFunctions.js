@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import XRegExp from "xregexp";
-
 const AUTOSAVED_PREFIX = "renku/autosave/";
 
 function convertUnicodeToAscii(string) {
@@ -112,11 +110,6 @@ function slugFromTitle(
 
   if (slug === separator) return "";
   return slug;
-}
-
-function verifyTitleCharacters(title) {
-  const regexPattern = XRegExp("^(\\pL|\\d|\\_|\\-|\\.|\\ )*$");
-  return regexPattern.test(title);
 }
 
 function getActiveProjectPathWithNamespace(currentPath) {
@@ -385,7 +378,6 @@ export {
   groupBy,
   gitLabUrlFromProfileUrl,
   isValidURL,
-  verifyTitleCharacters,
   convertUnicodeToAscii,
   refreshIfNecessary,
   sleep,

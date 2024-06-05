@@ -41,8 +41,8 @@ import {
   refreshIfNecessary,
   slugFromTitle,
   splitAutosavedBranches,
-  verifyTitleCharacters,
 } from "./helpers/HelperFunctions";
+import { verifyTitleCharacters } from "./helpers/verifyTitleCharacters.utils";
 
 describe("Render React components and functions", () => {
   it("render RefreshButton", async () => {
