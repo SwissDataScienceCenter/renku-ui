@@ -12,7 +12,7 @@
 - chore: remove old reactstrap wrapper ([#3155](https://github.com/SwissDataScienceCenter/renku-ui/pull/3155))
 - fix: improve non existing project errors ([#3153](https://github.com/SwissDataScienceCenter/renku-ui/pull/3153))
 - feat: improve membership maintenance UX ([#3154]([https://github.com/SwissDataScienceCenter/renku-ui/pull/3154))
-- refactor(client): some migration step for `react-router@v6` by @leafty in https://github.com/SwissDataScienceCenter/renku-ui/pull/3151
+- refactor(client): some migration step for `react-router@v6` ([#3151](https://github.com/SwissDataScienceCenter/renku-ui/pull/3151))
 - chore(ci/cd): add dependabot updates for github actions ([#3159](https://github.com/SwissDataScienceCenter/renku-ui/pull/3159))
 - build(deps): bump actions/checkout from 3 to 4 ([#3163](https://github.com/SwissDataScienceCenter/renku-ui/pull/3163))
 - build(deps): bump actions/setup-node from 3 to 4 ([#3164](https://github.com/SwissDataScienceCenter/renku-ui/pull/3164))
