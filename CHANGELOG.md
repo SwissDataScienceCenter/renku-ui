@@ -4,7 +4,7 @@
 
 ### Features
 
-- convert font-awesome icons to bootstrap icons ([#3173](https://github.com/SwissDataScienceCenter/renku-ui/pull/3173), [#3159](https://github.com/SwissDataScienceCenter/renku-ui/pull/3159), [#3161](https://github.com/SwissDataScienceCenter/renku-ui/pull/3161))
+- convert font-awesome icons to bootstrap icons ([#3173](https://github.com/SwissDataScienceCenter/renku-ui/pull/3173), [#3161](https://github.com/SwissDataScienceCenter/renku-ui/pull/3161))
 - improve membership maintenance UX ([#3154](https://github.com/SwissDataScienceCenter/renku-ui/pull/3154))
 - small updates to the connected services page ([#3149](https://github.com/SwissDataScienceCenter/renku-ui/pull/3149))
 
@@ -17,7 +17,7 @@
 - deprecate Url.js for Renku 2.0 components ([#3158](https://github.com/SwissDataScienceCenter/renku-ui/pull/3158))
 - fix project page nav in small viewports ([#3168](https://github.com/SwissDataScienceCenter/renku-ui/pull/3168), [#3169](https://github.com/SwissDataScienceCenter/renku-ui/pull/3169))
 - update session buttons in Renku 2.0 ([#3172](https://github.com/SwissDataScienceCenter/renku-ui/pull/3172))
-- update session badges on the project page of Renku 2.0 ([#3174](https://github.com/SwissDataScienceCenter/renku-ui/pull/3173), [#3175](https://github.com/SwissDataScienceCenter/renku-ui/pull/3175))
+- update session badges on the project page of Renku 2.0 ([#3174](https://github.com/SwissDataScienceCenter/renku-ui/pull/3174), [#3175](https://github.com/SwissDataScienceCenter/renku-ui/pull/3175))
 - redirect to group page after creation ([#3177](https://github.com/SwissDataScienceCenter/renku-ui/pull/3177))
 - optimize bundle size ([#3181](https://github.com/SwissDataScienceCenter/renku-ui/pull/3181))
 - update dependencies ([#3180](https://github.com/SwissDataScienceCenter/renku-ui/pull/3180), [#3178](https://github.com/SwissDataScienceCenter/renku-ui/pull/3178), [#3160](https://github.com/SwissDataScienceCenter/renku-ui/pull/3160))
