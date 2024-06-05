@@ -21,7 +21,7 @@
 - build(deps): bump peter-evans/create-or-update-comment from 1 to 4 ([#3167](https://github.com/SwissDataScienceCenter/renku-ui/pull/3167))
 - fix: use Bootstrap icons where possible ([#3161](https://github.com/SwissDataScienceCenter/renku-ui/pull/3161))
 - chore(client): upgrade mermaid and dagre-d3 ([#3160](https://github.com/SwissDataScienceCenter/renku-ui/pull/3160))
-- refactor: move IconLink to its own file (#3170) ([#3170](https://github.com/SwissDataScienceCenter/renku-ui/pull/3170), [#3171](https://github.com/SwissDataScienceCenter/renku-ui/pull/3171))
+- refactor: move IconLink to its own file ([#3170](https://github.com/SwissDataScienceCenter/renku-ui/pull/3170), [#3171](https://github.com/SwissDataScienceCenter/renku-ui/pull/3171))
 - fix: fix project page nav in small viewports ([#3168](https://github.com/SwissDataScienceCenter/renku-ui/pull/3168), [#3169](https://github.com/SwissDataScienceCenter/renku-ui/pull/3169))
 - fix: update session buttons in Renku 2.0 ([#3172](https://github.com/SwissDataScienceCenter/renku-ui/pull/3172))
 - fix: show a full page 404 when a project is not accessible ([#3162](https://github.com/SwissDataScienceCenter/renku-ui/pull/3162))
