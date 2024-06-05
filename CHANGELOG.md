@@ -1,38 +1,27 @@
 # Changes
 
-## [3.27.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.27.0...3.27.1) (2024-06-05)
+## [3.28.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.27.0...3.28.0) (2024-06-05)
+
+### Features
+
+- convert font-awesome icons to bootstrap icons ([#3173](https://github.com/SwissDataScienceCenter/renku-ui/pull/3173), [#3159](https://github.com/SwissDataScienceCenter/renku-ui/pull/3159), [#3161](https://github.com/SwissDataScienceCenter/renku-ui/pull/3161))
+- smprove membership maintenance UX ([#3154](https://github.com/SwissDataScienceCenter/renku-ui/pull/3154))
+- small updates to the connected services page ([#3149](https://github.com/SwissDataScienceCenter/renku-ui/pull/3149))
 
 ### Fixes
 
-- fix: refactor client to fix dynamic imports ([#3140](https://github.com/SwissDataScienceCenter/renku-ui/pull/3140), [#3141](https://github.com/SwissDataScienceCenter/renku-ui/pull/3141))
-- tests: run acceptance tests in parallel by ([#3147](https://github.com/SwissDataScienceCenter/renku-ui/pull/3147), [#3148](https://github.com/SwissDataScienceCenter/renku-ui/pull/3148))
-- docs: add more guidelines for styling ([#3150](https://github.com/SwissDataScienceCenter/renku-ui/pull/3150))
-- fix: show project members in the project information page ([#3143](https://github.com/SwissDataScienceCenter/renku-ui/pull/3143))
-- chore: small updates to the connected services page ([#3149](https://github.com/SwissDataScienceCenter/renku-ui/pull/3149))
-- chore: remove old reactstrap wrapper ([#3155](https://github.com/SwissDataScienceCenter/renku-ui/pull/3155))
-- fix: improve non existing project errors ([#3153](https://github.com/SwissDataScienceCenter/renku-ui/pull/3153))
-- feat: improve membership maintenance UX ([#3154](https://github.com/SwissDataScienceCenter/renku-ui/pull/3154))
-- refactor(client): some migration step for `react-router@v6` ([#3151](https://github.com/SwissDataScienceCenter/renku-ui/pull/3151))
-- chore(ci/cd): add dependabot updates for github actions ([#3159](https://github.com/SwissDataScienceCenter/renku-ui/pull/3159))
-- build(deps): bump actions/checkout from 3 to 4 ([#3163](https://github.com/SwissDataScienceCenter/renku-ui/pull/3163))
-- build(deps): bump actions/setup-node from 3 to 4 ([#3164](https://github.com/SwissDataScienceCenter/renku-ui/pull/3164))
-- refactor: deprecate Url.js for Renku 2.0 components ([#3158](https://github.com/SwissDataScienceCenter/renku-ui/pull/3158))
-- build(deps): bump peter-evans/find-comment from 1 to 3 ([#3165](https://github.com/SwissDataScienceCenter/renku-ui/pull/3165))
-- build(deps): bump peter-evans/create-or-update-comment from 1 to 4 ([#3167](https://github.com/SwissDataScienceCenter/renku-ui/pull/3167))
-- fix: use Bootstrap icons where possible ([#3161](https://github.com/SwissDataScienceCenter/renku-ui/pull/3161))
-- chore(client): upgrade mermaid and dagre-d3 ([#3160](https://github.com/SwissDataScienceCenter/renku-ui/pull/3160))
-- refactor: move IconLink to its own file ([#3170](https://github.com/SwissDataScienceCenter/renku-ui/pull/3170), [#3171](https://github.com/SwissDataScienceCenter/renku-ui/pull/3171))
-- fix: fix project page nav in small viewports ([#3168](https://github.com/SwissDataScienceCenter/renku-ui/pull/3168), [#3169](https://github.com/SwissDataScienceCenter/renku-ui/pull/3169))
-- fix: update session buttons in Renku 2.0 ([#3172](https://github.com/SwissDataScienceCenter/renku-ui/pull/3172))
-- fix: show a full page 404 when a project is not accessible ([#3162](https://github.com/SwissDataScienceCenter/renku-ui/pull/3162))
-- build(deps): bump actions/upload-artifact from 3 to 4 ([#3166](https://github.com/SwissDataScienceCenter/renku-ui/pull/3166))
-- fix: update session badges in the project page of Renku 2.0 ([#3174](https://github.com/SwissDataScienceCenter/renku-ui/pull/3173), [#3175](https://github.com/SwissDataScienceCenter/renku-ui/pull/3175))
-- chore: remove direct jquery dependency ([#3178](https://github.com/SwissDataScienceCenter/renku-ui/pull/3178))
-- fix: redirect to group page after creation ([#3177](https://github.com/SwissDataScienceCenter/renku-ui/pull/3177))
-- chore: use lodash-es ([#3180](https://github.com/SwissDataScienceCenter/renku-ui/pull/3180))
-- Convert font-awesome icons to bootstrap icons ([#3173](https://github.com/SwissDataScienceCenter/renku-ui/pull/3173))
-- chore(client): move `verifyTitleCharacters()` to optimize bundle size ([#3181](https://github.com/SwissDataScienceCenter/renku-ui/pull/3181))
-- fix: show a full page 404 when a group is not accessible ([#3176](https://github.com/SwissDataScienceCenter/renku-ui/pull/3176))
+- adjust navigation logic to prepare migration to `react-router@v6` ([#3151](https://github.com/SwissDataScienceCenter/renku-ui/pull/3151))
+- refactor client to fix dynamic imports ([#3140](https://github.com/SwissDataScienceCenter/renku-ui/pull/3140), [#3141](https://github.com/SwissDataScienceCenter/renku-ui/pull/3141))
+- remove old reactstrap wrapper ([#3155](https://github.com/SwissDataScienceCenter/renku-ui/pull/3155))
+- show project members on the project information page ([#3143](https://github.com/SwissDataScienceCenter/renku-ui/pull/3143))
+- deprecate Url.js for Renku 2.0 components ([#3158](https://github.com/SwissDataScienceCenter/renku-ui/pull/3158))
+- fix project page nav in small viewports ([#3168](https://github.com/SwissDataScienceCenter/renku-ui/pull/3168), [#3169](https://github.com/SwissDataScienceCenter/renku-ui/pull/3169))
+- update session buttons in Renku 2.0 ([#3172](https://github.com/SwissDataScienceCenter/renku-ui/pull/3172))
+- update session badges on the project page of Renku 2.0 ([#3174](https://github.com/SwissDataScienceCenter/renku-ui/pull/3173), [#3175](https://github.com/SwissDataScienceCenter/renku-ui/pull/3175))
+- redirect to group page after creation ([#3177](https://github.com/SwissDataScienceCenter/renku-ui/pull/3177))
+- optimize bundle size ([#3181](https://github.com/SwissDataScienceCenter/renku-ui/pull/3181))
+- update dependencies ([#3180](https://github.com/SwissDataScienceCenter/renku-ui/pull/3180), [#3178](https://github.com/SwissDataScienceCenter/renku-ui/pull/3178), [#3160](https://github.com/SwissDataScienceCenter/renku-ui/pull/3160))
+- show a full page 404 when a group or project is not accessible ([#3162](https://github.com/SwissDataScienceCenter/renku-ui/pull/3162), [#3176](https://github.com/SwissDataScienceCenter/renku-ui/pull/3176), [#3153](https://github.com/SwissDataScienceCenter/renku-ui/pull/3153))
 
 ## [3.27.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.26.0...3.27.0) (2024-05-24)
 
