@@ -5,7 +5,7 @@
 ### Features
 
 - convert font-awesome icons to bootstrap icons ([#3173](https://github.com/SwissDataScienceCenter/renku-ui/pull/3173), [#3159](https://github.com/SwissDataScienceCenter/renku-ui/pull/3159), [#3161](https://github.com/SwissDataScienceCenter/renku-ui/pull/3161))
-- smprove membership maintenance UX ([#3154](https://github.com/SwissDataScienceCenter/renku-ui/pull/3154))
+- improve membership maintenance UX ([#3154](https://github.com/SwissDataScienceCenter/renku-ui/pull/3154))
 - small updates to the connected services page ([#3149](https://github.com/SwissDataScienceCenter/renku-ui/pull/3149))
 
 ### Fixes
