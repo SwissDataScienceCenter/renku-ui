@@ -244,7 +244,9 @@ export function SessionItemDisplay({
                 className={cx("bi", "me-1", "text-light-emphasis")}
                 size={16}
               />
-              <span className="text-dark" data-cy="session-status">Not Running</span>
+              <span className="text-dark" data-cy="session-status">
+                Not Running
+              </span>
             </SessionBadge>
           </SessionStatusBadgeBox>
           <SessionStatusLabelBox>
