@@ -20,7 +20,18 @@ import fixtures from "../support/renkulab-fixtures";
 
 describe("Navigate to project page", () => {
   beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .namespaces()
+      .dataServicesUser({
+        response: {
+          id: "user1-uuid",
+          email: "user1@email.com",
+        },
+      })
+      .listProjectV2Members();
     fixtures.projects().landingUserProjects().readProjectV2();
   });
 
@@ -51,9 +62,7 @@ describe("Navigate to project page", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     // add data source
-    cy.getDataCy("data-source-box").within(() => {
-      cy.getDataCy("plus-button").click();
-    });
+    cy.getDataCy("add-data-source").click();
     cy.wait("@getStorageSchema");
     cy.getDataCy("data-storage-s3").click();
     cy.getDataCy("data-provider-AWS").click();
@@ -117,9 +126,7 @@ describe("Navigate to project page", () => {
       name: "getProjectAfterUpdate",
       fixture: "projectV2/update-projectV2-one-repository.json",
     });
-    cy.getDataCy("code-repositories-box").within(() => {
-      cy.getDataCy("plus-button").click();
-    });
+    cy.getDataCy("add-repository").click();
 
     cy.getDataCy("add-existing-repository-button").click();
     cy.getDataCy("field-group-url").type("gitlab.dev.renku.ch/url-repo");
@@ -159,9 +166,7 @@ describe("Navigate to project page", () => {
     cy.wait("@getSessions");
     cy.wait("@sessionLaunchers");
     // ADD SESSION CUSTOM IMAGE
-    cy.getDataCy("sessions-box").within(() => {
-      cy.getDataCy("plus-button").click();
-    });
+    cy.getDataCy("add-session-launcher").click();
 
     fixtures.sessionLaunchers({
       fixture: "projectV2/session-launchers.json",
@@ -174,7 +179,7 @@ describe("Navigate to project page", () => {
       .type(customImage, { delay: 0 })
       .should("have.value", customImage);
     cy.get("#addSessionLauncherName").type("Session-custom");
-    cy.getDataCy("add-launcher-custom-btn").click();
+    cy.getDataCy("add-launcher-custom-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-custom");
 
@@ -182,7 +187,7 @@ describe("Navigate to project page", () => {
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("session-name").should("contain.text", "Session-custom");
       cy.getDataCy("session-status").should("contain.text", "Not Running");
-      cy.getDataCy("session-btn").should("contain.text", "Launch");
+      cy.getDataCy("start-session-button").should("contain.text", "Launch");
     });
 
     // check session launcher view and edit session launcher
@@ -194,29 +199,27 @@ describe("Navigate to project page", () => {
     cy.getDataCy("edit-session-name").clear().type("Session custom");
     cy.getDataCy("edit-session-type-custom").should("be.visible");
     cy.getDataCy("edit-session-type-existing").should("be.visible");
-    cy.getDataCy("edit-session-btn").click();
+    cy.getDataCy("edit-session-button").click();
     cy.wait("@editLauncher");
     cy.getDataCy("get-back-session-view").click();
 
     // start session
     cy.getDataCy("session-launcher-item").within(() => {
-      cy.getDataCy("session-btn").click();
+      cy.getDataCy("start-session-button").click();
     });
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
 
     cy.go("back");
 
     // ADD SESSION EXISTING ENVIRONMENT
-    cy.getDataCy("sessions-box").within(() => {
-      cy.getDataCy("plus-button").click();
-    });
+    cy.getDataCy("add-session-launcher").click();
     fixtures.sessionLaunchers({
       fixture: "projectV2/session-launchers-global.json",
       name: "session-launchers-global",
     });
     cy.getDataCy("add-existing-environment").click();
     cy.getDataCy("global-environment-item").first().click();
-    cy.getDataCy("add-session-launcher-btn").click();
+    cy.getDataCy("add-session-launcher-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-global");
 
@@ -224,7 +227,7 @@ describe("Navigate to project page", () => {
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("session-name").should("contain.text", "Jupyter Notebook");
       cy.getDataCy("session-status").should("contain.text", "Not Running");
-      cy.getDataCy("session-btn").should("contain.text", "Launch");
+      cy.getDataCy("start-session-button").should("contain.text", "Launch");
     });
   });
 });

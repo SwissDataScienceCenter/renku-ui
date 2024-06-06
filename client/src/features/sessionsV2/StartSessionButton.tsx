@@ -53,7 +53,7 @@ export default function StartSessionButton({
         "px-2"
       )}
       to={startUrl}
-      data-cy="session-btn"
+      data-cy="start-session-button"
     >
       <PlayFill className={cx("bi", "me-1")} />
       Launch

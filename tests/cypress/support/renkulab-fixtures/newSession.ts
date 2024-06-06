@@ -110,7 +110,7 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
 
     newLauncher(args?: SimpleFixture) {
       const { fixture = "", name = "newLauncher" } = args ?? {};
-      const response = { fixture, delay: 2000, statusCode: 201 };
+      const response = { fixture, statusCode: 201 };
       cy.intercept(
         "POST",
         "/ui-server/api/data/session_launchers",
@@ -121,7 +121,7 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
 
     editLauncher(args?: SimpleFixture) {
       const { fixture = "", name = "editLauncher" } = args ?? {};
-      const response = { fixture, delay: 2000, statusCode: 201 };
+      const response = { fixture, statusCode: 201 };
       cy.intercept(
         "PATCH",
         "/ui-server/api/data/session_launchers/*",

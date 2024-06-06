@@ -256,7 +256,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
 
     sessionLaunchers(args?: SimpleFixture) {
       const { fixture = "", name = "sessionLaunchers" } = args ?? {};
-      const response = { fixture, delay: 2000 };
+      const response = { fixture };
       cy.intercept(
         "GET",
         `/ui-server/api/data/projects/*/session_launchers`,

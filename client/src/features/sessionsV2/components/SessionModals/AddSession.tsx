@@ -145,7 +145,7 @@ function AddSessionCustomImageModal({
           <Button
             disabled={result.isLoading}
             type="submit"
-            data-cy="add-launcher-custom-btn"
+            data-cy="add-launcher-custom-button"
           >
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
@@ -262,7 +262,7 @@ function AddSessionExistingEnvModal({
           disabled={result.isLoading}
           type="submit"
           onClick={handleSubmit(onSubmit)}
-          data-cy="add-session-launcher-btn"
+          data-cy="add-session-launcher-button"
         >
           {result.isLoading ? (
             <>
