@@ -97,6 +97,83 @@ After installing it, go to the workspace settings, search for
 `editor.defaultFormatter` and set it to `Prettier`, then search for
 `editor.formatOnSave` and turn on "Format on save".
 
+### Commits and Pull Requests
+
+We use [Conventional Commits](https://www.conventionalcommits.org) to format our
+commit messages. This allows us to automatically generate changelogs.
+
+Please stick to the following rules to keep messages as consistent as possible:
+
+- Start the commit message with a type from the following list (taken from the
+  [Angular convention](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#type):
+  - `build`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `style`, `test`.
+- Do _not_ add any scope.
+- Write a concise description of the change starting with a verb in the present
+  tense (imperative mood).
+- Use the body of the commit message to provide more context about the change.
+  This won't be necessary for small changes/fixes or version bumps.
+- Include a footer if you wish to reference issues or include co-authors. This is
+  not required.
+- Mention breaking changes clearly by adding the following:
+  - Exclamation mark after the type.
+  - Description of the breaking change, starting with `BREAKING CHANGE:`, as
+    the last line in the body.
+    If you need a newer version of a component that has not yet been released,
+    mention the version as `[component_name] > [current_version]`. Should the final
+    version number be wrong, we can amend it in the GitHub release notes.
+- Include a reference to the PR number at the end of the description (first line).
+  If you use "squash-merge" on GitHub, this will be added automatically.
+
+Here are a couple of examples:
+
+```
+feat!: add a new feature (#1234)
+
+This is a longer description of the feature that was added.
+
+BREAKING CHANGE: this commit breaks something
+
+fix #123
+```
+
+```
+build: bump the react version to 18.1 (#2345)
+```
+
+We encourage squashing commits when merging a PR and expanding the body to include
+relevant details. This will make the commit history cleaner and easier to
+understand. You should still keep separate commits whenever it makes
+sense to do so. In that case, you can rebase the commits in the PR before merging.
+
+Please pay extra attention to following the guidelines when squash-merging a PR.
+It's easy to mess up since GitHub pre-compiles the commit message.
+
+### Releases
+
+To tag a release, please manually run the `Prepare Release` GitHub action. This action
+will create a new PR bumping the version number wherever needed in the code.
+
+We _loosely_ follow the recommendations from [Semantic Versioning](https://semver.org)
+when tagging releases. We don't expose APIs so the distinction between `major` and `minor`
+is subtle. Try to follow these rules:
+
+- If the release includes only bug fixes or minor changes (i.e. no `feat` nor `perf`
+  commits), bump the `patch` version.
+- When introducing at least one new feature or significant change to an existing
+  feature, bump the `minor` version.
+- We keep the `major` version for significant changes that overhaul big chunks of the UI,
+  like a re-design, a re-styling, or URL restructuring.
+
+Once the Release PR is merged, you can go to the
+[`Releases` section](https://github.com/SwissDataScienceCenter/renku-ui/releases) and
+click the Draft a new release" button. Manually enter a new tag matching the version
+number created by the GitHub action and fill in the release notes using the "Generate
+release notes" button.
+
+Please give it a quick read to ensure the notes are correct. If you make a bugfix
+release for a previous version, you might need to adjust the target or add/remove
+entries.
+
 ### Additional tools
 
 If you want to develop and test your changes against a real RenkuLab deployment
@@ -114,60 +191,6 @@ Kubectl and telepresence will allow you to inject code running on your developme
 | -------------------------------- | ---------------------------- |
 | [docker](https://www.docker.com) | For building containers      |
 | [helm](https://helm.sh)          | For packaging things for K8s |
-
-### Contribute
-
-#### Commit
-
-We use [Conventional Commits](https://www.conventionalcommits.org) to format our
-commit messages. This allows us to automatically generate changelogs.
-
-When you commit, please follow the guidelines. Here is an example of a commit message:
-
-```
-feat: add a new feature (#345)
-
-This is a longer description of the feature that was added.
-
-BREAKING CHANGE: this commit breaks something
-
-fix #123
-```
-
-The first line always includes the type of change (please try to use `feat` and `fix`
-correctly cause they affect release notes), a short description of the change starting
-with a verb, and the pull request number. This last part is added automatically by GitHub
-when merging a PR.
-
-All the other sections are optional, but we encourage you to add a reference to the
-issue you are fixing and to mention any breaking changes.
-
-#### Tag
-
-We loosely follow the recommendations from [Semantic Versioning](https://semver.org)
-to tag our releases. Since we don't expose APIs, the distinction between `major` and
-`minor` is not always clear, but we try to follow the guidelines when it comes to
-tagging `patch` releases.
-
-In general, you can follow this rule:
-
-- When you need to urgently fix a bug, tag a patch release creating a new
-  branch from the previous tag (E.G. if you are tagging `3.22.1`, start from `3.22.0`).
-  You can later merge the same change to `main`.
-- When there are new features, tag a minor release from the `main` branch.
-
-Before merging, please make sure to:
-
-- Bump the version in the `package.json` and `package-lock.json` files on both the
-  client and the server folders.
-- Bump the version in the helm-chart `Chart.yaml` and `values.yaml` files.
-- Update the `CHANGELOG.md` file listing all the changes since the last release. We are
-  broadly following the layout of the auto-generated GitHub release notes. The easiest
-  way to generate them is to go to the
-  [New release](https://github.com/SwissDataScienceCenter/renku-ui/releases/new) page
-  and click on the `Generate release notes` button. Please remove chores and other
-  non-user-relevant changes from the list, and separate the remaining into `Features`
-  and `Bug Fixes` sections.
 
 ## UI Client
 
