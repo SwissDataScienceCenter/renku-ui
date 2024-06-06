@@ -140,6 +140,7 @@ export function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
         if (data[key] !== project[key]) dataToSend[key] = data[key];
       }
       dataToSend.visibility = data.visibility;
+      dataToSend.keywords = data.keywords;
       updateProject({
         "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
