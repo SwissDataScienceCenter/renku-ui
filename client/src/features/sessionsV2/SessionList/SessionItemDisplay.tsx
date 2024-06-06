@@ -23,22 +23,24 @@ import {
   LayoutSidebarInsetReverse,
 } from "react-bootstrap-icons";
 import { Col, Row } from "reactstrap";
-import { TimeCaption } from "../../../components/TimeCaption.tsx";
-import { NotebookAnnotations } from "../../../notebooks/components/session.types.ts";
-import { Project } from "../../projectsV2/api/projectV2.api.ts";
-import sessionsApi from "../../session/sessions.api.ts";
-import { filterSessionsWithCleanedAnnotations } from "../../session/sessions.utils.ts";
-import { SessionView } from "../SessionView/SessionView.tsx";
-import StartSessionButton from "../StartSessionButton.tsx";
-import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton.tsx";
+
+import { TimeCaption } from "../../../components/TimeCaption";
+import { NotebookAnnotations } from "../../../notebooks/components/session.types";
+import { Project } from "../../projectsV2/api/projectV2.api";
+import sessionsApi from "../../session/sessions.api";
+import { filterSessionsWithCleanedAnnotations } from "../../session/sessions.utils";
+import { SessionView } from "../SessionView/SessionView";
+import { getShowSessionUrlByProject } from "../SessionsV2";
+import StartSessionButton from "../StartSessionButton";
+import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
   SessionBadge,
   SessionStatusV2Description,
   SessionStatusV2Label,
-} from "../components/SessionStatus/SessionStatus.tsx";
-import { SessionLauncher } from "../sessionsV2.types.ts";
+} from "../components/SessionStatus/SessionStatus";
+import { SessionLauncher } from "../sessionsV2.types";
+
 import sessionItemStyles from "./SessionItemDisplay.module.scss";
-import { getShowSessionUrlByProject } from "../SessionsV2.tsx";
 
 export function SessionNameBox({
   children,
@@ -231,8 +233,11 @@ export function SessionItemDisplay({
             <span className={cx("text-truncate")}>{name}</span>
           </SessionNameBox>
           <SessionStatusBadgeBox>
-            <SessionBadge className={"border border-dark-subtle bg-light"}>
-              <DashCircleFill className="text-light-emphasis" size={16} />
+            <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
+              <DashCircleFill
+                className={cx("bi", "me-1", "text-light-emphasis")}
+                size={16}
+              />
               <span className="text-dark">Not Running</span>
             </SessionBadge>
           </SessionStatusBadgeBox>

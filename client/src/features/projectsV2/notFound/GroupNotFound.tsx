@@ -28,65 +28,44 @@ import ContainerWrap from "../../../components/container/ContainerWrap";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
-interface ProjectNotFoundProps {
+interface GroupNotFoundProps {
   error?: FetchBaseQueryError | SerializedError | undefined | null;
 }
 
-export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
-  const {
-    id: projectId,
-    namespace,
-    slug,
-  } = useParams<{
-    id: string;
-    namespace: string;
-    slug: string;
-  }>();
+export default function GroupNotFound({ error }: GroupNotFoundProps) {
+  const { slug: groupSlug } = useParams<{ slug: string }>();
 
   const [detailsOpen, setDetailsOpen] = useState(false);
   const onClickDetails = useCallback(() => {
     setDetailsOpen((open) => !open);
   }, []);
 
-  const notFoundText =
-    namespace && slug ? (
-      <>
-        We could not find the project{" "}
-        <span className={cx("fw-bold", "user-select-all")}>
-          {namespace}
-          <span className="mx-1">{"/"}</span>
-          {slug}
-        </span>
-        .
-      </>
-    ) : projectId ? (
-      <>
-        We could not find the project with id <code>{projectId}</code>.
-      </>
-    ) : (
-      <>We could not find the requested project.</>
-    );
+  const notFoundText = groupSlug ? (
+    <>
+      We could not find the group{" "}
+      <span className={cx("fw-bold", "user-select-all")}>{groupSlug}</span>.
+    </>
+  ) : (
+    <>We could not find the requested group.</>
+  );
 
   return (
     <ContainerWrap fullSize className="container-lg">
       <Row className="mt-3">
         <Col>
           <h1>Error 404</h1>
-          <h2>Project not found</h2>
+          <h2>Group not found</h2>
 
           <p>{notFoundText}</p>
-          <p>
-            It is possible that the project has been deleted by its owner or you
-            do not have permission to access it.
-          </p>
+          <p>It is possible that the group has been deleted by its owner.</p>
 
           <div>
             <Link
-              to={ABSOLUTE_ROUTES.v2.projects.root}
+              to={ABSOLUTE_ROUTES.v2.groups.root}
               className={cx("btn", "btn-rk-green")}
             >
               <ArrowLeft className={cx("bi", "me-1")} />
-              Return to the projects list
+              Return to the groups list
             </Link>
           </div>
 

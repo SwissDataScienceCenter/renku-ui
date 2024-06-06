@@ -25,7 +25,7 @@ describe("Add new v2 group", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects();
-    fixtures.createGroupV2().readGroupV2();
+    fixtures.createGroupV2().readGroupV2({ groupSlug: slug });
     cy.visit("/v2/groups/new");
   });
 
@@ -35,7 +35,9 @@ describe("Add new v2 group", () => {
     cy.getDataCy("group-slug-input").should("have.value", slug);
     cy.contains("Create").click();
     cy.wait("@createGroupV2");
-    cy.contains("Group created").should("be.visible");
+    cy.wait("@readGroupV2");
+    cy.url().should("contain", `v2/groups/${slug}`);
+    cy.contains("test 2 group-v2").should("be.visible");
   });
 });
 
@@ -188,6 +190,6 @@ describe("Edit v2 group", () => {
       name: "listGroupV2PostDelete",
     });
     cy.contains("Group with slug test-2-group-v2 does not exist");
-    cy.contains("return to groups list").click();
+    cy.contains("Return to the groups list").click();
   });
 });

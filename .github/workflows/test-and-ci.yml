@@ -126,13 +126,13 @@ jobs:
           wait-on: http://localhost:3000/
           wait-on-timeout: 300
           working-directory: tests
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure() # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
         with:
           name: cypress-screenshots
           path: tests/cypress/screenshots
           retention-days: 7
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always() # Cypress test video is always captured, so this action uses "always()" condition
         with:
           name: cypress-videos

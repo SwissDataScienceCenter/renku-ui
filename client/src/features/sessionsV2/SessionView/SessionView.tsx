@@ -37,31 +37,30 @@ import {
   OffcanvasBody,
   Row,
 } from "reactstrap";
-import { TimeCaption } from "../../../components/TimeCaption.tsx";
-import ButtonStyles from "../../../components/buttons/Buttons.module.scss";
-import { CommandCopy } from "../../../components/commandCopy/CommandCopy.tsx";
-import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils.ts";
-import { Project } from "../../projectsV2/api/projectV2.api.ts";
-import { SessionRowResourceRequests } from "../../session/components/SessionsList.tsx";
-import { Session, Sessions } from "../../session/sessions.types.ts";
-import {
-  getShowSessionUrlByProject,
-  SessionV2Actions,
-} from "../SessionsV2.tsx";
-import StartSessionButton from "../StartSessionButton.tsx";
-import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal.tsx";
-import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton.tsx";
+
+import { TimeCaption } from "../../../components/TimeCaption";
+import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
+import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
+import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
+import { Project } from "../../projectsV2/api/projectV2.api";
+import { useGetStoragesV2Query } from "../../projectsV2/api/storagesV2.api";
+import { SessionRowResourceRequests } from "../../session/components/SessionsList";
+import { Session, Sessions } from "../../session/sessions.types";
+import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
+import StartSessionButton from "../StartSessionButton";
+import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
+import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
   SessionBadge,
   SessionStatusV2Description,
   SessionStatusV2Label,
   SessionStatusV2Title,
-} from "../components/SessionStatus/SessionStatus.tsx";
-import sessionsV2Api from "../sessionsV2.api.ts";
-import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types.ts";
+} from "../components/SessionStatus/SessionStatus";
+import sessionsV2Api from "../sessionsV2.api";
+import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
+
+import buttonStyles from "../../../components/buttons/Buttons.module.scss";
 import sessionViewStyles from "./SessionView.module.scss";
-import { useGetStoragesV2Query } from "../../projectsV2/api/storagesV2.api.ts";
-import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay.tsx";
 
 function SessionCard({
   session,
@@ -142,8 +141,11 @@ function SessionCardNotRunning({
               "py-2"
             )}
           >
-            <SessionBadge className={"border border-dark-subtle bg-light"}>
-              <DashCircleFill className="text-light-emphasis" size={16} />
+            <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
+              <DashCircleFill
+                className={cx("bi", "me-1", "text-light-emphasis")}
+                size={16}
+              />
               <span className="text-dark">Not Running</span>
             </SessionBadge>
           </Col>
@@ -231,7 +233,7 @@ function EnvironmentCard({
                     "bg-transparent",
                     "shadow-none",
                     "border-0",
-                    ButtonStyles.EditButton
+                    buttonStyles.EditButton
                   )}
                   onClick={toggle}
                 >

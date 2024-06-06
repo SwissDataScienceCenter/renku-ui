@@ -25,7 +25,7 @@
 
 import { Component } from "react";
 import { connect } from "react-redux";
-import { groupBy } from "lodash";
+import { groupBy } from "lodash-es";
 
 import Present from "./Project.present";
 import { ProjectCoordinator, MigrationStatus } from "./Project.state";
