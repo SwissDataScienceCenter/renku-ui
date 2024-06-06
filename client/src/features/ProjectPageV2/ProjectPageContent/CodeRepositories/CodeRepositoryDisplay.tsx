@@ -428,9 +428,7 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
   ];
 
   const buttonContent = isLoading ? (
-    <>
-      <Loader className="bi" inline size={16} />
-    </>
+    <Loader className="bi" inline size={16} />
   ) : permissions.pull && permissions.push ? (
     <CheckCircleFill className="bi" />
   ) : permissions.pull ? (
