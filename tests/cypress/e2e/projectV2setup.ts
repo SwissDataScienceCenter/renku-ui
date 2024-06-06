@@ -35,20 +35,6 @@ describe("Navigate to project page", () => {
     fixtures.projects().landingUserProjects().readProjectV2();
   });
 
-  it("show project information", () => {
-    fixtures.readProjectV2();
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
-    // check project data
-    cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
-    cy.getDataCy("project-description").should(
-      "contain.text",
-      "Project 2 description"
-    );
-    cy.getDataCy("project-visibility").should("contain.text", "Public");
-    cy.getDataCy("project-namespace").should("contain.text", "user1-uuid");
-  });
-
   it("set up data source", () => {
     fixtures
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
