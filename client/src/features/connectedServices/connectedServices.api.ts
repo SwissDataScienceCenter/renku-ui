@@ -30,13 +30,7 @@ const connectedServicesApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "/ui-server/api/data/oauth2",
   }),
-  tagTypes: [
-    "Provider",
-    "Connection",
-    "ConnectedAccount",
-    "Repository",
-    "RepositoryProbe",
-  ],
+  tagTypes: ["Provider", "Connection", "ConnectedAccount"],
   endpoints: (builder) => ({
     getProviders: builder.query<ProviderList, void>({
       query: () => {
