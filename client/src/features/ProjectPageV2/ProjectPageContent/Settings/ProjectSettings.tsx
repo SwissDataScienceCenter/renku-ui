@@ -49,9 +49,7 @@ import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 
-const projectMetadataStringKeys = ["description", "name", "namespace"] as const;
-
-export function notificationProjectUpdated(
+function notificationProjectUpdated(
   notifications: NotificationsManager,
   projectName: string
 ) {
@@ -103,7 +101,7 @@ function ProjectReadOnlyVisibilityField({
   );
 }
 
-export function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
+function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
   const { userRole } = useProjectAccess({ projectId: project.id });
   const {
     control,
@@ -135,15 +133,10 @@ export function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
   const onSubmit = useCallback(
     (data: ProjectV2Metadata) => {
       if (data.namespace !== project.namespace) setRedirectAfterUpdate(true);
-      const dataToSend: ProjectV2Metadata = {};
-      for (const key of projectMetadataStringKeys) {
-        if (data[key] !== project[key]) dataToSend[key] = data[key];
-      }
-      dataToSend.visibility = data.visibility;
       updateProject({
         "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
-        projectPatch: dataToSend,
+        projectPatch: data,
       });
     },
     [project, updateProject]
