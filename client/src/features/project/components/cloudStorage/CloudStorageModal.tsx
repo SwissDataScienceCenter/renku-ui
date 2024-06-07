@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
+import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -71,6 +71,7 @@ import {
   CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
+  CloudStorageSchema,
   TestCloudStorageConnectionParams,
   UpdateCloudStorageParams,
 } from "./projectCloudStorage.types";
@@ -84,6 +85,106 @@ import {
   usePostStoragesV2Mutation,
 } from "../../../projectsV2/api/storagesV2.api.ts";
 import styles from "./CloudStorage.module.scss";
+import { SerializedError } from "@reduxjs/toolkit";
+
+interface AddCloudStorageBodyContentProps
+  extends AddCloudStorageHeaderContentProps {
+  addResultStorageName: string | undefined;
+  redraw: boolean;
+  schema: CloudStorageSchema[] | undefined;
+  schemaError: FetchBaseQueryError | SerializedError | undefined;
+  schemaIsFetching: boolean;
+  setStateSafe: (newState: Partial<AddCloudStorageState>) => void;
+  setStorageDetailsSafe: (
+    newStorageDetails: Partial<CloudStorageDetails>
+  ) => void;
+  state: AddCloudStorageState;
+  storageDetails: CloudStorageDetails;
+  success: boolean;
+}
+function AddCloudStorageBodyContent({
+  addResultStorageName,
+  isV2,
+  redraw,
+  schema,
+  schemaError,
+  schemaIsFetching,
+  setStateSafe,
+  setStorageDetailsSafe,
+  state,
+  storageDetails,
+  storageId,
+  success,
+}: AddCloudStorageBodyContentProps) {
+  if (redraw) return <Loader />;
+  if (success)
+    return (
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p className="p-0">
+          The storage {addResultStorageName} has been successfully{" "}
+          {storageId ? "updated" : "added"}.
+        </p>
+      </SuccessAlert>
+    );
+  if (schemaIsFetching || !schema) return <Loader />;
+  if (schemaError) return <RtkOrNotebooksError error={schemaError} />;
+  if (!isV2) {
+    return (
+      <AddOrEditCloudStorage
+        schema={schema}
+        setState={setStateSafe}
+        setStorage={setStorageDetailsSafe}
+        state={state}
+        storage={storageDetails}
+      />
+    );
+  }
+  return (
+    <>
+      {!storageId && (
+        <p>
+          Add published datasets from data repositories for use in your project.
+          Or, connect to cloud storage to read and write custom data.
+        </p>
+      )}
+      <AddOrEditCloudStorageV2
+        schema={schema}
+        setState={setStateSafe}
+        setStorage={setStorageDetailsSafe}
+        state={state}
+        storage={storageDetails}
+        isV2={isV2}
+      />
+    </>
+  );
+}
+
+interface AddCloudStorageHeaderContentProps {
+  isV2: boolean;
+  storageId: string | null;
+}
+function AddCloudStorageHeaderContent({
+  storageId,
+  isV2,
+}: AddCloudStorageHeaderContentProps) {
+  if (isV2)
+    return (
+      <>
+        <Database className={cx("bi", "me-2")} />
+        <span className="text-uppercase">
+          {" "}
+          {storageId ? "Edit" : "Add"} data source{" "}
+        </span>
+      </>
+    );
+  return (
+    <>
+      <CloudFill className={cx("bi", "me-2")} />
+      {storageId ? "Edit" : "Add"} Cloud Storage
+    </>
+  );
+}
+
 interface CloudStorageModalProps {
   currentStorage?: CloudStorage | CloudStorageGetRead | null;
   isOpen: boolean;
@@ -557,50 +658,6 @@ export default function CloudStorageModal({
       </div>
     ) : null;
 
-  const description = isV2 && !storageId && (
-    <p>
-      Add published datasets from data repositories for use in your project. Or,
-      connect to cloud storage to read and write custom data.
-    </p>
-  );
-
-  const bodyContent = redraw ? (
-    <Loader />
-  ) : success ? (
-    <SuccessAlert dismissible={false} timeout={0}>
-      <p className="p-0">
-        The storage {addResultStorageName} has been succesfully{" "}
-        {storageId ? "updated" : "added"}.
-      </p>
-    </SuccessAlert>
-  ) : schemaIsFetching || !schema ? (
-    <Loader />
-  ) : schemaError ? (
-    <RtkOrNotebooksError error={schemaError} />
-  ) : (
-    <>
-      {description}
-      {isV2 ? (
-        <AddOrEditCloudStorageV2
-          schema={schema}
-          setState={setStateSafe}
-          setStorage={setStorageDetailsSafe}
-          state={state}
-          storage={storageDetails}
-          isV2={isV2}
-        />
-      ) : (
-        <AddOrEditCloudStorage
-          schema={schema}
-          setState={setStateSafe}
-          setStorage={setStorageDetailsSafe}
-          state={state}
-          storage={storageDetails}
-        />
-      )}
-    </>
-  );
-
   return (
     <Modal
       backdrop="static"
@@ -616,27 +673,27 @@ export default function CloudStorageModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle} data-cy="cloud-storage-edit-header">
-        {isV2 ? (
-          <>
-            <Database className={cx("bi", "me-2")} />
-            <span className="text-uppercase">
-              {" "}
-              {storageId ? "Edit" : "Add"} data source{" "}
-            </span>
-          </>
-        ) : (
-          <>
-            <CloudFill className={cx("bi", "me-2")} />
-            {storageId ? "Edit" : "Add"} Cloud Storage
-          </>
-        )}
+        <AddCloudStorageHeaderContent isV2={isV2} storageId={storageId} />
       </ModalHeader>
 
       <ModalBody
         data-cy="cloud-storage-edit-body"
         className={isV2 ? "pt-0" : ""}
       >
-        {bodyContent}
+        <AddCloudStorageBodyContent
+          addResultStorageName={addResultStorageName}
+          isV2={isV2}
+          redraw={redraw}
+          schema={schema}
+          schemaError={schemaError}
+          schemaIsFetching={schemaIsFetching}
+          setStateSafe={setStateSafe}
+          setStorageDetailsSafe={setStorageDetailsSafe}
+          state={state}
+          storageDetails={storageDetails}
+          storageId={storageId}
+          success={success}
+        />
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="cloud-storage-edit-footer">
