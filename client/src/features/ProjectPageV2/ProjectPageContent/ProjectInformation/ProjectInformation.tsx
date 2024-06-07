@@ -122,8 +122,8 @@ export default function ProjectInformation() {
   const totalMembers = members?.length ?? 0;
   const totalKeywords = project.keywords?.length || 0;
   const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
-    namespace: project.namespace,
-    slug: project.slug,
+    namespace: project.namespace ?? "",
+    slug: project.slug ?? "",
   });
   const membersUrl = `${settingsUrl}#members`;
 

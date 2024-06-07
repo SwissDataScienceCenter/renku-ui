@@ -153,8 +153,8 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
     project.id ? { projectId: project.id } : skipToken
   );
   const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
-    namespace: project.namespace,
-    slug: project.slug,
+    namespace: project.namespace ?? "",
+    slug: project.slug ?? "",
   });
 
   const addSessionBtn =
