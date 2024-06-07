@@ -159,7 +159,13 @@ function CodeRepositoryDeleteModal({
       projectId: project.id,
       projectPatch: { repositories },
     });
-  }, []);
+  }, [
+    project.etag,
+    project.id,
+    project.repositories,
+    repositoryUrl,
+    updateProject,
+  ]);
 
   useEffect(() => {
     if (result.isSuccess) {
