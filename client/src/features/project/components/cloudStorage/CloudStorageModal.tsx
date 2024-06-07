@@ -231,7 +231,7 @@ export default function CloudStorageModal({
     [storageDetails, validateResult]
   );
 
-  const validateConnection = () => {
+  const validateConnection = useCallback(() => {
     const validateParameters: TestCloudStorageConnectionParams = {
       configuration: {
         type: storageDetails.schema,
@@ -255,7 +255,7 @@ export default function CloudStorageModal({
     }
 
     validateCloudStorageConnection(validateParameters);
-  };
+  }, [storageDetails, validateCloudStorageConnection]);
 
   const addOrEditStorage = useCallback(() => {
     storageDetails.options;
@@ -429,17 +429,6 @@ export default function CloudStorageModal({
   const continueButton = success ? null : state.step === 3 &&
     state.completedSteps >= 2 ? (
     <div id={`${addButtonId}-div`} className="d-inline-block">
-      <TestConnectionAndContinueButtons
-        actionState={setStateSafe}
-        actionTest={validateConnection}
-        continueId="add-cloud-storage-continue"
-        resetTest={validateResult.reset}
-        step={state.step}
-        testId="test-cloud-storage"
-        testIsFailure={validateResult.isError}
-        testIsOngoing={validateResult.isLoading}
-        testIsSuccess={validateResult.isSuccess}
-      />
       <Button
         data-cy="cloud-storage-edit-update-button"
         id={`${addButtonId}-button`}
@@ -463,6 +452,17 @@ export default function CloudStorageModal({
     </div>
   ) : (
     <div id={`${continueButtonId}-div`} className="d-inline-block">
+      <TestConnectionAndContinueButtons
+        actionState={setStateSafe}
+        actionTest={validateConnection}
+        continueId="add-cloud-storage-continue"
+        resetTest={validateResult.reset}
+        step={state.step}
+        testId="test-cloud-storage"
+        testIsFailure={validateResult.isError}
+        testIsOngoing={validateResult.isLoading}
+        testIsSuccess={validateResult.isSuccess}
+      />
       <Button
         id={`${continueButtonId}-button`}
         data-cy="cloud-storage-edit-next-button"
