@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Badge,
   Button,
@@ -144,8 +144,10 @@ function AddCodeRepositoryStep2Modal({
   isOpen,
 }: AddCodeRepositoryModalProps) {
   const [repositoryUrl, setRepositoryUrl] = useState("");
-  const [updateProject, { isLoading }] = usePatchProjectsByProjectIdMutation();
-  const onAddCodeRepository = (url: string) => {
+
+  const [updateProject, result] = usePatchProjectsByProjectIdMutation();
+
+  const onAddCodeRepository = useCallback((url: string) => {
     if (!url) return;
     const repositories = project?.repositories?.length
       ? [...project.repositories]
@@ -155,13 +157,15 @@ function AddCodeRepositoryStep2Modal({
       "If-Match": project.etag ? project.etag : "",
       projectId: project.id,
       projectPatch: { repositories },
-    })
-      .unwrap()
-      .then(() => {
-        toggleModal();
-        setRepositoryUrl("");
-      });
-  };
+    });
+  }, []);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      toggleModal();
+      setRepositoryUrl("");
+    }
+  }, []);
 
   return (
     <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
@@ -191,7 +195,7 @@ function AddCodeRepositoryStep2Modal({
             type="submit"
             onClick={() => onAddCodeRepository(repositoryUrl)}
           >
-            {isLoading ? (
+            {result.isLoading ? (
               <>
                 <Loader className="me-2" inline size={16} />
                 Adding code repository

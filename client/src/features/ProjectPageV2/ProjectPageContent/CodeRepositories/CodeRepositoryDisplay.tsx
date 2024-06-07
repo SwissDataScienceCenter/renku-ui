@@ -45,6 +45,7 @@ import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
 import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -147,8 +148,9 @@ function CodeRepositoryDeleteModal({
   toggleModal,
   isOpen,
 }: CodeRepositoryDeleteModalProps) {
-  const [updateProject, { isLoading }] = usePatchProjectsByProjectIdMutation();
-  const onDeleteCodeRepository = () => {
+  const [updateProject, result] = usePatchProjectsByProjectIdMutation();
+
+  const onDeleteCodeRepository = useCallback(() => {
     const repositories = project?.repositories
       ? project?.repositories?.filter((repo) => repo !== repositoryUrl)
       : [];
@@ -156,10 +158,20 @@ function CodeRepositoryDeleteModal({
       "If-Match": project.etag ? project.etag : "",
       projectId: project.id,
       projectPatch: { repositories },
-    })
-      .unwrap()
-      .then(() => toggleModal());
-  };
+    });
+  }, []);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      toggleModal();
+    }
+  }, [result.isSuccess, toggleModal]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      result.reset();
+    }
+  }, [isOpen, result]);
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
@@ -169,6 +181,7 @@ function CodeRepositoryDeleteModal({
       <ModalBody className="py-0">
         <Row>
           <Col>
+            {result.error && <RtkOrNotebooksError error={result.error} />}
             <p>
               Are you sure about removing this code repository from the project?
             </p>
@@ -191,7 +204,7 @@ function CodeRepositoryDeleteModal({
             type="submit"
             onClick={onDeleteCodeRepository}
           >
-            {isLoading ? (
+            {result.isLoading ? (
               <>
                 <Loader className="me-2" inline size={16} />
                 Deleting code repository
