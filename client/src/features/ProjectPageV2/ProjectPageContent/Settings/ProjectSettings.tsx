@@ -132,7 +132,8 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
 
   const onSubmit = useCallback(
     (data: ProjectV2Metadata) => {
-      if (data.namespace !== project.namespace) setRedirectAfterUpdate(true);
+      const namespaceChanged = data.namespace !== project.namespace;
+      setRedirectAfterUpdate(namespaceChanged);
       updateProject({
         "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
