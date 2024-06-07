@@ -596,3 +596,103 @@ describe("Viewer cannot edit project", () => {
     cy.getDataCy("add-repository").should("not.exist");
   });
 });
+
+describe("launch sessions with cloud storage", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "user1-uuid",
+          email: "user1@email.com",
+        },
+      })
+      .namespaces();
+    fixtures
+      .projects()
+      .landingUserProjects()
+      .listProjectV2()
+      .readProjectV2()
+      .listProjectV2Members();
+    fixtures
+      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .postCloudStorage({
+        name: "postCloudStorageV2",
+        fixture: "cloudStorage/new-cloud-storage_v2.json",
+      })
+      .cloudStorage({ name: "getCloudStorageV2", isV2: true })
+      .deleteCloudStorage({ name: "deleteCloudStorageV2", isV2: true })
+      .sessionLaunchers()
+      .newLauncher()
+      .environments();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+  });
+
+  it("set up data source with credentials", () => {
+    cy.intercept("/ui-server/api/notebooks/servers*", {
+      body: { servers: {} },
+    }).as("getSessions");
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getSessions");
+    cy.wait("@sessionLaunchers");
+
+    // add data source
+    cy.getDataCy("add-data-source").click();
+    cy.wait("@getStorageSchema");
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
+    cy.getDataCy("cloud-storage-edit-next-button").click();
+    cy.get("#sourcePath").type("giab");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("cloud-storage-edit-next-button").click();
+    cy.getDataCy("cloud-storage-edit-mount").within(() => {
+      cy.get("#name").type("giab");
+    });
+    cy.getDataCy("cloud-storage-edit-update-button").click();
+    cy.wait("@postCloudStorageV2");
+    cy.getDataCy("cloud-storage-edit-body").should(
+      "contain.text",
+      "The storage example-storage has been succesfully added."
+    );
+    cy.getDataCy("cloud-storage-edit-close-button").click();
+    cy.wait("@getCloudStorageV2");
+    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
+
+    // ADD SESSION CUSTOM IMAGE
+    cy.getDataCy("add-session-launcher").click();
+
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers.json",
+      name: "session-launchers-custom",
+    });
+    const customImage = "renku/renkulab-py:latest";
+    cy.getDataCy("add-custom-image").click();
+    cy.getDataCy("custom-image-input")
+      .clear()
+      .type(customImage, { delay: 0 })
+      .should("have.value", customImage);
+    cy.get("#addSessionLauncherName").type("Session-custom");
+    cy.getDataCy("add-launcher-custom-button").click();
+    cy.wait("@newLauncher");
+    cy.wait("@session-launchers-custom");
+
+    // check session values
+    cy.getDataCy("session-launcher-item").within(() => {
+      cy.getDataCy("session-name").should("contain.text", "Session-custom");
+      cy.getDataCy("session-status").should("contain.text", "Not Running");
+      cy.getDataCy("start-session-button").should("contain.text", "Launch");
+    });
+
+    // start session
+    cy.getDataCy("session-launcher-item").within(() => {
+      cy.getDataCy("start-session-button").click();
+    });
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+  });
+});
