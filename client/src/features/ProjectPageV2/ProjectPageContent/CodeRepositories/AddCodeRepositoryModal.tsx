@@ -33,13 +33,15 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { Loader } from "../../../../components/Loader.tsx";
+
+import { Loader } from "../../../../components/Loader";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import BootstrapGitLabIcon from "../../../../components/icons/BootstrapGitLabIcon";
+import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
+import { Project } from "../../../projectsV2/api/projectV2.api";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+
 import stylesButton from "../../../../components/buttons/Buttons.module.scss";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert.tsx";
-import BootstrapGitLabIcon from "../../../../components/icons/BootstrapGitLabIcon.tsx";
-import RenkuFrogIcon from "../../../../components/icons/RenkuIcon.tsx";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 import styles from "../ProjectOverview/ProjectOverview.module.scss";
 
 interface AddCodeRepositoryModalProps {
