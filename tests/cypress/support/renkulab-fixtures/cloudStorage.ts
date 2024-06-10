@@ -27,6 +27,10 @@ interface CloudStorageArgs extends SimpleFixture {
   isV2?: boolean;
 }
 
+interface TestCloudStorageArgs extends SimpleFixture {
+  success?: boolean;
+}
+
 export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
   return class CloudStorageFixtures extends Parent {
     cloudStorage(args?: CloudStorageArgs) {
@@ -115,6 +119,28 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
         isV2
           ? "/ui-server/api/data/storages_v2/*"
           : "/ui-server/api/data/storage/*",
+        response
+      ).as(name);
+      return this;
+    }
+
+    testCloudStorage(args?: TestCloudStorageArgs) {
+      const { name = "testCloudStorage", success = true } = args ?? {};
+      const response = success
+        ? { statusCode: 200 }
+        : {
+            statusCode: 422,
+            body: {
+              error: {
+                code: 1422,
+                message:
+                  "2024/06/11 09:39:07 ERROR : : error listing: InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.\n\tstatus code: 403, request id: P58392SAB, host id: Epk3482=\n2024/06/11 09:39:07 Failed to lsf with 2 errors: last error was: error in ListJSON: InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.\n\tstatus code: 403, request id: P58392SAB, host id: Epk3482=\n",
+              },
+            },
+          };
+      cy.intercept(
+        "POST",
+        "/ui-server/api/data/storage_schema/test_connection",
         response
       ).as(name);
       return this;

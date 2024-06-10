@@ -624,7 +624,6 @@ describe("launch sessions with cloud storage", () => {
         fixture: "cloudStorage/new-cloud-storage_v2.json",
       })
       .cloudStorage({ name: "getCloudStorageV2", isV2: true })
-      .deleteCloudStorage({ name: "deleteCloudStorageV2", isV2: true })
       .sessionLaunchers()
       .newLauncher()
       .environments();
@@ -632,10 +631,15 @@ describe("launch sessions with cloud storage", () => {
     cy.wait("@readProjectV2");
   });
 
-  it("set up data source with credentials", () => {
+  it("launch session with data source requiring credentials", () => {
+    fixtures.testCloudStorage();
     cy.intercept("/ui-server/api/notebooks/servers*", {
       body: { servers: {} },
     }).as("getSessions");
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers.json",
+      name: "session-launchers-custom",
+    });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessions");
@@ -650,7 +654,8 @@ describe("launch sessions with cloud storage", () => {
     cy.get("#sourcePath").type("giab");
     cy.get("#access_key_id").type("access key");
     cy.get("#secret_access_key").type("secret key");
-    cy.getDataCy("cloud-storage-edit-next-button").click();
+    cy.getDataCy("test-cloud-storage-button").click();
+    cy.getDataCy("add-cloud-storage-continue-button").click();
     cy.getDataCy("cloud-storage-edit-mount").within(() => {
       cy.get("#name").type("giab");
     });
@@ -658,7 +663,7 @@ describe("launch sessions with cloud storage", () => {
     cy.wait("@postCloudStorageV2");
     cy.getDataCy("cloud-storage-edit-body").should(
       "contain.text",
-      "The storage example-storage has been succesfully added."
+      "The storage example-storage has been successfully added."
     );
     cy.getDataCy("cloud-storage-edit-close-button").click();
     cy.wait("@getCloudStorageV2");
@@ -666,11 +671,6 @@ describe("launch sessions with cloud storage", () => {
 
     // ADD SESSION CUSTOM IMAGE
     cy.getDataCy("add-session-launcher").click();
-
-    fixtures.sessionLaunchers({
-      fixture: "projectV2/session-launchers.json",
-      name: "session-launchers-custom",
-    });
     const customImage = "renku/renkulab-py:latest";
     cy.getDataCy("add-custom-image").click();
     cy.getDataCy("custom-image-input")
