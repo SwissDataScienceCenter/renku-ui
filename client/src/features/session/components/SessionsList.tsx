@@ -313,8 +313,15 @@ function SessionRowProject({ annotations }: SessionRowProjectProps) {
   );
 }
 
+export interface SessionLauncherResources {
+  name?: string;
+  cpu: number;
+  memory: number;
+  gpu: number;
+  storage: number;
+}
 interface SessionRowResourceRequestsProps {
-  resourceRequests: Session["resources"]["requests"];
+  resourceRequests: Session["resources"]["requests"] | SessionLauncherResources;
 }
 
 export function SessionRowResourceRequests({
@@ -327,12 +334,13 @@ export function SessionRowResourceRequests({
   if (entries.length == 0) {
     return null;
   }
+
   return (
     <>
       {entries.map(([key, value], index) => (
         <span key={key} className="text-nowrap">
           <span className="fw-bold">{value} </span>
-          {key}
+          {key !== "name" && key}
           {entries.length - 1 === index ? " " : " | "}
         </span>
       ))}

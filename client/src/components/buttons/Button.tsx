@@ -30,6 +30,7 @@ import { Fragment, ReactNode, useRef, useState } from "react";
 import {
   ArrowRight,
   ChevronDown,
+  PencilFill,
   PencilSquare,
   PlusLg,
 } from "react-bootstrap-icons";
@@ -341,7 +342,7 @@ function EditButtonLink({
           <PencilSquare />
         ) : (
           <Link className="text-decoration-none" data-cy={dataCy} to={to}>
-            <PencilSquare />
+            <PencilFill size={20} />
           </Link>
         )}
       </span>

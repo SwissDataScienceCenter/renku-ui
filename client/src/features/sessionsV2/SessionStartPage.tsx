@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   generatePath,
   useNavigate,
@@ -35,7 +35,10 @@ import ProgressStepsIndicator, {
 } from "../../components/progress/ProgressSteps";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
+import {
+  useGetResourceClassByIdQuery,
+  useGetResourcePoolsQuery,
+} from "../dataServices/dataServices.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api.ts";
@@ -52,6 +55,17 @@ import {
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { XLg } from "react-bootstrap-icons";
+import { Loader } from "../../components/Loader.tsx";
+import { ResourceClass } from "../dataServices/dataServices.types.ts";
+import { SingleValue } from "react-select";
+import { ErrorAlert } from "../../components/Alert.jsx";
+import { SessionClassSelector } from "../session/components/options/SessionClassOption.tsx";
+import {
+  SessionLauncherResources,
+  SessionRowResourceRequests,
+} from "../session/components/SessionsList.tsx";
 
 export default function SessionStartPage() {
   const { launcherId, namespace, slug } = useParams<
@@ -118,16 +132,37 @@ function StartSessionFromLauncher({
   const navigate = useNavigate();
 
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
+  const [modalPendingInformation, setModalPendingInformation] =
+    useState<boolean>(false);
+  const [currentSessionClass, setCurrentSessionClass] =
+    useState<ResourceClass>();
 
   const { data: environments } = useGetSessionEnvironmentsQuery(
     environment_kind === "global_environment" ? undefined : skipToken
   );
+  const { data: launcherClass, isLoading: isLoadingLauncherClass } =
+    useGetResourceClassByIdQuery(launcher?.resource_class_id ?? skipToken);
   const environment = useMemo(
     () =>
       launcher.environment_kind === "global_environment" &&
       environments?.find((env) => env.id === launcher.environment_id),
     [environments, launcher]
   );
+
+  const cancelLaunchSession = () => {
+    const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+      namespace: project.namespace,
+      slug: project.slug,
+    });
+    navigate(url);
+  };
+
+  const onReadyPendingInformation = (envClass: ResourceClass) => {
+    if (envClass) {
+      setCurrentSessionClass(envClass);
+    }
+  };
+
   const {
     data: storages,
     isFetching: isFetchingStorages,
@@ -163,24 +198,6 @@ function StartSessionFromLauncher({
     );
   const { data: resourcePools } = useGetResourcePoolsQuery({});
 
-  const defaultSessionClass = useMemo(
-    () =>
-      resourcePools
-        ?.filter((pool) => pool.default)
-        .flatMap((pool) => pool.classes)
-        .find((c) => c.default) ??
-      resourcePools?.find(() => true)?.classes[0] ??
-      null,
-    [resourcePools]
-  );
-  const currentSessionClass = useMemo(
-    () =>
-      resourcePools
-        ?.flatMap(({ classes }) => classes)
-        .find((c) => c.id === startSessionOptionsV2.sessionClass) ?? null,
-    [resourcePools, startSessionOptionsV2.sessionClass]
-  );
-
   const dispatch = useAppDispatch();
 
   const [
@@ -195,6 +212,15 @@ function StartSessionFromLauncher({
     };
   }, [dispatch]);
 
+  // set manual session class
+  useEffect(() => {
+    if (currentSessionClass)
+      dispatch(
+        startSessionOptionsV2Slice.actions.setSessionClass(
+          currentSessionClass?.id
+        )
+      );
+  }, [currentSessionClass, dispatch]);
   // Set the default URL
   useEffect(() => {
     const defaultUrl = default_url
@@ -236,29 +262,29 @@ function StartSessionFromLauncher({
 
   // Select default session class
   useEffect(() => {
-    if (resourcePools == null) {
+    if (resourcePools == null || isLoadingLauncherClass) {
       return;
     }
+    const initialSessionClass = resourcePools
+      ?.flatMap((pool) => pool.classes)
+      .find((c) => c.id == launcherClass?.id && c.matching);
 
-    const initialSessionClassId =
-      resourcePools
-        ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == defaultSessionClass?.id && c.matching)?.id ??
-      resourcePools
-        ?.filter((pool) => pool.default)
-        .flatMap((pool) => pool.classes)
-        .find((c) => c.matching)?.id ??
-      0;
-
-    if (initialSessionClassId == 0) {
+    if (!initialSessionClass && !currentSessionClass) {
+      setModalPendingInformation(true);
+      return;
+    }
+    if (initialSessionClass?.id == 0) {
       // TODO: propagate error
       return;
     }
 
-    dispatch(
-      startSessionOptionsV2Slice.actions.setSessionClass(initialSessionClassId)
-    );
-  }, [defaultSessionClass?.id, dispatch, resourcePools]);
+    if (initialSessionClass) setCurrentSessionClass(initialSessionClass);
+  }, [
+    resourcePools,
+    currentSessionClass,
+    launcherClass,
+    isLoadingLauncherClass,
+  ]);
 
   // Select default storage
   useEffect(() => {
@@ -270,6 +296,7 @@ function StartSessionFromLauncher({
         currentSessionClass.default_storage
       )
     );
+    setModalPendingInformation(false);
   }, [currentSessionClass, dispatch]);
 
   // Request session
@@ -279,7 +306,8 @@ function StartSessionFromLauncher({
       resourcePools == null ||
       startSessionOptionsV2.sessionClass == 0 ||
       isLoadingStorages ||
-      isFetchingStorages
+      isFetchingStorages ||
+      !currentSessionClass
     ) {
       return;
     }
@@ -288,11 +316,7 @@ function StartSessionFromLauncher({
       projectId: project.id,
       launcherId: launcher.id,
       repositories: startSessionOptionsV2.repositories,
-      cloudStorage:
-        storages?.map(
-          // (storage) => storage.storage as unknown as SessionCloudStorage
-          (storage) => storage.storage
-        ) || [],
+      cloudStorage: storages?.map((storage) => storage.storage) || [],
       defaultUrl: startSessionOptionsV2.defaultUrl,
       environmentVariables: {},
       image: containerImage,
@@ -310,6 +334,7 @@ function StartSessionFromLauncher({
     startSession,
     startSessionOptionsV2,
     storages,
+    currentSessionClass,
   ]);
 
   // Navigate to the session page when it is ready
@@ -366,6 +391,16 @@ function StartSessionFromLauncher({
     ]);
   }, [error, isLoadingStartSession, resourcePools, startSessionOptionsV2]);
 
+  // TODO: evaluate if user find useful see the resources of the launcher class
+  const requiredValues: SessionLauncherResources | undefined =
+    launcherClass && {
+      name: launcherClass.name,
+      cpu: launcherClass.cpu,
+      memory: launcherClass.memory,
+      gpu: launcherClass.gpu,
+      storage: launcherClass.max_storage,
+    };
+
   return (
     <div>
       {error && <RtkErrorAlert error={error} dismissible={false} />}
@@ -378,7 +413,115 @@ function StartSessionFromLauncher({
           title={`Starting session ${launcher.name}`}
           status={steps}
         />
+        <PendingSessionDataModal
+          isOpen={modalPendingInformation}
+          onCancel={cancelLaunchSession}
+          requiredValues={requiredValues}
+          onContinue={onReadyPendingInformation}
+        />
       </div>
     </div>
+  );
+}
+
+interface PendingSessionDataModalProps {
+  isOpen: boolean;
+  onContinue: (env: ResourceClass) => void;
+  onCancel: () => void;
+  requiredValues?: SessionLauncherResources;
+}
+function PendingSessionDataModal({
+  isOpen,
+  onContinue,
+  onCancel,
+  requiredValues,
+}: PendingSessionDataModalProps) {
+  const {
+    data: resourcePools,
+    isLoading,
+    isError,
+  } = useGetResourcePoolsQuery({});
+
+  const [currentSessionClass, setCurrentSessionClass] = useState<
+    ResourceClass | undefined
+  >(undefined);
+
+  const onChange = useCallback((newValue: SingleValue<ResourceClass>) => {
+    if (newValue) {
+      setCurrentSessionClass(newValue);
+    }
+  }, []);
+
+  const onClick = useCallback(() => {
+    if (currentSessionClass) {
+      onContinue(currentSessionClass);
+    }
+  }, [currentSessionClass, onContinue]);
+
+  const selector = isLoading ? (
+    <div className="form-label">
+      <Loader className="me-1" inline size={16} />
+      Fetching available resource pools...
+    </div>
+  ) : !resourcePools || resourcePools.length == 0 || isError ? (
+    <ErrorAlert dismissible={false}>
+      <h3 className={cx("fs-6", "fw-bold")}>
+        Error on loading available session resource pools
+      </h3>
+      <p className="mb-0">
+        Modifying the session is not possible at the moment. You can try to{" "}
+        <a
+          className={cx("btn", "btn-sm", "btn-primary", "mx-1")}
+          href={window.location.href}
+          onClick={() => window.location.reload()}
+        >
+          reload the page
+        </a>
+        .
+      </p>
+    </ErrorAlert>
+  ) : (
+    <SessionClassSelector
+      resourcePools={resourcePools}
+      currentSessionClass={currentSessionClass}
+      onChange={onChange}
+    />
+  );
+
+  return (
+    <Modal centered isOpen={isOpen} size="lg">
+      <ModalHeader className={cx("fw-bold")}>
+        Pending data to launch session
+      </ModalHeader>
+      <ModalBody className="pt-0">
+        <p className={cx("mb-0", "pb-3")}>
+          You do not have access to the resource pool class assigned to this
+          session launcher. Please select one of your available resource pool
+          classes to continue.
+        </p>
+        {currentSessionClass && (
+          <p>
+            <span className="fw-bold me-3">Original requested resources:</span>
+            <span>
+              <SessionRowResourceRequests resourceRequests={requiredValues} />
+            </span>
+          </p>
+        )}
+        <div className="field-group">{selector}</div>
+      </ModalBody>
+      <ModalFooter className="pt-0">
+        <Button className="ms-2 btn-outline-rk-green" onClick={onCancel}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel launch
+        </Button>
+        <Button
+          className="ms-2 btn-rk-green"
+          disabled={!currentSessionClass}
+          onClick={onClick}
+        >
+          Continue
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 }

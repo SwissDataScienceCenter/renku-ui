@@ -17,14 +17,18 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { ResourcePool, ResourcePoolsQueryParams } from "./dataServices.types";
+import {
+  ResourceClass,
+  ResourcePool,
+  ResourcePoolsQueryParams,
+} from "./dataServices.types";
 
 export const dataServicesApi = createApi({
   reducerPath: "dataServices",
   baseQuery: fetchBaseQuery({
     baseUrl: "/ui-server/api/data",
   }),
-  tagTypes: ["ResourcePool"],
+  tagTypes: ["ResourcePool", "Classes"],
   endpoints: (builder) => ({
     getResourcePools: builder.query<ResourcePool[], ResourcePoolsQueryParams>({
       query: ({ cpuRequest, gpuRequest, memoryRequest, storageRequest }) => {
@@ -41,9 +45,18 @@ export const dataServicesApi = createApi({
       },
       providesTags: ["ResourcePool"],
     }),
+    getResourceClassById: builder.query<ResourceClass, number>({
+      query: (classId) => {
+        return {
+          url: `classes/${classId}`,
+        };
+      },
+      providesTags: ["Classes"],
+    }),
   }),
 });
 
 export default dataServicesApi;
 
-export const { useGetResourcePoolsQuery } = dataServicesApi;
+export const { useGetResourcePoolsQuery, useGetResourceClassByIdQuery } =
+  dataServicesApi;

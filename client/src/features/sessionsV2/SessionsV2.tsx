@@ -20,9 +20,9 @@ import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
   LayoutSidebarInsetReverse,
-  PencilSquare,
+  PencilFill,
   ThreeDotsVertical,
-  Trash,
+  Trash3Fill,
 } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import {
@@ -310,13 +310,10 @@ export function SessionV2Actions({
         </DropdownToggle>
         <DropdownMenu className="btn-with-menu-options" end>
           <DropdownItem onClick={toggleUpdate} data-cy="session-view-menu-edit">
-            <PencilSquare /> Edit Launcher
+            <PencilFill className={cx("bi", "me-1")} /> Edit launcher
           </DropdownItem>
-          <DropdownItem
-            onClick={toggleDelete}
-            data-cy="session-view-menu-delete"
-          >
-            <Trash /> Delete Launcher
+          <DropdownItem onClick={toggleDelete} data-cy="session-view-menu-delete">
+            <Trash3Fill className={cx("bi", "me-1")} /> Delete launcher
           </DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>

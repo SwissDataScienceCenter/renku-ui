@@ -26,8 +26,7 @@ import {
   FileEarmarkText,
   PlayFill,
   Tools,
-  Trash,
-  TrashFill,
+  Trash3Fill,
   XLg,
 } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom-v5-compat";
@@ -313,7 +312,7 @@ export default function ActiveSessionButton({
             <SessionPausedIcon size={16} />
           </span>
         ) : (
-          <TrashFill className={cx("bi", "me-1")} />
+          <Trash3Fill className={cx("bi", "me-1")} />
         )}
         {logged ? "Pause" : "Delete"}
       </Button>
@@ -339,7 +338,7 @@ export default function ActiveSessionButton({
       data-cy="delete-session-button"
       onClick={logged ? toggleStopSession : onStopSession}
     >
-      <Trash className={cx("bi", "me-1")} />
+      <Trash3Fill className={cx("bi", "me-1")} />
       Delete session
     </DropdownItem>
   );
@@ -353,7 +352,7 @@ export default function ActiveSessionButton({
         onClick={toggleModifySession}
       >
         <Tools className={cx("bi", "me-1")} />
-        Modify session
+        Modify resources
       </DropdownItem>
     );
 
@@ -475,7 +474,7 @@ function ConfirmDeleteModal({
           type="submit"
           onClick={onClick}
         >
-          <Trash className={cx("bi", "me-1")} /> Delete this session
+          <Trash3Fill className={cx("bi", "me-1")} /> Delete this session
         </Button>
       </ModalFooter>
     </Modal>
@@ -507,7 +506,7 @@ function ModifySessionModal({
       size="lg"
       toggle={toggleModal}
     >
-      <ModalHeader toggle={toggleModal}>Modify Session</ModalHeader>
+      <ModalHeader toggle={toggleModal}>Modify Session Resources</ModalHeader>
       <ModifySessionModalContent
         annotations={annotations}
         onModifySession={onModifySession}

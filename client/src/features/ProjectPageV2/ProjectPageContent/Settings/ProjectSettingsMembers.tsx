@@ -19,7 +19,7 @@
 import cx from "classnames";
 import type { ReactNode } from "react";
 import React, { useCallback, useState, useRef } from "react";
-import { PeopleFill, PencilSquare, Trash } from "react-bootstrap-icons";
+import { PencilFill, PeopleFill, Trash3Fill } from "react-bootstrap-icons";
 import {
   Button,
   Col,
@@ -71,7 +71,7 @@ function MemberActionMenu({
       data-cy={`project-member-edit-${index}`}
       onClick={onEdit}
     >
-      <PencilSquare className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Edit
+      <PencilFill className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Edit
     </Button>
   );
   return (
@@ -85,7 +85,8 @@ function MemberActionMenu({
           isPrincipal
         >
           <DropdownItem onClick={onRemove}>
-            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+            <Trash3Fill className={cx("rk-icon", "rk-icon-sm", "me-2")} />{" "}
+            Remove
           </DropdownItem>
         </ButtonWithMenu>
       </span>
@@ -126,7 +127,8 @@ function ProjectMemberAction({
             data-cy={`project-member-remove-${index}`}
             onClick={onRemove}
           >
-            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+            <Trash3Fill className={cx("rk-icon", "rk-icon-sm", "me-2")} />{" "}
+            Remove
           </Button>
         ),
         enabled:

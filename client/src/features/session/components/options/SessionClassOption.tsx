@@ -451,6 +451,7 @@ function AskForComputeResources() {
 }
 
 interface SessionClassSelectorProps {
+  id?: string;
   resourcePools: ResourcePool[];
   currentSessionClass?: ResourceClass | undefined;
   defaultSessionClass?: ResourceClass | undefined;
@@ -459,6 +460,7 @@ interface SessionClassSelectorProps {
 }
 
 export const SessionClassSelector = ({
+  id,
   resourcePools,
   currentSessionClass,
   defaultSessionClass,
@@ -478,6 +480,7 @@ export const SessionClassSelector = ({
   return (
     <div data-cy="session-class-select">
       <Select
+        id={id}
         classNames={selectClassNames}
         components={selectComponents}
         defaultValue={defaultSessionClass}
@@ -600,7 +603,7 @@ interface OptionOrSingleValueContentProps {
   sessionClass: ResourceClass;
 }
 
-const OptionOrSingleValueContent = ({
+export const OptionOrSingleValueContent = ({
   sessionClass,
 }: OptionOrSingleValueContentProps) => {
   const labelClassName = cx(

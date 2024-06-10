@@ -26,7 +26,7 @@ import {
   Database,
   Globe2,
   Link45deg,
-  PencilSquare,
+  PencilFill,
 } from "react-bootstrap-icons";
 import {
   Button,
@@ -61,7 +61,8 @@ import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
 
 import buttonStyles from "../../../components/buttons/Buttons.module.scss";
 import sessionViewStyles from "./SessionView.module.scss";
-
+import { useGetResourcePoolsQuery } from "../../dataServices/dataServices.api.ts";
+import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher.tsx";
 function SessionCard({
   session,
   project,
@@ -110,7 +111,7 @@ function SessionCard({
           <Col xs={12} className={cx("d-flex", "align-items-center", "py-2")}>
             <SessionStatusV2Description session={session} />
           </Col>
-          <Col xs={12} className={cx("d-flex", "align-items-center", "py-2")}>
+          <Col xs={12} className={cx("py-2")}>
             <SessionRowResourceRequests
               resourceRequests={session.resources.requests}
             />
@@ -202,10 +203,6 @@ function EnvironmentCard({
   launcher: SessionLauncher;
   environment?: SessionEnvironment;
 }) {
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const toggle = useCallback(() => {
-    setIsUpdateOpen((open) => !open);
-  }, []);
   return (
     <>
       <Card className={cx("border", sessionViewStyles.EnvironmentCard)}>
@@ -220,25 +217,25 @@ function EnvironmentCard({
                 "py-2"
               )}
             >
-              <h5 className="fw-bold mb-0">
-                <small>
-                  {launcher.environment_kind === "global_environment"
-                    ? environment?.name || ""
-                    : launcher.name}
-                </small>
-              </h5>
-              <div>
-                <Button
-                  className={cx(
-                    "bg-transparent",
-                    "shadow-none",
-                    "border-0",
-                    buttonStyles.EditButton
-                  )}
-                  onClick={toggle}
-                >
-                  <PencilSquare size={22} />
-                </Button>
+              <div className="d-flex gap-3">
+                <h5 className="fw-bold mb-0">
+                  <small>
+                    {launcher.environment_kind === "global_environment"
+                      ? environment?.name || ""
+                      : launcher.name}
+                  </small>
+                </h5>
+                {/*<Button*/}
+                {/*  className={cx(*/}
+                {/*    "bg-transparent",*/}
+                {/*    "shadow-none",*/}
+                {/*    "border-0",*/}
+                {/*    buttonStyles.EditButton*/}
+                {/*  )}*/}
+                {/*  onClick={toggle}*/}
+                {/*>*/}
+                {/*  <PencilFill size={20} />*/}
+                {/*</Button>*/}
               </div>
             </Col>
             <Col
@@ -328,11 +325,6 @@ function EnvironmentCard({
           </Row>
         </CardBody>
       </Card>
-      <UpdateSessionLauncherModal
-        isOpen={isUpdateOpen}
-        launcher={launcher}
-        toggle={toggle}
-      />
     </>
   );
 }
@@ -350,6 +342,14 @@ export function SessionView({
   toggleSessionView,
   project,
 }: SessionViewProps) {
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsUpdateOpen((open) => !open);
+  }, []);
+  const toggleModifyResources = useCallback(() => {
+    setModifyResourcesOpen((open) => !open);
+  }, []);
   const { data: environments, isLoading } =
     sessionsV2Api.endpoints.getSessionEnvironments.useQueryState(
       launcher && launcher.environment_kind === "global_environment"
@@ -368,6 +368,8 @@ export function SessionView({
     projectId: project.id,
   });
 
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+
   const totalSession = sessions ? Object.keys(sessions).length : 0;
   const title = launcher ? launcher.name : "Orphan Session";
   const launcherMenu = launcher && (
@@ -384,6 +386,14 @@ export function SessionView({
     : sessions && Object.keys(sessions).length > 0
     ? Object.keys(sessions)[0]
     : "nn";
+
+  const launcherResourceClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == launcher?.resource_class_id),
+    [launcher, resourcePools]
+  );
 
   return (
     <Offcanvas
@@ -437,8 +447,61 @@ export function SessionView({
         )}
         {launcher && !isLoading && (
           <>
-            <h5 className={cx("mt-5", "fw-bold")}>Session Environment</h5>
+            <div className="mt-5 d-flex gap-2 align-items-center mb-3">
+              <h5 className={cx("fw-bold", "mb-0")}>Session Environment</h5>
+              <Button
+                className={cx(
+                  "bg-transparent",
+                  "shadow-none",
+                  "border-0",
+                  "px-1",
+                  buttonStyles.EditButton
+                )}
+                onClick={toggle}
+              >
+                <PencilFill size={20} />
+              </Button>
+            </div>
             <EnvironmentCard launcher={launcher} environment={environment} />
+            <UpdateSessionLauncherModal
+              isOpen={isUpdateOpen}
+              launcher={launcher}
+              toggle={toggle}
+            />
+          </>
+        )}
+        {launcher && launcherResourceClass && (
+          <>
+            <div className="mt-5 d-flex gap-2 align-items-center mb-3">
+              <h5 className={cx("fw-bold", "mb-0")}>Assigned Resources</h5>
+              <Button
+                className={cx(
+                  "bg-transparent",
+                  "shadow-none",
+                  "border-0",
+                  "px-1",
+                  buttonStyles.EditButton
+                )}
+                onClick={toggleModifyResources}
+              >
+                <PencilFill size={20} />
+              </Button>
+            </div>
+            <SessionRowResourceRequests
+              resourceRequests={{
+                name: launcherResourceClass.name,
+                cpu: launcherResourceClass.cpu,
+                memory: `${launcherResourceClass.memory}G`,
+                storage: `${launcherResourceClass.max_storage}G`,
+                gpu: launcherResourceClass.gpu,
+              }}
+            />
+            <ModifyResourcesLauncherModal
+              isOpen={isModifyResourcesOpen}
+              toggleModal={toggleModifyResources}
+              resourceClassId={launcherResourceClass.id}
+              sessionLauncherId={launcher?.id}
+            />
           </>
         )}
         <h5 className={cx("mt-5", "fw-bold")}>Session Launcher Details</h5>

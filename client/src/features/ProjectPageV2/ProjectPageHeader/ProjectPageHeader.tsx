@@ -20,9 +20,9 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import {
   Binoculars,
-  PencilSquare,
+  PencilFill,
   ThreeDotsVertical,
-  Trash,
+  Trash3Fill,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import {
@@ -105,7 +105,7 @@ function ProjectActions({ project, settingsUrl }: ProjectActionsProps) {
                   )}
                   to={settingsUrl}
                 >
-                  <PencilSquare /> Edit project information
+                  <PencilFill /> Edit project information
                 </Link>
               </DropdownItem>
             }
@@ -124,7 +124,7 @@ function ProjectActions({ project, settingsUrl }: ProjectActionsProps) {
                 )}
                 onClick={toggleDelete}
               >
-                <Trash /> Delete this project
+                <Trash3Fill /> Delete this project
               </DropdownItem>
             }
             role={userRole}

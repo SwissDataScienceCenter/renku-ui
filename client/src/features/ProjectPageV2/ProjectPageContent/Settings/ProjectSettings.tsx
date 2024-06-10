@@ -17,7 +17,6 @@
  */
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Pencil } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   generatePath,
@@ -48,6 +47,7 @@ import useProjectAccess from "../../utils/useProjectAccess.hook";
 
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
+import { PencilFill } from "react-bootstrap-icons";
 
 function notificationProjectUpdated(
   notifications: NotificationsManager,
@@ -233,7 +233,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
             {isUpdating ? (
               <Loader className="me-1" inline size={16} />
             ) : (
-              <Pencil size={16} className={cx("bi", "me-1")} />
+              <PencilFill size={20} className={cx("bi", "me-1")} />
             )}
             Update project
           </Button>
