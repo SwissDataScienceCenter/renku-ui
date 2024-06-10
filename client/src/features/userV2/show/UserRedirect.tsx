@@ -16,10 +16,43 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
+
+import { Loader } from "../../../components/Loader";
+import ContainerWrap from "../../../components/container/ContainerWrap";
+import LazyNotFound from "../../../not-found/LazyNotFound";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import UserNotFound from "../../projectsV2/notFound/UserNotFound";
+import { useGetUserQuery } from "../../user/dataServicesUser.api";
+
 export default function UserRedirect() {
-  return (
-    <div>
-      <p>TODO: User redirect page</p>
-    </div>
+  const isUserLoggedIn = useLegacySelector(
+    (state) => state.stateModel.user.logged
   );
+
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useGetUserQuery(isUserLoggedIn ? undefined : skipToken);
+
+  if (!isUserLoggedIn) {
+    return <LazyNotFound />;
+  }
+
+  if (isLoading) {
+    return <Loader className="align-self-center" />;
+  }
+
+  if (user) {
+    return (
+      <ContainerWrap>
+        <p>
+          TODO: Handle redirect for {user.first_name} {user.last_name}.
+        </p>
+      </ContainerWrap>
+    );
+  }
+
+  return <UserNotFound error={error} />;
 }
