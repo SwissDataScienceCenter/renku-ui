@@ -158,7 +158,7 @@ function AddCodeRepositoryStep2Modal({
   const [updateProject, result] = usePatchProjectsByProjectIdMutation();
   const onSubmit = useCallback(
     (data: AddCodeRepositoryForm) => {
-      const repositories = project?.repositories?.length
+      const repositories = project.repositories?.length
         ? [...project.repositories]
         : [];
       repositories.push(data.repositoryUrl);
@@ -211,9 +211,8 @@ function AddCodeRepositoryStep2Modal({
                         errors.repositoryUrl && "is-invalid"
                       )}
                       id={`project-${project.id}-add-repository-url`}
-                      aria-describedby={`project-${project.id}-add-repository-url-help`}
                       type="text"
-                      placeholder="https://github.com/my-repository"
+                      placeholder="https://github.com/my-org/my-repository.git"
                       {...field}
                     />
                   )}
