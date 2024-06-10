@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "3.28.1",
+  "version": "3.29.0",
   "private": true,
   "scripts": {
     "start": "vite --port 3000",
