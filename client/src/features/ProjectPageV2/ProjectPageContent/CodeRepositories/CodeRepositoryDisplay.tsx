@@ -139,6 +139,7 @@ function EditCodeRepositoryModal({
                         errors.repositoryUrl && "is-invalid"
                       )}
                       id={`project-${project.id}-edit-repository-url`}
+                      data-cy="project-edit-repository-url"
                       type="text"
                       placeholder="https://github.com/my-org/my-repository.git"
                       {...field}

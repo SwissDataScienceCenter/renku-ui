@@ -211,6 +211,7 @@ function AddCodeRepositoryStep2Modal({
                         errors.repositoryUrl && "is-invalid"
                       )}
                       id={`project-${project.id}-add-repository-url`}
+                      data-cy="project-add-repository-url"
                       type="text"
                       placeholder="https://github.com/my-org/my-repository.git"
                       {...field}
