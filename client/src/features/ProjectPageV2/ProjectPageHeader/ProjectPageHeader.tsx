@@ -40,10 +40,10 @@ import {
 } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { ProjectDeleteConfirmation } from "../../projectsV2/show/ProjectV2EditForm";
 import AddSessionLauncherButton from "../../sessionsV2/AddSessionLauncherButton";
 import { useGetProjectSessionLaunchersQuery } from "../../sessionsV2/sessionsV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
+import ProjectDeleteConfirmation from "../settings/ProjectDeleteConfirmation";
 import AccessGuard from "../utils/AccessGuard";
 import useProjectAccess from "../utils/useProjectAccess.hook";
 
