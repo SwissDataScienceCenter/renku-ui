@@ -328,8 +328,7 @@ function AddCloudStorageContinueButton({
           });
         }}
       >
-        <ChevronRight className={cx("bi", "me-1")} />
-        Next
+        Next <ChevronRight className={cx("bi", "me-1")} />
       </Button>
       {disableContinueButton && (
         <UncontrolledTooltip placement="top" target={`${continueButtonId}-div`}>
@@ -828,7 +827,7 @@ function TestConnectionAndContinueButtons({
       </>
     ) : (
       <>
-        <ChevronRight className={cx("bi", "me-1")} /> Test connection
+        Test connection <ChevronRight className={cx("bi", "me-1")} />
       </>
     );
   const testConnectionColorClass = testIsSuccess
@@ -859,7 +858,7 @@ function TestConnectionAndContinueButtons({
     </>
   ) : testIsFailure ? (
     <>
-      Continue anyway <XLg className="bi" />
+      Continue anyway <ChevronRight className="bi" />
     </>
   ) : null;
   const continueColorClass = testIsSuccess
