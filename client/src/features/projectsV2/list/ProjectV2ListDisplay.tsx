@@ -38,11 +38,13 @@ const DEFAULT_PER_PAGE = 10;
 const DEFAULT_PAGE_PARAM = "page";
 
 interface ProjectListDisplayProps {
+  namespace?: string;
   pageParam?: string;
   perPage?: number;
 }
 
 export default function ProjectListDisplay({
+  namespace: ns,
   pageParam: pageParam_,
   perPage: perPage_,
 }: ProjectListDisplayProps) {
@@ -84,6 +86,7 @@ export default function ProjectListDisplay({
   }, [pageParam, searchParams]);
 
   const { data, error, isLoading } = useGetProjectsQuery({
+    namespace: ns,
     page,
     perPage,
   });
@@ -102,7 +105,7 @@ export default function ProjectListDisplay({
         { replace: true }
       );
     }
-  }, [data?.totalPages, onPageChange, page]);
+  }, [data?.totalPages, page, pageParam, setSearchParams]);
 
   if (isLoading)
     return (
@@ -157,7 +160,9 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
     >
       <div className={cx("card", "card-entity", "p-3")}>
         <h3>
-          <Link to={projectUrl}>{project.name}</Link>
+          <Link className="stretched-link" to={projectUrl}>
+            {project.name}
+          </Link>
         </h3>
         <div className="mb-2 fw-light">{project.namespace}/</div>
         <div className="mb-2">{project.description}</div>

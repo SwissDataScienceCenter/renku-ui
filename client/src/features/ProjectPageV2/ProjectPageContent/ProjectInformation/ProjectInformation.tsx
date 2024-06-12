@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { generatePath } from "react-router-dom-v5-compat";
+import { Link, generatePath } from "react-router-dom-v5-compat";
 
 import { TimeCaption } from "../../../../components/TimeCaption";
 import {
@@ -31,6 +31,7 @@ import type {
   ProjectMemberResponse,
 } from "../../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+import { useGetUsersByUserIdQuery } from "../../../user/dataServicesUser.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import MembershipGuard from "../../utils/MembershipGuard";
 import { toSortedMembers } from "../../utils/roleUtils";
@@ -56,6 +57,8 @@ function ProjectInformationMember({
 }: {
   member: ProjectMemberResponse;
 }) {
+  const { data: memberData } = useGetUsersByUserIdQuery({ userId: member.id });
+
   const displayName =
     member.first_name && member.last_name
       ? `${member.first_name} ${member.last_name}`
@@ -64,6 +67,20 @@ function ProjectInformationMember({
       : member.email
       ? member.email
       : member.id;
+
+  if (memberData?.username) {
+    return (
+      <div className={cx("fw-bold", "mb-1")}>
+        <Link
+          to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+            username: memberData.username,
+          })}
+        >
+          {displayName}
+        </Link>
+      </div>
+    );
+  }
 
   return <div className={cx("fw-bold", "mb-1")}>{displayName}</div>;
 }

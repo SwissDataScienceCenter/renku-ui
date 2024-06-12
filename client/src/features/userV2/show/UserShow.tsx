@@ -29,6 +29,7 @@ import ContainerWrap from "../../../components/container/ContainerWrap";
 import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { useGetNamespacesByGroupSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 
 export default function UserShow() {
@@ -71,9 +72,10 @@ export default function UserShow() {
       <h1>{name ?? "Unknown user"}</h1>
       <p className="fs-4">{`@${username}`}</p>
 
-      <div>
-        <p>TODO: Project list</p>
-      </div>
+      <section>
+        <h2 className="fs-4">Personal Projects</h2>
+        <ProjectV2ListDisplay namespace={username} pageParam="projects_page" />
+      </section>
     </ContainerWrap>
   );
 }

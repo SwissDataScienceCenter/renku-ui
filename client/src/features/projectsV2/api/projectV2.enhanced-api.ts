@@ -91,7 +91,11 @@ const injectedApi = api.injectEndpoints({
     getProjectsPaged: builder.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: "/projects",
-        params: { page: queryArg.page, per_page: queryArg.perPage },
+        params: {
+          namespace: queryArg["namespace"],
+          page: queryArg.page,
+          per_page: queryArg.perPage,
+        },
       }),
       transformResponse: (response, meta, queryArg) => {
         const projects = response as ProjectsList;
