@@ -43,7 +43,10 @@ export default function UserRedirect() {
   useEffect(() => {
     if (user?.username) {
       navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.users.show, { username: user.username })
+        generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+          username: user.username,
+        }),
+        { replace: true }
       );
     }
   }, [navigate, user?.username]);
