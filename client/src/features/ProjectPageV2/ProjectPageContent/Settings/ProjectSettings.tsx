@@ -24,7 +24,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom-v5-compat";
-import { Button, Input, Form, Label } from "reactstrap";
+import { Button, Form, Input, Label } from "reactstrap";
 
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
@@ -32,6 +32,7 @@ import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import KeywordsInput from "../../../../components/form-field/KeywordsInput";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../../notifications/notifications.types";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import AppContext from "../../../../utils/context/appContext";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
@@ -39,17 +40,16 @@ import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescr
 import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
-import { ProjectV2Metadata } from "../../../projectsV2/show/ProjectV2EditForm";
 
+import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
+import type { ProjectV2Metadata } from "../../settings/projectSettings.types";
 import AccessGuard from "../../utils/AccessGuard";
 import useProjectAccess from "../../utils/useProjectAccess.hook";
 
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
-import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 
-export function notificationProjectUpdated(
+function notificationProjectUpdated(
   notifications: NotificationsManager,
   projectName: string
 ) {
@@ -101,7 +101,7 @@ function ProjectReadOnlyVisibilityField({
   );
 }
 
-export function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
+function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
   const { userRole } = useProjectAccess({ projectId: project.id });
   const {
     control,
@@ -132,7 +132,6 @@ export function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
 
   const onSubmit = useCallback(
     (data: ProjectV2Metadata) => {
-      // Check for namespace change to handle redirection
       const namespaceChanged = data.namespace !== project.namespace;
       setRedirectAfterUpdate(namespaceChanged);
       updateProject({
