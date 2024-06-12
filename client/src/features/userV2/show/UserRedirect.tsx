@@ -17,15 +17,19 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useEffect } from "react";
+import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 
 import { Loader } from "../../../components/Loader";
-import ContainerWrap from "../../../components/container/ContainerWrap";
 import LazyNotFound from "../../../not-found/LazyNotFound";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import { useGetUserQuery } from "../../user/dataServicesUser.api";
 
 export default function UserRedirect() {
+  const navigate = useNavigate();
+
   const isUserLoggedIn = useLegacySelector(
     (state) => state.stateModel.user.logged
   );
@@ -36,22 +40,20 @@ export default function UserRedirect() {
     error,
   } = useGetUserQuery(isUserLoggedIn ? undefined : skipToken);
 
+  useEffect(() => {
+    if (user?.username) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.users.show, { username: user.username })
+      );
+    }
+  }, [navigate, user?.username]);
+
   if (!isUserLoggedIn) {
     return <LazyNotFound />;
   }
 
   if (isLoading) {
     return <Loader className="align-self-center" />;
-  }
-
-  if (user) {
-    return (
-      <ContainerWrap>
-        <p>
-          TODO: Handle redirect for {user.first_name} {user.last_name}.
-        </p>
-      </ContainerWrap>
-    );
   }
 
   return <UserNotFound error={error} />;
