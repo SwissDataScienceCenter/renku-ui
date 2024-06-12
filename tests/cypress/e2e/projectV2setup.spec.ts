@@ -115,7 +115,9 @@ describe("Navigate to project page", () => {
     cy.getDataCy("add-repository").click();
 
     cy.getDataCy("add-existing-repository-button").click();
-    cy.getDataCy("field-group-url").type("gitlab.dev.renku.ch/url-repo");
+    cy.getDataCy("project-add-repository-url").type(
+      "gitlab.dev.renku.ch/url-repo"
+    );
     cy.getDataCy("add-code-repository-modal-button").click();
 
     cy.wait("@updateProjectV2");
@@ -126,7 +128,7 @@ describe("Navigate to project page", () => {
 
     // edit code repository
     cy.getDataCy("code-repository-edit").click();
-    cy.getDataCy("field-group-url").type("2");
+    cy.getDataCy("project-edit-repository-url").type("2");
     cy.getDataCy("edit-code-repository-modal-button").click();
     cy.wait("@updateProjectV2");
 
