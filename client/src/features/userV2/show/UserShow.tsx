@@ -123,7 +123,7 @@ function ItsYouBadge({ username }: ItsYouBadgeProps) {
         )}
         pill
       >
-        It's you!
+        It&apos;s you!
       </Badge>
     );
   }
