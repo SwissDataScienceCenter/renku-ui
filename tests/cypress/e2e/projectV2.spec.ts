@@ -596,3 +596,141 @@ describe("Viewer cannot edit project", () => {
     cy.getDataCy("add-repository").should("not.exist");
   });
 });
+
+describe("launch sessions with cloud storage", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "user1-uuid",
+          email: "user1@email.com",
+        },
+      })
+      .namespaces();
+    fixtures
+      .projects()
+      .landingUserProjects()
+      .listProjectV2()
+      .readProjectV2()
+      .listProjectV2Members();
+    fixtures
+      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .sessionLaunchers()
+      .newLauncher()
+      .environments();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+  });
+
+  it("launch session with public data source", () => {
+    fixtures
+      .testCloudStorage()
+      .sessionServersEmpty()
+      .sessionImage()
+      .resourcePoolsTest()
+      .cloudStorage({
+        isV2: true,
+        fixture: "cloudStorage/cloud-storage.json",
+        name: "getCloudStorageV2",
+      });
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers.json",
+      name: "session-launchers-custom",
+    });
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getSessionServers");
+    cy.wait("@sessionLaunchers");
+
+    // ensure the data source is there
+    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
+    cy.getDataCy("data-storage-name").click();
+    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
+    cy.getDataCy("requires-credentials-section")
+      .contains("No")
+      .should("be.visible");
+    cy.getDataCy("data-source-view-back-button").click();
+
+    // ensure the session launcher is there
+    cy.getDataCy("session-launcher-item").within(() => {
+      cy.getDataCy("session-name").should("contain.text", "Session-custom");
+      cy.getDataCy("session-status").should("contain.text", "Not Running");
+      cy.getDataCy("start-session-button").should("contain.text", "Launch");
+    });
+
+    // start session
+    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
+        const csConfig = req.body.cloudstorage;
+        expect(csConfig.length).equal(1);
+        req.reply({ body: sessions[0] });
+      }).as("createSession");
+    });
+    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item").within(() => {
+      cy.getDataCy("start-session-button").click();
+    });
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+  });
+
+  it("launch session with data source requiring credentials", () => {
+    fixtures
+      .testCloudStorage()
+      .sessionServersEmpty()
+      .sessionImage()
+      .resourcePoolsTest()
+      .cloudStorage({
+        isV2: true,
+        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        name: "getCloudStorageV2",
+      });
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers.json",
+      name: "session-launchers-custom",
+    });
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getSessionServers");
+    cy.wait("@sessionLaunchers");
+
+    // ensure the data source is there
+    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
+    cy.getDataCy("data-storage-name").click();
+    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
+    cy.getDataCy("requires-credentials-section")
+      .contains("Yes")
+      .should("be.visible");
+    cy.getDataCy("data-source-view-back-button").click();
+
+    // ensure the session launcher is there
+    cy.getDataCy("session-launcher-item").within(() => {
+      cy.getDataCy("session-name").should("contain.text", "Session-custom");
+      cy.getDataCy("session-status").should("contain.text", "Not Running");
+      cy.getDataCy("start-session-button").should("contain.text", "Launch");
+    });
+
+    // start session
+    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
+        const csConfig = req.body.cloudstorage;
+        expect(csConfig.length).equal(1);
+        req.reply({ body: sessions[0] });
+      }).as("createSession");
+    });
+    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item").within(() => {
+      cy.getDataCy("start-session-button").click();
+    });
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+  });
+});
