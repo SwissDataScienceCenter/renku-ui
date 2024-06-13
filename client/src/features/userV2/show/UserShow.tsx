@@ -35,6 +35,8 @@ import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import { useGetUserQuery } from "../../user/dataServicesUser.api";
 
+import styles from "./UserShow.module.scss";
+
 export default function UserShow() {
   const { username } = useParams<{ username: string }>();
 
@@ -72,12 +74,28 @@ export default function UserShow() {
 
   return (
     <ContainerWrap>
-      <div className={cx("d-flex", "align-items-start", "h1")}>
-        <h1 className={cx("mb-0")}>{name ?? "Unknown user"}</h1>
-        <UserBadge />
-        <ItsYouBadge username={username} />
+      <div className={cx("d-flex", "flex-column", "flex-sm-row")}>
+        <UserAvatar username={username} />
+        <div>
+          <div
+            className={cx(
+              "d-flex",
+              "flex-row",
+              "flex-wrap",
+              "flex-sm-nowrap",
+              "align-items-start",
+              "h1"
+            )}
+          >
+            <h1 className={cx("mb-0", "me-4")}>{name ?? "Unknown user"}</h1>
+            <div>
+              <UserBadge />
+              <ItsYouBadge username={username} />
+            </div>
+          </div>
+          <p className="fs-4">{`@${username}`}</p>
+        </div>
       </div>
-      <p className="fs-4">{`@${username}`}</p>
 
       <section>
         <h2 className="fs-4">Personal Projects</h2>
@@ -87,11 +105,37 @@ export default function UserShow() {
   );
 }
 
+interface UserAvatarProps {
+  username: string;
+}
+
+function UserAvatar({ username }: UserAvatarProps) {
+  const firstLetters = username.slice(0, 2).toUpperCase();
+
+  return (
+    <div className={cx("mb-1", "me-3")}>
+      <div
+        className={cx(
+          "border",
+          "border-info-subtle",
+          "rounded-circle",
+          "bg-info-subtle",
+          "text-center",
+          "align-content-center",
+          "fw-bold",
+          styles.avatar
+        )}
+      >
+        {firstLetters}
+      </div>
+    </div>
+  );
+}
+
 function UserBadge() {
   return (
     <Badge
       className={cx(
-        "ms-4",
         "border",
         "border-success",
         "bg-success-subtle",

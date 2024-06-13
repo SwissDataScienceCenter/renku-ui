@@ -1,0 +1,19 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.avatar {
+  --size: 48px;
+  --font-size: 18px;
+
+  height: var(--size);
+  width: var(--size);
+  font-size: var(--font-size);
+
+  @include media-breakpoint-up(sm) {
+    --size: 64px;
+    --font-size: 28px;
+  }
+}
