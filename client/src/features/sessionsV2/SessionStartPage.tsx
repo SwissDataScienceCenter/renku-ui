@@ -43,57 +43,6 @@ import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionLauncherState from "./useSessionLaunchState";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
 
-export default function SessionStartPage() {
-  const { launcherId, namespace, slug } = useParams<
-    "launcherId" | "namespace" | "slug"
-  >();
-  const {
-    data: project,
-    isLoading: isLoadingProject,
-    error: projectError,
-  } = useGetProjectsByNamespaceAndSlugQuery(
-    namespace && slug ? { namespace, slug } : skipToken
-  );
-  const projectId = project?.id ?? "";
-
-  const {
-    data: launchers,
-    isLoading: isLoadingLaunchers,
-    error: launchersError,
-  } = useGetProjectSessionLaunchersQuery({ projectId: projectId ?? "" });
-
-  const isLoading = isLoadingProject || isLoadingLaunchers;
-  const error = projectError || launchersError;
-
-  const launcher = useMemo(
-    () => launchers?.find(({ id }) => id === launcherId),
-    [launcherId, launchers]
-  );
-
-  if (isLoading) {
-    return <PageLoader />;
-  }
-
-  if (error) {
-    return (
-      <div>
-        <RtkErrorAlert error={error} dismissible={false} />
-      </div>
-    );
-  }
-
-  if (launcher == null || project == null) {
-    return (
-      <div>
-        <h1 className="fs-5">Error: session not found</h1>
-        <p>This sessions configuration does not seem to exist.</p>
-      </div>
-    );
-  }
-
-  return <StartSessionFromLauncher launcher={launcher} project={project} />;
-}
-
 interface StartSessionFromLauncherProps {
   launcher: SessionLauncher;
   project: Project;
@@ -278,4 +227,55 @@ function StartSessionFromLauncher({
       </div>
     </div>
   );
+}
+
+export default function SessionStartPage() {
+  const { launcherId, namespace, slug } = useParams<
+    "launcherId" | "namespace" | "slug"
+  >();
+  const {
+    data: project,
+    isLoading: isLoadingProject,
+    error: projectError,
+  } = useGetProjectsByNamespaceAndSlugQuery(
+    namespace && slug ? { namespace, slug } : skipToken
+  );
+  const projectId = project?.id ?? "";
+
+  const {
+    data: launchers,
+    isLoading: isLoadingLaunchers,
+    error: launchersError,
+  } = useGetProjectSessionLaunchersQuery({ projectId: projectId ?? "" });
+
+  const isLoading = isLoadingProject || isLoadingLaunchers;
+  const error = projectError || launchersError;
+
+  const launcher = useMemo(
+    () => launchers?.find(({ id }) => id === launcherId),
+    [launcherId, launchers]
+  );
+
+  if (isLoading) {
+    return <PageLoader />;
+  }
+
+  if (error) {
+    return (
+      <div>
+        <RtkErrorAlert error={error} dismissible={false} />
+      </div>
+    );
+  }
+
+  if (launcher == null || project == null) {
+    return (
+      <div>
+        <h1 className="fs-5">Error: session not found</h1>
+        <p>This sessions configuration does not seem to exist.</p>
+      </div>
+    );
+  }
+
+  return <StartSessionFromLauncher launcher={launcher} project={project} />;
 }
