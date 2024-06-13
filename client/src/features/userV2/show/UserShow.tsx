@@ -39,8 +39,6 @@ import {
 } from "../../user/dataServicesUser.api";
 import UserAvatar from "./UserAvatar";
 
-import styles from "./UserShow.module.scss";
-
 export default function UserShow() {
   const { username } = useParams<{ username: string }>();
 
