@@ -34,23 +34,13 @@ import ProgressStepsIndicator, {
   StepsProgressBar,
 } from "../../components/progress/ProgressSteps";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api.ts";
-import {
-  useGetDockerImageQuery,
-  useStartRenku2SessionMutation,
-} from "../session/sessions.api";
-import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
-import { DockerImageStatus } from "../session/startSessionOptions.types";
-import {
-  useGetProjectSessionLaunchersQuery,
-  useGetSessionEnvironmentsQuery,
-} from "./sessionsV2.api";
+import { useStartRenku2SessionMutation } from "../session/sessions.api";
+import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
+import useSessionLauncherState from "./useSessionLaunchState";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
 
 export default function SessionStartPage() {
@@ -113,66 +103,21 @@ function StartSessionFromLauncher({
   launcher,
   project,
 }: StartSessionFromLauncherProps) {
-  const { environment_kind, default_url } = launcher;
-
   const navigate = useNavigate();
 
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
-
-  const { data: environments } = useGetSessionEnvironmentsQuery(
-    environment_kind === "global_environment" ? undefined : skipToken
-  );
-  const environment = useMemo(
-    () =>
-      launcher.environment_kind === "global_environment" &&
-      environments?.find((env) => env.id === launcher.environment_id),
-    [environments, launcher]
-  );
   const {
-    data: storages,
-    isFetching: isFetchingStorages,
-    isLoading: isLoadingStorages,
-  } = useGetStoragesV2Query({
-    projectId: project.id,
+    containerImage,
+    defaultSessionClass,
+    isFetchingOrLoadingStorages,
+    resourcePools,
+    startSessionOptionsV2,
+    storages,
+  } = useSessionLauncherState({
+    launcher,
+    project,
   });
 
-  const containerImage =
-    environment_kind === "global_environment" && environment
-      ? environment.container_image
-      : environment_kind === "global_environment"
-      ? "unknown"
-      : launcher.container_image;
-
-  const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2
-  );
-
-  const { data: dockerImageStatus, isLoading: isLoadingDockerImageStatus } =
-    useGetDockerImageQuery(
-      containerImage !== "unknown"
-        ? {
-            image: containerImage,
-          }
-        : skipToken,
-      {
-        pollingInterval:
-          startSessionOptionsV2.dockerImageStatus === "not-available"
-            ? SESSION_CI_PIPELINE_POLLING_INTERVAL_MS
-            : 0,
-      }
-    );
-  const { data: resourcePools } = useGetResourcePoolsQuery({});
-
-  const defaultSessionClass = useMemo(
-    () =>
-      resourcePools
-        ?.filter((pool) => pool.default)
-        .flatMap((pool) => pool.classes)
-        .find((c) => c.default) ??
-      resourcePools?.find(() => true)?.classes[0] ??
-      null,
-    [resourcePools]
-  );
   const currentSessionClass = useMemo(
     () =>
       resourcePools
@@ -187,52 +132,6 @@ function StartSessionFromLauncher({
     startSession,
     { data: session, error, isLoading: isLoadingStartSession },
   ] = useStartRenku2SessionMutation();
-
-  // Reset start session options slice when we navigate away
-  useEffect(() => {
-    return () => {
-      dispatch(startSessionOptionsV2Slice.actions.reset());
-    };
-  }, [dispatch]);
-
-  // Set the default URL
-  useEffect(() => {
-    const defaultUrl = default_url
-      ? default_url
-      : environment && environment.default_url
-      ? environment.default_url
-      : "/lab";
-
-    if (startSessionOptionsV2.defaultUrl !== defaultUrl) {
-      dispatch(startSessionOptionsV2Slice.actions.setDefaultUrl(defaultUrl));
-    }
-  }, [environment, default_url, dispatch, startSessionOptionsV2.defaultUrl]);
-
-  // Set the image status
-  useEffect(() => {
-    const newStatus: DockerImageStatus = isLoadingDockerImageStatus
-      ? "unknown"
-      : dockerImageStatus == null
-      ? "not-available"
-      : dockerImageStatus.available
-      ? "available"
-      : "not-available";
-    if (newStatus !== startSessionOptionsV2.dockerImageStatus) {
-      dispatch(
-        startSessionOptionsV2Slice.actions.setDockerImageStatus(newStatus)
-      );
-    }
-  }, [
-    dispatch,
-    dockerImageStatus,
-    isLoadingDockerImageStatus,
-    startSessionOptionsV2.dockerImageStatus,
-  ]);
-
-  useEffect(() => {
-    const repositories = (project.repositories ?? []).map((url) => ({ url }));
-    dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
-  }, [dispatch, project.repositories]);
 
   // Select default session class
   useEffect(() => {
@@ -278,8 +177,7 @@ function StartSessionFromLauncher({
       startSessionOptionsV2.dockerImageStatus !== "available" ||
       resourcePools == null ||
       startSessionOptionsV2.sessionClass == 0 ||
-      isLoadingStorages ||
-      isFetchingStorages
+      isFetchingOrLoadingStorages
     ) {
       return;
     }
@@ -302,8 +200,7 @@ function StartSessionFromLauncher({
     });
   }, [
     containerImage,
-    isFetchingStorages,
-    isLoadingStorages,
+    isFetchingOrLoadingStorages,
     launcher.id,
     project.id,
     resourcePools,

@@ -46,6 +46,8 @@ export interface CloudStorageOptions extends RCloneOption {
   requiredCredential: boolean;
 }
 
+type StorageDefinition = CloudStorage | CloudStorageGetRead;
+
 export function parseCloudStorageConfiguration(
   formattedConfiguration: string
 ): Record<string, string> {
@@ -87,9 +89,7 @@ export function convertFromAdvancedConfig(
   return values.length ? values.join("\n") + "\n" : "";
 }
 
-export function getCredentialFieldDefinitions<
-  T extends CloudStorage | CloudStorageGetRead
->(
+export function getCredentialFieldDefinitions<T extends StorageDefinition>(
   storageDefinition: T
 ):
   | (T extends CloudStorageGetRead
