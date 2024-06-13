@@ -17,23 +17,30 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
+import { SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Cloud Storage
  */
 
+interface CloudStorageArgs extends SimpleFixture {
+  isV2?: boolean;
+}
+
 export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
   return class CloudStorageFixtures extends Parent {
-    cloudStorage(args?: SimpleFixture) {
+    cloudStorage(args?: CloudStorageArgs) {
       const {
         fixture = "cloudStorage/cloud-storage.json",
         name = "getCloudStorage",
+        isV2 = false,
       } = args ?? {};
       const response = { fixture };
       cy.intercept(
         "GET",
-        "/ui-server/api/data/storage?project_id=*",
+        isV2
+          ? "/ui-server/api/data/storages_v2?project_id=*"
+          : "/ui-server/api/data/storage?project_id=*",
         response
       ).as(name);
       return this;
@@ -65,21 +72,33 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
         name = "postCloudStorage",
       } = args ?? {};
       const response = { fixture, statusCode: 201 };
-      cy.intercept("POST", "/ui-server/api/data/storage", response).as(name);
+      cy.intercept("POST", "/ui-server/api/data/storage*", response).as(name);
       return this;
     }
 
-    patchCloudStorage(args?: NameOnlyFixture) {
-      const { name = "patchCloudStorage" } = args ?? {};
-      const response = { statusCode: 201 };
-      cy.intercept("PATCH", "/ui-server/api/data/storage/*", response).as(name);
-      return this;
-    }
-
-    getStorageSchema(args?: NameOnlyFixture) {
-      const { name = "getStorageSchema" } = args ?? {};
+    patchCloudStorage(args?: CloudStorageArgs) {
+      const { name = "patchCloudStorage", isV2 = false } = args ?? {};
       const response = {
-        fixture: "cloudStorage/storage-schema.json",
+        statusCode: 201,
+        fixture: "cloudStorage/new-cloud-storage.json",
+      };
+      cy.intercept(
+        "PATCH",
+        isV2
+          ? "/ui-server/api/data/storages_v2/*"
+          : "/ui-server/api/data/storage/*",
+        response
+      ).as(name);
+      return this;
+    }
+
+    getStorageSchema(args?: SimpleFixture) {
+      const {
+        name = "getStorageSchema",
+        fixture = "cloudStorage/storage-schema.json",
+      } = args ?? {};
+      const response = {
+        fixture,
         statusCode: 200,
       };
       cy.intercept("GET", "/ui-server/api/data/storage_schema", response).as(
@@ -88,12 +107,16 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    deleteCloudStorage(args?: NameOnlyFixture) {
-      const { name = "deleteCloudStorage" } = args ?? {};
+    deleteCloudStorage(args?: CloudStorageArgs) {
+      const { name = "deleteCloudStorage", isV2 = false } = args ?? {};
       const response = { statusCode: 204 };
-      cy.intercept("DELETE", "/ui-server/api/data/storage/*", response).as(
-        name
-      );
+      cy.intercept(
+        "DELETE",
+        isV2
+          ? "/ui-server/api/data/storages_v2/*"
+          : "/ui-server/api/data/storage/*",
+        response
+      ).as(name);
       return this;
     }
   };

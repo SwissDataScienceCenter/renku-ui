@@ -1,0 +1,20 @@
+{
+  "storage": {
+    "configuration": {
+      "provider": "AWS",
+      "region": "eu-central-2"
+    },
+    "name": "example-storage",
+    "private": true,
+    "project_id": 1,
+    "readonly": false,
+    "source_path": "bucket/my-source",
+    "storage_id": 2,
+    "storage_type": "s3",
+    "target_path": "external_storage/aws"
+  },
+  "sensitive_fields": [
+    { "help": "First credential", "name": "first" },
+    { "help": "Second credential", "name": "second" }
+  ]
+}

@@ -58,6 +58,7 @@ const VisibilityIcon = ({ visibility, className }: VisibilityIconProps) => {
       <div
         ref={ref}
         className={`card-visibility-icon d-flex gap-2 align-items-center ${className}`}
+        data-cy="project-visibility"
       >
         {icon[visibility] || ""} {capitalizeFirstLetter(visibility)}
       </div>

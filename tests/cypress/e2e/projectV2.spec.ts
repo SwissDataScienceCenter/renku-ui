@@ -173,6 +173,20 @@ describe("Navigate to project", () => {
     cy.contains("user3-uuid").should("be.visible");
   });
 
+  it("show project information", () => {
+    fixtures.readProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    // check project data
+    cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
+    cy.getDataCy("project-description").should(
+      "contain.text",
+      "Project 2 description"
+    );
+    cy.getDataCy("project-visibility").should("contain.text", "Public");
+    cy.getDataCy("project-namespace").should("contain.text", "user1-uuid");
+  });
+
   it("shows at most 5 members, owners first", () => {
     fixtures
       .listProjectV2Members({
