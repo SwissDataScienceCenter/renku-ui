@@ -19,6 +19,7 @@
 import {
   CloudStorageGetRead,
   RCloneConfig,
+  RCloneOption,
 } from "../../projectsV2/api/storagesV2.api.ts";
 import {
   CLOUD_OPTIONS_OVERRIDE,
@@ -40,6 +41,10 @@ import {
 } from "../components/cloudStorage/projectCloudStorage.types";
 
 const LAST_POSITION = 1000;
+
+export interface CloudStorageOptions extends RCloneOption {
+  requiredCredential: boolean;
+}
 
 export function parseCloudStorageConfiguration(
   formattedConfiguration: string
@@ -82,17 +87,26 @@ export function convertFromAdvancedConfig(
   return values.length ? values.join("\n") + "\n" : "";
 }
 
-export function getCredentialFieldDefinitions(
-  storageDefinition: CloudStorage
-): CloudStorageCredential[] | undefined {
-  const { sensitive_fields, storage } = storageDefinition;
+export function getCredentialFieldDefinitions<
+  T extends CloudStorage | CloudStorageGetRead
+>(
+  storageDefinition: T
+):
+  | (T extends CloudStorageGetRead
+      ? CloudStorageOptions
+      : CloudStorageCredential)[]
+  | undefined {
+  const { storage, sensitive_fields } = storageDefinition;
   const { configuration } = storage;
-
   const providedSensitiveFields = getProvidedSensitiveFields(configuration);
-  return sensitive_fields?.map((field) => ({
+  const result = sensitive_fields?.map((field) => ({
     ...field,
-    requiredCredential: providedSensitiveFields.includes(field.name),
+    requiredCredential: providedSensitiveFields.includes(field?.name || ""),
   }));
+  if (result == null) return result;
+  return result as (T extends CloudStorageGetRead
+    ? CloudStorageOptions
+    : CloudStorageCredential)[];
 }
 
 export function getProvidedSensitiveFields(
