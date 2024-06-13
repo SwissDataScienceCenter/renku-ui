@@ -39,6 +39,7 @@ import { toSortedMembers } from "../../utils/roleUtils";
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 
 import styles from "./ProjectInformation.module.scss";
+import UserAvatar from "../../../userV2/show/UserAvatar";
 
 export function ProjectImageView() {
   return (
@@ -71,6 +72,12 @@ function ProjectInformationMember({
   if (memberData?.username) {
     return (
       <div className={cx("fw-bold", "mb-1")}>
+        <div className={cx("d-inline-block", "me-1")}>
+          <UserAvatar
+            firstName={member.first_name}
+            lastName={member.last_name}
+          />
+        </div>
         <Link
           to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
             username: memberData.username,

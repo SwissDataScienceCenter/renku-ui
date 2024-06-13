@@ -33,7 +33,11 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { useGetNamespacesByGroupSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
-import { useGetUserQuery } from "../../user/dataServicesUser.api";
+import {
+  useGetUserQuery,
+  useGetUsersByUserIdQuery,
+} from "../../user/dataServicesUser.api";
+import UserAvatar from "./UserAvatar";
 
 import styles from "./UserShow.module.scss";
 
@@ -44,11 +48,23 @@ export default function UserShow() {
 
   const {
     data: namespace,
-    isLoading,
-    error,
+    isLoading: isLoadingNamespace,
+    error: namespaceError,
   } = useGetNamespacesByGroupSlugQuery(
     username ? { groupSlug: username } : skipToken
   );
+  const {
+    data: user,
+    isLoading: isLoadingUser,
+    error: userError,
+  } = useGetUsersByUserIdQuery(
+    namespace?.namespace_kind === "user" && namespace.created_by
+      ? { userId: namespace.created_by }
+      : skipToken
+  );
+
+  const isLoading = isLoadingNamespace || isLoadingUser;
+  const error = namespaceError ?? userError;
 
   useEffect(() => {
     if (username && namespace?.namespace_kind === "group") {
@@ -66,16 +82,26 @@ export default function UserShow() {
     return <Loader className="align-self-center" />;
   }
 
-  if (error || !namespace) {
+  if (error || !namespace || !user) {
     return <UserNotFound error={error} />;
   }
 
-  const { name } = namespace;
+  const name =
+    user.first_name && user.last_name
+      ? `${user.first_name} ${user.last_name}`
+      : user.first_name || user.last_name;
 
   return (
     <ContainerWrap>
       <div className={cx("d-flex", "flex-column", "flex-sm-row")}>
-        <UserAvatar username={username} />
+        <div className={cx("mb-1", "me-3")}>
+          <UserAvatar
+            firstName={user.first_name}
+            lastName={user.last_name}
+            username={username}
+            large
+          />
+        </div>
         <div>
           <div
             className={cx(
@@ -102,33 +128,6 @@ export default function UserShow() {
         <ProjectV2ListDisplay namespace={username} pageParam="projects_page" />
       </section>
     </ContainerWrap>
-  );
-}
-
-interface UserAvatarProps {
-  username: string;
-}
-
-function UserAvatar({ username }: UserAvatarProps) {
-  const firstLetters = username.slice(0, 2).toUpperCase();
-
-  return (
-    <div className={cx("mb-1", "me-3")}>
-      <div
-        className={cx(
-          "border",
-          "border-info-subtle",
-          "rounded-circle",
-          "bg-info-subtle",
-          "text-center",
-          "align-content-center",
-          "fw-bold",
-          styles.avatar
-        )}
-      >
-        {firstLetters}
-      </div>
-    </div>
   );
 }
 

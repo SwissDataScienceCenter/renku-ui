@@ -5,15 +5,20 @@
 @import "~bootstrap/scss/mixins";
 
 .avatar {
-  --size: 48px;
-  --font-size: 18px;
+  --size: 20px;
+  --font-size: 11px;
 
   height: var(--size);
   width: var(--size);
   font-size: var(--font-size);
 
-  @include media-breakpoint-up(sm) {
-    --size: 64px;
-    --font-size: 28px;
+  &.large {
+    --size: 48px;
+    --font-size: 18px;
+
+    @include media-breakpoint-up(sm) {
+      --size: 64px;
+      --font-size: 28px;
+    }
   }
 }
