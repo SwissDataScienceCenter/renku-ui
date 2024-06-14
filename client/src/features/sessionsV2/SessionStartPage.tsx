@@ -140,6 +140,7 @@ function StartSessionFromLauncher({
   const { data: environments } = useGetSessionEnvironmentsQuery(
     environment_kind === "global_environment" ? undefined : skipToken
   );
+  // testing code
   const { data: launcherClass, isLoading: isLoadingLauncherClass } =
     useGetResourceClassByIdQuery(launcher?.resource_class_id ?? skipToken);
   const environment = useMemo(
