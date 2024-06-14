@@ -186,7 +186,7 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
           <div
             className={cx(
               "mt-auto",
-              "mb-1",
+              "mb-0",
               "card-text",
               "d-flex",
               "flex-wrap"
@@ -213,14 +213,6 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
               />
             </div>
           </div>
-          {/* <p className={cx("mb-1", "card-text")}></p>
-          <p className={cx("mb-0", "card-text")}>
-            <TimeCaption
-              datetime={creationDate}
-              prefix="Created"
-              enableTooltip
-            />
-          </p> */}
         </CardBody>
       </Card>
     </Col>

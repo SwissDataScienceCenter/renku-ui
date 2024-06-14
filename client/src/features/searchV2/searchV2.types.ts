@@ -18,51 +18,7 @@
 
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
 
-export type EntityType = "Project" | "User";
-
-// export interface SearchApiParams {
-//   searchString: string;
-//   page: number;
-//   perPage: number;
-// }
-
-// export interface SearchApiResponse {
-//   items: SearchResult[];
-//   pagingInfo: {
-//     page: {
-//       limit: number;
-//       offset: number;
-//     };
-//     totalResult: number;
-//     totalPages: number;
-//     prevPage: number;
-//     nextPage: number;
-//   };
-// }
-
-// export type SearchResult = ProjectSearchResult | UserSearchResult;
-// export interface ProjectSearchResult {
-//   createdBy: UserV2;
-//   creationDate: Date;
-//   description: string;
-//   id: string;
-//   members: UserV2[];
-//   name: string;
-//   namespace: string;
-//   repositories: string[];
-//   score: number;
-//   slug: string;
-//   type: "Project";
-//   visibility: string;
-// }
-
-// export interface UserSearchResult {
-//   id: string;
-//   firstName: string;
-//   lastName: string;
-//   type: "User";
-//   email: string;
-// }
+// export type EntityType = "Project" | "User";
 
 export interface DateFilter {
   option: DateFilterTypes;
