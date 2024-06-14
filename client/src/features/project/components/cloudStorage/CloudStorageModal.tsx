@@ -87,13 +87,14 @@ import {
 import styles from "./CloudStorage.module.scss";
 import { SerializedError } from "@reduxjs/toolkit";
 
-interface AddCloudStorageComponentProps {
+interface AddCloudStorageForwardBackButtonProps {
   setStateSafe: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   validateResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
 }
 
-interface AddCloudStorageBackButtonProps extends AddCloudStorageComponentProps {
+interface AddCloudStorageBackButtonProps
+  extends AddCloudStorageForwardBackButtonProps {
   success: boolean;
   toggle: () => void;
 }
@@ -216,10 +217,9 @@ function AddCloudStorageHeaderContent({
   if (isV2)
     return (
       <>
-        <Database className={cx("bi", "me-2")} />
+        <Database className={cx("bi", "me-2")} />{" "}
         <span className="text-uppercase">
-          {" "}
-          {storageId ? "Edit" : "Add"} data source{" "}
+          {storageId ? "Edit" : "Add"} data source
         </span>
       </>
     );
@@ -232,7 +232,7 @@ function AddCloudStorageHeaderContent({
 }
 
 interface AddCloudStorageContinueButtonProps
-  extends AddCloudStorageComponentProps {
+  extends AddCloudStorageForwardBackButtonProps {
   addButtonDisableReason: string;
   addOrEditStorage: () => void;
   disableAddButton: boolean;
@@ -337,6 +337,30 @@ function AddCloudStorageContinueButton({
             : "Please select a provider or change storage type"}
         </UncontrolledTooltip>
       )}
+    </div>
+  );
+}
+
+interface AddCloudStorageConnectionTestResultProps {
+  validateResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
+}
+
+function AddCloudStorageConnectionTestResult({
+  validateResult,
+}: AddCloudStorageConnectionTestResultProps) {
+  if (validateResult.isUninitialized || validateResult.isLoading) return null;
+  if (validateResult.error)
+    return (
+      <div className={cx("w-100", "my-0")}>
+        <RtkOrNotebooksError error={validateResult.error} />
+      </div>
+    );
+  return (
+    <div className={cx("w-100", "my-0")}>
+      {" "}
+      <SuccessAlert timeout={0}>
+        <p className="p-0">The connection to the storage works correctly.</p>
+      </SuccessAlert>
     </div>
   );
 }
@@ -503,8 +527,7 @@ export default function CloudStorageModal({
       Object.keys(storageDetails.options).length > 0
     ) {
       const options = storageDetails.options as CloudStorageDetailsOptions;
-      Object.keys(options).forEach((key) => {
-        const value = options[key];
+      Object.entries(options).forEach(([key, value]) => {
         if (value != undefined && value !== "") {
           validateParameters.configuration[key] = value;
         }
@@ -683,26 +706,6 @@ export default function CloudStorageModal({
     : "Please go back and select a provider";
   const isResultLoading = isAddResultLoading || isModifyResultLoading;
 
-  const connectionResultContent =
-    validateResult.isUninitialized ||
-    validateResult.isLoading ? null : validateResult.error ? (
-      <RtkOrNotebooksError error={validateResult.error} />
-    ) : (
-      <SuccessAlert timeout={0}>
-        <p className="p-0">The connection to the storage works correctly.</p>
-      </SuccessAlert>
-    );
-  const connectionResult = connectionResultContent && (
-    <div className={cx("w-100", "my-0")}>{connectionResultContent}</div>
-  );
-
-  const errorMessage =
-    addResultError || modifyResult.error ? (
-      <div className="w-100">
-        <RtkOrNotebooksError error={addResultError || modifyResult.error} />
-      </div>
-    ) : null;
-
   return (
     <Modal
       backdrop="static"
@@ -742,8 +745,12 @@ export default function CloudStorageModal({
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="cloud-storage-edit-footer">
-        {connectionResult}
-        {errorMessage}
+        <AddCloudStorageConnectionTestResult validateResult={validateResult} />
+        {(addResultError || modifyResult.error) && (
+          <div className="w-100">
+            <RtkOrNotebooksError error={addResultError || modifyResult.error} />
+          </div>
+        )}
         {isV2 && (
           <div className={cx("d-flex", "flex-grow-1")}>
             <AddStorageBreadcrumbNavbar state={state} setState={setStateSafe} />
@@ -763,7 +770,7 @@ export default function CloudStorageModal({
             Reset
           </Button>
         )}
-        {isResultLoading ? null : (
+        {!isResultLoading && (
           <AddCloudStorageBackButton
             setStateSafe={setStateSafe}
             state={state}
@@ -772,7 +779,7 @@ export default function CloudStorageModal({
             validateResult={validateResult}
           />
         )}
-        {success ? null : (
+        {!success && (
           <AddCloudStorageContinueButton
             addButtonDisableReason={addButtonDisableReason}
             addOrEditStorage={addOrEditStorage}
@@ -889,7 +896,8 @@ function TestConnectionAndContinueButtons({
         </Button>
         {testIsFailure && (
           <UncontrolledTooltip placement="top" target={divContinueId}>
-            Current options are not working. You should fix them and test again.
+            The connection is not working as configured. You can make changes
+            and try again, or skip and continue.
           </UncontrolledTooltip>
         )}
       </div>
