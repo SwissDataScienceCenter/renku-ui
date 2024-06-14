@@ -39,7 +39,7 @@ import { toSortedMembers } from "../../utils/roleUtils";
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 
 import styles from "./ProjectInformation.module.scss";
-import UserAvatar from "../../../userV2/show/UserAvatar";
+import UserAvatar from "../../../usersV2/show/UserAvatar";
 
 export function ProjectImageView() {
   return (

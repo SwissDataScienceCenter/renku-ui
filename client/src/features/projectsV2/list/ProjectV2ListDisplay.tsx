@@ -18,11 +18,13 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
+import { Globe2, LockFill } from "react-bootstrap-icons";
 import {
   Link,
   generatePath,
   useSearchParams,
 } from "react-router-dom-v5-compat";
+import { Card, CardBody, Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
@@ -31,8 +33,6 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { Project } from "../api/projectV2.api";
 import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
-
-import styles from "./projectV2List.module.scss";
 
 const DEFAULT_PER_PAGE = 10;
 const DEFAULT_PAGE_PARAM = "page";
@@ -125,11 +125,11 @@ export default function ProjectListDisplay({
 
   return (
     <>
-      <div className="d-flex flex-wrap w-100">
+      <Row className={cx("row-cols-1", "row-cols-sm-2", "g-3")}>
         {data.projects?.map((project) => (
           <ProjectV2ListProject key={project.id} project={project} />
         ))}
-      </div>
+      </Row>
       <Pagination
         currentPage={data.page}
         perPage={perPage}
@@ -149,28 +149,80 @@ interface ProjectV2ListProjectProps {
   project: Project;
 }
 function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
+  const {
+    name,
+    namespace,
+    description,
+    visibility,
+    creation_date: creationDate,
+  } = project;
+
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: project.namespace,
     slug: project.slug,
   });
+  const namespaceUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+    username: project.namespace,
+  });
+
   return (
-    <div
-      data-cy="list-card"
-      className={cx("m-2", "rk-search-result-card", styles.listProjectWidth)}
-    >
-      <div className={cx("card", "card-entity", "p-3")}>
-        <h3>
-          <Link className="stretched-link" to={projectUrl}>
-            {project.name}
-          </Link>
-        </h3>
-        <div className="mb-2 fw-light">{project.namespace}/</div>
-        <div className="mb-2">{project.description}</div>
-        <div className={cx("align-items-baseline", "d-flex")}>
-          <span className={cx("fst-italic", "me-3")}>{project.visibility}</span>
-          <TimeCaption datetime={project.creation_date} prefix="Created" />
-        </div>
-      </div>
-    </div>
+    <Col>
+      <Card className="h-100">
+        <CardBody className={cx("d-flex", "flex-column")}>
+          <h3 className="card-title">
+            <Link className={cx("link-offset-1")} to={projectUrl}>
+              {name}
+            </Link>
+          </h3>
+          <p className={cx("mb-2", "card-text")}>
+            <Link to={namespaceUrl}>
+              {"@"}
+              {namespace}
+            </Link>
+          </p>
+          {description && (
+            <p className={cx("mb-2", "card-text")}>{description}</p>
+          )}
+          <div
+            className={cx(
+              "mt-auto",
+              "mb-1",
+              "card-text",
+              "d-flex",
+              "flex-wrap"
+            )}
+          >
+            <div className={cx("flex-grow-1", "me-2")}>
+              {visibility === "private" ? (
+                <>
+                  <LockFill className={cx("bi", "me-1")} />
+                  Private
+                </>
+              ) : (
+                <>
+                  <Globe2 className={cx("bi", "me-1")} />
+                  Public
+                </>
+              )}
+            </div>
+            <div>
+              <TimeCaption
+                datetime={creationDate}
+                prefix="Created"
+                enableTooltip
+              />
+            </div>
+          </div>
+          {/* <p className={cx("mb-1", "card-text")}></p>
+          <p className={cx("mb-0", "card-text")}>
+            <TimeCaption
+              datetime={creationDate}
+              prefix="Created"
+              enableTooltip
+            />
+          </p> */}
+        </CardBody>
+      </Card>
+    </Col>
   );
 }
