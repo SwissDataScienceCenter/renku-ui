@@ -34,9 +34,9 @@ import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyPro
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
+import LazyGroupV2Show from "../groupsV2/LazyGroupV2Show";
 import LazyGroupV2List from "../projectsV2/LazyGroupList";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
-import LazyGroupV2Show from "../projectsV2/LazyGroupShow";
 import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
