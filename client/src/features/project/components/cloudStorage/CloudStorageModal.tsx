@@ -866,7 +866,7 @@ function TestConnectionAndContinueButtons({
     </>
   ) : testIsFailure ? (
     <>
-      Skip <ChevronRight className="bi" />
+      Skip Test <ChevronRight className="bi" />
     </>
   ) : null;
   const continueColorClass = testIsSuccess
