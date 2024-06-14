@@ -18,7 +18,11 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useDispatch } from "react-redux";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+import {
+  Link,
+  generatePath,
+  useSearchParams,
+} from "react-router-dom-v5-compat";
 import { Button, Card, CardBody, Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -26,13 +30,17 @@ import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import searchV2Api from "../searchV2.api";
-import { setCreatedBy, setPage } from "../searchV2.slice";
+import searchV2Api, { useGetSearchResultsQuery } from "../searchV2.api";
+// import { setCreatedBy, setPage } from "../searchV2.slice";
 import { ProjectSearchResult, UserSearchResult } from "../searchV2.types";
+import { useCallback, useMemo } from "react";
+
+const DEFAULT_PER_PAGE = 10;
+const DEFAULT_PAGE_PARAM = "page";
 
 export default function SearchV2Results() {
-  const searchState = useAppSelector((state) => state.searchV2);
-  const dispatch = useDispatch();
+  // const searchState = useAppSelector((state) => state.searchV2);
+  // const dispatch = useDispatch();
 
   return (
     <Row data-cy="search-results">
@@ -43,31 +51,63 @@ export default function SearchV2Results() {
         <SearchV2ResultsContent />
       </Col>
       <Col className="mt-4" xs={12}>
-        <Pagination
+        {/* <Pagination
           currentPage={searchState.search.page}
           perPage={searchState.search.perPage}
           totalItems={searchState.search.totalResults}
           onPageChange={(page: number) => {
-            dispatch(setPage(page));
+            // dispatch(setPage(page));
           }}
           showDescription={true}
           className="rk-search-pagination"
-        />
+        /> */}
       </Col>
     </Row>
   );
 }
 
 function SearchV2ResultsContent() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   // get the search state
-  const { search } = useAppSelector((state) => state.searchV2);
-  const searchResults = searchV2Api.endpoints.getSearchResults.useQueryState(
-    search.lastSearch != null
+  // const { search } = useAppSelector((state) => state.searchV2);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const query = useMemo(() => searchParams.get("q"), [searchParams]);
+
+  const page = useMemo(() => {
+    const pageRaw = searchParams.get(DEFAULT_PAGE_PARAM);
+    if (!pageRaw) {
+      return 1;
+    }
+    try {
+      const page = parseInt(pageRaw, 10);
+      return page > 0 ? page : 1;
+    } catch {
+      return 1;
+    }
+  }, [searchParams]);
+
+  const onPageChange = useCallback(
+    (pageNumber: number) => {
+      setSearchParams((prevParams) => {
+        if (pageNumber == 1) {
+          prevParams.delete(DEFAULT_PAGE_PARAM);
+        } else {
+          prevParams.set(DEFAULT_PAGE_PARAM, `${pageNumber}`);
+        }
+        return prevParams;
+      });
+    },
+    [setSearchParams]
+  );
+
+  const searchResults = useGetSearchResultsQuery(
+    query != null
       ? {
-          searchString: search.lastSearch,
-          page: search.page,
-          perPage: search.perPage,
+          searchString: query,
+          page,
+          perPage: DEFAULT_PER_PAGE,
         }
       : skipToken
   );
@@ -75,7 +115,8 @@ function SearchV2ResultsContent() {
   if (searchResults.isFetching) {
     return <Loader />;
   }
-  if (search.lastSearch == null) {
+
+  if (query == null) {
     return <p>Start searching by typing in the search bar above.</p>;
   }
 
@@ -83,8 +124,7 @@ function SearchV2ResultsContent() {
     return (
       <>
         <p>
-          No results for{" "}
-          <span className="fw-bold">{`"${search.lastSearch}"`}</span>.
+          No results for <span className="fw-bold">{query}</span>.
         </p>
         <p>You can try another search, or change some filters.</p>
       </>
@@ -96,7 +136,7 @@ function SearchV2ResultsContent() {
       return (
         <SearchV2ResultProject
           searchByUser={(userId) => {
-            dispatch(setCreatedBy(userId));
+            // dispatch(setCreatedBy(userId));
           }}
           key={`project-result-${entity.id}`}
           project={entity}

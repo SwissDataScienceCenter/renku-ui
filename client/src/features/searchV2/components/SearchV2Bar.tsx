@@ -16,42 +16,90 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { Button, InputGroup } from "reactstrap";
+import { useSearchParams } from "react-router-dom-v5-compat";
+import { Button, InputGroup, Input, Form } from "reactstrap";
 
-import { setQuery } from "../searchV2.slice";
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import useStartNewSearch from "../useStartSearch.hook";
+// import { setQuery } from "../searchV2.slice";
+// import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+// import useStartNewSearch from "../useStartSearch.hook";
 
 export default function SearchV2Bar() {
-  const dispatch = useDispatch();
-  const searchState = useAppSelector((state) => state.searchV2);
-  const { startNewSearch } = useStartNewSearch();
+  // const dispatch = useDispatch();
+  // const searchState = useAppSelector((state) => state.searchV2);
+  // const { startNewSearch } = useStartNewSearch();
 
-  // focus search input when loading the component
-  const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
+  // // focus search input when loading the component
+  // const inputRef = useRef<HTMLInputElement>(null);
+  // useEffect(() => {
+  //   if (inputRef.current) {
+  //     inputRef.current.focus();
+  //   }
+  // }, []);
 
-  // handle pressing Enter to search
-  // ? We could use react-hotkeys-hook if we wish to handle Enter also outside the input
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      startNewSearch();
-    }
-  };
+  // // handle pressing Enter to search
+  // // ? We could use react-hotkeys-hook if we wish to handle Enter also outside the input
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (event.key === "Enter") {
+  //     startNewSearch();
+  //   }
+  // };
 
-  // basic autocomplete for searched values, without duplicates
-  const previousSearchEntries = Array.from(
-    new Set(searchState.search.history.map((entry) => entry.query))
-  ).map((value) => <option key={value} value={value} />);
+  // // basic autocomplete for searched values, without duplicates
+  // const previousSearchEntries = Array.from(
+  //   new Set(searchState.search.history.map((entry) => entry.query))
+  // ).map((value) => <option key={value} value={value} />);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const query = useMemo(() => searchParams.get("q"), [searchParams]);
+
+  const { handleSubmit, register } = useForm<SearchForm>({
+    defaultValues: { query },
+  });
+
+  const onSubmit = useCallback(
+    (data: SearchForm) => {
+      setSearchParams((prev) => {
+        prev.set("q", data.query ?? "");
+        return prev;
+      });
+    },
+    [setSearchParams]
+  );
 
   return (
-    <InputGroup data-cy="search-bar">
+    <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+      <InputGroup data-cy="search-bar">
+        <input
+          autoComplete="renku-search"
+          className={cx("form-control", "rounded-0", "rounded-start")}
+          data-cy="search-input"
+          id="search-input"
+          list="previous-searches"
+          // onChange={(e) => dispatch(setQuery(e.target.value))}
+          // onKeyDown={handleKeyDown}
+          placeholder="Search..."
+          // ref={inputRef}
+          // tabIndex={-1}
+          type="text"
+          // value={searchState.search.query}
+          {...register("query")}
+        />
+        <Button
+          className="rounded-end"
+          color="secondary"
+          data-cy="search-button"
+          id="search-button"
+          type="submit"
+        >
+          Search
+        </Button>
+      </InputGroup>
+
+      {/* <InputGroup data-cy="search-bar">
       <input
         autoComplete="renku-search"
         className={cx("form-control", "rounded-0", "rounded-start")}
@@ -78,6 +126,11 @@ export default function SearchV2Bar() {
       >
         Search
       </Button>
-    </InputGroup>
+    </InputGroup> */}
+    </Form>
   );
+}
+
+interface SearchForm {
+  query: string | null | undefined;
 }

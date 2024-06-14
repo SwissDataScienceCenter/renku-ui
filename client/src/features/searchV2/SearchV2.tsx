@@ -35,15 +35,15 @@ export default function SearchV2() {
           <SearchV2Bar />
         </Col>
       </Row>
-      <Row className="mb-3">
+      {/* <Row className="mb-3">
         <Col>
           <SearchV2Header />
         </Col>
-      </Row>
+      </Row>*/}
       <Row className="mb-3">
-        <Col xs={12} sm={4} lg={3}>
+        {/*<Col xs={12} sm={4} lg={3}>
           <SearchV2Filters />
-        </Col>
+        </Col>*/}
         <Col xs={12} sm={8} lg={9}>
           <SearchV2Results />
         </Col>
