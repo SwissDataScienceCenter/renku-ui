@@ -26,9 +26,11 @@ import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import searchV2Api from "../searchV2.api";
+import { searchV2Api, Project, User } from "../api/searchV2Api.api";
 import { setCreatedBy, setPage } from "../searchV2.slice";
-import { ProjectSearchResult, UserSearchResult } from "../searchV2.types";
+
+// import searchV2Api from "../searchV2.api";
+// import { ProjectSearchResult, UserSearchResult } from "../searchV2.types";
 
 export default function SearchV2Results() {
   const searchState = useAppSelector((state) => state.searchV2);
@@ -62,10 +64,10 @@ function SearchV2ResultsContent() {
   const dispatch = useDispatch();
   // get the search state
   const { search } = useAppSelector((state) => state.searchV2);
-  const searchResults = searchV2Api.endpoints.getSearchResults.useQueryState(
+  const searchResults = searchV2Api.endpoints.$get.useQueryState(
     search.lastSearch != null
       ? {
-          searchString: search.lastSearch,
+          q: search.lastSearch,
           page: search.page,
           perPage: search.perPage,
         }
@@ -79,7 +81,7 @@ function SearchV2ResultsContent() {
     return <p>Start searching by typing in the search bar above.</p>;
   }
 
-  if (!searchResults.data?.items.length) {
+  if (!searchResults.data?.items?.length) {
     return (
       <>
         <p>
@@ -134,7 +136,7 @@ function SearchV2ResultsCard({ cardId, children }: SearchV2ResultsCardProps) {
 }
 
 interface SearchV2ResultProjectProps {
-  project: ProjectSearchResult;
+  project: Project;
   searchByUser: (userId: string) => void;
 }
 function SearchV2ResultProject({
@@ -142,7 +144,7 @@ function SearchV2ResultProject({
   searchByUser,
 }: SearchV2ResultProjectProps) {
   const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-    namespace: project.namespace,
+    namespace: project.namespace ?? "",
     slug: project.slug,
   });
   return (
@@ -174,7 +176,7 @@ function SearchV2ResultProject({
 }
 
 interface SearchV2ResultUserProps {
-  user: UserSearchResult;
+  user: User;
 }
 function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
   return (
@@ -186,7 +188,7 @@ function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
       <h4 className="mb-0">
         {user.firstName} {user.lastName}
       </h4>
-      <p className="form-text mb-0">{user.email}</p>
+      {/* <p className="form-text mb-0">{user.email}</p> */}
     </SearchV2ResultsCard>
   );
 }

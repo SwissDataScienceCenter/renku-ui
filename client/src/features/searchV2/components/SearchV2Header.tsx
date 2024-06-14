@@ -22,16 +22,18 @@ import { skipToken } from "@reduxjs/toolkit/query";
 
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { AVAILABLE_SORTING } from "../searchV2.utils";
-import searchV2Api from "../searchV2.api";
 import { setSorting } from "../searchV2.slice";
+import { searchV2Api } from "../api/searchV2Api.api";
+
+// import searchV2Api from "../searchV2.api";
 
 export default function SearchV2Header() {
   const { search, sorting } = useAppSelector((state) => state.searchV2);
   const dispatch = useDispatch();
-  const searchResults = searchV2Api.endpoints.getSearchResults.useQueryState(
+  const searchResults = searchV2Api.endpoints.$get.useQueryState(
     search.lastSearch != null
       ? {
-          searchString: search.lastSearch,
+          q: search.lastSearch,
           page: search.page,
           perPage: search.perPage,
         }
@@ -40,7 +42,7 @@ export default function SearchV2Header() {
 
   const searchQuery = search.lastSearch;
   const total =
-    searchResults.data?.items.length != null
+    searchResults.data?.items?.length != null
       ? searchResults.data?.pagingInfo.totalResult
       : 0;
   const setNewSorting = useCallback(
