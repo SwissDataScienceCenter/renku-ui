@@ -682,6 +682,7 @@ export default function CloudStorageModal({
   const isModifyResultLoading =
     modifyResult.isLoading || modifyResultV2.isLoading;
   const addResultError = isV2 ? addResultV2.error : addResult.error;
+  const modifyResultError = isV2 ? modifyResultV2.error : modifyResult.error;
   const addResultStorageName = isV2
     ? addResultV2?.data?.storage?.name
     : addResult?.data?.storage?.name;
@@ -746,9 +747,9 @@ export default function CloudStorageModal({
 
       <ModalFooter className="border-top" data-cy="cloud-storage-edit-footer">
         <AddCloudStorageConnectionTestResult validateResult={validateResult} />
-        {(addResultError || modifyResult.error) && (
+        {(addResultError || modifyResultError) && (
           <div className="w-100">
-            <RtkOrNotebooksError error={addResultError || modifyResult.error} />
+            <RtkOrNotebooksError error={addResultError || modifyResultError} />
           </div>
         )}
         {isV2 && (
@@ -865,7 +866,7 @@ function TestConnectionAndContinueButtons({
     </>
   ) : testIsFailure ? (
     <>
-      Continue anyway <ChevronRight className="bi" />
+      Skip <ChevronRight className="bi" />
     </>
   ) : null;
   const continueColorClass = testIsSuccess

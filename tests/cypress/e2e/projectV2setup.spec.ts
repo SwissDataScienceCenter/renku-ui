@@ -126,9 +126,7 @@ describe("Navigate to project page", () => {
     cy.get("#access_key_id").type("access key");
     cy.get("#secret_access_key").type("secret key");
     cy.getDataCy("test-cloud-storage-button").click();
-    cy.getDataCy("add-cloud-storage-continue-button")
-      .contains("Continue anyway")
-      .click();
+    cy.getDataCy("add-cloud-storage-continue-button").contains("Skip").click();
     cy.getDataCy("cloud-storage-edit-mount").within(() => {
       cy.get("#name").type("giab");
     });
