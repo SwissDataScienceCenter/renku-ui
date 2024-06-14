@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+// TODO: update this
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { SearchApiParams, SearchApiResponse } from "./searchV2.types";
 
