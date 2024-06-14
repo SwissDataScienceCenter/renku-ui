@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   generatePath,
   useNavigate,
@@ -36,14 +36,21 @@ import ProgressStepsIndicator, {
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 
+import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
+
+import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
+import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
+import {
+  SessionStartCloudStorageConfiguration,
+  StartSessionOptionsV2,
+} from "./startSessionOptionsV2.types";
 import useSessionLauncherState from "./useSessionLaunchState";
-import { StartSessionOptionsV2 } from "./startSessionOptionsV2.types";
 
 interface SessionStartingProps extends StartSessionFromLauncherProps {
   containerImage: string;
@@ -70,7 +77,9 @@ function SessionStarting({
       projectId: project.id,
       launcherId: launcher.id,
       repositories: startSessionOptionsV2.repositories,
-      cloudStorage: startSessionOptionsV2.cloudStorage,
+      cloudStorage: startSessionOptionsV2.cloudStorage
+        .filter((cs) => cs.active)
+        .map((cs) => storageDefinitionFromConfig(cs)),
       defaultUrl: startSessionOptionsV2.defaultUrl,
       environmentVariables: {},
       image: containerImage,
@@ -131,6 +140,108 @@ function SessionStarting({
           style={ProgressStyle.Light}
           title={`Starting session ${launcher.name}`}
           status={steps}
+        />
+      </div>
+    </div>
+  );
+}
+
+function doesCloudStorageNeedCredentials(
+  config: SessionStartCloudStorageConfiguration
+) {
+  if (config.active === false) return false;
+  return Object.values(config.sensitiveFieldValues).some(
+    (value) => value === ""
+  );
+}
+
+interface StartSessionWithCloudStorageModalProps
+  extends Omit<SessionStartingProps, "cloudStorages"> {
+  cloudStorageConfigs: Omit<
+    SessionLaunchModalCloudStorageConfiguration,
+    "sensitiveFields"
+  >[];
+}
+
+function StartSessionWithCloudStorageModal({
+  containerImage,
+  launcher,
+  project,
+  startSessionOptionsV2,
+  cloudStorageConfigs: initialCloudStorageConfigs,
+}: StartSessionWithCloudStorageModalProps) {
+  const [showCloudStorageSecretsModal, setShowCloudStorageSecretsModal] =
+    useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const cloudStorageConfigs = initialCloudStorageConfigs.filter(
+    ({ active }) => active
+  );
+
+  useEffect(() => {
+    if (cloudStorageConfigs.some(doesCloudStorageNeedCredentials)) {
+      setShowCloudStorageSecretsModal(true);
+    }
+  }, [cloudStorageConfigs]);
+
+  const onStart = useCallback(
+    (cloudStorageConfigs: SessionLaunchModalCloudStorageConfiguration[]) => {
+      setShowCloudStorageSecretsModal(false);
+      dispatch(
+        startSessionOptionsV2Slice.actions.setCloudStorage(cloudStorageConfigs)
+      );
+    },
+    [dispatch]
+  );
+
+  const steps = [
+    {
+      id: 0,
+      status: StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  const navigate = useNavigate();
+  const onCancel = useCallback(() => {
+    const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+      namespace: project.namespace,
+      slug: project.slug,
+    });
+    navigate(url);
+  }, [navigate, project.namespace, project.slug]);
+
+  // TODO If the credentials are all stored as secrets, we can also launch
+  if (cloudStorageConfigs.length === 0) {
+    return (
+      <SessionStarting
+        containerImage={containerImage}
+        launcher={launcher}
+        project={project}
+        startSessionOptionsV2={startSessionOptionsV2}
+      />
+    );
+  }
+
+  return (
+    <div>
+      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Starting session ${launcher.name}`}
+          status={steps}
+        />
+        <SessionStartCloudStorageSecretsModal
+          isOpen={showCloudStorageSecretsModal}
+          onCancel={onCancel}
+          onStart={onStart}
+          cloudStorageConfigs={cloudStorageConfigs}
         />
       </div>
     </div>
@@ -205,14 +316,30 @@ function StartSessionFromLauncher({
     );
   }, [currentSessionClass, dispatch]);
 
-  if (
+  const needsCredentials = startSessionOptionsV2.cloudStorage.some(
+    doesCloudStorageNeedCredentials
+  );
+
+  const allDataFetched =
     startSessionOptionsV2.dockerImageStatus === "available" &&
     resourcePools != null &&
     startSessionOptionsV2.sessionClass !== 0 &&
-    !isFetchingOrLoadingStorages
-  )
+    !isFetchingOrLoadingStorages;
+
+  if (allDataFetched && !needsCredentials)
     return (
       <SessionStarting
+        containerImage={containerImage}
+        launcher={launcher}
+        project={project}
+        startSessionOptionsV2={startSessionOptionsV2}
+      />
+    );
+
+  if (allDataFetched && needsCredentials)
+    return (
+      <StartSessionWithCloudStorageModal
+        cloudStorageConfigs={startSessionOptionsV2.cloudStorage}
         containerImage={containerImage}
         launcher={launcher}
         project={project}
@@ -234,16 +361,14 @@ function StartSessionFromLauncher({
   ];
 
   return (
-    <div>
-      <div className={cx("progress-box-small", "progress-box-small--steps")}>
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Starting session ${launcher.name}`}
-          status={steps}
-        />
-      </div>
+    <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <ProgressStepsIndicator
+        description="Preparing to start session"
+        type={ProgressType.Determinate}
+        style={ProgressStyle.Light}
+        title={`Starting session ${launcher.name}`}
+        status={steps}
+      />
     </div>
   );
 }

@@ -191,7 +191,7 @@ export default function CloudStorageModal({
     useUpdateCloudStorageMutation();
   const [modifyCloudStorageV2ForProject, modifyResultV2] =
     usePatchStoragesV2ByStorageIdMutation();
-  const [validateCloudStorageConnection, validateResult] =
+  const [validateCloudStorageConnection, validationResult] =
     useTestCloudStorageConnectionMutation();
 
   const setStorageDetailsSafe = useCallback(
@@ -212,10 +212,10 @@ export default function CloudStorageModal({
         fullNewDetails.options = undefined;
         fullNewDetails.sourcePath = undefined;
       }
-      if (!validateResult.isUninitialized) validateResult.reset();
+      if (!validationResult.isUninitialized) validationResult.reset();
       setStorageDetails(fullNewDetails);
     },
-    [storageDetails, validateResult]
+    [storageDetails, validationResult]
   );
 
   const validateConnection = useCallback(() => {
@@ -452,7 +452,9 @@ export default function CloudStorageModal({
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="cloud-storage-edit-footer">
-        <AddCloudStorageConnectionTestResult validateResult={validateResult} />
+        <AddCloudStorageConnectionTestResult
+          validationResult={validationResult}
+        />
         {(addResultError || modifyResultError) && (
           <div className="w-100">
             <RtkOrNotebooksError error={addResultError || modifyResultError} />
@@ -467,9 +469,9 @@ export default function CloudStorageModal({
           <Button
             color="outline-danger"
             data-cy="cloud-storage-edit-rest-button"
-            disabled={validateResult.isLoading}
+            disabled={validationResult.isLoading}
             onClick={() => {
-              if (!validateResult.isUninitialized) validateResult.reset();
+              if (!validationResult.isUninitialized) validationResult.reset();
               reset();
             }}
           >
@@ -483,7 +485,7 @@ export default function CloudStorageModal({
             state={state}
             success={success}
             toggle={toggle}
-            validateResult={validateResult}
+            validationResult={validationResult}
           />
         )}
         {!success && (
@@ -498,7 +500,7 @@ export default function CloudStorageModal({
             storageDetails={storageDetails}
             storageId={storageId}
             validateConnection={validateConnection}
-            validateResult={validateResult}
+            validationResult={validationResult}
           />
         )}
       </ModalFooter>

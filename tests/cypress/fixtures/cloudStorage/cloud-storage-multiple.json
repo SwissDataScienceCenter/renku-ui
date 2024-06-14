@@ -1,0 +1,101 @@
+[
+  {
+    "storage": {
+      "configuration": {
+        "type": "s3",
+        "provider": "Other",
+        "endpoint": "https://s3.example.com"
+      },
+      "name": "public-storage",
+      "private": true,
+      "project_id": 1,
+      "readonly": true,
+      "source_path": "bucket/source",
+      "storage_id": 1,
+      "storage_type": "s3",
+      "target_path": "external_storage/public"
+    }
+  },
+  {
+    "storage": {
+      "configuration": {
+        "type": "s3",
+        "provider": "AWS",
+        "access_key_id": "<sensitive>",
+        "secret_access_key": "<sensitive>"
+      },
+      "name": "private-storage-1",
+      "project_id": 1,
+      "readonly": true,
+      "source_path": "bucket/my-source-1",
+      "storage_id": 2,
+      "storage_type": "s3",
+      "target_path": "external_storage/private-1"
+    },
+    "sensitive_fields": [
+      {
+        "name": "access_key_id",
+        "help": "AWS Access Key ID.\n\nLeave blank for anonymous access or runtime credentials.",
+        "provider": "",
+        "default": "",
+        "default_str": "",
+        "required": false,
+        "sensitive": true,
+        "advanced": false,
+        "exclusive": false
+      },
+      {
+        "name": "secret_access_key",
+        "help": "AWS Secret Access Key (password).\n\nLeave blank for anonymous access or runtime credentials.",
+        "provider": "",
+        "default": "",
+        "default_str": "",
+        "required": false,
+        "sensitive": true,
+        "advanced": false,
+        "exclusive": false
+      }
+    ]
+  },
+  {
+    "storage": {
+      "configuration": {
+        "type": "s3",
+        "provider": "AWS",
+        "access_key_id": "<sensitive>",
+        "secret_access_key": "<sensitive>"
+      },
+      "name": "private-storage-2",
+      "project_id": 1,
+      "readonly": true,
+      "source_path": "bucket/my-source-2",
+      "storage_id": 2,
+      "storage_type": "s3",
+      "target_path": "external_storage/private-2"
+    },
+    "sensitive_fields": [
+      {
+        "name": "access_key_id",
+        "help": "AWS Access Key ID.\n\nLeave blank for anonymous access or runtime credentials.",
+        "provider": "",
+        "default": "",
+        "default_str": "",
+        "required": false,
+        "sensitive": true,
+        "advanced": false,
+        "exclusive": false
+      },
+      {
+        "name": "secret_access_key",
+        "help": "AWS Secret Access Key (password).\n\nLeave blank for anonymous access or runtime credentials.",
+        "provider": "",
+        "default": "",
+        "default_str": "",
+        "required": false,
+        "sensitive": true,
+        "advanced": false,
+        "exclusive": false
+      }
+    ]
+  }
+]
