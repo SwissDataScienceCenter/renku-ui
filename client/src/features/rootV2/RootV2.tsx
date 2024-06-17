@@ -46,6 +46,7 @@ import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
 import NavbarV2 from "./NavbarV2";
+import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -146,9 +147,15 @@ function GroupsV2Routes() {
         element={<LazyGroupV2New />}
       />
       <Route
-        path={RELATIVE_ROUTES.v2.groups.show}
-        element={<LazyGroupV2Show />}
-      />
+        path={RELATIVE_ROUTES.v2.groups.show.root}
+        // element={<LazyGroupV2Show />}
+      >
+        <Route index element={<LazyGroupV2Show />} />
+        <Route
+          path={RELATIVE_ROUTES.v2.groups.show.settings}
+          element={<LazyGroupV2Settings />}
+        />
+      </Route>
       <Route
         path="*"
         element={

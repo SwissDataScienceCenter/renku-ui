@@ -174,7 +174,7 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
   });
   const namespaceUrl =
     namespaceData && namespaceData.namespace_kind === "group"
-      ? generatePath(ABSOLUTE_ROUTES.v2.groups.show, { slug: namespace })
+      ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, { slug: namespace })
       : generatePath(ABSOLUTE_ROUTES.v2.users.show, {
           username: project.namespace,
         });

@@ -67,7 +67,7 @@ export default function UserShow() {
   useEffect(() => {
     if (username && namespace?.namespace_kind === "group") {
       navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.groups.show, { slug: username }),
+        generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, { slug: username }),
         {
           replace: true,
         }

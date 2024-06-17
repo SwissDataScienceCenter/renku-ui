@@ -19,7 +19,9 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
+import { PencilSquare } from "react-bootstrap-icons";
 import {
+  Link,
   generatePath,
   useNavigate,
   useParams,
@@ -30,7 +32,10 @@ import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
+import type { GroupResponse } from "../../projectsV2/api/namespace.api";
 import {
+  useGetGroupsByGroupSlugMembersQuery,
   useGetGroupsByGroupSlugQuery,
   useGetNamespacesByGroupSlugQuery,
 } from "../../projectsV2/api/projectV2.enhanced-api";
@@ -115,6 +120,8 @@ export default function GroupV2Show() {
         </section>
       )}
 
+      <GroupSettingsButton group={group} />
+
       <section>
         <h2 className="fs-4">Group Members</h2>
         <GroupV2MemberListDisplay group={slug} />
@@ -147,5 +154,36 @@ function GroupBadge() {
     >
       Group
     </Badge>
+  );
+}
+
+interface GroupSettingsButtonProps {
+  group: GroupResponse;
+}
+
+function GroupSettingsButton({ group }: GroupSettingsButtonProps) {
+  const { data: members } = useGetGroupsByGroupSlugMembersQuery({
+    groupSlug: group.slug,
+  });
+
+  return (
+    <MembershipGuard
+      enabled={
+        <div className="mb-2">
+          <Link
+            to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.settings, {
+              slug: group.slug,
+            })}
+            className={cx("btn", "btn-rk-green")}
+          >
+            <PencilSquare className={cx("bi", "me-1")} />
+            Edit group settings
+          </Link>
+        </div>
+      }
+      disabled={null}
+      members={members}
+      minimumRole="editor"
+    />
   );
 }
