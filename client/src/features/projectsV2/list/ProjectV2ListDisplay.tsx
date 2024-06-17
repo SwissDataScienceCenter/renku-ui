@@ -32,7 +32,10 @@ import { TimeCaption } from "../../../components/TimeCaption";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { Project } from "../api/projectV2.api";
-import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
+import {
+  useGetNamespacesByGroupSlugQuery,
+  useGetProjectsQuery,
+} from "../api/projectV2.enhanced-api";
 
 const DEFAULT_PER_PAGE = 10;
 const DEFAULT_PAGE_PARAM = "page";
@@ -153,6 +156,10 @@ interface ProjectV2ListProjectProps {
   project: Project;
 }
 function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
+  const { data: namespaceData } = useGetNamespacesByGroupSlugQuery({
+    groupSlug: project.namespace,
+  });
+
   const {
     name,
     namespace,
@@ -165,9 +172,12 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
     namespace: project.namespace,
     slug: project.slug,
   });
-  const namespaceUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-    username: project.namespace,
-  });
+  const namespaceUrl =
+    namespaceData && namespaceData.namespace_kind === "group"
+      ? generatePath(ABSOLUTE_ROUTES.v2.groups.show, { slug: namespace })
+      : generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+          username: project.namespace,
+        });
 
   return (
     <Col>
