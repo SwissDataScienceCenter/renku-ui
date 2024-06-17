@@ -167,7 +167,7 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
 
   return (
     <Col>
-      <Card className="h-100">
+      <Card className="h-100" data-cy="project-card">
         <CardBody className={cx("d-flex", "flex-column")}>
           <h3 className="card-title">
             <Link className={cx("link-offset-1")} to={projectUrl}>
@@ -213,14 +213,6 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
               />
             </div>
           </div>
-          {/* <p className={cx("mb-1", "card-text")}></p>
-          <p className={cx("mb-0", "card-text")}>
-            <TimeCaption
-              datetime={creationDate}
-              prefix="Created"
-              enableTooltip
-            />
-          </p> */}
         </CardBody>
       </Card>
     </Col>
