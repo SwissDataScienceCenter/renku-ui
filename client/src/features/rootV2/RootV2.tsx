@@ -43,8 +43,8 @@ import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProje
 import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
-import LazyUserRedirect from "../userV2/LazyUserRedirect";
-import LazyUserShow from "../userV2/LazyUserShow";
+import LazyUserRedirect from "../usersV2/LazyUserRedirect";
+import LazyUserShow from "../usersV2/LazyUserShow";
 import NavbarV2 from "./NavbarV2";
 
 export default function RootV2() {

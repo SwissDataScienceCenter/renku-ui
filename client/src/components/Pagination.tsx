@@ -43,21 +43,10 @@ export default function Pagination({
     return null;
   }
 
-  let extraInfoPagination = null;
-  if (showDescription && totalInPage) {
-    const initialValue = currentPage * perPage - (perPage - 1);
-    const lastValue = initialValue + totalInPage - 1;
-    extraInfoPagination = (
-      <div className="pagination-label">
-        {initialValue} - {lastValue} of {totalItems} results
-      </div>
-    );
-  }
-
   const className = cx("pagination", className_);
 
   return (
-    <div className="d-flex align-items-center flex-column ">
+    <div className={cx("d-flex", "align-items-center", "flex-column")}>
       <ReactPagination
         activePage={currentPage}
         itemsCountPerPage={perPage}
@@ -71,7 +60,35 @@ export default function Pagination({
         hideFirstLastPages={false}
         hideDisabled
       />
-      {extraInfoPagination}
+      {showDescription && totalInPage && (
+        <ExtraInfoPagination
+          currentPage={currentPage}
+          perPage={perPage}
+          totalInPage={totalInPage}
+          totalItems={totalItems}
+        />
+      )}
+    </div>
+  );
+}
+
+interface ExtraInfoPaginationProps {
+  currentPage: number;
+  perPage: number;
+  totalInPage: number;
+  totalItems: number;
+}
+function ExtraInfoPagination({
+  currentPage,
+  perPage,
+  totalInPage,
+  totalItems,
+}: ExtraInfoPaginationProps) {
+  const initialValue = currentPage * perPage - (perPage - 1);
+  const lastValue = initialValue + totalInPage - 1;
+  return (
+    <div className="pagination-label">
+      {initialValue} - {lastValue} of {totalItems} results
     </div>
   );
 }

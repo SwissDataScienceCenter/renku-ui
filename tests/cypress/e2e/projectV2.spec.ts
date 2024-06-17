@@ -215,8 +215,10 @@ describe("Edit v2 project", () => {
   it("changes project metadata", () => {
     fixtures.readProjectV2().updateProjectV2().listNamespaceV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("list-card").first().find("a").click();
+    cy.getDataCy("project-card")
+      .contains("a", "test 2 v2-project")
+      .should("be.visible")
+      .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.getDataCy("project-settings-edit").should("be.visible").click();
@@ -238,8 +240,10 @@ describe("Edit v2 project", () => {
   it("changes project namespace", () => {
     fixtures.readProjectV2().updateProjectV2().listManyNamespaceV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("list-card").first().find("a").click();
+    cy.getDataCy("project-card")
+      .contains("a", "test 2 v2-project")
+      .should("be.visible")
+      .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.getDataCy("project-settings-edit").should("be.visible").click();
@@ -270,7 +274,10 @@ describe("Edit v2 project", () => {
       fixture: "projectV2/update-projectV2-repositories.json",
     });
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.getDataCy("list-card").first().find("a").click();
+    cy.getDataCy("project-card")
+      .contains("a", "test 2 v2-project")
+      .should("be.visible")
+      .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.getDataCy("add-repository").click();
