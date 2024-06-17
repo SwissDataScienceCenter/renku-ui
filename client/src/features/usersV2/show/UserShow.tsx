@@ -126,7 +126,13 @@ export default function UserShow() {
 
       <section>
         <h2 className="fs-4">Personal Projects</h2>
-        <ProjectV2ListDisplay namespace={username} pageParam="projects_page" />
+        <ProjectV2ListDisplay
+          namespace={username}
+          pageParam="projects_page"
+          emptyListElement={
+            <p>{name ?? username} has no visible personal project.</p>
+          }
+        />
       </section>
     </ContainerWrap>
   );

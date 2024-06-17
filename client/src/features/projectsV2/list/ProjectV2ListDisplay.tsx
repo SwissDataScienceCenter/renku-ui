@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { ReactNode, useCallback, useEffect, useMemo } from "react";
 import { Globe2, LockFill } from "react-bootstrap-icons";
 import {
   Link,
@@ -41,12 +41,14 @@ interface ProjectListDisplayProps {
   namespace?: string;
   pageParam?: string;
   perPage?: number;
+  emptyListElement?: ReactNode;
 }
 
 export default function ProjectListDisplay({
   namespace: ns,
   pageParam: pageParam_,
   perPage: perPage_,
+  emptyListElement,
 }: ProjectListDisplayProps) {
   const pageParam = useMemo(
     () => (pageParam_ ? pageParam_ : DEFAULT_PAGE_PARAM),
@@ -117,11 +119,13 @@ export default function ProjectListDisplay({
       </div>
     );
 
-  if (error) {
+  if (error || data == null) {
     return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
-  if (data == null) return <div>No V2 projects.</div>;
+  if (!data.total) {
+    return emptyListElement ?? <p>The project list is empty.</p>;
+  }
 
   return (
     <>
