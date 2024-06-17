@@ -92,6 +92,7 @@ export function AddCodeRepositoryStep1Modal({
                   styles.BorderDashed,
                   stylesButton.EmptyButton
                 )}
+                data-cy="add-existing-repository-button"
               >
                 <Github className="bi me-2" />
                 <BootstrapGitLabIcon className="bi me-2" />

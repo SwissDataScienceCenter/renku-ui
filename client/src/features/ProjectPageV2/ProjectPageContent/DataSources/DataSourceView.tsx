@@ -96,6 +96,7 @@ export function DataSourceView({
           className="d-flex justify-content-start gap-2 align-items-center mb-4"
           role="button"
           onClick={setToggleView}
+          data-cy="data-source-view-back-button"
         >
           <ArrowLeft size={24} />
           Back
@@ -103,7 +104,9 @@ export function DataSourceView({
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div>
             <label className="fst-italic fs-small">Data source</label>
-            <h2 className="fw-bold">{storageDefinition.name}</h2>
+            <h2 className="fw-bold" data-cy="data-source-title">
+              {storageDefinition.name}
+            </h2>
           </div>
           <DataSourceActions storage={storage} projectId={projectId} />
         </div>
