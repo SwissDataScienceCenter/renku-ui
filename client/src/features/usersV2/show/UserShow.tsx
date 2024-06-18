@@ -28,7 +28,6 @@ import { Badge } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
-import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { useGetNamespacesByGroupSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
@@ -75,15 +74,11 @@ export default function UserShow() {
     }
   }, [namespace?.namespace_kind, navigate, username]);
 
-  if (!username) {
-    return <LazyNotFound />;
-  }
-
   if (isLoading) {
     return <Loader className="align-self-center" />;
   }
 
-  if (error || !namespace || !user) {
+  if (error || !username || !namespace || !user) {
     return <UserNotFound error={error} />;
   }
 
