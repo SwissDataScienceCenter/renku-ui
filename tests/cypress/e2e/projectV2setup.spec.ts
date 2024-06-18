@@ -45,6 +45,7 @@ describe("Navigate to project page", () => {
       })
       .cloudStorage({ name: "getCloudStorageV2", isV2: true })
       .deleteCloudStorage({ name: "deleteCloudStorageV2", isV2: true });
+    fixtures.testCloudStorage();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     // add data source
@@ -54,7 +55,8 @@ describe("Navigate to project page", () => {
     cy.getDataCy("data-provider-AWS").click();
     cy.getDataCy("cloud-storage-edit-next-button").click();
     cy.get("#sourcePath").type("giab");
-    cy.getDataCy("cloud-storage-edit-next-button").click();
+    cy.getDataCy("test-cloud-storage-button").click();
+    cy.getDataCy("add-cloud-storage-continue-button").click();
     cy.getDataCy("cloud-storage-edit-mount").within(() => {
       cy.get("#name").type("giab");
     });
@@ -62,7 +64,7 @@ describe("Navigate to project page", () => {
     cy.wait("@postCloudStorageV2");
     cy.getDataCy("cloud-storage-edit-body").should(
       "contain.text",
-      "The storage example-storage has been succesfully added."
+      "The storage example-storage has been successfully added."
     );
     cy.getDataCy("cloud-storage-edit-close-button").click();
     cy.wait("@getCloudStorageV2");
@@ -78,7 +80,11 @@ describe("Navigate to project page", () => {
     fixtures.patchCloudStorage({ name: "patchCloudStorage2", isV2: true });
     cy.getDataCy("data-source-edit").click();
     cy.get("#sourcePath").type("2");
-    cy.getDataCy("cloud-storage-edit-next-button")
+    cy.getDataCy("test-cloud-storage-button")
+      .filter(":enabled")
+      .first()
+      .click();
+    cy.getDataCy("add-cloud-storage-continue-button")
       .filter(":enabled")
       .first()
       .click();
@@ -97,6 +103,42 @@ describe("Navigate to project page", () => {
     cy.getDataCy("data-source-delete").click();
     cy.getDataCy("delete-data-source-modal-button").click();
     cy.wait("@deleteCloudStorageV2");
+  });
+
+  it("set up data source with failed credentials", () => {
+    fixtures
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .postCloudStorage({
+        name: "postCloudStorageV2",
+        fixture: "cloudStorage/new-cloud-storage_v2.json",
+      })
+      .cloudStorage({ name: "getCloudStorageV2", isV2: true })
+      .testCloudStorage({ success: false });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    // add data source
+    cy.getDataCy("add-data-source").click();
+    cy.wait("@getStorageSchema");
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
+    cy.getDataCy("cloud-storage-edit-next-button").click();
+    cy.get("#sourcePath").type("giab");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("test-cloud-storage-button").click();
+    cy.getDataCy("add-cloud-storage-continue-button").contains("Skip").click();
+    cy.getDataCy("cloud-storage-edit-mount").within(() => {
+      cy.get("#name").type("giab");
+    });
+    cy.getDataCy("cloud-storage-edit-update-button").click();
+    cy.wait("@postCloudStorageV2");
+    cy.getDataCy("cloud-storage-edit-body").should(
+      "contain.text",
+      "The storage example-storage has been successfully added."
+    );
+    cy.getDataCy("cloud-storage-edit-close-button").click();
+    cy.wait("@getCloudStorageV2");
+    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
   });
 
   it("set up repositories", () => {
