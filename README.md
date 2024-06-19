@@ -142,8 +142,8 @@ build: bump the react version to 18.1 (#2345)
 
 We encourage squashing commits when merging a PR and expanding the body to include
 relevant details. This will make the commit history cleaner and easier to
-understand. You should still keep separate commits whenever it makes
-sense to do so. In that case, you can rebase the commits in the PR before merging.
+understand. You can keep separate commits if they are logically separate (please
+rebase the PR before merging), although it's best to have separate PRs in that case.
 
 Please pay extra attention to following the guidelines when squash-merging a PR.
 It's easy to mess up since GitHub pre-compiles the commit message.
@@ -157,7 +157,7 @@ We _loosely_ follow the recommendations from [Semantic Versioning](https://semve
 when tagging releases. We don't expose APIs so the distinction between `major` and `minor`
 is subtle. Try to follow these rules:
 
-- If the release includes only bug fixes or minor changes (i.e. no `feat` nor `perf`
+- If the release includes only bug fixes or minor changes (i.e. no `feat`
   commits), bump the `patch` version.
 - When introducing at least one new feature or significant change to an existing
   feature, bump the `minor` version.
