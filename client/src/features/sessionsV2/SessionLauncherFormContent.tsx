@@ -94,6 +94,7 @@ export default function SessionLauncherFormContent({
               id="addSessionLauncherName"
               placeholder="session name"
               type="text"
+              data-cy="edit-session-name"
               {...field}
             />
           )}
@@ -136,6 +137,7 @@ export default function SessionLauncherFormContent({
                   value={"global_environment"}
                   checked={field.value === "global_environment"}
                   disabled={environments && environments.length == 0}
+                  data-cy="edit-session-type-existing"
                 />
                 <Label
                   className={cx(
@@ -154,6 +156,7 @@ export default function SessionLauncherFormContent({
                   {...field}
                   value={"container_image"}
                   checked={field.value === "container_image"}
+                  data-cy="edit-session-type-custom"
                 />
                 <Label className="ms-2" for="addSessionLauncherContainerImage">
                   Custom Image
@@ -290,6 +293,7 @@ export function CustomEnvFormContent({
               id="addSessionLauncherContainerImage"
               placeholder="Docker image"
               type="text"
+              data-cy="custom-image-input"
               {...field}
             />
           )}
@@ -478,6 +482,7 @@ export function SessionEnvironmentItem({
           styles.environmentLabel
         )}
         for={`addSessionLauncherGlobalEnvironment-${id}`}
+        data-cy="global-environment-item"
       >
         <Card>
           <CardBody

@@ -146,8 +146,8 @@ export default function ProjectInformation() {
   const totalMembers = members?.length ?? 0;
   const totalKeywords = project.keywords?.length || 0;
   const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
-    namespace: project.namespace,
-    slug: project.slug,
+    namespace: project.namespace ?? "",
+    slug: project.slug ?? "",
   });
   const membersUrl = `${settingsUrl}#members`;
 
@@ -194,7 +194,9 @@ export default function ProjectInformation() {
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Namespace</div>
-        <div className="fw-bold">{project.namespace}</div>
+        <div className="fw-bold" data-cy="project-namespace">
+          {project.namespace}
+        </div>
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Visibility</div>

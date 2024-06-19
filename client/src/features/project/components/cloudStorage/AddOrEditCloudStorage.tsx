@@ -661,6 +661,7 @@ function AddStorageType({
         value={s.prefix}
         tag="div"
         onClick={() => setFinalSchema(s.prefix)}
+        data-cy={`data-storage-${s.prefix}`}
       >
         <p className="mb-0">
           <b>{s.name}</b>
@@ -783,6 +784,7 @@ function AddStorageType({
             key={p.name}
             tag="div"
             value={p.name}
+            data-cy={`data-provider-${p.name}`}
             onClick={() => setFinalProvider(p.name)}
           >
             <p className="mb-0">

@@ -288,7 +288,7 @@ describe("Cloud storage settings page", () => {
   });
 
   it("can update an existing storage", () => {
-    fixtures.versions().cloudStorageStar();
+    fixtures.versions().cloudStorageStar().testCloudStorage();
     fixtures.patchCloudStorage();
     cy.visit("/projects/e2e/local-test-project/settings/storage");
     cy.wait("@getNotebooksVersions");
@@ -311,9 +311,13 @@ describe("Cloud storage settings page", () => {
     cy.get("#sourcePath")
       .should("have.value", "bucket/source")
       .type("{selectAll}bucket/new-target");
-    cy.getDataCy("cloud-storage-edit-next-button")
+    cy.getDataCy("test-cloud-storage-button")
       .should("be.visible")
-      .contains("Next")
+      .contains("Test connection")
+      .click();
+    cy.getDataCy("add-cloud-storage-continue-button")
+      .should("be.visible")
+      .contains("Continue")
       .click();
 
     cy.get("#name")
@@ -334,9 +338,13 @@ describe("Cloud storage settings page", () => {
     cy.get("#sourcePath").should("have.value", "bucket/new-target");
     cy.getDataCy("cloud-storage-edit-rest-button").should("be.visible").click();
     cy.get("#sourcePath").should("have.value", "bucket/source");
-    cy.getDataCy("cloud-storage-edit-next-button")
+    cy.getDataCy("test-cloud-storage-button")
       .should("be.visible")
-      .contains("Next")
+      .contains("Test connection")
+      .click();
+    cy.getDataCy("add-cloud-storage-continue-button")
+      .should("be.visible")
+      .contains("Continue")
       .click();
     cy.get("#mountPoint").should("have.value", "mount/path");
 
@@ -380,7 +388,8 @@ describe("Cloud storage settings page", () => {
       .versions({
         notebooks: { fixture: "version-notebooks.json" },
       })
-      .cloudStorage();
+      .cloudStorage()
+      .testCloudStorage();
     fixtures.postCloudStorage().patchCloudStorage();
     cy.visit("/projects/e2e/local-test-project/settings/storage");
     cy.wait("@getNotebooksVersions");
@@ -403,7 +412,10 @@ describe("Cloud storage settings page", () => {
     cy.getDataCy("cloud-storage-edit-next-button").should("be.visible").click();
 
     cy.get("#sourcePath").should("have.value", "").type("bucket/my-source");
-    cy.getDataCy("cloud-storage-edit-next-button").should("be.visible").click();
+    cy.getDataCy("test-cloud-storage-button").should("be.visible").click();
+    cy.getDataCy("add-cloud-storage-continue-button")
+      .should("be.visible")
+      .click();
 
     cy.get("#name").should("have.value", "").type("fake-storage");
     cy.get("#mountPoint").should("have.value", "external_storage/fake-storage");
@@ -423,7 +435,7 @@ describe("Cloud storage settings page", () => {
     });
 
     cy.getDataCy("cloud-storage-edit-body").contains(
-      "storage fake-storage has been succesfully added"
+      "storage fake-storage has been successfully added"
     );
     cy.getDataCy("cloud-storage-edit-close-button")
       .should("be.visible")

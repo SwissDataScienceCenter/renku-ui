@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { DataServicesError } from "../../../dataServices/dataServices.types";
+
 export interface CloudStorage {
   storage: CloudStorageConfiguration;
   sensitive_fields?: CloudStorageSensitiveFieldDefinition[];
@@ -154,3 +156,10 @@ export type CloudStorageDetails = {
   mountPoint?: string;
   readOnly?: boolean;
 };
+
+export interface TestCloudStorageConnectionParams {
+  configuration: CloudStorageDetailsOptions;
+  source_path: string;
+}
+
+export type TestCloudStorageConnectionResponse = DataServicesError | void;

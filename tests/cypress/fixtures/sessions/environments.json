@@ -1,0 +1,14 @@
+[
+  {
+    "id": "01HYMSPE2D9K4Q3WAME1NN4244",
+    "name": "Jupyter Notebook",
+    "creation_date": "2024-05-24T07:57:53Z",
+    "container_image": "renku/renkulab-py:latest"
+  },
+  {
+    "id": "01HYMSPZ5TZ4M4D3QNJVQZRMD6",
+    "name": "PyTorch Data Science",
+    "creation_date": "2024-05-24T07:58:10Z",
+    "container_image": "renku/renkulab-py:latest"
+  }
+]
