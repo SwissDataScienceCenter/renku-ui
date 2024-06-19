@@ -40,10 +40,10 @@ import {
 } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { ProjectDeleteConfirmation } from "../../projectsV2/show/ProjectV2EditForm";
 import AddSessionLauncherButton from "../../sessionsV2/AddSessionLauncherButton";
 import { useGetProjectSessionLaunchersQuery } from "../../sessionsV2/sessionsV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
+import ProjectDeleteConfirmation from "../settings/ProjectDeleteConfirmation";
 import AccessGuard from "../utils/AccessGuard";
 import useProjectAccess from "../utils/useProjectAccess.hook";
 
@@ -153,8 +153,8 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
     project.id ? { projectId: project.id } : skipToken
   );
   const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
-    namespace: project.namespace,
-    slug: project.slug,
+    namespace: project.namespace ?? "",
+    slug: project.slug ?? "",
   });
 
   const addSessionBtn =
@@ -182,7 +182,9 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
           <Row>
             <Col className="col-12 col-sm-8">
               <div className={cx("")}>
-                <h1 className="fw-bold">{project.name}</h1>
+                <h1 className="fw-bold" data-cy="project-name">
+                  {project.name}
+                </h1>
               </div>
             </Col>
             <Col className="col-12 col-sm-4">
@@ -210,7 +212,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
           <Col className="col-12">
             <div>
               {project.description?.length ? (
-                <p>
+                <p data-cy="project-description">
                   {project.description}
                   <span className="mx-2">
                     <AccessGuard

@@ -49,7 +49,10 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
 
   return (
     <>
-      <div className={cx("p-3", "d-flex", "justify-content-between")}>
+      <div
+        className={cx("p-3", "d-flex", "justify-content-between")}
+        data-cy="data-source-box"
+      >
         <div className="fw-bold">
           <Database size={20} className={cx("me-2")} />
           Data Sources ({totalStorages})
