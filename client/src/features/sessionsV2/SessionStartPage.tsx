@@ -44,12 +44,10 @@ import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionLauncherState from "./useSessionLaunchState";
 import { StartSessionOptionsV2 } from "./startSessionOptionsV2.types";
-import { GetStoragesV2ApiResponse } from "../projectsV2/api/storagesV2.api";
 
 interface SessionStartingProps extends StartSessionFromLauncherProps {
   containerImage: string;
   startSessionOptionsV2: StartSessionOptionsV2;
-  storages: GetStoragesV2ApiResponse | undefined;
 }
 
 function SessionStarting({
@@ -57,7 +55,6 @@ function SessionStarting({
   launcher,
   project,
   startSessionOptionsV2,
-  storages,
 }: SessionStartingProps) {
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
   const navigate = useNavigate();
@@ -73,11 +70,7 @@ function SessionStarting({
       projectId: project.id,
       launcherId: launcher.id,
       repositories: startSessionOptionsV2.repositories,
-      cloudStorage:
-        storages?.map(
-          // (storage) => storage.storage as unknown as SessionCloudStorage
-          (storage) => storage.storage
-        ) || [],
+      cloudStorage: startSessionOptionsV2.cloudStorage,
       defaultUrl: startSessionOptionsV2.defaultUrl,
       environmentVariables: {},
       image: containerImage,
@@ -91,7 +84,6 @@ function SessionStarting({
     project.id,
     startSession,
     startSessionOptionsV2,
-    storages,
   ]);
 
   // Navigate to the session page when it is ready
@@ -160,7 +152,6 @@ function StartSessionFromLauncher({
     isFetchingOrLoadingStorages,
     resourcePools,
     startSessionOptionsV2,
-    storages,
   } = useSessionLauncherState({
     launcher,
     project,
@@ -226,7 +217,6 @@ function StartSessionFromLauncher({
         launcher={launcher}
         project={project}
         startSessionOptionsV2={startSessionOptionsV2}
-        storages={storages}
       />
     );
 

@@ -18,12 +18,12 @@
 
 import type {
   DockerImageStatus,
-  SessionCloudStorage,
   SessionEnvironmentVariable,
 } from "../session/startSessionOptions.types";
+import type { CloudStorageWithIdRead } from "../projectsV2/api/storagesV2.api.ts";
 
 export interface StartSessionOptionsV2 {
-  cloudStorage: SessionCloudStorage[];
+  cloudStorage: CloudStorageWithIdRead[];
   defaultUrl: string;
   dockerImageStatus: DockerImageStatus;
   environmentVariables: SessionEnvironmentVariable[];

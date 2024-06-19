@@ -149,6 +149,14 @@ export default function useSessionLauncherState({
     dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
   }, [dispatch, project.repositories]);
 
+  useEffect(() => {
+    if (storages == null) return;
+    const initialCloudStorage = storages.map((storage) => storage.storage);
+    dispatch(
+      startSessionOptionsV2Slice.actions.setCloudStorage(initialCloudStorage)
+    );
+  }, [dispatch, storages]);
+
   return {
     containerImage,
     defaultSessionClass,
