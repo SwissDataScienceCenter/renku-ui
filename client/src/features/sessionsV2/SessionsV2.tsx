@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
+  GearFill,
   LayoutSidebarInsetReverse,
   PencilSquare,
   ThreeDotsVertical,
@@ -87,26 +88,7 @@ export function getShowSessionUrlByProject(
 interface SessionsV2Props {
   project: Project;
 }
-
 export default function SessionsV2({ project }: SessionsV2Props) {
-  const { error } = useGetSessionEnvironmentsQuery();
-  return (
-    <div>
-      <h3 className="fs-5">Sessions</h3>
-      <div>
-        <AddSessionLauncherButton styleBtn="iconTextBtn" />
-      </div>
-
-      {error && <RtkErrorAlert error={error} />}
-
-      <div className="mt-2">
-        <SessionLaunchersListDisplay project={project} />
-      </div>
-    </div>
-  );
-}
-
-export function SessionLaunchersListDisplay({ project }: SessionsV2Props) {
   const { userRole } = useProjectAccess({ projectId: project.id });
   const projectId = project.id;
 
@@ -152,122 +134,79 @@ export function SessionLaunchersListDisplay({ project }: SessionsV2Props) {
     (launchers ? launchers?.length : 0) +
     Object.entries(orphanSessions)?.length;
   return (
-    <>
+    <div className="card">
       <div
-        className={cx("p-3", "d-flex", "justify-content-between")}
+        className={cx("card-header", "d-flex", "justify-content-between")}
         data-cy="sessions-box"
       >
-        <div className="fw-bold">
-          <img
-            src={rkIconSessions}
-            className={cx("rk-icon", "rk-icon-lg", "me-2")}
-          />
+        <h3 className="mb-0">
+          <GearFill className={cx("me-2", "text-icon")} />
           Sessions ({totalSessions})
-        </div>
+        </h3>
         <AccessGuard
           disabled={null}
           enabled={
-            <AddSessionLauncherButton
-              data-cy="add-session-launcher"
-              styleBtn="iconBtn"
-            />
+            <div className="my-auto">
+              <AddSessionLauncherButton
+                data-cy="add-session-launcher"
+                styleBtn="iconBtn"
+              />
+            </div>
           }
           minimumRole="editor"
           role={userRole}
         />
       </div>
-      {loading}
-      {errorAlert}
-      <p className={cx("px-3", totalSessions > 0 && "d-none")}>
-        Define interactive environments in which to do your work and share it
-        with others.
-      </p>
-      <p className={cx("px-3", totalSessions === 0 && "d-none")}>
-        Session launchers are available to everyone who can see the project.
-        Running sessions are only accessible to you.
-      </p>
-      <div className={cx("py-0", "px-0", totalSessions === 0 ? "d-none" : "")}>
-        <Row
-          className={cx("d-none", "d-xl-flex", "pt-3", "px-0", "m-0", "mb-1")}
-        >
-          <Col
-            xl={3}
-            sm={6}
-            xs={12}
-            className={cx("d-flex", "align-items-center", "px-3")}
-          >
-            <span
-              className={cx(
-                "w-100",
-                "fst-italic",
-                "fs-small",
-                "text-light-emphasis",
-                "border-0",
-                "border-bottom",
-                "border-dark-subtle",
-                "rk-border-dotted"
-              )}
-            >
-              Session launcher
-            </span>
-          </Col>
-          <Col
-            xl={3}
-            xs={12}
-            className={cx("d-flex", "align-items-center", "px-2")}
-          >
-            <span
-              className={cx(
-                "w-100",
-                "fst-italic",
-                "fs-small",
-                "text-light-emphasis",
-                "border-0",
-                "border-bottom",
-                "border-dark-subtle",
-                "rk-border-dotted"
-              )}
-            >
-              Session state
-            </span>
-          </Col>
-          <Col
-            xl={6}
-            xs={12}
-            className={cx("d-flex", "align-items-center", "px-2")}
-          >
-            <span
-              className={cx(
-                "w-100",
-                "fst-italic",
-                "fs-small",
-                "text-light-emphasis",
-                "border-0",
-                "border-bottom",
-                "border-dark-subtle",
-                "rk-border-dotted"
-              )}
-            >
-              Session details
-            </span>
-          </Col>
-        </Row>
-        {launchers?.map((launcher) => (
-          <SessionItemDisplay
-            key={`launcher-${launcher.id}`}
-            launcher={launcher}
-            project={project}
-          />
-        ))}
-        {Object.entries(orphanSessions).map(([key, session]) => (
-          <OrphanSession
-            key={`orphan-${key}`}
-            session={session}
-            project={project}
-          />
-        ))}
+      <div className="card-body">
+        {loading}
+        {errorAlert}
+        <p className={cx(totalSessions > 0 && "d-none")}>
+          Define interactive environments in which to do your work and share it
+          with others.
+        </p>
+        <p className={cx(totalSessions === 0 && "d-none")}>
+          Session launchers are available to everyone who can see the project.
+          Running sessions are only accessible to you.
+        </p>
+        {totalSessions > 0 && (
+          <ul className={cx("list-group", "list-group-flush")}>
+            {launchers?.map((launcher) => (
+              <SessionItemDisplay
+                key={`launcher-${launcher.id}`}
+                launcher={launcher}
+                project={project}
+              />
+            ))}
+            {Object.entries(orphanSessions).map(([key, session]) => (
+              <OrphanSession
+                key={`orphan-${key}`}
+                session={session}
+                project={project}
+              />
+            ))}
+
+            {/* <li
+              className={cx("list-group-item", "d-flex", "align-items-center")}
+            ></li> */}
+          </ul>
+        )}
+
+        {/* {launchers?.map((launcher) => (
+            <SessionItemDisplay
+              key={`launcher-${launcher.id}`}
+              launcher={launcher}
+              project={project}
+            />
+          ))}
+          {Object.entries(orphanSessions).map(([key, session]) => (
+            <OrphanSession
+              key={`orphan-${key}`}
+              session={session}
+              project={project}
+            />
+          ))} */}
       </div>
-    </>
+    </div>
   );
 }
 

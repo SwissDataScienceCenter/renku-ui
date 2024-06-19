@@ -1,0 +1,28 @@
+// ? Bootstrap customization reference:
+// ? https://getbootstrap.com/docs/5.3/customize/sass/
+
+// 1: Optional default variable overrides here (functions unavailable)
+
+@import "./fonts/fonts";
+
+$font-family-base: "Inter", sans-serif;
+
+// 2: Import Bootstrap
+
+@import "~bootstrap/scss/bootstrap";
+
+// 3: Optional custom code here
+
+@import "./icons/icons.scss";
+
+svg.bi,
+svg.text-icon {
+  display: inline-flex;
+  height: 1em;
+  vertical-align: -0.125em;
+  width: 1em;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}

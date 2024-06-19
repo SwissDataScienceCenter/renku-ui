@@ -78,7 +78,9 @@ class TreeNode extends Component {
 
     const order =
       this.props.node.type === "tree" ? "order-second" : "order-third";
-    const hidden = this.props.node.name.startsWith(".") ? "rk-opacity-50" : "";
+    const hidden = this.props.node.name.startsWith(".")
+      ? "text-opacity-50"
+      : "";
     const selected = this.props.nodeInsideIsSelected ? "selected-file" : "";
 
     const urlPrefix = this.props.fileView

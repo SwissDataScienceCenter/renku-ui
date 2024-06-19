@@ -41,6 +41,7 @@ import {
   Col,
   DropdownMenu,
   DropdownToggle,
+  UncontrolledDropdown,
   UncontrolledTooltip,
 } from "reactstrap";
 
@@ -115,6 +116,43 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
       {props.default}
       {options}
     </ButtonDropdown>
+  );
+}
+
+type BButtonWithMenuV2Props = {
+  children?:
+    | React.ReactElement[]
+    | React.ReactNode[]
+    | JSX.Element[]
+    | JSX.Element;
+  className?: string;
+  color?: string;
+  default: React.ReactNode;
+  direction?: "up" | "down" | "start" | "end";
+  disabled?: boolean;
+  id?: string;
+  size?: string;
+};
+export function ButtonWithMenuV2(props: BButtonWithMenuV2Props) {
+  return (
+    <UncontrolledDropdown
+      className={cx(props.className)}
+      color={props.color ?? "primary"}
+      direction={props.direction ?? "down"}
+      disabled={props.disabled}
+      group
+      id={props.id}
+      size={props.size ?? "md"}
+    >
+      {props.default}
+      <DropdownToggle
+        caret
+        color={props.color ?? "primary"}
+        data-cy="button-with-menu-dropdown"
+        disabled={props.disabled}
+      />
+      <DropdownMenu>{props.children}</DropdownMenu>
+    </UncontrolledDropdown>
   );
 }
 
@@ -308,10 +346,10 @@ function UnderlineArrowLink({
   const ref = useRef(null);
   return (
     <>
-      <span ref={ref} className={buttonStyles.LinkUnderline}>
-        <Link className="text-decoration-none" to={to}>
+      <span ref={ref}>
+        <Link to={to}>
           {text}
-          <ArrowRight className={cx("bi", "ms-1")} />
+          <ArrowRight className={cx("ms-2", "text-icon")} />
         </Link>
       </span>
       <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>

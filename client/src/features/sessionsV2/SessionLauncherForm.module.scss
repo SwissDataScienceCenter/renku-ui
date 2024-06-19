@@ -5,16 +5,16 @@
 @import "~bootstrap/scss/maps";
 @import "~bootstrap/scss/mixins";
 
-.environmentLabel {
-  &:hover {
-    .environmentCard {
-      background-color: $rk-gray-100 !important;
-    }
-  }
+// .environmentLabel {
+//   &:hover {
+//     .environmentCard {
+//       background-color: $rk-gray-100 !important;
+//     }
+//   }
 
-  input:focus-visible + & {
-    box-shadow: var(--bs-focus-ring-x, 0) var(--bs-focus-ring-y, 0)
-      var(--bs-focus-ring-blur, 0) var(--bs-focus-ring-width)
-      var(--bs-focus-ring-color);
-  }
-}
+//   input:focus-visible + & {
+//     box-shadow: var(--bs-focus-ring-x, 0) var(--bs-focus-ring-y, 0)
+//       var(--bs-focus-ring-blur, 0) var(--bs-focus-ring-width)
+//       var(--bs-focus-ring-color);
+//   }
+// }

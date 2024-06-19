@@ -16,56 +16,27 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { ReactNode } from "react";
 import { Col, Row } from "reactstrap";
 
-import { SessionLaunchersListDisplay } from "../../../sessionsV2/SessionsV2";
+import SessionsV2 from "../../../sessionsV2/SessionsV2";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import { CodeRepositoriesDisplay } from "../CodeRepositories/RepositoriesBox";
 import { DataSourcesDisplay } from "../DataSources/DataSourcesBox";
-
-import styles from "./ProjectOverview.module.scss";
-
-function OverviewBox({ children }: { children: ReactNode }) {
-  return (
-    <div
-      className={cx(
-        "border-1",
-        "border-rk-text-light",
-        "rounded-2",
-        "bg-white",
-        "mt-3",
-        "mt-lg-0",
-        styles.BorderDashed,
-        styles.ProjectPageOverviewBox
-      )}
-    >
-      {children}
-    </div>
-  );
-}
 
 export default function ProjectPageOverview() {
   const { project } = useProject();
 
   return (
     <div className="mx-3 pb-5">
-      <Row className="g-5">
+      <Row>
         <Col sm={12}>
-          <OverviewBox>
-            <SessionLaunchersListDisplay project={project} />
-          </OverviewBox>
+          <SessionsV2 project={project} />
         </Col>
         <Col xl={6}>
-          <OverviewBox>
-            <DataSourcesDisplay project={project} />
-          </OverviewBox>
+          <DataSourcesDisplay project={project} />
         </Col>
         <Col xl={6}>
-          <OverviewBox>
-            <CodeRepositoriesDisplay project={project} />
-          </OverviewBox>
+          <CodeRepositoriesDisplay project={project} />
         </Col>
       </Row>
     </div>

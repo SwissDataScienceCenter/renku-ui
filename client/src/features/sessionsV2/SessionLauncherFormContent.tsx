@@ -17,6 +17,8 @@
  */
 
 import cx from "classnames";
+import { useEffect, useMemo, useState } from "react";
+import { SingleValue } from "react-select";
 import {
   Control,
   Controller,
@@ -37,23 +39,21 @@ import {
   Label,
   Row,
 } from "reactstrap";
+import { Globe2 } from "react-bootstrap-icons";
 
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
 import { EnvironmentKind, SessionEnvironment } from "./sessionsV2.types";
-
-import { useEffect, useMemo, useState } from "react";
-import { SingleValue } from "react-select";
 import { WarnAlert } from "../../components/Alert.jsx";
-import rkIconGlobalEnv from "../../styles/assets/globalEnvironment.svg";
 import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import {
   ResourceClass,
   ResourcePool,
 } from "../dataServices/dataServices.types";
 import { SessionClassSelector } from "../session/components/options/SessionClassOption";
+
 import styles from "./SessionLauncherForm.module.scss";
 import sessionViewStyles from "./SessionView/SessionView.module.scss";
 
@@ -311,7 +311,7 @@ export function CustomEnvFormContent({
 
   return (
     <>
-      <div className="mb-5">
+      <div className="mb-3">
         <Label className="form-label" for="addSessionLauncherName">
           Session launcher Name
         </Label>
@@ -490,7 +490,7 @@ export function ExistingEnvFormContent({
       <div>
         {isLoading && (
           <p>
-            <Loader className="me-1" inline size={16} />
+            <Loader className="me-2" inline size={16} />
             Loading environments...
           </p>
         )}
@@ -650,13 +650,10 @@ export function SessionEnvironmentItem({
               {name}
             </CardTitle>
             <CardText>
-              <img
-                src={rkIconGlobalEnv}
-                className={cx("rk-icon", "rk-icon-md", "me-2")}
-              />{" "}
+              <Globe2 className={cx("me-2", "icon-text")} />
               Global environment
             </CardText>
-            <CardText className="mb-0">
+            <CardText>
               {description ? description : <i>No description</i>}
             </CardText>
             <CardText>
