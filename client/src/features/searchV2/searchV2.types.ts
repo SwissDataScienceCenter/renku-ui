@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { UserV2 } from "../userV2/userV2.types";
+import { UserV2 } from "../usersV2/userV2.types";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
 
 export type EntityType = "Project" | "User";
