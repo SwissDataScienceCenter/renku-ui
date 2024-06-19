@@ -37,7 +37,7 @@ import type { GroupResponse } from "../../projectsV2/api/namespace.api";
 import {
   useGetGroupsByGroupSlugMembersQuery,
   useGetGroupsByGroupSlugQuery,
-  useGetNamespacesByGroupSlugQuery,
+  useGetNamespacesByNamespaceSlugQuery,
 } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
@@ -53,7 +53,9 @@ export default function GroupV2Show() {
     data: namespace,
     isLoading: isLoadingNamespace,
     error: namespaceError,
-  } = useGetNamespacesByGroupSlugQuery(slug ? { groupSlug: slug } : skipToken);
+  } = useGetNamespacesByNamespaceSlugQuery(
+    slug ? { namespaceSlug: slug } : skipToken
+  );
   const {
     data: group,
     isLoading: isLoadingGroup,

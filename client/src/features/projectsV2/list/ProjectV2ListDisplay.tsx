@@ -33,7 +33,7 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { Project } from "../api/projectV2.api";
 import {
-  useGetNamespacesByGroupSlugQuery,
+  useGetNamespacesByNamespaceSlugQuery,
   useGetProjectsQuery,
 } from "../api/projectV2.enhanced-api";
 
@@ -156,8 +156,8 @@ interface ProjectV2ListProjectProps {
   project: Project;
 }
 function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
-  const { data: namespaceData } = useGetNamespacesByGroupSlugQuery({
-    groupSlug: project.namespace,
+  const { data: namespaceData } = useGetNamespacesByNamespaceSlugQuery({
+    namespaceSlug: project.namespace,
   });
 
   const {

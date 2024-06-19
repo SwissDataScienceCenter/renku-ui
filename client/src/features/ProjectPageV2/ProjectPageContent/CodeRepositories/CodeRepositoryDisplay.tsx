@@ -380,7 +380,7 @@ export function RepositoryItem({
       />
       <div className={cx("d-flex", "flex-column")}>
         {canonicalUrl?.hostname && (
-          <span ata-cy="code-repository-title">{canonicalUrl.hostname}</span>
+          <span data-cy="code-repository-title">{canonicalUrl.hostname}</span>
         )}
         <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
           {title || canonicalUrlStr}

@@ -29,7 +29,7 @@ import { Badge } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { useGetNamespacesByGroupSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import {
@@ -47,8 +47,8 @@ export default function UserShow() {
     data: namespace,
     isLoading: isLoadingNamespace,
     error: namespaceError,
-  } = useGetNamespacesByGroupSlugQuery(
-    username ? { groupSlug: username } : skipToken
+  } = useGetNamespacesByNamespaceSlugQuery(
+    username ? { namespaceSlug: username } : skipToken
   );
   const {
     data: user,
