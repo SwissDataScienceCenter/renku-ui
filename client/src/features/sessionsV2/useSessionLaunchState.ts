@@ -19,19 +19,19 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 
-import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook.ts";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook.ts";
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
-import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api.ts";
-import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api.ts";
-import type { Project } from "../projectsV2/api/projectV2.api.ts";
-import { useGetDockerImageQuery } from "../session/sessions.api.ts";
-import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants.ts";
-import { DockerImageStatus } from "../session/startSessionOptions.types.ts";
+import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
+import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api";
+import type { Project } from "../projectsV2/api/projectV2.api";
+import { useGetDockerImageQuery } from "../session/sessions.api";
+import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
+import { DockerImageStatus } from "../session/startSessionOptions.types";
 
-import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api.ts";
-import { SessionLauncher } from "./sessionsV2.types.ts";
-import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice.ts";
+import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
+import { SessionLauncher } from "./sessionsV2.types";
+import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
 interface StartSessionFromLauncherProps {
   launcher: SessionLauncher;

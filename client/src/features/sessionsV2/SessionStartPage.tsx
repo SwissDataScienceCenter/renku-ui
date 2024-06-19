@@ -33,7 +33,7 @@ import ProgressStepsIndicator, {
   StatusStepProgressBar,
   StepsProgressBar,
 } from "../../components/progress/ProgressSteps";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 
 import type { Project } from "../projectsV2/api/projectV2.api";
@@ -43,8 +43,8 @@ import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionLauncherState from "./useSessionLaunchState";
-import { StartSessionOptionsV2 } from "./startSessionOptionsV2.types.ts";
-import { GetStoragesV2ApiResponse } from "../projectsV2/api/storagesV2.api.ts";
+import { StartSessionOptionsV2 } from "./startSessionOptionsV2.types";
+import { GetStoragesV2ApiResponse } from "../projectsV2/api/storagesV2.api";
 
 interface SessionStartingProps extends StartSessionFromLauncherProps {
   containerImage: string;

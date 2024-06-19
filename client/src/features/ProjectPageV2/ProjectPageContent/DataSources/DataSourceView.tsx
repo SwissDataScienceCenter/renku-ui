@@ -19,10 +19,10 @@ import cx from "classnames";
 import { useMemo } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Offcanvas, OffcanvasBody } from "reactstrap";
-import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem.tsx";
-import { getCredentialFieldDefinitions } from "../../../project/utils/projectCloudStorage.utils.ts";
-import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api.ts";
-import { DataSourceActions } from "./DataSourceDisplay.tsx";
+import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem";
+import { getCredentialFieldDefinitions } from "../../../project/utils/projectCloudStorage.utils";
+import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
+import { DataSourceActions } from "./DataSourceDisplay";
 
 interface DataSourceViewProps {
   storage: CloudStorageGetRead;

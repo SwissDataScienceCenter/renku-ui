@@ -20,7 +20,7 @@ import {
   CloudStorageGetRead,
   RCloneConfig,
   RCloneOption,
-} from "../../projectsV2/api/storagesV2.api.ts";
+} from "../../projectsV2/api/storagesV2.api";
 import {
   CLOUD_OPTIONS_OVERRIDE,
   CLOUD_STORAGE_MOUNT_PATH_HELP,
