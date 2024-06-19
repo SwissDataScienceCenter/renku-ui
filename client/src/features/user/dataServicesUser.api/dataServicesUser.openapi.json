@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "Renku data services.",
-    "description": "Endpoints that provide different information from different backends.\n",
+    "title": "Renku Data Services API",
+    "description": "This service is the main backend for Renku. It provides information about users, projects,\ncloud storage, access to compute resources and many other things.\n",
     "version": "v1"
   },
   "servers": [
@@ -27,6 +27,9 @@
                 }
               }
             }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
         },
         "tags": ["users"]
@@ -56,6 +59,9 @@
                 }
               }
             }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
         },
         "tags": ["users"]
@@ -84,6 +90,19 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The user does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
         },
         "tags": ["users"]
@@ -133,6 +152,9 @@
           "id": {
             "$ref": "#/components/schemas/UserId"
           },
+          "username": {
+            "$ref": "#/components/schemas/Username"
+          },
           "email": {
             "$ref": "#/components/schemas/UserEmail"
           },
@@ -143,10 +165,12 @@
             "$ref": "#/components/schemas/UserFirstLastName"
           }
         },
-        "required": ["id"],
+        "required": ["id", "username"],
         "example": {
           "id": "some-random-keycloak-id",
-          "email": "user@gmail.com"
+          "username": "some-username",
+          "first_name": "Jane",
+          "last_name": "Doe"
         }
       },
       "UsersWithId": {
@@ -155,6 +179,16 @@
           "$ref": "#/components/schemas/UserWithId"
         },
         "uniqueItems": true
+      },
+      "UserSecretKey": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "secret_key": {
+            "type": "string",
+            "description": "The users secret key"
+          }
+        }
       },
       "Version": {
         "type": "object",
@@ -168,7 +202,15 @@
       "UserId": {
         "type": "string",
         "description": "Keycloak user ID",
-        "example": "f74a228b-1790-4276-af5f-25c2424e9b0c"
+        "example": "f74a228b-1790-4276-af5f-25c2424e9b0c",
+        "pattern": "^[A-Za-z0-9]{1}[A-Za-z0-9-]+$"
+      },
+      "Username": {
+        "type": "string",
+        "description": "Handle of the user",
+        "example": "some-username",
+        "minLength": 1,
+        "maxLength": 99
       },
       "UserFirstLastName": {
         "type": "string",
@@ -182,6 +224,88 @@
         "format": "email",
         "description": "User email",
         "example": "some-user@gmail.com"
+      },
+      "SecretsList": {
+        "description": "A list of secrets",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SecretWithId"
+        },
+        "minItems": 0
+      },
+      "SecretWithId": {
+        "description": "A Renku secret",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "name": {
+            "$ref": "#/components/schemas/SecretName"
+          },
+          "modification_date": {
+            "$ref": "#/components/schemas/ModificationDate"
+          }
+        },
+        "required": ["id", "name", "modification_date"],
+        "example": {
+          "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
+          "name": "S3-Credentials",
+          "modification_date": "2024-01-16T11:42:05Z"
+        }
+      },
+      "SecretPost": {
+        "description": "Secret metadata to be created",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/SecretName"
+          },
+          "value": {
+            "$ref": "#/components/schemas/SecretValue"
+          }
+        },
+        "required": ["name", "value"]
+      },
+      "SecretPatch": {
+        "type": "object",
+        "description": "Secret metadata to be modified",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/SecretValue"
+          }
+        },
+        "required": ["value"]
+      },
+      "SecretName": {
+        "description": "Secret name",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "pattern": "^[a-zA-Z0-9_\\-.]*$",
+        "example": "Data-S3-Secret_1"
+      },
+      "Ulid": {
+        "description": "ULID identifier",
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[A-Z0-9]{26}$"
+      },
+      "ModificationDate": {
+        "description": "The date and time the secret was created or modified (this is always in UTC)",
+        "type": "string",
+        "format": "date-time",
+        "example": "2023-11-01T17:32:28Z"
+      },
+      "SecretValue": {
+        "description": "Secret value that can be any text",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 5000
       },
       "ErrorResponse": {
         "type": "object",

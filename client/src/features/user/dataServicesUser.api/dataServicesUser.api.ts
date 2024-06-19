@@ -45,15 +45,16 @@ export type GetErrorApiArg = void;
 export type GetVersionApiResponse = /** status 200 The error */ Version;
 export type GetVersionApiArg = void;
 export type UserId = string;
+export type Username = string;
 export type UserEmail = string;
 export type UserFirstLastName = string;
 export type UserWithId = {
   id: UserId;
+  username: Username;
   email?: UserEmail;
   first_name?: UserFirstLastName;
   last_name?: UserFirstLastName;
 };
-export type UsersWithId = UserWithId[];
 export type ErrorResponse = {
   error: {
     code: number;
@@ -61,6 +62,7 @@ export type ErrorResponse = {
     message: string;
   };
 };
+export type UsersWithId = UserWithId[];
 export type Version = {
   version: string;
 };

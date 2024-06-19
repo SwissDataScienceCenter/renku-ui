@@ -17,11 +17,9 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-
 import {
   Button,
   Form,
@@ -33,9 +31,6 @@ import {
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-
-import type { UserWithId } from "../../user/dataServicesUser.api";
-
 import type { ProjectMemberResponse } from "../api/projectV2.api";
 import { useDeleteProjectsByProjectIdMembersAndMemberIdMutation } from "../api/projectV2.enhanced-api";
 
@@ -50,14 +45,13 @@ type ProjectMemberForRemove = ProjectMemberResponse;
 
 interface RemoveProjectMemberAccessFormProps
   extends Pick<RemoveProjectMemberModalProps, "projectId" | "toggle"> {
-  member: UserWithId;
+  member: ProjectMemberResponse;
 }
 function RemoveProjectMemberAccessForm({
   projectId,
   toggle,
   member,
 }: RemoveProjectMemberAccessFormProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [deleteMember, result] =
     useDeleteProjectsByProjectIdMembersAndMemberIdMutation();
 

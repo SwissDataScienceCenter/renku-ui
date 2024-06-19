@@ -22,7 +22,7 @@ import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Button, Card, CardBody, Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
-import { Pagination } from "../../../components/Pagination";
+import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";

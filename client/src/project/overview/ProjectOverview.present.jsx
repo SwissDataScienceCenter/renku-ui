@@ -47,7 +47,7 @@ import { CommitsView } from "../../components/commits/Commits";
 import { Loader } from "../../components/Loader";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { RefreshButton } from "../../components/buttons/Button";
-import { Pagination } from "../../components/Pagination";
+import Pagination from "../../components/Pagination";
 
 class OverviewStats extends Component {
   valueOrEmptyOrLoading(value, fetching, readableSize = true) {

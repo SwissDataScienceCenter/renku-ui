@@ -16,26 +16,26 @@
  * limitations under the License.
  */
 
-import { Button } from "reactstrap";
-import Masonry from "react-masonry-css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSadCry } from "@fortawesome/free-solid-svg-icons";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import Masonry from "react-masonry-css";
+import { Button } from "reactstrap";
 
 import {
   KgSearchResult,
   ListResponse,
 } from "../../features/kgSearch/KgSearch.types";
+import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 import {
   FiltersProperties,
   hasInitialFilterValues,
   mapSearchResultToEntity,
 } from "../../utils/helpers/KgSearchFunctions";
 import { Loader } from "../Loader";
+import Pagination from "../Pagination";
 import ListCard from "../list/ListCard";
-import { Pagination } from "../Pagination";
-import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 
 interface SearchResultProps {
   data?: ListResponse<KgSearchResult>;

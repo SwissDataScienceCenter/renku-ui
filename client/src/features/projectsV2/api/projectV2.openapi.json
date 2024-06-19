@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "Renku Project Management Service",
+    "title": "Renku Data Services API",
     "description": "Service that allows creating, updating, deleting, and managing Renku native projects.\nAll errors have the same format as the schema called ErrorResponse.\n",
-    "version": "0.6.0"
+    "version": "v1"
   },
   "servers": [
     {
@@ -18,6 +18,15 @@
       "get": {
         "summary": "Get all projects",
         "parameters": [
+          {
+            "in": "query",
+            "description": "A namespace, used as a filter.",
+            "name": "namespace",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "in": "query",
             "description": "Result's page number starting from 1",
@@ -167,8 +176,7 @@
             "name": "project_id",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Ulid",
-              "type": "string"
+              "$ref": "#/components/schemas/Ulid"
             }
           },
           {
@@ -548,8 +556,7 @@
         "type": "string",
         "minLength": 26,
         "maxLength": 26,
-        "pattern": "^[A-Z0-9]{26}$",
-        "format": "ulid"
+        "pattern": "^[A-Z0-9]{26}$"
       },
       "ProjectName": {
         "description": "Renku project name",
@@ -576,13 +583,6 @@
         "description": "A description for the resource",
         "type": "string",
         "maxLength": 500
-      },
-      "KeyCloakId": {
-        "description": "Member's KeyCloak ID",
-        "type": "string",
-        "pattern": "^[A-Za-z0-9-]+$",
-        "minLength": 1,
-        "example": "123-keycloak-user-id-456"
       },
       "KeywordsList": {
         "description": "Project keywords",
@@ -636,7 +636,7 @@
           },
           {
             "id": "another-keycloak-user-id",
-            "role": "member"
+            "role": "viewer"
           }
         ]
       },

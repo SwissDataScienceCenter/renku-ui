@@ -46,6 +46,7 @@ import {
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
+import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
@@ -365,20 +366,22 @@ export function RepositoryItem({
 }: RepositoryItemProps) {
   const canonicalUrlStr = useMemo(() => `${url.replace(/.git$/i, "")}`, [url]);
   const canonicalUrl = useMemo(
-    () => new URL(canonicalUrlStr),
+    () => safeNewUrl(canonicalUrlStr),
     [canonicalUrlStr]
   );
 
-  const title = canonicalUrl.pathname.split("/").pop();
+  const title = canonicalUrl?.pathname.split("/").pop() ?? canonicalUrlStr;
 
   const urlDisplay = (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <RepositoryIcon
         className="flex-shrink-0"
-        provider={canonicalUrl.origin}
+        provider={canonicalUrl?.origin ?? window.location.origin}
       />
       <div className={cx("d-flex", "flex-column")}>
-        <span data-cy="code-repository-title">{canonicalUrl.hostname}</span>
+        {canonicalUrl?.hostname && (
+          <span ata-cy="code-repository-title">{canonicalUrl.hostname}</span>
+        )}
         <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
           {title || canonicalUrlStr}
           <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
