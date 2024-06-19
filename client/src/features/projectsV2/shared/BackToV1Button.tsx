@@ -34,7 +34,6 @@ export default function BackToV1Button({
         "btn",
         "btn-sm",
         outline ? `btn-outline-${color}` : `btn-${color}`,
-        "ms-2",
         "text-decoration-none"
       )}
       to="/"

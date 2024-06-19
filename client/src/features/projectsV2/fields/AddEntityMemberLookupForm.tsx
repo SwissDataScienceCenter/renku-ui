@@ -82,11 +82,7 @@ export default function AddEntityMemberEmailLookupForm({
   return (
     <>
       <ModalBody>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-3">
             <Label className="form-label" for="addProjectMemberEmail">
               Email
@@ -113,11 +109,7 @@ export default function AddEntityMemberEmailLookupForm({
             {isUserNotFound && <div>No user found for {lookupEmail}.</div>}
           </div>
           <div className={cx("d-flex", "flex-row-reverse")}>
-            <Button
-              className="btn-outline-rk-green"
-              disabled={isLoading}
-              type="submit"
-            >
+            <Button color="primary" disabled={isLoading} type="submit">
               Lookup
             </Button>
           </div>
@@ -125,15 +117,20 @@ export default function AddEntityMemberEmailLookupForm({
       </ModalBody>
       <ModalFooter>
         <Button
-          className="btn-outline-rk-green"
+          color="outline-secondary"
           onClick={toggle}
           data-cy="user-lookup-close-button"
         >
-          <XLg className={cx("bi", "me-1")} />
+          <XLg className={cx("me-2", "text-icon")} />
           Close
         </Button>
-        <Button disabled={true} onClick={handleSubmit(onSubmit)} type="submit">
-          <PlusLg className={cx("bi", "me-1")} />
+        <Button
+          color="primary"
+          disabled={true}
+          onClick={handleSubmit(onSubmit)}
+          type="submit"
+        >
+          <PlusLg className={cx("me-2", "text-icon")} />
           Add Member
         </Button>
       </ModalFooter>

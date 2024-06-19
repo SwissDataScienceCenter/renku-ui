@@ -18,7 +18,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import {
-  LayoutSidebarInsetReverse,
+  InfoCircleFill,
   Pencil,
   ThreeDotsVertical,
   Trash,
@@ -30,6 +30,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  ListGroupItem,
   Modal,
   ModalBody,
   ModalFooter,
@@ -37,6 +38,7 @@ import {
   Row,
   UncontrolledDropdown,
 } from "reactstrap";
+
 import { Loader } from "../../../../components/Loader.tsx";
 import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
 import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
@@ -44,7 +46,6 @@ import {
   CloudStorageGetRead,
   useDeleteStoragesV2ByStorageIdMutation,
 } from "../../../projectsV2/api/storagesV2.api.ts";
-import sessionItemStyles from "../../../sessionsV2/SessionList/SessionItemDisplay.module.scss";
 import { DataSourceView } from "./DataSourceView.tsx";
 
 interface DataSourceDeleteModalProps {
@@ -214,79 +215,40 @@ export function DataSourceDisplay({
     setToggleView((open: boolean) => !open);
   }, []);
 
-  const nameDisplay = (
-    <div
-      className={cx(
-        "d-flex",
-        "align-items-center",
-        "gap-1",
-        "cursor-pointer",
-        "ps-2",
-        sessionItemStyles.ItemDisplaySessionName
-      )}
-      onClick={toggleDetails}
-    >
-      <LayoutSidebarInsetReverse
-        className={cx("flex-shrink-0", "me-0", "me-sm-2")}
-        size="20"
-      />
-      <span className={cx("text-truncate")} data-cy="data-storage-name">
-        {storageSensitive.name}
-      </span>
-    </div>
-  );
+  const storageType = storageSensitive?.storage_type ? (
+    <span className="fst-italic" data-cy="data-storage-type">
+      (type: {storageSensitive?.storage_type})
+    </span>
+  ) : null;
 
-  const storageTypeDisplay = (
-    <span
-      className={cx("d-flex", "align-items-center", "gap-2")}
-      onClick={() => toggleDetails()}
-    >
-      {storageSensitive?.storage_type}
+  const storageName = (
+    <span className="fw-bold" data-cy="data-storage-name">
+      {storageSensitive.name}
     </span>
   );
 
   return (
-    <Row
-      className={cx(
-        "pt-3",
-        "pb-3",
-        "mx-0",
-        sessionItemStyles.ItemDisplaySessionRow
-      )}
-      data-cy="data-storage-item"
-    >
-      <Col xs={10} sm={6} className={cx("text-truncate", "col")}>
-        {nameDisplay}
-        <DataSourceView
-          storage={storage}
-          setToggleView={toggleDetails}
-          toggleView={toggleView}
-          projectId={projectId}
-        />
-      </Col>
-      <Col
-        xs={12}
-        sm={4}
-        className={cx(
-          "col-12",
-          "order-3",
-          "order-sm-2",
-          "col-sm",
-          "cursor-pointer",
-          "ps-5",
-          "ps-md-0",
-          "pt-2",
-          "pt-md-0"
-        )}
-      >
-        {storageTypeDisplay}
-      </Col>
-      <Col
-        xs={2}
-        className={cx("order-2", "order-xs-3", "d-flex", "justify-content-end")}
-      >
-        <DataSourceActions storage={storage} projectId={projectId} />
-      </Col>
-    </Row>
+    <ListGroupItem>
+      <div className={cx("d-flex", "align-items-center", "gap-3")}>
+        <div
+          className={cx("cursor-pointer", "link-primary")}
+          onClick={toggleDetails}
+        >
+          <InfoCircleFill className={cx("me-2", "text-icon")} />
+          <span className={cx("text-truncate")}>
+            {storageName} {storageType}
+          </span>
+        </div>
+        <div className={cx("d-flex", "ms-auto", "my-auto")}>
+          <DataSourceActions storage={storage} projectId={projectId} />
+        </div>
+      </div>
+      <DataSourceView
+        storage={storage}
+        setToggleView={toggleDetails}
+        toggleView={toggleView}
+        projectId={projectId}
+      />
+    </ListGroupItem>
   );
 }

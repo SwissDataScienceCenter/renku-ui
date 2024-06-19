@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import {
@@ -34,20 +33,62 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 
-import {
-  EditButtonLink,
-  UnderlineArrowLink,
-} from "../../../components/buttons/Button";
+import { UnderlineArrowLink } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import AddSessionLauncherButton from "../../sessionsV2/AddSessionLauncherButton";
-import { useGetProjectSessionLaunchersQuery } from "../../sessionsV2/sessionsV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
 import ProjectDeleteConfirmation from "../settings/ProjectDeleteConfirmation";
 import AccessGuard from "../utils/AccessGuard";
 import useProjectAccess from "../utils/useProjectAccess.hook";
 
 import dotsDropdownStyles from "../../../components/buttons/ThreeDots.module.scss";
+
+interface ProjectPageHeaderProps {
+  project: Project;
+}
+export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
+  const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
+    namespace: project.namespace ?? "",
+    slug: project.slug ?? "",
+  });
+
+  return (
+    <header>
+      <Row>
+        <Col xs={12} lg={2}>
+          <div className={cx("d-none", "d-lg-block")}>
+            <ProjectImageView />
+          </div>
+        </Col>
+        <Col xs={12} lg={10}>
+          <Row>
+            <Col className={cx("d-flex", "justify-content-between")}>
+              <h1 data-cy="project-name">{project.name}</h1>
+              <div className={cx("align-items-center", "d-flex")}>
+                <ProjectActions project={project} settingsUrl={settingsUrl} />
+              </div>
+            </Col>
+          </Row>
+          <Col>
+            <div>
+              {project.description?.length ? (
+                <p data-cy="project-description">{project.description}</p>
+              ) : (
+                <p>
+                  <UnderlineArrowLink
+                    tooltip="Add project description"
+                    text="Add description"
+                    to={settingsUrl}
+                  />
+                </p>
+              )}
+            </div>
+          </Col>
+        </Col>
+      </Row>
+    </header>
+  );
+}
 
 interface ProjectActionsProps extends ProjectPageHeaderProps {
   settingsUrl: string;
@@ -69,43 +110,32 @@ function ProjectActions({ project, settingsUrl }: ProjectActionsProps) {
             "bg-transparent",
             "d-flex",
             "border-0",
-            "shadow-none",
             dotsDropdownStyles.threeDots
           )}
         >
           <ThreeDotsVertical className="fs-3" />
         </DropdownToggle>
-        <DropdownMenu className={cx("mt-2", "mx-0", "text-start")} end>
+        <DropdownMenu end>
           <AccessGuard
             disabled={
               <DropdownItem>
                 <Link
-                  className={cx(
-                    "text-decoration-none",
-                    "d-flex",
-                    "align-items-center",
-                    "gap-2",
-                    "justify-content-start"
-                  )}
+                  className={cx("text-decoration-none", "text-reset")}
                   to={settingsUrl}
                 >
-                  <Binoculars /> View project information
+                  <Binoculars className={cx("me-2", "text-icon")} />
+                  View project information
                 </Link>
               </DropdownItem>
             }
             enabled={
               <DropdownItem>
                 <Link
-                  className={cx(
-                    "text-decoration-none",
-                    "d-flex",
-                    "align-items-center",
-                    "gap-2",
-                    "justify-content-start"
-                  )}
+                  className={cx("text-decoration-none", "text-reset")}
                   to={settingsUrl}
                 >
-                  <PencilSquare /> Edit project information
+                  <PencilSquare className={cx("me-2", "text-icon")} />
+                  Edit project information
                 </Link>
               </DropdownItem>
             }
@@ -115,16 +145,9 @@ function ProjectActions({ project, settingsUrl }: ProjectActionsProps) {
           <AccessGuard
             disabled={null}
             enabled={
-              <DropdownItem
-                className={cx(
-                  "d-flex",
-                  "align-items-center",
-                  "gap-2",
-                  "justify-content-start"
-                )}
-                onClick={toggleDelete}
-              >
-                <Trash /> Delete this project
+              <DropdownItem onClick={toggleDelete}>
+                <Trash className={cx("me-2", "text-icon")} />
+                Delete this project
               </DropdownItem>
             }
             role={userRole}
@@ -137,110 +160,5 @@ function ProjectActions({ project, settingsUrl }: ProjectActionsProps) {
         toggle={toggleDelete}
       />
     </>
-  );
-}
-
-interface ProjectPageHeaderProps {
-  project: Project;
-}
-export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
-  const { userRole } = useProjectAccess({ projectId: project.id });
-  const {
-    data: launchers,
-    error: launchersError,
-    isLoading: isLoadingLaunchers,
-  } = useGetProjectSessionLaunchersQuery(
-    project.id ? { projectId: project.id } : skipToken
-  );
-  const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
-    namespace: project.namespace ?? "",
-    slug: project.slug ?? "",
-  });
-
-  const addSessionBtn =
-    !launchersError &&
-    !isLoadingLaunchers &&
-    launchers &&
-    launchers?.length <= 0 ? (
-      <AccessGuard
-        disabled={null}
-        enabled={<AddSessionLauncherButton styleBtn="iconTextBtn" />}
-        minimumRole="editor"
-        role={userRole}
-      />
-    ) : null;
-
-  return (
-    <header className={cx("px-4", "px-lg-0")}>
-      <Row>
-        <Col className="col-12 col-lg-2">
-          <div className={cx("d-none", "d-lg-block")}>
-            <ProjectImageView />
-          </div>
-        </Col>
-        <Col className="col-12 col-lg-10">
-          <Row>
-            <Col className="col-12 col-sm-8">
-              <div className={cx("")}>
-                <h1 className="fw-bold" data-cy="project-name">
-                  {project.name}
-                </h1>
-              </div>
-            </Col>
-            <Col className="col-12 col-sm-4">
-              <div className={cx("")}>
-                <div
-                  className={cx(
-                    "d-none",
-                    "align-items-center",
-                    "justify-content-end",
-                    "gap-2",
-                    "d-sm-flex"
-                  )}
-                >
-                  {addSessionBtn}
-                  <div className={cx("d-none", "d-sm-none", "d-md-block")}>
-                    <ProjectActions
-                      project={project}
-                      settingsUrl={settingsUrl}
-                    />
-                  </div>
-                </div>
-              </div>
-            </Col>
-          </Row>
-          <Col className="col-12">
-            <div>
-              {project.description?.length ? (
-                <p data-cy="project-description">
-                  {project.description}
-                  <span className="mx-2">
-                    <AccessGuard
-                      disabled={null}
-                      enabled={
-                        <EditButtonLink
-                          data-cy="project-description-edit"
-                          to={settingsUrl}
-                          tooltip="Modify project information"
-                        />
-                      }
-                      minimumRole="editor"
-                      role={userRole}
-                    />
-                  </span>
-                </p>
-              ) : (
-                <UnderlineArrowLink
-                  tooltip="Add project description"
-                  text="Add description"
-                  to={settingsUrl}
-                />
-              )}
-            </div>
-          </Col>
-          <Col className="d-flex d-sm-none">{addSessionBtn}</Col>
-        </Col>
-      </Row>
-    </header>
   );
 }

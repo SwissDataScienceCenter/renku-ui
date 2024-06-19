@@ -16,12 +16,11 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import ProjectInformation from "./ProjectInformation/ProjectInformation";
 
 export default function ProjectInformationPage() {
   return (
-    <div className={cx("d-block", "d-lg-none", "d-sm-block", "pt-4")}>
+    <div>
       <ProjectInformation />
     </div>
   );

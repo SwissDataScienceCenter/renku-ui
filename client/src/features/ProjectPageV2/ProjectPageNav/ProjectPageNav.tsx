@@ -17,20 +17,15 @@
  */
 import cx from "classnames";
 import { EyeFill, Folder2Open, PencilSquare } from "react-bootstrap-icons";
-import { generatePath, useMatch } from "react-router-dom-v5-compat";
-import { Nav, NavItem, NavLink } from "reactstrap";
+import { generatePath } from "react-router-dom-v5-compat";
+import { Nav, NavItem } from "reactstrap";
 
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { Project } from "../../projectsV2/api/projectV2.api";
-import AccessGuard from "../utils/AccessGuard";
-import useProjectAccess from "../utils/useProjectAccess.hook";
-
-import styles from "./ProjectPageNav.module.scss";
 
 export default function ProjectPageNav({ project }: { project: Project }) {
   const { namespace = "", slug = "" } = project;
-  const { userRole } = useProjectAccess({ projectId: project.id });
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace,
     slug,
@@ -47,122 +42,28 @@ export default function ProjectPageNav({ project }: { project: Project }) {
     slug,
   });
 
-  const isSettings = useMatch(projectSettingsUrl);
-
-  const navLinkClasses = [
-    "p-0",
-    "mb-1",
-    "text-center",
-    "text-lg-start",
-    "d-flex",
-    "flex-column",
-    "flex-lg-row",
-    "align-items-center",
-    "align-items-lg-start",
-    "gap-2",
-    "fs-small",
-  ];
-
   return (
     <>
-      <Nav justified className={cx("d-flex", "flex-row", "flex-lg-column")}>
-        <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0", "d-flex")}>
-          <RenkuNavLinkV2
-            end
-            to={projectUrl}
-            title="Overview"
-            className={cx(navLinkClasses, styles.navLink)}
-          >
-            <EyeFill className={cx("d-block", "d-lg-none", "rk-icon-md")} />
+      <Nav tabs>
+        <NavItem>
+          <RenkuNavLinkV2 end to={projectUrl} title="Overview">
+            <EyeFill className={cx("me-2", "text-icon")} />
             Overview
           </RenkuNavLinkV2>
         </NavItem>
-        <NavItem
-          className={cx(
-            "mb-0",
-            "mb-lg-3",
-            "py-3",
-            "py-lg-0",
-            "d-flex",
-            "d-lg-none"
-          )}
-        >
-          <RenkuNavLinkV2
-            end
-            to={projectInfoUrl}
-            title="Project Information"
-            className={cx(navLinkClasses, styles.navLink)}
-          >
-            <Folder2Open className="rk-icon-md" />
+        <NavItem>
+          <RenkuNavLinkV2 end to={projectInfoUrl} title="Project Information">
+            <Folder2Open className={cx("me-2", "text-icon")} />
             Project Info
           </RenkuNavLinkV2>
         </NavItem>
-        <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0", "d-flex")}>
-          <RenkuNavLinkV2
-            end
-            to={projectSettingsUrl}
-            title="Settings"
-            className={cx(navLinkClasses, styles.navLink)}
-          >
-            <PencilSquare
-              className={cx("d-block", "d-lg-none", "rk-icon-md")}
-            />
+        <NavItem>
+          <RenkuNavLinkV2 end to={projectSettingsUrl} title="Settings">
+            <PencilSquare className={cx("me-2", "text-icon")} />
             Settings
           </RenkuNavLinkV2>
         </NavItem>
       </Nav>
-      {isSettings && (
-        <Nav className="d-none d-lg-flex">
-          <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
-            <NavLink
-              href="#general"
-              className={cx(
-                navLinkClasses,
-                "mb-2",
-                "ps-2",
-                "ms-2",
-                styles.navLink
-              )}
-            >
-              General
-            </NavLink>
-          </NavItem>
-          <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
-            <NavLink
-              href="#members"
-              className={cx(
-                navLinkClasses,
-                "mb-2",
-                "ms-2",
-                "ps-2",
-                styles.navLink
-              )}
-            >
-              Members
-            </NavLink>
-          </NavItem>
-          <AccessGuard
-            disabled={null}
-            enabled={
-              <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
-                <NavLink
-                  href="#delete"
-                  className={cx(
-                    navLinkClasses,
-                    "mb-2",
-                    "ms-2",
-                    "ps-2",
-                    styles.navLink
-                  )}
-                >
-                  Delete
-                </NavLink>
-              </NavItem>
-            }
-            role={userRole}
-          />
-        </Nav>
-      )}
     </>
   );
 }

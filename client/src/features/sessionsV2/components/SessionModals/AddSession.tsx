@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Link45deg, PlusLg, XLg } from "react-bootstrap-icons";
+import { Box2Fill, Gear, Link45deg, PlusLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom-v5-compat";
 import {
@@ -33,11 +33,7 @@ import {
   Row,
 } from "reactstrap";
 import { Loader } from "../../../../components/Loader";
-import stylesButton from "../../../../components/buttons/Buttons.module.scss";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import EnvironmentIcon from "../../../../components/icons/EnvironmentIcon";
-import rkIconSessions from "../../../../styles/icons/sessions.svg";
-import styles from "../../../ProjectPageV2/ProjectPageContent/ProjectOverview/ProjectOverview.module.scss";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
   CustomEnvFormContent,
@@ -46,6 +42,7 @@ import {
 } from "../../SessionLauncherFormContent";
 import { useAddSessionLauncherMutation } from "../../sessionsV2.api";
 import { SessionLauncherEnvironment } from "../../sessionsV2.types";
+import { InfoAlert } from "../../../../components/Alert";
 
 interface AddSessionLauncherModalProps {
   isOpen: boolean;
@@ -118,23 +115,19 @@ function AddSessionCustomImageModal({
       size="lg"
       toggle={toggle}
     >
-      <Form
-        className="form-rk-green"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <ModalHeader toggle={toggle} className="pb-0">
-          <span>
-            <Link45deg size={30} className="me-2 flex-shrink-0" />
-            Provide a custom image
-          </span>
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+        <ModalHeader toggle={toggle}>
+          <Link45deg className={cx("me-2", "text-icon")} />
+          Provide a custom image
         </ModalHeader>
         <ModalBody>
           <p>
             Create a session launcher from a custom image. You can provide an
             image URL from a registry, for example from https://hub.docker.com
-            Note: image must be publicly accessible!
           </p>
+          <InfoAlert dismissible={false} timeout={0}>
+            The image must be public.
+          </InfoAlert>
           {result.error && <RtkErrorAlert error={result.error} />}
 
           <CustomEnvFormContent
@@ -143,20 +136,21 @@ function AddSessionCustomImageModal({
             setValue={setValue}
           />
         </ModalBody>
-        <ModalFooter className="pt-0">
-          <Button className="btn-outline-rk-green" onClick={toggle}>
-            <XLg className={cx("bi", "me-1")} />
+        <ModalFooter className="gap-2">
+          <Button color="outline-secondary" onClick={toggle}>
+            <XLg className={cx("me-2", "text-icon")} />
             Cancel
           </Button>
           <Button
+            color="primary"
+            data-cy="add-launcher-custom-button"
             disabled={result.isLoading}
             type="submit"
-            data-cy="add-launcher-custom-button"
           >
             {result.isLoading ? (
-              <Loader className="me-1" inline size={16} />
+              <Loader className="me-2" inline size={16} />
             ) : (
-              <PlusLg className={cx("bi", "me-1")} />
+              <PlusLg className={cx("me-2", "text-icon")} />
             )}
             Add Session launcher
           </Button>
@@ -235,18 +229,12 @@ function AddSessionExistingEnvModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle} className="pb-0">
-        <span>
-          <EnvironmentIcon size={30} className="me-2" />
-          Select an existing environment
-        </span>
+      <ModalHeader toggle={toggle}>
+        <Box2Fill className={cx("me-2", "text-icon")} />
+        Select an existing environment
       </ModalHeader>
       <ModalBody>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           <p>
             Reuse an environment already defined on RenkuLab to create an
             interactive session for your project.
@@ -262,12 +250,13 @@ function AddSessionExistingEnvModal({
           />
         </Form>
       </ModalBody>
-      <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
-          <XLg className={cx("bi", "me-1")} />
+      <ModalFooter className="gap-2">
+        <Button color="outline-secondary" onClick={toggle}>
+          <XLg className={cx("me-2", "text-icon")} />
           Cancel
         </Button>
         <Button
+          color="primary"
           disabled={result.isLoading}
           type="submit"
           onClick={handleSubmit(onSubmit)}
@@ -275,12 +264,12 @@ function AddSessionExistingEnvModal({
         >
           {result.isLoading ? (
             <>
-              <Loader className="me-1" inline size={16} />
+              <Loader className="me-2" inline size={16} />
               Adding Session launcher
             </>
           ) : (
             <>
-              <PlusLg className={cx("bi", "me-1")} />
+              <PlusLg className={cx("me-2", "text-icon")} />
               Add Session launcher
             </>
           )}
@@ -320,65 +309,42 @@ export function Step1AddSessionModal({
 
   return (
     <>
-      <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
+      <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>
-          <span className="d-flex align-items-center">
-            <img
-              src={rkIconSessions}
-              className={cx("rk-icon", "rk-icon-lg", "me-2")}
-            />
-            <small className="text-uppercase">Add session launcher</small>
-          </span>
+          <Gear className={cx("me-2", "text-icon")} />
+          Add session launcher
         </ModalHeader>
-        <ModalBody className="pt-0">
-          <p className="fw-500 fst-normal">
+        <ModalBody>
+          <p>
             Define an interactive environment in which to do your work and share
             it with others.
-            <br />
+          </p>
+          <p>
             Everyone who can see the project can launch a session. Running
             sessions are only accessible by the person who launched it.
-            <br />
+          </p>
+          <p>
             All project code repositories and data sources will be automatically
             mounted in your session.
           </p>
-          <Row className="mb-3">
-            <Col xs={12}>
+          <Row className="gap-3">
+            <Col className="d-grid" xs={12}>
               <Button
-                onClick={() => goNextStep(false)}
-                className={cx(
-                  "w-100",
-                  "bg-transparent",
-                  "text-dark",
-                  "rounded-3",
-                  "my-2",
-                  "py-3",
-                  "border-black",
-                  styles.BorderDashed,
-                  stylesButton.EmptyButton
-                )}
+                color="outline-primary"
                 data-cy="add-existing-environment"
+                onClick={() => goNextStep(false)}
               >
-                <EnvironmentIcon size={30} className="me-2" />
+                <Box2Fill className={cx("me-2", "text-icon")} />
                 Select an existing environment
               </Button>
             </Col>
-            <Col xs={12}>
+            <Col className="d-grid" xs={12}>
               <Button
-                onClick={() => goNextStep(true)}
-                className={cx(
-                  "w-100",
-                  "bg-transparent",
-                  "text-dark",
-                  "rounded-3",
-                  "my-2",
-                  "py-3",
-                  "border-black",
-                  styles.BorderDashed,
-                  stylesButton.EmptyButton
-                )}
+                color="outline-primary"
                 data-cy="add-custom-image"
+                onClick={() => goNextStep(true)}
               >
-                <Link45deg className={cx("me-2", "rk-icon-lg")} />
+                <Link45deg className={cx("me-2", "text-icon")} />
                 Provide a custom image
               </Button>
             </Col>

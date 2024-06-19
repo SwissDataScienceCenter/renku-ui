@@ -21,16 +21,15 @@
  *  Alert.js
  *  Alert code and presentation.
  */
-
+import cx from "classnames";
 import { Component } from "react";
 import { Alert } from "reactstrap";
 
 import {
-  WarningIcon,
-  DangerIcon,
-  InfoIcon,
-  SuccessIcon,
-} from "./icons/AlertIcon.tsx";
+  CheckCircleFill,
+  ExclamationTriangleFill,
+  InfoCircleFill,
+} from "react-bootstrap-icons";
 
 /**
  * Display a alert that can be dismissed.
@@ -86,13 +85,17 @@ class RenkuAlert extends Component {
 
   getIcon() {
     const icon = {
-      danger: <DangerIcon className="text-danger" />,
-      info: <InfoIcon className="text-info" />,
-      warning: <WarningIcon className="text-warning" />,
-      success: <SuccessIcon className="text-success" />,
+      danger: (
+        <ExclamationTriangleFill className={cx("text-icon", "text-danger")} />
+      ),
+      info: <InfoCircleFill className={cx("text-icon", "text-info")} />,
+      warning: (
+        <ExclamationTriangleFill className={cx("text-icon", "text-warning")} />
+      ),
+      success: <CheckCircleFill className={cx("text-icon", "text-success")} />,
     }[this.props.color];
 
-    return icon ? <div className="alert-icon">{icon}</div> : "";
+    return icon;
   }
 
   render() {
@@ -108,9 +111,11 @@ class RenkuAlert extends Component {
         className={this.props.className}
         data-cy={this.props.dataCy}
       >
-        <div className="alert-content gap-3">
-          {alertIcon}
-          <div className="w-100 overflow-auto">{this.props.children}</div>
+        <div className={cx("d-flex", "gap-3")}>
+          <h1 className="my-auto">{alertIcon}</h1>
+          <div className={cx("my-auto", "overflow-auto", "w-100")}>
+            {this.props.children}
+          </div>
         </div>
       </Alert>
     );

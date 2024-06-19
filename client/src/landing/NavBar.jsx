@@ -23,8 +23,8 @@
  *  NavBar for logged-in and logged-out users.
  */
 
+import cx from "classnames";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
-import { Nav, Navbar } from "reactstrap";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
 import { RenkuNavLink } from "../components/RenkuNavLink";
@@ -152,38 +152,43 @@ function FooterNavbarInner({ location, params }) {
       : taggedVersion;
 
   const footer = (
-    <footer className="footer">
-      <Navbar
-        className="container-fluid flex-nowrap justify-content-between
-        renku-container navbar bg-primary navbar-dark"
+    <footer>
+      <div
+        className={cx(
+          "flex-nowrap",
+          "navbar",
+          "px-2",
+          "px-sm-3",
+          "py-2",
+          location.pathname.startsWith("/v2") ? "bg-dark" : "bg-primary"
+        )}
+        data-bs-theme="dark"
       >
-        <div className="w-100">
-          <span className="text-white-50">
+        <div className="navbar-nav">
+          <span className="text-white">
             &copy; SDSC {new Date().getFullYear()}
           </span>
         </div>
-        <div className="w-100">
-          <Nav
-            className="justify-content-end justify-content-lg-center"
-            data-cy="version-info"
+        <div className="navbar-nav" data-cy="version-info">
+          <Link
+            className={cx("d-flex", "ms-auto", "ms-lg-0", "nav-link", "p-0")}
+            to={Url.pages.help.release}
           >
-            <Link className="nav-link" to={Url.pages.help.release}>
-              <img src={RENKU_LOGO} alt="Renku" className="pb-2" height="44" />
-              <span className="ps-2">{displayVersion}</span>
-            </Link>
-          </Nav>
+            <img src={RENKU_LOGO} alt="Renku" height={44} />
+            <span className={cx("my-auto", "ps-3")}>{displayVersion}</span>
+          </Link>
         </div>
-        <div className="d-none d-lg-inline w-100">
-          <Nav className="justify-content-end">
+        <div className={cx("d-lg-flex", "d-none", "navbar-nav")}>
+          <div className={cx("d-flex", "flex-row", "gap-3", "ms-auto")}>
             {!user.logged &&
             location.pathname === Url.get(Url.pages.landing) ? (
               <FooterNavbarAnonymousLinks />
             ) : (
               <FooterNavbarLoggedInLinks privacyLink={privacyLink} />
             )}
-          </Nav>
+          </div>
         </div>
-      </Navbar>
+      </div>
     </footer>
   );
 

@@ -399,8 +399,8 @@ export function RepositoryItem({
 
   const title = canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
 
-  const urlDisplay = (
-    <div className={cx("d-flex", "align-items-center", "gap-2")}>
+  return (
+    <div className={cx("d-flex", "align-items-center", "gap-3")}>
       <RepositoryIcon
         className="flex-shrink-0"
         provider={canonicalUrl?.origin}
@@ -411,26 +411,16 @@ export function RepositoryItem({
         )}
         <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
           {title || canonicalUrlStr}
-          <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
+          <BoxArrowUpRight className={cx("bi", "ms-2")} />
         </a>
       </div>
-    </div>
-  );
-
-  return (
-    <Row className={cx("mb-4")}>
-      <Col xs={showMenu ? 8 : 10} className="text-truncate">
-        {urlDisplay}
-      </Col>
-      <Col xs={2} className="text-truncate">
-        <RepositoryPermissions repositoryUrl={url} />
-      </Col>
+      <RepositoryPermissions repositoryUrl={url} />
       {showMenu && (
-        <Col xs={2} className={cx("d-flex", "justify-content-end")}>
+        <div className={cx("d-flex", "ms-auto", "my-auto")}>
           <CodeRepositoryActions project={project} url={url} />
-        </Col>
+        </div>
       )}
-    </Row>
+    </div>
   );
 }
 
@@ -540,8 +530,8 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
         <RepositoryPermissionsModalContent repositoryUrl={repositoryUrl} />
         <ModalFooter>
           <div className="d-flex justify-content-end">
-            <Button color="outline-danger" onClick={toggleDetails}>
-              <XLg className={cx("bi", "me-1")} />
+            <Button color="outline-secondary" onClick={toggleDetails}>
+              <XLg className={cx("me-2", "text-icon")} />
               Close
             </Button>
           </div>
@@ -596,7 +586,7 @@ function RepositoryPermissionsModalContent({
 
   return (
     <ModalBody>
-      <Row className="gy-2">
+      <Row className="g-3">
         <Col xs={12}>
           Repository:{" "}
           <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
@@ -620,7 +610,7 @@ function RepositoryPermissionsModalContent({
           </Col>
         )}
         <Col xs={12}>
-          <h6 className={cx("fs-5", "fw-bold", "mb-0")}>Permissions</h6>
+          <h6 className={cx("fs-5", "fw-bold")}>Permissions</h6>
         </Col>
         <Col className="mt-0" xs={12} sm={6}>
           Clone, Pull:{" "}
@@ -632,7 +622,7 @@ function RepositoryPermissionsModalContent({
             <NoBadge />
           )}
         </Col>
-        <Col className={cx("mt-1", "mt-sm-0")} xs={12} sm={6}>
+        <Col className="mt-0" xs={12} sm={6}>
           Push:{" "}
           {isLoading ? (
             <Loader className="bi" inline size={16} />

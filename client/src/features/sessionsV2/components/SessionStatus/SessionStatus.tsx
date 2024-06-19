@@ -163,31 +163,22 @@ export function SessionStatusV2Title({
   const { status } = session;
   const state = status.state;
 
-  return state === "running" && !launcher ? (
-    <small>
-      <i>You are currently running a orphan session</i>
-    </small>
-  ) : state === "running" ? (
-    <small>
-      <i>You are currently running a session from this launcher</i>
-    </small>
-  ) : state === "starting" ? (
-    <small>
-      <i>You are currently starting a session from this launcher</i>
-    </small>
-  ) : state === "stopping" ? (
-    <small>
-      <i>You are currently stopping a session from this launcher</i>
-    </small>
-  ) : state === "hibernated" ? (
-    <small>
-      <i>You have a paused session from this launcher</i>
-    </small>
-  ) : state === "failed" ? (
-    <small>
-      <i>An error was encountered while attempting to launch this session.</i>
-    </small>
-  ) : null;
+  const text =
+    state === "running" && !launcher
+      ? "You are currently running a orphan session"
+      : state === "running"
+      ? "You are currently running a session from this launcher"
+      : state === "starting"
+      ? "You are currently starting a session from this launcher"
+      : state === "stopping"
+      ? "You are currently stopping a session from this launcher"
+      : state === "hibernated"
+      ? "You have a paused session from this launcher"
+      : state === "failed"
+      ? "An error was encountered while attempting to launch this session."
+      : null;
+
+  return text ? <p className={cx("fst-italic", "mb-2")}>{text}</p> : null;
 }
 interface SessionStatusV2TextProps {
   annotations: NotebookAnnotations;

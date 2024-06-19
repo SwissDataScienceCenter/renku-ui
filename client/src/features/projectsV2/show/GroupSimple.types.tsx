@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -13,27 +13,14 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
 
-import { SessionStatusState } from "../sessions.types";
-
-interface GetSessionStatusColorArgs {
-  defaultImage: boolean;
-  status: SessionStatusState;
-}
-
-export function getSessionStatusColor({
-  defaultImage,
-  status,
-}: GetSessionStatusColorArgs): string {
-  return status === "running" && defaultImage
-    ? "warning"
-    : status === "running"
-    ? "success"
-    : status === "starting" || status === "stopping"
-    ? "warning"
-    : status === "hibernated"
-    ? "dark"
-    : "danger";
-}
+export type GroupSimple = {
+  id: string;
+  name: string;
+  slug: string;
+  creation_date: string | Date;
+  created_by: string;
+  description?: string;
+};
