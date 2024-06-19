@@ -300,7 +300,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
   return (
     <UncontrolledDropdown className="nav-item dropdown">
       <DropdownToggle
-        className={cx("nav-link", "fs-5", "px-2")}
+        className={cx("nav-link", "fs-5")}
         nav
         caret
         id="profile-dropdown"

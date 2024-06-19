@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { ReactNode } from "react";
 import cx from "classnames";
+import { ReactNode } from "react";
 
 interface ContainerWrapProps {
   children?: ReactNode;
@@ -35,7 +35,7 @@ export default function ContainerWrap({
   }
 
   const className = cx(
-    fullSize ? "w-100" : ["container-xxl", "py-4", "mt-2", "renku-container"],
+    fullSize ? "w-100" : ["container-xxl", "py-3", "px-2", "px-sm-3"],
     className_
   );
   return <div className={className}>{children}</div>;

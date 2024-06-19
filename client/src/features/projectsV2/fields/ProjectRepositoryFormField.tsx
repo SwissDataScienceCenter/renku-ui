@@ -17,11 +17,10 @@
  */
 
 import cx from "classnames";
-
+import { Button, FormText, Input, Label } from "reactstrap";
+import { XLg } from "react-bootstrap-icons";
 import { Controller } from "react-hook-form";
 import type { FieldValues } from "react-hook-form";
-
-import { Button, FormText, Input, Label } from "reactstrap";
 
 import type { Repository } from "../projectV2.types";
 import type { GenericProjectFormFieldProps } from "./formField.types";
@@ -54,6 +53,7 @@ export default function ProjectRepositoryFormField({
       <div
         className={cx(
           "d-flex",
+          "input-group",
           errors.repositories && errors.repositories[index] && "is-invalid",
           index > 0 &&
             (errors.repositories == null ||
@@ -69,7 +69,6 @@ export default function ProjectRepositoryFormField({
           render={({ field }) => (
             <Input
               className={cx(
-                "form-control",
                 errors.repositories &&
                   errors.repositories[index] &&
                   "is-invalid"
@@ -85,11 +84,8 @@ export default function ProjectRepositoryFormField({
             pattern: /^(http|https):\/\/[^ "]+$/,
           }}
         />
-        <Button
-          className={cx("btn-outline-rk-green", "ms-1")}
-          onClick={onDelete}
-        >
-          X
+        <Button onClick={onDelete}>
+          <XLg className="text-icon" />
         </Button>
       </div>
       <div className="invalid-feedback">

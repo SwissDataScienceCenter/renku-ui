@@ -9,7 +9,7 @@ import "bootstrap";
 
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import v1Styles from "./styles/index.scss?inline";
-import v2Styles from "./styles/indexV2.scss?inline";
+import v2Styles from "./styles/renku_bootstrap.scss?inline";
 
 import App from "./App";
 // Disable service workers for the moment -- see below where registerServiceWorker is called

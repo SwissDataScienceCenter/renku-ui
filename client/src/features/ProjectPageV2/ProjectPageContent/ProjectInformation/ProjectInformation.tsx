@@ -44,7 +44,7 @@ export function ProjectImageView() {
     <div className={cx(styles.projectPageImgPlaceholder)}>
       <img
         src={projectPreviewImg}
-        className="rounded-2"
+        className={cx("mb-3", "rounded-2")}
         alt="Project image preview"
       />
     </div>

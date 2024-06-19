@@ -65,55 +65,29 @@ export default function ProjectPageNav({ project }: { project: Project }) {
 
   return (
     <>
-      <Nav justified className={cx("d-flex", "flex-row", "flex-lg-column")}>
-        <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0", "d-flex")}>
-          <RenkuNavLinkV2
-            end
-            to={projectUrl}
-            title="Overview"
-            className={cx(navLinkClasses, styles.navLink)}
-          >
-            <EyeFill className={cx("d-block", "d-lg-none", "rk-icon-md")} />
+      <Nav tabs>
+        <NavItem>
+          <RenkuNavLinkV2 end to={projectUrl} title="Overview">
+            <EyeFill className={cx("me-2", "text-icon")} />
             Overview
           </RenkuNavLinkV2>
         </NavItem>
-        <NavItem
-          className={cx(
-            "mb-0",
-            "mb-lg-3",
-            "py-3",
-            "py-lg-0",
-            "d-flex",
-            "d-lg-none"
-          )}
-        >
-          <RenkuNavLinkV2
-            end
-            to={projectInfoUrl}
-            title="Project Information"
-            className={cx(navLinkClasses, styles.navLink)}
-          >
-            <Folder2Open className="rk-icon-md" />
+        <NavItem>
+          <RenkuNavLinkV2 end to={projectInfoUrl} title="Project Information">
+            <Folder2Open className={cx("me-2", "text-icon")} />
             Project Info
           </RenkuNavLinkV2>
         </NavItem>
-        <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0", "d-flex")}>
-          <RenkuNavLinkV2
-            end
-            to={projectSettingsUrl}
-            title="Settings"
-            className={cx(navLinkClasses, styles.navLink)}
-          >
-            <PencilSquare
-              className={cx("d-block", "d-lg-none", "rk-icon-md")}
-            />
+        <NavItem>
+          <RenkuNavLinkV2 end to={projectSettingsUrl} title="Settings">
+            <PencilSquare className={cx("me-2", "text-icon")} />
             Settings
           </RenkuNavLinkV2>
         </NavItem>
       </Nav>
       {isSettings && (
         <Nav className="d-none d-lg-flex">
-          <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
+          <NavItem>
             <NavLink
               href="#general"
               className={cx(
@@ -127,7 +101,7 @@ export default function ProjectPageNav({ project }: { project: Project }) {
               General
             </NavLink>
           </NavItem>
-          <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
+          <NavItem>
             <NavLink
               href="#members"
               className={cx(
@@ -144,7 +118,7 @@ export default function ProjectPageNav({ project }: { project: Project }) {
           <AccessGuard
             disabled={null}
             enabled={
-              <NavItem className={cx("mb-0", "mb-lg-3", "py-3", "py-lg-0")}>
+              <NavItem>
                 <NavLink
                   href="#delete"
                   className={cx(

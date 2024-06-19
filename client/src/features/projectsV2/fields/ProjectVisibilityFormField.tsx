@@ -40,16 +40,11 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
         control={control}
         name={name}
         render={({ field }) => (
-          <div className="d-flex flex-row gap-5 my-3">
-            <div className="d-flex align-items-center gap-2">
+          <div className={cx("d-flex", "flex-row gap-4")}>
+            <div className={cx("d-flex", "gap-2")}>
               <Input
                 type="radio"
-                className={cx(
-                  "form-control",
-                  errors.visibility && "is-invalid",
-                  "p-0",
-                  "mt-0"
-                )}
+                className={cx(errors.visibility && "is-invalid")}
                 data-cy="project-visibility-public"
                 id="project-visibility-public"
                 {...field}
@@ -58,25 +53,15 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
               />
               <Label
                 for="project-visibility-public"
-                className={cx(
-                  "cursor-pointer",
-                  "d-flex",
-                  "align-items-center",
-                  "gap-1"
-                )}
+                className={cx("cursor-pointer")}
               >
-                Public <Globe size={16} />
+                Public <Globe className="text-icon" />
               </Label>
             </div>
-            <div className="d-flex align-items-center gap-2">
+            <div className="d-flex gap-2">
               <Input
                 type="radio"
-                className={cx(
-                  "form-control",
-                  errors.visibility && "is-invalid",
-                  "p-0",
-                  "mt-0"
-                )}
+                className={cx(errors.visibility && "is-invalid")}
                 data-cy="project-visibility-private"
                 id="project-visibility-private"
                 {...field}
@@ -85,14 +70,9 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
               />
               <Label
                 for="project-visibility-private"
-                className={cx(
-                  "cursor-pointer",
-                  "d-flex",
-                  "align-items-center",
-                  "gap-1"
-                )}
+                className={cx("cursor-pointer")}
               >
-                Private <Lock size={16} />
+                Private <Lock className="text-icon" />
               </Label>
             </div>
           </div>

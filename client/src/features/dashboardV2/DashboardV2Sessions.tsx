@@ -25,10 +25,53 @@ import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSe
 import "../../notebooks/Notebooks.css";
 import styles from "./Dashboard.module.scss";
 
+export default function DashboardV2Sessions() {
+  const { data: sessions, error, isLoading } = useGetSessionsQuery();
+
+  const v2Sessions = useMemo(
+    () =>
+      sessions != null
+        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
+            sessions,
+            ({ annotations }) => annotations["renkuVersion"] === "2.0"
+          )
+        : {},
+    [sessions]
+  );
+
+  const noSessions = isLoading ? (
+    <div className={cx("d-flex", "flex-column", "mx-auto")}>
+      <Loader />
+      <p className={cx("mx-auto", "my-3")}>Retrieving sessions...</p>
+    </div>
+  ) : error ? (
+    <div>
+      <p>Cannot show sessions.</p>
+      <RtkErrorAlert error={error} />
+    </div>
+  ) : !sessions ||
+    (Object.keys(sessions).length == 0 &&
+      Object.keys(v2Sessions).length == 0) ? (
+    <div>No running sessions.</div>
+  ) : null;
+
+  if (noSessions) return <div className="card-body">{noSessions}</div>;
+
+  return (
+    <ul
+      className={cx("list-group", "list-group-flush")}
+      data-cy="dashboard-session-list"
+    >
+      {Object.entries(v2Sessions).map(([key, session]) => (
+        <DashboardSession key={key} session={session} />
+      ))}
+    </ul>
+  );
+}
+
 interface DashboardSessionProps {
   session: Session;
 }
-
 function DashboardSession({ session }: DashboardSessionProps) {
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
@@ -63,26 +106,21 @@ function DashboardSession({ session }: DashboardSessionProps) {
   const details = { message: session.status.message };
 
   return (
-    <div data-cy="list-session" className={cx(styles.containerSessions, "p-3")}>
-      <div
-        className={cx(styles.entityTitle, "text-truncate", "cursor-pointer")}
-      >
+    <div data-cy="list-session" className={cx("list-group-item", "py-3")}>
+      <div className={cx("d-flex", "justify-content-between")}>
         <Link
           data-cy="list-session-link"
-          className="text-decoration-none"
+          className={cx("text-decoration-none", "text-reset")}
           to={projectUrl}
         >
-          <div className={cx("text-truncate")}>
-            <span className={cx("card-title", "text-truncate")}>
-              {project
-                ? project.namespace + "/" + project.slug
-                : projectId ?? "Unknown"}
-            </span>
-          </div>
+          <h4>
+            {project
+              ? project.namespace + "/" + project.slug
+              : projectId ?? "Unknown"}
+          </h4>
         </Link>
-      </div>
-      <div className={cx(styles.entityAction, "mb-3")}>
         <ActiveSessionButton
+          className="my-auto"
           session={session}
           showSessionUrl={showSessionUrl}
         />
@@ -99,91 +137,46 @@ function DashboardSession({ session }: DashboardSessionProps) {
           "cursor-pointer"
         )}
       >
-        <Link className="text-decoration-none" to={projectUrl}>
-          <div className={cx("card-text", "text-rk-dark", "m-0")}>
-            <div className="mb-0">
-              <b>Container image</b> {image}
-            </div>
-          </div>
+        <Link
+          className={cx("text-decoration-none", "text-reset")}
+          to={projectUrl}
+        >
+          <p className="mb-2">
+            <b>Container image:</b> {image}
+          </p>
         </Link>
       </div>
       <div
         className={cx(
-          styles.sessionIcon,
-          "d-none",
-          "d-md-flex",
-          "align-items-center"
+          "align-items-center",
+          "d-flex",
+          "justify-content-between"
         )}
       >
-        <div className="me-2">
-          <SessionListRowStatusIcon
-            annotations={annotations}
-            details={details}
-            image={image}
-            status={status.state}
-            uid={session.name}
-          />
+        <div className={cx("d-flex")}>
+          <div className="me-2">
+            <SessionListRowStatusIcon
+              annotations={annotations}
+              details={details}
+              image={image}
+              status={status.state}
+              uid={session.name}
+            />
+          </div>
+          <div>
+            <SessionListRowStatus
+              annotations={annotations}
+              details={details}
+              startTimestamp={started}
+              status={status.state}
+              uid={session.name}
+            />
+          </div>
         </div>
-        <div>
-          <SessionListRowStatus
-            annotations={annotations}
-            details={details}
-            startTimestamp={started}
-            status={status.state}
-            uid={session.name}
-          />
-        </div>
-      </div>
-      <div className={cx(styles.sessionTime)}>
-        <TimeCaption datetime={session.started} prefix="Started" />
-      </div>
-    </div>
-  );
-}
-
-export default function DashboardV2Sessions() {
-  const { data: sessions, error, isLoading } = useGetSessionsQuery();
-
-  const v2Sessions = useMemo(
-    () =>
-      sessions != null
-        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
-            sessions,
-            ({ annotations }) => annotations["renkuVersion"] === "2.0"
-          )
-        : {},
-    [sessions]
-  );
-  if (isLoading) {
-    return (
-      <div className={cx("d-flex", "justify-content-center", "w-100")}>
-        <div className={cx("d-flex", "flex-column")}>
-          <Loader className="me-2" />
-          <div>Retrieving sessions...</div>
+        <div className={cx("d-none", "d-md-flex")}>
+          <TimeCaption datetime={session.started} prefix="Started" />
         </div>
       </div>
-    );
-  }
-
-  if (error) {
-    return <RtkErrorAlert error={error} />;
-  }
-
-  if (
-    !sessions ||
-    (Object.keys(sessions).length == 0 && Object.keys(v2Sessions).length == 0)
-  ) {
-    return <div>No running sessions.</div>;
-  }
-
-  return (
-    <div
-      data-cy="dashboard-session-list"
-      className={cx("d-flex", "flex-column")}
-    >
-      {Object.entries(v2Sessions).map(([key, session]) => (
-        <DashboardSession key={key} session={session} />
-      ))}
     </div>
   );
 }
