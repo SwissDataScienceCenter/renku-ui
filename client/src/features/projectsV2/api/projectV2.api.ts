@@ -4,7 +4,11 @@ const injectedRtkApi = api.injectEndpoints({
     getProjects: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: `/projects`,
-        params: { page: queryArg.page, per_page: queryArg.perPage },
+        params: {
+          namespace: queryArg["namespace"],
+          page: queryArg.page,
+          per_page: queryArg.perPage,
+        },
       }),
     }),
     postProjects: build.mutation<PostProjectsApiResponse, PostProjectsApiArg>({
@@ -80,6 +84,8 @@ export { injectedRtkApi as projectV2Api };
 export type GetProjectsApiResponse =
   /** status 200 List of projects */ ProjectsList;
 export type GetProjectsApiArg = {
+  /** A namespace, used as a filter. */
+  namespace?: string;
   /** Result's page number starting from 1 */
   page?: number;
   /** The number of results per page */
