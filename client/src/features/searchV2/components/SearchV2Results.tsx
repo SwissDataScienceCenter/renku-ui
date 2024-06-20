@@ -210,7 +210,7 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
         className={cx("mt-auto", "mb-0", "card-text", "d-flex", "flex-wrap")}
       >
         <div className={cx("flex-grow-1", "me-2")}>
-          {visibility === "Private" ? (
+          {visibility.toLowerCase() === "private" ? (
             <>
               <LockFill className={cx("bi", "me-1")} />
               Private
