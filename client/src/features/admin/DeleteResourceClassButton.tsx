@@ -34,16 +34,16 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
+import { CheckLg, TrashFill, XLg } from "react-bootstrap-icons";
+import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
+import { Loader } from "../../components/Loader";
+import { useDeleteResourceClassMutation } from "../dataServices/computeResources.api.ts";
 import {
   ResourceClass,
   ResourcePool,
 } from "../dataServices/dataServices.types";
-import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
-import { CheckLg, TrashFill, XLg } from "react-bootstrap-icons";
-import cx from "classnames";
-import { useDeleteResourceClassMutation } from "./adminComputeResources.api";
-import { Loader } from "../../components/Loader";
 
 interface DeleteResourceClassButtonProps {
   resourceClass: ResourceClass;

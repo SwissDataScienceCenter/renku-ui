@@ -16,27 +16,27 @@
  * limitations under the License.
  */
 
-import { ReactNode } from "react";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { ReactNode } from "react";
 import Media from "react-media";
 import { Link } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { EnvironmentLogs } from "../../../components/Logs";
 import { NotebooksHelper } from "../../../notebooks";
-import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import {
   SessionListRowStatus,
   SessionListRowStatusIcon,
 } from "../../../notebooks/components/SessionListStatus";
+import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import Sizes from "../../../utils/constants/Media";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
 import { Session, SessionStatusState, Sessions } from "../sessions.types";
 import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 interface SessionsListProps {
   disableProjectTitle?: boolean;
@@ -313,8 +313,15 @@ function SessionRowProject({ annotations }: SessionRowProjectProps) {
   );
 }
 
+export interface SessionLauncherResources {
+  name?: string;
+  cpu: number;
+  memory: number;
+  gpu: number;
+  storage: number;
+}
 interface SessionRowResourceRequestsProps {
-  resourceRequests: Session["resources"]["requests"];
+  resourceRequests: Session["resources"]["requests"] | SessionLauncherResources;
 }
 
 export function SessionRowResourceRequests({
@@ -327,12 +334,13 @@ export function SessionRowResourceRequests({
   if (entries.length == 0) {
     return null;
   }
+
   return (
     <>
       {entries.map(([key, value], index) => (
         <span key={key} className="text-nowrap">
           <span className="fw-bold">{value} </span>
-          {key}
+          {key !== "name" && key}
           {entries.length - 1 === index ? " " : " | "}
         </span>
       ))}

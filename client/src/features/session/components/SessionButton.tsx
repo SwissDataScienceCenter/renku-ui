@@ -42,7 +42,7 @@ import {
   Row,
 } from "reactstrap";
 
-import { ErrorAlert, WarnAlert } from "../../../components/Alert";
+import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
@@ -58,9 +58,13 @@ import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
 import { Url } from "../../../utils/helpers/url";
-import { useGetResourcePoolsQuery } from "../../dataServices/dataServices.api";
+import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api.ts";
 import { ResourceClass } from "../../dataServices/dataServices.types";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
+import {
+  ErrorOrNotAvailableResourcePools,
+  FetchingResourcePools,
+} from "../../sessionsV2/components/SessionModals/ResourceClassWarning.tsx";
 import {
   useGetSessionsQuery,
   usePatchSessionMutation,
@@ -733,27 +737,9 @@ function ModifySessionModalContent({
     );
 
   const selector = isLoading ? (
-    <div className="form-label">
-      <Loader className="me-1" inline size={16} />
-      Fetching available resource pools...
-    </div>
+    <FetchingResourcePools />
   ) : !resourcePools || resourcePools.length == 0 || isError ? (
-    <ErrorAlert dismissible={false}>
-      <h3 className={cx("fs-6", "fw-bold")}>
-        Error on loading available session resource pools
-      </h3>
-      <p className="mb-0">
-        Modifying the session is not possible at the moment. You can try to{" "}
-        <a
-          className={cx("btn", "btn-sm", "btn-primary", "mx-1")}
-          href={window.location.href}
-          onClick={() => window.location.reload()}
-        >
-          reload the page
-        </a>
-        .
-      </p>
-    </ErrorAlert>
+    <ErrorOrNotAvailableResourcePools />
   ) : (
     <SessionClassSelector
       resourcePools={resourcePools}

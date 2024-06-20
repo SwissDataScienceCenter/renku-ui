@@ -23,23 +23,22 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useGetNotebooksVersionQuery } from "../../../../features/versions/versions.api";
 import { useCallback, useContext, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import Select, {
   ClassNamesConfig,
   GroupBase,
+  GroupHeadingProps,
   OptionProps,
   SelectComponentsConfig,
   SingleValue,
   SingleValueProps,
-  GroupHeadingProps,
   components,
 } from "react-select";
+import { useGetNotebooksVersionQuery } from "../../../../features/versions/versions.api";
 
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
-import { Loader } from "../../../../components/Loader";
 import { User } from "../../../../model/renkuModels.types";
 import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 import AppContext from "../../../../utils/context/appContext";
@@ -47,7 +46,7 @@ import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constant
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
+import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api.ts";
 import {
   ResourceClass,
   ResourcePool,
@@ -58,8 +57,9 @@ import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import { setSessionClass } from "../../startSessionOptionsSlice";
 import { computeStorageSizes } from "../../utils/sessionOptions.utils";
 
-import styles from "./SessionClassOption.module.scss";
 import { toHumanDuration } from "../../../../utils/helpers/DurationUtils";
+import { FetchingResourcePools } from "../../../sessionsV2/components/SessionModals/ResourceClassWarning.tsx";
+import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {
   // Project options
@@ -178,10 +178,7 @@ export const SessionClassOption = () => {
   if (isLoading || !projectConfig) {
     return (
       <div className="field-group">
-        <div className="form-label">
-          <Loader className="me-1" inline size={16} />
-          Fetching available resource pools...
-        </div>
+        <FetchingResourcePools />
       </div>
     );
   }
@@ -451,6 +448,7 @@ function AskForComputeResources() {
 }
 
 interface SessionClassSelectorProps {
+  id?: string;
   resourcePools: ResourcePool[];
   currentSessionClass?: ResourceClass | undefined;
   defaultSessionClass?: ResourceClass | undefined;
@@ -459,6 +457,7 @@ interface SessionClassSelectorProps {
 }
 
 export const SessionClassSelector = ({
+  id,
   resourcePools,
   currentSessionClass,
   defaultSessionClass,
@@ -478,6 +477,7 @@ export const SessionClassSelector = ({
   return (
     <div data-cy="session-class-select">
       <Select
+        id={id}
         classNames={selectClassNames}
         components={selectComponents}
         defaultValue={defaultSessionClass}

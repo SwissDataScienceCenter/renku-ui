@@ -33,13 +33,13 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
 import {
   useAddResourcePoolMutation,
   useGetResourcePoolsQuery,
-} from "./adminComputeResources.api";
+} from "../dataServices/computeResources.api.ts";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import { AddResourcePoolForm } from "./adminComputeResources.types";
-import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
 
 export default function AddResourcePoolButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,7 +64,7 @@ interface AddResourcePoolModalProps {
 }
 function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
   // Fetch existing resource pools and default values
-  const { data: resourcePools } = useGetResourcePoolsQuery();
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
   const notebookVersion = useGetNotebooksVersionQuery();
   const defaultSessionClass = useMemo(
     () =>

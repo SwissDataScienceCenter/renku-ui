@@ -22,7 +22,7 @@ import { useEffect, useMemo } from "react";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
-import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
+import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import { CLOUD_OPTIONS_OVERRIDE } from "../project/components/cloudStorage/projectCloudStorage.constants";
 import {
   RCloneOption,

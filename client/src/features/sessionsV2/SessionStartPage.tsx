@@ -24,7 +24,6 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
-
 import PageLoader from "../../components/PageLoader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import ProgressStepsIndicator, {
@@ -40,17 +39,16 @@ import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorag
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
-
+import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass.tsx";
 import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
 import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
+import { StartSessionOptionsV2, SessionStartCloudStorageConfiguration, } from "./startSessionOptionsV2.types";
+import useSessionLauncherState from "./useSessionLaunchState.hook.ts";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-import {
-  SessionStartCloudStorageConfiguration,
-  StartSessionOptionsV2,
-} from "./startSessionOptionsV2.types";
-import useSessionLauncherState from "./useSessionLaunchState";
+
+import useSessionResourceClass from "./useSessionResourceClass.hook.ts";
 
 interface SessionStartingProps extends StartSessionFromLauncherProps {
   containerImage: string;
@@ -257,64 +255,30 @@ function StartSessionFromLauncher({
   launcher,
   project,
 }: StartSessionFromLauncherProps) {
-  const {
-    containerImage,
-    defaultSessionClass,
-    isFetchingOrLoadingStorages,
-    resourcePools,
-    startSessionOptionsV2,
-  } = useSessionLauncherState({
+  const hasCustomQuery =
+    new URLSearchParams(location.search).get("custom") === "true";
+  const navigate = useNavigate();
+  const startSessionOptionsV2 = useAppSelector(
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+  );
+  const { containerImage, isFetchingOrLoadingStorages, resourcePools } =
+    useSessionLauncherState({
+      launcher,
+      project,
+    });
+  const { isPendingResourceClass, setResourceClass } = useSessionResourceClass({
     launcher,
-    project,
+    isCustomLaunch: hasCustomQuery,
+    resourcePools,
   });
 
-  const currentSessionClass = useMemo(
-    () =>
-      resourcePools
-        ?.flatMap(({ classes }) => classes)
-        .find((c) => c.id === startSessionOptionsV2.sessionClass) ?? null,
-    [resourcePools, startSessionOptionsV2.sessionClass]
-  );
-
-  const dispatch = useAppDispatch();
-
-  // Select default session class
-  useEffect(() => {
-    if (resourcePools == null) {
-      return;
-    }
-
-    const initialSessionClassId =
-      resourcePools
-        ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == defaultSessionClass?.id && c.matching)?.id ??
-      resourcePools
-        ?.filter((pool) => pool.default)
-        .flatMap((pool) => pool.classes)
-        .find((c) => c.matching)?.id ??
-      0;
-
-    if (initialSessionClassId == 0) {
-      // TODO: propagate error
-      return;
-    }
-
-    dispatch(
-      startSessionOptionsV2Slice.actions.setSessionClass(initialSessionClassId)
-    );
-  }, [defaultSessionClass?.id, dispatch, resourcePools]);
-
-  // Select default storage
-  useEffect(() => {
-    if (currentSessionClass == null) {
-      return;
-    }
-    dispatch(
-      startSessionOptionsV2Slice.actions.setStorage(
-        currentSessionClass.default_storage
-      )
-    );
-  }, [currentSessionClass, dispatch]);
+  const cancelLaunchSession = useCallback(() => {
+    const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+      namespace: project.namespace,
+      slug: project.slug,
+    });
+    navigate(url);
+  }, [navigate, project]);
 
   const needsCredentials = startSessionOptionsV2.cloudStorage.some(
     doesCloudStorageNeedCredentials
@@ -322,7 +286,6 @@ function StartSessionFromLauncher({
 
   const allDataFetched =
     startSessionOptionsV2.dockerImageStatus === "available" &&
-    resourcePools != null &&
     startSessionOptionsV2.sessionClass !== 0 &&
     !isFetchingOrLoadingStorages;
 
@@ -368,6 +331,13 @@ function StartSessionFromLauncher({
         style={ProgressStyle.Light}
         title={`Starting session ${launcher.name}`}
         status={steps}
+      />
+      <SelectResourceClassModal
+        isOpen={isPendingResourceClass}
+        onCancel={cancelLaunchSession}
+        resourceClassId={launcher.resource_class_id}
+        onContinue={setResourceClass}
+        isCustom={hasCustomQuery}
       />
     </div>
   );

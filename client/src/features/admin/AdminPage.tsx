@@ -34,8 +34,16 @@ import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
-import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
+import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
+import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
+import {
+  useDeleteResourcePoolMutation,
+  useGetResourcePoolUsersQuery,
+  useGetResourcePoolsQuery,
+  useGetUsersQuery,
+  useRemoveUserFromResourcePoolMutation,
+} from "../dataServices/computeResources.api.ts";
 import {
   ResourceClass,
   ResourcePool,
@@ -49,18 +57,10 @@ import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
-import {
-  useDeleteResourcePoolMutation,
-  useGetResourcePoolUsersQuery,
-  useGetResourcePoolsQuery,
-  useGetUsersQuery,
-  useRemoveUserFromResourcePoolMutation,
-} from "./adminComputeResources.api";
 import { ResourcePoolUser } from "./adminComputeResources.types";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
-import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
 
 export default function AdminPage() {
   return (
@@ -90,7 +90,7 @@ function AdminComputeResourcesOverview() {
     data: resourcePools,
     error: resourcePoolsError,
     isLoading: resourcePoolsIsLoading,
-  } = useGetResourcePoolsQuery();
+  } = useGetResourcePoolsQuery({});
 
   const error = rawUsersError || resourcePoolsError;
   const isLoading = rawUsersIsLoading || resourcePoolsIsLoading;
@@ -132,7 +132,7 @@ function AdminComputeResourcesOverview() {
 }
 
 function ResourcePoolsList() {
-  const { data: resourcePools } = useGetResourcePoolsQuery();
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
 
   if (!resourcePools) {
     return null;

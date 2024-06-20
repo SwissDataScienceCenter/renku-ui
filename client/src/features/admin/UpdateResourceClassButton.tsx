@@ -33,12 +33,12 @@ import {
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { useUpdateResourceClassMutation } from "../dataServices/computeResources.api.ts";
 import {
   NodeAffinity,
   ResourceClass,
   ResourcePool,
 } from "../dataServices/dataServices.types";
-import { useUpdateResourceClassMutation } from "./adminComputeResources.api";
 
 import styles from "./UpdateResourceClassButton.module.scss";
 

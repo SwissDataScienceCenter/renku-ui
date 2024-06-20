@@ -16,18 +16,12 @@
  * limitations under the License.
  */
 
-import { useParams } from "react-router-dom-v5-compat";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useAddSessionLauncherMutation } from "../../sessionsV2.api.ts";
-import { useForm } from "react-hook-form";
-import {
-  CustomEnvFormContent,
-  ExistingEnvFormContent,
-  SessionLauncherForm,
-} from "../../SessionLauncherFormContent.tsx";
+import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { SessionLauncherEnvironment } from "../../sessionsV2.types.ts";
+import { Link45deg, PlusLg, XLg } from "react-bootstrap-icons";
+import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom-v5-compat";
 import {
   Button,
   Col,
@@ -38,14 +32,20 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { Link45deg, PlusLg, XLg } from "react-bootstrap-icons";
-import cx from "classnames";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert.tsx";
 import { Loader } from "../../../../components/Loader.tsx";
+import stylesButton from "../../../../components/buttons/Buttons.module.scss";
+import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert.tsx";
+import EnvironmentIcon from "../../../../components/icons/EnvironmentIcon.tsx";
 import rkIconSessions from "../../../../styles/icons/sessions.svg";
 import styles from "../../../ProjectPageV2/ProjectPageContent/ProjectOverview/ProjectOverview.module.scss";
-import stylesButton from "../../../../components/buttons/Buttons.module.scss";
-import EnvironmentIcon from "../../../../components/icons/EnvironmentIcon.tsx";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
+import {
+  CustomEnvFormContent,
+  ExistingEnvFormContent,
+  SessionLauncherForm,
+} from "../../SessionLauncherFormContent.tsx";
+import { useAddSessionLauncherMutation } from "../../sessionsV2.api.ts";
+import { SessionLauncherEnvironment } from "../../sessionsV2.types.ts";
 
 interface AddSessionLauncherModalProps {
   isOpen: boolean;
@@ -68,6 +68,7 @@ function AddSessionCustomImageModal({
     formState: { errors },
     handleSubmit,
     reset,
+    setValue,
   } = useForm<SessionLauncherForm, unknown>({
     defaultValues: {
       name: "",
@@ -85,6 +86,7 @@ function AddSessionCustomImageModal({
       };
       addSessionLauncher({
         project_id: projectId ?? "",
+        resource_class_id: data.resourceClass.id,
         name,
         default_url: default_url.trim() ? default_url : undefined,
         ...environment,
@@ -135,7 +137,11 @@ function AddSessionCustomImageModal({
           </p>
           {result.error && <RtkErrorAlert error={result.error} />}
 
-          <CustomEnvFormContent control={control} errors={errors} />
+          <CustomEnvFormContent
+            control={control}
+            errors={errors}
+            setValue={setValue}
+          />
         </ModalBody>
         <ModalFooter className="pt-0">
           <Button className="btn-outline-rk-green" onClick={toggle}>
@@ -178,6 +184,7 @@ function AddSessionExistingEnvModal({
     reset,
     watch,
     setValue,
+    resetField,
   } = useForm<SessionLauncherForm, unknown>({
     defaultValues: {
       name: "",
@@ -188,13 +195,14 @@ function AddSessionExistingEnvModal({
   });
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
-      const { default_url, name } = data;
+      const { default_url, name, resourceClass } = data;
       const environment: SessionLauncherEnvironment = {
         environment_kind: "global_environment",
         environment_id: data.environment_id,
       };
       addSessionLauncher({
         project_id: projectId ?? "",
+        resource_class_id: resourceClass.id,
         name,
         default_url: default_url.trim() ? default_url : undefined,
         ...environment,
@@ -250,6 +258,7 @@ function AddSessionExistingEnvModal({
             watch={watch}
             setValue={setValue}
             touchedFields={touchedFields}
+            resetField={resetField}
           />
         </Form>
       </ModalBody>
