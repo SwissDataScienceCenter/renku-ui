@@ -60,7 +60,6 @@ import {
   WarnAlert,
 } from "../../../../components/Alert";
 import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import connectedServicesApi, {
   useGetProvidersQuery,
