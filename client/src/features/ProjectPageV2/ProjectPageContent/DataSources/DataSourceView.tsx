@@ -19,38 +19,10 @@ import cx from "classnames";
 import { useMemo } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Offcanvas, OffcanvasBody } from "reactstrap";
-import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem.tsx";
-import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/components/cloudStorage/projectCloudStorage.constants.ts";
-import {
-  CloudStorageGetRead,
-  RCloneConfig,
-  RCloneOption,
-} from "../../../projectsV2/api/storagesV2.api.ts";
-import { DataSourceActions } from "./DataSourceDisplay.tsx";
-
-export interface CloudStorageOptions extends RCloneOption {
-  requiredCredential: boolean;
-}
-export function getCredentialFieldDefinitions(
-  storageDefinition: CloudStorageGetRead
-): CloudStorageOptions[] | undefined {
-  const { sensitive_fields, storage } = storageDefinition;
-  const { configuration } = storage;
-
-  const providedSensitiveFields = getProvidedSensitiveFields(configuration);
-  return sensitive_fields?.map((field) => ({
-    ...field,
-    requiredCredential: providedSensitiveFields.includes(field?.name || ""),
-  }));
-}
-
-export function getProvidedSensitiveFields(
-  configuration: RCloneConfig
-): string[] {
-  return Object.entries(configuration)
-    .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
-    .map(([key]) => key);
-}
+import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem";
+import { getCredentialFieldDefinitions } from "../../../project/utils/projectCloudStorage.utils";
+import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
+import { DataSourceActions } from "./DataSourceDisplay";
 
 interface DataSourceViewProps {
   storage: CloudStorageGetRead;
@@ -132,7 +104,7 @@ export function DataSourceView({
             </div>
             <div>{storageDefinition.source_path}</div>
           </div>
-          <div className="mt-3">
+          <div className="mt-3" data-cy="requires-credentials-section">
             <div>
               <small className="fw-bold">Requires credentials</small>
             </div>
