@@ -35,6 +35,7 @@ export const AVAILABLE_FILTERS = {
   role: ROLE_FILTER,
   type: {
     project: "Project",
+    group: "Group",
     user: "User",
   },
   visibility: {
@@ -155,7 +156,9 @@ export const buildSearchQuery = (searchState: SearchV2State): string => {
   if (searchState.filters.createdBy)
     searchQueryItems.push(`createdBy:${searchState.filters.createdBy}`);
 
-  searchQueryItems.push(query);
+  if (query) {
+    searchQueryItems.push(query);
+  }
 
   return searchQueryItems.join(" ");
 };
