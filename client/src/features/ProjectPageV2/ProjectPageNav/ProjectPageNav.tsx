@@ -29,7 +29,7 @@ import useProjectAccess from "../utils/useProjectAccess.hook";
 import styles from "./ProjectPageNav.module.scss";
 
 export default function ProjectPageNav({ project }: { project: Project }) {
-  const { namespace, slug } = project;
+  const { namespace = "", slug = "" } = project;
   const { userRole } = useProjectAccess({ projectId: project.id });
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace,

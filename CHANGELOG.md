@@ -1,5 +1,10 @@
 # Changes
 
+## Changelog file deprecated
+
+The `CHANGELOG.md` file has been deprecated in favor of the
+[GitHub Releases](https://github.com/SwissDataScienceCenter/renku-ui/releases) page.
+
 ## [3.28.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.27.0...3.28.0) (2024-06-05)
 
 ### Features

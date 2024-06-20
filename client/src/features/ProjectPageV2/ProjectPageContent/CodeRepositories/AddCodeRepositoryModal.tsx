@@ -15,27 +15,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { useCallback, useState } from "react";
+import cx from "classnames";
+import { useCallback, useEffect, useState } from "react";
+import { CodeSquare, Github, PlusLg } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import {
   Badge,
   Button,
   Col,
+  Form,
+  FormGroup,
+  Input,
+  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
   Row,
 } from "reactstrap";
-import { CodeSquare, Github, PlusLg } from "react-bootstrap-icons";
-import cx from "classnames";
-import styles from "../ProjectOverview/ProjectOverview.module.scss";
+
+import { Loader } from "../../../../components/Loader";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import BootstrapGitLabIcon from "../../../../components/icons/BootstrapGitLabIcon";
+import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
+import { Project } from "../../../projectsV2/api/projectV2.api";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+
 import stylesButton from "../../../../components/buttons/Buttons.module.scss";
-import BootstrapGitLabIcon from "../../../../components/icons/BootstrapGitLabIcon.tsx";
-import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
-import FieldGroup from "../../../../components/FieldGroups.tsx";
-import { Loader } from "../../../../components/Loader.tsx";
-import RenkuFrogIcon from "../../../../components/icons/RenkuIcon.tsx";
+import styles from "../ProjectOverview/ProjectOverview.module.scss";
 
 interface AddCodeRepositoryModalProps {
   project: Project;
@@ -85,6 +92,7 @@ export function AddCodeRepositoryStep1Modal({
                   styles.BorderDashed,
                   stylesButton.EmptyButton
                 )}
+                data-cy="add-existing-repository-button"
               >
                 <Github className="bi me-2" />
                 <BootstrapGitLabIcon className="bi me-2" />
@@ -143,65 +151,109 @@ function AddCodeRepositoryStep2Modal({
   toggleModal,
   isOpen,
 }: AddCodeRepositoryModalProps) {
-  const [repositoryUrl, setRepositoryUrl] = useState("");
-  const [updateProject, { isLoading }] = usePatchProjectsByProjectIdMutation();
-  const onAddCodeRepository = (url: string) => {
-    if (!url) return;
-    const repositories = project?.repositories?.length
-      ? [...project.repositories]
-      : [];
-    repositories.push(url);
-    updateProject({
-      "If-Match": project.etag ? project.etag : "",
-      projectId: project.id,
-      projectPatch: { repositories },
-    })
-      .unwrap()
-      .then(() => {
-        toggleModal();
-        setRepositoryUrl("");
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<AddCodeRepositoryForm>();
+
+  const [updateProject, result] = usePatchProjectsByProjectIdMutation();
+  const onSubmit = useCallback(
+    (data: AddCodeRepositoryForm) => {
+      const repositories = project.repositories?.length
+        ? [...project.repositories]
+        : [];
+      repositories.push(data.repositoryUrl);
+      updateProject({
+        "If-Match": project.etag ? project.etag : "",
+        projectId: project.id,
+        projectPatch: { repositories },
       });
-  };
+    },
+    [project.etag, project.id, project.repositories, updateProject]
+  );
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      toggleModal();
+    }
+  }, [result.isSuccess, toggleModal]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+      result.reset();
+    }
+  }, [isOpen, reset, result]);
 
   return (
     <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
-      <ModalHeader toggle={toggleModal}>
-        <RenkuFrogIcon className="me-2" size={30} />
-        Connect an existing code repository
-      </ModalHeader>
-      <ModalBody className="py-0">
-        <p>Specify a code repository by its URL.</p>
-        <Row>
-          <Col>
-            <FieldGroup
-              id="url"
-              label="Repository URL"
-              value={repositoryUrl}
-              help={"https://github.com/my-repository"}
-              isRequired={true}
-              onChange={(e) => setRepositoryUrl(e.target.value)}
-            />
-          </Col>
-        </Row>
-        <ModalFooter className="px-0">
-          <Button
-            color="rk-green"
-            className={cx("float-right", "mt-1", "ms-2")}
-            data-cy="add-code-repository-modal-button"
-            type="submit"
-            onClick={() => onAddCodeRepository(repositoryUrl)}
-          >
-            {isLoading ? (
-              <>
-                <Loader className="me-2" inline size={16} />
-                Adding code repository
-              </>
-            ) : (
-              <>Add code repository</>
-            )}
-          </Button>
-        </ModalFooter>
-      </ModalBody>
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+        <ModalHeader toggle={toggleModal}>
+          <RenkuFrogIcon className="me-2" size={30} />
+          Connect an existing code repository
+        </ModalHeader>
+        <ModalBody className="py-0">
+          {result.error && <RtkOrNotebooksError error={result.error} />}
+          <p>Specify a code repository by its URL.</p>
+          <Row>
+            <Col>
+              <FormGroup className="field-group">
+                <Label for={`project-${project.id}-add-repository-url`}>
+                  Repository URL
+                  <span className="required-label">*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name="repositoryUrl"
+                  render={({ field }) => (
+                    <Input
+                      className={cx(
+                        "form-control",
+                        errors.repositoryUrl && "is-invalid"
+                      )}
+                      id={`project-${project.id}-add-repository-url`}
+                      data-cy="project-add-repository-url"
+                      type="text"
+                      placeholder="https://github.com/my-org/my-repository.git"
+                      {...field}
+                    />
+                  )}
+                  rules={{ required: true }}
+                />
+                <div className="invalid-feedback">
+                  Please provide a valid URL.
+                </div>
+              </FormGroup>
+            </Col>
+          </Row>
+          <ModalFooter className="px-0">
+            <Button
+              color="rk-green"
+              className={cx("float-right", "mt-1", "ms-2")}
+              data-cy="add-code-repository-modal-button"
+              type="submit"
+            >
+              {result.isLoading ? (
+                <>
+                  <Loader className="me-1" inline size={16} />
+                  Adding code repository
+                </>
+              ) : (
+                <>
+                  <PlusLg className={cx("bi", "me-1")} />
+                  Add code repository
+                </>
+              )}
+            </Button>
+          </ModalFooter>
+        </ModalBody>
+      </Form>
     </Modal>
   );
+}
+
+interface AddCodeRepositoryForm {
+  repositoryUrl: string;
 }

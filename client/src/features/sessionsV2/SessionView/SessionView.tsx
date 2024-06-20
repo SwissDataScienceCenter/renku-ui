@@ -399,6 +399,7 @@ export function SessionView({
           className="d-flex justify-content-start gap-2 align-items-center mb-4"
           role="button"
           onClick={() => setToggleSessionView()}
+          data-cy="get-back-session-view"
         >
           <ArrowLeft size={24} />
           Back
@@ -408,7 +409,9 @@ export function SessionView({
             <label className="fst-italic fs-small">
               {launcher ? "Session launcher" : "Session without launcher"}
             </label>
-            <h2 className="fw-bold">{title}</h2>
+            <h2 className="fw-bold" data-cy="session-view-title">
+              {title}
+            </h2>
           </div>
           {launcherMenu}
         </div>

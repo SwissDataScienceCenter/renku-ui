@@ -20,7 +20,7 @@ COPY .storybook /app/.storybook
 
 RUN npm run storybook-build -- -o storybook-static
 
-FROM nginxinc/nginx-unprivileged:1.25-alpine
+FROM nginxinc/nginx-unprivileged:1.27-alpine
 
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY --from=builder /app/storybook-static /usr/share/nginx/html/storybook
