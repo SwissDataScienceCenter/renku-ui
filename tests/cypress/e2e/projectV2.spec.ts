@@ -173,6 +173,20 @@ describe("Navigate to project", () => {
     cy.contains("user3-uuid").should("be.visible");
   });
 
+  it("show project information", () => {
+    fixtures.readProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    // check project data
+    cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
+    cy.getDataCy("project-description").should(
+      "contain.text",
+      "Project 2 description"
+    );
+    cy.getDataCy("project-visibility").should("contain.text", "Public");
+    cy.getDataCy("project-namespace").should("contain.text", "user1-uuid");
+  });
+
   it("shows at most 5 members, owners first", () => {
     fixtures
       .listProjectV2Members({
@@ -215,8 +229,10 @@ describe("Edit v2 project", () => {
   it("changes project metadata", () => {
     fixtures.readProjectV2().updateProjectV2().listNamespaceV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("list-card").first().find("a").click();
+    cy.getDataCy("project-card")
+      .contains("a", "test 2 v2-project")
+      .should("be.visible")
+      .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.getDataCy("project-settings-edit").should("be.visible").click();
@@ -238,8 +254,10 @@ describe("Edit v2 project", () => {
   it("changes project namespace", () => {
     fixtures.readProjectV2().updateProjectV2().listManyNamespaceV2();
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("list-card").first().find("a").click();
+    cy.getDataCy("project-card")
+      .contains("a", "test 2 v2-project")
+      .should("be.visible")
+      .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.getDataCy("project-settings-edit").should("be.visible").click();
@@ -270,12 +288,17 @@ describe("Edit v2 project", () => {
       fixture: "projectV2/update-projectV2-repositories.json",
     });
     cy.contains("List Projects (V2)").should("be.visible");
-    cy.getDataCy("list-card").first().find("a").click();
+    cy.getDataCy("project-card")
+      .contains("a", "test 2 v2-project")
+      .should("be.visible")
+      .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.getDataCy("add-repository").click();
     cy.contains("Connect an existing repository").click();
-    cy.getDataCy("field-group-url").type("https://domain.name/repo3.git");
+    cy.getDataCy("project-add-repository-url").type(
+      "https://domain.name/repo3.git"
+    );
     fixtures.readProjectV2({
       fixture: "projectV2/update-projectV2-repositories.json",
       name: "readPostUpdate",

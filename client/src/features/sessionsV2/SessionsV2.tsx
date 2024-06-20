@@ -153,7 +153,10 @@ export function SessionLaunchersListDisplay({ project }: SessionsV2Props) {
     Object.entries(orphanSessions)?.length;
   return (
     <>
-      <div className={cx("p-3", "d-flex", "justify-content-between")}>
+      <div
+        className={cx("p-3", "d-flex", "justify-content-between")}
+        data-cy="sessions-box"
+      >
         <div className="fw-bold">
           <img
             src={rkIconSessions}
@@ -300,16 +303,19 @@ export function SessionV2Actions({
             dotsDropdownStyles.threeDotsDark
           )}
         >
-          <div>
+          <div data-cy="session-view-menu">
             <ThreeDotsVertical size={24} />
             <span className="visually-hidden">Actions</span>
           </div>
         </DropdownToggle>
         <DropdownMenu className="btn-with-menu-options" end>
-          <DropdownItem onClick={toggleUpdate}>
+          <DropdownItem onClick={toggleUpdate} data-cy="session-view-menu-edit">
             <PencilSquare /> Edit Launcher
           </DropdownItem>
-          <DropdownItem onClick={toggleDelete}>
+          <DropdownItem
+            onClick={toggleDelete}
+            data-cy="session-view-menu-delete"
+          >
             <Trash /> Delete Launcher
           </DropdownItem>
         </DropdownMenu>

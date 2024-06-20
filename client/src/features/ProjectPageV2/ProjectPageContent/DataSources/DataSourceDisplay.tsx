@@ -148,11 +148,16 @@ export function DataSourceActions({
             "shadow-none",
             dotsDropdownStyles.threeDotsDark
           )}
+          data-cy="data-source-action"
         >
           <ThreeDotsVertical size={24} className="fs-3" />
           <span className="visually-hidden">Actions</span>
         </DropdownToggle>
-        <DropdownMenu className={cx("text-end", "mx-0", "mt-2")} end>
+        <DropdownMenu
+          className={cx("text-end", "mx-0", "mt-2")}
+          end
+          data-cy="data-source-menu"
+        >
           <DropdownItem
             className={cx(
               "d-flex",
@@ -161,6 +166,7 @@ export function DataSourceActions({
               "justify-content-start"
             )}
             onClick={toggleDelete}
+            data-cy="data-source-delete"
           >
             <Trash /> Remove data sources
           </DropdownItem>
@@ -172,6 +178,7 @@ export function DataSourceActions({
               "justify-content-start"
             )}
             onClick={toggleEdit}
+            data-cy="data-source-edit"
           >
             <Pencil /> Edit data source
           </DropdownItem>
@@ -223,7 +230,9 @@ export function DataSourceDisplay({
         className={cx("flex-shrink-0", "me-0", "me-sm-2")}
         size="20"
       />
-      <span className={cx("text-truncate")}>{storageSensitive.name}</span>
+      <span className={cx("text-truncate")} data-cy="data-storage-name">
+        {storageSensitive.name}
+      </span>
     </div>
   );
 
@@ -244,6 +253,7 @@ export function DataSourceDisplay({
         "mx-0",
         sessionItemStyles.ItemDisplaySessionRow
       )}
+      data-cy="data-storage-item"
     >
       <Col xs={10} sm={6} className={cx("text-truncate", "col")}>
         {nameDisplay}

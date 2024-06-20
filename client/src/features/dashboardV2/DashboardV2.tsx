@@ -249,7 +249,7 @@ function GroupsList() {
             ...group,
             readableId: group.slug,
             visibility: "public",
-            url: generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
+            url: generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
               slug: group.slug,
             }),
           }}

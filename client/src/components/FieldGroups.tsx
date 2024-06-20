@@ -40,6 +40,9 @@ interface FieldGroupProps {
   isRequired?: boolean;
 }
 
+/** @deprecated Avoid using the `<FieldGroup>` component as it creates HTML
+ * code which do not respect `<label>` and accessibility standards.
+ */
 const FieldGroup = ({
   id,
   label,

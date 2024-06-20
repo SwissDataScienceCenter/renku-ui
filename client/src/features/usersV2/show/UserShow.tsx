@@ -28,9 +28,8 @@ import { Badge } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
-import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { useGetNamespacesByGroupSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import {
@@ -48,8 +47,8 @@ export default function UserShow() {
     data: namespace,
     isLoading: isLoadingNamespace,
     error: namespaceError,
-  } = useGetNamespacesByGroupSlugQuery(
-    username ? { groupSlug: username } : skipToken
+  } = useGetNamespacesByNamespaceSlugQuery(
+    username ? { namespaceSlug: username } : skipToken
   );
   const {
     data: user,
@@ -67,7 +66,7 @@ export default function UserShow() {
   useEffect(() => {
     if (username && namespace?.namespace_kind === "group") {
       navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.groups.show, { slug: username }),
+        generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, { slug: username }),
         {
           replace: true,
         }
@@ -75,15 +74,11 @@ export default function UserShow() {
     }
   }, [namespace?.namespace_kind, navigate, username]);
 
-  if (!username) {
-    return <LazyNotFound />;
-  }
-
   if (isLoading) {
     return <Loader className="align-self-center" />;
   }
 
-  if (error || !namespace || !user) {
+  if (error || !username || !namespace || !user) {
     return <UserNotFound error={error} />;
   }
 
@@ -126,7 +121,13 @@ export default function UserShow() {
 
       <section>
         <h2 className="fs-4">Personal Projects</h2>
-        <ProjectV2ListDisplay namespace={username} pageParam="projects_page" />
+        <ProjectV2ListDisplay
+          namespace={username}
+          pageParam="projects_page"
+          emptyListElement={
+            <p>{name ?? username} has no visible personal project.</p>
+          }
+        />
       </section>
     </ContainerWrap>
   );

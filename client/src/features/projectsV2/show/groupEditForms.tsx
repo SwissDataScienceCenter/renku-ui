@@ -20,7 +20,6 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { Navigate, generatePath } from "react-router-dom-v5-compat";
 import {
   Button,
   Form,
@@ -49,9 +48,6 @@ import AddGroupMemberModal from "../fields/AddGroupMemberModal";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
-
-import { SettingEditOption } from "./groupShow.types";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 type GroupMetadata = Omit<GroupPatchRequest, "repositories">;
 
@@ -127,17 +123,10 @@ function GroupDeleteConfirmation({
 
 interface GroupEditSubmitGroupProps {
   isUpdating: boolean;
-  onCancel: () => void;
 }
-function GroupEditSubmitGroup({
-  isUpdating,
-  onCancel,
-}: GroupEditSubmitGroupProps) {
+function GroupEditSubmitGroup({ isUpdating }: GroupEditSubmitGroupProps) {
   return (
     <div className={cx("d-flex", "justify-content-between")}>
-      <Button disabled={isUpdating} color="outline-rk-green" onClick={onCancel}>
-        Cancel
-      </Button>
       <div>
         <Button disabled={isUpdating} className="me-1" type="submit">
           {isUpdating && <Loader inline={true} size={16} />} Update
@@ -149,12 +138,8 @@ function GroupEditSubmitGroup({
 
 interface GroupMetadataFormProps {
   group: GroupResponse;
-  setSettingEdit: (option: SettingEditOption) => void;
 }
-export function GroupMetadataForm({
-  group,
-  setSettingEdit,
-}: GroupMetadataFormProps) {
+export function GroupMetadataForm({ group }: GroupMetadataFormProps) {
   const {
     control,
     formState: { errors },
@@ -167,19 +152,10 @@ export function GroupMetadataForm({
     },
   });
 
-  const [updateGroup, { data, isLoading, isError }] =
+  const [updateGroup, { isLoading, isError }] =
     usePatchGroupsByGroupSlugMutation();
 
   const isUpdating = isLoading;
-  const onCancel = useCallback(() => {
-    setSettingEdit(null);
-  }, [setSettingEdit]);
-
-  useEffect(() => {
-    if (data != null) {
-      setSettingEdit(null);
-    }
-  }, [data, setSettingEdit]);
 
   const onSubmit = useCallback(
     (data: GroupMetadata) => {
@@ -192,14 +168,6 @@ export function GroupMetadataForm({
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
-
-  if (data != null && data.slug !== group.slug)
-    return (
-      <Navigate
-        to={generatePath(ABSOLUTE_ROUTES.v2.groups.show, { slug: data.slug })}
-        replace
-      />
-    );
 
   return (
     <div>
@@ -232,17 +200,14 @@ export function GroupMetadataForm({
           errors={errors}
           name="description"
         />
-        <GroupEditSubmitGroup isUpdating={isUpdating} onCancel={onCancel} />
+        <GroupEditSubmitGroup isUpdating={isUpdating} />
         {isError && <div>There was an error</div>}
       </Form>
     </div>
   );
 }
 
-export function GroupMembersForm({
-  group,
-  setSettingEdit,
-}: GroupMetadataFormProps) {
+export function GroupMembersForm({ group }: GroupMetadataFormProps) {
   const { data, isLoading } = useGetGroupsByGroupSlugMembersQuery({
     groupSlug: group.slug,
   });
@@ -252,9 +217,6 @@ export function GroupMembersForm({
   }, []);
 
   const [deleteMember] = useDeleteGroupsByGroupSlugMembersAndUserIdMutation();
-  const onCancel = useCallback(() => {
-    setSettingEdit(null);
-  }, [setSettingEdit]);
 
   const onDelete = useCallback(
     (member: GroupMemberResponse) => {
@@ -269,9 +231,6 @@ export function GroupMembersForm({
       <>
         <h4>Project Members</h4>
         <div className="mb-3">Could not load members</div>
-        <div>
-          <Button onClick={onCancel}>Close</Button>
-        </div>
       </>
     );
   return (
@@ -311,11 +270,6 @@ export function GroupMembersForm({
         groupSlug={group.slug}
         toggle={toggleAddMemberModalOpen}
       />
-      <div className={cx("d-flex", "justify-content-end")}>
-        <Button disabled={isLoading} onClick={onCancel}>
-          Close
-        </Button>
-      </div>
     </>
   );
 }

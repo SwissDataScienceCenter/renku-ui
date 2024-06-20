@@ -16,18 +16,15 @@
  * limitations under the License.
  */
 
-// Run `npm run generate-api:namespaceV2` to generate the API
-import type { ConfigFile } from "@rtk-query/codegen-openapi";
-import path from "path";
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-const config: ConfigFile = {
-  // Configure to inject endpoints into the projectV2Api
-  apiFile: "./projectV2.api.ts",
-  apiImport: "projectV2Api",
-  outputFile: "./namespace.api.ts",
-  exportName: "projectAndNamespaceApi",
-  hooks: true,
-  schemaFile: path.join(__dirname, "namespace.openapi.json"),
-};
+const GroupV2Show = lazy(() => import("./show/GroupV2Show"));
 
-export default config;
+export default function LazyGroupV2Show() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <GroupV2Show />
+    </Suspense>
+  );
+}

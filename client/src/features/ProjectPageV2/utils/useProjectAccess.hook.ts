@@ -47,7 +47,7 @@ export default function useProjectAccess({ projectId }: UseProjectAccessArgs): {
   if (userError) return viewer;
   if (!user) return viewer;
   if (!members) return viewer;
-  // Find the user is a member of the project
+  // Find the user as a member of the project
   const member = members.find((member) => member.id === user.id);
   if (!member) return viewer;
 

@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { ReactNode, useCallback, useEffect, useMemo } from "react";
 import { Globe2, LockFill } from "react-bootstrap-icons";
 import {
   Link,
@@ -32,7 +32,10 @@ import { TimeCaption } from "../../../components/TimeCaption";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { Project } from "../api/projectV2.api";
-import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
+import {
+  useGetNamespacesByNamespaceSlugQuery,
+  useGetProjectsQuery,
+} from "../api/projectV2.enhanced-api";
 
 const DEFAULT_PER_PAGE = 10;
 const DEFAULT_PAGE_PARAM = "page";
@@ -41,12 +44,14 @@ interface ProjectListDisplayProps {
   namespace?: string;
   pageParam?: string;
   perPage?: number;
+  emptyListElement?: ReactNode;
 }
 
 export default function ProjectListDisplay({
   namespace: ns,
   pageParam: pageParam_,
   perPage: perPage_,
+  emptyListElement,
 }: ProjectListDisplayProps) {
   const pageParam = useMemo(
     () => (pageParam_ ? pageParam_ : DEFAULT_PAGE_PARAM),
@@ -117,11 +122,13 @@ export default function ProjectListDisplay({
       </div>
     );
 
-  if (error) {
+  if (error || data == null) {
     return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
-  if (data == null) return <div>No V2 projects.</div>;
+  if (!data.total) {
+    return emptyListElement ?? <p>The project list is empty.</p>;
+  }
 
   return (
     <>
@@ -149,6 +156,10 @@ interface ProjectV2ListProjectProps {
   project: Project;
 }
 function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
+  const { data: namespaceData } = useGetNamespacesByNamespaceSlugQuery({
+    namespaceSlug: project.namespace,
+  });
+
   const {
     name,
     namespace,
@@ -161,13 +172,16 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
     namespace: project.namespace,
     slug: project.slug,
   });
-  const namespaceUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-    username: project.namespace,
-  });
+  const namespaceUrl =
+    namespaceData && namespaceData.namespace_kind === "group"
+      ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, { slug: namespace })
+      : generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+          username: project.namespace,
+        });
 
   return (
     <Col>
-      <Card className="h-100">
+      <Card className="h-100" data-cy="project-card">
         <CardBody className={cx("d-flex", "flex-column")}>
           <h3 className="card-title">
             <Link className={cx("link-offset-1")} to={projectUrl}>

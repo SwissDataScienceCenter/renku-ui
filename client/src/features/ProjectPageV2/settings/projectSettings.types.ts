@@ -16,4 +16,6 @@
  * limitations under the License.
  */
 
-export type SettingEditOption = "metadata" | "members" | null;
+import type { ProjectPatch } from "../../projectsV2/api/projectV2.api";
+
+export type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
