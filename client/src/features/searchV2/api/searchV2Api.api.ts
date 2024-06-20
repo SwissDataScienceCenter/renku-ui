@@ -1,6 +1,20 @@
 import { searchV2EmptyApi as api } from "./searchV2-empty.api";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
+    getQuery: build.query<GetQueryApiResponse, GetQueryApiArg>({
+      query: (queryArg) => ({
+        url: `/query`,
+        headers: { "Renku-Auth-Anon-Id": queryArg["Renku-Auth-Anon-Id"] },
+        params: {
+          q: queryArg.q,
+          page: queryArg.page,
+          per_page: queryArg.perPage,
+        },
+      }),
+    }),
+    getVersion: build.query<GetVersionApiResponse, GetVersionApiArg>({
+      query: () => ({ url: `/version` }),
+    }),
     $get: build.query<$getApiResponse, $getApiArg>({
       query: (queryArg) => ({
         url: `/`,
@@ -16,6 +30,18 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as searchV2Api };
+export type GetQueryApiResponse = /** status 200  */ SearchResult;
+export type GetQueryApiArg = {
+  "Renku-Auth-Anon-Id"?: string;
+  /** User defined search query */
+  q?: string;
+  /** The page to retrieve, starting at 1 */
+  page?: number;
+  /** How many items to return for one page */
+  perPage?: number;
+};
+export type GetVersionApiResponse = /** status 200  */ CurrentVersion;
+export type GetVersionApiArg = void;
 export type $getApiResponse = /** status 200  */ SearchResult;
 export type $getApiArg = {
   "Renku-Auth-Anon-Id"?: string;
@@ -26,21 +52,11 @@ export type $getApiArg = {
   /** How many items to return for one page */
   perPage?: number;
 };
-export type Visibility = "Private" | "Public";
-export type UserId = {
-  id: string;
-};
-export type Project = {
+export type Group = {
   id: string;
   name: string;
-  slug: string;
-  namespace?: string;
-  repositories?: string[];
-  visibility: Visibility;
+  namespace: string;
   description?: string;
-  createdBy: UserId;
-  creationDate: string;
-  keywords?: string[];
   score?: number;
   type: string;
 };
@@ -52,24 +68,38 @@ export type User = {
   score?: number;
   type: string;
 };
-export type Group = {
+export type UserOrGroup =
+  | ({
+      type: "Group";
+    } & Group)
+  | ({
+      type: "User";
+    } & User);
+export type Visibility = "Private" | "Public";
+export type Project = {
   id: string;
   name: string;
-  namespace: string;
+  slug: string;
+  namespace?: UserOrGroup;
+  repositories?: string[];
+  visibility: Visibility;
   description?: string;
+  createdBy?: User;
+  creationDate: string;
+  keywords?: string[];
   score?: number;
   type: string;
 };
 export type SearchEntity =
   | ({
+      type: "Group";
+    } & Group)
+  | ({
       type: "Project";
     } & Project)
   | ({
       type: "User";
-    } & User)
-  | ({
-      type: "Group";
-    } & Group);
+    } & User);
 export type MapEntityTypeInt = {
   [key: string]: number;
 };
@@ -92,4 +122,11 @@ export type SearchResult = {
   facets: FacetData;
   pagingInfo: PageWithTotals;
 };
-export const { use$getQuery } = injectedRtkApi;
+export type CurrentVersion = {
+  name: string;
+  version: string;
+  headCommit: string;
+  describedVersion: string;
+};
+export const { useGetQueryQuery, useGetVersionQuery, use$getQuery } =
+  injectedRtkApi;

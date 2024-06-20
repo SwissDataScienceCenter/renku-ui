@@ -182,10 +182,10 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
     project;
 
   const namespaceUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-    username: namespace ?? "",
+    username: namespace?.namespace ?? "",
   });
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-    namespace: namespace ?? "",
+    namespace: namespace?.namespace ?? "",
     slug,
   });
 
@@ -197,7 +197,7 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
       <p className={cx("mb-2", "card-text")}>
         <Link to={namespaceUrl}>
           {"@"}
-          {namespace}
+          {namespace?.namespace}
         </Link>
       </p>
       {description && <p className={cx("mb-2", "card-text")}>{description}</p>}
