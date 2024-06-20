@@ -231,7 +231,7 @@ interface SearchV2ResultGroupProps {
 function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
   const { name, namespace, description } = group;
 
-  const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
+  const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
     slug: namespace,
   });
 
