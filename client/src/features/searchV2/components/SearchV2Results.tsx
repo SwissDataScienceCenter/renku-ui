@@ -181,9 +181,14 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
   const { creationDate, description, name, namespace, slug, visibility } =
     project;
 
-  const namespaceUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-    username: namespace?.namespace ?? "",
-  });
+  const namespaceUrl =
+    namespace?.type === "User"
+      ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+          username: namespace?.namespace ?? "",
+        })
+      : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+          slug: namespace?.namespace ?? "",
+        });
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: namespace?.namespace ?? "",
     slug,
