@@ -324,7 +324,7 @@ export function CustomEnvFormContent({
               id="addSessionLauncherName"
               placeholder="session name"
               type="text"
-              data-cy="custom-image-input"
+              data-cy="launcher-name-input"
               {...field}
             />
           )}
@@ -333,9 +333,7 @@ export function CustomEnvFormContent({
         <div className="invalid-feedback">Please provide a name</div>
       </div>
       <div className={cx("mb-5", "mt-5")}>
-        <Label className="form-label" for="addSessionLauncherName">
-          Session launcher environment
-        </Label>
+        <Label className="form-label">Session launcher environment</Label>
         <Card className={cx("border", sessionViewStyles.EnvironmentCard)}>
           <CardBody className={cx("d-flex", "flex-column", "p-4")}>
             <div className={cx("mb-5")}>
@@ -355,6 +353,7 @@ export function CustomEnvFormContent({
                     id="addSessionLauncherContainerImage"
                     placeholder="Docker image"
                     type="text"
+                    data-cy="custom-image-input"
                     {...field}
                   />
                 )}
@@ -614,6 +613,7 @@ export function SessionEnvironmentItem({
     <Col
       xs={12}
       className={cx("mb-3", isSelected && orderCard && "order-first")}
+      data-cy="global-environment-item"
     >
       <Input
         className="btn-check"

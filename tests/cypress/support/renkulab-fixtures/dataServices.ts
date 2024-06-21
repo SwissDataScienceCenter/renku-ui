@@ -84,5 +84,15 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       ).as(name);
       return this;
     }
+
+    getResourceClass(args?: SimpleFixture) {
+      const {
+        fixture = "dataServices/resource-class.json",
+        name = "getResourceClass",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept("GET", "/ui-server/api/data/classes/*", response).as(name);
+      return this;
+    }
   };
 }
