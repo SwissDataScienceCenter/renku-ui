@@ -33,25 +33,220 @@ import ProgressStepsIndicator, {
   StatusStepProgressBar,
   StepsProgressBar,
 } from "../../components/progress/ProgressSteps";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
+
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api.ts";
-import {
-  useGetDockerImageQuery,
-  useStartRenku2SessionMutation,
-} from "../session/sessions.api";
-import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
-import { DockerImageStatus } from "../session/startSessionOptions.types";
-import {
-  useGetProjectSessionLaunchersQuery,
-  useGetSessionEnvironmentsQuery,
-} from "./sessionsV2.api";
+import { useStartRenku2SessionMutation } from "../session/sessions.api";
+import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
+import useSessionLauncherState from "./useSessionLaunchState";
+import { StartSessionOptionsV2 } from "./startSessionOptionsV2.types";
+
+interface SessionStartingProps extends StartSessionFromLauncherProps {
+  containerImage: string;
+  startSessionOptionsV2: StartSessionOptionsV2;
+}
+
+function SessionStarting({
+  containerImage,
+  launcher,
+  project,
+  startSessionOptionsV2,
+}: SessionStartingProps) {
+  const [steps, setSteps] = useState<StepsProgressBar[]>([]);
+  const navigate = useNavigate();
+
+  const [
+    startSession,
+    { data: session, error, isLoading: isLoadingStartSession },
+  ] = useStartRenku2SessionMutation();
+
+  // Request session
+  useEffect(() => {
+    startSession({
+      projectId: project.id,
+      launcherId: launcher.id,
+      repositories: startSessionOptionsV2.repositories,
+      cloudStorage: startSessionOptionsV2.cloudStorage,
+      defaultUrl: startSessionOptionsV2.defaultUrl,
+      environmentVariables: {},
+      image: containerImage,
+      lfsAutoFetch: false,
+      sessionClass: startSessionOptionsV2.sessionClass,
+      storage: startSessionOptionsV2.storage,
+    });
+  }, [
+    containerImage,
+    launcher.id,
+    project.id,
+    startSession,
+    startSessionOptionsV2,
+  ]);
+
+  // Navigate to the session page when it is ready
+  useEffect(() => {
+    if (session != null) {
+      const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
+        namespace: project.namespace,
+        slug: project.slug,
+        session: session.name,
+      });
+      navigate(url, {
+        state: { redirectFromStartServer: true, fromLanding: false },
+      });
+    }
+  }, [navigate, project.namespace, project.slug, session]);
+
+  // Update the loading steps UI
+  useEffect(() => {
+    setSteps([
+      {
+        id: 0,
+        status: StatusStepProgressBar.READY,
+        step: "Loading session configuration",
+      },
+      {
+        id: 1,
+        status: error
+          ? StatusStepProgressBar.FAILED
+          : isLoadingStartSession
+          ? StatusStepProgressBar.EXECUTING
+          : StatusStepProgressBar.READY,
+        step: "Requesting session",
+      },
+    ]);
+  }, [error, isLoadingStartSession, startSessionOptionsV2]);
+
+  return (
+    <div>
+      {error && <RtkErrorAlert error={error} dismissible={false} />}
+
+      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Starting session ${launcher.name}`}
+          status={steps}
+        />
+      </div>
+    </div>
+  );
+}
+
+interface StartSessionFromLauncherProps {
+  launcher: SessionLauncher;
+  project: Project;
+}
+
+function StartSessionFromLauncher({
+  launcher,
+  project,
+}: StartSessionFromLauncherProps) {
+  const {
+    containerImage,
+    defaultSessionClass,
+    isFetchingOrLoadingStorages,
+    resourcePools,
+    startSessionOptionsV2,
+  } = useSessionLauncherState({
+    launcher,
+    project,
+  });
+
+  const currentSessionClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap(({ classes }) => classes)
+        .find((c) => c.id === startSessionOptionsV2.sessionClass) ?? null,
+    [resourcePools, startSessionOptionsV2.sessionClass]
+  );
+
+  const dispatch = useAppDispatch();
+
+  // Select default session class
+  useEffect(() => {
+    if (resourcePools == null) {
+      return;
+    }
+
+    const initialSessionClassId =
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == defaultSessionClass?.id && c.matching)?.id ??
+      resourcePools
+        ?.filter((pool) => pool.default)
+        .flatMap((pool) => pool.classes)
+        .find((c) => c.matching)?.id ??
+      0;
+
+    if (initialSessionClassId == 0) {
+      // TODO: propagate error
+      return;
+    }
+
+    dispatch(
+      startSessionOptionsV2Slice.actions.setSessionClass(initialSessionClassId)
+    );
+  }, [defaultSessionClass?.id, dispatch, resourcePools]);
+
+  // Select default storage
+  useEffect(() => {
+    if (currentSessionClass == null) {
+      return;
+    }
+    dispatch(
+      startSessionOptionsV2Slice.actions.setStorage(
+        currentSessionClass.default_storage
+      )
+    );
+  }, [currentSessionClass, dispatch]);
+
+  if (
+    startSessionOptionsV2.dockerImageStatus === "available" &&
+    resourcePools != null &&
+    startSessionOptionsV2.sessionClass !== 0 &&
+    !isFetchingOrLoadingStorages
+  )
+    return (
+      <SessionStarting
+        containerImage={containerImage}
+        launcher={launcher}
+        project={project}
+        startSessionOptionsV2={startSessionOptionsV2}
+      />
+    );
+
+  const steps = [
+    {
+      id: 0,
+      status: StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  return (
+    <div>
+      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Starting session ${launcher.name}`}
+          status={steps}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function SessionStartPage() {
   const { launcherId, namespace, slug } = useParams<
@@ -102,283 +297,4 @@ export default function SessionStartPage() {
   }
 
   return <StartSessionFromLauncher launcher={launcher} project={project} />;
-}
-
-interface StartSessionFromLauncherProps {
-  launcher: SessionLauncher;
-  project: Project;
-}
-
-function StartSessionFromLauncher({
-  launcher,
-  project,
-}: StartSessionFromLauncherProps) {
-  const { environment_kind, default_url } = launcher;
-
-  const navigate = useNavigate();
-
-  const [steps, setSteps] = useState<StepsProgressBar[]>([]);
-
-  const { data: environments } = useGetSessionEnvironmentsQuery(
-    environment_kind === "global_environment" ? undefined : skipToken
-  );
-  const environment = useMemo(
-    () =>
-      launcher.environment_kind === "global_environment" &&
-      environments?.find((env) => env.id === launcher.environment_id),
-    [environments, launcher]
-  );
-  const {
-    data: storages,
-    isFetching: isFetchingStorages,
-    isLoading: isLoadingStorages,
-  } = useGetStoragesV2Query({
-    projectId: project.id,
-  });
-
-  const containerImage =
-    environment_kind === "global_environment" && environment
-      ? environment.container_image
-      : environment_kind === "global_environment"
-      ? "unknown"
-      : launcher.container_image;
-
-  const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2
-  );
-
-  const { data: dockerImageStatus, isLoading: isLoadingDockerImageStatus } =
-    useGetDockerImageQuery(
-      containerImage !== "unknown"
-        ? {
-            image: containerImage,
-          }
-        : skipToken,
-      {
-        pollingInterval:
-          startSessionOptionsV2.dockerImageStatus === "not-available"
-            ? SESSION_CI_PIPELINE_POLLING_INTERVAL_MS
-            : 0,
-      }
-    );
-  const { data: resourcePools } = useGetResourcePoolsQuery({});
-
-  const defaultSessionClass = useMemo(
-    () =>
-      resourcePools
-        ?.filter((pool) => pool.default)
-        .flatMap((pool) => pool.classes)
-        .find((c) => c.default) ??
-      resourcePools?.find(() => true)?.classes[0] ??
-      null,
-    [resourcePools]
-  );
-  const currentSessionClass = useMemo(
-    () =>
-      resourcePools
-        ?.flatMap(({ classes }) => classes)
-        .find((c) => c.id === startSessionOptionsV2.sessionClass) ?? null,
-    [resourcePools, startSessionOptionsV2.sessionClass]
-  );
-
-  const dispatch = useAppDispatch();
-
-  const [
-    startSession,
-    { data: session, error, isLoading: isLoadingStartSession },
-  ] = useStartRenku2SessionMutation();
-
-  // Reset start session options slice when we navigate away
-  useEffect(() => {
-    return () => {
-      dispatch(startSessionOptionsV2Slice.actions.reset());
-    };
-  }, [dispatch]);
-
-  // Set the default URL
-  useEffect(() => {
-    const defaultUrl = default_url
-      ? default_url
-      : environment && environment.default_url
-      ? environment.default_url
-      : "/lab";
-
-    if (startSessionOptionsV2.defaultUrl !== defaultUrl) {
-      dispatch(startSessionOptionsV2Slice.actions.setDefaultUrl(defaultUrl));
-    }
-  }, [environment, default_url, dispatch, startSessionOptionsV2.defaultUrl]);
-
-  // Set the image status
-  useEffect(() => {
-    const newStatus: DockerImageStatus = isLoadingDockerImageStatus
-      ? "unknown"
-      : dockerImageStatus == null
-      ? "not-available"
-      : dockerImageStatus.available
-      ? "available"
-      : "not-available";
-    if (newStatus !== startSessionOptionsV2.dockerImageStatus) {
-      dispatch(
-        startSessionOptionsV2Slice.actions.setDockerImageStatus(newStatus)
-      );
-    }
-  }, [
-    dispatch,
-    dockerImageStatus,
-    isLoadingDockerImageStatus,
-    startSessionOptionsV2.dockerImageStatus,
-  ]);
-
-  useEffect(() => {
-    const repositories = (project.repositories ?? []).map((url) => ({ url }));
-    dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
-  }, [dispatch, project.repositories]);
-
-  // Select default session class
-  useEffect(() => {
-    if (resourcePools == null) {
-      return;
-    }
-
-    const initialSessionClassId =
-      resourcePools
-        ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == defaultSessionClass?.id && c.matching)?.id ??
-      resourcePools
-        ?.filter((pool) => pool.default)
-        .flatMap((pool) => pool.classes)
-        .find((c) => c.matching)?.id ??
-      0;
-
-    if (initialSessionClassId == 0) {
-      // TODO: propagate error
-      return;
-    }
-
-    dispatch(
-      startSessionOptionsV2Slice.actions.setSessionClass(initialSessionClassId)
-    );
-  }, [defaultSessionClass?.id, dispatch, resourcePools]);
-
-  // Select default storage
-  useEffect(() => {
-    if (currentSessionClass == null) {
-      return;
-    }
-    dispatch(
-      startSessionOptionsV2Slice.actions.setStorage(
-        currentSessionClass.default_storage
-      )
-    );
-  }, [currentSessionClass, dispatch]);
-
-  // Request session
-  useEffect(() => {
-    if (
-      startSessionOptionsV2.dockerImageStatus !== "available" ||
-      resourcePools == null ||
-      startSessionOptionsV2.sessionClass == 0 ||
-      isLoadingStorages ||
-      isFetchingStorages
-    ) {
-      return;
-    }
-
-    startSession({
-      projectId: project.id,
-      launcherId: launcher.id,
-      repositories: startSessionOptionsV2.repositories,
-      cloudStorage:
-        storages?.map(
-          // (storage) => storage.storage as unknown as SessionCloudStorage
-          (storage) => storage.storage
-        ) || [],
-      defaultUrl: startSessionOptionsV2.defaultUrl,
-      environmentVariables: {},
-      image: containerImage,
-      lfsAutoFetch: false,
-      sessionClass: startSessionOptionsV2.sessionClass,
-      storage: startSessionOptionsV2.storage,
-    });
-  }, [
-    containerImage,
-    isFetchingStorages,
-    isLoadingStorages,
-    launcher.id,
-    project.id,
-    resourcePools,
-    startSession,
-    startSessionOptionsV2,
-    storages,
-  ]);
-
-  // Navigate to the session page when it is ready
-  useEffect(() => {
-    if (session != null) {
-      const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
-        namespace: project.namespace,
-        slug: project.slug,
-        session: session.name,
-      });
-      navigate(url, {
-        state: { redirectFromStartServer: true, fromLanding: false },
-      });
-    }
-  }, [navigate, project.namespace, project.slug, session]);
-
-  // Update the loading steps UI
-  useEffect(() => {
-    if (
-      startSessionOptionsV2.dockerImageStatus !== "available" ||
-      resourcePools == null ||
-      startSessionOptionsV2.sessionClass == 0
-    ) {
-      setSteps([
-        {
-          id: 0,
-          status: StatusStepProgressBar.EXECUTING,
-          step: "Loading session configuration",
-        },
-        {
-          id: 1,
-          status: StatusStepProgressBar.WAITING,
-          step: "Requesting session",
-        },
-      ]);
-      return;
-    }
-
-    setSteps([
-      {
-        id: 0,
-        status: StatusStepProgressBar.READY,
-        step: "Loading session configuration",
-      },
-      {
-        id: 1,
-        status: error
-          ? StatusStepProgressBar.FAILED
-          : isLoadingStartSession
-          ? StatusStepProgressBar.EXECUTING
-          : StatusStepProgressBar.READY,
-        step: "Requesting session",
-      },
-    ]);
-  }, [error, isLoadingStartSession, resourcePools, startSessionOptionsV2]);
-
-  return (
-    <div>
-      {error && <RtkErrorAlert error={error} dismissible={false} />}
-
-      <div className={cx("progress-box-small", "progress-box-small--steps")}>
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Starting session ${launcher.name}`}
-          status={steps}
-        />
-      </div>
-    </div>
-  );
 }

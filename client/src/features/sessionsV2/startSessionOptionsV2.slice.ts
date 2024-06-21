@@ -18,16 +18,16 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import type { CloudStorageWithIdRead } from "../projectsV2/api/storagesV2.api.ts";
+import { MIN_SESSION_STORAGE_GB } from "../session/startSessionOptions.constants";
+import type {
+  DockerImageStatus,
+  SessionEnvironmentVariable,
+} from "../session/startSessionOptions.types";
 import {
   SessionRepository,
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
-import { MIN_SESSION_STORAGE_GB } from "../session/startSessionOptions.constants";
-import type {
-  DockerImageStatus,
-  SessionCloudStorage,
-  SessionEnvironmentVariable,
-} from "../session/startSessionOptions.types";
 
 const initialState: StartSessionOptionsV2 = {
   cloudStorage: [],
@@ -46,7 +46,7 @@ const startSessionOptionsV2Slice = createSlice({
   reducers: {
     addCloudStorageItem: (
       state,
-      action: PayloadAction<SessionCloudStorage>
+      action: PayloadAction<CloudStorageWithIdRead>
     ) => {
       state.cloudStorage.push(action.payload);
     },
@@ -65,7 +65,10 @@ const startSessionOptionsV2Slice = createSlice({
     ) => {
       state.environmentVariables.splice(action.payload.index, 1);
     },
-    setCloudStorage: (state, action: PayloadAction<SessionCloudStorage[]>) => {
+    setCloudStorage: (
+      state,
+      action: PayloadAction<CloudStorageWithIdRead[]>
+    ) => {
       state.cloudStorage.splice(0, -1, ...action.payload);
     },
     setDefaultUrl: (state, action: PayloadAction<string>) => {
@@ -88,7 +91,7 @@ const startSessionOptionsV2Slice = createSlice({
     },
     updateCloudStorageItem: (
       state,
-      action: PayloadAction<{ index: number; storage: SessionCloudStorage }>
+      action: PayloadAction<{ index: number; storage: CloudStorageWithIdRead }>
     ) => {
       state.cloudStorage[action.payload.index] = action.payload.storage;
     },
