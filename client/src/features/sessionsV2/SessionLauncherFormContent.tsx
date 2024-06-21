@@ -48,12 +48,12 @@ import { useEffect, useMemo, useState } from "react";
 import { SingleValue } from "react-select";
 import { WarnAlert } from "../../components/Alert.jsx";
 import rkIconGlobalEnv from "../../styles/assets/globalEnvironment.svg";
-import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api.ts";
+import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import {
   ResourceClass,
   ResourcePool,
-} from "../dataServices/dataServices.types.ts";
-import { SessionClassSelector } from "../session/components/options/SessionClassOption.tsx";
+} from "../dataServices/dataServices.types";
+import { SessionClassSelector } from "../session/components/options/SessionClassOption";
 import styles from "./SessionLauncherForm.module.scss";
 import sessionViewStyles from "./SessionView/SessionView.module.scss";
 

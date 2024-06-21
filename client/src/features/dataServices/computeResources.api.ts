@@ -21,7 +21,7 @@ import {
   ResourceClass,
   ResourcePool,
   ResourcePoolsQueryParams,
-} from "./dataServices.types.ts";
+} from "./dataServices.types";
 import {
   AddResourceClassParams,
   AddResourcePoolParams,
@@ -33,7 +33,7 @@ import {
   ResourcePoolUser,
   UpdateResourceClassParams,
   UpdateResourcePoolParams,
-} from "../admin/adminComputeResources.types.ts";
+} from "../admin/adminComputeResources.types";
 
 const computeResourcesApi = createApi({
   reducerPath: "computeResourcesApi",

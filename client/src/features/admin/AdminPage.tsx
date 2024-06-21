@@ -43,7 +43,7 @@ import {
   useGetResourcePoolsQuery,
   useGetUsersQuery,
   useRemoveUserFromResourcePoolMutation,
-} from "../dataServices/computeResources.api.ts";
+} from "../dataServices/computeResources.api";
 import {
   ResourceClass,
   ResourcePool,

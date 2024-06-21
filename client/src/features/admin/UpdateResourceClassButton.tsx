@@ -33,7 +33,7 @@ import {
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useUpdateResourceClassMutation } from "../dataServices/computeResources.api.ts";
+import { useUpdateResourceClassMutation } from "../dataServices/computeResources.api";
 import {
   NodeAffinity,
   ResourceClass,

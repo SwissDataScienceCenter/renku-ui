@@ -60,14 +60,14 @@ import {
 import sessionsV2Api from "../sessionsV2.api";
 import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
 
-import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard.tsx";
+import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
 import {
   useGetResourceClassByIdQuery,
   useGetResourcePoolsQuery,
-} from "../../dataServices/computeResources.api.ts";
-import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api.ts";
-import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal.tsx";
-import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher.tsx";
+} from "../../dataServices/computeResources.api";
+import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
+import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import sessionViewStyles from "./SessionView.module.scss";
 
 function SessionCard({

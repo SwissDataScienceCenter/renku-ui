@@ -32,7 +32,7 @@ import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import adminSessionsApi from "../../features/admin/adminSessions.api";
 import connectedServicesApi from "../../features/connectedServices/connectedServices.api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
-import computeResourcesApi from "../../features/dataServices/computeResources.api.ts";
+import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";

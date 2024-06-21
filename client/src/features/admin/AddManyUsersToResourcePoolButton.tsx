@@ -49,7 +49,7 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useAddUsersToResourcePoolMutation } from "../dataServices/computeResources.api.ts";
+import { useAddUsersToResourcePoolMutation } from "../dataServices/computeResources.api";
 import { ResourcePool } from "../dataServices/dataServices.types";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
 import useKeycloakRealm from "./useKeycloakRealm.hook";

@@ -25,14 +25,14 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import {
   useGetResourceClassByIdQuery,
   useGetResourcePoolsQuery,
-} from "../../../dataServices/computeResources.api.ts";
-import { ResourceClass } from "../../../dataServices/dataServices.types.ts";
-import { SessionRowResourceRequests } from "../../../session/components/SessionsList.tsx";
-import { SessionClassSelector } from "../../../session/components/options/SessionClassOption.tsx";
+} from "../../../dataServices/computeResources.api";
+import { ResourceClass } from "../../../dataServices/dataServices.types";
+import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
+import { SessionClassSelector } from "../../../session/components/options/SessionClassOption";
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
-} from "./ResourceClassWarning.tsx";
+} from "./ResourceClassWarning";
 
 interface SelectResourceClassModalProps {
   isOpen: boolean;

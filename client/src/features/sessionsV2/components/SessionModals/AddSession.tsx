@@ -32,20 +32,20 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { Loader } from "../../../../components/Loader.tsx";
+import { Loader } from "../../../../components/Loader";
 import stylesButton from "../../../../components/buttons/Buttons.module.scss";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert.tsx";
-import EnvironmentIcon from "../../../../components/icons/EnvironmentIcon.tsx";
+import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import EnvironmentIcon from "../../../../components/icons/EnvironmentIcon";
 import rkIconSessions from "../../../../styles/icons/sessions.svg";
 import styles from "../../../ProjectPageV2/ProjectPageContent/ProjectOverview/ProjectOverview.module.scss";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
   CustomEnvFormContent,
   ExistingEnvFormContent,
   SessionLauncherForm,
-} from "../../SessionLauncherFormContent.tsx";
-import { useAddSessionLauncherMutation } from "../../sessionsV2.api.ts";
-import { SessionLauncherEnvironment } from "../../sessionsV2.types.ts";
+} from "../../SessionLauncherFormContent";
+import { useAddSessionLauncherMutation } from "../../sessionsV2.api";
+import { SessionLauncherEnvironment } from "../../sessionsV2.types";
 
 interface AddSessionLauncherModalProps {
   isOpen: boolean;

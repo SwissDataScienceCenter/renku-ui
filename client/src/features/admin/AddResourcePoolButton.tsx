@@ -37,7 +37,7 @@ import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
 import {
   useAddResourcePoolMutation,
   useGetResourcePoolsQuery,
-} from "../dataServices/computeResources.api.ts";
+} from "../dataServices/computeResources.api";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import { AddResourcePoolForm } from "./adminComputeResources.types";
 

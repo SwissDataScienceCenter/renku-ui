@@ -39,7 +39,7 @@ import { useCallback, useEffect, useState } from "react";
 import { CheckLg, TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
 import { Loader } from "../../components/Loader";
-import { useDeleteResourceClassMutation } from "../dataServices/computeResources.api.ts";
+import { useDeleteResourceClassMutation } from "../dataServices/computeResources.api";
 import {
   ResourceClass,
   ResourcePool,

@@ -33,22 +33,21 @@ import ProgressStepsIndicator, {
   StepsProgressBar,
 } from "../../components/progress/ProgressSteps";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 
-import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
-import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass.tsx";
+import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
 import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import { StartSessionOptionsV2, SessionStartCloudStorageConfiguration, } from "./startSessionOptionsV2.types";
-import useSessionLauncherState from "./useSessionLaunchState.hook.ts";
+import useSessionLauncherState from "./useSessionLaunchState.hook";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-
-import useSessionResourceClass from "./useSessionResourceClass.hook.ts";
+import useSessionResourceClass from "./useSessionResourceClass.hook";
 
 interface SessionStartingProps extends StartSessionFromLauncherProps {
   containerImage: string;
@@ -255,8 +254,7 @@ function StartSessionFromLauncher({
   launcher,
   project,
 }: StartSessionFromLauncherProps) {
-  const hasCustomQuery =
-    new URLSearchParams(location.search).get("custom") === "true";
+  const hasCustomQuery = new URLSearchParams(location.search).has("custom");
   const navigate = useNavigate();
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2

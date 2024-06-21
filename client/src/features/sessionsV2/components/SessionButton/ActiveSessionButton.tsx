@@ -57,7 +57,7 @@ import AppContext from "../../../../utils/context/appContext";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api.ts";
+import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
@@ -72,7 +72,7 @@ import useWaitForSessionStatus from "../../../session/useWaitForSessionStatus.ho
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
-} from "../SessionModals/ResourceClassWarning.tsx";
+} from "../SessionModals/ResourceClassWarning";
 
 interface ActiveSessionButtonProps {
   session: Session;

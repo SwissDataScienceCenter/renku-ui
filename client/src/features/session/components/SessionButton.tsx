@@ -58,13 +58,13 @@ import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
 import { Url } from "../../../utils/helpers/url";
-import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api.ts";
+import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api";
 import { ResourceClass } from "../../dataServices/dataServices.types";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
-} from "../../sessionsV2/components/SessionModals/ResourceClassWarning.tsx";
+} from "../../sessionsV2/components/SessionModals/ResourceClassWarning";
 import {
   useGetSessionsQuery,
   usePatchSessionMutation,

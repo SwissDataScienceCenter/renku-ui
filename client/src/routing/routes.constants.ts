@@ -37,7 +37,7 @@ export const ABSOLUTE_ROUTES = {
           show: "/v2/projects/:namespace/:slug/sessions/show/:session",
           start: "/v2/projects/:namespace/:slug/sessions/:launcherId/start",
           startCustom:
-            "/v2/projects/:namespace/:slug/sessions/:launcherId/start?custom=true",
+            "/v2/projects/:namespace/:slug/sessions/:launcherId/start?custom",
         },
       },
       showById: "/v2/projects/:id",

@@ -11,16 +11,16 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { SuccessAlert } from "../../../../components/Alert.jsx";
-import { Loader } from "../../../../components/Loader.tsx";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api.ts";
-import { ResourceClass } from "../../../dataServices/dataServices.types.ts";
-import { SessionClassSelector } from "../../../session/components/options/SessionClassOption.tsx";
-import { useUpdateSessionLauncherMutation } from "../../sessionsV2.api.ts";
+import { SuccessAlert } from "../../../../components/Alert";
+import { Loader } from "../../../../components/Loader";
+import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
+import { ResourceClass } from "../../../dataServices/dataServices.types";
+import { SessionClassSelector } from "../../../session/components/options/SessionClassOption";
+import { useUpdateSessionLauncherMutation } from "../../sessionsV2.api";
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
-} from "./ResourceClassWarning.tsx";
+} from "./ResourceClassWarning";
 
 interface ModifyResourcesLauncherModalProps {
   isOpen: boolean;

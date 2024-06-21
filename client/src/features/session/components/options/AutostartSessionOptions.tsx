@@ -24,7 +24,7 @@ import { ProjectStatistics } from "../../../../notebooks/components/session.type
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api.ts";
+import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import {

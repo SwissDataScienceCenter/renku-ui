@@ -39,7 +39,7 @@ import {
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useAddUsersToResourcePoolMutation } from "../dataServices/computeResources.api.ts";
+import { useAddUsersToResourcePoolMutation } from "../dataServices/computeResources.api";
 import { ResourcePool } from "../dataServices/dataServices.types";
 import adminKeycloakApi from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";

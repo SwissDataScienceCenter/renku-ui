@@ -46,7 +46,7 @@ import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constant
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api.ts";
+import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import {
   ResourceClass,
   ResourcePool,
