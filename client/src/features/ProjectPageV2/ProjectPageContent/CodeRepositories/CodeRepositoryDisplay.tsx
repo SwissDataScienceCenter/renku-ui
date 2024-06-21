@@ -69,6 +69,9 @@ import repositoriesApi, {
   useGetRepositoryMetadataQuery,
   useGetRepositoryProbeQuery,
 } from "../../../repositories/repositories.api";
+import { Link, useLocation } from "react-router-dom-v5-compat";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
+import { Url } from "../../../../utils/helpers/url";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -650,6 +653,8 @@ function RepositoryPermissionsModalContent({
 function RepositoryPermissionsAlert({
   repositoryUrl,
 }: RepositoryPermissionsProps) {
+  const location = useLocation();
+
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
@@ -698,6 +703,10 @@ function RepositoryPermissionsAlert({
       ? "connected"
       : "not-connected";
 
+  const loginUrl = Url.get(Url.pages.login.link, {
+    pathname: location.pathname,
+  });
+
   if (error && isNotFound) {
     const color = permissions.pull ? "warning" : "danger";
 
@@ -734,13 +743,17 @@ function RepositoryPermissionsAlert({
           </p>
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
-              As an anonymous user, you are not allowed to clone or pull private
-              repositories.
+              You need to <Link to={loginUrl}>log in</Link> to perform pushes on
+              git repositories.
             </p>
           ) : provider && status === "not-connected" ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
               Your user account is not currently connected to{" "}
-              {provider.display_name}.
+              {provider.display_name}. See{" "}
+              <Link to={ABSOLUTE_ROUTES.v2.connectedServices}>
+                connected services
+              </Link>
+              .
             </p>
           ) : null}
         </ErrorAlert>
@@ -757,13 +770,17 @@ function RepositoryPermissionsAlert({
           </p>
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
-              As an anonymous user, you are not allowed to perform pushes on git
-              repositories.
+              You need to <Link to={loginUrl}>log in</Link> to perform pushes on
+              git repositories.
             </p>
           ) : provider && status === "not-connected" ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
               Your user account is not currently connected to{" "}
-              {provider.display_name}.
+              {provider.display_name}. See{" "}
+              <Link to={ABSOLUTE_ROUTES.v2.connectedServices}>
+                connected services
+              </Link>
+              .
             </p>
           ) : null}
         </WarnAlert>
