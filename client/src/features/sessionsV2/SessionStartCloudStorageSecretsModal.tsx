@@ -109,6 +109,7 @@ function ProgressBreadcrumbs({
 
 interface SensitiveFieldInputProps {
   control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  friendlyName: string;
   defaultValue: string | undefined;
   option: RCloneOption;
 }
@@ -116,6 +117,7 @@ interface SensitiveFieldInputProps {
 function SensitiveFieldInput({
   control,
   defaultValue,
+  friendlyName,
   option,
 }: SensitiveFieldInputProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -128,7 +130,7 @@ function SensitiveFieldInput({
     <div>
       {/* {option.friendlyName ?? option.name}{" "} */}
       <Label htmlFor={option.name}>
-        {option.name}
+        {friendlyName}
         <div id={tooltipContainerId} className="d-inline">
           <KeyFill className={cx("bi", "ms-1")} />
         </div>
@@ -205,6 +207,7 @@ function CloudStorageConfigurationSecrets({
               key={field.name}
               control={control}
               defaultValue={defaultValue}
+              friendlyName={field.friendlyName}
               option={field}
             />
           );

@@ -47,11 +47,13 @@ describe("storageDefinitionFromConfig", () => {
       },
       sensitiveFieldDefinitions: [
         {
+          friendlyName: "Access Key ID",
           help: "AWS Access Key ID.\n\nLeave blank for anonymous access or runtime credentials.",
           name: "access_key_id",
           value: "",
         },
         {
+          friendlyName: "Secret Access Key (password)",
           help: "AWS Secret Access Key (password).\n\nLeave blank for anonymous access or runtime credentials.",
           name: "secret_access_key",
           value: "",

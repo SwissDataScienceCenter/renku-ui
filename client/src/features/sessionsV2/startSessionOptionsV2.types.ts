@@ -25,7 +25,11 @@ import type { CloudStorageGetRead } from "../projectsV2/api/storagesV2.api";
 export interface SessionStartCloudStorageConfiguration {
   active: boolean;
   cloudStorage: CloudStorageGetRead;
-  sensitiveFieldDefinitions: { name: string; help: string }[];
+  sensitiveFieldDefinitions: {
+    friendlyName: string;
+    help: string;
+    name: string;
+  }[];
   sensitiveFieldValues: Record<string, string>;
 }
 

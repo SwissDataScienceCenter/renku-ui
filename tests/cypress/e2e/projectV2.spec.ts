@@ -752,6 +752,9 @@ describe("launch sessions with cloud storage", () => {
       .find("#access_key_id")
       .type("access key");
     cy.getDataCy("session-cloud-storage-credentials-modal")
+      .contains("Secret Access Key (password)")
+      .should("be.visible");
+    cy.getDataCy("session-cloud-storage-credentials-modal")
       .find("#secret_access_key")
       .type("secret key");
     cy.getDataCy("session-cloud-storage-credentials-modal")

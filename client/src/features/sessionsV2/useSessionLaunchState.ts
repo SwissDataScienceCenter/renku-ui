@@ -23,6 +23,7 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
+import { CLOUD_OPTIONS_OVERRIDE } from "../project/components/cloudStorage/projectCloudStorage.constants";
 import {
   RCloneOption,
   useGetStoragesV2Query,
@@ -167,13 +168,19 @@ export default function useSessionLauncherState({
           storageDefinition.configuration
         ).filter((key) => defSensitiveFieldsMap[key] != null);
 
+        const overrides =
+          storageDefinition.storage_type != null
+            ? CLOUD_OPTIONS_OVERRIDE[storageDefinition.storage_type]
+            : undefined;
+
         const sensitiveFieldDefinitions = configSensitiveFields
           .filter((key) => defSensitiveFieldsMap[key].name != null)
           .map((key) => {
             const { help, name } = defSensitiveFieldsMap[key];
             return {
-              help: help ?? "",
-              name: name ?? "(no name)",
+              help: overrides?.[key]?.help ?? help ?? "",
+              friendlyName: overrides?.[key]?.friendlyName ?? name ?? key,
+              name: name ?? key,
               value: "",
             };
           });
