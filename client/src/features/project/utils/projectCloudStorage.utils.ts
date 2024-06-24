@@ -426,6 +426,8 @@ export function storageDefinitionFromConfig(
   Object.entries(sensitiveFieldValues).forEach(([name, value]) => {
     if (value != null && value !== "") {
       newStorageDefinition.configuration[name] = value;
+    } else {
+      delete newStorageDefinition.configuration[name];
     }
   });
   return newStorageDefinition;
