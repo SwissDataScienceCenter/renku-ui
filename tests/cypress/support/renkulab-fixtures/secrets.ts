@@ -21,6 +21,7 @@ import { NameOnlyFixture } from "./fixtures.types";
 
 interface ListSecretsArgs extends NameOnlyFixture {
   numberOfSecrets?: number;
+  secretsKind?: "general" | "storage";
 }
 
 function generateFakeSecrets(num: number) {
@@ -38,13 +39,19 @@ function generateFakeSecrets(num: number) {
 export function Secrets<T extends FixturesConstructor>(Parent: T) {
   return class SecretsFixtures extends Parent {
     listSecrets(args?: ListSecretsArgs) {
-      const { name = "listSecrets", numberOfSecrets = 0 } = args ?? {};
+      const {
+        name = "listSecrets",
+        numberOfSecrets = 0,
+        secretsKind = "general",
+      } = args ?? {};
       const response = {
         body: generateFakeSecrets(numberOfSecrets),
       };
-      cy.intercept("GET", "/ui-server/api/data/user/secrets", response).as(
-        name
-      );
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/user/secrets?kind=${secretsKind}`,
+        response
+      ).as(name);
       return this;
     }
 

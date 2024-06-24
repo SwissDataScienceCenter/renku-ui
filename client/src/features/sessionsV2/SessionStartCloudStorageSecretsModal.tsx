@@ -53,8 +53,60 @@ import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorag
 import type { RCloneOption } from "../projectsV2/api/storagesV2.api";
 import type { SessionStartCloudStorageConfiguration } from "../sessionsV2/startSessionOptionsV2.types";
 
+enum ModelFlowState {
+  PROMPT_CREDENTIALS = 0,
+  PROMPT_SAVE_CREDENTIALS = 1,
+}
+
 export type SessionLaunchModalCloudStorageConfiguration =
   SessionStartCloudStorageConfiguration;
+
+interface CredentialsButtonsProps
+  extends Pick<SessionStartCloudStorageSecretsModalProps, "onCancel"> {
+  onSkip: () => void;
+  validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
+}
+
+function CredentialsButtons({
+  onCancel,
+  onSkip,
+  validationResult,
+}: CredentialsButtonsProps) {
+  return (
+    <div>
+      <Button className="me-5" color="outline-danger" onClick={onCancel}>
+        <XLg className={cx("bi", "me-1")} />
+        Cancel
+      </Button>
+      <Button className={cx("ms-2", "btn-outline-rk-green")} onClick={onSkip}>
+        Skip <SkipForward className={cx("bi", "me-1")} />
+      </Button>
+      <Button
+        className={cx(
+          "ms-2",
+          validationResult.isSuccess && "btn-rk-green",
+          validationResult.isError && "btn-danger"
+        )}
+        disabled={validationResult.isLoading}
+        type="submit"
+      >
+        {validationResult.isLoading ? (
+          <span>
+            Testing <Loader inline size={16} />
+          </span>
+        ) : validationResult.isError ? (
+          <span>
+            <ArrowRepeat className="bi" /> Retry
+          </span>
+        ) : (
+          <span>
+            Continue <ChevronRight className="bi" />
+          </span>
+        )}
+      </Button>
+    </div>
+  );
+}
 
 interface ProgressBreadcrumbsProps {
   cloudStorageConfigs: SessionLaunchModalCloudStorageConfiguration[];
@@ -104,6 +156,30 @@ function ProgressBreadcrumbs({
         ))}
       </ol>
     </nav>
+  );
+}
+
+interface SaveCredentialsButtonProps {
+  onSaveAndStart: () => void;
+  onStartWithoutSaving: () => void;
+}
+
+function SaveCredentialsButton({
+  onSaveAndStart,
+  onStartWithoutSaving,
+}: SaveCredentialsButtonProps) {
+  return (
+    <div>
+      <Button
+        className={cx("ms-2", "btn-outline-rk-green")}
+        onClick={onStartWithoutSaving}
+      >
+        Just Start
+      </Button>
+      <Button className={cx("ms-2", "btn-rk-green")} onClick={onSaveAndStart}>
+        Save and Start
+      </Button>
+    </div>
   );
 }
 
@@ -216,6 +292,16 @@ function CloudStorageConfigurationSecrets({
     </>
   );
 }
+
+function CloudStorageConfigurationSaveCredentials() {
+  return (
+    <div>
+      You can <b>save</b> your credentials to use them automatically for future
+      sessions.
+    </div>
+  );
+}
+
 interface SessionStartCloudStorageSecretsModalProps {
   isOpen: boolean;
   onCancel: () => void;
@@ -249,10 +335,39 @@ export default function SessionStartCloudStorageSecretsModal({
         )
   );
   const [index, setIndex] = useState(0);
+  const [modalState, setModalState] = useState<ModelFlowState>(
+    ModelFlowState.PROMPT_CREDENTIALS
+  );
+  const [saveCredentials, setSaveCredentials] = useState<boolean | null>(null);
   const { control, handleSubmit, reset: resetForm } = useForm();
 
   const [validateCloudStorageConnection, validationResult] =
     useTestCloudStorageConnectionMutation();
+
+  const onNext = useCallback(() => {
+    if (index < cloudStorageConfigs.length - 1) {
+      if (!validationResult.isUninitialized) validationResult.reset();
+      resetForm();
+      setIndex((index) => index + 1);
+    } else if (saveCredentials == null) {
+      setModalState(ModelFlowState.PROMPT_SAVE_CREDENTIALS);
+    } else {
+      resetForm();
+      const newCloudStorageConfigs = cloudStorageConfigs.map((cs) => ({
+        ...cs,
+        saveCredentials: saveCredentials,
+      }));
+      onStart([...noCredentialsConfigs, ...newCloudStorageConfigs]);
+    }
+  }, [
+    cloudStorageConfigs,
+    index,
+    noCredentialsConfigs,
+    onStart,
+    resetForm,
+    saveCredentials,
+    validationResult,
+  ]);
 
   const onSkip = useCallback(() => {
     if (cloudStorageConfigs.length < 1) {
@@ -266,21 +381,8 @@ export default function SessionStartCloudStorageSecretsModal({
       active: false,
     };
     setCloudStorageConfigs(newCloudStorageConfigs);
-    if (index < cloudStorageConfigs.length - 1) {
-      if (!validationResult.isUninitialized) validationResult.reset();
-      resetForm();
-      setIndex((index) => index + 1);
-    } else {
-      onStart([...noCredentialsConfigs, ...cloudStorageConfigs]);
-    }
-  }, [
-    cloudStorageConfigs,
-    index,
-    noCredentialsConfigs,
-    onStart,
-    resetForm,
-    validationResult,
-  ]);
+    onNext();
+  }, [cloudStorageConfigs, index, noCredentialsConfigs, onNext, onStart]);
 
   const onContinue = useCallback(
     (options: CloudStorageDetailsOptions) => {
@@ -312,23 +414,26 @@ export default function SessionStartCloudStorageSecretsModal({
     [cloudStorageConfigs, index, validateCloudStorageConnection]
   );
 
+  const onSaveAndStart = useCallback(() => {
+    setSaveCredentials(true);
+    onNext();
+  }, [onNext]);
+  const onStartWithoutSaving = useCallback(() => {
+    setSaveCredentials(false);
+    onNext();
+  }, [onNext]);
+
   useEffect(() => {
     if (cloudStorageConfigs == null) return;
     if (cloudStorageConfigs[index].active && !validationResult.isSuccess)
       return;
-    if (index < cloudStorageConfigs.length - 1) {
-      if (!validationResult.isUninitialized) validationResult.reset();
-      resetForm();
-      setIndex((index) => index + 1);
-    } else {
-      onStart([...noCredentialsConfigs, ...cloudStorageConfigs]);
-    }
+    onNext();
   }, [
     cloudStorageConfigs,
     index,
     noCredentialsConfigs,
+    onNext,
     onStart,
-    resetForm,
     validationResult,
   ]);
 
@@ -352,20 +457,28 @@ export default function SessionStartCloudStorageSecretsModal({
         onSubmit={handleSubmit(onContinue)}
       >
         <ModalBody className="pt-0">
-          <CloudStorageConfigurationSecrets
-            cloudStorageConfig={cloudStorageConfigs[index]}
-            control={control}
-          />
-          <div className="mt-3">
-            {validationResult.isError ? (
-              <div className="text-danger">
-                The data source could not be mounted. Please retry with
-                different credentials, or skip.
+          {modalState === ModelFlowState.PROMPT_CREDENTIALS && (
+            <>
+              <CloudStorageConfigurationSecrets
+                cloudStorageConfig={cloudStorageConfigs[index]}
+                control={control}
+              />
+
+              <div className="mt-3">
+                {validationResult.isError ? (
+                  <div className="text-danger">
+                    The data source could not be mounted. Please retry with
+                    different credentials, or skip.
+                  </div>
+                ) : (
+                  <div>&nbsp;</div>
+                )}
               </div>
-            ) : (
-              <div>&nbsp;</div>
-            )}
-          </div>
+            </>
+          )}
+          {modalState === ModelFlowState.PROMPT_SAVE_CREDENTIALS && (
+            <CloudStorageConfigurationSaveCredentials />
+          )}
         </ModalBody>
         <ModalFooter className={cx("d-flex", "align-items-baseline", "pt-0")}>
           <div className="flex-grow-1">
@@ -376,41 +489,19 @@ export default function SessionStartCloudStorageSecretsModal({
               setIndex={setIndex}
             />
           </div>
-          <div>
-            <Button className="me-5" color="outline-danger" onClick={onCancel}>
-              <XLg className={cx("bi", "me-1")} />
-              Cancel
-            </Button>
-            <Button
-              className={cx("ms-2", "btn-outline-rk-green")}
-              onClick={onSkip}
-            >
-              Skip <SkipForward className={cx("bi", "me-1")} />
-            </Button>
-            <Button
-              className={cx(
-                "ms-2",
-                validationResult.isSuccess && "btn-rk-green",
-                validationResult.isError && "btn-danger"
-              )}
-              disabled={validationResult.isLoading}
-              type="submit"
-            >
-              {validationResult.isLoading ? (
-                <span>
-                  Testing <Loader inline size={16} />
-                </span>
-              ) : validationResult.isError ? (
-                <span>
-                  <ArrowRepeat className="bi" /> Retry
-                </span>
-              ) : (
-                <span>
-                  Continue <ChevronRight className="bi" />
-                </span>
-              )}
-            </Button>
-          </div>
+          {modalState === ModelFlowState.PROMPT_CREDENTIALS && (
+            <CredentialsButtons
+              onCancel={onCancel}
+              onSkip={onSkip}
+              validationResult={validationResult}
+            />
+          )}
+          {modalState === ModelFlowState.PROMPT_SAVE_CREDENTIALS && (
+            <SaveCredentialsButton
+              onSaveAndStart={onSaveAndStart}
+              onStartWithoutSaving={onStartWithoutSaving}
+            />
+          )}
         </ModalFooter>
       </Form>
     </Modal>

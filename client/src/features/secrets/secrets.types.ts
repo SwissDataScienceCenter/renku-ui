@@ -27,13 +27,19 @@ export interface AddSecretParams {
   value: string;
 }
 
-export interface EditSecretParams {
-  id: string;
-  value: string;
-}
-
 export type AddSecretForm = AddSecretParams;
 
 export interface EditSecretForm {
   value: string;
 }
+
+export interface EditSecretParams {
+  id: string;
+  value: string;
+}
+
+export interface GetSecretsParams {
+  kind: SecretKind;
+}
+
+export type SecretKind = "general" | "storage";

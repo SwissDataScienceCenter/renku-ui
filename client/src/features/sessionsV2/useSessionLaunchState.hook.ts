@@ -205,6 +205,7 @@ export default function useSessionLauncherState({
           cloudStorage,
           sensitiveFieldDefinitions,
           sensitiveFieldValues,
+          saveCredentials: false,
         };
       }),
     [storages]

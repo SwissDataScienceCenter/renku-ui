@@ -41,7 +41,7 @@ import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
 
 import styles from "./secrets.module.scss";
 
-export default function SecretsNew() {
+export default function GeneralSecretNew() {
   // Set up the modal
   const [showModal, setShowModal] = useState(false);
   const toggleModal = useCallback(() => {
@@ -81,7 +81,7 @@ export default function SecretsNew() {
   // Force fetching the secrets when trying to add a new one to try to prevent duplicates
   useEffect(() => {
     if (showModal) {
-      getSecrets();
+      getSecrets({ kind: "general" });
     }
   }, [getSecrets, showModal]);
 
