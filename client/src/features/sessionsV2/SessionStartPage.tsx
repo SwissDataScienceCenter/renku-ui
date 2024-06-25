@@ -44,10 +44,14 @@ import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecr
 import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
-import { StartSessionOptionsV2, SessionStartCloudStorageConfiguration, } from "./startSessionOptionsV2.types";
+import {
+  StartSessionOptionsV2,
+  SessionStartCloudStorageConfiguration,
+} from "./startSessionOptionsV2.types";
 import useSessionLauncherState from "./useSessionLaunchState.hook";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
+import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils.ts";
 
 interface SessionStartingProps extends StartSessionFromLauncherProps {
   containerImage: string;
