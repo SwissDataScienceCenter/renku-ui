@@ -23,7 +23,11 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { useGetResourcePoolsQuery } from "../dataServices/dataServices.api";
-import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api";
+import { CLOUD_OPTIONS_OVERRIDE } from "../project/components/cloudStorage/projectCloudStorage.constants";
+import {
+  RCloneOption,
+  useGetStoragesV2Query,
+} from "../projectsV2/api/storagesV2.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetDockerImageQuery } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
@@ -32,6 +36,7 @@ import { DockerImageStatus } from "../session/startSessionOptions.types";
 import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
+import type { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
 
 interface StartSessionFromLauncherProps {
   launcher: SessionLauncher;
@@ -149,13 +154,60 @@ export default function useSessionLauncherState({
     dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
   }, [dispatch, project.repositories]);
 
+  const initialCloudStorages = useMemo(
+    () =>
+      storages?.map((cloudStorage) => {
+        const storageDefinition = cloudStorage.storage;
+        const defSensitiveFieldsMap: Record<string, RCloneOption> = {};
+        if (cloudStorage.sensitive_fields != null) {
+          cloudStorage.sensitive_fields.forEach((f) => {
+            if (f.name != null) defSensitiveFieldsMap[f.name] = f;
+          });
+        }
+        const configSensitiveFields = Object.keys(
+          storageDefinition.configuration
+        ).filter((key) => defSensitiveFieldsMap[key] != null);
+
+        const overrides =
+          storageDefinition.storage_type != null
+            ? CLOUD_OPTIONS_OVERRIDE[storageDefinition.storage_type]
+            : undefined;
+
+        const sensitiveFieldDefinitions = configSensitiveFields
+          .filter((key) => defSensitiveFieldsMap[key].name != null)
+          .map((key) => {
+            const { help, name } = defSensitiveFieldsMap[key];
+            return {
+              help: overrides?.[key]?.help ?? help ?? "",
+              friendlyName: overrides?.[key]?.friendlyName ?? name ?? key,
+              name: name ?? key,
+              value: "",
+            };
+          });
+
+        const sensitiveFieldValues: SessionStartCloudStorageConfiguration["sensitiveFieldValues"] =
+          {};
+        configSensitiveFields.forEach((key) => {
+          const { name } = defSensitiveFieldsMap[key];
+          if (name == null) return;
+          sensitiveFieldValues[name] = "";
+        });
+        return {
+          active: true,
+          cloudStorage,
+          sensitiveFieldDefinitions,
+          sensitiveFieldValues,
+        };
+      }),
+    [storages]
+  );
+
   useEffect(() => {
-    if (storages == null) return;
-    const initialCloudStorage = storages.map((storage) => storage.storage);
+    if (initialCloudStorages == null) return;
     dispatch(
-      startSessionOptionsV2Slice.actions.setCloudStorage(initialCloudStorage)
+      startSessionOptionsV2Slice.actions.setCloudStorage(initialCloudStorages)
     );
-  }, [dispatch, storages]);
+  }, [dispatch, initialCloudStorages]);
 
   return {
     containerImage,
@@ -163,6 +215,5 @@ export default function useSessionLauncherState({
     isFetchingOrLoadingStorages: isFetchingStorages || isLoadingStorages,
     resourcePools,
     startSessionOptionsV2,
-    storages,
   };
 }

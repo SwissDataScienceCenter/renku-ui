@@ -49,7 +49,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 interface AddCloudStorageForwardBackButtonProps {
   setStateSafe: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
-  validateResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
+  validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
 }
 
 interface AddCloudStorageBackButtonProps
@@ -62,7 +62,7 @@ export function AddCloudStorageBackButton({
   state,
   success,
   toggle,
-  validateResult,
+  validationResult,
 }: AddCloudStorageBackButtonProps) {
   if (state.step <= 1 || success)
     return (
@@ -79,9 +79,9 @@ export function AddCloudStorageBackButton({
     <Button
       className="btn-outline-rk-green"
       data-cy="cloud-storage-edit-back-button"
-      disabled={validateResult.isLoading}
+      disabled={validationResult.isLoading}
       onClick={() => {
-        if (!validateResult.isUninitialized) validateResult.reset();
+        if (!validationResult.isUninitialized) validationResult.reset();
         setStateSafe({
           step: state.advancedMode ? 0 : state.step - 1,
         });
@@ -212,7 +212,7 @@ export function AddCloudStorageContinueButton({
   storageDetails,
   storageId,
   validateConnection,
-  validateResult,
+  validationResult,
 }: AddCloudStorageContinueButtonProps) {
   const addButtonId = "add-cloud-storage-continue";
   const continueButtonId = "add-cloud-storage-next";
@@ -249,12 +249,12 @@ export function AddCloudStorageContinueButton({
           actionState={setStateSafe}
           actionTest={validateConnection}
           continueId="add-cloud-storage-continue"
-          resetTest={validateResult.reset}
+          resetTest={validationResult.reset}
           step={state.step}
           testId="test-cloud-storage"
-          testIsFailure={validateResult.isError}
-          testIsOngoing={validateResult.isLoading}
-          testIsSuccess={validateResult.isSuccess}
+          testIsFailure={validationResult.isError}
+          testIsOngoing={validationResult.isLoading}
+          testIsSuccess={validationResult.isSuccess}
         />
         {disableContinueButton && (
           <UncontrolledTooltip
@@ -301,17 +301,18 @@ export function AddCloudStorageContinueButton({
 }
 
 interface AddCloudStorageConnectionTestResultProps {
-  validateResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
+  validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
 }
 
 export function AddCloudStorageConnectionTestResult({
-  validateResult,
+  validationResult,
 }: AddCloudStorageConnectionTestResultProps) {
-  if (validateResult.isUninitialized || validateResult.isLoading) return null;
-  if (validateResult.error)
+  if (validationResult.isUninitialized || validationResult.isLoading)
+    return null;
+  if (validationResult.error)
     return (
       <div className={cx("w-100", "my-0")}>
-        <RtkOrNotebooksError error={validateResult.error} />
+        <RtkOrNotebooksError error={validationResult.error} />
       </div>
     );
   return (

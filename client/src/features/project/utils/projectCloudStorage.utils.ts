@@ -40,6 +40,8 @@ import {
   CloudStorageSchemaOptions,
 } from "../components/cloudStorage/projectCloudStorage.types";
 
+import { SessionStartCloudStorageConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
+
 const LAST_POSITION = 1000;
 
 export interface CloudStorageOptions extends RCloneOption {
@@ -412,4 +414,19 @@ export function findSensitive(
         .filter((o) => o.ispassword || o.sensitive) // eslint-disable-line spellcheck/spell-checker
         .map((o) => o.name)
     : [];
+}
+
+export function storageDefinitionFromConfig(
+  config: SessionStartCloudStorageConfiguration
+) {
+  const storageDefinition = config.cloudStorage.storage;
+  const newStorageDefinition = { ...storageDefinition };
+  newStorageDefinition.configuration = { ...storageDefinition.configuration };
+  const sensitiveFieldValues = config.sensitiveFieldValues;
+  Object.entries(sensitiveFieldValues).forEach(([name, value]) => {
+    if (value != null && value !== "") {
+      newStorageDefinition.configuration[name] = value;
+    }
+  });
+  return newStorageDefinition;
 }
