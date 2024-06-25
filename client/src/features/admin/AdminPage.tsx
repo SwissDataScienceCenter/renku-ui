@@ -66,9 +66,19 @@ export default function AdminPage() {
   return (
     <>
       <h1 className={cx("fs-2", "mb-3")}>Admin Panel</h1>
+      <IncidentsAndMaintenanceSection />
       <ComputeResourcesSection />
       <SessionEnvironmentsSection />
     </>
+  );
+}
+
+function IncidentsAndMaintenanceSection() {
+  return (
+    <section>
+      <h2 className="fs-5">Incidents And Maintenance</h2>
+      <p>TODO</p>
+    </section>
   );
 }
 
