@@ -37,6 +37,7 @@ import {
   Offcanvas,
   OffcanvasBody,
   Row,
+  UncontrolledTooltip,
 } from "reactstrap";
 
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -470,18 +471,25 @@ export function SessionView({
               <MembershipGuard
                 disabled={null}
                 enabled={
-                  <Button
-                    className={cx(
-                      "bg-transparent",
-                      "shadow-none",
-                      "border-0",
-                      "px-1",
-                      buttonStyles.EditButton
-                    )}
-                    onClick={toggle}
-                  >
-                    <PencilFill size={20} />
-                  </Button>
+                  <>
+                    <Button
+                      className={cx(
+                        "bg-transparent",
+                        "shadow-none",
+                        "border-0",
+                        "px-1",
+                        buttonStyles.EditButton
+                      )}
+                      onClick={toggle}
+                      tabIndex={0}
+                      id="modify-session-environment-button"
+                    >
+                      <PencilFill size={20} />
+                    </Button>
+                    <UncontrolledTooltip target="modify-session-environment-button">
+                      Modify session environment
+                    </UncontrolledTooltip>
+                  </>
                 }
                 members={members}
                 minimumRole="editor"
@@ -509,18 +517,25 @@ export function SessionView({
             <MembershipGuard
               disabled={null}
               enabled={
-                <Button
-                  className={cx(
-                    "bg-transparent",
-                    "shadow-none",
-                    "border-0",
-                    "px-1",
-                    buttonStyles.EditButton
-                  )}
-                  onClick={toggleModifyResources}
-                >
-                  <PencilFill size={20} />
-                </Button>
+                <>
+                  <Button
+                    className={cx(
+                      "bg-transparent",
+                      "shadow-none",
+                      "border-0",
+                      "px-1",
+                      buttonStyles.EditButton
+                    )}
+                    onClick={toggleModifyResources}
+                    tabIndex={0}
+                    id="modify-resource-class-button"
+                  >
+                    <PencilFill size={20} />
+                  </Button>
+                  <UncontrolledTooltip target="modify-resource-class-button">
+                    Set resource class
+                  </UncontrolledTooltip>
+                </>
               }
               members={members}
               minimumRole="editor"

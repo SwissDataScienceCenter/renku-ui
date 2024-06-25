@@ -591,8 +591,9 @@ export function SessionEnvironmentItem({
           defaultValue={defaultSessionClass}
           render={() => (
             <>
-              <Label>Compute resources </Label>
+              <Label for="resource-class-selector">Compute resources </Label>
               <SessionClassSelector
+                id="resource-class-selector"
                 resourcePools={resourcePools}
                 onChange={onChangeResourceClass}
                 defaultSessionClass={defaultSessionClass}
