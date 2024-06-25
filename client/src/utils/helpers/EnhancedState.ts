@@ -66,6 +66,7 @@ import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "../feature-flags/featureFlags.slice";
+import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -97,6 +98,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [keycloakUserApi.reducerPath]: keycloakUserApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
+    [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
@@ -135,6 +137,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(inactiveKgProjectsApi.middleware)
         .concat(keycloakUserApi.middleware)
         .concat(kgSearchApi.middleware)
+        .concat(platformApi.middleware)
         .concat(projectCloudStorageApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectGitLabApi.middleware)

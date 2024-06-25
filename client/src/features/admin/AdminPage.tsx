@@ -34,12 +34,14 @@ import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
-import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
+import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
+import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
 import {
   ResourceClass,
   ResourcePool,
 } from "../dataServices/dataServices.types";
+import { useGetPlatformConfigQuery } from "../platform/api/platform.api";
 import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
@@ -60,7 +62,6 @@ import { ResourcePoolUser } from "./adminComputeResources.types";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
-import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
 
 export default function AdminPage() {
   return (
@@ -74,10 +75,15 @@ export default function AdminPage() {
 }
 
 function IncidentsAndMaintenanceSection() {
+  const result = useGetPlatformConfigQuery();
+
   return (
     <section>
       <h2 className="fs-5">Incidents And Maintenance</h2>
       <p>TODO</p>
+      <pre>
+        {JSON.stringify({ data: result.data, error: result.error }, null, 2)}
+      </pre>
     </section>
   );
 }
