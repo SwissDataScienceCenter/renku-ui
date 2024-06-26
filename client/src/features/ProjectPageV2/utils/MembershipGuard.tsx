@@ -17,6 +17,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetUserQuery } from "../../../features/user/dataServicesUser.api";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import type {
   ProjectMemberListResponse,
@@ -24,7 +25,6 @@ import type {
 } from "../../projectsV2/api/projectV2.api.ts";
 import AccessGuard from "./AccessGuard.tsx";
 import { toNumericRole } from "./roleUtils.ts";
-import { useGetUserInfoQuery } from "../../user/keycloakUser.api.ts";
 
 interface SelfOverride {
   disabled: React.ReactNode | undefined;
@@ -50,15 +50,14 @@ export default function MembershipGuard({
     data: user,
     isLoading: isUserLoading,
     error: userError,
-  } = useGetUserInfoQuery(logged ? undefined : skipToken);
+  } = useGetUserQuery(logged ? undefined : skipToken);
   if (isUserLoading) return disabled;
   if (userError) return disabled;
   // If the user is not logged in, return null
   if (!user) return null;
   if (!members) return disabled;
   // Find the user is a member of the project
-  const userId = user.isLoggedIn ? user.sub : null;
-  const userMember = members.find((member) => member.id === userId);
+  const userMember = members.find((member) => member.id === user.id);
   if (!userMember) return disabled;
   // If the user themselves is the target of this guard and there is an applicable override, use it
   if (
