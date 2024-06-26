@@ -148,7 +148,6 @@ function GroupsV2Routes() {
       />
       <Route
         path={RELATIVE_ROUTES.v2.groups.show.root}
-        // element={<LazyGroupV2Show />}
       >
         <Route index element={<LazyGroupV2Show />} />
         <Route
