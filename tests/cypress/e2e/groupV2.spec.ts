@@ -25,7 +25,10 @@ describe("Add new v2 group", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects();
-    fixtures.createGroupV2().readGroupV2({ groupSlug: slug });
+    fixtures
+      .createGroupV2()
+      .readGroupV2({ groupSlug: slug })
+      .readGroupV2Namespace({ groupSlug: slug });
     cy.visit("/v2/groups/new");
   });
 
@@ -36,6 +39,7 @@ describe("Add new v2 group", () => {
     cy.contains("Create").click();
     cy.wait("@createGroupV2");
     cy.wait("@readGroupV2");
+    cy.wait("@readGroupV2Namespace");
     cy.url().should("contain", `v2/groups/${slug}`);
     cy.contains("test 2 group-v2").should("be.visible");
   });
@@ -67,7 +71,7 @@ describe("List v2 groups", () => {
   });
 
   it("shows groups", () => {
-    fixtures.readGroupV2();
+    fixtures.readGroupV2().readGroupV2Namespace();
     cy.contains("List Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
@@ -83,24 +87,34 @@ describe("Edit v2 group", () => {
   });
 
   it("allows editing group metadata", () => {
-    fixtures.readGroupV2().updateGroupV2();
+    fixtures
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .listGroupV2Members()
+      .updateGroupV2();
     cy.contains("List Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.contains("Edit Settings").should("be.visible").click();
-    cy.get("button").contains("Metadata").should("be.visible").click();
+    cy.contains("Edit group settings").should("be.visible").click();
     cy.getDataCy("group-name-input").clear().type("new name");
     cy.getDataCy("group-slug-input").clear().type("new-slug");
     cy.getDataCy("group-description-input").clear().type("new description");
-    fixtures.readGroupV2({
-      fixture: "groupV2/update-groupV2-metadata.json",
-      groupSlug: "new-slug",
-      name: "readPostUpdate",
-    });
+    fixtures
+      .readGroupV2({
+        fixture: "groupV2/update-groupV2-metadata.json",
+        groupSlug: "new-slug",
+        name: "readPostUpdate",
+      })
+      .readGroupV2Namespace({
+        fixture: "groupV2/update-groupV2-namespace.json",
+        groupSlug: "new-slug",
+        name: "readNamespacePostUpdate",
+      });
     cy.get("button").contains("Update").should("be.visible").click();
     cy.wait("@updateGroupV2");
     cy.wait("@readPostUpdate");
+    cy.wait("@readNamespacePostUpdate");
     cy.contains("new name").should("be.visible");
   });
 
@@ -126,14 +140,14 @@ describe("Edit v2 group", () => {
         response: [],
       })
       .listGroupV2Members()
-      .readGroupV2();
+      .readGroupV2()
+      .readGroupV2Namespace();
 
     cy.contains("List Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.contains("Edit Settings").should("be.visible").click();
-    cy.get("button").contains("Members").should("be.visible").click();
+    cy.contains("Edit group settings").should("be.visible").click();
     cy.contains("user1@email.com").should("be.visible");
     cy.contains("user3-uuid").should("be.visible");
     fixtures
@@ -165,13 +179,16 @@ describe("Edit v2 group", () => {
   });
 
   it("deletes group", () => {
-    fixtures.readGroupV2().deleteGroupV2();
+    fixtures
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .listGroupV2Members()
+      .deleteGroupV2();
     cy.contains("List Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.contains("Edit Settings").should("be.visible").click();
-    cy.get("button").contains("Metadata").should("be.visible").click();
+    cy.contains("Edit group settings").should("be.visible").click();
     cy.getDataCy("group-description-input").clear().type("new description");
     cy.get("button").contains("Delete").should("be.visible").click();
     cy.get("button")

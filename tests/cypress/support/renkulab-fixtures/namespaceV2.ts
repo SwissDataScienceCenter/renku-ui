@@ -266,6 +266,21 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    readGroupV2Namespace(args?: GroupV2Args) {
+      const {
+        fixture = "groupV2/read-groupV2-namespace.json",
+        name = "readGroupV2Namespace",
+        groupSlug = "test-2-group-v2",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/namespaces/${groupSlug}`,
+        response
+      ).as(name);
+      return this;
+    }
+
     updateGroupV2(args?: GroupV2Args) {
       const {
         fixture = "groupV2/update-groupV2-metadata.json",

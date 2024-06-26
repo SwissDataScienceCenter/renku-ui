@@ -17,10 +17,10 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useGetUserQuery } from "../../user/dataServicesUser.api/index.ts";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook.ts";
 import type { Role } from "../../projectsV2/api/projectV2.api.ts";
 import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api.ts";
+import { useGetUserInfoQuery } from "../../user/keycloakUser.api.ts";
 
 interface UseProjectAccessArgs {
   projectId: string;
@@ -34,7 +34,7 @@ export default function useProjectAccess({ projectId }: UseProjectAccessArgs): {
     data: user,
     isLoading: isUserLoading,
     error: userError,
-  } = useGetUserQuery(logged ? undefined : skipToken);
+  } = useGetUserInfoQuery(logged ? undefined : skipToken);
   const { data: members } = useGetProjectsByProjectIdMembersQuery(
     logged
       ? {
@@ -48,7 +48,8 @@ export default function useProjectAccess({ projectId }: UseProjectAccessArgs): {
   if (!user) return viewer;
   if (!members) return viewer;
   // Find the user as a member of the project
-  const member = members.find((member) => member.id === user.id);
+  const userId = user.isLoggedIn ? user.sub : null;
+  const member = members.find((member) => member.id === userId);
   if (!member) return viewer;
 
   return { userRole: member.role };
