@@ -81,7 +81,14 @@ describe("List v2 groups", () => {
 
 describe("Edit v2 group", () => {
   beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: { id: "0945f006-e117-49b7-8966-4c0842146313" },
+      })
+      .namespaces();
     fixtures.projects().landingUserProjects().listGroupV2();
     cy.visit("/v2/groups");
   });
