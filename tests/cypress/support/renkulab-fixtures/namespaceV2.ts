@@ -151,9 +151,11 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
     listManyNamespaceV2(args?: ListManyNamespacesArgs) {
       const { numberOfNamespaces = 50, name = "listNamespaceV2" } = args ?? {};
       cy.intercept("GET", `/ui-server/api/data/namespaces?*`, (req) => {
-        const page = +req.query["page"] ?? 1;
+        const pageRaw = +req.query["page"];
+        const page = isNaN(pageRaw) ? 1 : pageRaw;
         // TODO the request parameter is per_page, the result is per-page. These should be the same.
-        const perPage = +req.query["per_page"] ?? 20;
+        const perPageRaw = +req.query["per_page"];
+        const perPage = isNaN(pageRaw) ? 20 : perPageRaw;
         const start = (page - 1) * perPage;
         const totalPages = Math.ceil(numberOfNamespaces / perPage);
         const numToGen = Math.min(
