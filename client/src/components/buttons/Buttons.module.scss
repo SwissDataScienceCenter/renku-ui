@@ -38,7 +38,7 @@
 }
 
 .EditButton {
-  color: #{$rk-gray-800} !important;
+  color: var(--bs-rk-text-light) !important;
 }
 .EditButton:hover {
   color: var(--bs-dark) !important;

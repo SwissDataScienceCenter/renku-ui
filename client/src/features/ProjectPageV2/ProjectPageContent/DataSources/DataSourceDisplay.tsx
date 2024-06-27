@@ -19,9 +19,9 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import {
   LayoutSidebarInsetReverse,
-  Pencil,
+  PencilFill,
   ThreeDotsVertical,
-  Trash,
+  Trash3Fill,
   XLg,
 } from "react-bootstrap-icons";
 import {
@@ -109,7 +109,7 @@ function DataSourceDeleteModal({
               </>
             ) : (
               <>
-                <Trash className={cx("bi", "me-1")} />
+                <Trash3Fill className={cx("bi", "me-1")} />
                 Remove data source
               </>
             )}
@@ -168,7 +168,7 @@ export function DataSourceActions({
             onClick={toggleDelete}
             data-cy="data-source-delete"
           >
-            <Trash /> Remove data sources
+            <Trash3Fill /> Remove data sources
           </DropdownItem>
           <DropdownItem
             className={cx(
@@ -180,7 +180,7 @@ export function DataSourceActions({
             onClick={toggleEdit}
             data-cy="data-source-edit"
           >
-            <Pencil /> Edit data source
+            <PencilFill /> Edit data source
           </DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>

@@ -18,8 +18,8 @@
 
 import cx from "classnames";
 import type { ReactNode } from "react";
-import React, { useCallback, useState, useRef } from "react";
-import { PeopleFill, PencilSquare, Trash } from "react-bootstrap-icons";
+import React, { useCallback, useRef, useState } from "react";
+import { PencilFill, PeopleFill, Trash3Fill } from "react-bootstrap-icons";
 import {
   Button,
   Col,
@@ -71,7 +71,7 @@ function MemberActionMenu({
       data-cy={`project-member-edit-${index}`}
       onClick={onEdit}
     >
-      <PencilSquare className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Edit
+      <PencilFill className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Edit
     </Button>
   );
   return (
@@ -85,7 +85,8 @@ function MemberActionMenu({
           isPrincipal
         >
           <DropdownItem onClick={onRemove}>
-            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+            <Trash3Fill className={cx("rk-icon", "rk-icon-sm", "me-2")} />{" "}
+            Remove
           </DropdownItem>
         </ButtonWithMenu>
       </span>
@@ -126,7 +127,8 @@ function ProjectMemberAction({
             data-cy={`project-member-remove-${index}`}
             onClick={onRemove}
           >
-            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+            <Trash3Fill className={cx("rk-icon", "rk-icon-sm", "me-2")} />{" "}
+            Remove
           </Button>
         ),
         enabled:
@@ -163,8 +165,12 @@ function ProjectPageSettingsMembersTableRow({
   onEdit,
 }: ProjectPageSettingsMembersTableRowProps) {
   return (
-    <Row className={cx("px-0", "py-4", "py-xl-3", "px-md-2", "m-0")}>
-      <Col xs={9} sm={6} className={cx("d-flex", "align-items-center", "px-3")}>
+    <Row className={cx("px-0", "py-4", "py-xl-3", "px-md-4", "m-0")}>
+      <Col
+        xs={9}
+        sm={6}
+        className={cx("d-flex", "align-items-center", "px-2", "px-md-0")}
+      >
         {member.email ?? member.id}
       </Col>
       <Col
@@ -178,7 +184,13 @@ function ProjectPageSettingsMembersTableRow({
       <Col
         xs={12}
         xl={3}
-        className={cx("d-flex", "align-items-center", "px-3", "px-md-2")}
+        className={cx(
+          "d-flex",
+          "align-items-center",
+          "px-2",
+          "px-md-0",
+          "justify-content-end"
+        )}
         data-cy={`project-member-actions-${index}`}
       >
         <ProjectMemberAction

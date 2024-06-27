@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Trash } from "react-bootstrap-icons";
+import { Trash3Fill } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom-v5-compat";
 import { Button, Input } from "reactstrap";
 
@@ -103,7 +103,7 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
               {result.isLoading ? (
                 <Loader className="me-1" inline size={16} />
               ) : (
-                <Trash className={cx("bi", "me-1")} />
+                <Trash3Fill className={cx("bi", "me-1")} />
               )}
               Delete project
             </Button>
