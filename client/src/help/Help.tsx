@@ -43,6 +43,7 @@ import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 import HelpRelease from "./HelpRelease";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
+import StatusSummary from "../features/platform/components/StatusSummary";
 
 type HelpNavProps = {
   statuspageId: string;
@@ -203,6 +204,7 @@ function HelpContent() {
       <Route path="/" element={<HelpGetting />} />
       <Route path="docs" element={<HelpDocumentation />} />
       <Route path="status" element={<StatuspageDisplay model={model} />} />
+      <Route path="status-2" element={<StatusSummary />} />
       <Route path="release" element={<HelpRelease />} />
       <Route path="tos" element={<TermsOfService />} />
       <Route path="privacy" element={<PrivacyPolicy />} />

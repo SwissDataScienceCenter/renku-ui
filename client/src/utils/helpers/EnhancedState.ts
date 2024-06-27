@@ -67,6 +67,7 @@ import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "../feature-flags/featureFlags.slice";
 import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
+import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -112,6 +113,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
+    [statuspageApi.reducerPath]: statuspageApi.reducer,
     [termsApi.reducerPath]: termsApi.reducer,
     [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
@@ -152,6 +154,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionSidecarApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsV2Api.middleware)
+        .concat(statuspageApi.middleware)
         .concat(termsApi.middleware)
         .concat(userPreferencesApi.middleware)
         .concat(versionsApi.middleware)
