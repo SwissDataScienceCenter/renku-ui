@@ -17,7 +17,6 @@
  */
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Pencil } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   generatePath,
@@ -46,6 +45,7 @@ import type { ProjectV2Metadata } from "../../settings/projectSettings.types";
 import AccessGuard from "../../utils/AccessGuard";
 import useProjectAccess from "../../utils/useProjectAccess.hook";
 
+import { PencilFill } from "react-bootstrap-icons";
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
 
@@ -225,15 +225,11 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           value={project.keywords as string[]}
         />
         <div className={cx("d-flex", "justify-content-end")}>
-          <Button
-            disabled={isUpdating || !isDirty}
-            className="me-1"
-            type="submit"
-          >
+          <Button disabled={isUpdating || !isDirty} type="submit">
             {isUpdating ? (
               <Loader className="me-1" inline size={16} />
             ) : (
-              <Pencil size={16} className={cx("bi", "me-1")} />
+              <PencilFill size={20} className={cx("bi", "me-1")} />
             )}
             Update project
           </Button>

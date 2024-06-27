@@ -20,10 +20,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
   CheckCircleFill,
-  Pencil,
+  PencilFill,
   SlashCircleFill,
   ThreeDotsVertical,
-  Trash,
+  Trash3Fill,
   XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
@@ -283,7 +283,7 @@ function CodeRepositoryDeleteModal({
               </>
             ) : (
               <>
-                <Trash className={cx("bi", "me-1")} />
+                <Trash3Fill className={cx("bi", "me-1")} />
                 Remove repository
               </>
             )}
@@ -343,7 +343,7 @@ function CodeRepositoryActions({
             onClick={toggleEdit}
             data-cy="code-repository-edit"
           >
-            <Pencil /> Edit code repository
+            <PencilFill /> Edit code repository
           </DropdownItem>
           <DropdownItem
             className={cx(
@@ -355,7 +355,7 @@ function CodeRepositoryActions({
             onClick={toggleDelete}
             data-cy="code-repository-delete"
           >
-            <Trash /> Remove code repository
+            <Trash3Fill /> Remove code repository
           </DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>

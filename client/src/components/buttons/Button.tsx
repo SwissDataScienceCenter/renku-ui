@@ -30,7 +30,7 @@ import { Fragment, ReactNode, useRef, useState } from "react";
 import {
   ArrowRight,
   ChevronDown,
-  PencilSquare,
+  PencilFill,
   PlusLg,
 } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
@@ -338,10 +338,10 @@ function EditButtonLink({
     <>
       <span ref={ref} className={buttonStyles.LinkIcon}>
         {disabled ? (
-          <PencilSquare />
+          <PencilFill />
         ) : (
           <Link className="text-decoration-none" data-cy={dataCy} to={to}>
-            <PencilSquare />
+            <PencilFill size={20} />
           </Link>
         )}
       </span>

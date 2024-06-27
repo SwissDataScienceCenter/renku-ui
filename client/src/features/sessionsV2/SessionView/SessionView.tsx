@@ -466,7 +466,7 @@ export function SessionView({
         )}
         {launcher && !isLoading && (
           <>
-            <div className="mt-5 d-flex gap-2 align-items-center mb-3">
+            <div className="mt-5 d-flex gap-2 align-items-end mb-3">
               <h5 className={cx("fw-bold", "mb-0")}>Session Environment</h5>
               <MembershipGuard
                 disabled={null}
@@ -505,13 +505,7 @@ export function SessionView({
         )}
         <>
           <div
-            className={cx(
-              "mt-5",
-              "d-flex",
-              "gap-2",
-              "align-items-center",
-              "mb-3"
-            )}
+            className={cx("mt-5", "d-flex", "gap-2", "align-items-end", "mb-3")}
           >
             <h5 className={cx("fw-bold", "mb-0")}>Default Resource Class</h5>
             <MembershipGuard
