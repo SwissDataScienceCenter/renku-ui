@@ -20,6 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { XLg } from "react-bootstrap-icons";
+import { Link } from "react-router-dom-v5-compat";
 import { SingleValue } from "react-select";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import {
@@ -37,14 +38,14 @@ import {
 interface SelectResourceClassModalProps {
   isOpen: boolean;
   onContinue: (env: ResourceClass) => void;
-  onCancel: () => void;
+  projectUrl: string;
   resourceClassId?: number;
   isCustom: boolean;
 }
 export function SelectResourceClassModal({
   isOpen,
   onContinue,
-  onCancel,
+  projectUrl,
   resourceClassId,
   isCustom,
 }: SelectResourceClassModalProps) {
@@ -99,6 +100,25 @@ export function SelectResourceClassModal({
       <p>Resource class not available</p>
     );
 
+  const cancelLaunchSession = (
+    <Link
+      className={cx(
+        "btn",
+        "d-flex",
+        "align-items-center",
+        "py-1",
+        "px-2",
+        "ms-2",
+        "btn-outline-rk-green"
+      )}
+      to={projectUrl}
+      data-cy="start-session-button"
+    >
+      <XLg className={cx("bi", "me-1")} />
+      Cancel launch
+    </Link>
+  );
+
   return (
     <Modal centered isOpen={isOpen} size="lg">
       <ModalHeader className={cx("fw-bold")}>
@@ -129,13 +149,7 @@ export function SelectResourceClassModal({
         <div className="field-group">{selector}</div>
       </ModalBody>
       <ModalFooter className="pt-0">
-        <Button
-          className={cx("ms-2", "btn-outline-rk-green")}
-          onClick={onCancel}
-        >
-          <XLg className={cx("bi", "me-1")} />
-          Cancel launch
-        </Button>
+        {cancelLaunchSession}
         <Button
           className={cx("ms-2", "btn-rk-green")}
           disabled={!currentSessionClass}

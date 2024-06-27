@@ -24,11 +24,11 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import { CLOUD_OPTIONS_OVERRIDE } from "../project/components/cloudStorage/projectCloudStorage.constants";
+import type { Project } from "../projectsV2/api/projectV2.api";
 import {
   RCloneOption,
   useGetStoragesV2Query,
 } from "../projectsV2/api/storagesV2.api";
-import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetDockerImageQuery } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
@@ -37,15 +37,18 @@ import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
+import useSessionResourceClass from "./useSessionResourceClass.hook";
 
 interface StartSessionFromLauncherProps {
   launcher: SessionLauncher;
   project: Project;
+  isCustomLaunch: boolean;
 }
 
 export default function useSessionLauncherState({
   launcher,
   project,
+  isCustomLaunch,
 }: StartSessionFromLauncherProps) {
   const { environment_kind, default_url } = launcher;
 
@@ -55,6 +58,12 @@ export default function useSessionLauncherState({
     isLoading: isLoadingStorages,
   } = useGetStoragesV2Query({
     projectId: project.id,
+  });
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const { isPendingResourceClass, setResourceClass } = useSessionResourceClass({
+    launcher,
+    isCustomLaunch,
+    resourcePools,
   });
 
   const { data: environments } = useGetSessionEnvironmentsQuery(
@@ -93,7 +102,6 @@ export default function useSessionLauncherState({
             : 0,
       }
     );
-  const { data: resourcePools } = useGetResourcePoolsQuery({});
 
   const defaultSessionClass = useMemo(
     () =>
@@ -215,5 +223,7 @@ export default function useSessionLauncherState({
     isFetchingOrLoadingStorages: isFetchingStorages || isLoadingStorages,
     resourcePools,
     startSessionOptionsV2,
+    isPendingResourceClass,
+    setResourceClass,
   };
 }

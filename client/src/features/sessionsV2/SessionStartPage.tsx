@@ -23,6 +23,7 @@ import {
   generatePath,
   useNavigate,
   useParams,
+  useSearchParams,
 } from "react-router-dom-v5-compat";
 import PageLoader from "../../components/PageLoader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
@@ -33,25 +34,24 @@ import ProgressStepsIndicator, {
   StepsProgressBar,
 } from "../../components/progress/ProgressSteps";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
+import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
-import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
-import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
 import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
+import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
+import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
+import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
-  StartSessionOptionsV2,
   SessionStartCloudStorageConfiguration,
+  StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLauncherState from "./useSessionLaunchState.hook";
-import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-import useSessionResourceClass from "./useSessionResourceClass.hook";
-import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils.ts";
 
 interface SessionStartingProps extends StartSessionFromLauncherProps {
   containerImage: string;
@@ -258,29 +258,21 @@ function StartSessionFromLauncher({
   launcher,
   project,
 }: StartSessionFromLauncherProps) {
-  const hasCustomQuery = new URLSearchParams(location.search).has("custom");
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const hasCustomQuery = searchParams.has("custom");
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
-  const { containerImage, isFetchingOrLoadingStorages, resourcePools } =
-    useSessionLauncherState({
-      launcher,
-      project,
-    });
-  const { isPendingResourceClass, setResourceClass } = useSessionResourceClass({
+  const {
+    containerImage,
+    isFetchingOrLoadingStorages,
+    isPendingResourceClass,
+    setResourceClass,
+  } = useSessionLauncherState({
     launcher,
+    project,
     isCustomLaunch: hasCustomQuery,
-    resourcePools,
   });
-
-  const cancelLaunchSession = useCallback(() => {
-    const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-      namespace: project.namespace,
-      slug: project.slug,
-    });
-    navigate(url);
-  }, [navigate, project]);
 
   const needsCredentials = startSessionOptionsV2.cloudStorage.some(
     doesCloudStorageNeedCredentials
@@ -300,6 +292,11 @@ function StartSessionFromLauncher({
         startSessionOptionsV2={startSessionOptionsV2}
       />
     );
+
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace: project.namespace,
+    slug: project.slug,
+  });
 
   if (allDataFetched && needsCredentials)
     return (
@@ -336,10 +333,10 @@ function StartSessionFromLauncher({
       />
       <SelectResourceClassModal
         isOpen={isPendingResourceClass}
-        onCancel={cancelLaunchSession}
         resourceClassId={launcher.resource_class_id}
         onContinue={setResourceClass}
         isCustom={hasCustomQuery}
+        projectUrl={projectUrl}
       />
     </div>
   );

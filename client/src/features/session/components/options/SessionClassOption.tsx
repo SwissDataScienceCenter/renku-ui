@@ -35,7 +35,7 @@ import Select, {
   SingleValueProps,
   components,
 } from "react-select";
-import { useGetNotebooksVersionQuery } from "../../../../features/versions/versions.api";
+import { useGetNotebooksVersionQuery } from "../../../versions/versions.api.ts";
 
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
@@ -58,7 +58,7 @@ import { setSessionClass } from "../../startSessionOptionsSlice";
 import { computeStorageSizes } from "../../utils/sessionOptions.utils";
 
 import { toHumanDuration } from "../../../../utils/helpers/DurationUtils";
-import { FetchingResourcePools } from "../../../sessionsV2/components/SessionModals/ResourceClassWarning.tsx";
+import { FetchingResourcePools } from "../../../sessionsV2/components/SessionModals/ResourceClassWarning";
 import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {

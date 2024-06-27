@@ -17,10 +17,9 @@
  */
 
 import cx from "classnames";
-import { Play, PlayFill } from "react-bootstrap-icons";
-import { Link, generatePath, useNavigate } from "react-router-dom-v5-compat";
+import { PlayFill } from "react-bootstrap-icons";
+import { Link, generatePath } from "react-router-dom-v5-compat";
 
-import { useCallback } from "react";
 import { DropdownItem } from "reactstrap";
 import { ButtonWithMenu } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -36,7 +35,6 @@ export default function StartSessionButton({
   namespace,
   slug,
 }: StartSessionButtonProps) {
-  const navigate = useNavigate();
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
     {
@@ -45,18 +43,6 @@ export default function StartSessionButton({
       slug,
     }
   );
-
-  const onClickCustomLaunch = useCallback(() => {
-    const customStartUrl = generatePath(
-      ABSOLUTE_ROUTES.v2.projects.show.sessions.startCustom,
-      {
-        launcherId,
-        namespace,
-        slug,
-      }
-    );
-    navigate(customStartUrl);
-  }, [launcherId, namespace, slug, navigate]);
 
   const defaultAction = (
     <Link
@@ -77,9 +63,24 @@ export default function StartSessionButton({
   );
 
   const customizeLaunch = (
-    <DropdownItem data-cy="custom-launch-button" onClick={onClickCustomLaunch}>
-      <Play size={24} className={cx("bi", "me-1")} />
-      Custom launch
+    <DropdownItem data-cy="custom-launch-button">
+      <Link
+        className={cx(
+          "d-flex",
+          "align-items-center",
+          "py-1",
+          "px-2",
+          "text-decoration-none"
+        )}
+        to={{
+          pathname: startUrl,
+          search: new URLSearchParams({ custom: "1" }).toString(),
+        }}
+        data-cy="start-custom-session-button"
+      >
+        <PlayFill className={cx("bi", "me-1")} />
+        Custom launch
+      </Link>
     </DropdownItem>
   );
 
