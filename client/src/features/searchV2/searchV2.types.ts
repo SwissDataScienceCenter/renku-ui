@@ -18,8 +18,6 @@
 
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
 
-// export type EntityType = "Project" | "User";
-
 export interface DateFilter {
   option: DateFilterTypes;
   from?: string;

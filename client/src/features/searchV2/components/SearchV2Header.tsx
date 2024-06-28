@@ -25,8 +25,6 @@ import { AVAILABLE_SORTING } from "../searchV2.utils";
 import { setSorting } from "../searchV2.slice";
 import { searchV2Api } from "../api/searchV2Api.api";
 
-// import searchV2Api from "../searchV2.api";
-
 export default function SearchV2Header() {
   const { search, sorting } = useAppSelector((state) => state.searchV2);
   const dispatch = useDispatch();
