@@ -21,6 +21,7 @@ import { Col, Row } from "reactstrap";
 
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
+import { useGetVersionQuery as useGetSearchVersionQuery } from "../features/searchV2/api/searchV2Api.api";
 import {
   useGetCoreVersionsQuery,
   useGetDataServicesVersionQuery,
@@ -150,6 +151,22 @@ function RenkuRelease() {
   );
 }
 
+function SearchRelease() {
+  const { data, isFetching } = useGetSearchVersionQuery();
+  if (isFetching) {
+    return <Loader inline size={16} />;
+  }
+  const searchVersion = data?.version;
+  const { taggedVersion, devHash } = parseChartVersion(searchVersion);
+  return (
+    <ComponentAndDevVersion
+      componentUrl={RenkuRepositories.Renku}
+      devHash={devHash}
+      taggedVersion={taggedVersion}
+    />
+  );
+}
+
 function UiRelease() {
   const { params } = useContext(AppContext);
   const uiVersion = params?.UI_VERSION ?? DEFAULT_APP_PARAMS.UI_VERSION;
@@ -183,6 +200,9 @@ function ComponentDetails() {
         </li>
         <li>
           Notebooks: <NotebookRelease />
+        </li>
+        <li>
+          Search: <SearchRelease />
         </li>
       </ul>
     </>
