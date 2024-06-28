@@ -18,6 +18,7 @@
 
 export interface StatusPageSummary {
   page: StatusPageMetadata;
+  components: StatusPageComponents;
   status: StatusPageOverallStatus;
 }
 
@@ -27,6 +28,17 @@ export interface StatusPageMetadata {
   url: string;
   time_zone: string;
   updated_at: string;
+}
+
+export type StatusPageComponents = StatusPageComponent[];
+
+export interface StatusPageComponent {
+  id: string;
+  name: string;
+  status: string;
+  position: number;
+  showcase: boolean;
+  only_show_if_degraded: boolean;
 }
 
 export interface StatusPageOverallStatus {
