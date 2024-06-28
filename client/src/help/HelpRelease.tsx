@@ -160,7 +160,7 @@ function SearchRelease() {
   const { taggedVersion, devHash } = parseChartVersion(searchVersion);
   return (
     <ComponentAndDevVersion
-      componentUrl={RenkuRepositories.Renku}
+      componentUrl={RenkuRepositories.Search}
       devHash={devHash}
       taggedVersion={taggedVersion}
     />
