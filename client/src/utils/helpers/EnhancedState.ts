@@ -48,7 +48,6 @@ import { projectsApi } from "../../features/projects/projects.api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
-import searchV2Api from "../../features/searchV2/searchV2.api";
 import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import secretsApi from "../../features/secrets/secrets.api";
 import sessionsApi from "../../features/session/sessions.api";
@@ -65,6 +64,7 @@ import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "../feature-flags/featureFlags.slice";
+import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(

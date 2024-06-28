@@ -20,15 +20,14 @@ import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import { setPage, setSearch, setTotals } from "./searchV2.slice";
-import searchV2Api from "./searchV2.api";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { buildSearchQuery } from "./searchV2.utils";
+import { searchV2Api } from "./api/searchV2Api.api";
 
 const useStartNewSearch = () => {
   const dispatch = useDispatch();
   const searchState = useAppSelector((state) => state.searchV2);
-  const [startSearch, searchResult] =
-    searchV2Api.useLazyGetSearchResultsQuery();
+  const [startSearch, searchResult] = searchV2Api.endpoints.$get.useLazyQuery();
 
   // update the search slice and start the new query
   const startNewSearch = useCallback(() => {
@@ -45,7 +44,7 @@ const useStartNewSearch = () => {
     const resetPage = searchState.search.lastSearch !== searchQuery;
     if (resetPage) dispatch(setPage(1));
     startSearch({
-      searchString: searchQuery,
+      q: searchQuery,
       page: resetPage ? 1 : searchState.search.page,
       perPage: searchState.search.perPage,
     });
