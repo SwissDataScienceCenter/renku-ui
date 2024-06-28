@@ -214,7 +214,7 @@ describe("Edit v2 project", () => {
       .userTest()
       .dataServicesUser({
         response: {
-          id: "user1-uuid",
+          id: "0945f006-e117-49b7-8966-4c0842146313",
           email: "user1@email.com",
         },
       })

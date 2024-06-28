@@ -48,6 +48,8 @@ import AddGroupMemberModal from "../fields/AddGroupMemberModal";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
+import { generatePath, useNavigate } from "react-router-dom-v5-compat";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 type GroupMetadata = Omit<GroupPatchRequest, "repositories">;
 
@@ -140,6 +142,8 @@ interface GroupMetadataFormProps {
   group: GroupResponse;
 }
 export function GroupMetadataForm({ group }: GroupMetadataFormProps) {
+  const navigate = useNavigate();
+
   const {
     control,
     formState: { errors },
@@ -152,10 +156,19 @@ export function GroupMetadataForm({ group }: GroupMetadataFormProps) {
     },
   });
 
-  const [updateGroup, { isLoading, isError }] =
-    usePatchGroupsByGroupSlugMutation();
+  const [updateGroup, updateGroupResult] = usePatchGroupsByGroupSlugMutation();
 
-  const isUpdating = isLoading;
+  useEffect(() => {
+    if (updateGroupResult.isSuccess) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+          slug: updateGroupResult.data.slug,
+        })
+      );
+    }
+  }, [navigate, updateGroupResult.data?.slug, updateGroupResult.isSuccess]);
+
+  const isUpdating = updateGroupResult.isLoading;
 
   const onSubmit = useCallback(
     (data: GroupMetadata) => {
@@ -201,7 +214,7 @@ export function GroupMetadataForm({ group }: GroupMetadataFormProps) {
           name="description"
         />
         <GroupEditSubmitGroup isUpdating={isUpdating} />
-        {isError && <div>There was an error</div>}
+        {updateGroupResult.isError && <div>There was an error</div>}
       </Form>
     </div>
   );
