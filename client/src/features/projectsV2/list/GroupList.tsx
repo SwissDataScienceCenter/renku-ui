@@ -36,7 +36,7 @@ interface GroupListGroupProps {
   group: GroupResponse;
 }
 function GroupListGroup({ group }: GroupListGroupProps) {
-  const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
+  const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
     slug: group.slug,
   });
   return (

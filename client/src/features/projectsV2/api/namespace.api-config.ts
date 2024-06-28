@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// Run `npx @rtk-query/codegen-openapi namespace.api-config.ts` in this folder to generate the API
+// Run `npm run generate-api:namespaceV2` to generate the API
 import type { ConfigFile } from "@rtk-query/codegen-openapi";
 import path from "path";
 

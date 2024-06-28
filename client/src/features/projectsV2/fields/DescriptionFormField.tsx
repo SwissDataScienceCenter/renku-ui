@@ -32,7 +32,7 @@ export default function DescriptionFormField<T extends FieldValues>({
 }: GenericFormFieldProps<T>) {
   return (
     <div className="mb-3">
-      <Label className="form-label" for={`${entityName}-slug`}>
+      <Label className="form-label" for={`${entityName}-description`}>
         Description
       </Label>
       <Controller

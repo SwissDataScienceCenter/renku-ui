@@ -30,7 +30,10 @@ import type {
   ProjectMemberListResponse,
   ProjectMemberResponse,
 } from "../../../projectsV2/api/projectV2.api";
-import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+import {
+  useGetNamespacesByNamespaceSlugQuery,
+  useGetProjectsByProjectIdMembersQuery,
+} from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useGetUsersByUserIdQuery } from "../../../user/dataServicesUser.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import MembershipGuard from "../../utils/MembershipGuard";
@@ -40,6 +43,7 @@ import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg
 
 import styles from "./ProjectInformation.module.scss";
 import UserAvatar from "../../../usersV2/show/UserAvatar";
+import { useMemo } from "react";
 
 export function ProjectImageView() {
   return (
@@ -151,6 +155,25 @@ export default function ProjectInformation() {
   });
   const membersUrl = `${settingsUrl}#members`;
 
+  const { data: namespace } = useGetNamespacesByNamespaceSlugQuery({
+    namespaceSlug: project.namespace,
+  });
+  const namespaceName = useMemo(
+    () => namespace?.name ?? project.namespace,
+    [namespace?.name, project.namespace]
+  );
+  const namespaceUrl = useMemo(
+    () =>
+      namespace?.namespace_kind === "group"
+        ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+            slug: project.namespace,
+          })
+        : generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+            username: project.namespace,
+          }),
+    [namespace?.namespace_kind, project.namespace]
+  );
+
   return (
     <aside className={cx("px-3", "pb-5", "pb-lg-2")}>
       <div
@@ -195,7 +218,7 @@ export default function ProjectInformation() {
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
         <div>Namespace</div>
         <div className="fw-bold" data-cy="project-namespace">
-          {project.namespace}
+          <Link to={namespaceUrl}>{namespaceName}</Link>
         </div>
       </div>
       <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
