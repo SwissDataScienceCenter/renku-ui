@@ -17,11 +17,11 @@
  */
 
 import { statuspageEmptyApi } from "./statuspage-empty.api";
-import { GetSummaryParams } from "./statuspage.types";
+import { GetSummaryParams, StatusPageSummary } from "./statuspage.types";
 
 export const statuspageApi = statuspageEmptyApi.injectEndpoints({
   endpoints: (build) => ({
-    getSummary: build.query<unknown, GetSummaryParams>({
+    getSummary: build.query<StatusPageSummary, GetSummaryParams>({
       query: ({ statusPageId }) => {
         return {
           url: `https://${statusPageId}.statuspage.io/api/v2/summary.json`,

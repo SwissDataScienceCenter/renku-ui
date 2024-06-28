@@ -19,13 +19,17 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { Link } from "react-router-dom-v5-compat";
-import { WarnAlert } from "../../../components/Alert";
+import { SuccessAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetUserInfoQuery } from "../../user/keycloakUser.api";
 import { useGetPlatformConfigQuery } from "../api/platform.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
+import { Col, Row } from "reactstrap";
+import { BoxArrowUpRight, CheckCircleFill } from "react-bootstrap-icons";
+import { TimeCaption } from "../../../components/TimeCaption";
+import { StatusPageSummary } from "../statuspage-api/statuspage.types";
 
 const FIVE_MINUTES_MILLIS = 5 * 60 * 1_000;
 
@@ -91,6 +95,7 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
     data: summary,
     isLoading,
     error,
+    fulfilledTimeStamp,
   } = useGetSummaryQuery(
     { statusPageId },
     { pollingInterval: FIVE_MINUTES_MILLIS }
@@ -113,9 +118,54 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
 
   return (
     <>
-      <div>TODO</div>
+      <Row>
+        <Col>
+          <h3>RenkuLab Status</h3>
+          <OverallStatus summary={summary} />
+          <div>TODO</div>
+          <p className="mb-0">
+            For further information, see{" "}
+            <Link to={summary.page.url}>
+              {summary.page.url}
+              <BoxArrowUpRight className={cx("bi", "ms-1")} />
+            </Link>
+            .
+          </p>
+          <p>
+            <TimeCaption
+              datetime={new Date(fulfilledTimeStamp)}
+              prefix="Status retrieved"
+              suffix="; "
+              enableTooltip
+            />
+            <TimeCaption
+              datetime={summary.page.updated_at}
+              prefix="last updated"
+              suffix="."
+              enableTooltip
+            />
+          </p>
+        </Col>
+      </Row>
       <pre>statusPageId = {statusPageId}</pre>
       <pre>{JSON.stringify(summary, null, 2)}</pre>
     </>
   );
+}
+
+interface OverallStatusProps {
+  summary: StatusPageSummary;
+}
+
+function OverallStatus({ summary }: OverallStatusProps) {
+  if (summary.status.indicator == "none") {
+    return (
+      <div className={cx("alert", "alert-success", "rounded", "p-3")}>
+        <CheckCircleFill className={cx("bi", "me-1")} />
+        {summary.status.description}
+      </div>
+    );
+  }
+
+  return null;
 }

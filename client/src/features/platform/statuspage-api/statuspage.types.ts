@@ -16,6 +16,26 @@
  * limitations under the License
  */
 
+export interface StatusPageSummary {
+  page: StatusPageMetadata;
+  status: StatusPageOverallStatus;
+}
+
+export interface StatusPageMetadata {
+  id: string;
+  name: string;
+  url: string;
+  time_zone: string;
+  updated_at: string;
+}
+
+export interface StatusPageOverallStatus {
+  indicator: StatusIndicator;
+  description: string;
+}
+
+export type StatusIndicator = "none" | "minor" | "major" | "critical";
+
 export interface GetSummaryParams {
   statusPageId: string;
 }
