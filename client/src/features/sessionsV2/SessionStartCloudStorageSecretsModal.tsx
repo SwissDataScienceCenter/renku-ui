@@ -53,11 +53,6 @@ import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorag
 import type { RCloneOption } from "../projectsV2/api/storagesV2.api";
 import type { SessionStartCloudStorageConfiguration } from "../sessionsV2/startSessionOptionsV2.types";
 
-enum ModelFlowState {
-  PROMPT_CREDENTIALS = 0,
-  PROMPT_SAVE_CREDENTIALS = 1,
-}
-
 export type SessionLaunchModalCloudStorageConfiguration =
   SessionStartCloudStorageConfiguration;
 
@@ -156,30 +151,6 @@ function ProgressBreadcrumbs({
         ))}
       </ol>
     </nav>
-  );
-}
-
-interface SaveCredentialsButtonProps {
-  onSaveAndStart: () => void;
-  onStartWithoutSaving: () => void;
-}
-
-function SaveCredentialsButton({
-  onSaveAndStart,
-  onStartWithoutSaving,
-}: SaveCredentialsButtonProps) {
-  return (
-    <div>
-      <Button
-        className={cx("ms-2", "btn-outline-rk-green")}
-        onClick={onStartWithoutSaving}
-      >
-        Just Start
-      </Button>
-      <Button className={cx("ms-2", "btn-rk-green")} onClick={onSaveAndStart}>
-        Save and Start
-      </Button>
-    </div>
   );
 }
 
@@ -289,16 +260,31 @@ function CloudStorageConfigurationSecrets({
           );
         })}
       </div>
+      <div className="mt-2">
+        <Controller
+          name="saveCredentials"
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <Input
+              id="saveCredentials"
+              className="form-check-input"
+              checked={field.value}
+              innerRef={field.ref}
+              onBlur={field.onBlur}
+              onChange={field.onChange}
+              type="checkbox"
+            />
+          )}
+        />
+        <Label
+          className={cx("form-check-label", "ms-2")}
+          htmlFor="saveCredentials"
+        >
+          Save credentials for future sessions?
+        </Label>
+      </div>
     </>
-  );
-}
-
-function CloudStorageConfigurationSaveCredentials() {
-  return (
-    <div>
-      You can <b>save</b> your credentials to use them automatically for future
-      sessions.
-    </div>
   );
 }
 
@@ -335,10 +321,6 @@ export default function SessionStartCloudStorageSecretsModal({
         )
   );
   const [index, setIndex] = useState(0);
-  const [modalState, setModalState] = useState<ModelFlowState>(
-    ModelFlowState.PROMPT_CREDENTIALS
-  );
-  const [saveCredentials, setSaveCredentials] = useState<boolean | null>(null);
   const { control, handleSubmit, reset: resetForm } = useForm();
 
   const [validateCloudStorageConnection, validationResult] =
@@ -349,15 +331,9 @@ export default function SessionStartCloudStorageSecretsModal({
       if (!validationResult.isUninitialized) validationResult.reset();
       resetForm();
       setIndex((index) => index + 1);
-    } else if (saveCredentials == null) {
-      setModalState(ModelFlowState.PROMPT_SAVE_CREDENTIALS);
     } else {
       resetForm();
-      const newCloudStorageConfigs = cloudStorageConfigs.map((cs) => ({
-        ...cs,
-        saveCredentials: saveCredentials,
-      }));
-      onStart([...noCredentialsConfigs, ...newCloudStorageConfigs]);
+      onStart([...noCredentialsConfigs, ...cloudStorageConfigs]);
     }
   }, [
     cloudStorageConfigs,
@@ -365,7 +341,6 @@ export default function SessionStartCloudStorageSecretsModal({
     noCredentialsConfigs,
     onStart,
     resetForm,
-    saveCredentials,
     validationResult,
   ]);
 
@@ -390,6 +365,11 @@ export default function SessionStartCloudStorageSecretsModal({
 
       const config = { ...cloudStorageConfigs[index] };
       const sensitiveFieldValues = { ...config.sensitiveFieldValues };
+      const { saveCredentials } = options;
+      if (saveCredentials === true || saveCredentials === false) {
+        config.saveCredentials = saveCredentials;
+        delete options.saveCredentials;
+      }
       if (options && Object.keys(options).length > 0) {
         Object.entries(options).forEach(([key, value]) => {
           if (value != undefined && value !== "") {
@@ -413,15 +393,6 @@ export default function SessionStartCloudStorageSecretsModal({
     },
     [cloudStorageConfigs, index, validateCloudStorageConnection]
   );
-
-  const onSaveAndStart = useCallback(() => {
-    setSaveCredentials(true);
-    onNext();
-  }, [onNext]);
-  const onStartWithoutSaving = useCallback(() => {
-    setSaveCredentials(false);
-    onNext();
-  }, [onNext]);
 
   useEffect(() => {
     if (cloudStorageConfigs == null) return;
@@ -457,28 +428,21 @@ export default function SessionStartCloudStorageSecretsModal({
         onSubmit={handleSubmit(onContinue)}
       >
         <ModalBody className="pt-0">
-          {modalState === ModelFlowState.PROMPT_CREDENTIALS && (
-            <>
-              <CloudStorageConfigurationSecrets
-                cloudStorageConfig={cloudStorageConfigs[index]}
-                control={control}
-              />
+          <CloudStorageConfigurationSecrets
+            cloudStorageConfig={cloudStorageConfigs[index]}
+            control={control}
+          />
 
-              <div className="mt-3">
-                {validationResult.isError ? (
-                  <div className="text-danger">
-                    The data source could not be mounted. Please retry with
-                    different credentials, or skip.
-                  </div>
-                ) : (
-                  <div>&nbsp;</div>
-                )}
+          <div className="mt-3">
+            {validationResult.isError ? (
+              <div className="text-danger">
+                The data source could not be mounted. Please retry with
+                different credentials, or skip.
               </div>
-            </>
-          )}
-          {modalState === ModelFlowState.PROMPT_SAVE_CREDENTIALS && (
-            <CloudStorageConfigurationSaveCredentials />
-          )}
+            ) : (
+              <div>&nbsp;</div>
+            )}
+          </div>
         </ModalBody>
         <ModalFooter className={cx("d-flex", "align-items-baseline", "pt-0")}>
           <div className="flex-grow-1">
@@ -489,19 +453,11 @@ export default function SessionStartCloudStorageSecretsModal({
               setIndex={setIndex}
             />
           </div>
-          {modalState === ModelFlowState.PROMPT_CREDENTIALS && (
-            <CredentialsButtons
-              onCancel={onCancel}
-              onSkip={onSkip}
-              validationResult={validationResult}
-            />
-          )}
-          {modalState === ModelFlowState.PROMPT_SAVE_CREDENTIALS && (
-            <SaveCredentialsButton
-              onSaveAndStart={onSaveAndStart}
-              onStartWithoutSaving={onStartWithoutSaving}
-            />
-          )}
+          <CredentialsButtons
+            onCancel={onCancel}
+            onSkip={onSkip}
+            validationResult={validationResult}
+          />
         </ModalFooter>
       </Form>
     </Modal>

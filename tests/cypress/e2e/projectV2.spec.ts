@@ -843,17 +843,15 @@ describe("launch sessions with cloud storage", () => {
     cy.getDataCy("session-cloud-storage-credentials-modal")
       .find("#secret_access_key")
       .type("secret key");
+    cy.get("#saveCredentials").click();
     cy.getDataCy("session-cloud-storage-credentials-modal")
       .contains("Continue")
       .click();
     cy.wait("@testCloudStorage");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("Save and Start")
-      .click();
     cy.contains("Saving credentials...").should("be.visible");
     cy.wait("@postCloudStorageSecrets");
-    // cy.wait("@createSession");
-    // cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
   it("launch session with data source requiring multiple credentials", () => {
