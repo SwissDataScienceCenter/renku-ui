@@ -24,9 +24,10 @@ import {
   CodeSquare,
   DashCircleFill,
   Database,
+  ExclamationTriangleFill,
   Globe2,
   Link45deg,
-  PencilSquare,
+  PencilFill,
 } from "react-bootstrap-icons";
 import {
   Button,
@@ -36,9 +37,11 @@ import {
   Offcanvas,
   OffcanvasBody,
   Row,
+  UncontrolledTooltip,
 } from "reactstrap";
 
 import { TimeCaption } from "../../../components/TimeCaption";
+import buttonStyles from "../../../components/buttons/Buttons.module.scss";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
@@ -48,7 +51,6 @@ import { SessionRowResourceRequests } from "../../session/components/SessionsLis
 import { Session, Sessions } from "../../session/sessions.types";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
-import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
   SessionBadge,
@@ -59,7 +61,14 @@ import {
 import sessionsV2Api from "../sessionsV2.api";
 import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
 
-import buttonStyles from "../../../components/buttons/Buttons.module.scss";
+import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
+import {
+  useGetResourceClassByIdQuery,
+  useGetResourcePoolsQuery,
+} from "../../dataServices/computeResources.api";
+import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
+import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import sessionViewStyles from "./SessionView.module.scss";
 
 function SessionCard({
@@ -110,7 +119,7 @@ function SessionCard({
           <Col xs={12} className={cx("d-flex", "align-items-center", "py-2")}>
             <SessionStatusV2Description session={session} />
           </Col>
-          <Col xs={12} className={cx("d-flex", "align-items-center", "py-2")}>
+          <Col xs={12} className={cx("py-2")}>
             <SessionRowResourceRequests
               resourceRequests={session.resources.requests}
             />
@@ -202,10 +211,6 @@ function EnvironmentCard({
   launcher: SessionLauncher;
   environment?: SessionEnvironment;
 }) {
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const toggle = useCallback(() => {
-    setIsUpdateOpen((open) => !open);
-  }, []);
   return (
     <>
       <Card className={cx("border", sessionViewStyles.EnvironmentCard)}>
@@ -220,25 +225,14 @@ function EnvironmentCard({
                 "py-2"
               )}
             >
-              <h5 className="fw-bold mb-0">
-                <small>
-                  {launcher.environment_kind === "global_environment"
-                    ? environment?.name || ""
-                    : launcher.name}
-                </small>
-              </h5>
-              <div>
-                <Button
-                  className={cx(
-                    "bg-transparent",
-                    "shadow-none",
-                    "border-0",
-                    buttonStyles.EditButton
-                  )}
-                  onClick={toggle}
-                >
-                  <PencilSquare size={22} />
-                </Button>
+              <div className={cx("d-flex", "gap-3")}>
+                <h5 className={cx("fw-bold", "mb-0")}>
+                  <small>
+                    {launcher.environment_kind === "global_environment"
+                      ? environment?.name || ""
+                      : launcher.name}
+                  </small>
+                </h5>
               </div>
             </Col>
             <Col
@@ -328,11 +322,6 @@ function EnvironmentCard({
           </Row>
         </CardBody>
       </Card>
-      <UpdateSessionLauncherModal
-        isOpen={isUpdateOpen}
-        launcher={launcher}
-        toggle={toggle}
-      />
     </>
   );
 }
@@ -350,6 +339,17 @@ export function SessionView({
   toggleSessionView,
   project,
 }: SessionViewProps) {
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsUpdateOpen((open) => !open);
+  }, []);
+  const toggleModifyResources = useCallback(() => {
+    setModifyResourcesOpen((open) => !open);
+  }, []);
+  const { data: members } = useGetProjectsByProjectIdMembersQuery({
+    projectId: project.id,
+  });
   const { data: environments, isLoading } =
     sessionsV2Api.endpoints.getSessionEnvironments.useQueryState(
       launcher && launcher.environment_kind === "global_environment"
@@ -368,6 +368,12 @@ export function SessionView({
     projectId: project.id,
   });
 
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const {
+    data: launcherResourceClass,
+    isLoading: isLoadingLauncherResourceClass,
+  } = useGetResourceClassByIdQuery(launcher?.resource_class_id ?? skipToken);
+
   const totalSession = sessions ? Object.keys(sessions).length : 0;
   const title = launcher ? launcher.name : "Orphan Session";
   const launcherMenu = launcher && (
@@ -384,6 +390,29 @@ export function SessionView({
     : sessions && Object.keys(sessions).length > 0
     ? Object.keys(sessions)[0]
     : "nn";
+
+  const userLauncherResourceClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == launcher?.resource_class_id),
+    [launcher, resourcePools]
+  );
+
+  const resourceDetails =
+    !isLoadingLauncherResourceClass && launcherResourceClass ? (
+      <SessionRowResourceRequests
+        resourceRequests={{
+          name: launcherResourceClass.name,
+          cpu: launcherResourceClass.cpu,
+          memory: `${launcherResourceClass.memory}G`,
+          storage: `${launcherResourceClass.max_storage}G`,
+          gpu: launcherResourceClass.gpu,
+        }}
+      />
+    ) : (
+      <p>This session launcher does not have a default resource class.</p>
+    );
 
   return (
     <Offcanvas
@@ -437,10 +466,95 @@ export function SessionView({
         )}
         {launcher && !isLoading && (
           <>
-            <h5 className={cx("mt-5", "fw-bold")}>Session Environment</h5>
+            <div className="mt-5 d-flex gap-2 align-items-center mb-3">
+              <h5 className={cx("fw-bold", "mb-0")}>Session Environment</h5>
+              <MembershipGuard
+                disabled={null}
+                enabled={
+                  <>
+                    <Button
+                      className={cx(
+                        "bg-transparent",
+                        "shadow-none",
+                        "border-0",
+                        "px-1",
+                        buttonStyles.EditButton
+                      )}
+                      onClick={toggle}
+                      tabIndex={0}
+                      id="modify-session-environment-button"
+                    >
+                      <PencilFill size={20} />
+                    </Button>
+                    <UncontrolledTooltip target="modify-session-environment-button">
+                      Modify session environment
+                    </UncontrolledTooltip>
+                  </>
+                }
+                members={members}
+                minimumRole="editor"
+              />
+            </div>
             <EnvironmentCard launcher={launcher} environment={environment} />
+            <UpdateSessionLauncherModal
+              isOpen={isUpdateOpen}
+              launcher={launcher}
+              toggle={toggle}
+            />
           </>
         )}
+        <>
+          <div
+            className={cx(
+              "mt-5",
+              "d-flex",
+              "gap-2",
+              "align-items-center",
+              "mb-3"
+            )}
+          >
+            <h5 className={cx("fw-bold", "mb-0")}>Default Resource Class</h5>
+            <MembershipGuard
+              disabled={null}
+              enabled={
+                <>
+                  <Button
+                    className={cx(
+                      "bg-transparent",
+                      "shadow-none",
+                      "border-0",
+                      "px-1",
+                      buttonStyles.EditButton
+                    )}
+                    onClick={toggleModifyResources}
+                    tabIndex={0}
+                    id="modify-resource-class-button"
+                  >
+                    <PencilFill size={20} />
+                  </Button>
+                  <UncontrolledTooltip target="modify-resource-class-button">
+                    Set resource class
+                  </UncontrolledTooltip>
+                </>
+              }
+              members={members}
+              minimumRole="editor"
+            />
+          </div>
+          {resourceDetails}
+          {launcherResourceClass && !userLauncherResourceClass && (
+            <p>
+              <ExclamationTriangleFill className={cx("bi", "text-warning")} />{" "}
+              You do not have access to this resource class.
+            </p>
+          )}
+          <ModifyResourcesLauncherModal
+            isOpen={isModifyResourcesOpen}
+            toggleModal={toggleModifyResources}
+            resourceClassId={userLauncherResourceClass?.id}
+            sessionLauncherId={launcher?.id}
+          />
+        </>
         <h5 className={cx("mt-5", "fw-bold")}>Session Launcher Details</h5>
         <div className="mt-3">
           <label className="fw-bold">Default URL</label>

@@ -20,10 +20,11 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 
 import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
+import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
+import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import {
@@ -49,7 +50,6 @@ import {
 import { startSessionOptionsSlice } from "../../startSessionOptionsSlice";
 import { useProjectSessions } from "../ProjectSessionsList";
 import SessionDockerImage from "./SessionDockerImage";
-import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 
 export default function AutostartSessionOptions() {
   useAutostartSessionOptions();

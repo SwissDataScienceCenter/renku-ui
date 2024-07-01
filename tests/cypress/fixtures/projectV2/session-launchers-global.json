@@ -5,6 +5,7 @@
     "name": "Jupyter Notebook",
     "creation_date": "2024-05-24T08:18:15Z",
     "environment_kind": "global_environment",
-    "environment_id": "01HYMSPE2D9K4Q3WAME1NN4244"
+    "environment_id": "01HYMSPE2D9K4Q3WAME1NN4244",
+    "resource_class_id": 2
   }
 ]
