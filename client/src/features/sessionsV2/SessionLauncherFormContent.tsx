@@ -33,6 +33,7 @@ import {
   CardText,
   CardTitle,
   Col,
+  Collapse,
   Input,
   Label,
   Row,
@@ -44,7 +45,7 @@ import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
 import { EnvironmentKind, SessionEnvironment } from "./sessionsV2.types";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { SingleValue } from "react-select";
 import { WarnAlert } from "../../components/Alert.jsx";
 import rkIconGlobalEnv from "../../styles/assets/globalEnvironment.svg";
@@ -56,22 +57,32 @@ import {
 import { SessionClassSelector } from "../session/components/options/SessionClassOption";
 import styles from "./SessionLauncherForm.module.scss";
 import sessionViewStyles from "./SessionView/SessionView.module.scss";
+import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon.tsx";
 
 export interface SessionLauncherForm {
   name: string;
+  container_image: string;
   description: string;
+  default_url: string;
   environment_kind: EnvironmentKind;
   environment_id: string;
-  container_image: string;
-  default_url: string;
   resourceClass: ResourceClass;
+}
+export interface CustomSessionLauncherForm extends SessionLauncherForm {
+  port: number;
+  workingDirectory: string;
+  uid: number;
+  gid: number;
+  mountDirectory: string;
+  ssh: boolean;
+  sshPort: number;
 }
 
 /* Edit session launcher */
 interface SessionLauncherFormContentProps {
-  control: Control<SessionLauncherForm, unknown>;
-  errors: FieldErrors<SessionLauncherForm>;
-  watch: UseFormWatch<SessionLauncherForm>;
+  control: Control<SessionLauncherForm | CustomSessionLauncherForm, unknown>;
+  errors: FieldErrors<CustomSessionLauncherForm>;
+  watch: UseFormWatch<SessionLauncherForm | CustomSessionLauncherForm>;
   touchedFields: Partial<
     Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
   >;
@@ -282,9 +293,9 @@ export default function SessionLauncherFormContent({
 
 /* Add custom session launcher */
 interface CustomEnvFormContentProps {
-  control: Control<SessionLauncherForm, unknown>;
-  errors: FieldErrors<SessionLauncherForm>;
-  setValue: UseFormSetValue<SessionLauncherForm>;
+  control: Control<CustomSessionLauncherForm, unknown>;
+  errors: FieldErrors<CustomSessionLauncherForm>;
+  setValue: UseFormSetValue<CustomSessionLauncherForm>;
 }
 export function CustomEnvFormContent({
   control,
@@ -293,7 +304,12 @@ export function CustomEnvFormContent({
 }: CustomEnvFormContentProps) {
   const { data: resourcePools, isLoading: isLoadingResourcesPools } =
     useGetResourcePoolsQuery({});
-
+  const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
+  const toggleIsOpen = useCallback(
+    () =>
+      setIsAdvanceSettingsOpen((isAdvanceSettingOpen) => !isAdvanceSettingOpen),
+    []
+  );
   const onChangeResourceClass = (resourceClass: SingleValue<ResourceClass>) => {
     if (resourceClass) setValue("resourceClass", resourceClass);
   };
@@ -362,24 +378,185 @@ export function CustomEnvFormContent({
                 Please provide a container image
               </div>
             </div>
-            <div className={cx("mb-0")}>
-              <Label className="form-label" for="addSessionLauncherDefaultUrl">
-                Default URL (Optional)
-              </Label>
-              <Controller
-                control={control}
-                name="default_url"
-                render={({ field }) => (
-                  <Input
-                    className="form-control"
-                    id="addSessionLauncherDefaultUrl"
-                    placeholder="/lab"
-                    type="text"
-                    {...field}
-                  />
-                )}
-              />
+            <div className="ms-auto">
+              <span onClick={toggleIsOpen}>
+                Advance settings{" "}
+                <ChevronFlippedIcon flipped={isAdvanceSettingOpen} />
+              </span>
             </div>
+            <Collapse isOpen={isAdvanceSettingOpen}>
+              <div className={cx("mb-0")}>
+                <Label
+                  className="form-label"
+                  for="addSessionLauncherDefaultUrl"
+                >
+                  Default URL (Optional)
+                </Label>
+                <Controller
+                  control={control}
+                  name="default_url"
+                  render={({ field }) => (
+                    <Input
+                      className="form-control"
+                      id="addSessionLauncherDefaultUrl"
+                      placeholder="/lab"
+                      type="text"
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+              <div className={cx("mb-5")}>
+                <Label className="form-label" for="addSessionLauncherPort">
+                  Port
+                </Label>
+                <Controller
+                  control={control}
+                  name="port"
+                  rules={{ required: false }}
+                  render={({ field }) => (
+                    <Input
+                      className={cx(errors.port && "is-invalid")}
+                      id="addSessionLauncherPort"
+                      placeholder="Port"
+                      type="number"
+                      data-cy="custom-launcher-port"
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+              <div className={cx("mb-5")}>
+                <Label
+                  className="form-label"
+                  for="addSessionLauncherWorkingDirectory"
+                >
+                  Working Directory
+                </Label>
+                <Controller
+                  control={control}
+                  name="workingDirectory"
+                  rules={{ required: false }}
+                  render={({ field }) => (
+                    <Input
+                      className={cx(errors.workingDirectory && "is-invalid")}
+                      id="addSessionLauncherWorkingDirectory"
+                      placeholder=""
+                      type="text"
+                      data-cy="custom-launcher-working-directory"
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+              <div className={cx("mb-5")}>
+                <div>
+                  <Label className="form-label" for="addSessionLauncherUID">
+                    Port
+                  </Label>
+                  <Controller
+                    control={control}
+                    name="uid"
+                    rules={{ required: false }}
+                    render={({ field }) => (
+                      <Input
+                        className={cx(errors.uid && "is-invalid")}
+                        id="addSessionLauncherUID"
+                        placeholder="Enter a numeric User ID (UID)"
+                        type="number"
+                        data-cy="custom-launcher-uid"
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+                <div>
+                  <Label className="form-label" for="addSessionLauncherGID">
+                    Port
+                  </Label>
+                  <Controller
+                    control={control}
+                    name="gid"
+                    rules={{ required: false }}
+                    render={({ field }) => (
+                      <Input
+                        className={cx(errors.gid && "is-invalid")}
+                        id="addSessionLauncherGID"
+                        placeholder="Enter a numeric Group ID (GID)"
+                        type="number"
+                        data-cy="custom-launcher-gid"
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+              <div className={cx("mb-5")}>
+                <Label
+                  className="form-label"
+                  for="addSessionLauncherMountDirectory"
+                >
+                  Port
+                </Label>
+                <Controller
+                  control={control}
+                  name="mountDirectory"
+                  rules={{ required: false }}
+                  render={({ field }) => (
+                    <Input
+                      className={cx(errors.mountDirectory && "is-invalid")}
+                      id="addSessionLauncherMountDirectory"
+                      placeholder=""
+                      type="text"
+                      data-cy="custom-launcher-mount-directory"
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+              <div className={cx("mb-5")}>
+                <div>
+                  <Label className="form-label" for="addSessionLauncherSSH">
+                    SSH
+                  </Label>
+                  <Controller
+                    control={control}
+                    name="ssh"
+                    rules={{ required: false }}
+                    render={({ field }) => (
+                      <Input
+                        className={cx(errors.ssh && "is-invalid")}
+                        id="addSessionLauncherSSH"
+                        type="switch"
+                        data-cy="custom-launcher-ssh"
+                        checked={field.value}
+                        role="switch"
+                      />
+                    )}
+                  />
+                </div>
+                <div>
+                  <Label className="form-label" for="addSessionLauncherSSHPort">
+                    SSH
+                  </Label>
+                  <Controller
+                    control={control}
+                    name="sshPort"
+                    rules={{ required: false }}
+                    render={({ field }) => (
+                      <Input
+                        className={cx(errors.sshPort && "is-invalid")}
+                        id="addSessionLauncherSSHPort"
+                        placeholder="SSH Port"
+                        type="number"
+                        data-cy="custom-launcher-port"
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+            </Collapse>
           </CardBody>
         </Card>
       </div>
