@@ -48,6 +48,11 @@ export type SessionLauncherEnvironment =
   | {
       environment_kind: Extract<EnvironmentKind, "container_image">;
       container_image: string;
+      port?: number;
+      workingDirectory?: string;
+      uid?: number;
+      gid?: number;
+      mountDirectory?: string;
     };
 
 export type SessionLauncherList = SessionLauncher[];

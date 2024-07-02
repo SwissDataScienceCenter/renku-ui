@@ -17,14 +17,8 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  CheckLg,
-  InfoCircleFill,
-  KeyFill,
-  TrashFill,
-  XLg,
-} from "react-bootstrap-icons";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { CheckLg, KeyFill, TrashFill, XLg } from "react-bootstrap-icons";
 import {
   Button,
   Card,
@@ -35,22 +29,21 @@ import {
   ModalBody,
   ModalFooter,
   PopoverBody,
-  UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
+import { MoreInfo } from "../../../../components/MoreInfo.tsx";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { StateModelProject } from "../../project.types";
+import { getCredentialFieldDefinitions } from "../../utils/projectCloudStorage.utils";
+import AddOrEditCloudStorageButton from "./AddOrEditCloudStorageButton";
 import { useDeleteCloudStorageMutation } from "./projectCloudStorage.api";
 import {
   CloudStorage,
   CloudStorageConfiguration,
 } from "./projectCloudStorage.types";
-import { getCredentialFieldDefinitions } from "../../utils/projectCloudStorage.utils";
-import AddOrEditCloudStorageButton from "./AddOrEditCloudStorageButton";
 
 interface CloudStorageItemProps {
   children?: React.ReactNode;
@@ -256,7 +249,7 @@ function CloudStorageDetails({
                 {requiredCredentials.map(({ name, help }, index) => (
                   <li key={index}>
                     {name}
-                    <CredentialMoreInfo help={help} />
+                    <MoreInfo help={help} />
                   </li>
                 ))}
               </ul>
@@ -289,23 +282,6 @@ function CloudStorageDetails({
           />
         </section>
       )}
-    </>
-  );
-}
-
-export function CredentialMoreInfo({ help }: { help: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-
-  return (
-    <>
-      <span ref={ref}>
-        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
-      </span>
-      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
-        <PopoverBody>
-          <LazyRenkuMarkdown markdownText={help} />
-        </PopoverBody>
-      </UncontrolledPopover>
     </>
   );
 }

@@ -37,6 +37,7 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
   CustomEnvFormContent,
+  CustomSessionLauncherForm,
   ExistingEnvFormContent,
   SessionLauncherForm,
 } from "../../SessionLauncherFormContent";
@@ -66,7 +67,7 @@ function AddSessionCustomImageModal({
     handleSubmit,
     reset,
     setValue,
-  } = useForm<SessionLauncherForm, unknown>({
+  } = useForm<CustomSessionLauncherForm, unknown>({
     defaultValues: {
       name: "",
       environment_kind: "container_image",
@@ -75,7 +76,7 @@ function AddSessionCustomImageModal({
     },
   });
   const onSubmit = useCallback(
-    (data: SessionLauncherForm) => {
+    (data: CustomSessionLauncherForm) => {
       const { default_url, name } = data;
       const environment: SessionLauncherEnvironment = {
         environment_kind: "container_image",
@@ -83,7 +84,7 @@ function AddSessionCustomImageModal({
       };
       addSessionLauncher({
         project_id: projectId ?? "",
-        resource_class_id: data.resourceClass.id,
+        // resource_class_id: data.resourceClass.id, TODO ANDREA: Uncomment this
         name,
         default_url: default_url.trim() ? default_url : undefined,
         ...environment,
@@ -189,14 +190,15 @@ function AddSessionExistingEnvModal({
   });
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
-      const { default_url, name, resourceClass } = data;
+      // const { default_url, name, resourceClass } = data; TODO ANDREA: uncomment this
+      const { default_url, name } = data;
       const environment: SessionLauncherEnvironment = {
         environment_kind: "global_environment",
         environment_id: data.environment_id,
       };
       addSessionLauncher({
         project_id: projectId ?? "",
-        resource_class_id: resourceClass.id,
+        // resource_class_id: resourceClass.id, TODO ANDREA: uncomment this
         name,
         default_url: default_url.trim() ? default_url : undefined,
         ...environment,

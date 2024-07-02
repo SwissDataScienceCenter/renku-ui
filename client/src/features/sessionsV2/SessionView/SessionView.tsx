@@ -45,7 +45,6 @@ import {
 
 import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
-import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetStoragesV2Query } from "../../projectsV2/api/storagesV2.api";
@@ -61,7 +60,7 @@ import {
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import sessionsV2Api from "../sessionsV2.api";
-import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
+import { SessionLauncher } from "../sessionsV2.types";
 
 import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
 import {
@@ -71,6 +70,7 @@ import {
 import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
+import { EnvironmentCard } from "./EnvironmentCard";
 
 interface SessionCardContentProps {
   color: string;
