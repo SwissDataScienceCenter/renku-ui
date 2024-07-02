@@ -20,6 +20,7 @@ import { ReactNode, useMemo, useState } from "react";
 import {
   Clock,
   DashCircleFill,
+  InfoCircleFill,
   LayoutSidebarInsetReverse,
 } from "react-bootstrap-icons";
 import { Col, Row } from "reactstrap";
@@ -50,24 +51,22 @@ export function SessionNameBox({
   handler: () => void;
 }) {
   return (
-    <Col
-      xl={3}
-      sm={6}
-      xs={12}
+    <div
       className={cx(
-        "d-flex",
-        "align-items-center",
-        "gap-2",
-        "fw-bold",
-        "cursor-pointer",
-        "ps-sm-3",
-        "ps-xl-4",
-        sessionItemStyles.ItemDisplaySessionName
+        "cursor-pointer"
+        // "d-flex",
+        // "align-items-center",
+        // "gap-2",
+        // "fw-bold",
+        // "cursor-pointer",
+        // "ps-sm-3",
+        // "ps-xl-4",
+        // sessionItemStyles.ItemDisplaySessionName
       )}
       onClick={() => handler()}
     >
       {children}
-    </Col>
+    </div>
   );
 }
 export function SessionStatusBadgeBox({ children }: { children: ReactNode }) {
@@ -179,44 +178,76 @@ export function SessionItemDisplay({
 
   return (
     <>
+      <li className={cx("list-group-item", "d-flex", "align-items-center")}>
+        <h1>OUTSIDE</h1>
+        <div
+          className={cx("cursor-pointer", "link-primary")}
+          onClick={() => toggleSessionDetails()}
+        >
+          <InfoCircleFill className={cx("me-2", "text-icon")} />
+          <span className="fw-bold" data-cy="session-name">
+            {name}
+          </span>
+        </div>
+        <div></div>
+      </li>
       {filteredSessionsLength > 0 ? (
         Object.entries(filteredSessions).map(([key, session]) => (
-          <Row
-            key={`session-item-${key}`}
-            className={cx(
-              "px-0",
-              "py-4",
-              "py-xl-3",
-              "m-0",
-              sessionItemStyles.ItemDisplaySessionRow
-            )}
-            data-cy="session-launcher-item"
-          >
-            <SessionNameBox handler={() => toggleSessionDetails()}>
-              <LayoutSidebarInsetReverse
-                className={cx("flex-shrink-0", "me-0")}
-                size="20"
-              />
-              <span className={cx("text-truncate")} data-cy="session-name">
-                {name}
-              </span>
-            </SessionNameBox>
-            <SessionStatusBadgeBox>
-              <SessionStatusV2Label key={key} session={session} />
-            </SessionStatusBadgeBox>
-            <SessionStatusLabelBox>
-              <SessionStatusV2Description key={key} session={session} />
-            </SessionStatusLabelBox>
-            <SessionBtnBox>
-              <ActiveSessionButton
-                session={session}
-                showSessionUrl={getShowSessionUrlByProject(
-                  project,
-                  session.name
-                )}
-              />
-            </SessionBtnBox>
-          </Row>
+          <>
+            {/* <li
+              className={cx("list-group-item", "d-flex", "align-items-center")}
+            >
+              
+              <div
+                className={cx("cursor-pointer", "link-primary")}
+                onClick={() => toggleSessionDetails()}
+              >
+                <InfoCircleFill className={cx("me-2", "text-icon")} />
+                <span className="fw-bold" data-cy="session-name">
+                  {name}
+                </span>
+              </div>
+              <div></div>
+            </li> */}
+
+            <Row
+              key={`session-item-${key}`}
+              className={cx(
+                "px-0",
+                "py-4",
+                "py-xl-3",
+                "m-0",
+                sessionItemStyles.ItemDisplaySessionRow
+              )}
+              data-cy="session-launcher-item"
+            >
+              <h1>INSIDE - FILTERED</h1>
+              <SessionNameBox handler={() => toggleSessionDetails()}>
+                <LayoutSidebarInsetReverse
+                  className={cx("flex-shrink-0", "me-0")}
+                  size="20"
+                />
+                <span className={cx("text-truncate")} data-cy="session-name">
+                  {name}
+                </span>
+              </SessionNameBox>
+              <SessionStatusBadgeBox>
+                <SessionStatusV2Label key={key} session={session} />
+              </SessionStatusBadgeBox>
+              <SessionStatusLabelBox>
+                <SessionStatusV2Description key={key} session={session} />
+              </SessionStatusLabelBox>
+              <SessionBtnBox>
+                <ActiveSessionButton
+                  session={session}
+                  showSessionUrl={getShowSessionUrlByProject(
+                    project,
+                    session.name
+                  )}
+                />
+              </SessionBtnBox>
+            </Row>
+          </>
         ))
       ) : (
         <Row
@@ -229,6 +260,7 @@ export function SessionItemDisplay({
           )}
           data-cy="session-launcher-item"
         >
+          <h1>INSIDE - OTHERS</h1>
           <SessionNameBox handler={() => toggleSessionDetails()}>
             <LayoutSidebarInsetReverse
               className={cx("flex-shrink-0", "me-0")}

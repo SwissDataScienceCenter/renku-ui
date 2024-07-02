@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import {
   Outlet,
   useOutletContext,
@@ -31,8 +30,6 @@ import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/proj
 import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
-
-import styles from "./ProjectPageContainer.module.scss";
 
 export default function ProjectPageContainer() {
   const { namespace, slug } = useParams<{
@@ -58,7 +55,7 @@ export default function ProjectPageContainer() {
           <ProjectPageHeader project={data} />
         </Col>
         <Col xs={12}>
-          <div>
+          <div className="mb-3">
             <ProjectPageNav project={data} />
           </div>
         </Col>

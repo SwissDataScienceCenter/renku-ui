@@ -17,20 +17,15 @@
  */
 import cx from "classnames";
 import { EyeFill, Folder2Open, PencilSquare } from "react-bootstrap-icons";
-import { generatePath, useMatch } from "react-router-dom-v5-compat";
-import { Nav, NavItem, NavLink } from "reactstrap";
+import { generatePath } from "react-router-dom-v5-compat";
+import { Nav, NavItem } from "reactstrap";
 
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { Project } from "../../projectsV2/api/projectV2.api";
-import AccessGuard from "../utils/AccessGuard";
-import useProjectAccess from "../utils/useProjectAccess.hook";
-
-import styles from "./ProjectPageNav.module.scss";
 
 export default function ProjectPageNav({ project }: { project: Project }) {
   const { namespace = "", slug = "" } = project;
-  const { userRole } = useProjectAccess({ projectId: project.id });
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace,
     slug,
@@ -46,22 +41,6 @@ export default function ProjectPageNav({ project }: { project: Project }) {
     namespace,
     slug,
   });
-
-  const isSettings = useMatch(projectSettingsUrl);
-
-  const navLinkClasses = [
-    "p-0",
-    "mb-1",
-    "text-center",
-    "text-lg-start",
-    "d-flex",
-    "flex-column",
-    "flex-lg-row",
-    "align-items-center",
-    "align-items-lg-start",
-    "gap-2",
-    "fs-small",
-  ];
 
   return (
     <>
@@ -85,58 +64,6 @@ export default function ProjectPageNav({ project }: { project: Project }) {
           </RenkuNavLinkV2>
         </NavItem>
       </Nav>
-      {isSettings && (
-        <Nav className="d-none d-lg-flex">
-          <NavItem>
-            <NavLink
-              href="#general"
-              className={cx(
-                navLinkClasses,
-                "mb-2",
-                "ps-2",
-                "ms-2",
-                styles.navLink
-              )}
-            >
-              General
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              href="#members"
-              className={cx(
-                navLinkClasses,
-                "mb-2",
-                "ms-2",
-                "ps-2",
-                styles.navLink
-              )}
-            >
-              Members
-            </NavLink>
-          </NavItem>
-          <AccessGuard
-            disabled={null}
-            enabled={
-              <NavItem>
-                <NavLink
-                  href="#delete"
-                  className={cx(
-                    navLinkClasses,
-                    "mb-2",
-                    "ms-2",
-                    "ps-2",
-                    styles.navLink
-                  )}
-                >
-                  Delete
-                </NavLink>
-              </NavItem>
-            }
-            role={userRole}
-          />
-        </Nav>
-      )}
     </>
   );
 }

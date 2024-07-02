@@ -62,7 +62,7 @@ import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
 import UnsavedWorkWarning from "../../../session/components/UnsavedWorkWarning";
-import { SessionClassSelector } from "../../../session/components/options/SessionClassOption";
+import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
@@ -600,7 +600,7 @@ function ModifySessionModalContent({
   ) : !resourcePools || resourcePools.length == 0 || isError ? (
     <ErrorOrNotAvailableResourcePools />
   ) : (
-    <SessionClassSelector
+    <SessionClassSelectorV2
       resourcePools={resourcePools}
       currentSessionClass={currentSessionClass}
       onChange={onChange}

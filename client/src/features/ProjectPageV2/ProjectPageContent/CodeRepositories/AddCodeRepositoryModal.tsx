@@ -42,7 +42,6 @@ import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
 import stylesButton from "../../../../components/buttons/Buttons.module.scss";
-import styles from "../ProjectOverview/ProjectOverview.module.scss";
 
 interface AddCodeRepositoryModalProps {
   project: Project;
@@ -89,7 +88,7 @@ export function AddCodeRepositoryStep1Modal({
                   "my-2",
                   "py-3",
                   "border-black",
-                  styles.BorderDashed,
+                  // styles.BorderDashed,
                   stylesButton.EmptyButton
                 )}
                 data-cy="add-existing-repository-button"
@@ -111,7 +110,7 @@ export function AddCodeRepositoryStep1Modal({
                   "my-2",
                   "py-3",
                   "border-black",
-                  styles.BorderDashed,
+                  // styles.BorderDashed,
                   stylesButton.EmptyButton
                 )}
               >
