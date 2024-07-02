@@ -58,7 +58,6 @@ function GeneralSecretSection() {
   );
 }
 
-
 function StorageSecretSection() {
   return (
     <>
@@ -82,7 +81,6 @@ function StorageSecretSection() {
     </>
   );
 }
-
 
 function SecretsPageInfo() {
   return (

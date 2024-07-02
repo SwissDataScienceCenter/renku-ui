@@ -32,6 +32,7 @@ export interface SessionStartCloudStorageConfiguration {
   }[];
   sensitiveFieldValues: Record<string, string>;
   saveCredentials: boolean;
+  savedCredentialFields: string[];
 }
 
 export interface StartSessionOptionsV2 {

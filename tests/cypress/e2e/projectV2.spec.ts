@@ -765,14 +765,11 @@ describe("launch sessions with cloud storage", () => {
       .contains("Continue")
       .click();
     cy.wait("@testCloudStorage");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("Just Start")
-      .click();
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
-  it("launch session with data source. saving credentials", () => {
+  it("launch session with data source, saving credentials", () => {
     fixtures
       .testCloudStorage()
       .sessionServersEmpty()
@@ -782,6 +779,9 @@ describe("launch sessions with cloud storage", () => {
         isV2: true,
         fixture: "cloudStorage/cloud-storage-with-secrets.json",
         name: "getCloudStorageV2",
+      })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets-empty.json",
       });
     fixtures.sessionLaunchers({
       fixture: "projectV2/session-launchers.json",
@@ -850,6 +850,62 @@ describe("launch sessions with cloud storage", () => {
     cy.wait("@testCloudStorage");
     cy.contains("Saving credentials...").should("be.visible");
     cy.wait("@postCloudStorageSecrets");
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+  });
+
+  it("launch session with saved credentials", () => {
+    fixtures
+      .testCloudStorage()
+      .sessionServersEmpty()
+      .sessionImage()
+      .resourcePoolsTest()
+      .cloudStorage({
+        isV2: true,
+        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        name: "getCloudStorageV2",
+      })
+      .cloudStorageSecrets();
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers.json",
+      name: "session-launchers-custom",
+    });
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getSessionServers");
+    cy.wait("@sessionLaunchers");
+
+    // start session
+    fixtures.postCloudStorageSecrets({
+      content: [
+        {
+          name: "access_key_id",
+          value: "access key",
+        },
+        {
+          name: "secret_access_key",
+          value: "secret key",
+        },
+      ],
+    });
+
+    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
+        const csConfig = req.body.cloudstorage;
+        expect(csConfig.length).equal(1);
+        const storage = csConfig[0];
+        expect(storage.configuration).to.not.have.property("access_key_id");
+        expect(storage.configuration).to.not.have.property("secret_access_key");
+        req.reply({ body: sessions[0] });
+      }).as("createSession");
+    });
+
+    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item").within(() => {
+      cy.getDataCy("start-session-button").click();
+    });
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });

@@ -277,6 +277,13 @@ function doesCloudStorageNeedCredentials(
   config: SessionStartCloudStorageConfiguration
 ) {
   if (config.active === false) return false;
+  const sensitiveFields = Object.keys(config.sensitiveFieldValues);
+  if (
+    sensitiveFields.every((key) =>
+      config.savedCredentialFields.find((field) => key === field)
+    )
+  )
+    return false;
   return Object.values(config.sensitiveFieldValues).some(
     (value) => value === ""
   );
@@ -349,7 +356,6 @@ function StartSessionWithCloudStorageModal({
     navigate(url);
   }, [navigate, project.namespace, project.slug]);
 
-  // TODO If the credentials are all stored as secrets, we can also launch
   if (cloudStorageConfigs.length === 0) {
     return (
       <SessionStarting
