@@ -215,10 +215,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/CloudStorageSecretPost"
-                }
+                "$ref": "#/components/schemas/CloudStorageSecretPostList"
               }
             }
           }
@@ -759,6 +756,13 @@
           }
         },
         "required": ["name", "value"]
+      },
+      "CloudStorageSecretPostList": {
+        "description": "List of storage secrets that are saved",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CloudStorageSecretPost"
+        }
       },
       "CloudStorageSecretGetList": {
         "description": "List of storage secrets that are saved",

@@ -106,10 +106,12 @@ function SaveCloudStorage({
     const storage = credentialsToSave[index];
     saveCredentials({
       storageId: storage.storageId,
-      body: Object.entries(storage.secrets).map(([key, value]) => ({
-        name: key,
-        value,
-      })),
+      cloudStorageSecretPostList: Object.entries(storage.secrets).map(
+        ([key, value]) => ({
+          name: key,
+          value,
+        })
+      ),
     });
   }, [credentialsToSave, index, saveCredentials]);
 

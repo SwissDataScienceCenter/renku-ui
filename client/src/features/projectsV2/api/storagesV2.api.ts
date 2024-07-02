@@ -57,7 +57,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/storages_v2/${queryArg.storageId}/secrets`,
         method: "POST",
-        body: queryArg.body,
+        body: queryArg.cloudStorageSecretPostList,
       }),
     }),
     deleteStoragesV2ByStorageIdSecrets: build.mutation<
@@ -171,7 +171,7 @@ export type PatchStoragesV2ByStorageIdApiArg = {
   cloudStoragePatch: CloudStoragePatch;
 };
 export type DeleteStoragesV2ByStorageIdApiResponse =
-  /** status 204 The rclone storage was removed or did not exist in the first place */ void;
+  /** status 204 The rcloud storage was removed or did not exist in the first place */ void;
 export type DeleteStoragesV2ByStorageIdApiArg = {
   /** the id of the storage */
   storageId: UlidId;
@@ -197,7 +197,7 @@ export type PostStoragesV2ByStorageIdSecretsApiResponse =
 export type PostStoragesV2ByStorageIdSecretsApiArg = {
   /** The id of the storage */
   storageId: UlidId;
-  body: CloudStorageSecretPost[];
+  cloudStorageSecretPostList: CloudStorageSecretPostList;
 };
 export type DeleteStoragesV2ByStorageIdSecretsApiResponse =
   /** status 204 The secrets were removed or did not exist in the first place or the storage doesn't exist */ void;
@@ -226,7 +226,7 @@ export type PatchStorageByStorageIdApiArg = {
   body: CloudStoragePatch;
 };
 export type DeleteStorageByStorageIdApiResponse =
-  /** status 204 The rclone storage was removed or did not exist in the first place */ void;
+  /** status 204 The rcloud storage was removed or did not exist in the first place */ void;
 export type DeleteStorageByStorageIdApiArg = {
   /** the id of the storage */
   storageId: UlidId;
@@ -311,7 +311,6 @@ export type RCloneOption = {
   /** The cloud provider the option is for (See 'provider' RCloneOption in the schema for potential values) */
   provider?: string;
   /** default value for the option */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   default?: number | string | boolean | object | any;
   /** string representation of the default value */
   default_str?: string;
@@ -394,6 +393,7 @@ export type CloudStorageSecretPost = {
   name: string;
   value: SecretValue;
 };
+export type CloudStorageSecretPostList = CloudStorageSecretPost[];
 export type RCloneEntry = {
   /** Human readable name of the provider */
   name?: string;

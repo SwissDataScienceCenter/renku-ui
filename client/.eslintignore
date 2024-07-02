@@ -1,2 +1,4 @@
 *.css
 *.svg
+# Generated files should not be linted
+src/features/projectsV2/api/storagesV2.api.ts
