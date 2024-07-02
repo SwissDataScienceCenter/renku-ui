@@ -41,6 +41,7 @@ import styles from "../../../ProjectPageV2/ProjectPageContent/ProjectOverview/Pr
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
   CustomEnvFormContent,
+  CustomSessionLauncherForm,
   ExistingEnvFormContent,
   SessionLauncherForm,
 } from "../../SessionLauncherFormContent";
@@ -69,16 +70,17 @@ function AddSessionCustomImageModal({
     handleSubmit,
     reset,
     setValue,
-  } = useForm<SessionLauncherForm, unknown>({
+  } = useForm<CustomSessionLauncherForm, unknown>({
     defaultValues: {
       name: "",
       environment_kind: "container_image",
       container_image: "",
       default_url: "",
+      ssh: false,
     },
   });
   const onSubmit = useCallback(
-    (data: SessionLauncherForm) => {
+    (data: CustomSessionLauncherForm) => {
       const { default_url, name } = data;
       const environment: SessionLauncherEnvironment = {
         environment_kind: "container_image",
