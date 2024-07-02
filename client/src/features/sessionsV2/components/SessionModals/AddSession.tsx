@@ -117,7 +117,7 @@ function AddSessionCustomImageModal({
     >
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggle}>
-          <Link45deg className={cx("me-2", "icon-text")} />
+          <Link45deg className={cx("me-2", "text-icon")} />
           Provide a custom image
         </ModalHeader>
         <ModalBody>
