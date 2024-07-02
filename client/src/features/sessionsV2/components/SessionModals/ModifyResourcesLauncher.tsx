@@ -15,7 +15,7 @@ import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { SessionClassSelector } from "../../../session/components/options/SessionClassOption";
+import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import { useUpdateSessionLauncherMutation } from "../../sessionsV2.api";
 import {
   ErrorOrNotAvailableResourcePools,
@@ -73,7 +73,7 @@ export function ModifyResourcesLauncherModal({
   ) : !resourcePools || resourcePools.length == 0 || isErrorResources ? (
     <ErrorOrNotAvailableResourcePools />
   ) : (
-    <SessionClassSelector
+    <SessionClassSelectorV2
       resourcePools={resourcePools}
       currentSessionClass={currentSessionClass}
       onChange={onChange}

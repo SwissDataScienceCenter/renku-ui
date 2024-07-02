@@ -27,7 +27,6 @@ import {
 } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import {
-  Col,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -39,7 +38,6 @@ import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import rkIconSessions from "../../styles/icons/sessions.svg";
 import AccessGuard from "../ProjectPageV2/utils/AccessGuard";
 import useProjectAccess from "../ProjectPageV2/utils/useProjectAccess.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
@@ -62,10 +60,7 @@ import {
   SessionStatusV2Description,
   SessionStatusV2Label,
 } from "./components/SessionStatus/SessionStatus";
-import {
-  useGetProjectSessionLaunchersQuery,
-  useGetSessionEnvironmentsQuery,
-} from "./sessionsV2.api";
+import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 
 // Required for logs formatting
@@ -160,38 +155,16 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       <div className="card-body">
         {loading}
         {errorAlert}
-        <p className={cx(totalSessions > 0 && "d-none")}>
-          Define interactive environments in which to do your work and share it
-          with others.
+        <p className="m-0">
+          {totalSessions > 0
+            ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
+            : "Define interactive environments in which to do your work and share it  with others."}
         </p>
-        <p className={cx(totalSessions === 0 && "d-none")}>
-          Session launchers are available to everyone who can see the project.
-          Running sessions are only accessible to you.
-        </p>
-        {totalSessions > 0 && (
-          <ul className={cx("list-group", "list-group-flush")}>
-            {launchers?.map((launcher) => (
-              <SessionItemDisplay
-                key={`launcher-${launcher.id}`}
-                launcher={launcher}
-                project={project}
-              />
-            ))}
-            {Object.entries(orphanSessions).map(([key, session]) => (
-              <OrphanSession
-                key={`orphan-${key}`}
-                session={session}
-                project={project}
-              />
-            ))}
+      </div>
 
-            {/* <li
-              className={cx("list-group-item", "d-flex", "align-items-center")}
-            ></li> */}
-          </ul>
-        )}
-
-        {/* {launchers?.map((launcher) => (
+      {totalSessions > 0 && (
+        <ul className={cx("list-group", "list-group-flush")}>
+          {launchers?.map((launcher) => (
             <SessionItemDisplay
               key={`launcher-${launcher.id}`}
               launcher={launcher}
@@ -204,8 +177,9 @@ export default function SessionsV2({ project }: SessionsV2Props) {
               session={session}
               project={project}
             />
-          ))} */}
-      </div>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -300,6 +274,7 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
           sessionItemStyles.ItemDisplaySessionRow
         )}
       >
+        <h1>ORPHANED</h1>
         <SessionNameBox handler={openSessionDetails}>
           <LayoutSidebarInsetReverse
             className={cx("flex-shrink-0", "me-0")}
