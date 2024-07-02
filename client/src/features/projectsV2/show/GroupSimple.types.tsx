@@ -16,29 +16,11 @@
  * limitations under the License
  */
 
-import cx from "classnames";
-import { BoxArrowInLeft } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
-
-interface BackToV1ButtonProps {
-  outline?: boolean;
-  color?: string;
-}
-export default function BackToV1Button({
-  outline = false,
-  color = "light",
-}: BackToV1ButtonProps) {
-  return (
-    <Link
-      className={cx(
-        "btn",
-        "btn-sm",
-        outline ? `btn-outline-${color}` : `btn-${color}`,
-        "text-decoration-none"
-      )}
-      to="/"
-    >
-      <BoxArrowInLeft className="bi" /> Back to <b>Renku 1.0</b>
-    </Link>
-  );
-}
+export type GroupSimple = {
+  id: string;
+  name: string;
+  slug: string;
+  creation_date: string | Date;
+  created_by: string;
+  description?: string;
+};

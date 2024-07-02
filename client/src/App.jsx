@@ -260,8 +260,8 @@ function App(props) {
   const user = useLegacySelector((state) => state.stateModel.user);
   if (!user?.fetched && user?.fetching) {
     return (
-      <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
-        <h3 className="text-center text-primary">Checking user data</h3>
+      <section className="py-5">
+        <h3 className="text-center">Checking user data</h3>
         <Loader />
       </section>
     );

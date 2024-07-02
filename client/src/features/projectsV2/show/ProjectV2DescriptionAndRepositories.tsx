@@ -15,29 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import cx from "classnames";
 import { Label } from "reactstrap";
 
 import type { Project } from "../api/projectV2.api";
 
 function ProjectV2Description({ description }: Pick<Project, "description">) {
   const desc =
-    description == null
-      ? "(no description)"
-      : description.length < 1
-      ? "(no description)"
-      : description;
-  return <div className="fs-5">{desc}</div>;
+    description == null || description.length < 1 ? (
+      <span className="fst-italic">(no description)</span>
+    ) : (
+      description
+    );
+  return <p className="fw-bold">{desc}</p>;
 }
 
 function ProjectV2Repositories({
   repositories,
 }: Pick<Project, "repositories">) {
   if (repositories == null || repositories.length < 1)
-    return <div className="mb-3">(no repositories)</div>;
+    return <p className={cx("fst-italic", "fw-bold")}>(no repositories)</p>;
   return (
     <div>
       {repositories?.map((repo, i) => (
-        <div key={i}>{repo}</div>
+        <p className="fw-bold" key={i}>
+          {repo}
+        </p>
       ))}
     </div>
   );

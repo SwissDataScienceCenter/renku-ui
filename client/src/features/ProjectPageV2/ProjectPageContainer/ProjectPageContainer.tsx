@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import {
   Outlet,
   useOutletContext,
@@ -31,8 +30,6 @@ import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/proj
 import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
-
-import styles from "./ProjectPageContainer.module.scss";
 
 export default function ProjectPageContainer() {
   const { namespace, slug } = useParams<{
@@ -52,20 +49,17 @@ export default function ProjectPageContainer() {
   }
 
   return (
-    <ContainerWrap fullSize className="container-lg">
+    <ContainerWrap>
       <Row>
-        <Col
-          sm={12}
-          className={cx("py-4", "px-0", "px-lg-2", styles.HeaderContainer)}
-        >
+        <Col xs={12}>
           <ProjectPageHeader project={data} />
         </Col>
-        <Col sm={12} lg={1} className={cx(styles.NavContainer)}>
-          <div className="sticky-top pt-2 pt-md-4">
+        <Col xs={12}>
+          <div className="mb-3">
             <ProjectPageNav project={data} />
           </div>
         </Col>
-        <Col sm={12} lg={11}>
+        <Col xs={12}>
           <main>
             <Outlet context={{ project: data } satisfies ContextType} />
           </main>

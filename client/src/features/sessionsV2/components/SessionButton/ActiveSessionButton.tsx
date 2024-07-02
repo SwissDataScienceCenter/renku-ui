@@ -24,9 +24,10 @@ import {
   BoxArrowUpRight,
   CheckLg,
   FileEarmarkText,
+  PauseCircle,
   PlayFill,
+  Plugin,
   Tools,
-  Trash,
   TrashFill,
   XLg,
 } from "react-bootstrap-icons";
@@ -46,8 +47,7 @@ import {
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { EnvironmentLogs } from "../../../../components/Logs";
-import { ButtonWithMenu } from "../../../../components/buttons/Button";
-import SessionPausedIcon from "../../../../components/icons/SessionPausedIcon";
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { User } from "../../../../model/renkuModels.types";
 import { NotebooksHelper } from "../../../../notebooks";
 import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
@@ -62,7 +62,7 @@ import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
 import UnsavedWorkWarning from "../../../session/components/UnsavedWorkWarning";
-import { SessionClassSelector } from "../../../session/components/options/SessionClassOption";
+import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
@@ -75,11 +75,13 @@ import {
 } from "../SessionModals/ResourceClassWarning";
 
 interface ActiveSessionButtonProps {
+  className?: string;
   session: Session;
   showSessionUrl: string;
 }
 
 export default function ActiveSessionButton({
+  className,
   session,
   showSessionUrl,
 }: ActiveSessionButtonProps) {
@@ -257,67 +259,66 @@ export default function ActiveSessionButton({
 
   const defaultAction =
     status === "stopping" || isStopping ? (
-      <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        <Loader className="me-1" inline size={16} />
+      <Button color="primary" data-cy="stopping-btn" disabled>
+        <Loader className="me-2" inline size={16} />
         Deleting
       </Button>
     ) : isHibernating ? (
-      <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        <Loader className="me-1" inline size={16} />
+      <Button color="primary" data-cy="stopping-btn" disabled>
+        <Loader className="me-2" inline size={16} />
         Pausing
       </Button>
     ) : status === "starting" || status === "running" ? (
       <Link
-        className={cx(buttonClassName, "d-inline-flex")}
+        className={cx("btn", "btn-primary")}
         data-cy="open-session"
         to={showSessionUrl}
       >
-        <img
-          className={cx("rk-icon", "rk-icon-md", "me-1")}
-          src="/connect.svg"
-        />
+        <Plugin className={cx("me-2", "text-icon")} />
         Open
       </Link>
     ) : status === "hibernated" ? (
       <Button
-        className={buttonClassName}
+        color="primary"
         data-cy="resume-session-button"
         disabled={isResuming}
         onClick={onResumeSession}
       >
         {isResuming ? (
           <>
-            <Loader className="me-1" inline size={16} />
+            <Loader className="me-2" inline size={16} />
             Resuming
           </>
         ) : (
           <>
-            <PlayFill className={cx("bi", "me-1")} />
+            <PlayFill className={cx("me-2", "text-icon")} />
             Resume
           </>
         )}
       </Button>
     ) : failedScheduling ? (
       <Button
+        color="primary"
         className={buttonClassName}
         data-cy="modify-session-button"
         onClick={toggleModifySession}
       >
-        <Tools className={cx("bi", "me-1")} />
+        <Tools className={cx("me-2", "text-icon")} />
         Modify
       </Button>
     ) : (
       <Button
+        color="primary"
         className={buttonClassName}
         data-cy={logged ? "pause-session-button" : "delete-session-button"}
         onClick={logged ? onHibernateSession : onStopSession}
       >
         {logged ? (
           <span className="align-self-start">
-            <SessionPausedIcon size={16} />
+            <PauseCircle className={cx("me-2", "text-icon")} />
           </span>
         ) : (
-          <TrashFill className={cx("bi", "me-1")} />
+          <TrashFill className={cx("me-2", "text-icon")} />
         )}
         {logged ? "Pause" : "Delete"}
       </Button>
@@ -333,7 +334,7 @@ export default function ActiveSessionButton({
         disabled={status === "starting"}
         onClick={onHibernateSession}
       >
-        <SessionPausedIcon className={cx("bi", "me-1")} size={16} />
+        <PauseCircle className={cx("me-2", "text-icon")} />
         Pause session
       </DropdownItem>
     );
@@ -343,7 +344,7 @@ export default function ActiveSessionButton({
       data-cy="delete-session-button"
       onClick={logged ? toggleStopSession : onStopSession}
     >
-      <Trash className={cx("bi", "me-1")} />
+      <TrashFill className={cx("me-2", "text-icon")} />
       Delete session
     </DropdownItem>
   );
@@ -356,32 +357,32 @@ export default function ActiveSessionButton({
         data-cy="modify-session-button"
         onClick={toggleModifySession}
       >
-        <Tools className={cx("bi", "me-1")} />
-        Modify Session resources
+        <Tools className={cx("me-2", "text-icon")} />
+        Modify session resources
       </DropdownItem>
     );
 
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
     <DropdownItem href={session.url} target="_blank">
-      <BoxArrowUpRight className={cx("bi", "me-1")} />
+      <BoxArrowUpRight className={cx("me-2", "text-icon")} />
       Open in new tab
     </DropdownItem>
   );
 
   const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
-      <FileEarmarkText className={cx("bi", "me-1")} />
+      <FileEarmarkText className={cx("me-2", "text-icon")} />
       Get logs
     </DropdownItem>
   );
 
   return (
-    <ButtonWithMenu
-      className="py-1"
-      color="rk-green"
+    <ButtonWithMenuV2
+      className={cx(className)}
+      color="primary"
       default={defaultAction}
-      isPrincipal
+      size="sm"
     >
       {hibernateAction}
       {deleteAction}
@@ -413,7 +414,7 @@ export default function ActiveSessionButton({
         name={displayModal.targetServer}
         annotations={cleanAnnotations}
       />
-    </ButtonWithMenu>
+    </ButtonWithMenuV2>
   );
 }
 
@@ -469,7 +470,7 @@ function ConfirmDeleteModal({
           disabled={isStopping}
           onClick={toggleModal}
         >
-          <XLg className={cx("bi", "me-1")} />
+          <XLg className={cx("me-2", "text-icon")} />
           Cancel
         </Button>
         <Button
@@ -479,7 +480,7 @@ function ConfirmDeleteModal({
           type="submit"
           onClick={onClick}
         >
-          <Trash className={cx("bi", "me-1")} /> Delete this session
+          <TrashFill className={cx("me-2", "text-icon")} /> Delete this session
         </Button>
       </ModalFooter>
     </Modal>
@@ -599,7 +600,7 @@ function ModifySessionModalContent({
   ) : !resourcePools || resourcePools.length == 0 || isError ? (
     <ErrorOrNotAvailableResourcePools />
   ) : (
-    <SessionClassSelector
+    <SessionClassSelectorV2
       resourcePools={resourcePools}
       currentSessionClass={currentSessionClass}
       onChange={onChange}

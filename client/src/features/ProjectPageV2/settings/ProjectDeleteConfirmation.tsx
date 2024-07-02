@@ -82,11 +82,9 @@ export default function ProjectDeleteConfirmation({
 
   return (
     <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader className={cx("text-danger", "fw-bold")}>
-        Delete project
-      </ModalHeader>
-      <ModalBody className="pt-0">
-        <p className={cx("mb-0", "pb-3")}>
+      <ModalHeader className={cx("text-danger")}>Delete project</ModalHeader>
+      <ModalBody>
+        <p>
           Deleted projects cannot be restored. Please type{" "}
           <strong>{project.slug}</strong>, the slug of the project, to confirm.
         </p>
@@ -96,21 +94,20 @@ export default function ProjectDeleteConfirmation({
           onChange={onChange}
         />
       </ModalBody>
-      <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-danger" onClick={toggle}>
-          <XLg className={cx("bi", "me-1")} />
+      <ModalFooter className="gap-2">
+        <Button color="outline-danger" onClick={toggle}>
+          <XLg className={cx("me-2", "text-icon")} />
           Cancel
         </Button>
         <Button
-          className="ms-2"
           color="danger"
           disabled={typedName !== project.slug?.trim()}
           onClick={onDelete}
         >
           {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
+            <Loader className="me-2" inline size={16} />
           ) : (
-            <Trash className={cx("bi", "me-1")} />
+            <Trash className={cx("me-2", "text-icon")} />
           )}
           Delete project
         </Button>

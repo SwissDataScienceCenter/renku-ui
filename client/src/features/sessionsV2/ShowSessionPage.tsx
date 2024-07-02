@@ -16,11 +16,14 @@
  * limitations under the License.
  */
 
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Journals } from "react-bootstrap-icons";
+import {
+  ArrowLeft,
+  Journals,
+  PauseCircle,
+  TrashFill,
+} from "react-bootstrap-icons";
 import {
   Link,
   generatePath,
@@ -29,7 +32,6 @@ import {
 } from "react-router-dom-v5-compat";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
-import SessionPausedIcon from "../../components/icons/SessionPausedIcon";
 import { User } from "../../model/renkuModels.types";
 import { SESSION_TABS } from "../../notebooks/Notebooks.present";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
@@ -219,17 +221,15 @@ export default function ShowSessionPage() {
           </div>
           <div
             className={cx(
-              "d-flex",
               "align-items-center",
-              "justify-content-between",
               "bg-primary",
+              "d-flex",
               "flex-grow-1",
+              "justify-content-between",
               "py-2"
             )}
           >
-            <div className={cx("px-3", "text-rk-green", "fw-bold")}>
-              {sessionName}
-            </div>
+            <div className={cx("px-3", "text-white")}>{sessionName}</div>
             <div className="px-3">
               <img alt="Renku" className="d-block" height="22" src={logo} />
             </div>
@@ -265,7 +265,7 @@ function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
         innerRef={ref}
         onClick={toggleModalResources}
       >
-        <Journals className="text-rk-dark" />
+        <Journals className="text-icon" />
         <span className="visually-hidden">Resources</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
@@ -306,7 +306,7 @@ function PauseSessionBtn({ openPauseSession }: PauseSessionBtnProps) {
         innerRef={ref}
         onClick={openPauseSession}
       >
-        <SessionPausedIcon className="text-rk-dark" size={16} />
+        <PauseCircle className="text-icon" />
         <span className="visually-hidden">{tooltip}</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
@@ -340,7 +340,7 @@ function DeleteSessionBtn({ openDeleteSession }: DeleteSessionBtnProps) {
         innerRef={ref}
         onClick={openDeleteSession}
       >
-        <FontAwesomeIcon className="text-rk-dark" icon={faTrash} />
+        <TrashFill className="text-icon" />
         <span className="visually-hidden">{tooltip}</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>

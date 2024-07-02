@@ -66,10 +66,10 @@ function ProjectV2NewHeader({
 }: Pick<NewProjectV2State, "currentStep">) {
   return (
     <>
-      <div className="mb-2">
+      <p>
         V2 Projects let you group together related resources and control who can
-        access them. {"  "} <WipBadge />
-      </div>
+        access them. <WipBadge />
+      </p>
       {currentStep === 0 && <ProjectV2NewMetadataStepHeader />}
       {currentStep === 1 && <ProjectV2NewAccessStepHeader />}
       {currentStep === 2 && <ProjectV2NewRepositoryStepHeader />}
@@ -81,7 +81,7 @@ function ProjectV2NewHeader({
 function ProjectV2NewMetadataStepHeader() {
   return (
     <>
-      <b>Describe your project</b>
+      <h4>Describe your project</h4>
       <p>Provide some information to explain what your project is about.</p>
     </>
   );
@@ -90,7 +90,7 @@ function ProjectV2NewMetadataStepHeader() {
 function ProjectV2NewProjectCreatingStepHeader() {
   return (
     <>
-      <b>Review and create</b>
+      <h4>Review and create</h4>
       <p>Review what has been entered and, if ready, create the project.</p>
     </>
   );
@@ -99,7 +99,7 @@ function ProjectV2NewProjectCreatingStepHeader() {
 function ProjectV2NewRepositoryStepHeader() {
   return (
     <>
-      <b>Associate some repositories (optional)</b>
+      <h4>Associate some repositories (optional)</h4>
       <p>
         You can associate one or more repositories with the project now if you
         want. This can also be done later at any time.
@@ -140,24 +140,18 @@ function ProjectV2NewReviewCreateStep({
   const errorAlert = result.error && <RtkErrorAlert error={result.error} />;
 
   return (
-    <Form className="form-rk-green" noValidate onSubmit={onSubmit}>
+    <Form noValidate onSubmit={onSubmit}>
       {errorAlert}
       <h4>Review</h4>
-      <div className="mb-3">
+      <div>
         <Label>Name</Label>
-        <div className="fs-5">{newProject.name}</div>
-      </div>
-      <div className="mb-3">
+        <p className="fw-bold">{newProject.name}</p>
         <Label>Namespace</Label>
-        <div className="fs-5">{newProject.namespace}</div>
-      </div>
-      <div className="mb-3">
+        <p className="fw-bold">{newProject.namespace}</p>
         <Label>Slug</Label>
-        <div className="fs-5">{newProject.slug}</div>
-      </div>
-      <div className="mb-3">
+        <p className="fw-bold">{newProject.slug}</p>
         <Label>Visibility</Label>
-        <div className="fs-5">{newProject.visibility}</div>
+        <p className="fw-bold">{newProject.visibility}</p>
       </div>
       <ProjectV2DescriptionAndRepositories project={newProject} />
       <ProjectFormSubmitGroup currentStep={currentStep} />
