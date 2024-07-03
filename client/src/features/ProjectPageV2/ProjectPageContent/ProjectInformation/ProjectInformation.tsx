@@ -18,6 +18,8 @@
 
 import cx from "classnames";
 import { generatePath } from "react-router-dom-v5-compat";
+import { Card, CardBody, CardHeader } from "reactstrap";
+import { InfoCircleFill } from "react-bootstrap-icons";
 
 import { TimeCaption } from "../../../../components/TimeCaption";
 import {
@@ -36,10 +38,7 @@ import MembershipGuard from "../../utils/MembershipGuard";
 import { toSortedMembers } from "../../utils/roleUtils";
 
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
-
 import styles from "./ProjectInformation.module.scss";
-import { Card, CardBody, CardHeader } from "reactstrap";
-import { InfoCircleFill } from "react-bootstrap-icons";
 
 const MAX_MEMBERS_DISPLAYED = 5;
 

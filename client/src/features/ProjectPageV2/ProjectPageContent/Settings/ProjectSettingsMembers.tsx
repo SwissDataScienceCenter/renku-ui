@@ -19,19 +19,19 @@
 import cx from "classnames";
 import type { ReactNode } from "react";
 import React, { useCallback, useState, useRef } from "react";
-import { PeopleFill, PencilSquare, Trash } from "react-bootstrap-icons";
+import { PeopleFill, PencilSquare, Trash, PlusLg } from "react-bootstrap-icons";
 import {
   Button,
+  Card,
+  CardBody,
+  CardHeader,
   Col,
   DropdownItem,
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
 
-import {
-  ButtonWithMenu,
-  PlusRoundButton,
-} from "../../../../components/buttons/Button.tsx";
+import { ButtonWithMenu } from "../../../../components/buttons/Button.tsx";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 
@@ -46,10 +46,6 @@ import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMe
 
 import MembershipGuard from "../../utils/MembershipGuard.tsx";
 import { toSortedMembers } from "../../utils/roleUtils.ts";
-
-function OverviewBox({ children }: { children: ReactNode }) {
-  return <div className={cx("bg-white", "rounded-3", "mt-3")}>{children}</div>;
-}
 
 type MemberActionMenuProps = Omit<
   ProjectPageSettingsMembersTableRowProps,
@@ -303,7 +299,7 @@ function ProjectPageSettingsMembersContent({
   if (isLoading)
     return (
       <p>
-        <Loader className="bi" inline size={16} />
+        <Loader className="me-2" inline />
         Loading members...
       </p>
     );
@@ -311,24 +307,27 @@ function ProjectPageSettingsMembersContent({
     if (error.status === 401 || error.status === 404) return null;
     return <RtkErrorAlert error={error} />;
   }
-  if (members == null)
-    return <div className="mb-3">Could not load members</div>;
+  if (members == null) return <div>Could not load members</div>;
   const totalMembers = members ? members?.length : 0;
   return (
     <>
-      <div className={cx("d-flex", "justify-content-between", "p-3", "p-md-4")}>
-        <div className="fw-bold">
-          <PeopleFill className={cx("rk-icon", "rk-icon-lg", "me-2")} />
+      <div className={cx("d-flex", "justify-content-between")}>
+        <p className="fw-bold">
+          <PeopleFill className={cx("me-2", "text-icon")} />
           Members ({totalMembers})
-        </div>
+        </p>
         <div>
           <MembershipGuard
             disabled={null}
             enabled={
-              <PlusRoundButton
+              <Button
+                color="outline-primary"
                 data-cy="project-add-member"
-                handler={toggleAddMemberModalOpen}
-              />
+                onClick={toggleAddMemberModalOpen}
+                size="sm"
+              >
+                <PlusLg />
+              </Button>
             }
             members={members}
           />
@@ -363,29 +362,27 @@ export default function ProjectPageSettingsMembers({
     projectId: project.id,
   });
   return (
-    <>
-      <Row className="g-5">
-        <Col sm={12}>
-          <h4 className="fw-bold">Members of the project</h4>
-          <MembershipGuard
-            disabled={null}
-            enabled={<small>Manage access permissions to the project</small>}
-            members={members}
-          />
-        </Col>
-      </Row>
-      <Row className="g-5">
-        <Col sm={12}>
-          <OverviewBox>
-            <ProjectPageSettingsMembersContent
-              error={error}
-              isLoading={isLoading}
-              members={members}
-              projectId={project.id}
-            />
-          </OverviewBox>
-        </Col>
-      </Row>
-    </>
+    <Card id="members">
+      <CardHeader>
+        <MembershipGuard
+          disabled={<h4 className="m-0">Members of the project</h4>}
+          enabled={
+            <>
+              <h4>Members of the project</h4>
+              <p className="m-0">Manage access permissions to the project</p>
+            </>
+          }
+          members={members}
+        />
+      </CardHeader>
+      <CardBody>
+        <ProjectPageSettingsMembersContent
+          error={error}
+          isLoading={isLoading}
+          members={members}
+          projectId={project.id}
+        />
+      </CardBody>
+    </Card>
   );
 }

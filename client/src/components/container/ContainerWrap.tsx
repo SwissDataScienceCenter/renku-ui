@@ -35,7 +35,9 @@ export default function ContainerWrap({
   }
 
   const className = cx(
-    fullSize ? "w-100" : ["container-xxl", "py-3", "px-2", "px-sm-3"],
+    fullSize
+      ? "w-100"
+      : ["container-xxl", "py-3", "px-2", "px-sm-3", "px-xxl-0"],
     className_
   );
   return <div className={className}>{children}</div>;

@@ -58,7 +58,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
         </div>
       </CardHeader>
       <CardBody>
-        {totalRepositories > 0 ? (
+        {totalRepositories === 0 ? (
           <p className="m-0">
             Connect code repositories to save and share code.
           </p>
