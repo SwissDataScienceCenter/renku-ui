@@ -22,12 +22,13 @@
  *  not-found
  *  Components for the not-found page
  */
-
+import cx from "classnames";
 import { ReactNode } from "react";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import { Button } from "reactstrap";
+
+import { HouseFill } from "react-bootstrap-icons";
+
 import "./NotFound.css";
 
 interface NotFoundProps {
@@ -54,8 +55,8 @@ export default function NotFound({
       : "div";
   return (
     <div className="not-found-box">
-      <div className="container-xxl pt-5 renku-container">
-        <div className="not-found-box-text">
+      <div className={cx("container-xxl", "p-5")}>
+        <div className={cx("p-4", "bg-white", "bg-opacity-75")}>
           <h1 className="title" data-cy="not-found-title">
             404
           </h1>
@@ -65,14 +66,15 @@ export default function NotFound({
           <Tag data-cy="not-found-description">{description}</Tag>
           <div className="mt-5">
             <Link to="/">
-              <Button className="btn-rk-green btn-icon-text">
-                <FontAwesomeIcon icon={faHome} /> Return Home
+              <Button color="primary" className="btn-rk-green">
+                <HouseFill className={cx("me-2", "text-icon")} />
+                Return Home
               </Button>
             </Link>
           </div>
         </div>
         {children == null ? null : (
-          <div className="not-found-box-text mt-4" data-cy="not-found-children">
+          <div className="mt-4" data-cy="not-found-children">
             {children}
           </div>
         )}

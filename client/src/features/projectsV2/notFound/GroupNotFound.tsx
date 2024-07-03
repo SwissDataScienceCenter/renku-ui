@@ -50,11 +50,11 @@ export default function GroupNotFound({ error }: GroupNotFoundProps) {
   );
 
   return (
-    <ContainerWrap fullSize className="container-lg">
-      <Row className="mt-3">
+    <ContainerWrap>
+      <Row>
         <Col>
           <h1>Error 404</h1>
-          <h2>Group not found</h2>
+          <h2 className="mb-3">Group not found</h2>
 
           <p>{notFoundText}</p>
           <p>It is possible that the group has been deleted by its owner.</p>
@@ -62,17 +62,17 @@ export default function GroupNotFound({ error }: GroupNotFoundProps) {
           <div>
             <Link
               to={ABSOLUTE_ROUTES.v2.groups.root}
-              className={cx("btn", "btn-rk-green")}
+              className={cx("btn", "btn-outline-primary")}
             >
-              <ArrowLeft className={cx("bi", "me-1")} />
+              <ArrowLeft className={cx("me-2", "text-icon")} />
               Return to the groups list
             </Link>
           </div>
 
           {error && (
             <>
-              <div className={cx("mt-3", "mb-1")}>
-                <Button color="link" className="p-0" onClick={onClickDetails}>
+              <div className="my-3">
+                <Button color="outline-secondary" onClick={onClickDetails}>
                   Show error details
                 </Button>
               </div>
