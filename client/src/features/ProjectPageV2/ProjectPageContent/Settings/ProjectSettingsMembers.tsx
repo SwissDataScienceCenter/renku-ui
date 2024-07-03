@@ -17,7 +17,6 @@
  */
 
 import cx from "classnames";
-import type { ReactNode } from "react";
 import React, { useCallback, useState, useRef } from "react";
 import { PeopleFill, PencilSquare, Trash, PlusLg } from "react-bootstrap-icons";
 import {
