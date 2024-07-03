@@ -21,7 +21,6 @@ import { useCallback, useState } from "react";
 import { PlusLg } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
 
-import { PlusRoundButton } from "../../components/buttons/Button.tsx";
 import { Step1AddSessionModal } from "./components/SessionModals/AddSession.tsx";
 
 export default function AddSessionLauncherButton({
