@@ -33,10 +33,7 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 
-import {
-  EditButtonLink,
-  UnderlineArrowLink,
-} from "../../../components/buttons/Button";
+import { UnderlineArrowLink } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
@@ -50,7 +47,6 @@ interface ProjectPageHeaderProps {
   project: Project;
 }
 export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
-  const { userRole } = useProjectAccess({ projectId: project.id });
   const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
     namespace: project.namespace ?? "",
     slug: project.slug ?? "",
@@ -73,26 +69,10 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
               </div>
             </Col>
           </Row>
-          <Col className="col-12">
+          <Col>
             <div>
               {project.description?.length ? (
-                <p data-cy="project-description">
-                  {project.description}
-                  <span className="ms-2">
-                    <AccessGuard
-                      disabled={null}
-                      enabled={
-                        <EditButtonLink
-                          data-cy="project-description-edit"
-                          to={settingsUrl}
-                          tooltip="Modify project information"
-                        />
-                      }
-                      minimumRole="editor"
-                      role={userRole}
-                    />
-                  </span>
-                </p>
+                <p data-cy="project-description">{project.description}</p>
               ) : (
                 <UnderlineArrowLink
                   tooltip="Add project description"

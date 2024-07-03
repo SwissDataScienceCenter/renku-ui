@@ -23,24 +23,28 @@ import SessionsV2 from "../../sessionsV2/SessionsV2";
 import { useProject } from "../ProjectPageContainer/ProjectPageContainer";
 import { CodeRepositoriesDisplay } from "./CodeRepositories/RepositoriesBox";
 import { DataSourcesDisplay } from "./DataSources/DataSourcesBox";
-import { ProjectInformationCard } from "./ProjectInformation/ProjectInformation";
+import ProjectInformation from "./ProjectInformation/ProjectInformation";
 
 export default function ProjectOverviewPage() {
   const { project } = useProject();
 
   return (
-    <Row className="row-gap-3">
-      <Col className={cx("order-1", "order-lg-2")} xs={12} lg={2}>
-        <ProjectInformationCard />
+    <Row className="g-3">
+      <Col className={cx("order-1", "order-lg-2")} xs={12} lg={3} xl={2}>
+        <ProjectInformation output="card" />
       </Col>
-      <Col className={cx("order-2", "order-lg-1")} xs={12} lg={10}>
-        <SessionsV2 project={project} />
-      </Col>
-      <Col className="order-3" xs={12} xl={6}>
-        <DataSourcesDisplay project={project} />
-      </Col>
-      <Col className="order-4" xs={12} xl={6}>
-        <CodeRepositoriesDisplay project={project} />
+      <Col className={cx("order-2", "order-lg-1")} xs={12} lg={9} xl={10}>
+        <Row className="g-3">
+          <Col xs={12}>
+            <SessionsV2 project={project} />
+          </Col>
+          <Col className="order-3" xs={12} xl={6}>
+            <DataSourcesDisplay project={project} />
+          </Col>
+          <Col className="order-4" xs={12} xl={6}>
+            <CodeRepositoriesDisplay project={project} />
+          </Col>
+        </Row>
       </Col>
     </Row>
   );

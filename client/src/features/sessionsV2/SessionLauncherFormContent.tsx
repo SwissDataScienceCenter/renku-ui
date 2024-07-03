@@ -481,10 +481,12 @@ export function ExistingEnvFormContent({
       </p>
     );
   if (environments && environments.length === 0)
-    <WarnAlert dismissible={false}>
-      No existing environments are available. Please contact an admin to update
-      this list.
-    </WarnAlert>;
+    return (
+      <WarnAlert dismissible={false}>
+        No existing environments available. Please contact an admin to update
+        this list.
+      </WarnAlert>
+    );
 
   return (
     <>

@@ -17,15 +17,15 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { Database } from "react-bootstrap-icons";
+import { DatabaseFill, PlusLg } from "react-bootstrap-icons";
 import { Loader } from "../../../../components/Loader.tsx";
-import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
 import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api.ts";
 import AccessGuard from "../../utils/AccessGuard.tsx";
 import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
 import { DataSourceDisplay } from "./DataSourceDisplay.tsx";
+import { Button, Card, CardBody, CardHeader } from "reactstrap";
 
 export function DataSourcesDisplay({ project }: { project: Project }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,48 +48,53 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
   );
 
   return (
-    <>
-      <div
-        className={cx("p-3", "d-flex", "justify-content-between")}
-        data-cy="data-source-box"
-      >
-        <div className="fw-bold">
-          <Database size={20} className={cx("me-2")} />
-          Data Sources ({totalStorages})
-        </div>
-        <AccessGuard
-          disabled={null}
-          enabled={
-            <PlusRoundButton data-cy="add-data-source" handler={toggle} />
-          }
-          minimumRole="editor"
-          role={userRole}
-        />
-      </div>
-      {!isLoading && !isFetching && totalStorages === 0 ? (
-        <p className="px-3">
-          Add published datasets from data repositories, and connect to cloud
-          storage to read and write custom data.
-        </p>
-      ) : (
-        <div className={cx("p-0", "pb-0", "m-0")}>
-          {data?.map((storage, index) => (
-            <DataSourceDisplay
-              key={index}
-              storage={storage}
-              projectId={project.id}
+    <Card data-cy="data-source-box">
+      <CardHeader>
+        <div className={cx("d-flex", "justify-content-between")}>
+          <h3 className="m-0">
+            <DatabaseFill className={cx("me-2", "text-icon")} />
+            Data Sources ({totalStorages})
+          </h3>
+          <div className="my-auto">
+            <AccessGuard
+              disabled={null}
+              enabled={
+                <Button color="outline-primary" onClick={toggle} size="sm">
+                  <PlusLg />
+                </Button>
+              }
+              minimumRole="editor"
+              role={userRole}
             />
-          ))}
-          {contentLoading}
+          </div>
         </div>
-      )}
-      <AddCloudStorageModal
-        currentStorage={null}
-        isOpen={isOpen}
-        toggle={toggle}
-        projectId={project.id}
-        isV2
-      />
-    </>
+      </CardHeader>
+      <CardBody>
+        {!isLoading && !isFetching && totalStorages === 0 ? (
+          <p className="m-0">
+            Add published datasets from data repositories, and connect to cloud
+            storage to read and write custom data.
+          </p>
+        ) : (
+          <div>
+            {data?.map((storage, index) => (
+              <DataSourceDisplay
+                key={index}
+                storage={storage}
+                projectId={project.id}
+              />
+            ))}
+            {contentLoading}
+          </div>
+        )}
+        <AddCloudStorageModal
+          currentStorage={null}
+          isOpen={isOpen}
+          toggle={toggle}
+          projectId={project.id}
+          isV2
+        />
+      </CardBody>
+    </Card>
   );
 }

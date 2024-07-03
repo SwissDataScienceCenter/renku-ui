@@ -43,7 +43,12 @@ import { InfoCircleFill } from "react-bootstrap-icons";
 
 const MAX_MEMBERS_DISPLAYED = 5;
 
-export default function ProjectInformation() {
+interface ProjectInformationProps {
+  output?: "plain" | "card";
+}
+export default function ProjectInformation({
+  output = "plain",
+}: ProjectInformationProps) {
   const { project } = useProject();
 
   const { data: members } = useGetProjectsByProjectIdMembersQuery({
@@ -57,32 +62,12 @@ export default function ProjectInformation() {
   });
   const membersUrl = `${settingsUrl}#members`;
 
-  return (
+  const information = (
     <div>
-      <MembershipGuard
-        disabled={
-          <EditButtonLink
-            buttonStyle={true}
-            disabled={true}
-            to={settingsUrl}
-            tooltip="Your role does not allow modifying project information"
-          />
-        }
-        enabled={
-          <EditButtonLink
-            buttonStyle={true}
-            data-cy="project-settings-edit"
-            to={settingsUrl}
-            tooltip="Modify project information"
-          />
-        }
-        members={members}
-        minimumRole="editor"
-      />
       <p>
         Namespace: <span className="fw-bold">{project.namespace}</span>
       </p>
-      <p className="d-flex">
+      <p className={cx("d-flex", "flex-wrap")}>
         <span className="me-1">Visibility: </span>
         <span className="fw-bold">
           <VisibilityIcon visibility={project.visibility} />
@@ -110,6 +95,42 @@ export default function ProjectInformation() {
         ))}
       </div>
     </div>
+  );
+  return output === "plain" ? (
+    information
+  ) : (
+    <Card>
+      <CardHeader>
+        <div className={cx("d-flex", "justify-content-between")}>
+          <h3 className="m-0">
+            <InfoCircleFill className={cx("me-2", "text-icon")} />
+            Info
+          </h3>
+
+          <div>
+            <MembershipGuard
+              disabled={
+                <EditButtonLink
+                  disabled={true}
+                  to={settingsUrl}
+                  tooltip="Your role does not allow modifying project information"
+                />
+              }
+              enabled={
+                <EditButtonLink
+                  data-cy="project-settings-edit"
+                  to={settingsUrl}
+                  tooltip="Modify project information"
+                />
+              }
+              members={members}
+              minimumRole="editor"
+            />
+          </div>
+        </div>
+      </CardHeader>
+      <CardBody>{information}</CardBody>
+    </Card>
   );
 }
 

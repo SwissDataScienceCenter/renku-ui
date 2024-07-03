@@ -361,14 +361,12 @@ function UnderlineArrowLink({
  * Edit button
  */
 interface EditButtonLinkProps {
-  buttonStyle?: boolean;
   "data-cy"?: string;
   disabled?: boolean;
   to: string;
   tooltip: ReactNode;
 }
 function EditButtonLink({
-  buttonStyle = false,
   "data-cy": dataCy,
   disabled = false,
   to,
@@ -377,31 +375,18 @@ function EditButtonLink({
   const ref = useRef(null);
   return (
     <>
-      <span ref={ref} className={buttonStyles.LinkIcon}>
+      <span ref={ref}>
         {disabled ? (
-          buttonStyle ? (
-            <Button disabled>
-              <PencilSquare className={cx("me-2", "text-icon")} />
-              Edit
-            </Button>
-          ) : (
-            <span>
-              <PencilSquare className={cx("me-2", "text-icon")} />
-              Edit
-            </span>
-          )
+          <Button color="secondary-outline" disabled>
+            <PencilSquare className="text-icon" />
+          </Button>
         ) : (
           <Link
-            className={cx(
-              buttonStyle
-                ? ["btn", "btn-outline-primary", "btn-sm"]
-                : "text-decoration-none"
-            )}
+            className={cx("btn", "btn-sm", "btn-outline-primary")}
             data-cy={dataCy}
             to={to}
           >
-            <PencilSquare className={cx("me-2", "text-icon")} />
-            Edit
+            <PencilSquare className="text-icon" />
           </Link>
         )}
       </span>
