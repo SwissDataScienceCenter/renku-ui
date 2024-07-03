@@ -37,7 +37,10 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
-import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
+import {
+  storageDefinitionAfterSavingCredentialsFromConfig,
+  storageDefinitionFromConfig,
+} from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { usePostStoragesV2ByStorageIdSecretsMutation } from "../projectsV2/api/storagesV2.api";
@@ -142,19 +145,8 @@ function SaveCloudStorage({
   useEffect(() => {
     if (saveCredentialsResult.isLoading) return;
     if (index >= credentialsToSave.length) {
-      const cloudStorageConfigs = startSessionOptionsV2.cloudStorage.map(
-        (cs) => {
-          const newCs = { ...cs, saveCredentials: false };
-          newCs.sensitiveFieldValues = {};
-          const newStorage = { ...newCs.cloudStorage.storage };
-          newStorage.configuration = {};
-          const newCloudStorage = {
-            ...newCs.cloudStorage,
-            storage: newStorage,
-          };
-          newCs.cloudStorage = newCloudStorage;
-          return newCs;
-        }
+      const cloudStorageConfigs = startSessionOptionsV2.cloudStorage.map((cs) =>
+        storageDefinitionAfterSavingCredentialsFromConfig(cs)
       );
       dispatch(
         startSessionOptionsV2Slice.actions.setCloudStorage(cloudStorageConfigs)
