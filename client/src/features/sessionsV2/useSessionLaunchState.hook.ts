@@ -27,7 +27,6 @@ import { CLOUD_OPTIONS_OVERRIDE } from "../project/components/cloudStorage/proje
 import { useGetStorageSecretsByV2StorageIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import {
-  projectStoragesApi,
   RCloneOption,
   useGetStoragesV2Query,
 } from "../projectsV2/api/storagesV2.api";
@@ -167,17 +166,6 @@ export default function useSessionLauncherState({
   const { data: storagesSecrets } = useGetStorageSecretsByV2StorageIdQuery({
     storageIds: storages?.map((s) => s.storage.storage_id) ?? [],
   });
-
-  useEffect(() => {
-    storages?.map((cloudStorage) => {
-      const result = dispatch(
-        projectStoragesApi.endpoints.getStoragesV2ByStorageIdSecrets.initiate({
-          storageId: cloudStorage.storage.storage_id,
-        })
-      );
-      return result.unsubscribe;
-    });
-  }, [dispatch, storages]);
 
   const initialCloudStorages = useMemo(
     () =>
