@@ -11,7 +11,7 @@
       "project_id": 1,
       "readonly": true,
       "source_path": "bucket/source",
-      "storage_id": 1,
+      "storage_id": "1",
       "storage_type": "s3",
       "target_path": "external_storage/public"
     }
@@ -28,7 +28,7 @@
       "project_id": 1,
       "readonly": true,
       "source_path": "bucket/my-source-1",
-      "storage_id": 2,
+      "storage_id": "2",
       "storage_type": "s3",
       "target_path": "external_storage/private-1"
     },
@@ -69,7 +69,7 @@
       "project_id": 1,
       "readonly": true,
       "source_path": "/",
-      "storage_id": 3,
+      "storage_id": "3",
       "storage_type": "webdav",
       "target_path": "external_storage/webdav"
     },

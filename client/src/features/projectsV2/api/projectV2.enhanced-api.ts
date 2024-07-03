@@ -170,6 +170,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "Project",
     "ProjectMembers",
     "Storages",
+    "StorageSecrets",
   ],
   endpoints: {
     deleteGroupsByGroupSlug: {
@@ -186,6 +187,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     deleteStoragesV2ByStorageId: {
       invalidatesTags: ["Storages"],
+    },
+    deleteStoragesV2ByStorageIdSecrets: {
+      invalidatesTags: ["StorageSecrets"],
     },
     getGroups: {
       providesTags: ["Group"],
@@ -221,8 +225,14 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsByProjectIdMembers: {
       providesTags: ["ProjectMembers"],
     },
+    getStorageSecretsByV2StorageId: {
+      providesTags: ["StorageSecrets"],
+    },
     getStoragesV2: {
       providesTags: ["Storages"],
+    },
+    getStoragesV2ByStorageIdSecrets: {
+      providesTags: ["StorageSecrets"],
     },
     patchGroupsByGroupSlug: {
       invalidatesTags: ["Group", "Namespace"],
@@ -247,6 +257,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     postStoragesV2: {
       invalidatesTags: ["Storages"],
+    },
+    postStoragesV2ByStorageIdSecrets: {
+      invalidatesTags: ["StorageSecrets"],
     },
   },
 });
@@ -280,7 +293,10 @@ export const {
   useGetNamespacesByNamespaceSlugQuery,
 
   // storages hooks
+  useDeleteStoragesV2ByStorageIdSecretsMutation,
   useGetStoragesV2Query,
-  usePostStoragesV2Mutation,
   useGetStorageSecretsByV2StorageIdQuery,
+  useGetStoragesV2ByStorageIdSecretsQuery,
+  usePostStoragesV2Mutation,
+  usePostStoragesV2ByStorageIdSecretsMutation,
 } = enhancedApi;

@@ -96,6 +96,17 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    deleteCloudStorageSecrets(args?: CloudStorageSecretsArgs) {
+      const { name = "deleteCloudStorageSecrets", storageId = 2 } = args ?? {};
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept(
+        "DELETE",
+        `/ui-server/api/data/storages_v2/${storageId}/secrets`,
+        { body: null, delay: 1000 }
+      ).as(name);
+      return this;
+    }
+
     postCloudStorageSecrets(args?: PostCloudStorageSecretsArgs) {
       const {
         content,
@@ -115,7 +126,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
               expect(secret.name).equal(content[index].name);
               expect(secret.value).equal(content[index].value);
             });
-            req.reply({ body: secrets });
+            req.reply({ body: secrets, delay: 1000 });
           }
         ).as(name);
       });

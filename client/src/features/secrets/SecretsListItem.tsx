@@ -23,6 +23,7 @@ import { TimeCaption } from "../../components/TimeCaption";
 import SecretEdit from "./SecretEdit";
 import SecretDelete from "./SecretDelete";
 import { SecretDetails, SecretKind } from "./secrets.types";
+import { storageSecretNameToFieldName } from "./secrets.utils";
 
 interface SecretsListItemProps {
   kind: SecretKind;
@@ -33,9 +34,7 @@ export default function SecretsListItem({
   secret,
 }: SecretsListItemProps) {
   const secretDisplayName =
-    kind === "storage"
-      ? secret.name.split("-").slice(1).join("-") || secret.name
-      : secret.name;
+    kind === "storage" ? storageSecretNameToFieldName(secret) : secret.name;
   return (
     <Card
       className="border"

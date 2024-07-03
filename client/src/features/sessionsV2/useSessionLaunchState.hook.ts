@@ -23,13 +23,9 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
-import { CLOUD_OPTIONS_OVERRIDE } from "../project/components/cloudStorage/projectCloudStorage.constants";
-import { useGetStorageSecretsByV2StorageIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import useDataSourceConfiguration from "../ProjectPageV2/ProjectPageContent/DataSources/useDataSourceConfiguration.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import {
-  RCloneOption,
-  useGetStoragesV2Query,
-} from "../projectsV2/api/storagesV2.api";
+import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api";
 import { useGetDockerImageQuery } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
@@ -37,7 +33,6 @@ import { DockerImageStatus } from "../session/startSessionOptions.types";
 import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-import type { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
 
 interface StartSessionFromLauncherProps {
@@ -163,63 +158,10 @@ export default function useSessionLauncherState({
     dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
   }, [dispatch, project.repositories]);
 
-  const { data: storagesSecrets } = useGetStorageSecretsByV2StorageIdQuery({
-    storageIds: storages?.map((s) => s.storage.storage_id) ?? [],
-  });
-
-  const initialCloudStorages = useMemo(
-    () =>
-      storages?.map((cloudStorage) => {
-        const storageDefinition = cloudStorage.storage;
-        const defSensitiveFieldsMap: Record<string, RCloneOption> = {};
-        if (cloudStorage.sensitive_fields != null) {
-          cloudStorage.sensitive_fields.forEach((f) => {
-            if (f.name != null) defSensitiveFieldsMap[f.name] = f;
-          });
-        }
-        const configSensitiveFields = Object.keys(
-          storageDefinition.configuration
-        ).filter((key) => defSensitiveFieldsMap[key] != null);
-
-        const overrides =
-          storageDefinition.storage_type != null
-            ? CLOUD_OPTIONS_OVERRIDE[storageDefinition.storage_type]
-            : undefined;
-
-        const sensitiveFieldDefinitions = configSensitiveFields
-          .filter((key) => defSensitiveFieldsMap[key].name != null)
-          .map((key) => {
-            const { help, name } = defSensitiveFieldsMap[key];
-            return {
-              help: overrides?.[key]?.help ?? help ?? "",
-              friendlyName: overrides?.[key]?.friendlyName ?? name ?? key,
-              name: name ?? key,
-              value: "",
-            };
-          });
-
-        const sensitiveFieldValues: SessionStartCloudStorageConfiguration["sensitiveFieldValues"] =
-          {};
-        configSensitiveFields.forEach((key) => {
-          const { name } = defSensitiveFieldsMap[key];
-          if (name == null) return;
-          sensitiveFieldValues[name] = "";
-        });
-        const savedCredentialFields = storagesSecrets
-          ? storagesSecrets[storageDefinition.storage_id].map((s) => s.name)
-          : [];
-        return {
-          active: true,
-          cloudStorage,
-          sensitiveFieldDefinitions,
-          sensitiveFieldValues,
-          saveCredentials: false,
-          savedCredentialFields,
-        };
-      }),
-    [storages, storagesSecrets]
-  );
-
+  const { cloudStorageConfigs: initialCloudStorages } =
+    useDataSourceConfiguration({
+      storages,
+    });
   useEffect(() => {
     if (initialCloudStorages == null) return;
     dispatch(

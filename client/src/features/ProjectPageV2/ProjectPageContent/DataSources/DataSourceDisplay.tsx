@@ -19,6 +19,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import {
   LayoutSidebarInsetReverse,
+  Lock,
   Pencil,
   ThreeDotsVertical,
   Trash,
@@ -45,6 +46,7 @@ import {
   useDeleteStoragesV2ByStorageIdMutation,
 } from "../../../projectsV2/api/storagesV2.api.ts";
 import sessionItemStyles from "../../../sessionsV2/SessionList/SessionItemDisplay.module.scss";
+import DataSourceCredentialsModal from "./DataSourceCredentialsModal.tsx";
 import { DataSourceView } from "./DataSourceView.tsx";
 
 interface DataSourceDeleteModalProps {
@@ -126,8 +128,12 @@ export function DataSourceActions({
   storage: CloudStorageGetRead;
   projectId: string;
 }) {
+  const [isCredentialsOpen, setCredentialsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const toggleCredentials = useCallback(() => {
+    setCredentialsOpen((open) => !open);
+  }, []);
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
   }, []);
@@ -182,8 +188,25 @@ export function DataSourceActions({
           >
             <Pencil /> Edit data source
           </DropdownItem>
+          <DropdownItem
+            className={cx(
+              "d-flex",
+              "align-items-center",
+              "gap-2",
+              "justify-content-start"
+            )}
+            onClick={toggleCredentials}
+            data-cy="data-source-credentials"
+          >
+            <Lock /> Update Credentials
+          </DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>
+      <DataSourceCredentialsModal
+        storage={storage}
+        setOpen={setCredentialsOpen}
+        isOpen={isCredentialsOpen}
+      />
       <DataSourceDeleteModal
         storage={storage}
         isOpen={isDeleteOpen}

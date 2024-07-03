@@ -318,7 +318,7 @@ export function AddCloudStorageConnectionTestResult({
   return (
     <div className={cx("w-100", "my-0")}>
       {" "}
-      <SuccessAlert timeout={0}>
+      <SuccessAlert dismissible={false} timeout={0}>
         <p className="p-0">The connection to the storage works correctly.</p>
       </SuccessAlert>
     </div>

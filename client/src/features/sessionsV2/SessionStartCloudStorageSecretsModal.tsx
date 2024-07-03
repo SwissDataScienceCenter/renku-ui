@@ -22,6 +22,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRepeat,
   ChevronRight,
+  Eraser,
   EyeFill,
   EyeSlashFill,
   KeyFill,
@@ -52,47 +53,80 @@ import type {
 import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { RCloneOption } from "../projectsV2/api/storagesV2.api";
 import type { SessionStartCloudStorageConfiguration } from "../sessionsV2/startSessionOptionsV2.types";
+import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 
 export type SessionLaunchModalCloudStorageConfiguration =
   SessionStartCloudStorageConfiguration;
 
 interface CredentialsButtonsProps
   extends Pick<SessionStartCloudStorageSecretsModalProps, "onCancel"> {
+  context: Required<SessionStartCloudStorageSecretsModalProps["context"]>;
+  hasSavedCredentials: boolean;
   onSkip: () => void;
   validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
 }
 
 function CredentialsButtons({
+  context,
+  hasSavedCredentials,
   onCancel,
   onSkip,
   validationResult,
 }: CredentialsButtonsProps) {
   const skipButtonRef = useRef<HTMLAnchorElement>(null);
+  const clearButtonRef = useRef<HTMLAnchorElement>(null);
   return (
     <div>
       <Button className="me-5" color="outline-danger" onClick={onCancel}>
         <XLg className={cx("bi", "me-1")} />
         Cancel
       </Button>
-      <span ref={skipButtonRef}>
-        <Button className={cx("ms-2", "btn-outline-rk-green")} onClick={onSkip}>
-          Skip <SkipForward className={cx("bi", "me-1")} />
-        </Button>
-      </span>
-      <UncontrolledTooltip target={skipButtonRef}>
-        Skip the connection test. At session launch, the storage will try mount
-        {validationResult.isError
-          ? " using the provided credentials"
-          : " without any credentials"}
-        .
-      </UncontrolledTooltip>
+      {context === "session" && (
+        <>
+          <span ref={skipButtonRef}>
+            <Button
+              className={cx("ms-2", "btn-outline-rk-green")}
+              onClick={onSkip}
+            >
+              Skip <SkipForward className={cx("bi", "me-1")} />
+            </Button>
+          </span>
+          <UncontrolledTooltip target={skipButtonRef}>
+            Skip the connection test. At session launch, the storage will try
+            mount
+            {validationResult.isError
+              ? " using the provided credentials"
+              : " without any credentials"}
+            .
+          </UncontrolledTooltip>
+        </>
+      )}
+      {context === "storage" && (
+        <>
+          <span ref={clearButtonRef}>
+            <Button
+              className={cx("ms-2", "btn-outline-rk-green")}
+              onClick={onSkip}
+              disabled={!hasSavedCredentials}
+            >
+              Clear <Eraser className={cx("bi", "me-1")} />
+            </Button>
+          </span>
+          <UncontrolledTooltip target={clearButtonRef}>
+            Forget saved credentials.
+          </UncontrolledTooltip>
+        </>
+      )}
       <Button
         className={cx(
           "ms-2",
           validationResult.isSuccess && "btn-rk-green",
           validationResult.isError && "btn-danger"
         )}
-        disabled={validationResult.isLoading}
+        disabled={
+          validationResult.isLoading ||
+          (context === "storage" && hasSavedCredentials)
+        }
         type="submit"
       >
         {validationResult.isLoading ? (
@@ -105,7 +139,8 @@ function CredentialsButtons({
           </span>
         ) : (
           <span>
-            Continue <ChevronRight className="bi" />
+            {context === "session" ? "Continue" : "Test and Save"}{" "}
+            <ChevronRight className="bi" />
           </span>
         )}
       </Button>
@@ -161,6 +196,60 @@ function ProgressBreadcrumbs({
         ))}
       </ol>
     </nav>
+  );
+}
+
+interface SensitiveFieldWidgetProps
+  extends CloudStorageConfigurationSecretsProps {
+  credentialFieldDict: Record<string, string>;
+  field: {
+    name: string;
+    friendlyName: string;
+  };
+  hasIncompleteSavedCredentials: boolean;
+}
+
+function SensitiveFieldWidget({
+  cloudStorageConfig,
+  credentialFieldDict,
+  context,
+  control,
+  field,
+  hasIncompleteSavedCredentials,
+}: SensitiveFieldWidgetProps) {
+  const savedValue = credentialFieldDict[field.name];
+  if (context === "storage") {
+    if (savedValue != null) {
+      return (
+        <div className="mt-2">
+          <Label htmlFor={field.name}>{field.friendlyName}</Label>
+          <Input id={field.name} value="<saved secret>" readOnly />
+        </div>
+      );
+    }
+    if (hasIncompleteSavedCredentials) {
+      return (
+        <div className="mt-2">
+          <Label htmlFor={field.name}>{field.friendlyName}</Label>
+          <Input
+            id={field.name}
+            defaultValue="<clear credentials to edit>"
+            readOnly
+          />
+        </div>
+      );
+    }
+  }
+  const defaultValue =
+    cloudStorageConfig.sensitiveFieldValues[field.name] ?? "";
+  return (
+    <SensitiveFieldInput
+      key={field.name}
+      control={control}
+      defaultValue={defaultValue}
+      friendlyName={field.friendlyName}
+      option={field}
+    />
   );
 }
 
@@ -240,14 +329,29 @@ function SensitiveFieldInput({
 }
 interface CloudStorageConfigurationSecretsProps {
   cloudStorageConfig: SessionLaunchModalCloudStorageConfiguration;
+  context: Required<SessionStartCloudStorageSecretsModalProps["context"]>;
   control: SensitiveFieldInputProps["control"];
 }
 
 function CloudStorageConfigurationSecrets({
   cloudStorageConfig,
+  context,
   control,
 }: CloudStorageConfigurationSecretsProps) {
   const storage = cloudStorageConfig.cloudStorage.storage;
+
+  const credentialFieldDict = Object.fromEntries(
+    cloudStorageConfig.savedCredentialFields.map((secret) => [
+      storageSecretNameToFieldName({ name: secret }),
+      secret,
+    ])
+  );
+
+  const savedCredentialsLength = Object.keys(credentialFieldDict).length;
+  const hasIncompleteSavedCredentials =
+    savedCredentialsLength > 0 &&
+    savedCredentialsLength !=
+      cloudStorageConfig.sensitiveFieldDefinitions.length;
 
   return (
     <>
@@ -257,48 +361,59 @@ function CloudStorageConfigurationSecrets({
       </div>
       <div>
         {cloudStorageConfig.sensitiveFieldDefinitions.map((field) => {
-          const defaultValue =
-            cloudStorageConfig.sensitiveFieldValues[field.name] ?? "";
           return (
-            <SensitiveFieldInput
+            <SensitiveFieldWidget
               key={field.name}
+              cloudStorageConfig={cloudStorageConfig}
+              context={context}
+              credentialFieldDict={credentialFieldDict}
               control={control}
-              defaultValue={defaultValue}
-              friendlyName={field.friendlyName}
-              option={field}
+              field={field}
+              hasIncompleteSavedCredentials={hasIncompleteSavedCredentials}
             />
           );
         })}
       </div>
-      <div className="mt-2">
-        <Controller
-          name="saveCredentials"
-          control={control}
-          defaultValue={false}
-          render={({ field }) => (
-            <Input
-              id="saveCredentials"
-              className="form-check-input"
-              checked={field.value}
-              innerRef={field.ref}
-              onBlur={field.onBlur}
-              onChange={field.onChange}
-              type="checkbox"
-            />
-          )}
-        />
-        <Label
-          className={cx("form-check-label", "ms-2")}
-          htmlFor="saveCredentials"
-        >
-          Save credentials for future sessions
-        </Label>
+      {context === "session" && (
+        <div className="mt-2">
+          <Controller
+            name="saveCredentials"
+            control={control}
+            defaultValue={false}
+            render={({ field }) => (
+              <Input
+                id="saveCredentials"
+                className="form-check-input"
+                checked={field.value}
+                innerRef={field.ref}
+                onBlur={field.onBlur}
+                onChange={field.onChange}
+                type="checkbox"
+              />
+            )}
+          />
+          <Label
+            className={cx("form-check-label", "ms-2")}
+            htmlFor="saveCredentials"
+          >
+            Save credentials for future sessions
+          </Label>
+        </div>
+      )}
+      <div>
+        {context == "storage" && hasIncompleteSavedCredentials && (
+          <div className={cx("text-danger", "mt-3")}>
+            The saved credentials for this data source are incomplete so they
+            will be ignored at session launch.
+          </div>
+        )}
       </div>
     </>
   );
 }
 
 interface SessionStartCloudStorageSecretsModalProps {
+  context?: "session" | "storage";
   isOpen: boolean;
   onCancel: () => void;
   onStart: (
@@ -309,6 +424,7 @@ interface SessionStartCloudStorageSecretsModalProps {
     | undefined;
 }
 export default function SessionStartCloudStorageSecretsModal({
+  context = "session",
   isOpen,
   onCancel,
   onStart,
@@ -336,23 +452,19 @@ export default function SessionStartCloudStorageSecretsModal({
   const [validateCloudStorageConnection, validationResult] =
     useTestCloudStorageConnectionMutation();
 
-  const onNext = useCallback(() => {
-    if (index < cloudStorageConfigs.length - 1) {
-      if (!validationResult.isUninitialized) validationResult.reset();
-      resetForm();
-      setIndex((index) => index + 1);
-    } else {
-      resetForm();
-      onStart([...noCredentialsConfigs, ...cloudStorageConfigs]);
-    }
-  }, [
-    cloudStorageConfigs,
-    index,
-    noCredentialsConfigs,
-    onStart,
-    resetForm,
-    validationResult,
-  ]);
+  const onNext = useCallback(
+    (csConfigs: SessionLaunchModalCloudStorageConfiguration[]) => {
+      if (index < csConfigs.length - 1) {
+        if (!validationResult.isUninitialized) validationResult.reset();
+        resetForm();
+        setIndex((index) => index + 1);
+      } else {
+        resetForm();
+        onStart([...noCredentialsConfigs, ...csConfigs]);
+      }
+    },
+    [index, noCredentialsConfigs, onStart, resetForm, validationResult]
+  );
 
   const onSkip = useCallback(() => {
     if (cloudStorageConfigs.length < 1) {
@@ -366,7 +478,7 @@ export default function SessionStartCloudStorageSecretsModal({
       active: false,
     };
     setCloudStorageConfigs(newCloudStorageConfigs);
-    onNext();
+    onNext(newCloudStorageConfigs);
   }, [cloudStorageConfigs, index, noCredentialsConfigs, onNext, onStart]);
 
   const onContinue = useCallback(
@@ -408,7 +520,7 @@ export default function SessionStartCloudStorageSecretsModal({
     if (cloudStorageConfigs == null) return;
     if (cloudStorageConfigs[index].active && !validationResult.isSuccess)
       return;
-    onNext();
+    onNext(cloudStorageConfigs);
   }, [
     cloudStorageConfigs,
     index,
@@ -420,17 +532,24 @@ export default function SessionStartCloudStorageSecretsModal({
 
   if (cloudStorageConfigs == null) return null;
   if (cloudStorageConfigs.length < 1) return null;
+  const modalStrings =
+    context === "session"
+      ? {
+          dataCy: "session-cloud-storage-credentials-modal",
+          header: "Session Storage Credentials",
+        }
+      : {
+          dataCy: "cloud-storage-credentials-modal",
+          header: "Cloud Storage Credentials",
+        };
+
+  const hasSavedCredentials = cloudStorageConfigs.some(
+    (csc) => csc.savedCredentialFields.length > 0
+  );
 
   return (
-    <Modal
-      centered
-      data-cy="session-cloud-storage-credentials-modal"
-      isOpen={isOpen}
-      size="lg"
-    >
-      <ModalHeader className={cx("fw-bold")}>
-        Session Storage Credentials
-      </ModalHeader>
+    <Modal centered data-cy={modalStrings.dataCy} isOpen={isOpen} size="lg">
+      <ModalHeader className={cx("fw-bold")}>{modalStrings.header}</ModalHeader>
       <Form
         noValidate
         className="form-rk-green"
@@ -440,19 +559,26 @@ export default function SessionStartCloudStorageSecretsModal({
         <ModalBody className="pt-0">
           <CloudStorageConfigurationSecrets
             cloudStorageConfig={cloudStorageConfigs[index]}
+            context={context}
             control={control}
           />
 
           <div className="mt-3">
-            {validationResult.isError ? (
+            {!validationResult.isError ? (
+              <div>&nbsp;</div>
+            ) : context === "storage" ? (
+              <div className="text-danger">
+                The data source could not be mounted. Please try different
+                credentials or rely on providing credentials at session launch
+                time.
+              </div>
+            ) : (
               <div className="text-danger">
                 The data source could not be mounted. Please retry with
                 different credentials, or skip the test. If you skip, the data
                 source will still try to mount, using the provided credentials,
                 at session launch time.
               </div>
-            ) : (
-              <div>&nbsp;</div>
             )}
           </div>
         </ModalBody>
@@ -466,6 +592,8 @@ export default function SessionStartCloudStorageSecretsModal({
             />
           </div>
           <CredentialsButtons
+            context={context}
+            hasSavedCredentials={hasSavedCredentials}
             onCancel={onCancel}
             onSkip={onSkip}
             validationResult={validationResult}

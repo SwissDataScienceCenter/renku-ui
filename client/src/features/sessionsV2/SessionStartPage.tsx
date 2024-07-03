@@ -43,7 +43,8 @@ import {
 } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { usePostStoragesV2ByStorageIdSecretsMutation } from "../projectsV2/api/storagesV2.api";
+import { usePostStoragesV2ByStorageIdSecretsMutation } from "../projectsV2/api/projectV2.enhanced-api";
+import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
 import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
 import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
@@ -271,11 +272,13 @@ function doesCloudStorageNeedCredentials(
 ) {
   if (config.active === false) return false;
   const sensitiveFields = Object.keys(config.sensitiveFieldValues);
-  if (
-    sensitiveFields.every((key) =>
-      config.savedCredentialFields.find((field) => key === field)
-    )
-  )
+  const credentialFieldDict = Object.fromEntries(
+    config.savedCredentialFields.map((field) => [
+      storageSecretNameToFieldName({ name: field }),
+      true,
+    ])
+  );
+  if (sensitiveFields.every((key) => credentialFieldDict[key] != null))
     return false;
   return Object.values(config.sensitiveFieldValues).some(
     (value) => value === ""

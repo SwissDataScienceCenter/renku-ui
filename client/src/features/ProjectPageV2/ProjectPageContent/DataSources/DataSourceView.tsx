@@ -21,7 +21,9 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Offcanvas, OffcanvasBody } from "reactstrap";
 import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem";
 import { getCredentialFieldDefinitions } from "../../../project/utils/projectCloudStorage.utils";
+import { useGetStoragesV2ByStorageIdSecretsQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
+import { storageSecretNameToFieldName } from "../../../secrets/secrets.utils";
 import { DataSourceActions } from "./DataSourceDisplay";
 
 interface DataSourceViewProps {
@@ -43,7 +45,14 @@ export function DataSourceView({
   const anySensitiveField = Object.keys(storageDefinition.configuration).some(
     (key) => sensitiveFields.includes(key)
   );
-
+  const { data: storageSecrets } = useGetStoragesV2ByStorageIdSecretsQuery({
+    storageId: storage.storage.storage_id,
+  });
+  const savedCredentialFields =
+    storageSecrets?.reduce((acc: Record<string, string>, s) => {
+      acc[storageSecretNameToFieldName(s)] = s.name;
+      return acc;
+    }, {}) ?? {};
   const credentialFieldDefinitions = useMemo(
     () => getCredentialFieldDefinitions(storage),
     [storage]
@@ -53,6 +62,9 @@ export function DataSourceView({
       credentialFieldDefinitions?.filter((field) => field.requiredCredential),
     [credentialFieldDefinitions]
   );
+  const nonRequiredCredentialConfigurationKeys = Object.keys(
+    storageDefinition.configuration
+  ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
 
   return (
     <Offcanvas
@@ -90,14 +102,17 @@ export function DataSourceView({
             </div>
             <div>{storageDefinition.target_path}</div>
           </div>
-          {Object.keys(storageDefinition.configuration).map((key) => (
-            <div className="mt-2" key={key}>
-              <div>
-                <small className="text-capitalize fw-bold">{key}</small>
+          {nonRequiredCredentialConfigurationKeys.map((key) => {
+            const value = storageDefinition.configuration[key]?.toString();
+            return (
+              <div className="mt-2" key={key}>
+                <div>
+                  <small className="text-capitalize fw-bold">{key}</small>
+                </div>
+                <div>{value}</div>
               </div>
-              <div>{storageDefinition.configuration[key]?.toString()}</div>
-            </div>
-          ))}
+            );
+          })}
           <div className="mt-3">
             <div>
               <small className="fw-bold">Source path</small>
@@ -117,14 +132,33 @@ export function DataSourceView({
                 <div>
                   <small className="fw-bold">Required credentials</small>
                 </div>
-                <ul className={cx("ps-4", "mb-0")}>
-                  {requiredCredentials.map(({ name, help }, index) => (
-                    <li key={index}>
-                      {name}
-                      {help && <CredentialMoreInfo help={help} />}
-                    </li>
-                  ))}
-                </ul>
+                <table className={cx("ps-4", "mb-0", "table", "table-sm")}>
+                  <thead>
+                    <tr>
+                      <th>Field</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {requiredCredentials.map(({ name, help }, index) => {
+                      const value =
+                        name == null
+                          ? "unknown"
+                          : savedCredentialFields[name]
+                          ? "<saved secret>"
+                          : storageDefinition.configuration[name]?.toString();
+                      return (
+                        <tr key={index}>
+                          <td>
+                            {name}
+                            {help && <CredentialMoreInfo help={help} />}
+                          </td>
+                          <td data-cy={`${name}-value`}>{value}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
           <div className="mt-3">

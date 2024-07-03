@@ -18,6 +18,7 @@
 
 import {
   CloudStorageGetRead,
+  CloudStorageWithIdRead,
   RCloneConfig,
   RCloneOption,
 } from "../../projectsV2/api/storagesV2.api";
@@ -435,7 +436,7 @@ export function storageDefinitionAfterSavingCredentialsFromConfig(
 
 export function storageDefinitionFromConfig(
   config: SessionStartCloudStorageConfiguration
-) {
+): CloudStorageWithIdRead {
   const storageDefinition = config.cloudStorage.storage;
   const newStorageDefinition = { ...storageDefinition };
   newStorageDefinition.configuration = { ...storageDefinition.configuration };

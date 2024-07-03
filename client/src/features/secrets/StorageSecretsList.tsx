@@ -22,6 +22,7 @@ import { Col, Container, Row } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { useGetSecretsQuery } from "./secrets.api";
 import type { SecretDetails } from "./secrets.types";
+import { storageSecretNameToStorageId } from "./secrets.utils";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import SecretsListItem from "./SecretsListItem";
 
@@ -58,7 +59,7 @@ export default function StorageSecretsList() {
 
   if (secrets.data == null || secrets.data?.length === 0) return null;
   const secretsGroups = secrets.data.reduce((acc, secret) => {
-    const group = secret.name.split("-")[0];
+    const group = storageSecretNameToStorageId(secret);
     if (group in acc) {
       acc[group].push(secret);
     } else {
