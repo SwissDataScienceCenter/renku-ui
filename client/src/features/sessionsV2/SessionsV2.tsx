@@ -20,7 +20,6 @@ import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
   GearFill,
-  LayoutSidebarInsetReverse,
   PencilSquare,
   ThreeDotsVertical,
   Trash,
@@ -30,7 +29,6 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  Row,
   UncontrolledDropdown,
 } from "reactstrap";
 
@@ -46,20 +44,9 @@ import { Session } from "../session/sessions.types";
 import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
-import {
-  SessionBtnBox,
-  SessionItemDisplay,
-  SessionNameBox,
-  SessionStatusBadgeBox,
-  SessionStatusLabelBox,
-} from "./SessionList/SessionItemDisplay";
+import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
-import ActiveSessionButton from "./components/SessionButton/ActiveSessionButton";
-import {
-  SessionStatusV2Description,
-  SessionStatusV2Label,
-} from "./components/SessionStatus/SessionStatus";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 
@@ -67,7 +54,7 @@ import { SessionLauncher } from "./sessionsV2.types";
 import "../../notebooks/Notebooks.css";
 
 import dotsDropdownStyles from "../../components/buttons/ThreeDots.module.scss";
-import sessionItemStyles from "./SessionList/SessionItemDisplay.module.scss";
+import SessionItem from "./SessionList/SessionItem";
 
 export function getShowSessionUrlByProject(
   project: Project,
@@ -265,44 +252,11 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
 
   return (
     <>
-      <Row
-        className={cx(
-          "px-0",
-          "py-4",
-          "py-xl-3",
-          "m-0",
-          sessionItemStyles.ItemDisplaySessionRow
-        )}
-      >
-        <h1>ORPHANED</h1>
-        <SessionNameBox handler={openSessionDetails}>
-          <LayoutSidebarInsetReverse
-            className={cx("flex-shrink-0", "me-0")}
-            size="20"
-          />
-          <span
-            className={cx(
-              "text-truncate",
-              "fst-italic",
-              sessionItemStyles.ItemDisplaySessionName
-            )}
-          >
-            Orphan session
-          </span>
-        </SessionNameBox>
-        <SessionStatusBadgeBox>
-          <SessionStatusV2Label session={session} />
-        </SessionStatusBadgeBox>
-        <SessionStatusLabelBox>
-          <SessionStatusV2Description session={session} />
-        </SessionStatusLabelBox>
-        <SessionBtnBox>
-          <ActiveSessionButton
-            session={session}
-            showSessionUrl={getShowSessionUrlByProject(project, session.name)}
-          />
-        </SessionBtnBox>
-      </Row>
+      <SessionItem
+        project={project}
+        session={session}
+        toggleSessionDetails={openSessionDetails}
+      />
       <SessionView
         sessions={sessions}
         project={project}

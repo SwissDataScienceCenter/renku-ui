@@ -66,12 +66,12 @@ export default function ProjectInformation({
       <p>
         Namespace: <span className="fw-bold">{project.namespace}</span>
       </p>
-      <p className={cx("d-flex", "flex-wrap")}>
-        <span className="me-1">Visibility: </span>
+      <div className={cx("d-flex", "flex-wrap", "mb-3")}>
+        <p className={cx("me-1", "mb-0")}>Visibility: </p>
         <span className="fw-bold">
           <VisibilityIcon visibility={project.visibility} />
         </span>
-      </p>
+      </div>
       <p>
         Created:{" "}
         <TimeCaption

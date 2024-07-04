@@ -127,7 +127,11 @@ export default function SessionLauncherFormContent({
           name="environment_kind"
           render={({ field }) => (
             <div className={cx("d-flex", "gap-4")}>
-              <div>
+              <div
+                className={cx(
+                  environments && environments.length == 0 && "d-none"
+                )}
+              >
                 <Input
                   id="addSessionLauncherGlobalEnvironment"
                   type="radio"
@@ -138,10 +142,7 @@ export default function SessionLauncherFormContent({
                   data-cy="edit-session-type-existing"
                 />
                 <Label
-                  className={cx(
-                    environments && environments.length == 0 && "d-none",
-                    "ms-2"
-                  )}
+                  className="ms-2"
                   for="addSessionLauncherGlobalEnvironment"
                 >
                   Global environment
