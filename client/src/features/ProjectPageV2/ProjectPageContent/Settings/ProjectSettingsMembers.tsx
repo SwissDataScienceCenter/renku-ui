@@ -298,7 +298,7 @@ function ProjectPageSettingsMembersContent({
                 onClick={toggleAddMemberModalOpen}
                 size="sm"
               >
-                <PlusLg />
+                <PlusLg className="icon-text" />
               </Button>
             }
             members={members}

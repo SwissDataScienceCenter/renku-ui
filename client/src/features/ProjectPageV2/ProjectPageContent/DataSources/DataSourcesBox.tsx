@@ -25,7 +25,7 @@ import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api.ts
 import AccessGuard from "../../utils/AccessGuard.tsx";
 import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
 import { DataSourceDisplay } from "./DataSourceDisplay.tsx";
-import { Button, Card, CardBody, CardHeader } from "reactstrap";
+import { Button, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 export function DataSourcesDisplay({ project }: { project: Project }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +60,7 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
               disabled={null}
               enabled={
                 <Button color="outline-primary" onClick={toggle} size="sm">
-                  <PlusLg />
+                  <PlusLg className="icon-text" />
                 </Button>
               }
               minimumRole="editor"
@@ -69,32 +69,36 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
           </div>
         </div>
       </CardHeader>
-      <CardBody>
-        {!isLoading && !isFetching && totalStorages === 0 ? (
-          <p className="m-0">
-            Add published datasets from data repositories, and connect to cloud
-            storage to read and write custom data.
-          </p>
-        ) : (
-          <div>
-            {data?.map((storage, index) => (
-              <DataSourceDisplay
-                key={index}
-                storage={storage}
-                projectId={project.id}
-              />
-            ))}
-            {contentLoading}
-          </div>
-        )}
-        <AddCloudStorageModal
-          currentStorage={null}
-          isOpen={isOpen}
-          toggle={toggle}
-          projectId={project.id}
-          isV2
-        />
-      </CardBody>
+      {isLoading || isFetching || totalStorages === 0 ? (
+        <CardBody>
+          {isLoading || isFetching ? (
+            <Loader />
+          ) : (
+            <p className="m-0">
+              Add published datasets from data repositories, and connect to
+              cloud storage to read and write custom data.
+            </p>
+          )}
+        </CardBody>
+      ) : (
+        <ListGroup flush>
+          {data?.map((storage, index) => (
+            <DataSourceDisplay
+              key={index}
+              storage={storage}
+              projectId={project.id}
+            />
+          ))}
+          {contentLoading}
+        </ListGroup>
+      )}
+      <AddCloudStorageModal
+        currentStorage={null}
+        isOpen={isOpen}
+        toggle={toggle}
+        projectId={project.id}
+        isV2
+      />
     </Card>
   );
 }

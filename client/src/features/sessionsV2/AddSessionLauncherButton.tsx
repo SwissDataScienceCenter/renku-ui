@@ -49,7 +49,7 @@ export default function AddSessionLauncherButton({
           onClick={toggle}
           size="sm"
         >
-          <PlusLg />
+          <PlusLg className="icon-text" />
         </Button>
       )}
       <Step1AddSessionModal isOpen={isOpen} toggleModal={toggle} />

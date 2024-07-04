@@ -48,48 +48,77 @@ export default function SessionItem({
   return (
     <ListGroupItem>
       <Row className="g-2">
-        <Col
-          xs={12}
-          className={cx("cursor-pointer", "link-primary")}
-          onClick={() => toggleSessionDetails()}
-        >
-          <InfoCircleFill className={cx("me-2", "text-icon")} />
-          <span className="fw-bold" data-cy="session-name">
-            {name ? name : <span className="fst-italic">Orphan session</span>}
-          </span>
+        <Col xs={12} lg={9} xl={10}>
+          <Row className="g-2">
+            <Col xs={12} onClick={() => toggleSessionDetails()}>
+              <div
+                className={cx(
+                  "cursor-pointer",
+                  "d-inline-block",
+                  "link-primary"
+                )}
+              >
+                <InfoCircleFill className={cx("me-2", "text-icon")} />
+                <span className="fw-bold" data-cy="session-name">
+                  {name ? (
+                    name
+                  ) : (
+                    <span className="fst-italic">Orphan session</span>
+                  )}
+                </span>
+              </div>
+            </Col>
+
+            <Col xs={12}>
+              <Row className="gy-2">
+                <Col xs={12} md={session ? "auto" : 12}>
+                  {session ? (
+                    <SessionStatusV2Label session={session} />
+                  ) : (
+                    <SessionBadge
+                      className={cx("border-dark-subtle", "bg-light")}
+                    >
+                      <DashCircleFill
+                        className={cx(
+                          "me-2",
+                          "text-icon",
+                          "text-light-emphasis"
+                        )}
+                      />
+                      <span className="text-dark" data-cy="session-status">
+                        Not Running
+                      </span>
+                    </SessionBadge>
+                  )}
+                </Col>
+                {session ? (
+                  <Col xs={12} md="auto">
+                    <SessionStatusV2Description session={session} />
+                  </Col>
+                ) : null}
+              </Row>
+            </Col>
+          </Row>
         </Col>
-        <Col xs={12}>
-          {session ? (
-            <SessionStatusV2Label session={session} />
-          ) : (
-            <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-              <DashCircleFill
-                className={cx("me-2", "text-icon", "text-light-emphasis")}
+
+        <Col className="d-flex justify-content-lg-end" xs={12} lg={3} xl={2}>
+          <div className="my-auto">
+            {session != null ? (
+              <ActiveSessionButton
+                session={session}
+                showSessionUrl={getShowSessionUrlByProject(
+                  project,
+                  session.name
+                )}
               />
-              <span className="text-dark" data-cy="session-status">
-                Not Running
-              </span>
-            </SessionBadge>
-          )}
-        </Col>
-        {session ? (
-          <Col xs={12}>
-            <SessionStatusV2Description session={session} />
-          </Col>
-        ) : null}
-        <Col xs={12}>
-          {session != null ? (
-            <ActiveSessionButton
-              session={session}
-              showSessionUrl={getShowSessionUrlByProject(project, session.name)}
-            />
-          ) : launcher != null ? (
-            <StartSessionButton
-              launcherId={launcher.id}
-              namespace={project.namespace}
-              slug={project.slug}
-            />
-          ) : null}
+            ) : launcher != null ? (
+              <StartSessionButton
+                launcherId={launcher.id}
+                namespace={project.namespace}
+                slug={project.slug}
+              />
+            ) : null}
+          </div>
         </Col>
       </Row>
     </ListGroupItem>

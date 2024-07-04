@@ -55,7 +55,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
               disabled={null}
               enabled={
                 <Button color="outline-primary" onClick={toggle} size="sm">
-                  <PlusLg />
+                  <PlusLg className="icon-text" />
                 </Button>
               }
               minimumRole="editor"
