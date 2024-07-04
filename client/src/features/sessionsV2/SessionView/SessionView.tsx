@@ -19,7 +19,6 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
-  ArrowLeft,
   Clock,
   CodeSquare,
   DashCircleFill,
@@ -39,7 +38,6 @@ import {
   ListGroupItem,
   Offcanvas,
   OffcanvasBody,
-  OffcanvasHeader,
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
