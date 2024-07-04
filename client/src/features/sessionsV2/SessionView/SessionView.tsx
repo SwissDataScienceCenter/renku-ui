@@ -27,7 +27,6 @@ import {
   ExclamationTriangleFill,
   Globe2,
   Link45deg,
-  PencilFill,
   PencilSquare,
 } from "react-bootstrap-icons";
 import {
@@ -35,7 +34,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  CardTitle,
   Col,
   ListGroup,
   ListGroupItem,
@@ -46,7 +44,6 @@ import {
 } from "reactstrap";
 
 import { TimeCaption } from "../../../components/TimeCaption";
-import buttonStyles from "../../../components/buttons/Buttons.module.scss";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
@@ -74,7 +71,6 @@ import {
 import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
-import sessionViewStyles from "./SessionView.module.scss";
 
 interface SessionCardContentProps {
   color: string;
