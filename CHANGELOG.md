@@ -1,5 +1,9 @@
 # Changes
 
+## [3.30.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.30.0...3.30.1) (YYYY-MM-DD)
+
+TODO: Update me here.
+
 ## Changelog file deprecated
 
 The `CHANGELOG.md` file has been deprecated in favor of the
