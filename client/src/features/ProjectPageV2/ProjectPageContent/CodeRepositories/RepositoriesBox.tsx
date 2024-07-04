@@ -24,7 +24,14 @@ import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal.tsx";
 import AccessGuard from "../../utils/AccessGuard.tsx";
 import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
 import { RepositoryItem } from "./CodeRepositoryDisplay.tsx";
-import { Button, Card, CardBody, CardHeader } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  ListGroup,
+  ListGroupItem,
+} from "reactstrap";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
   const { userRole } = useProjectAccess({ projectId: project.id });
@@ -57,27 +64,30 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
           </div>
         </div>
       </CardHeader>
-      <CardBody>
-        {totalRepositories === 0 ? (
+      {totalRepositories === 0 ? (
+        <CardBody>
           <p className="m-0">
             Connect code repositories to save and share code.
           </p>
-        ) : (
-          project.repositories?.map((repositoryUrl, index) => (
-            <RepositoryItem
-              key={index}
-              project={project}
-              url={repositoryUrl}
-              showMenu={true}
-            />
-          ))
-        )}
-        <AddCodeRepositoryStep1Modal
-          toggleModal={toggle}
-          isOpen={isOpen}
-          project={project}
-        />
-      </CardBody>
+        </CardBody>
+      ) : (
+        <ListGroup flush>
+          {project.repositories?.map((repositoryUrl, index) => (
+            <ListGroupItem key={index}>
+              <RepositoryItem
+                project={project}
+                url={repositoryUrl}
+                showMenu={true}
+              />
+            </ListGroupItem>
+          ))}
+        </ListGroup>
+      )}
+      <AddCodeRepositoryStep1Modal
+        toggleModal={toggle}
+        isOpen={isOpen}
+        project={project}
+      />
     </Card>
   );
 }

@@ -29,6 +29,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  ListGroup,
   UncontrolledDropdown,
 } from "reactstrap";
 
@@ -150,7 +151,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       </div>
 
       {totalSessions > 0 && (
-        <ul className={cx("list-group", "list-group-flush")}>
+        <ListGroup flush>
           {launchers?.map((launcher) => (
             <SessionItemDisplay
               key={`launcher-${launcher.id}`}
@@ -165,7 +166,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
               project={project}
             />
           ))}
-        </ul>
+        </ListGroup>
       )}
     </div>
   );

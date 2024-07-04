@@ -17,7 +17,7 @@
  */
 import cx from "classnames";
 import { DashCircleFill, InfoCircleFill } from "react-bootstrap-icons";
-import { Col, Row } from "reactstrap";
+import { Col, ListGroupItem, Row } from "reactstrap";
 
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { getShowSessionUrlByProject } from "../SessionsV2";
@@ -46,7 +46,7 @@ export default function SessionItem({
   toggleSessionDetails,
 }: SessionItemProps) {
   return (
-    <li className="list-group-item">
+    <ListGroupItem>
       <Row className="g-2">
         <Col
           xs={12}
@@ -92,6 +92,6 @@ export default function SessionItem({
           ) : null}
         </Col>
       </Row>
-    </li>
+    </ListGroupItem>
   );
 }

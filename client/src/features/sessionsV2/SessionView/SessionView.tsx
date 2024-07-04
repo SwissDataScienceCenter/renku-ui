@@ -28,12 +28,17 @@ import {
   Globe2,
   Link45deg,
   PencilFill,
+  PencilSquare,
 } from "react-bootstrap-icons";
 import {
   Button,
   Card,
   CardBody,
+  CardHeader,
+  CardTitle,
   Col,
+  ListGroup,
+  ListGroupItem,
   Offcanvas,
   OffcanvasBody,
   Row,
@@ -71,6 +76,42 @@ import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import sessionViewStyles from "./SessionView.module.scss";
 
+interface SessionCardContentProps {
+  color: string;
+  contentDescription: React.ReactNode;
+  contentLabel: React.ReactNode;
+  contentResources?: React.ReactNode;
+  contentSession: React.ReactNode;
+}
+function SessionCardContent({
+  color,
+  contentDescription,
+  contentLabel,
+  contentResources,
+  contentSession,
+}: SessionCardContentProps) {
+  return (
+    <Card
+      className={cx("bg-opacity-10", `bg-${color}`, `border-${color}-subtle`)}
+    >
+      <CardBody className={cx("d-flex", "flex-column")}>
+        <Row className="g-2">
+          <Col xs="auto" className="d-flex">
+            {contentLabel}
+          </Col>
+          <Col xs="auto" className={cx("d-flex", "ms-sm-auto")}>
+            {contentSession}
+          </Col>
+          <Col xs={12} className={cx("d-flex", "align-items-center")}>
+            {contentDescription}
+          </Col>
+          {contentResources && <Col xs={12}>{contentResources}</Col>}
+        </Row>
+      </CardBody>
+    </Card>
+  );
+}
+
 function SessionCard({
   session,
   project,
@@ -79,54 +120,22 @@ function SessionCard({
   project: Project;
 }) {
   return (
-    <Card
-      className={
-        sessionViewStyles[
-          `SessionCard-${getSessionColor(session.status.state)}`
-        ]
+    <SessionCardContent
+      color={getSessionColor(session.status.state)}
+      contentDescription={<SessionStatusV2Description session={session} />}
+      contentLabel={<SessionStatusV2Label session={session} />}
+      contentSession={
+        <ActiveSessionButton
+          session={session}
+          showSessionUrl={getShowSessionUrlByProject(project, session.name)}
+        />
       }
-    >
-      <CardBody className={cx("d-flex", "flex-column")}>
-        <Row>
-          <Col
-            xs={12}
-            sm={6}
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "justify-content-start",
-              "py-2"
-            )}
-          >
-            <SessionStatusV2Label session={session} />
-          </Col>
-          <Col
-            xs={12}
-            sm={6}
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "justify-content-start",
-              "justify-content-sm-end",
-              "py-2"
-            )}
-          >
-            <ActiveSessionButton
-              session={session}
-              showSessionUrl={getShowSessionUrlByProject(project, session.name)}
-            />
-          </Col>
-          <Col xs={12} className={cx("d-flex", "align-items-center", "py-2")}>
-            <SessionStatusV2Description session={session} />
-          </Col>
-          <Col xs={12} className={cx("py-2")}>
-            <SessionRowResourceRequests
-              resourceRequests={session.resources.requests}
-            />
-          </Col>
-        </Row>
-      </CardBody>
-    </Card>
+      contentResources={
+        <SessionRowResourceRequests
+          resourceRequests={session.resources.requests}
+        />
+      }
+    />
   );
 }
 
@@ -138,55 +147,40 @@ function SessionCardNotRunning({
   project: Project;
 }) {
   return (
-    <Card className={sessionViewStyles["SessionCard-gray"]}>
-      <CardBody className={cx("d-flex", "flex-column")}>
-        <Row>
-          <Col
-            xs={6}
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "justify-content-start",
-              "py-2"
-            )}
-          >
-            <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-              <DashCircleFill
-                className={cx("bi", "me-1", "text-light-emphasis")}
-                size={16}
-              />
-              <span className="text-dark">Not Running</span>
-            </SessionBadge>
-          </Col>
-          <Col
-            xs={6}
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "justify-content-end",
-              "py-2"
-            )}
-          >
-            <StartSessionButton
-              launcherId={launcher.id}
-              namespace={project.namespace}
-              slug={project.slug}
+    <SessionCardContent
+      color="dark"
+      contentDescription={
+        <div>
+          <Clock className={cx("me-2", "text-icon")} />
+          <TimeCaption
+            datetime={launcher.creation_date}
+            enableTooltip
+            prefix="Created"
+          />
+        </div>
+      }
+      contentLabel={
+        <div className="my-auto">
+          <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
+            <DashCircleFill
+              className={cx("me-2", "text-icon", "text-light-emphasis")}
             />
-          </Col>
-          <Col
-            xs={12}
-            className={cx("d-flex", "align-items-center", "gap-2", "py-2")}
-          >
-            <Clock size="16" className="flex-shrink-0" />
-            <TimeCaption
-              datetime={launcher.creation_date}
-              enableTooltip
-              prefix="Created"
-            />
-          </Col>
-        </Row>
-      </CardBody>
-    </Card>
+            <span className="text-dark" data-cy="session-status">
+              Not Running
+            </span>
+          </SessionBadge>
+        </div>
+      }
+      contentSession={
+        <div className="my-auto">
+          <StartSessionButton
+            launcherId={launcher.id}
+            namespace={project.namespace}
+            slug={project.slug}
+          />
+        </div>
+      }
+    />
   );
 }
 
@@ -198,10 +192,10 @@ function getSessionColor(state: string) {
     : state === "stopping"
     ? "warning"
     : state === "hibernated"
-    ? "gray"
+    ? "dark"
     : state === "failed"
     ? "danger"
-    : "gray";
+    : "dark";
 }
 
 function EnvironmentCard({
@@ -213,113 +207,54 @@ function EnvironmentCard({
 }) {
   return (
     <>
-      <Card className={cx("border", sessionViewStyles.EnvironmentCard)}>
-        <CardBody className={cx("d-flex", "flex-column")}>
-          <Row>
-            <Col
-              xs={12}
-              className={cx(
-                "d-flex",
-                "align-items-center",
-                "justify-content-between",
-                "py-2"
-              )}
-            >
-              <div className={cx("d-flex", "gap-3")}>
-                <h5 className={cx("fw-bold", "mb-0")}>
-                  <small>
-                    {launcher.environment_kind === "global_environment"
-                      ? environment?.name || ""
-                      : launcher.name}
-                  </small>
-                </h5>
-              </div>
-            </Col>
-            <Col
-              xs={12}
-              className={cx(
-                "d-flex",
-                "align-items-center",
-                "justify-content-start",
-                "py-2"
-              )}
-            >
-              {launcher.environment_kind === "container_image" ? (
-                <div className="d-flex align-items-center gap-2">
-                  <Link45deg size={24} />
-                  Custom image
-                </div>
-              ) : (
-                <div className="d-flex align-items-center gap-2">
-                  <Globe2 size={24} />
-                  Global environment
-                </div>
-              )}
-            </Col>
-            {launcher.environment_kind === "global_environment" ? (
+      <Card className="bg-light">
+        <CardHeader tag="h5">
+          {launcher.environment_kind === "global_environment"
+            ? environment?.name || <span className="fst-italic">No name</span>
+            : launcher.name}
+        </CardHeader>
+        <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
+          <p className="m-0">
+            {launcher.environment_kind === "container_image" ? (
               <>
-                <Col
-                  xs={12}
-                  className={cx(
-                    "d-flex",
-                    "align-items-center",
-                    "justify-content-start",
-                    "py-2"
-                  )}
-                >
-                  {environment?.description ? (
-                    <p>{environment.description}</p>
-                  ) : (
-                    <p className="fst-italic mb-0">No description</p>
-                  )}
-                </Col>
-                <Col
-                  xs={12}
-                  className={cx(
-                    "d-flex",
-                    "align-items-center",
-                    "justify-content-start",
-                    "gap-2",
-                    "py-0"
-                  )}
-                >
-                  <label>Container image:</label>
-                  <CommandCopy command={environment?.container_image || ""} />
-                </Col>
-                <Col
-                  xs={12}
-                  className={cx(
-                    "d-flex",
-                    "flex-wrap",
-                    "align-items-center",
-                    "gap-2",
-                    "py-2"
-                  )}
-                >
-                  <Clock size="16" className="flex-shrink-0" />
-                  Created by <strong>Renku</strong> on{" "}
-                  {toHumanDateTime({
-                    datetime: launcher.creation_date,
-                    format: "date",
-                  })}
-                </Col>
+                <Link45deg className={cx("me-2", "text-icon")} />
+                Custom image
               </>
             ) : (
-              <Col
-                xs={12}
-                className={cx(
-                  "d-flex",
-                  "align-items-center",
-                  "justify-content-start",
-                  "gap-2",
-                  "py-2"
-                )}
-              >
-                <label>Container image:</label>
-                <CommandCopy command={launcher.container_image} />
-              </Col>
+              <>
+                <Globe2 className={cx("me-2", "text-icon")} />
+                Global environment
+              </>
             )}
-          </Row>
+          </p>
+          {launcher.environment_kind === "global_environment" ? (
+            <>
+              <p className="m-0">
+                {environment?.description ? (
+                  environment.description
+                ) : (
+                  <span className="fst-italic">No description</span>
+                )}
+              </p>
+              <div>
+                <span>Container image:</span>
+                <CommandCopy command={environment?.container_image || ""} />
+              </div>
+              <div>
+                <Clock className={cx("me-2", "text-icon")} />
+                Created by <strong>Renku</strong> on{" "}
+                {toHumanDateTime({
+                  datetime: launcher.creation_date,
+                  format: "date",
+                })}
+              </div>
+            </>
+          ) : (
+            <div>
+              <label>Container image:</label>
+              <CommandCopy command={launcher.container_image || ""} />
+            </div>
+          )}
         </CardBody>
       </Card>
     </>
@@ -424,70 +359,106 @@ export function SessionView({
       backdrop={true}
     >
       <OffcanvasBody>
-        <div
-          className="d-flex justify-content-start gap-2 align-items-center mb-4"
-          role="button"
-          onClick={() => setToggleSessionView()}
-          data-cy="get-back-session-view"
-        >
-          <ArrowLeft size={24} />
-          Back
-        </div>
-        <div className="d-flex justify-content-between align-items-center mt-3">
+        <div className={cx("d-flex", "flex-column", "gap-4")}>
           <div>
-            <label className="fst-italic fs-small">
-              {launcher ? "Session launcher" : "Session without launcher"}
-            </label>
-            <h2 className="fw-bold" data-cy="session-view-title">
-              {title}
-            </h2>
+            <Button
+              color="link"
+              onClick={() => setToggleSessionView()}
+              data-cy="get-back-session-view"
+            >
+              <ArrowLeft className={cx("me-2", "text-icon")} />
+              Back
+            </Button>
           </div>
-          {launcherMenu}
-        </div>
-        <p>{description}</p>
-        <h5 className={cx("mt-5", "fw-bold")}>Launched Session</h5>
-        {totalSession > 0 ? (
-          sessions &&
-          Object.entries(sessions).map(([key, session]) => (
-            <div key={key} className="py-2">
-              <SessionStatusV2Title session={session} launcher={launcher} />
-              <SessionCard session={session} project={project} />
+          <div>
+            <div className={cx("d-flex", "justify-content-between")}>
+              <h2 className="m-0" data-cy="session-view-title">
+                {title}
+              </h2>
+              <div className="my-auto">{launcherMenu}</div>
             </div>
-          ))
-        ) : (
-          <div className="py-2">
-            <small>
-              <i>Currently you are NOT running a session from this launcher.</i>
-            </small>
-            {launcher && (
-              <SessionCardNotRunning project={project} launcher={launcher} />
+            <p className={cx("fst-italic", "m-0")}>
+              {launcher ? "Session launcher" : "Session without launcher"}
+            </p>
+          </div>
+          {description && <p className="m-0">{description}</p>}
+
+          <div className={cx("d-flex", "flex-column", "gap-2")}>
+            <h4 className="mb-0">Launched Session</h4>
+            {totalSession > 0 ? (
+              sessions &&
+              Object.entries(sessions).map(([key, session]) => (
+                <div key={key}>
+                  <SessionStatusV2Title session={session} launcher={launcher} />
+                  <SessionCard session={session} project={project} />
+                </div>
+              ))
+            ) : (
+              <div>
+                <p className="mb-2">
+                  No session is running from this launcher.
+                </p>
+                {launcher && (
+                  <SessionCardNotRunning
+                    project={project}
+                    launcher={launcher}
+                  />
+                )}
+              </div>
             )}
           </div>
-        )}
-        {launcher && !isLoading && (
-          <>
-            <div className="mt-5 d-flex gap-2 align-items-center mb-3">
-              <h5 className={cx("fw-bold", "mb-0")}>Session Environment</h5>
+          {launcher && !isLoading && (
+            <div>
+              <div className={cx("d-flex", "justify-content-between", "mb-2")}>
+                <h4 className="my-auto">Session Environment</h4>
+                <MembershipGuard
+                  disabled={null}
+                  enabled={
+                    <>
+                      <Button
+                        color="outline-primary"
+                        id="modify-session-environment-button"
+                        onClick={toggle}
+                        size="sm"
+                        tabIndex={0}
+                      >
+                        <PencilSquare className="text-icon" />
+                      </Button>
+                      <UncontrolledTooltip target="modify-session-environment-button">
+                        Modify session environment
+                      </UncontrolledTooltip>
+                    </>
+                  }
+                  members={members}
+                  minimumRole="editor"
+                />
+              </div>
+              <EnvironmentCard launcher={launcher} environment={environment} />
+              <UpdateSessionLauncherModal
+                isOpen={isUpdateOpen}
+                launcher={launcher}
+                toggle={toggle}
+              />
+            </div>
+          )}
+          <div>
+            <div className={cx("d-flex", "justify-content-between", "mb-2")}>
+              <h4 className="my-auto">Default Resource Class</h4>
               <MembershipGuard
                 disabled={null}
                 enabled={
                   <>
                     <Button
-                      className={cx(
-                        "bg-transparent",
-                        "shadow-none",
-                        "border-0",
-                        "px-1",
-                        buttonStyles.EditButton
-                      )}
-                      onClick={toggle}
+                      color="outline-primary"
+                      id="modify-resource-class-button"
+                      onClick={toggleModifyResources}
+                      size="sm"
                       tabIndex={0}
-                      id="modify-session-environment-button"
                     >
-                      <PencilFill size={20} />
+                      <PencilSquare className="text-icon" />
                     </Button>
-                    <UncontrolledTooltip target="modify-session-environment-button">
-                      Modify session environment
+                    <UncontrolledTooltip target="modify-resource-class-button">
+                      Set resource class
                     </UncontrolledTooltip>
                   </>
                 }
@@ -495,116 +466,78 @@ export function SessionView({
                 minimumRole="editor"
               />
             </div>
-            <EnvironmentCard launcher={launcher} environment={environment} />
-            <UpdateSessionLauncherModal
-              isOpen={isUpdateOpen}
-              launcher={launcher}
-              toggle={toggle}
-            />
-          </>
-        )}
-        <>
-          <div
-            className={cx(
-              "mt-5",
-              "d-flex",
-              "gap-2",
-              "align-items-center",
-              "mb-3"
+            {resourceDetails}
+            {launcherResourceClass && !userLauncherResourceClass && (
+              <p>
+                <ExclamationTriangleFill className={cx("bi", "text-warning")} />{" "}
+                You do not have access to this resource class.
+              </p>
             )}
-          >
-            <h5 className={cx("fw-bold", "mb-0")}>Default Resource Class</h5>
-            <MembershipGuard
-              disabled={null}
-              enabled={
-                <>
-                  <Button
-                    className={cx(
-                      "bg-transparent",
-                      "shadow-none",
-                      "border-0",
-                      "px-1",
-                      buttonStyles.EditButton
-                    )}
-                    onClick={toggleModifyResources}
-                    tabIndex={0}
-                    id="modify-resource-class-button"
-                  >
-                    <PencilFill size={20} />
-                  </Button>
-                  <UncontrolledTooltip target="modify-resource-class-button">
-                    Set resource class
-                  </UncontrolledTooltip>
-                </>
-              }
-              members={members}
-              minimumRole="editor"
+            <ModifyResourcesLauncherModal
+              isOpen={isModifyResourcesOpen}
+              toggleModal={toggleModifyResources}
+              resourceClassId={userLauncherResourceClass?.id}
+              sessionLauncherId={launcher?.id}
             />
           </div>
-          {resourceDetails}
-          {launcherResourceClass && !userLauncherResourceClass && (
-            <p>
-              <ExclamationTriangleFill className={cx("bi", "text-warning")} />{" "}
-              You do not have access to this resource class.
-            </p>
-          )}
-          <ModifyResourcesLauncherModal
-            isOpen={isModifyResourcesOpen}
-            toggleModal={toggleModifyResources}
-            resourceClassId={userLauncherResourceClass?.id}
-            sessionLauncherId={launcher?.id}
-          />
-        </>
-        <h5 className={cx("mt-5", "fw-bold")}>Session Launcher Details</h5>
-        <div className="mt-3">
-          <label className="fw-bold">Default URL</label>
-          <p>
-            The default URL specifies the URL fragment on the session to go to
-            upon launch
-          </p>
+
           <div>
-            {launcher && launcher.default_url ? (
-              <CommandCopy command={launcher.default_url} noMargin />
-            ) : environment && environment.default_url ? (
-              <CommandCopy command={environment.default_url} noMargin />
+            <h4>Default URL</h4>
+            <p className="mb-2">
+              The default URL specifies the URL fragment on the session to go to
+              upon launch
+            </p>
+            <div className="mb-3">
+              {launcher && launcher.default_url ? (
+                <CommandCopy command={launcher.default_url} noMargin />
+              ) : environment && environment.default_url ? (
+                <CommandCopy command={environment.default_url} noMargin />
+              ) : (
+                <CommandCopy command="/lab" noMargin />
+              )}
+            </div>
+          </div>
+
+          <div>
+            <h4>
+              <Database className={cx("me-2", "text-icon")} />
+              Data Sources ({dataSources?.length || 0})
+            </h4>
+            {dataSources && dataSources?.length > 0 ? (
+              <ListGroup>
+                {dataSources?.map((storage, index) => (
+                  <ListGroupItem key={`storage-${index}`}>
+                    <div>Name: {storage.storage.name}</div>
+                    <div>Type: {storage.storage.storage_type}</div>
+                  </ListGroupItem>
+                ))}
+              </ListGroup>
             ) : (
-              <CommandCopy command="/lab" noMargin />
+              <p className="fst-italic">No data sources included</p>
             )}
           </div>
-        </div>
-        <div className="mt-5">
-          <label className={cx("fw-bold", "mb-3")}>
-            <Database size={20} className={cx("me-2")} /> Included Data Sources
-            ({dataSources?.length || 0})
-          </label>
-          <ul className="list-unstyled">
-            {dataSources?.map((storage, index) => (
-              <Row
-                key={`storage-${index}`}
-                className={cx("text-truncate", "ms-4")}
-              >
-                <Col xs={6}>{storage.storage.name}</Col>
-                <Col xs={6}>{storage.storage.storage_type}</Col>
-              </Row>
-            ))}
-          </ul>
-        </div>
-        <div className="mt-5">
-          <label className={cx("fw-bold", "mb-3")}>
-            <CodeSquare size={20} className={cx("me-2")} /> Included Code
-            Repositories ({project.repositories?.length || 0})
-          </label>
-          <ul className="list-unstyled">
-            {project.repositories?.map((repositoryUrl, index) => (
-              <li key={index} className="ms-4">
-                <RepositoryItem
-                  project={project}
-                  url={repositoryUrl}
-                  showMenu={false}
-                />
-              </li>
-            ))}
-          </ul>
+
+          <div>
+            <h4>
+              <CodeSquare className={cx("me-2", "text-icon")} />
+              Code Repositories ({project.repositories?.length || 0})
+            </h4>
+            {dataSources && dataSources?.length > 0 ? (
+              <ListGroup>
+                {project.repositories?.map((repositoryUrl, index) => (
+                  <ListGroupItem key={`storage-${index}`}>
+                    <RepositoryItem
+                      project={project}
+                      url={repositoryUrl}
+                      showMenu={false}
+                    />
+                  </ListGroupItem>
+                ))}
+              </ListGroup>
+            ) : (
+              <p className="fst-italic">No repositories included</p>
+            )}
+          </div>
         </div>
       </OffcanvasBody>
     </Offcanvas>

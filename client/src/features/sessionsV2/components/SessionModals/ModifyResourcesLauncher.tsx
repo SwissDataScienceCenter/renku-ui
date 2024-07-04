@@ -88,36 +88,36 @@ export function ModifyResourcesLauncherModal({
       toggle={toggleModal}
     >
       <ModalHeader toggle={toggleModal}>Set default resource class</ModalHeader>
-      <ModalBody className="py-0">
-        <Row>
-          <Col>
-            {result.error && (
-              <ErrorOrNotAvailableResourcePools title="Error modifying resources" />
-            )}
-            {result.isSuccess && (
-              <SuccessAlert dismissible={false}>
-                <h3 className={cx("fs-6", "fw-bold")}>
-                  Default resource class updated
-                </h3>
-                <p className="mb-0">
-                  The session launcher’s default resource class has been
-                  changed. This change will apply the next time you launch a new
-                  session.
-                </p>
-              </SuccessAlert>
-            )}
-            <p>
-              These changes will apply the{" "}
-              <strong>next time you launch a new session</strong>. If you wish
-              to modify a currently running session, pause it and select ‘Modify
-              session’ in the session options.
+      <ModalBody>
+        {result.error && (
+          <ErrorOrNotAvailableResourcePools title="Error modifying resources" />
+        )}
+        {result.isSuccess && (
+          <SuccessAlert dismissible={false}>
+            <h3 className={cx("fs-6", "fw-bold")}>
+              Default resource class updated
+            </h3>
+            <p className="mb-0">
+              The session launcher’s default resource class has been changed.
+              This change will apply the next time you launch a new session.
             </p>
-            <div className="field-group">{selector}</div>
-          </Col>
-        </Row>
+          </SuccessAlert>
+        )}
+        <p>
+          These changes will apply the{" "}
+          <strong>next time you launch a new session</strong>. If you wish to
+          modify a currently running session, pause it and select ‘Modify
+          session’ in the session options.
+        </p>
+        <div className="field-group">{selector}</div>
       </ModalBody>
       <ModalFooter>
+        <Button color="outline-secondary" onClick={toggleModal}>
+          <XLg className={cx("me-2", "text-icon")} />
+          Cancel
+        </Button>
         <Button
+          color="primary"
           disabled={
             isLoadingResources ||
             !resourcePools ||
@@ -131,15 +131,11 @@ export function ModifyResourcesLauncherModal({
           type="submit"
         >
           {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
+            <Loader className="me-2" inline size={16} />
           ) : (
-            <CheckLg className={cx("bi", "me-1")} />
+            <CheckLg className={cx("me-2", "text-icon")} />
           )}
           Modify resources
-        </Button>
-        <Button className="btn-outline-rk-green" onClick={toggleModal}>
-          <XLg className={cx("bi", "me-1")} />
-          Cancel
         </Button>
       </ModalFooter>
     </Modal>
