@@ -39,6 +39,7 @@ import {
   ListGroupItem,
   Offcanvas,
   OffcanvasBody,
+  OffcanvasHeader,
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
@@ -355,17 +356,16 @@ export function SessionView({
       backdrop={true}
     >
       <OffcanvasBody>
+        <div className="mb-3">
+          <button
+            aria-label="Close"
+            className="btn-close"
+            data-bs-dismiss="offcanvas"
+            onClick={() => setToggleSessionView()}
+          ></button>
+        </div>
+
         <div className={cx("d-flex", "flex-column", "gap-4")}>
-          <div>
-            <Button
-              color="link"
-              onClick={() => setToggleSessionView()}
-              data-cy="get-back-session-view"
-            >
-              <ArrowLeft className={cx("me-2", "text-icon")} />
-              Back
-            </Button>
-          </div>
           <div>
             <div className={cx("d-flex", "justify-content-between")}>
               <h2 className="m-0" data-cy="session-view-title">
@@ -483,7 +483,7 @@ export function SessionView({
               The default URL specifies the URL fragment on the session to go to
               upon launch
             </p>
-            <div className="mb-3">
+            <div>
               {launcher && launcher.default_url ? (
                 <CommandCopy command={launcher.default_url} noMargin />
               ) : environment && environment.default_url ? (
