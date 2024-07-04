@@ -74,11 +74,13 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
               {project.description?.length ? (
                 <p data-cy="project-description">{project.description}</p>
               ) : (
-                <UnderlineArrowLink
-                  tooltip="Add project description"
-                  text="Add description"
-                  to={settingsUrl}
-                />
+                <p>
+                  <UnderlineArrowLink
+                    tooltip="Add project description"
+                    text="Add description"
+                    to={settingsUrl}
+                  />
+                </p>
               )}
             </div>
           </Col>

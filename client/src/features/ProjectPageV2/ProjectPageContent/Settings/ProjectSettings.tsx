@@ -350,11 +350,7 @@ export default function ProjectPageSettings() {
       <ProjectPageSettingsMembers project={project} />
       <AccessGuard
         disabled={null}
-        enabled={
-          <div id="delete" className={cx("px-2", "px-md-5", "pt-4")}>
-            <ProjectPageDelete project={project} />
-          </div>
-        }
+        enabled={<ProjectPageDelete project={project} />}
         role={userRole}
       />
     </div>

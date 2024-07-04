@@ -133,6 +133,7 @@ type BButtonWithMenuV2Props = {
   id?: string;
   size?: string;
 };
+// ! TODO: fix dropdown button -- their appearance is broken when using React-strap components
 export function ButtonWithMenuV2(props: BButtonWithMenuV2Props) {
   return (
     <UncontrolledDropdown
@@ -147,6 +148,7 @@ export function ButtonWithMenuV2(props: BButtonWithMenuV2Props) {
       {props.default}
       <DropdownToggle
         caret
+        data-bs-toggle="dropdown"
         color={props.color ?? "primary"}
         data-cy="button-with-menu-dropdown"
         disabled={props.disabled}

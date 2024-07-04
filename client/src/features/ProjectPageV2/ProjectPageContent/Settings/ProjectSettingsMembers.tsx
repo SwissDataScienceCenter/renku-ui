@@ -26,11 +26,13 @@ import {
   CardHeader,
   Col,
   DropdownItem,
+  ListGroup,
+  ListGroupItem,
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { ButtonWithMenu } from "../../../../components/buttons/Button.tsx";
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button.tsx";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 
@@ -47,7 +49,7 @@ import MembershipGuard from "../../utils/MembershipGuard.tsx";
 import { toSortedMembers } from "../../utils/roleUtils.ts";
 
 type MemberActionMenuProps = Omit<
-  ProjectPageSettingsMembersTableRowProps,
+  ProjectPageSettingsMembersListItemProps,
   "member" | "members" | "numberOfOwners"
 > & { disabled?: boolean; tooltip?: React.ReactNode };
 
@@ -61,28 +63,28 @@ function MemberActionMenu({
   const ref = useRef(null);
   const defaultAction = (
     <Button
-      color="rk-green"
+      color="outline-primary"
       disabled={disabled}
       data-cy={`project-member-edit-${index}`}
       onClick={onEdit}
+      size="sm"
     >
-      <PencilSquare className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Edit
+      <PencilSquare className={cx("me-2", "text-icon")} /> Edit
     </Button>
   );
   return (
     <>
       <span ref={ref}>
-        <ButtonWithMenu
-          className="py-1"
-          color="rk-green"
+        <ButtonWithMenuV2
+          color="outline-primary"
           default={defaultAction}
           disabled={disabled}
-          isPrincipal
+          size="sm"
         >
           <DropdownItem onClick={onRemove}>
-            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+            <Trash className={cx("me-2", "text-icon")} /> Remove
           </DropdownItem>
-        </ButtonWithMenu>
+        </ButtonWithMenuV2>
       </span>
       {tooltip && (
         <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
@@ -98,7 +100,7 @@ function ProjectMemberAction({
   numberOfOwners,
   onRemove,
   onEdit,
-}: ProjectPageSettingsMembersTableRowProps) {
+}: ProjectPageSettingsMembersListItemProps) {
   return (
     <MembershipGuard
       disabled={
@@ -121,7 +123,8 @@ function ProjectMemberAction({
             data-cy={`project-member-remove-${index}`}
             onClick={onRemove}
           >
-            <Trash className={cx("rk-icon", "rk-icon-sm", "me-2")} /> Remove
+            <Trash className={cx("me-2", "text-icon")} />
+            Remove
           </Button>
         ),
         enabled:
@@ -140,7 +143,7 @@ function ProjectMemberAction({
   );
 }
 
-interface ProjectPageSettingsMembersTableRowProps {
+interface ProjectPageSettingsMembersListItemProps {
   index: number;
   member: ProjectMemberResponse;
   members: ProjectMemberResponse[];
@@ -148,119 +151,78 @@ interface ProjectPageSettingsMembersTableRowProps {
   onRemove: () => void;
   onEdit: () => void;
 }
-
-function ProjectPageSettingsMembersTableRow({
+function ProjectPageSettingsMembersListItem({
   index,
   member,
   members,
   numberOfOwners,
   onRemove,
   onEdit,
-}: ProjectPageSettingsMembersTableRowProps) {
+}: ProjectPageSettingsMembersListItemProps) {
   return (
-    <Row className={cx("px-0", "py-4", "py-xl-3", "px-md-2", "m-0")}>
-      <Col xs={9} sm={6} className={cx("d-flex", "align-items-center", "px-3")}>
-        {member.email ?? member.id}
-      </Col>
-      <Col
-        xs={3}
-        sm={6}
-        xl={3}
-        className={cx("d-flex", "align-items-center", "px-2")}
-      >
-        {member.role}
-      </Col>
-      <Col
-        xs={12}
-        xl={3}
-        className={cx("d-flex", "align-items-center", "px-3", "px-md-2")}
-        data-cy={`project-member-actions-${index}`}
-      >
-        <ProjectMemberAction
-          index={index}
-          member={member}
-          members={members}
-          numberOfOwners={numberOfOwners}
-          onRemove={onRemove}
-          onEdit={onEdit}
-        />
-      </Col>
-    </Row>
+    <ListGroupItem>
+      <Row className="g-2">
+        <Col className="align-content-around" xs={12} md="auto">
+          {member.email ?? member.id}{" "}
+          <span className="fw-bold">({member.role})</span>
+        </Col>
+        <Col
+          className="ms-md-auto"
+          xs={12}
+          md="auto"
+          data-cy={`project-member-actions-${index}`}
+        >
+          <ProjectMemberAction
+            index={index}
+            member={member}
+            members={members}
+            numberOfOwners={numberOfOwners}
+            onRemove={onRemove}
+            onEdit={onEdit}
+          />
+        </Col>
+      </Row>
+    </ListGroupItem>
   );
 }
 
-interface ProjectPageSettingsMembersTableProps {
+interface ProjectPageSettingsMembersListProps {
   members: ProjectMemberResponse[];
   projectId: string;
 }
-
-function ProjectPageSettingsMembersTable({
+function ProjectPageSettingsMembersList({
   members,
   projectId,
-}: ProjectPageSettingsMembersTableProps) {
+}: ProjectPageSettingsMembersListProps) {
   const [isEditMemberModalOpen, setIsEditMemberModalOpen] = useState(false);
   const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState<ProjectMemberResponse>();
   const sortedMembers = toSortedMembers(members);
   const numberOfOwners = sortedMembers.filter((m) => m.role === "owner").length;
 
-  const headerClasses = [
-    "w-100",
-    "fst-italic",
-    "fs-small",
-    "text-rk-gray-600",
-    "border-0",
-    "border-bottom",
-    "border-rk-gray-200",
-    "rk-border-dotted",
-  ];
   return (
     <>
-      <Row
-        className={cx("d-none", "d-xl-flex", "pt-3", "px-md-2", "m-0", "mb-1")}
-      >
-        <Col
-          xs={9}
-          sm={6}
-          className={cx("d-flex", "align-items-center", "px-3")}
-        >
-          <span className={cx(headerClasses)}>User id</span>
-        </Col>
-        <Col
-          xs={3}
-          sm={6}
-          xl={3}
-          className={cx("d-flex", "align-items-center", "px-2")}
-        >
-          <span className={cx(headerClasses)}>Role</span>
-        </Col>
-        <Col
-          xs={12}
-          xl={3}
-          className={cx("d-flex", "align-items-center", "px-2")}
-        >
-          <span className={cx(headerClasses)}>Actions</span>
-        </Col>
-      </Row>
-      {sortedMembers.map((d, i) => {
-        return (
-          <ProjectPageSettingsMembersTableRow
-            index={i}
-            key={d.id}
-            member={d}
-            members={members}
-            numberOfOwners={numberOfOwners}
-            onRemove={() => {
-              setMemberToEdit(d);
-              setIsRemoveMemberModalOpen(true);
-            }}
-            onEdit={() => {
-              setMemberToEdit(d);
-              setIsEditMemberModalOpen(true);
-            }}
-          />
-        );
-      })}
+      <ListGroup flush>
+        {sortedMembers.map((d, i) => {
+          return (
+            <ProjectPageSettingsMembersListItem
+              index={i}
+              key={d.id}
+              member={d}
+              members={members}
+              numberOfOwners={numberOfOwners}
+              onRemove={() => {
+                setMemberToEdit(d);
+                setIsRemoveMemberModalOpen(true);
+              }}
+              onEdit={() => {
+                setMemberToEdit(d);
+                setIsEditMemberModalOpen(true);
+              }}
+            />
+          );
+        })}
+      </ListGroup>
       <EditProjectMemberModal
         isOpen={isEditMemberModalOpen}
         member={memberToEdit}
@@ -297,25 +259,36 @@ function ProjectPageSettingsMembersContent({
   }, []);
   if (isLoading)
     return (
-      <p>
-        <Loader className="me-2" inline />
-        Loading members...
-      </p>
+      <CardBody>
+        <p>
+          <Loader className="me-2" inline />
+          Loading members...
+        </p>
+      </CardBody>
     );
   if (error) {
     if (error.status === 401 || error.status === 404) return null;
-    return <RtkErrorAlert error={error} />;
+    return (
+      <CardBody>
+        <RtkErrorAlert error={error} />
+      </CardBody>
+    );
   }
-  if (members == null) return <div>Could not load members</div>;
+  if (members == null)
+    return (
+      <CardBody>
+        <p className="p-0">Could not load members</p>
+      </CardBody>
+    );
   const totalMembers = members ? members?.length : 0;
   return (
     <>
-      <div className={cx("d-flex", "justify-content-between")}>
-        <p className="fw-bold">
+      <CardBody className={cx("d-flex", "justify-content-between")}>
+        <p className={cx("fw-bold", "my-auto")}>
           <PeopleFill className={cx("me-2", "text-icon")} />
           Members ({totalMembers})
         </p>
-        <div>
+        <div className="my-auto">
           <MembershipGuard
             disabled={null}
             enabled={
@@ -331,11 +304,8 @@ function ProjectPageSettingsMembersContent({
             members={members}
           />
         </div>
-      </div>
-      <ProjectPageSettingsMembersTable
-        members={members}
-        projectId={projectId}
-      />
+      </CardBody>
+      <ProjectPageSettingsMembersList members={members} projectId={projectId} />
       <AddProjectMemberModal
         isOpen={isAddMemberModalOpen}
         members={members}
@@ -374,14 +344,12 @@ export default function ProjectPageSettingsMembers({
           members={members}
         />
       </CardHeader>
-      <CardBody>
-        <ProjectPageSettingsMembersContent
-          error={error}
-          isLoading={isLoading}
-          members={members}
-          projectId={project.id}
-        />
-      </CardBody>
+      <ProjectPageSettingsMembersContent
+        error={error}
+        isLoading={isLoading}
+        members={members}
+        projectId={project.id}
+      />
     </Card>
   );
 }
