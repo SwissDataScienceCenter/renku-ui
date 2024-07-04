@@ -1,6 +1,5 @@
 # Changes
 
-
 ## Changelog file deprecated
 
 The `CHANGELOG.md` file has been deprecated in favor of the
