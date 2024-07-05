@@ -19,8 +19,11 @@
 import { FixturesConstructor } from "./fixtures";
 import { NameOnlyFixture } from "./fixtures.types";
 
-interface ListSecretsArgs extends NameOnlyFixture {
+interface ListSecretsArgs extends SecretArgs {
   numberOfSecrets?: number;
+}
+
+interface SecretArgs extends NameOnlyFixture {
   secretsKind?: "general" | "storage";
 }
 
@@ -60,28 +63,31 @@ export function Secrets<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    newSecret(args?: NameOnlyFixture) {
-      const { name = "fake_id" } = args ?? {};
+    newSecret(args?: SecretArgs) {
+      const { name = "fake_id", secretsKind = "general" } = args ?? {};
       const response = {
         body: {
           id: "fake_id",
           modification_date: new Date(),
           name: "fake_secret",
+          kind: secretsKind,
         },
       };
-      cy.intercept("POST", "/ui-server/api/data/user/secrets", response).as(
-        name
-      );
+      cy.intercept("POST", "/ui-server/api/data/user/secrets", (req) => {
+        expect(req.body).to.have.property("kind");
+        req.reply(response);
+      }).as(name);
       return this;
     }
 
-    editSecret(args?: NameOnlyFixture) {
-      const { name = "editSecret" } = args ?? {};
+    editSecret(args?: SecretArgs) {
+      const { name = "editSecret", secretsKind } = args ?? {};
       const response = {
         body: {
           id: "fake_id",
           modification_date: new Date(),
           name: "fake_secret",
+          kind: secretsKind,
         },
       };
       cy.intercept("PATCH", "/ui-server/api/data/user/secrets/*", response).as(

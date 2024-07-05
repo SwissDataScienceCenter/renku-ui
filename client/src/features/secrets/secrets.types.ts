@@ -20,11 +20,13 @@ export interface SecretDetails {
   id: string;
   modification_date: Date;
   name: string;
+  kind: SecretKind;
 }
 
 export interface AddSecretParams {
   name: string;
   value: string;
+  kind: SecretKind;
 }
 
 export type AddSecretForm = AddSecretParams;

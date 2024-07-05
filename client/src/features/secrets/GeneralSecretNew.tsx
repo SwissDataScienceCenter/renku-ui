@@ -64,6 +64,7 @@ export default function GeneralSecretNew() {
     defaultValues: {
       name: "",
       value: "",
+      kind: "general",
     },
     mode: "all",
   });
