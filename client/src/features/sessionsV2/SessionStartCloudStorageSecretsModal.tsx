@@ -281,7 +281,7 @@ function CloudStorageConfigurationSecrets({
           className={cx("form-check-label", "ms-2")}
           htmlFor="saveCredentials"
         >
-          Save credentials for future sessions?
+          Save credentials for future sessions
         </Label>
       </div>
     </>
