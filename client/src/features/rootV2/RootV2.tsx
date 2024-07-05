@@ -71,7 +71,7 @@ export default function RootV2() {
     <div className="w-100">
       <NavbarV2 />
 
-      <div className={cx("d-flex", "flex-grow-1", "h-100")}>
+      <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
           <Route
             index

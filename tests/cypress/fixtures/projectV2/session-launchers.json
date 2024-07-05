@@ -1,0 +1,11 @@
+[
+  {
+    "id": "01HYJE99XEKWNKPYN8WRB6QA8Z",
+    "project_id": "01HYJE5FR1JV4CWFMBFJQFQ4RM",
+    "name": "Session-custom",
+    "creation_date": "2024-05-23T09:59:59Z",
+    "environment_kind": "container_image",
+    "container_image": "renku/renkulab-py:latest",
+    "resource_class_id": 2
+  }
+]

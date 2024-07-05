@@ -155,7 +155,7 @@ export default function UpdateSessionLauncherModal({
       scrollable
     >
       <ModalHeader toggle={toggle}>Edit session {launcher.name}</ModalHeader>
-      <ModalBody>
+      <ModalBody className="pt-0">
         <Form
           className="form-rk-green"
           noValidate
@@ -180,6 +180,7 @@ export default function UpdateSessionLauncherModal({
           disabled={result.isLoading || !isDirty}
           type="submit"
           onClick={handleSubmit(onSubmit)}
+          data-cy="edit-session-button"
         >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
