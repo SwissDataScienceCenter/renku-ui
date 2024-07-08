@@ -43,8 +43,6 @@ import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { EditSecretForm, SecretDetails } from "./secrets.types";
 import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
 
-import styles from "./secrets.module.scss";
-
 interface SecretsEditProps {
   secret: SecretDetails;
 }
@@ -129,18 +127,16 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
                   name="value"
                   render={({ field }) => (
                     <Input
+                      id="edit-secret-value"
+                      type={showPlainText ? "textarea" : "password"}
+                      {...field}
                       autoComplete="off"
                       className={cx(
-                        "form-control",
                         "rounded-0",
                         "rounded-start",
-                        !showPlainText && styles.blurredText,
                         errors.value && "is-invalid"
                       )}
-                      id="edit-secret-value"
                       spellCheck="false"
-                      type="textarea"
-                      {...field}
                     />
                   )}
                   rules={{
