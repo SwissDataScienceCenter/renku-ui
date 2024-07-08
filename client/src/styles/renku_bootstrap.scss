@@ -3,9 +3,7 @@
 
 // 1: Optional default variable overrides here (functions unavailable)
 
-@import "./fonts/fonts";
-
-$font-family-base: "Inter", sans-serif;
+@import "renku_bootstrap_customization.scss"; // Changes to bootstrap variables
 
 // 2: Import Bootstrap
 
@@ -13,16 +11,5 @@ $font-family-base: "Inter", sans-serif;
 
 // 3: Optional custom code here
 
-@import "./icons/icons.scss";
-
-svg.bi,
-svg.text-icon {
-  display: inline-flex;
-  height: 1em;
-  vertical-align: -0.125em;
-  width: 1em;
-}
-
-.cursor-pointer {
-  cursor: pointer !important;
-}
+@import "icons/icons.scss"; // Icons will be temporarily pahsed out and re-imported
+@import "renku_additional_classes.scss"; // Additional classes

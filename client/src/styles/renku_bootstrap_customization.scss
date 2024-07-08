@@ -1,0 +1,15 @@
+// Colors
+$primary: #00835c; // new Renku green
+
+// Font
+@import "./fonts/fonts";
+
+$font-family-base: "Inter", sans-serif;
+
+// Variables
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+
+// Components
+// $card-spacer-x: map-get($spacers, 5);
