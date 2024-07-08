@@ -85,6 +85,7 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
   useEffect(() => {
     if (result.isSuccess) {
       toggleModal();
+      setShowPlainText(false);
       reset();
     }
   }, [reset, result.isSuccess, toggleModal]);

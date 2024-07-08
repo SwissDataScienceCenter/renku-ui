@@ -87,6 +87,7 @@ export default function SecretsNew() {
   useEffect(() => {
     if (result.isSuccess) {
       toggleModal();
+      setShowPlainText(false);
       reset();
     }
   }, [reset, result.isSuccess, toggleModal]);
