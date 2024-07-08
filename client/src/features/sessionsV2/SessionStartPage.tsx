@@ -73,7 +73,6 @@ function SaveCloudStorage({
 
   const credentialsToSave = useMemo(() => {
     return startSessionOptionsV2.cloudStorage
-      .filter((cs) => cs.active)
       .filter(shouldCloudStorageSaveCredentials)
       .map((cs) => ({
         storageName: cs.cloudStorage.storage.name,
@@ -198,9 +197,9 @@ function SessionStarting({
       projectId: project.id,
       launcherId: launcher.id,
       repositories: startSessionOptionsV2.repositories,
-      cloudStorage: startSessionOptionsV2.cloudStorage
-        .filter((cs) => cs.active)
-        .map((cs) => storageDefinitionFromConfig(cs)),
+      cloudStorage: startSessionOptionsV2.cloudStorage.map((cs) =>
+        storageDefinitionFromConfig(cs)
+      ),
       defaultUrl: startSessionOptionsV2.defaultUrl,
       environmentVariables: {},
       image: containerImage,
@@ -286,7 +285,6 @@ function doesCloudStorageNeedCredentials(
 function shouldCloudStorageSaveCredentials(
   config: SessionStartCloudStorageConfiguration
 ) {
-  if (config.active === false) return false;
   return config.saveCredentials;
 }
 
@@ -303,14 +301,11 @@ function StartSessionWithCloudStorageModal({
   launcher,
   project,
   startSessionOptionsV2,
-  cloudStorageConfigs: initialCloudStorageConfigs,
+  cloudStorageConfigs,
 }: StartSessionWithCloudStorageModalProps) {
   const [showCloudStorageSecretsModal, setShowCloudStorageSecretsModal] =
     useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const cloudStorageConfigs = initialCloudStorageConfigs.filter(
-    ({ active }) => active
-  );
 
   useEffect(() => {
     if (cloudStorageConfigs.some(doesCloudStorageNeedCredentials)) {

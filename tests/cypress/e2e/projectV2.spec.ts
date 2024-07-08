@@ -864,6 +864,88 @@ describe("launch sessions with cloud storage", () => {
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
+  it("launch session with data source, saving credentials on skip", () => {
+    fixtures
+      .testCloudStorage()
+      .sessionServersEmpty()
+      .sessionImage()
+      .resourcePoolsTest()
+      .cloudStorage({
+        isV2: true,
+        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        name: "getCloudStorageV2",
+      })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets-empty.json",
+      });
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers.json",
+      name: "session-launchers-custom",
+    });
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getSessionServers");
+    cy.wait("@sessionLaunchers");
+
+    // start session
+    fixtures.postCloudStorageSecrets({
+      content: [
+        {
+          name: "access_key_id",
+          value: "access key",
+        },
+        {
+          name: "secret_access_key",
+          value: "secret key",
+        },
+      ],
+    });
+
+    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
+        const csConfig = req.body.cloudstorage;
+        expect(csConfig.length).equal(1);
+        const storage = csConfig[0];
+        expect(storage.configuration).to.have.property("access_key_id");
+        expect(storage.configuration).to.have.property("secret_access_key");
+        expect(storage.configuration["access_key_id"]).to.equal("access key");
+        expect(storage.configuration["secret_access_key"]).to.equal(
+          "secret key"
+        );
+        req.reply({ body: sessions[0] });
+      }).as("createSession");
+    });
+
+    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item").within(() => {
+      cy.getDataCy("start-session-button").click();
+    });
+    fixtures.testCloudStorage({ success: false });
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .find("#access_key_id")
+      .type("access key");
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .contains("Secret Access Key (password)")
+      .should("be.visible");
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .find("#secret_access_key")
+      .type("secret key");
+    cy.get("#saveCredentials").click();
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .contains("Continue")
+      .click();
+    cy.wait("@testCloudStorage");
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .contains("Skip")
+      .click();
+    cy.contains("Saving credentials...").should("be.visible");
+    cy.wait("@postCloudStorageSecrets");
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+  });
+
   it("launch session with saved credentials", () => {
     fixtures
       .testCloudStorage()
@@ -945,13 +1027,23 @@ describe("launch sessions with cloud storage", () => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
         const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(2);
+        expect(csConfig.length).equal(3);
         const s3Storage = csConfig[0];
         expect(s3Storage.configuration).to.not.have.property("access_key_id");
         expect(s3Storage.configuration).to.not.have.property(
           "secret_access_key"
         );
-        const webDavStorage = csConfig[1];
+
+        const s3Storage1 = csConfig[1];
+        expect(s3Storage1.configuration).to.have.property("access_key_id");
+        expect(s3Storage1.configuration).to.have.property("secret_access_key");
+        expect(s3Storage1.configuration["access_key_id"]).to.equal(
+          "access key"
+        );
+        expect(s3Storage1.configuration["secret_access_key"]).to.equal(
+          "secret key"
+        );
+        const webDavStorage = csConfig[2];
         expect(webDavStorage.configuration).to.have.property("pass");
         expect(webDavStorage.configuration["pass"]).to.equal("webDav pass");
         req.reply({ body: sessions[0] });
@@ -989,6 +1081,85 @@ describe("launch sessions with cloud storage", () => {
     fixtures.testCloudStorage({ success: true });
     cy.getDataCy("session-cloud-storage-credentials-modal")
       .contains("Continue")
+      .click();
+    cy.wait("@testCloudStorage");
+    cy.wait("@getResourceClass");
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+  });
+
+  it("launch session with data source requiring multiple credentials, skippig all", () => {
+    fixtures
+      .sessionServersEmpty()
+      .sessionImage()
+      .resourcePoolsTest()
+      .cloudStorage({
+        isV2: true,
+        fixture: "cloudStorage/cloud-storage-multiple.json",
+        name: "getCloudStorageV2",
+      });
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers.json",
+      name: "session-launchers-custom",
+    });
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getSessionServers");
+    cy.wait("@sessionLaunchers");
+
+    // start session
+    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
+        const csConfig = req.body.cloudstorage;
+        expect(csConfig.length).equal(3);
+        const s3Storage = csConfig[0];
+        expect(s3Storage.configuration).to.not.have.property("access_key_id");
+        expect(s3Storage.configuration).to.not.have.property(
+          "secret_access_key"
+        );
+
+        const s3Storage1 = csConfig[1];
+        expect(s3Storage1.configuration).to.have.property("access_key_id");
+        expect(s3Storage1.configuration).to.have.property("secret_access_key");
+        expect(s3Storage1.configuration["access_key_id"]).to.equal(
+          "access key"
+        );
+        expect(s3Storage1.configuration["secret_access_key"]).to.equal(
+          "secret key"
+        );
+        const webDavStorage = csConfig[2];
+        expect(webDavStorage.configuration).to.have.property("pass");
+        expect(webDavStorage.configuration["pass"]).to.equal("webDav pass");
+        req.reply({ body: sessions[0] });
+      }).as("createSession");
+    });
+    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item").within(() => {
+      cy.getDataCy("start-session-button").click();
+    });
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .find("#access_key_id")
+      .type("access key");
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .find("#secret_access_key")
+      .type("secret key");
+    fixtures.testCloudStorage({ success: false });
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .contains("Continue")
+      .click();
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .contains("Skip")
+      .click();
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .find("#pass")
+      .type("webDav pass");
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .contains("Continue")
+      .click();
+    cy.getDataCy("session-cloud-storage-credentials-modal")
+      .contains("Skip")
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@getResourceClass");

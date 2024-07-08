@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRepeat,
   ChevronRight,
@@ -67,15 +67,25 @@ function CredentialsButtons({
   onSkip,
   validationResult,
 }: CredentialsButtonsProps) {
+  const skipButtonRef = useRef<HTMLAnchorElement>(null);
   return (
     <div>
       <Button className="me-5" color="outline-danger" onClick={onCancel}>
         <XLg className={cx("bi", "me-1")} />
         Cancel
       </Button>
-      <Button className={cx("ms-2", "btn-outline-rk-green")} onClick={onSkip}>
-        Skip <SkipForward className={cx("bi", "me-1")} />
-      </Button>
+      <span ref={skipButtonRef}>
+        <Button className={cx("ms-2", "btn-outline-rk-green")} onClick={onSkip}>
+          Skip <SkipForward className={cx("bi", "me-1")} />
+        </Button>
+      </span>
+      <UncontrolledTooltip target={skipButtonRef}>
+        Skip the connection test. At session launch, the storage will try mount
+        {validationResult.isError
+          ? " using the provided credentials"
+          : " without any credentials"}
+        .
+      </UncontrolledTooltip>
       <Button
         className={cx(
           "ms-2",
@@ -437,7 +447,9 @@ export default function SessionStartCloudStorageSecretsModal({
             {validationResult.isError ? (
               <div className="text-danger">
                 The data source could not be mounted. Please retry with
-                different credentials, or skip.
+                different credentials, or skip the test. If you skip, the data
+                source will still try to mount, using the provided credentials,
+                at session launch time.
               </div>
             ) : (
               <div>&nbsp;</div>
