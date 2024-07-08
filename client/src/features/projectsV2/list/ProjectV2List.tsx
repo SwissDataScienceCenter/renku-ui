@@ -17,49 +17,17 @@
  */
 import cx from "classnames";
 import { useState } from "react";
-import { generatePath, Link } from "react-router-dom-v5-compat";
+import { Col, Row } from "reactstrap";
+import { Link } from "react-router-dom-v5-compat";
 
 import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
 import { Pagination } from "../../../components/Pagination";
-import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import type { Project } from "../api/projectV2.api";
 import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
-
-import styles from "./projectV2List.module.scss";
-import { Col, Row } from "reactstrap";
 import ProjectSimple from "../show/ProjectSimple";
-
-interface ProjectV2ListProjectProps {
-  project: Project;
-}
-function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
-  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-    namespace: project.namespace,
-    slug: project.slug,
-  });
-  return (
-    <div
-      data-cy="list-card"
-      className={cx("m-2", "rk-search-result-card", styles.listProjectWidth)}
-    >
-      <div className={cx("card", "card-entity", "p-3")}>
-        <h3>
-          <Link to={projectUrl}>{project.name}</Link>
-        </h3>
-        <div className="mb-2 fw-light">{project.namespace}/</div>
-        <div className="mb-2">{project.description}</div>
-        <div className={cx("align-items-baseline", "d-flex")}>
-          <span className={cx("fst-italic", "me-3")}>{project.visibility}</span>
-          <TimeCaption datetime={project.creation_date} prefix="Created" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function ProjectList() {
   const perPage = 10;
