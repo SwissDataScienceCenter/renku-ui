@@ -24,12 +24,14 @@ import { Loader } from "../../../components/Loader";
 import { Pagination } from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import type { Project } from "../api/projectV2.api";
 import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
 
 import styles from "./projectV2List.module.scss";
+import { Col, Row } from "reactstrap";
+import ProjectSimple from "../show/ProjectSimple";
 
 interface ProjectV2ListProjectProps {
   project: Project;
@@ -71,32 +73,35 @@ function ProjectList() {
     return (
       <div className={cx("d-flex", "justify-content-center", "w-100")}>
         <div className={cx("d-flex", "flex-column")}>
-          <Loader className="me-2" />
+          <Loader />
           <div>Retrieving projects...</div>
         </div>
       </div>
     );
-  if (error) return <div>Cannot show projects.</div>;
+  if (error)
+    return (
+      <>
+        <p>Cannot show projects.</p>
+        <RtkOrNotebooksError error={error} />
+      </>
+    );
 
-  if (data == null) return <div>No V2 projects.</div>;
+  if (data == null || data.projects.length < 1) return <p>No V2 projects.</p>;
 
   return (
     <>
-      <div className="d-flex flex-wrap w-100">
+      <Row className="g-3">
         {data.projects?.map((project) => (
-          <ProjectV2ListProject key={project.id} project={project} />
+          <Col xs={12} sm={6} xl={4} key={project.id}>
+            <ProjectSimple element="card" project={project} />
+          </Col>
         ))}
-      </div>
+      </Row>
       <Pagination
         currentPage={data.page}
         perPage={perPage}
         totalItems={data.total}
         onPageChange={setPage}
-        className={cx(
-          "d-flex",
-          "justify-content-center",
-          "rk-search-pagination"
-        )}
       />
     </>
   );
@@ -110,11 +115,12 @@ export default function ProjectV2List() {
       title="List Projects (V2)"
       description={
         <>
-          <div>
-            All visible projects <WipBadge />{" "}
-          </div>
-          <div className="mt-3">
-            <Link className={cx("btn", "btn-secondary")} to={newProjectUrl}>
+          <p>
+            All visible projects
+            <WipBadge className="ms-2" />
+          </p>
+          <div className="mb-3">
+            <Link className={cx("btn", "btn-primary")} to={newProjectUrl}>
               Create New Project
             </Link>
           </div>
