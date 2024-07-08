@@ -22,45 +22,30 @@ import { BoxArrowUpRight, CheckCircleFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 
+import { Fragment, useContext, useMemo } from "react";
 import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetUserInfoQuery } from "../../user/keycloakUser.api";
-import { useGetPlatformConfigQuery } from "../api/platform.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
 import { StatusPageSummary } from "../statuspage-api/statuspage.types";
 
 const FIVE_MINUTES_MILLIS = 5 * 60 * 1_000;
 
 export default function StatusSummary() {
-  const {
-    data: platformConfig,
-    isLoading,
-    error,
-  } = useGetPlatformConfigQuery(undefined, {
-    pollingInterval: FIVE_MINUTES_MILLIS,
-  });
+  const { params } = useContext(AppContext);
+  const statusPageId =
+    params?.STATUSPAGE_ID ?? DEFAULT_APP_PARAMS.STATUSPAGE_ID;
 
-  if (isLoading) {
-    return <Loader className="align-self-center" />;
-  }
-
-  if (error || !platformConfig) {
-    return (
-      <>
-        <p>Error: could not retrieve RenkuLab&apos;s status configuration.</p>
-        <RtkOrNotebooksError error={error} dismissible={false} />
-      </>
-    );
-  }
-
-  if (!platformConfig.status_page_id) {
+  if (!statusPageId) {
     return <NoStatusPage />;
   }
 
-  return <StatuspageDisplay statusPageId={platformConfig.status_page_id} />;
+  return <StatuspageDisplay statusPageId={statusPageId} />;
 }
 
 function NoStatusPage() {
@@ -123,7 +108,14 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
         <Col>
           <h3>RenkuLab Status</h3>
           <OverallStatus summary={summary} />
+
           <div>TODO</div>
+
+          <h3>Components</h3>
+          <ComponentsStatus summary={summary} />
+
+          <div>TODO</div>
+
           <p className="mb-0">
             For further information, see{" "}
             <Link to={summary.page.url}>
@@ -168,5 +160,37 @@ function OverallStatus({ summary }: OverallStatusProps) {
     );
   }
 
-  return null;
+  return (
+    <div className={cx("alert", "alert-success", "rounded", "p-3")}>
+      <CheckCircleFill className={cx("bi", "me-1")} />
+      {summary.status.description}
+    </div>
+  );
+}
+
+interface ComponentsStatusProps {
+  summary: StatusPageSummary;
+}
+
+function ComponentsStatus({ summary }: ComponentsStatusProps) {
+  const components = useMemo(
+    () =>
+      [...summary.components]
+        .filter(({ showcase }) => showcase)
+        .sort((a, b) => a.position - b.position),
+    [summary.components]
+  );
+
+  return (
+    <Row className={cx("row-cols-2", "gy-2")}>
+      {components.map((component) => (
+        <Fragment key={component.id}>
+          <Col xs={6} className="fw-bold">
+            {component.name}
+          </Col>
+          <Col xs={6}>{component.status}</Col>
+        </Fragment>
+      ))}
+    </Row>
+  );
 }
