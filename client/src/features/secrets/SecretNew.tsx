@@ -33,13 +33,11 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import secretsApi, { useAddSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
+import secretsApi, { useAddSecretMutation } from "./secrets.api";
 import { AddSecretForm } from "./secrets.types";
 import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
-
-import styles from "./secrets.module.scss";
 
 export default function SecretsNew() {
   // Set up the modal
