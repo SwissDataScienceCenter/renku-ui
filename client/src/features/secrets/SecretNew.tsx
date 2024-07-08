@@ -117,7 +117,7 @@ export default function SecretsNew() {
             render={({ field }) => (
               <Input
                 autoComplete="off"
-                className={cx("form-control", errors.name && "is-invalid")}
+                className={cx(errors.name && "is-invalid")}
                 id="new-secret-name"
                 placeholder="Unique name"
                 type="text"
@@ -151,18 +151,16 @@ export default function SecretsNew() {
               name="value"
               render={({ field }) => (
                 <Input
+                  id="new-secret-value"
+                  type={showPlainText ? "textarea" : "password"}
+                  {...field}
                   autoComplete="off"
                   className={cx(
-                    "form-control",
                     "rounded-0",
                     "rounded-start",
-                    !showPlainText && styles.blurredText,
                     errors.value && "is-invalid"
                   )}
-                  id="new-secret-value"
                   spellCheck="false"
-                  type="textarea"
-                  {...field}
                 />
               )}
               rules={{
@@ -201,7 +199,14 @@ export default function SecretsNew() {
 
   return (
     <>
-      <Modal isOpen={showModal} toggle={toggleModal}>
+      <Modal
+        backdrop="static"
+        centered
+        fullscreen="md"
+        isOpen={showModal}
+        size="md"
+        toggle={toggleModal}
+      >
         <ModalHeader toggle={toggleModal}>Add New Secret</ModalHeader>
         <ModalBody>{modalBody}</ModalBody>
         <ModalFooter>
