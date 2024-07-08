@@ -18,17 +18,18 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { BoxArrowUpRight, CheckCircleFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
-import { SuccessAlert, WarnAlert } from "../../../components/Alert";
+import { Col, Row } from "reactstrap";
+
+import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
+import { TimeCaption } from "../../../components/TimeCaption";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetUserInfoQuery } from "../../user/keycloakUser.api";
 import { useGetPlatformConfigQuery } from "../api/platform.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
-import { Col, Row } from "reactstrap";
-import { BoxArrowUpRight, CheckCircleFill } from "react-bootstrap-icons";
-import { TimeCaption } from "../../../components/TimeCaption";
 import { StatusPageSummary } from "../statuspage-api/statuspage.types";
 
 const FIVE_MINUTES_MILLIS = 5 * 60 * 1_000;
