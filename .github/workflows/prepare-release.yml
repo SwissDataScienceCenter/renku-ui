@@ -57,7 +57,7 @@ jobs:
         run: git switch -c "release-${{ steps.get_version.outputs.version }}"
       - name: Commit changes
         run: |
-          git add client server helm-chart CHANGELOG.md
+          git add client server helm-chart
           git commit -m "build: release ${{ steps.get_version.outputs.version }}"
           git push
       - name: Create Pull Request
