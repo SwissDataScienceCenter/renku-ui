@@ -1,6 +1,6 @@
 {
   "name": "renku-ui-server",
-  "version": "3.28.1",
+  "version": "3.30.0",
   "description": "Server for renku API",
   "private": true,
   "main": "dist/index.js",
@@ -37,7 +37,7 @@
     "openid-client": "^4.9.1",
     "uuid": "^8.3.2",
     "winston": "^3.10.0",
-    "ws": "^8.14.2"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",

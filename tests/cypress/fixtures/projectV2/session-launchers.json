@@ -5,6 +5,7 @@
     "name": "Session-custom",
     "creation_date": "2024-05-23T09:59:59Z",
     "environment_kind": "container_image",
-    "container_image": "renku/renkulab-py:latest"
+    "container_image": "renku/renkulab-py:latest",
+    "resource_class_id": 2
   }
 ]

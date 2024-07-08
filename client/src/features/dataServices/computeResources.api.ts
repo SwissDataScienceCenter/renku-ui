@@ -20,7 +20,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
   ResourceClass,
   ResourcePool,
-} from "../dataServices/dataServices.types";
+  ResourcePoolsQueryParams,
+} from "./dataServices.types";
 import {
   AddResourceClassParams,
   AddResourcePoolParams,
@@ -32,17 +33,24 @@ import {
   ResourcePoolUser,
   UpdateResourceClassParams,
   UpdateResourcePoolParams,
-} from "./adminComputeResources.types";
+} from "../admin/adminComputeResources.types";
 
-const adminComputeResourcesApi = createApi({
-  reducerPath: "adminComputeResourcesApi",
+const computeResourcesApi = createApi({
+  reducerPath: "computeResourcesApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
-  tagTypes: ["ResourcePool", "ResourcePoolUser"],
+  tagTypes: ["ResourcePool", "ResourcePoolUser", "ResourceClass"],
   endpoints: (builder) => ({
-    getResourcePools: builder.query<ResourcePool[], void>({
-      query: () => {
+    getResourcePools: builder.query<ResourcePool[], ResourcePoolsQueryParams>({
+      query: ({ cpuRequest, gpuRequest, memoryRequest, storageRequest }) => {
+        const params = {
+          ...(cpuRequest ? { cpu: cpuRequest } : {}),
+          ...(gpuRequest ? { gpu: gpuRequest } : {}),
+          ...(memoryRequest ? { memory: memoryRequest } : {}),
+          ...(storageRequest ? { max_storage: storageRequest } : {}),
+        };
         return {
           url: "resource_pools",
+          params,
         };
       },
       providesTags: (result) =>
@@ -110,7 +118,7 @@ const adminComputeResourcesApi = createApi({
           body,
         };
       },
-      invalidatesTags: ["ResourcePool"],
+      invalidatesTags: ["ResourcePool", "ResourceClass"],
     }),
     updateResourcePool: builder.mutation<
       ResourcePool,
@@ -125,6 +133,7 @@ const adminComputeResourcesApi = createApi({
       },
       invalidatesTags: (_result, _error, { resourcePoolId }) => [
         { id: resourcePoolId, type: "ResourcePool" },
+        "ResourceClass",
       ],
     }),
     deleteResourcePool: builder.mutation<
@@ -137,7 +146,7 @@ const adminComputeResourcesApi = createApi({
           url: `resource_pools/${resourcePoolId}`,
         };
       },
-      invalidatesTags: ["ResourcePool"],
+      invalidatesTags: ["ResourcePool", "ResourceClass"],
     }),
     addResourceClass: builder.mutation<ResourceClass, AddResourceClassParams>({
       query: ({ resourcePoolId, ...params }) => {
@@ -149,6 +158,7 @@ const adminComputeResourcesApi = createApi({
       },
       invalidatesTags: (_result, _error, { resourcePoolId }) => [
         { id: resourcePoolId, type: "ResourcePool" },
+        "ResourceClass",
       ],
     }),
     updateResourceClass: builder.mutation<
@@ -164,6 +174,7 @@ const adminComputeResourcesApi = createApi({
       },
       invalidatesTags: (_result, _error, { resourcePoolId }) => [
         { id: resourcePoolId, type: "ResourcePool" },
+        "ResourceClass",
       ],
     }),
     deleteResourceClass: builder.mutation<void, DeleteResourceClassParams>({
@@ -175,6 +186,7 @@ const adminComputeResourcesApi = createApi({
       },
       invalidatesTags: (_result, _error, { resourcePoolId }) => [
         { id: resourcePoolId, type: "ResourcePool" },
+        "ResourceClass",
       ],
     }),
     addUsersToResourcePool: builder.mutation<
@@ -207,10 +219,18 @@ const adminComputeResourcesApi = createApi({
         { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
       ],
     }),
+    getResourceClassById: builder.query<ResourceClass, number>({
+      query: (classId) => {
+        return {
+          url: `classes/${classId}`,
+        };
+      },
+      providesTags: ["ResourceClass"],
+    }),
   }),
 });
 
-export default adminComputeResourcesApi;
+export default computeResourcesApi;
 
 export const {
   useGetResourcePoolsQuery,
@@ -224,4 +244,5 @@ export const {
   useDeleteResourceClassMutation,
   useAddUsersToResourcePoolMutation,
   useRemoveUserFromResourcePoolMutation,
-} = adminComputeResourcesApi;
+  useGetResourceClassByIdQuery,
+} = computeResourcesApi;

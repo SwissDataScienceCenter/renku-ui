@@ -20,6 +20,8 @@ import cx from "classnames";
 import { PlayFill } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 
+import { DropdownItem } from "reactstrap";
+import { ButtonWithMenu } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 
 interface StartSessionButtonProps {
@@ -42,7 +44,7 @@ export default function StartSessionButton({
     }
   );
 
-  return (
+  const defaultAction = (
     <Link
       className={cx(
         "btn",
@@ -58,5 +60,38 @@ export default function StartSessionButton({
       <PlayFill className={cx("bi", "me-1")} />
       Launch
     </Link>
+  );
+
+  const customizeLaunch = (
+    <DropdownItem data-cy="custom-launch-button">
+      <Link
+        className={cx(
+          "d-flex",
+          "align-items-center",
+          "py-1",
+          "px-2",
+          "text-decoration-none"
+        )}
+        to={{
+          pathname: startUrl,
+          search: new URLSearchParams({ custom: "1" }).toString(),
+        }}
+        data-cy="start-custom-session-button"
+      >
+        <PlayFill className={cx("bi", "me-1")} />
+        Custom launch
+      </Link>
+    </DropdownItem>
+  );
+
+  return (
+    <ButtonWithMenu
+      className="py-1"
+      color="rk-green"
+      default={defaultAction}
+      isPrincipal
+    >
+      {customizeLaunch}
+    </ButtonWithMenu>
   );
 }

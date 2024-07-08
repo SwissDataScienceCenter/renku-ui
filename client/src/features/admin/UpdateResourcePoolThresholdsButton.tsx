@@ -32,11 +32,11 @@ import {
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { useUpdateResourcePoolMutation } from "./adminComputeResources.api";
+import { useUpdateResourcePoolMutation } from "../dataServices/computeResources.api";
 import { ResourcePool } from "../dataServices/dataServices.types";
-import { UpdateResourcePoolThresholdsForm } from "./adminComputeResources.types";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import { ResourcePoolDefaultThreshold } from "./AddResourcePoolButton";
+import { UpdateResourcePoolThresholdsForm } from "./adminComputeResources.types";
 interface UpdateResourcePoolThresholdsButtonProps {
   resourcePool: ResourcePool;
 }

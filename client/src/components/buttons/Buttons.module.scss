@@ -48,7 +48,7 @@
 }
 .EditButton:focus,
 .EditButton:focus-visible {
-  color: #{$rk-gray-900} !important;
+  color: var(--bs-dark) !important;
 }
 
 .EmptyButton {

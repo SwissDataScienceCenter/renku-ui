@@ -28,12 +28,11 @@ import {
   configureStore,
 } from "@reduxjs/toolkit";
 
-import adminComputeResourcesApi from "../../features/admin/adminComputeResources.api";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import adminSessionsApi from "../../features/admin/adminSessions.api";
 import connectedServicesApi from "../../features/connectedServices/connectedServices.api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
-import { dataServicesApi } from "../../features/dataServices/dataServices.api";
+import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
@@ -48,6 +47,8 @@ import { projectsApi } from "../../features/projects/projects.api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
+import repositoriesApi from "../../features/repositories/repositories.api";
+import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import secretsApi from "../../features/secrets/secrets.api";
 import sessionsApi from "../../features/session/sessions.api";
@@ -64,7 +65,6 @@ import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "../feature-flags/featureFlags.slice";
-import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -86,11 +86,10 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectV2NewSlice.name]: projectV2NewSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
-    [adminComputeResourcesApi.reducerPath]: adminComputeResourcesApi.reducer,
+    [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
     [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
-    [dataServicesApi.reducerPath]: dataServicesApi.reducer,
     [dataServicesUserApi.reducerPath]: dataServicesUserApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
@@ -103,6 +102,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectV2Api.reducerPath]: projectV2Api.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
+    [repositoriesApi.reducerPath]: repositoriesApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
     [secretsApi.reducerPath]: secretsApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
@@ -122,11 +122,10 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         immutableCheck: false,
         serializableCheck: false,
       })
-        .concat(adminComputeResourcesApi.middleware)
+        .concat(computeResourcesApi.middleware)
         .concat(adminKeycloakApi.middleware)
         .concat(adminSessionsApi.middleware)
         .concat(connectedServicesApi.middleware)
-        .concat(dataServicesApi.middleware)
         // this is causing some problems, and I do not know why
         .concat(dataServicesUserApi.middleware)
         .concat(datasetsCoreApi.middleware)
@@ -140,6 +139,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectsApi.middleware)
         .concat(projectV2Api.middleware)
         .concat(recentUserActivityApi.middleware)
+        .concat(repositoriesApi.middleware)
         .concat(searchV2Api.middleware)
         .concat(secretsApi.middleware)
         .concat(sessionsApi.middleware)

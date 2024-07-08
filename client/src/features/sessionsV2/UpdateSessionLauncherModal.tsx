@@ -155,7 +155,7 @@ export default function UpdateSessionLauncherModal({
       scrollable
     >
       <ModalHeader toggle={toggle}>Edit session {launcher.name}</ModalHeader>
-      <ModalBody>
+      <ModalBody className="pt-0">
         <Form
           className="form-rk-green"
           noValidate
