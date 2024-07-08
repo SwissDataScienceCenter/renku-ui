@@ -615,6 +615,8 @@ describe("launch sessions with cloud storage", () => {
       .landingUserProjects()
       .listProjectV2()
       .readProjectV2()
+      .resourcePoolsTest()
+      .getResourceClass()
       .listProjectV2Members();
     fixtures
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
@@ -631,7 +633,6 @@ describe("launch sessions with cloud storage", () => {
       .testCloudStorage()
       .sessionServersEmpty()
       .sessionImage()
-      .resourcePoolsTest()
       .cloudStorage({
         isV2: true,
         fixture: "cloudStorage/cloud-storage.json",
@@ -676,7 +677,9 @@ describe("launch sessions with cloud storage", () => {
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("start-session-button").click();
     });
+    cy.wait("@getResourceClass");
     cy.wait("@createSession");
+
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
@@ -737,6 +740,7 @@ describe("launch sessions with cloud storage", () => {
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("start-session-button").click();
     });
+    cy.wait("@getResourceClass");
     cy.getDataCy("session-cloud-storage-credentials-modal")
       .should("be.visible")
       .contains("Please provide")
@@ -841,6 +845,7 @@ describe("launch sessions with cloud storage", () => {
       .contains("Continue")
       .click();
     cy.wait("@testCloudStorage");
+    cy.wait("@getResourceClass");
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });

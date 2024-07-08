@@ -190,6 +190,8 @@ describe("Navigate to project page", () => {
       .sessionLaunchers()
       .newLauncher()
       .editLauncher()
+      .resourcePoolsTest()
+      .getResourceClass()
       .environments();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
@@ -208,7 +210,7 @@ describe("Navigate to project page", () => {
       .clear()
       .type(customImage, { delay: 0 })
       .should("have.value", customImage);
-    cy.get("#addSessionLauncherName").type("Session-custom");
+    cy.getDataCy("launcher-name-input").type("Session-custom");
     cy.getDataCy("add-launcher-custom-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-custom");
