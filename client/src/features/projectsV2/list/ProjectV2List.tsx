@@ -58,10 +58,12 @@ function ProjectList() {
 
   return (
     <>
-      <Row className="g-3">
+      <Row
+        className={cx("g-3", "row-cols-1", "row-cols-sm-2", "row-cols-xl-3")}
+      >
         {data.projects?.map((project) => (
-          <Col xs={12} sm={6} xl={4} key={project.id}>
-            <ProjectSimple element="card" project={project} />
+          <Col key={project.id}>
+            <ProjectSimple element="card-full-height" project={project} />
           </Col>
         ))}
       </Row>

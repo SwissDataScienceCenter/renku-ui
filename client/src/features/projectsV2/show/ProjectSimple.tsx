@@ -26,7 +26,7 @@ import { TimeCaption } from "../../../components/TimeCaption";
 
 interface ProjectSimpleProps {
   className?: string | string[];
-  element: "card" | "card-body" | "list-item" | "plain";
+  element: "card" | "card-body" | "card-full-height" | "list-item" | "plain";
   project: Project;
 }
 
@@ -37,7 +37,12 @@ export default function ProjectSimple({
 }: ProjectSimpleProps) {
   const content = (
     <Link
-      className={cx("text-decoration-none", "text-reset")}
+      className={cx(
+        "text-decoration-none",
+        "text-reset",
+        element === "card-full-height" &&
+          cx("d-flex", "flex-column", "flex-grow-1")
+      )}
       data-cy="project-link"
       to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: project.namespace,
@@ -51,7 +56,9 @@ export default function ProjectSimple({
 
       {project.description && <p className="mb-2">{project.description}</p>}
 
-      <div className="d-flex">
+      <div
+        className={cx("d-flex", element === "card-full-height" && "mt-auto")}
+      >
         <VisibilityIcon
           className="text-primary"
           visibility={project.visibility}
@@ -68,6 +75,10 @@ export default function ProjectSimple({
   return element === "card" ? (
     <div className={cx("card", className)}>
       <div className="card-body">{content}</div>
+    </div>
+  ) : element === "card-full-height" ? (
+    <div className={cx("card", "h-100", className)}>
+      <div className={cx("card-body", "d-flex")}>{content}</div>
     </div>
   ) : element === "card-body" ? (
     <div className={cx("card-body", className)}>{content}</div>
