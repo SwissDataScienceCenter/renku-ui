@@ -125,7 +125,7 @@ export default function UserShow() {
           namespace={username}
           pageParam="projects_page"
           emptyListElement={
-            <p>{name ?? username} has no visible personal project.</p>
+            <p>{name ?? username} has no visible personal projects.</p>
           }
         />
       </section>

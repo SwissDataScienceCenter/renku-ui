@@ -44,7 +44,7 @@ export default function ProjectV2List() {
       }
     >
       <ProjectListDisplay
-        emptyListElement={<p>There is no visible project.</p>}
+        emptyListElement={<p>There are no visible projects.</p>}
       />
     </FormSchema>
   );

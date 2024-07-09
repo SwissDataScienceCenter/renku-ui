@@ -135,7 +135,7 @@ export default function GroupV2Show() {
           namespace={slug}
           pageParam="projects_page"
           emptyListElement={
-            <p>The group {group.name} has no visible project.</p>
+            <p>No visible projects.</p>
           }
         />
       </section>
