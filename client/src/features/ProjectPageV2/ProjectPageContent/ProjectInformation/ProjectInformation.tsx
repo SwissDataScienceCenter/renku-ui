@@ -100,11 +100,17 @@ export default function ProjectInformation({
   ) : (
     <Card>
       <CardHeader>
-        <div className={cx("d-flex", "justify-content-between")}>
-          <h3 className="m-0">
-            <InfoCircleFill className={cx("me-2", "text-icon")} />
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "justify-content-between"
+          )}
+        >
+          <h4 className="m-0">
+            <InfoCircleFill className={cx("me-2", "small", "text-icon")} />
             Info
-          </h3>
+          </h4>
 
           <div>
             <MembershipGuard
@@ -129,20 +135,6 @@ export default function ProjectInformation({
         </div>
       </CardHeader>
       <CardBody>{information}</CardBody>
-    </Card>
-  );
-}
-
-export function ProjectInformationCard() {
-  return (
-    <Card>
-      <CardHeader tag="h3">
-        <InfoCircleFill className={cx("me-2", "text-icon")} />
-        Info
-      </CardHeader>
-      <CardBody>
-        <ProjectInformation />
-      </CardBody>
     </Card>
   );
 }

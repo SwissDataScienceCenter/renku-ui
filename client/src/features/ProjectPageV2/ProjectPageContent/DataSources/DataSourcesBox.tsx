@@ -25,7 +25,14 @@ import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api.ts
 import AccessGuard from "../../utils/AccessGuard.tsx";
 import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
 import { DataSourceDisplay } from "./DataSourceDisplay.tsx";
-import { Button, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  ListGroup,
+} from "reactstrap";
 
 export function DataSourcesDisplay({ project }: { project: Project }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,11 +57,20 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
   return (
     <Card data-cy="data-source-box">
       <CardHeader>
-        <div className={cx("d-flex", "justify-content-between")}>
-          <h3 className="m-0">
-            <DatabaseFill className={cx("me-2", "text-icon")} />
-            Data Sources ({totalStorages})
-          </h3>
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "justify-content-between"
+          )}
+        >
+          <div className={cx("align-items-center", "d-flex")}>
+            <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
+              <DatabaseFill className={cx("me-2", "small", "text-icon")} />
+              Data Sources
+            </h4>
+            <Badge>{totalStorages}</Badge>
+          </div>
           <div className="my-auto">
             <AccessGuard
               disabled={null}

@@ -25,6 +25,7 @@ import AccessGuard from "../../utils/AccessGuard.tsx";
 import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
 import { RepositoryItem } from "./CodeRepositoryDisplay.tsx";
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -44,11 +45,22 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
   return (
     <Card data-cy="code-repositories-box">
       <CardHeader>
-        <div className={cx("d-flex", "justify-content-between")}>
-          <h3 className="m-0">
-            <FileCodeFill className={cx("me-2", "text-icon")} />
-            Code Repositories ({project?.repositories?.length})
-          </h3>
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "justify-content-between"
+          )}
+        >
+          <div className={cx("align-items-center", "d-flex")}>
+            <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
+              <FileCodeFill className={cx("me-2", "small", "text-icon")} />
+              Code Repositories
+            </h4>
+            {project?.repositories?.length && (
+              <Badge>{project?.repositories?.length}</Badge>
+            )}
+          </div>
 
           <div className="my-auto">
             <AccessGuard

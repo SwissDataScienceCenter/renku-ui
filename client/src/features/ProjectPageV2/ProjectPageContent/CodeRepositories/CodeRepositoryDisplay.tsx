@@ -401,18 +401,19 @@ export function RepositoryItem({
 
   return (
     <div className={cx("d-flex", "align-items-center", "gap-3")}>
-      <RepositoryIcon
-        className="flex-shrink-0"
-        provider={canonicalUrl?.origin}
-      />
       <div className={cx("d-flex", "flex-column")}>
         {canonicalUrl?.hostname && (
-          <span data-cy="code-repository-title">{canonicalUrl.hostname}</span>
+          <div className={cx("align-items-center", "d-flex", "gap-1")}>
+            <RepositoryIcon
+              className="flex-shrink-0"
+              provider={canonicalUrl?.origin}
+            />
+            <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
+              {title || canonicalUrlStr}
+              <BoxArrowUpRight className={cx("bi", "ms-2")} />
+            </a>
+          </div>
         )}
-        <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
-          {title || canonicalUrlStr}
-          <BoxArrowUpRight className={cx("bi", "ms-2")} />
-        </a>
       </div>
       <RepositoryPermissions repositoryUrl={url} />
       {showMenu && (
@@ -440,8 +441,8 @@ function RepositoryIcon({ className, provider }: RepositoryIconProps) {
     <img
       className={className}
       src={iconUrl.toString()}
-      width={24}
-      height={24}
+      width={16}
+      height={16}
     />
   );
 }

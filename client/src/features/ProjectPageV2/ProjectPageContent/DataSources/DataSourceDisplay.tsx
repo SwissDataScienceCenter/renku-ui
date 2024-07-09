@@ -235,7 +235,7 @@ export function DataSourceDisplay({
           onClick={toggleDetails}
         >
           <InfoCircleFill className={cx("me-2", "text-icon")} />
-          <span className={cx("text-truncate")}>
+          <span>
             {storageName} {storageType}
           </span>
         </div>

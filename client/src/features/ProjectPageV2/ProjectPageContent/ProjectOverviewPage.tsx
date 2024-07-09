@@ -16,7 +16,6 @@
  * limitations under the License
  */
 
-import cx from "classnames";
 import { Col, Row } from "reactstrap";
 
 import SessionsV2 from "../../sessionsV2/SessionsV2";
@@ -30,10 +29,7 @@ export default function ProjectOverviewPage() {
 
   return (
     <Row className="g-3">
-      <Col className={cx("order-1", "order-lg-2")} xs={12} lg={3} xl={2}>
-        <ProjectInformation output="card" />
-      </Col>
-      <Col className={cx("order-2", "order-lg-1")} xs={12} lg={9} xl={10}>
+      <Col xs={12} lg={9} xl={10}>
         <Row className="g-3">
           <Col xs={12}>
             <SessionsV2 project={project} />
@@ -45,6 +41,9 @@ export default function ProjectOverviewPage() {
             <CodeRepositoriesDisplay project={project} />
           </Col>
         </Row>
+      </Col>
+      <Col xs={12} lg={3} xl={2}>
+        <ProjectInformation output="card" />
       </Col>
     </Row>
   );

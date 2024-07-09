@@ -16,7 +16,12 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { PlusLg } from "react-bootstrap-icons";
+import {
+  FolderFill,
+  GearFill,
+  PeopleFill,
+  PlusLg,
+} from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 
@@ -100,7 +105,8 @@ function ProjectsDashboard() {
   return (
     <div className="card" data-cy="projects-container">
       <div className="card-header">
-        <h2 className={cx("d-flex", "m-0")}>
+        <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
+          <FolderFill className={cx("small", "text-icon")} />
           <span>Projects</span>
           <Link
             className={cx("btn", "btn-primary", "btn-sm", "ms-auto", "my-auto")}
@@ -111,7 +117,7 @@ function ProjectsDashboard() {
               Create new project
             </span>
           </Link>
-        </h2>
+        </h4>
       </div>
 
       <ProjectList />
@@ -174,7 +180,8 @@ function GroupsDashboard() {
   return (
     <div className="card" data-cy="groups-container">
       <div className="card-header">
-        <h2 className={cx("d-flex", "m-0")}>
+        <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
+          <PeopleFill className={cx("small", "text-icon")} />
           <span>Groups</span>
           <Link
             className={cx("btn", "btn-primary", "btn-sm", "ms-auto", "my-auto")}
@@ -185,7 +192,7 @@ function GroupsDashboard() {
               Create new group
             </span>
           </Link>
-        </h2>
+        </h4>
       </div>
 
       <GroupsList />
@@ -248,7 +255,10 @@ function SessionsDashboard() {
   return (
     <div className="card" data-cy="sessions-container">
       <div className="card-header">
-        <h2 className={cx("d-flex", "m-0")}>Sessions</h2>
+        <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
+          <GearFill className={cx("small", "text-icon")} />
+          Sessions
+        </h4>
       </div>
       <DashboardV2Sessions />
     </div>

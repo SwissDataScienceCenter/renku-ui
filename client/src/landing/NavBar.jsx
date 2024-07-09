@@ -160,7 +160,7 @@ function FooterNavbarInner({ location, params }) {
           "px-2",
           "px-sm-3",
           "py-2",
-          location.pathname.startsWith("/v2") ? "bg-dark" : "bg-primary"
+          location.pathname.startsWith("/v2") ? "bg-navy" : "bg-primary"
         )}
         data-bs-theme="dark"
       >

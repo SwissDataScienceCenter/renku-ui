@@ -113,11 +113,11 @@ function DashboardSession({ session }: DashboardSessionProps) {
           className={cx("text-decoration-none", "text-reset")}
           to={projectUrl}
         >
-          <h4>
+          <h5>
             {project
               ? project.namespace + "/" + project.slug
               : projectId ?? "Unknown"}
-          </h4>
+          </h5>
         </Link>
         <ActiveSessionButton
           className="my-auto"

@@ -26,6 +26,7 @@ import {
 } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import {
+  Badge,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -119,13 +120,21 @@ export default function SessionsV2({ project }: SessionsV2Props) {
   return (
     <div className="card">
       <div
-        className={cx("card-header", "d-flex", "justify-content-between")}
+        className={cx(
+          "align-items-center",
+          "card-header",
+          "d-flex",
+          "justify-content-between"
+        )}
         data-cy="sessions-box"
       >
-        <h3 className="mb-0">
-          <GearFill className={cx("me-2", "text-icon")} />
-          Sessions ({totalSessions})
-        </h3>
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
+            <GearFill className={cx("me-2", "small", "text-icon")} />
+            Sessions
+          </h4>
+          <Badge>{totalSessions}</Badge>
+        </div>
         <AccessGuard
           disabled={null}
           enabled={

@@ -42,7 +42,7 @@ export default function GroupSimple({
         slug: group.slug,
       })}
     >
-      <h4 className="m-0">{group.name}</h4>
+      <h5 className="m-0">{group.name}</h5>
       <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
 
       {group.description && <p className="mb-2">{group.description}</p>}

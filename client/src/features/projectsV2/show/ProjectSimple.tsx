@@ -49,7 +49,7 @@ export default function ProjectSimple({
         slug: project.slug,
       })}
     >
-      <h4 className="m-0">{project.name}</h4>
+      <h5 className="m-0">{project.name}</h5>
       <p className={cx("fst-italic", "mb-2")}>
         {project.namespace}/{project.slug}
       </p>
