@@ -102,7 +102,14 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
         Replace
       </Button>
 
-      <Modal isOpen={showModal} toggle={toggleModal}>
+      <Modal
+        backdrop="static"
+        centered
+        fullscreen="md"
+        isOpen={showModal}
+        size="md"
+        toggle={toggleModal}
+      >
         <ModalHeader toggle={toggleModal}>
           Replace Secret <code>{secret.name}</code>
         </ModalHeader>
