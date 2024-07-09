@@ -29,23 +29,13 @@ import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
 
 const configFetch = fetch("/config.json");
 
-const platformConfig = fetch("/api/data/platform/config")
-  .then((resp) => (resp.ok ? resp.json() : Promise.reject(resp.statusText)))
-  .then((config) => ({
-    disableUi: !!config["disable_ui"],
-  }))
-  .catch(() => ({ disableUi: false }));
-
-configFetch.then((configResp) => {
+configFetch.then((valuesRead) => {
+  const configResp = valuesRead;
   const configRead = configResp.json();
 
-  Promise.all([configRead, platformConfig]).then(([params_, { disableUi }]) => {
+  configRead.then((params_) => {
     const container = document.getElementById("root");
     const root = createRoot(container);
-
-    if (disableUi) {
-      params_["MAINTENANCE"] = "1";
-    }
 
     const params = validatedAppParams(params_);
 
