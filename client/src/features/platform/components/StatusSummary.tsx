@@ -18,7 +18,12 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { BoxArrowUpRight, CheckCircleFill } from "react-bootstrap-icons";
+import {
+  BoxArrowUpRight,
+  CheckCircleFill,
+  DashCircleFill,
+  XCircleFill,
+} from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 
@@ -151,18 +156,24 @@ interface OverallStatusProps {
 }
 
 function OverallStatus({ summary }: OverallStatusProps) {
-  if (summary.status.indicator == "none") {
-    return (
-      <div className={cx("alert", "alert-success", "rounded", "p-3")}>
-        <CheckCircleFill className={cx("bi", "me-1")} />
-        {summary.status.description}
-      </div>
-    );
-  }
+  const indicator = summary.status.indicator;
+
+  const alertColor =
+    indicator == "none"
+      ? "alert-success"
+      : indicator == "minor"
+      ? "alert-warning"
+      : "alert-danger";
+  const Icon =
+    indicator == "none"
+      ? CheckCircleFill
+      : indicator == "minor"
+      ? DashCircleFill
+      : XCircleFill;
 
   return (
-    <div className={cx("alert", "alert-success", "rounded", "p-3")}>
-      <CheckCircleFill className={cx("bi", "me-1")} />
+    <div className={cx("alert", alertColor, "rounded", "p-3")}>
+      <Icon className={cx("bi", "me-1")} />
       {summary.status.description}
     </div>
   );
