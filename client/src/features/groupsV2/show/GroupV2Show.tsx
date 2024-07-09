@@ -134,9 +134,7 @@ export default function GroupV2Show() {
         <ProjectV2ListDisplay
           namespace={slug}
           pageParam="projects_page"
-          emptyListElement={
-            <p>No visible projects.</p>
-          }
+          emptyListElement={<p>No visible projects.</p>}
         />
       </section>
     </ContainerWrap>
