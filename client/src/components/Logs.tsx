@@ -104,7 +104,7 @@ const LogTabs = ({ logs }: { logs: Record<string, string> }) => {
 
   return (
     <div>
-      <Nav pills className="nav-pills-underline log-nav bg-white">
+      <Nav tabs className="mb-2">
         {Object.keys(data).map((tab) => {
           return (
             <NavItem key={tab} data-cy="log-tab" role="button">
@@ -125,7 +125,10 @@ const LogTabs = ({ logs }: { logs: Record<string, string> }) => {
           return (
             <TabPane key={`log_${tab}`} tabId={tab}>
               <div className="d-flex flex-column">
-                <pre className="bg-primary text-white p-2 w-100 overflow-hidden log-container border-radius-8">
+                <pre
+                  className="overflow-hidden"
+                  style={{ whiteSpace: "pre-line" }}
+                >
                   {data[tab]}
                 </pre>
               </div>
@@ -163,7 +166,7 @@ const LogDownloadButton = ({
   return (
     <Button
       data-cy="session-log-download-button"
-      color={color ?? "rk-green"}
+      color={color ?? "primary"}
       size={size ?? "s"}
       disabled={!canDownload(logs)}
       onClick={() => {
@@ -221,8 +224,8 @@ function NoLogsAvailable(props: LogBodyProps) {
       <p>
         You can try to{" "}
         <Button
+          color="primary"
           data-cy="retry-logs-body"
-          className="btn-outline-rk-green"
           size="sm"
           onClick={() => {
             fetchLogs(name);
@@ -244,11 +247,11 @@ function SessionLogsBody(props: LogBodyProps) {
       <p data-cy="logs-unavailable-message">
         Logs unavailable. Please{" "}
         <Button
-          className="btn-outline-rk-green"
-          size="sm"
+          color="primary"
           onClick={() => {
             fetchLogs(name);
           }}
+          size="sm"
         >
           download
         </Button>{" "}
@@ -280,11 +283,10 @@ function SessionLogs(props: LogBodyProps) {
   // TODO: Revisit after #1219
   return (
     <>
-      <div className="p-2 p-lg-3 text-nowrap">
+      <div className="text-nowrap mb-3">
         <Button
           key="button"
-          color="rk-green"
-          size="sm"
+          color="outline-primary"
           style={{ marginRight: 8 }}
           id="session-refresh-logs"
           onClick={() => {
@@ -298,11 +300,10 @@ function SessionLogs(props: LogBodyProps) {
           logs={logs}
           downloading={downloading}
           save={save}
-          size="sm"
-          color="secondary"
+          color="outline-secondary"
         />
       </div>
-      <div className="p-2 p-lg-3 border-top">
+      <div>
         <SessionLogsBody fetchLogs={fetchLogs} logs={logs} name={sessionName} />
       </div>
     </>
@@ -377,14 +378,14 @@ const EnvironmentLogsPresent = ({
   return (
     <Modal
       isOpen={!!logs.show}
-      className="bg-body modal-dynamic-width"
+      className="modal-dynamic-width"
       scrollable={true}
       toggle={() => {
         toggleLogs(name);
       }}
     >
       <ModalHeader
-        className="bg-body header-multiline"
+        className="header-multiline"
         toggle={() => {
           toggleLogs(name);
         }}
@@ -399,7 +400,7 @@ const EnvironmentLogsPresent = ({
         </div>
       </ModalHeader>
       <ModalBody className="logs-modal">
-        <div className="mx-2 bg-white">
+        <div className="mx-2">
           <SessionLogs fetchLogs={fetchLogs} logs={logs} name={name} />
         </div>
       </ModalBody>

@@ -40,7 +40,7 @@ export default function StartSessionProgressBar({
   const statusData = getStatusData(session?.status);
   const title = "Starting Session";
   const logButton = (
-    <Button onClick={toggleLogs} className={cx("btn-outline-rk-green", "mt-3")}>
+    <Button className="mt-3" color="primary" onClick={toggleLogs}>
       Open Logs
     </Button>
   );
