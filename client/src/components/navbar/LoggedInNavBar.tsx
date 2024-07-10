@@ -33,11 +33,13 @@ import {
   RenkuToolbarNotifications,
 } from "./NavBarItems";
 import { RENKU_LOGO } from "./navbar.constans";
+import StatusBanner from "../../features/platform/components/StatusBanner";
+import { AppParams } from "../../utils/context/appParams.types";
 
 interface LoggedInNavBarProps {
   model: unknown;
   notifications: unknown;
-  params: unknown;
+  params: AppParams;
 }
 
 export default function LoggedInNavBar({
@@ -47,7 +49,7 @@ export default function LoggedInNavBar({
 }: LoggedInNavBarProps) {
   const location = useLocation();
 
-  const uiShortSha = (params as { UI_SHORT_SHA: string }).UI_SHORT_SHA;
+  const uiShortSha = params.UI_SHORT_SHA;
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -127,6 +129,7 @@ export default function LoggedInNavBar({
           </Collapse>
         </Navbar>
       </header>
+      <StatusBanner params={params} />
       <StatuspageBanner
         siteStatusUrl={Url.get(Url.pages.help.status)}
         model={model}

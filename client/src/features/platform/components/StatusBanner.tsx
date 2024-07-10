@@ -16,18 +16,81 @@
  * limitations under the License
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useContext, useMemo } from "react";
+
+import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import { useGetPlatformConfigQuery } from "../api/platform.api";
+import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
+import {
+  Incidents,
+  StatusPageSummary,
+} from "../statuspage-api/statuspage.types";
+import { AppParams } from "../../../utils/context/appParams.types";
 
 const FIVE_MINUTES_MILLIS = 5 * 60 * 1_000;
 
-export default function StatusBanner() {
-  const { data } = useGetPlatformConfigQuery(undefined, {
+interface StatusBannerProps {
+  params: AppParams | undefined;
+}
+
+export default function StatusBanner({ params }: StatusBannerProps) {
+  const statusPageId =
+    params?.STATUSPAGE_ID ?? DEFAULT_APP_PARAMS.STATUSPAGE_ID;
+
+  const { data: summary } = useGetSummaryQuery(
+    statusPageId ? { statusPageId } : skipToken,
+    {
+      pollingInterval: FIVE_MINUTES_MILLIS,
+    }
+  );
+
+  const { data: platformConfig } = useGetPlatformConfigQuery(undefined, {
     pollingInterval: FIVE_MINUTES_MILLIS,
   });
 
-  if (!data) {
+  return (
+    <StatusBannerDisplay
+      summary={summary}
+      incidentBannerContent={platformConfig?.maintenance_banner ?? ""}
+    />
+  );
+}
+
+interface StatusBannerDisplayProps {
+  summary: StatusPageSummary | null | undefined;
+  incidentBannerContent: string;
+}
+
+function StatusBannerDisplay({
+  summary,
+  incidentBannerContent,
+}: StatusBannerDisplayProps) {
+  const incidents = summary?.incidents ?? [];
+
+  return (
+    <>
+      <IncidentsBanner
+        incidents={incidents}
+        incidentBannerContent={incidentBannerContent}
+      />
+    </>
+  );
+}
+
+interface IncidentsBannerProps {
+  incidents: Incidents;
+  incidentBannerContent: string;
+}
+
+function IncidentsBanner({
+  incidents,
+  incidentBannerContent,
+}: IncidentsBannerProps) {
+  if (!incidents.length && !incidentBannerContent) {
     return null;
   }
 
-  return null;
+  return <div>INC</div>;
 }

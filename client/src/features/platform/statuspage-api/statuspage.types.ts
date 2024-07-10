@@ -19,6 +19,7 @@
 export interface StatusPageSummary {
   page: StatusPageMetadata;
   components: StatusPageComponents;
+  incidents: Incidents;
   scheduled_maintenances: ScheduledMaintenances;
   status: StatusPageOverallStatus;
 }
@@ -41,6 +42,23 @@ export interface StatusPageComponent {
   showcase: boolean;
   only_show_if_degraded: boolean;
 }
+
+export type Incidents = Incident[];
+
+export interface Incident {
+  id: string;
+  name: string;
+  status: IncidentStatus;
+  impact: StatusIndicator;
+  incident_updates: IncidentUpdates;
+  components: StatusPageComponents;
+}
+
+export type IncidentStatus =
+  | "investigating"
+  | "identified"
+  | "monitoring"
+  | "resolved";
 
 export type ScheduledMaintenances = ScheduledMaintenance[];
 
