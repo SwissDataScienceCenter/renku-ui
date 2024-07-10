@@ -63,6 +63,8 @@ describe("storageDefinitionFromConfig", () => {
         access_key_id: "access key",
         secret_access_key: "secret key",
       },
+      saveCredentials: false,
+      savedCredentialFields: [],
     };
     const result = storageDefinitionFromConfig(config);
     expect(result).toEqual({
