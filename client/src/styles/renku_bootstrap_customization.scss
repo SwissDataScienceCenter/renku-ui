@@ -23,6 +23,18 @@ $card-box-shadow: $box-shadow-sm;
 $dropdown-box-shadow: $box-shadow-sm;
 $input-box-shadow: transparent;
 
+// Adjust nav tabs
+$nav-tabs-link-active-bg: transparent;
+$nav-tabs-link-hover-border-color: transparent;
+$nav-link-transition: none;
+.nav-tabs .nav-link {
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+}
+.nav-tabs .nav-link.active {
+  border-bottom: 2px solid $primary !important;
+}
+
 // Add navy color
 $additional-colors: (
   "navy": $navy,
@@ -32,55 +44,18 @@ $theme-colors: map-merge($theme-colors, $additional-colors);
 // Adjust card and list group colors
 $card-cap-bg: transparent;
 $list-group-border-color: $card-border-color;
+
+// Adjust card and list group header spacing
+// ! HERE
 // $list-group-item-padding-y: $spacer; // ! discuss with Jimena
-
-// $card-cap-padding-y: 0;
-
-// $custom-border-color: $gray-400;
-// $border-color: $custom-border-color;
-// $card-border-color: $custom-border-color;
-
-// Components
-// $card-spacer-x: map-get($spacers, 5);
-
-// TEMP
-// Colors
-// $primary: #006e58; // new Renku green
-// $secondary: #ca4e86;
-// $theme-colors: (
-//   "primary": $primary,
-//   "secondary": $secondary,
-//   "success": $success,
-//   "info": $info,
-//   "warning": $warning,
-//   "danger": $danger,
-//   "light": $light,
-//   "dark": $dark,
-// );
-// $link-color: #009568; // Old Renku green
-
-// *** class changes ***
-
-// Card header --> remove border and additional padding on the bottom
 .card-header {
   border: 0 !important;
   padding-top: $spacer !important;
   padding-bottom: 0 !important;
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-weight: 600;
-  }
 }
 .card-footer {
   border: 0 !important;
 }
-
-// Flush list groups --> adjust top margins and border to adüate to the Card header changes
 .list-group-flush {
   border-top: inherit !important;
 }
@@ -89,4 +64,16 @@ $list-group-border-color: $card-border-color;
 }
 .card > .card-body + .list-group-flush {
   margin-top: inherit !important;
+}
+
+// Adjust card headers
+.card-header {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+  }
 }
