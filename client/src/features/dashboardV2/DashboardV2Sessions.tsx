@@ -2,16 +2,12 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
 import { Link, generatePath } from "react-router-dom-v5-compat";
+import { ListGroupItem } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import { EnvironmentLogs } from "../../components/Logs";
-import { TimeCaption } from "../../components/TimeCaption";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { NotebooksHelper } from "../../notebooks";
-import {
-  SessionListRowStatus,
-  SessionListRowStatusIcon,
-} from "../../notebooks/components/SessionListStatus";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
@@ -20,11 +16,13 @@ import { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
 import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
+import {
+  SessionStatusV2Description,
+  SessionStatusV2Label,
+} from "../sessionsV2/components/SessionStatus/SessionStatus";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
-import styles from "./Dashboard.module.scss";
-import { ListGroupItem } from "reactstrap";
 
 export default function DashboardV2Sessions() {
   const { data: sessions, error, isLoading } = useGetSessionsQuery();
@@ -77,7 +75,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
   );
-  const { image, started, status } = session;
+  const { image } = session;
   const annotations = NotebooksHelper.cleanAnnotations(
     session.annotations
   ) as NotebookAnnotations;
@@ -104,14 +102,12 @@ function DashboardSession({ session }: DashboardSessionProps) {
       })
     : ABSOLUTE_ROUTES.v2.projects.root;
 
-  const details = { message: session.status.message };
-
   return (
     <ListGroupItem data-cy="list-session">
       <div className={cx("d-flex", "justify-content-between")}>
         <Link
           data-cy="list-session-link"
-          className={cx("text-decoration-none", "text-reset")}
+          className="text-reset"
           to={projectUrl}
         >
           <h5>
@@ -130,22 +126,10 @@ function DashboardSession({ session }: DashboardSessionProps) {
           annotations={annotations}
         />
       </div>
-      <div
-        className={cx(
-          styles.entityDescription,
-          "d-none",
-          "d-md-block",
-          "cursor-pointer"
-        )}
-      >
-        <Link
-          className={cx("text-decoration-none", "text-reset")}
-          to={projectUrl}
-        >
-          <p className="mb-2">
-            <b>Container image:</b> {image}
-          </p>
-        </Link>
+      <div>
+        <p className="mb-2">
+          <b>Container image:</b> {image}
+        </p>
       </div>
       <div
         className={cx(
@@ -154,28 +138,11 @@ function DashboardSession({ session }: DashboardSessionProps) {
           "justify-content-between"
         )}
       >
-        <div className={cx("d-flex")}>
-          <div className="me-2">
-            <SessionListRowStatusIcon
-              annotations={annotations}
-              details={details}
-              image={image}
-              status={status.state}
-              uid={session.name}
-            />
-          </div>
-          <div>
-            <SessionListRowStatus
-              annotations={annotations}
-              details={details}
-              startTimestamp={started}
-              status={status.state}
-              uid={session.name}
-            />
-          </div>
+        <div className="d-flex">
+          <SessionStatusV2Label session={session} />
         </div>
-        <div className={cx("d-none", "d-md-flex")}>
-          <TimeCaption datetime={session.started} prefix="Started" />
+        <div className="d-flex">
+          <SessionStatusV2Description session={session} />
         </div>
       </div>
     </ListGroupItem>
