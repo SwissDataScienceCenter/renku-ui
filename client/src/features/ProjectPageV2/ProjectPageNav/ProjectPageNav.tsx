@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { EyeFill, Folder2Open, PencilSquare } from "react-bootstrap-icons";
+import { EyeFill, PencilSquare } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import { Nav, NavItem } from "reactstrap";
 
@@ -37,10 +37,6 @@ export default function ProjectPageNav({ project }: { project: Project }) {
       slug,
     }
   );
-  const projectInfoUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.info, {
-    namespace,
-    slug,
-  });
 
   return (
     <>
@@ -49,12 +45,6 @@ export default function ProjectPageNav({ project }: { project: Project }) {
           <RenkuNavLinkV2 end to={projectUrl} title="Overview">
             <EyeFill className={cx("me-2", "text-icon")} />
             Overview
-          </RenkuNavLinkV2>
-        </NavItem>
-        <NavItem>
-          <RenkuNavLinkV2 end to={projectInfoUrl} title="Project Information">
-            <Folder2Open className={cx("me-2", "text-icon")} />
-            Project Info
           </RenkuNavLinkV2>
         </NavItem>
         <NavItem>

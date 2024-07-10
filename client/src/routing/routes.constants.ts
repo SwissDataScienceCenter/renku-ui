@@ -30,7 +30,6 @@ export const ABSOLUTE_ROUTES = {
       new: "/v2/projects/new",
       show: {
         root: "/v2/projects/:namespace/:slug",
-        info: "/v2/projects/:namespace/:slug/info",
         settings: "/v2/projects/:namespace/:slug/settings",
         sessions: {
           root: "/v2/projects/:namespace/:slug/sessions",

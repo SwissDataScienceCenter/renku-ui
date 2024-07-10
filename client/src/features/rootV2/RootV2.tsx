@@ -28,7 +28,6 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
 import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
-import LazyProjectInformation from "../ProjectPageV2/ProjectPageContent/LazyProjectInformation";
 import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
 import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
@@ -181,10 +180,6 @@ function ProjectsV2Routes() {
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
         <Route element={<LazyProjectPageV2Show />}>
           <Route index element={<LazyProjectPageOverview />} />
-          <Route
-            path={RELATIVE_ROUTES.v2.projects.show.info}
-            element={<LazyProjectInformation />}
-          />
           <Route
             path={RELATIVE_ROUTES.v2.projects.show.settings}
             element={<LazyProjectPageSettings />}
