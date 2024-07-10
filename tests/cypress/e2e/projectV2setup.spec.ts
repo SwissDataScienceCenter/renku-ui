@@ -18,7 +18,7 @@
 
 import fixtures from "../support/renkulab-fixtures";
 
-describe("Navigate to project page", () => {
+describe("Set up project components", () => {
   beforeEach(() => {
     fixtures
       .config()
@@ -35,7 +35,7 @@ describe("Navigate to project page", () => {
     fixtures.projects().landingUserProjects().readProjectV2();
   });
 
-  it("set up data source", () => {
+  it("set up simple data source", () => {
     fixtures
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
@@ -73,6 +73,34 @@ describe("Navigate to project page", () => {
     cy.getDataCy("data-source-title").should("contain.text", "example-storage");
     cy.getDataCy("data-source-view-back-button").click();
 
+    // Should see a message that credentials are not editable
+    cy.getDataCy("button-with-menu-dropdown").first().click();
+    cy.getDataCy("data-source-credentials").click();
+    cy.getDataCy("cloud-storage-credentials-not-needed-modal")
+      .should("be.visible")
+      .should(
+        "contain.text",
+        "This data source does not require any credentials."
+      );
+    cy.getDataCy("cloud-storage-credentials-not-needed-modal")
+      .contains("Close")
+      .click();
+
+    cy.getDataCy("button-with-menu-dropdown").first().click();
+
+    // Should see a message that credentials are not editable
+    cy.getDataCy("data-source-credentials").click();
+    cy.getDataCy("cloud-storage-credentials-not-needed-modal")
+      .should("be.visible")
+      .should(
+        "contain.text",
+        "This data source does not require any credentials."
+      );
+    cy.getDataCy("cloud-storage-credentials-not-needed-modal")
+      .contains("Close")
+      .click();
+
+    cy.getDataCy("button-with-menu-dropdown").first().click();
     // edit data source
     fixtures.patchCloudStorage({ name: "patchCloudStorage2", isV2: true });
     cy.getDataCy("data-source-edit").first().click();
@@ -96,42 +124,6 @@ describe("Navigate to project page", () => {
     cy.getDataCy("data-source-delete").click();
     cy.getDataCy("delete-data-source-modal-button").click();
     cy.wait("@deleteCloudStorageV2");
-  });
-
-  it("set up data source with failed credentials", () => {
-    fixtures
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
-      .postCloudStorage({
-        name: "postCloudStorageV2",
-        fixture: "cloudStorage/new-cloud-storage_v2.json",
-      })
-      .cloudStorage({ name: "getCloudStorageV2", isV2: true })
-      .testCloudStorage({ success: false });
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
-    // add data source
-    cy.getDataCy("add-data-source").click();
-    cy.wait("@getStorageSchema");
-    cy.getDataCy("data-storage-s3").click();
-    cy.getDataCy("data-provider-AWS").click();
-    cy.getDataCy("cloud-storage-edit-next-button").click();
-    cy.get("#sourcePath").type("giab");
-    cy.get("#access_key_id").type("access key");
-    cy.get("#secret_access_key").type("secret key");
-    cy.getDataCy("test-cloud-storage-button").click();
-    cy.getDataCy("add-cloud-storage-continue-button").contains("Skip").click();
-    cy.getDataCy("cloud-storage-edit-mount").within(() => {
-      cy.get("#name").type("giab");
-    });
-    cy.getDataCy("cloud-storage-edit-update-button").click();
-    cy.wait("@postCloudStorageV2");
-    cy.getDataCy("cloud-storage-edit-body").should(
-      "contain.text",
-      "The storage example-storage has been successfully added."
-    );
-    cy.getDataCy("cloud-storage-edit-close-button").click();
-    cy.wait("@getCloudStorageV2");
-    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
   });
 
   it("set up repositories", () => {

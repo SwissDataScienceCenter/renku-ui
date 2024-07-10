@@ -40,3 +40,24 @@ export function convertCloudStorageForSessionApi(
     target_path,
   };
 }
+
+export function convertCloudStorageForSessionV2Api(
+  cloudStorage: SessionCloudStorage | CloudStorageWithIdRead
+): {
+  storage_id: string;
+  configuration: CloudStorageDetailsOptions;
+} {
+  const { configuration: csConfiguration, storage_id } = cloudStorage;
+  const configuration = { ...csConfiguration };
+  // Remove fields that are not necessary for the session API
+  if (configuration.type != null) {
+    delete configuration.type;
+  }
+  if (configuration.provider != null) {
+    delete configuration.provider;
+  }
+  return {
+    storage_id,
+    configuration,
+  };
+}

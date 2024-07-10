@@ -20,10 +20,10 @@ import { useCallback, useState } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
 import { Loader } from "../../../../components/Loader.tsx";
 import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api.ts";
+import { Project } from "../../../projectsV2/api/projectV2.api";
+import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api";
 import AccessGuard from "../../utils/AccessGuard.tsx";
-import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
+import useProjectAccess from "../../utils/useProjectAccess.hook";
 import { DataSourceDisplay } from "./DataSourceDisplay.tsx";
 import {
   Badge,
