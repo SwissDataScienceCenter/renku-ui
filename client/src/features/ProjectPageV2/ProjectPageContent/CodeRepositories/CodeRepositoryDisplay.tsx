@@ -403,14 +403,16 @@ export function RepositoryItem({
   const title = canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
   const mainInteraction = !readonly
     ? {
-        className: cx(!readonly && ["cursor-pointer", "link-primary"]),
+        className: cx(
+          !readonly && ["cursor-pointer", "text-decoration-underline"]
+        ),
         onClick: toggleDetails,
       }
     : {};
 
   return (
     <div className={cx("d-flex", "align-items-center", "gap-3")}>
-      <div className={cx("d-flex", "flex-column")}>
+      <div className={cx("align-items-center", "d-flex", "flex-row")}>
         <div {...mainInteraction}>
           <InfoCircleFill className={cx("me-2", "text-icon")} />
           <span className={cx("me-2", !readonly && "fw-bold")}>
@@ -418,27 +420,11 @@ export function RepositoryItem({
               <span className="fwd-italic">Unknown repository</span>
             )}
           </span>
-          <RepositoryPermissions repositoryUrl={url} />
         </div>
+        <RepositoryPermissions repositoryUrl={url} />
       </div>
       {!readonly && (
         <>
-          {/* {canonicalUrl?.hostname && (
-            <a
-              href={canonicalUrlStr}
-              target="_blank"
-              rel="noreferrer noopener"
-              className={cx("align-items-center", "d-flex", "flex-nowrap")}
-            >
-              <RepositoryIcon
-                className="me-1"
-                provider={canonicalUrl?.origin}
-              />
-              <span data-cy="code-repository-title">
-                {canonicalUrl.hostname}
-              </span>
-            </a>
-          )} */}
           <div className={cx("d-flex", "ms-auto", "my-auto")}>
             <CodeRepositoryActions project={project} url={url} />
           </div>

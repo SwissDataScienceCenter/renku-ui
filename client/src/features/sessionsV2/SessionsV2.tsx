@@ -27,6 +27,9 @@ import {
 import { generatePath } from "react-router-dom-v5-compat";
 import {
   Badge,
+  Card,
+  CardBody,
+  CardHeader,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -118,11 +121,13 @@ export default function SessionsV2({ project }: SessionsV2Props) {
     (launchers ? launchers?.length : 0) +
     Object.entries(orphanSessions)?.length;
   return (
-    <div className="card">
-      <div
+    <Card className="border-primary-subtle">
+      <CardHeader
         className={cx(
           "align-items-center",
-          "card-header",
+          "bg-primary",
+          "bg-opacity-10",
+          "border-primary-subtle",
           "d-flex",
           "justify-content-between"
         )}
@@ -148,8 +153,8 @@ export default function SessionsV2({ project }: SessionsV2Props) {
           minimumRole="editor"
           role={userRole}
         />
-      </div>
-      <div className="card-body">
+      </CardHeader>
+      <CardBody>
         {loading}
         {errorAlert}
         <p className="m-0">
@@ -157,7 +162,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
             ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
             : "Define interactive environments in which to do your work and share it  with others."}
         </p>
-      </div>
+      </CardBody>
 
       {totalSessions > 0 && (
         <ListGroup flush>
@@ -177,7 +182,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
           ))}
         </ListGroup>
       )}
-    </div>
+    </Card>
   );
 }
 

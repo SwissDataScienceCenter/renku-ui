@@ -1,22 +1,22 @@
-// Colors
-$primary: #006e58;
-$navy: #01192d;
-
-$enable-shadows: true;
-
-// $dark: #6699ff; // #01192d;
-// $navbar-dark-color: #6699ff;
-// $navbar-light-color: #6699ff;
-
 // Font
 @import "./fonts/fonts";
-
 $font-family-base: "Inter", sans-serif;
 
-// Variables
+// Redefine/add colors and shadow variables
+$primary: #006e58;
+$navy: #01192d;
+$enable-shadows: true;
+
+// Variables and functions
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/variables-dark";
+
+// Add navy color
+$additional-colors: (
+  "navy": $navy,
+);
+$theme-colors: map-merge($theme-colors, $additional-colors);
 
 // Adjust shadows
 $card-box-shadow: $box-shadow-sm;
@@ -32,39 +32,12 @@ $nav-link-transition: none;
   border-bottom: 2px solid transparent !important;
 }
 .nav-tabs .nav-link.active {
-  border-bottom: 2px solid $primary !important;
+  border-bottom: 2px solid $nav-tabs-link-active-color !important;
 }
 
-// Add navy color
-$additional-colors: (
-  "navy": $navy,
-);
-$theme-colors: map-merge($theme-colors, $additional-colors);
-
-// Adjust card and list group colors
-$card-cap-bg: transparent;
-$list-group-border-color: $card-border-color;
-
-// Adjust card and list group header spacing
-// ! HERE
-// $list-group-item-padding-y: $spacer; // ! discuss with Jimena
-.card-header {
-  border: 0 !important;
-  padding-top: $spacer !important;
-  padding-bottom: 0 !important;
-}
-.card-footer {
-  border: 0 !important;
-}
-.list-group-flush {
-  border-top: inherit !important;
-}
-.card > .list-group-flush {
-  margin-top: $spacer !important;
-}
-.card > .card-body + .list-group-flush {
-  margin-top: inherit !important;
-}
+// Adjust card and list group spacing
+$list-group-item-padding-y: $spacer;
+$card-cap-padding-y: $spacer;
 
 // Adjust card headers
 .card-header {

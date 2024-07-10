@@ -63,7 +63,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
         <Col xs={12} lg={10}>
           <Row>
             <Col className={cx("d-flex", "justify-content-between")}>
-              <h1 data-cy="project-name">{project.name}</h1>
+              <h2 data-cy="project-name">{project.name}</h2>
               <div className={cx("align-items-center", "d-flex")}>
                 <ProjectActions project={project} settingsUrl={settingsUrl} />
               </div>

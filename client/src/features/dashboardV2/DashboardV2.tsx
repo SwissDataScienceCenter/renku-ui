@@ -54,9 +54,7 @@ function DashboardWelcome() {
     <div>
       <Row>
         <Col>
-          <h2>
-            <b>Welcome to the Renku 2.0 alpha preview!</b>
-          </h2>
+          <h2>Welcome to the Renku 2.0 alpha preview!</h2>
         </Col>
       </Row>
       <Row>
@@ -103,8 +101,10 @@ function DashboardWelcome() {
 
 function ProjectsDashboard() {
   return (
-    <Card data-cy="projects-container">
-      <CardHeader>
+    <Card className="border-primary-subtle" data-cy="projects-container">
+      <CardHeader
+        className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
+      >
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
           <FolderFill className={cx("small", "text-icon")} />
           <span>Projects</span>
@@ -112,17 +112,14 @@ function ProjectsDashboard() {
             className={cx("btn", "btn-primary", "btn-sm", "ms-auto", "my-auto")}
             to="/v2/projects/new"
           >
-            <PlusLg className="bi" id="createPlus" />
-            <span className={cx("d-none", "d-sm-inline", "ms-1")}>
-              Create new project
-            </span>
+            <PlusLg className="text-icon" id="createPlus" />
           </Link>
         </h4>
       </CardHeader>
 
       <ProjectList />
 
-      <CardFooter className="py-3">
+      <CardFooter className={cx("bg-white", "py-3")}>
         <Link to="/v2/projects" data-cy="view-my-projects-btn">
           View all my projects
         </Link>
@@ -159,12 +156,7 @@ function ProjectList() {
       data-cy="dashboard-project-list"
     >
       {data?.projects?.map((project) => (
-        <ProjectSimple
-          className="py-3"
-          element="list-item"
-          key={project.id}
-          project={project}
-        />
+        <ProjectSimple element="list-item" key={project.id} project={project} />
       ))}
     </ul>
   );
@@ -172,8 +164,10 @@ function ProjectList() {
 
 function GroupsDashboard() {
   return (
-    <Card data-cy="groups-container">
-      <CardHeader>
+    <Card className="border-primary-subtle" data-cy="groups-container">
+      <CardHeader
+        className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
+      >
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
           <PeopleFill className={cx("small", "text-icon")} />
           <span>Groups</span>
@@ -181,10 +175,7 @@ function GroupsDashboard() {
             className={cx("btn", "btn-primary", "btn-sm", "ms-auto", "my-auto")}
             to="/v2/groups/new"
           >
-            <PlusLg className="bi" id="createPlus" />
-            <span className={cx("d-none", "d-sm-inline", "ms-1")}>
-              Create new group
-            </span>
+            <PlusLg className="text-icon" id="createPlus" />
           </Link>
         </h4>
       </CardHeader>
@@ -228,12 +219,7 @@ function GroupsList() {
       data-cy="dashboard-group-list"
     >
       {data?.groups?.map((group) => (
-        <GroupSimple
-          className="py-3"
-          element="list-item"
-          key={group.id}
-          group={group}
-        />
+        <GroupSimple element="list-item" key={group.id} group={group} />
       ))}
     </ul>
   );
@@ -241,8 +227,10 @@ function GroupsList() {
 
 function SessionsDashboard() {
   return (
-    <Card data-cy="sessions-container">
-      <CardHeader>
+    <Card className="border-primary-subtle" data-cy="sessions-container">
+      <CardHeader
+        className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
+      >
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
           <GearFill className={cx("small", "text-icon")} />
           Sessions

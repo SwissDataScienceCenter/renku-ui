@@ -231,7 +231,7 @@ export function DataSourceDisplay({
     <ListGroupItem>
       <div className={cx("d-flex", "align-items-center", "gap-3")}>
         <div
-          className={cx("cursor-pointer", "link-primary")}
+          className={cx("cursor-pointer", "text-decoration-underline")}
           onClick={toggleDetails}
         >
           <InfoCircleFill className={cx("me-2", "text-icon")} />

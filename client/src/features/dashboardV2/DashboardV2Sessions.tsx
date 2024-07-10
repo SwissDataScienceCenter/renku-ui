@@ -24,6 +24,7 @@ import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSe
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
 import styles from "./Dashboard.module.scss";
+import { ListGroupItem } from "reactstrap";
 
 export default function DashboardV2Sessions() {
   const { data: sessions, error, isLoading } = useGetSessionsQuery();
@@ -106,7 +107,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
   const details = { message: session.status.message };
 
   return (
-    <div data-cy="list-session" className={cx("list-group-item", "py-3")}>
+    <ListGroupItem data-cy="list-session">
       <div className={cx("d-flex", "justify-content-between")}>
         <Link
           data-cy="list-session-link"
@@ -177,6 +178,6 @@ function DashboardSession({ session }: DashboardSessionProps) {
           <TimeCaption datetime={session.started} prefix="Started" />
         </div>
       </div>
-    </div>
+    </ListGroupItem>
   );
 }

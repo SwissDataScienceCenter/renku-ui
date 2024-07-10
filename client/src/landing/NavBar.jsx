@@ -35,6 +35,7 @@ import { parseChartVersion } from "../help/release.utils";
 import { Links } from "../utils/constants/Docs";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../utils/helpers/url";
+import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 
 import "./NavBar.css";
 
@@ -96,9 +97,12 @@ function FooterNavbarAnonymousLinks() {
 }
 
 function FooterNavbarLoggedInLinks({ privacyLink }) {
+  const helpLocation = location.pathname.startsWith("/v2")
+    ? ABSOLUTE_ROUTES.v2.help.root
+    : "/help";
   return (
     <>
-      <RenkuNavLink to="/help" title="Help" />
+      <RenkuNavLink to={helpLocation} title="Help" />
       {privacyLink}
       <ExternalDocsLink
         url={Links.DISCOURSE}

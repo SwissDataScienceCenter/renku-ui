@@ -43,8 +43,10 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
 
   const totalRepositories = project.repositories?.length || 0;
   return (
-    <Card data-cy="code-repositories-box">
-      <CardHeader>
+    <Card className="border-primary-subtle" data-cy="code-repositories-box">
+      <CardHeader
+        className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
+      >
         <div
           className={cx(
             "align-items-center",
@@ -57,7 +59,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
               <FileCodeFill className={cx("me-2", "small", "text-icon")} />
               Code Repositories
             </h4>
-            {project?.repositories?.length && (
+            {project?.repositories?.length != null && (
               <Badge>{project?.repositories?.length}</Badge>
             )}
           </div>

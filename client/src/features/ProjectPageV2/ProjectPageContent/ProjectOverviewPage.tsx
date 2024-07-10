@@ -28,9 +28,9 @@ export default function ProjectOverviewPage() {
   const { project } = useProject();
 
   return (
-    <Row className="g-3">
+    <Row className="g-4">
       <Col xs={12} lg={9} xl={10}>
-        <Row className="g-3">
+        <Row className="g-4">
           <Col xs={12}>
             <SessionsV2 project={project} />
           </Col>

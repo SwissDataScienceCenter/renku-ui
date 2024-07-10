@@ -55,8 +55,10 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
   );
 
   return (
-    <Card data-cy="data-source-box">
-      <CardHeader>
+    <Card className="border-primary-subtle" data-cy="data-source-box">
+      <CardHeader
+        className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
+      >
         <div
           className={cx(
             "align-items-center",

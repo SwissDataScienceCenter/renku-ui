@@ -48,30 +48,45 @@ export default function SessionItem({
   return (
     <ListGroupItem>
       <Row className="g-2">
-        <Col xs={12} lg={9} xl={10}>
+        <Col
+          className={cx("align-items-center", "d-flex")}
+          xs={12}
+          md={8}
+          lg={9}
+          xl={10}
+        >
           <Row className="g-2">
-            <Col xs={12} onClick={() => toggleSessionDetails()}>
+            <Col
+              className={cx("align-items-center", "d-flex")}
+              xs={12}
+              lg="auto"
+            >
               <div
                 className={cx(
-                  "cursor-pointer",
-                  "d-inline-block",
-                  "link-primary"
+                  "align-items-center",
+                  "d-flex",
+                  "flex-row",
+                  "gap-2"
                 )}
               >
-                <InfoCircleFill className={cx("me-2", "text-icon")} />
-                <span className="fw-bold" data-cy="session-name">
-                  {name ? (
-                    name
-                  ) : (
-                    <span className="fst-italic">Orphan session</span>
+                <div
+                  className={cx(
+                    "cursor-pointer",
+                    "d-inline-block",
+                    "text-decoration-underline"
                   )}
-                </span>
-              </div>
-            </Col>
-
-            <Col xs={12}>
-              <Row className="gy-2">
-                <Col xs={12} md={session ? "auto" : 12}>
+                  onClick={() => toggleSessionDetails()}
+                >
+                  <InfoCircleFill className={cx("me-2", "text-icon")} />
+                  <span className="fw-bold" data-cy="session-name">
+                    {name ? (
+                      name
+                    ) : (
+                      <span className="fst-italic">Orphan session</span>
+                    )}
+                  </span>
+                </div>
+                <div>
                   {session ? (
                     <SessionStatusV2Label session={session} />
                   ) : (
@@ -80,29 +95,36 @@ export default function SessionItem({
                     >
                       <DashCircleFill
                         className={cx(
-                          "me-2",
+                          "me-1",
                           "text-icon",
                           "text-light-emphasis"
                         )}
                       />
-                      <span className="text-dark" data-cy="session-status">
+                      <span
+                        className="text-dark-emphasis"
+                        data-cy="session-status"
+                      >
                         Not Running
                       </span>
                     </SessionBadge>
                   )}
-                </Col>
-                {session ? (
-                  <Col xs={12} md="auto">
-                    <SessionStatusV2Description session={session} />
-                  </Col>
-                ) : null}
-              </Row>
+                </div>
+              </div>
             </Col>
+            {session ? (
+              <Col
+                className={cx("align-items-center", "d-flex")}
+                xs={12}
+                lg="auto"
+              >
+                <SessionStatusV2Description session={session} />
+              </Col>
+            ) : null}
           </Row>
         </Col>
 
-        <Col className="d-flex justify-content-lg-end" xs={12} lg={3} xl={2}>
-          <div className="my-auto">
+        <Col className={cx("d-flex", "ms-md-auto")} xs="auto">
+          <div className="my-sm-auto">
             {session != null ? (
               <ActiveSessionButton
                 session={session}

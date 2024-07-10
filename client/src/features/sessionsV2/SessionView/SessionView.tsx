@@ -158,9 +158,9 @@ function SessionCardNotRunning({
         <div className="my-auto">
           <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
             <DashCircleFill
-              className={cx("me-2", "text-icon", "text-light-emphasis")}
+              className={cx("me-1", "text-icon", "text-light-emphasis")}
             />
-            <span className="text-dark" data-cy="session-status">
+            <span className="text-dark-emphasis" data-cy="session-status">
               Not Running
             </span>
           </SessionBadge>
