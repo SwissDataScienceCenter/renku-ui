@@ -86,11 +86,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
         <ListGroup flush>
           {project.repositories?.map((repositoryUrl, index) => (
             <ListGroupItem key={index}>
-              <RepositoryItem
-                project={project}
-                url={repositoryUrl}
-                showMenu={true}
-              />
+              <RepositoryItem project={project} url={repositoryUrl} />
             </ListGroupItem>
           ))}
         </ListGroup>

@@ -20,7 +20,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
   CheckCircleFill,
+  InfoCircleFill,
   Pencil,
+  PencilSquare,
   SlashCircleFill,
   ThreeDotsVertical,
   Trash,
@@ -43,13 +45,14 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Offcanvas,
+  OffcanvasBody,
   Row,
   UncontrolledDropdown,
 } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
@@ -137,11 +140,8 @@ function EditCodeRepositoryModal({
   return (
     <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ModalHeader toggle={toggleModal}>
-          <RenkuFrogIcon className="me-2" size={30} />
-          Edit code repository
-        </ModalHeader>
-        <ModalBody className="py-0">
+        <ModalHeader toggle={toggleModal}>Edit code repository</ModalHeader>
+        <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
           <p>Specify a code repository by its URL.</p>
           <Row>
@@ -175,24 +175,25 @@ function EditCodeRepositoryModal({
               </FormGroup>
             </Col>
           </Row>
-          <ModalFooter className="px-0">
-            <Button
-              color="rk-green"
-              className={cx("float-right", "mt-1", "ms-2")}
-              data-cy="edit-code-repository-modal-button"
-              type="submit"
-            >
-              {result.isLoading ? (
-                <>
-                  <Loader className="me-1" inline size={16} />
-                  Edit code repository
-                </>
-              ) : (
-                <>Edit code repository</>
-              )}
-            </Button>
-          </ModalFooter>
         </ModalBody>
+        <ModalFooter>
+          <Button color="outline-primary" onClick={toggleModal}>
+            <XLg className={cx("me-2", "text-icon")} />
+            Close
+          </Button>
+          <Button
+            color="primary"
+            data-cy="edit-code-repository-modal-button"
+            type="submit"
+          >
+            {result.isLoading ? (
+              <Loader className="me-1" inline size={16} />
+            ) : (
+              <PencilSquare className={cx("me-2", "text-icon")} />
+            )}
+            Edit code repository
+          </Button>
+        </ModalFooter>
       </Form>
     </Modal>
   );
@@ -264,14 +265,13 @@ function CodeRepositoryDeleteModal({
         </Row>
       </ModalBody>
       <ModalFooter>
-        <div className="d-flex justify-content-end">
+        <div className={cx("d-flex", "justify-content-end", "gap-2")}>
           <Button color="outline-danger" onClick={toggleModal}>
-            <XLg className={cx("bi", "me-1")} />
+            <XLg className={cx("me-2", "text-icon")} />
             Cancel
           </Button>
           <Button
             color="danger"
-            className={cx("float-right", "ms-2")}
             data-cy="delete-code-repository-modal-button"
             type="submit"
             onClick={onDeleteCodeRepository}
@@ -283,7 +283,7 @@ function CodeRepositoryDeleteModal({
               </>
             ) : (
               <>
-                <Trash className={cx("bi", "me-1")} />
+                <Trash className={cx("me-2", "text-icon")} />
                 Remove repository
               </>
             )}
@@ -293,6 +293,7 @@ function CodeRepositoryDeleteModal({
     </Modal>
   );
 }
+
 function CodeRepositoryActions({
   url,
   project,
@@ -315,10 +316,8 @@ function CodeRepositoryActions({
       <UncontrolledDropdown>
         <DropdownToggle
           className={cx(
-            "m-0",
             "p-0",
             "bg-transparent",
-            "d-flex",
             "border-0",
             "shadow-none",
             dotsDropdownStyles.threeDotsDark
@@ -374,17 +373,21 @@ function CodeRepositoryActions({
     </>
   );
 }
+
 interface RepositoryItemProps {
   project: Project;
+  readonly?: boolean;
   url: string;
-  showMenu: boolean;
 }
-
 export function RepositoryItem({
-  url,
   project,
-  showMenu = true,
+  readonly = false,
+  url,
 }: RepositoryItemProps) {
+  const [showDetails, setShowDetails] = useState(false);
+  const toggleDetails = useCallback(() => {
+    setShowDetails((open) => !open);
+  }, []);
   const canonicalUrlStr = useMemo(() => `${url.replace(/.git$/i, "")}`, [url]);
   const canonicalUrl = useMemo(() => {
     try {
@@ -398,28 +401,55 @@ export function RepositoryItem({
   }, [canonicalUrlStr]);
 
   const title = canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
+  const mainInteraction = !readonly
+    ? {
+        className: cx(!readonly && ["cursor-pointer", "link-primary"]),
+        onClick: toggleDetails,
+      }
+    : {};
 
   return (
     <div className={cx("d-flex", "align-items-center", "gap-3")}>
       <div className={cx("d-flex", "flex-column")}>
-        {canonicalUrl?.hostname && (
-          <div className={cx("align-items-center", "d-flex", "gap-1")}>
-            <RepositoryIcon
-              className="flex-shrink-0"
-              provider={canonicalUrl?.origin}
-            />
-            <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
-              {title || canonicalUrlStr}
-              <BoxArrowUpRight className={cx("bi", "ms-2")} />
-            </a>
-          </div>
-        )}
-      </div>
-      <RepositoryPermissions repositoryUrl={url} />
-      {showMenu && (
-        <div className={cx("d-flex", "ms-auto", "my-auto")}>
-          <CodeRepositoryActions project={project} url={url} />
+        <div {...mainInteraction}>
+          <InfoCircleFill className={cx("me-2", "text-icon")} />
+          <span className={cx("me-2", !readonly && "fw-bold")}>
+            {title || canonicalUrlStr || (
+              <span className="fwd-italic">Unknown repository</span>
+            )}
+          </span>
+          <RepositoryPermissions repositoryUrl={url} />
         </div>
+      </div>
+      {!readonly && (
+        <>
+          {/* {canonicalUrl?.hostname && (
+            <a
+              href={canonicalUrlStr}
+              target="_blank"
+              rel="noreferrer noopener"
+              className={cx("align-items-center", "d-flex", "flex-nowrap")}
+            >
+              <RepositoryIcon
+                className="me-1"
+                provider={canonicalUrl?.origin}
+              />
+              <span data-cy="code-repository-title">
+                {canonicalUrl.hostname}
+              </span>
+            </a>
+          )} */}
+          <div className={cx("d-flex", "ms-auto", "my-auto")}>
+            <CodeRepositoryActions project={project} url={url} />
+          </div>
+          <RepositoryView
+            project={project}
+            repositoryUrl={url}
+            showDetails={showDetails}
+            title={title}
+            toggleDetails={toggleDetails}
+          />
+        </>
       )}
     </div>
   );
@@ -479,72 +509,54 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
     repositoryProviderMatch?.repository_metadata?.permissions,
   ]);
 
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const toggleDetails = useCallback(() => {
-    setIsDetailsOpen((open) => !open);
-  }, []);
-
-  const commonButtonClasses = [
-    "border",
-    "rounded-circle",
-    "fs-6",
-    "lh-1",
-    "p-2",
-  ];
-
-  const buttonContent = isLoading ? (
-    <Loader className="bi" inline size={16} />
+  const badgeIcon = isLoading ? (
+    <Loader className="me-1" inline size={16} />
   ) : permissions.pull && permissions.push ? (
-    <CheckCircleFill className="bi" />
+    <CheckCircleFill className={cx("me-1", "text-icon")} />
   ) : permissions.pull ? (
-    <SlashCircleFill className="bi" />
+    <SlashCircleFill className={cx("me-1", "text-icon")} />
   ) : (
-    <XCircleFill className="bi" />
+    <XCircleFill className={cx("me-1", "text-icon")} />
   );
 
-  const buttonClasses = isLoading
-    ? ["border-dark-subtle", "bg-light", "text-dark"]
-    : permissions.pull && permissions.push
-    ? ["border-success", "bg-success-subtle", "text-success"]
+  const badgeText = isLoading
+    ? ""
+    : permissions.push
+    ? "push & pull"
     : permissions.pull
-    ? ["border-warning", "bg-warning-subtle", "text-warning"]
-    : ["border-danger", "bg-danger-subtle", "text-danger"];
+    ? "pull only"
+    : "no access";
+
+  const badgeColorClasses = isLoading
+    ? ["border-dark-subtle", "bg-light", "text-dark-emphasis"]
+    : permissions.push
+    ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
+    : permissions.pull
+    ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
+    : ["border-danger", "bg-danger-subtle", "text-danger-emphasis"];
 
   return (
-    <>
-      <Button
-        className={cx(...commonButtonClasses, ...buttonClasses)}
-        onClick={toggleDetails}
-        title="View repository permissions"
-      >
-        {buttonContent}
-        <span className="visually-hidden">View repository permissions</span>
-      </Button>
-      <Modal
-        size="lg"
-        fullscreen="sm"
-        isOpen={isDetailsOpen}
-        toggle={toggleDetails}
-        centered
-      >
-        <ModalHeader toggle={toggleDetails}>Repository permissions</ModalHeader>
-        <RepositoryPermissionsModalContent repositoryUrl={repositoryUrl} />
-        <ModalFooter>
-          <div className="d-flex justify-content-end">
-            <Button color="outline-secondary" onClick={toggleDetails}>
-              <XLg className={cx("me-2", "text-icon")} />
-              Close
-            </Button>
-          </div>
-        </ModalFooter>
-      </Modal>
-    </>
+    <Badge pill className={cx("border", badgeColorClasses)}>
+      {badgeIcon}
+      <span className="fw-normal">{badgeText}</span>
+    </Badge>
   );
 }
 
-function RepositoryPermissionsModalContent({
+interface RepositoryViewProps {
+  project: Project;
+  repositoryUrl: string;
+  showDetails: boolean;
+  title: string;
+  toggleDetails: () => void;
+}
+function RepositoryView({
+  project,
   repositoryUrl,
-}: RepositoryPermissionsProps) {
+  showDetails,
+  title,
+  toggleDetails,
+}: RepositoryViewProps) {
   const {
     data: repositoryProviderMatch,
     isLoading: isLoadingRepositoryProviderMatch,
@@ -584,60 +596,117 @@ function RepositoryPermissionsModalContent({
     () => `${repositoryUrl.replace(/.git$/i, "")}`,
     [repositoryUrl]
   );
+  const canonicalUrl = useMemo(() => {
+    try {
+      return new URL(canonicalUrlStr);
+    } catch (error) {
+      if (error instanceof TypeError) {
+        return null;
+      }
+      throw error;
+    }
+  }, [canonicalUrlStr]);
 
   return (
-    <ModalBody>
-      <Row className="g-3">
-        <Col xs={12}>
-          Repository:{" "}
-          <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
-            {repositoryUrl}
-            <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
-          </a>
-        </Col>
-        {providersError && (
-          <Col xs={12}>
-            <RtkOrNotebooksError error={providersError} dismissible={false} />
-          </Col>
-        )}
-        {error && !isNotFound && (
-          <Col xs={12}>
-            <RtkOrNotebooksError error={error} dismissible={false} />
-          </Col>
-        )}
-        {!isLoading && !permissions.push && (
-          <Col xs={12}>
-            <RepositoryPermissionsAlert repositoryUrl={repositoryUrl} />
-          </Col>
-        )}
-        <Col xs={12}>
-          <h6 className={cx("fs-5", "fw-bold")}>Permissions</h6>
-        </Col>
-        <Col className="mt-0" xs={12} sm={6}>
-          Clone, Pull:{" "}
-          {isLoading ? (
-            <Loader className="bi" inline size={16} />
-          ) : permissions.pull ? (
-            <YesBadge />
-          ) : (
-            <NoBadge />
-          )}
-        </Col>
-        <Col className="mt-0" xs={12} sm={6}>
-          Push:{" "}
-          {isLoading ? (
-            <Loader className="bi" inline size={16} />
-          ) : permissions.push ? (
-            <YesBadge />
-          ) : (
-            <NoBadge />
-          )}
-        </Col>
-        <Col xs={12}>
-          <RepositoryProviderDetails repositoryUrl={repositoryUrl} />
-        </Col>
-      </Row>
-    </ModalBody>
+    <Offcanvas
+      key={`data-source-details-${repositoryUrl}`}
+      className="min-vw-50"
+      toggle={toggleDetails}
+      isOpen={showDetails}
+      direction="end"
+      backdrop={true}
+    >
+      <OffcanvasBody>
+        <div className="mb-3">
+          <button
+            aria-label="Close"
+            className="btn-close"
+            data-bs-dismiss="offcanvas"
+            onClick={toggleDetails}
+          ></button>
+        </div>
+
+        <div>
+          <div className="mb-4">
+            <div className={cx("d-flex", "justify-content-between")}>
+              <h2 className="m-0" data-cy="data-source-title">
+                {title}
+              </h2>
+              <div className="my-auto">
+                <CodeRepositoryActions project={project} url={repositoryUrl} />
+              </div>
+            </div>
+            <p className={cx("fst-italic", "m-0")}>Code repository</p>
+          </div>
+
+          <div className={cx("d-flex", "flex-column", "gap-3")}>
+            <div>
+              <h5>Repository</h5>
+              <p className="mb-0">
+                URL:{" "}
+                <a
+                  href={canonicalUrlStr}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {repositoryUrl}
+                  <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
+                </a>
+              </p>
+            </div>
+            {canonicalUrl && (
+              <p className="mb-0">
+                From:{" "}
+                <RepositoryIcon
+                  className="me-1"
+                  provider={canonicalUrl?.origin}
+                />
+                <span data-cy="code-repository-title">
+                  {canonicalUrl?.hostname}
+                </span>
+              </p>
+            )}
+            {providersError && (
+              <RtkOrNotebooksError error={providersError} dismissible={false} />
+            )}
+            {error && !isNotFound && (
+              <RtkOrNotebooksError error={error} dismissible={false} />
+            )}
+            {!isLoading && !permissions.push && (
+              <RepositoryPermissionsAlert repositoryUrl={repositoryUrl} />
+            )}
+            <div>
+              <h5>Permissions</h5>
+              <Row>
+                <Col xs={6}>
+                  Clone, Pull:{" "}
+                  {isLoading ? (
+                    <Loader className="bi" inline size={16} />
+                  ) : permissions.pull ? (
+                    <YesBadge />
+                  ) : (
+                    <NoBadge />
+                  )}
+                </Col>
+                <Col xs={6}>
+                  Push:{" "}
+                  {isLoading ? (
+                    <Loader className="bi" inline size={16} />
+                  ) : permissions.push ? (
+                    <YesBadge />
+                  ) : (
+                    <NoBadge />
+                  )}
+                </Col>
+              </Row>
+            </div>
+            <Col xs={12}>
+              <RepositoryProviderDetails repositoryUrl={repositoryUrl} />
+            </Col>
+          </div>
+        </div>
+      </OffcanvasBody>
+    </Offcanvas>
   );
 }
 
@@ -788,12 +857,10 @@ function YesBadge() {
       className={cx(
         "border",
         "rounded-pill",
-        "fs-6",
-        "lh-1",
         "p-2",
         "border-success",
         "bg-success-subtle",
-        "text-success"
+        "text-success-emphasis"
       )}
     >
       <CheckCircleFill className={cx("bi", "me-1")} />
@@ -808,12 +875,10 @@ function NoBadge() {
       className={cx(
         "border",
         "rounded-pill",
-        "fs-6",
-        "lh-1",
         "p-2",
         "border-danger",
         "bg-danger-subtle",
-        "text-danger"
+        "text-danger-emphasis"
       )}
     >
       <XCircleFill className={cx("bi", "me-1")} />

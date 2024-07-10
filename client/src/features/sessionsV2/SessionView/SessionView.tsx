@@ -522,8 +522,8 @@ export function SessionView({
                   <ListGroupItem key={`storage-${index}`}>
                     <RepositoryItem
                       project={project}
+                      readonly={true}
                       url={repositoryUrl}
-                      showMenu={false}
                     />
                   </ListGroupItem>
                 ))}

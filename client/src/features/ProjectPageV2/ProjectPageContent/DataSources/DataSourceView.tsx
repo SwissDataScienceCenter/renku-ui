@@ -57,7 +57,7 @@ export function DataSourceView({
   return (
     <Offcanvas
       key={`data-source-details-${storageDefinition.storage_id}`}
-      className="bg-white"
+      className="min-vw-50"
       toggle={setToggleView}
       isOpen={toggleView}
       direction="end"

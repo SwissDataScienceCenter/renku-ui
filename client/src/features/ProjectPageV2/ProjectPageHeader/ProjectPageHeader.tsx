@@ -105,11 +105,10 @@ function ProjectActions({ project, settingsUrl }: ProjectActionsProps) {
       <UncontrolledDropdown>
         <DropdownToggle
           className={cx(
-            "m-0",
-            "p-0",
             "bg-transparent",
-            "d-flex",
             "border-0",
+            "p-0",
+            "shadow-none",
             dotsDropdownStyles.threeDots
           )}
         >
