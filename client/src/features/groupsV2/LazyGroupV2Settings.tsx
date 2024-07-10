@@ -16,4 +16,15 @@
  * limitations under the License.
  */
 
-export type SettingEditOption = "metadata" | "members" | null;
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
+
+const GroupV2Settings = lazy(() => import("./settings/GroupV2Settings"));
+
+export default function LazyGroupV2Settings() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <GroupV2Settings />
+    </Suspense>
+  );
+}
