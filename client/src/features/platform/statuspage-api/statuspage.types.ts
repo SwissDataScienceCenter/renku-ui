@@ -19,6 +19,7 @@
 export interface StatusPageSummary {
   page: StatusPageMetadata;
   components: StatusPageComponents;
+  scheduled_maintenances: ScheduledMaintenances;
   status: StatusPageOverallStatus;
 }
 
@@ -39,6 +40,31 @@ export interface StatusPageComponent {
   position: number;
   showcase: boolean;
   only_show_if_degraded: boolean;
+}
+
+export type ScheduledMaintenances = ScheduledMaintenance[];
+
+export interface ScheduledMaintenance {
+  id: string;
+  name: string;
+  status: ScheduledMaintenanceStatus;
+  scheduled_for: string;
+  scheduled_until: string;
+  incident_updates: IncidentUpdates;
+}
+
+export type ScheduledMaintenanceStatus =
+  | "scheduled"
+  | "in_progress"
+  | "verifying"
+  | "completed";
+
+export type IncidentUpdates = IncidentUpdate[];
+
+export interface IncidentUpdate {
+  id: string;
+  body: string;
+  display_at: string;
 }
 
 export interface StatusPageOverallStatus {

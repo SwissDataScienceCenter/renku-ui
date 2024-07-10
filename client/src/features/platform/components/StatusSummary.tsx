@@ -18,6 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { Fragment, useContext, useMemo } from "react";
 import {
   BoxArrowUpRight,
   CheckCircleFill,
@@ -27,7 +28,6 @@ import {
 import { Link } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 
-import { Fragment, useContext, useMemo } from "react";
 import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -35,9 +35,17 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import {
+  ensureDateTime,
+  toHumanDateTime,
+} from "../../../utils/helpers/DateTimeUtils";
+import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
 import { useGetUserInfoQuery } from "../../user/keycloakUser.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
-import { StatusPageSummary } from "../statuspage-api/statuspage.types";
+import type {
+  ScheduledMaintenance,
+  StatusPageSummary,
+} from "../statuspage-api/statuspage.types";
 
 const FIVE_MINUTES_MILLIS = 5 * 60 * 1_000;
 
@@ -116,12 +124,13 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
 
           <div>TODO</div>
 
-          <h3>Components</h3>
+          <h3>Scheduled Maintenance</h3>
+          <ScheduledMaintenanceDisplay summary={summary} />
+
+          <h3 className="mt-3">Components</h3>
           <ComponentsStatus summary={summary} />
 
-          <div>TODO</div>
-
-          <p className="mb-0">
+          <p className={cx("mt-3", "mb-0")}>
             For further information, see{" "}
             <Link to={summary.page.url}>
               {summary.page.url}
@@ -176,6 +185,80 @@ function OverallStatus({ summary }: OverallStatusProps) {
       <Icon className={cx("bi", "me-1")} />
       {summary.status.description}
     </div>
+  );
+}
+
+interface ScheduledMaintenanceDisplayProps {
+  summary: StatusPageSummary;
+}
+
+function ScheduledMaintenanceDisplay({
+  summary,
+}: ScheduledMaintenanceDisplayProps) {
+  const maintenances = useMemo(
+    () =>
+      [...summary.scheduled_maintenances].sort((a, b) =>
+        ensureDateTime(a.scheduled_for)
+          .diff(ensureDateTime(b.scheduled_for))
+          .valueOf()
+      ),
+    [summary.scheduled_maintenances]
+  );
+
+  if (!maintenances.length) {
+    return (
+      <p>
+        <CheckCircleFill className={cx("bi", "me-1", "text-success")} />
+        No scheduled maintenance.
+      </p>
+    );
+  }
+
+  return (
+    <Row className={cx("row-cols-1", "gy-2")}>
+      {maintenances.map((maintenance) => (
+        <MaintenanceItem key={maintenance.id} maintenance={maintenance} />
+      ))}
+    </Row>
+  );
+}
+
+interface MaintenanceItemProps {
+  maintenance: ScheduledMaintenance;
+}
+
+function MaintenanceItem({ maintenance }: MaintenanceItemProps) {
+  const maintenanceStart = ensureDateTime(maintenance.scheduled_for);
+  const maintenanceDuration = ensureDateTime(maintenance.scheduled_until).diff(
+    maintenanceStart
+  );
+  const displayStart = toHumanDateTime({
+    datetime: maintenanceStart,
+    format: "full",
+  });
+  const displayTime = toHumanDuration({ duration: maintenanceDuration });
+  // const incidents = maintenance.incident_updates.map((u) => (
+  //   <ScheduledMaintenanceIncident key={u.id} incident={u} />
+  // ));
+
+  return (
+    <Col key={maintenance.id} xs={12}>
+      <h4 className={cx("fw-bold", "fs-6")}>
+        {maintenance.name} on {displayStart} for {displayTime}
+      </h4>
+      {maintenance.incident_updates.map((update) => (
+        <p key={update.id} className="mb-1">
+          {update.body}{" "}
+          <span className="time-caption" style={{ fontSize: "smaller" }}>
+            Posted at{" "}
+            {toHumanDateTime({
+              datetime: update.display_at,
+              format: "full",
+            })}
+          </span>
+        </p>
+      ))}
+    </Col>
   );
 }
 
