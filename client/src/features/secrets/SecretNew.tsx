@@ -63,7 +63,6 @@ export default function SecretsNew() {
       name: "",
       value: "",
     },
-    mode: "all",
   });
 
   // Handle fetching/posting data
@@ -153,13 +152,14 @@ export default function SecretsNew() {
                   id="new-secret-value"
                   type={showPlainText ? "textarea" : "password"}
                   {...field}
-                  autoComplete="off"
+                  autoComplete="off one-time-code"
                   className={cx(
                     "rounded-0",
                     "rounded-start",
                     errors.value && "is-invalid"
                   )}
                   spellCheck="false"
+                  {...(showPlainText ? { rows: 6 } : {})}
                 />
               )}
               rules={{
@@ -184,7 +184,7 @@ export default function SecretsNew() {
                 placement="top"
                 target="secret-new-show-value"
               >
-                Hide/show secret value
+                {showPlainText ? "Hide secret value" : "Show secret value"}
               </UncontrolledTooltip>
             </Button>
             {errors.value && (
