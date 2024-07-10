@@ -57,14 +57,12 @@ export default function NotFound({
     <div className="not-found-box">
       <div className={cx("container-xxl", "p-5")}>
         <div className={cx("p-4", "bg-white", "bg-opacity-75")}>
-          <h1 className="title" data-cy="not-found-title">
-            404
-          </h1>
-          <h3 className="subtitle" data-cy="not-found-subtitle">
+          <h1 data-cy="not-found-title">404</h1>
+          <h3 className="mb-4" data-cy="not-found-subtitle">
             {title}
           </h3>
           <Tag data-cy="not-found-description">{description}</Tag>
-          <div className="mt-5">
+          <div>
             <Link to="/">
               <Button color="primary" className="btn-rk-green">
                 <HouseFill className={cx("me-2", "text-icon")} />
