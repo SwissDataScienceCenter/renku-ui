@@ -19,7 +19,10 @@ import type {
 import {
   GetStoragesV2ApiArg,
   GetStoragesV2ApiResponse as GetStoragesV2ApiResponseOrig,
+  GetStoragesV2ByStorageIdSecretsApiArg,
+  GetStoragesV2ByStorageIdSecretsApiResponse,
 } from "./storagesV2.api.ts";
+import type { CloudStorageSecretGetList } from "./storagesV2.api.ts";
 
 interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;
@@ -35,6 +38,15 @@ interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
 
 interface GetStoragesV2ApiResponse extends AbstractKgPaginatedResponse {
   storages: GetStoragesV2ApiResponseOrig;
+}
+
+type GetStoragesV2StorageIdSecretsApiResponse = Record<
+  string,
+  GetStoragesV2ByStorageIdSecretsApiResponse
+>;
+
+interface GetStoragesV2StorageIdSecretsApiArg {
+  storageIds: GetStoragesV2ByStorageIdSecretsApiArg["storageId"][];
 }
 
 const injectedApi = api.injectEndpoints({
@@ -127,6 +139,25 @@ const injectedApi = api.injectEndpoints({
         url: "/storages",
         params: { project_id: queryArg.projectId },
       }),
+    }),
+    getStorageSecretsByV2StorageId: builder.query<
+      GetStoragesV2StorageIdSecretsApiResponse,
+      GetStoragesV2StorageIdSecretsApiArg
+    >({
+      async queryFn(queryArg, _api, _options, fetchWithBQ) {
+        const { storageIds } = queryArg;
+        const result: GetStoragesV2StorageIdSecretsApiResponse = {};
+        for (const storageId of storageIds) {
+          const response = await fetchWithBQ(
+            `/storages_v2/${storageId}/secrets`
+          );
+          if (response.error) {
+            return response;
+          }
+          result[storageId] = response.data as CloudStorageSecretGetList;
+        }
+        return { data: result };
+      },
     }),
   }),
 });
@@ -251,4 +282,5 @@ export const {
   // storages hooks
   useGetStoragesV2Query,
   usePostStoragesV2Mutation,
+  useGetStorageSecretsByV2StorageIdQuery,
 } = enhancedApi;

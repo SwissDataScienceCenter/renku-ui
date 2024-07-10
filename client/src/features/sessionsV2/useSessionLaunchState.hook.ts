@@ -24,6 +24,7 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import { CLOUD_OPTIONS_OVERRIDE } from "../project/components/cloudStorage/projectCloudStorage.constants";
+import { useGetStorageSecretsByV2StorageIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import {
   RCloneOption,
@@ -162,6 +163,10 @@ export default function useSessionLauncherState({
     dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
   }, [dispatch, project.repositories]);
 
+  const { data: storagesSecrets } = useGetStorageSecretsByV2StorageIdQuery({
+    storageIds: storages?.map((s) => s.storage.storage_id) ?? [],
+  });
+
   const initialCloudStorages = useMemo(
     () =>
       storages?.map((cloudStorage) => {
@@ -200,14 +205,19 @@ export default function useSessionLauncherState({
           if (name == null) return;
           sensitiveFieldValues[name] = "";
         });
+        const savedCredentialFields = storagesSecrets
+          ? storagesSecrets[storageDefinition.storage_id].map((s) => s.name)
+          : [];
         return {
           active: true,
           cloudStorage,
           sensitiveFieldDefinitions,
           sensitiveFieldValues,
+          saveCredentials: false,
+          savedCredentialFields,
         };
       }),
-    [storages]
+    [storages, storagesSecrets]
   );
 
   useEffect(() => {
