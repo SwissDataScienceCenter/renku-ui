@@ -237,9 +237,6 @@ function MaintenanceItem({ maintenance }: MaintenanceItemProps) {
     format: "full",
   });
   const displayTime = toHumanDuration({ duration: maintenanceDuration });
-  // const incidents = maintenance.incident_updates.map((u) => (
-  //   <ScheduledMaintenanceIncident key={u.id} incident={u} />
-  // ));
 
   return (
     <Col key={maintenance.id} xs={12}>
