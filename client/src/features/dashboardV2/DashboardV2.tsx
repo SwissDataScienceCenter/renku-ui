@@ -23,7 +23,7 @@ import {
   PlusLg,
 } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
-import { Col, Row } from "reactstrap";
+import { Card, CardFooter, CardHeader, Col, Row } from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
@@ -103,8 +103,8 @@ function DashboardWelcome() {
 
 function ProjectsDashboard() {
   return (
-    <div className="card" data-cy="projects-container">
-      <div className="card-header">
+    <Card data-cy="projects-container">
+      <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
           <FolderFill className={cx("small", "text-icon")} />
           <span>Projects</span>
@@ -118,22 +118,16 @@ function ProjectsDashboard() {
             </span>
           </Link>
         </h4>
-      </div>
+      </CardHeader>
 
       <ProjectList />
 
-      <div className="card-footer">
-        <div className={cx("d-flex", "justify-content-center")}>
-          <Link
-            to="/v2/projects"
-            data-cy="view-my-projects-btn"
-            className={cx("btn", "btn-outline-primary", "btn-sm")}
-          >
-            View all my projects
-          </Link>
-        </div>
-      </div>
-    </div>
+      <CardFooter className="py-3">
+        <Link to="/v2/projects" data-cy="view-my-projects-btn">
+          View all my projects
+        </Link>
+      </CardFooter>
+    </Card>
   );
 }
 
@@ -178,8 +172,8 @@ function ProjectList() {
 
 function GroupsDashboard() {
   return (
-    <div className="card" data-cy="groups-container">
-      <div className="card-header">
+    <Card data-cy="groups-container">
+      <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
           <PeopleFill className={cx("small", "text-icon")} />
           <span>Groups</span>
@@ -193,22 +187,16 @@ function GroupsDashboard() {
             </span>
           </Link>
         </h4>
-      </div>
+      </CardHeader>
 
       <GroupsList />
 
-      <div className="card-footer">
-        <div className={cx("d-flex", "justify-content-center")}>
-          <Link
-            to="/v2/groups"
-            data-cy="view-my-groups-btn"
-            className={cx("btn", "btn-outline-primary", "btn-sm")}
-          >
-            View all my groups
-          </Link>
-        </div>
-      </div>
-    </div>
+      <CardFooter className="py-3">
+        <Link to="/v2/groups" data-cy="view-my-groups-btn">
+          View all my groups
+        </Link>
+      </CardFooter>
+    </Card>
   );
 }
 
@@ -253,14 +241,14 @@ function GroupsList() {
 
 function SessionsDashboard() {
   return (
-    <div className="card" data-cy="sessions-container">
-      <div className="card-header">
+    <Card data-cy="sessions-container">
+      <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
           <GearFill className={cx("small", "text-icon")} />
           Sessions
         </h4>
-      </div>
+      </CardHeader>
       <DashboardV2Sessions />
-    </div>
+    </Card>
   );
 }
