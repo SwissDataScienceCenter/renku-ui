@@ -21,6 +21,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   AddSecretParams,
   EditSecretParams,
+  GetSecretsParams,
   SecretDetails,
 } from "./secrets.types";
 
@@ -31,10 +32,10 @@ const secretsApi = createApi({
   }),
   tagTypes: ["Secrets", "Secret"],
   endpoints: (builder) => ({
-    getSecrets: builder.query<SecretDetails[], void>({
-      query: () => {
+    getSecrets: builder.query<SecretDetails[], GetSecretsParams>({
+      query: ({ kind }) => {
         return {
-          url: "",
+          url: `?kind=${kind}`,
         };
       },
       providesTags: ["Secrets"],

@@ -11,7 +11,7 @@
       "project_id": 1,
       "readonly": true,
       "source_path": "bucket/source",
-      "storage_id": 1,
+      "storage_id": "1",
       "storage_type": "s3",
       "target_path": "mount/path"
     }
