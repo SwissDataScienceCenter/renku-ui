@@ -68,7 +68,11 @@ const injectedApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: "/namespaces",
-        params: { page: queryArg.page ?? 1, per_page: queryArg.perPage ?? 20 },
+        params: {
+          page: queryArg.page,
+          per_page: queryArg.perPage,
+          minimum_role: queryArg.minimumRole,
+        },
       }),
       transformResponse: (response, meta, queryArg) => {
         const namespaces = response as NamespaceResponseList;
@@ -91,7 +95,11 @@ const injectedApi = api.injectEndpoints({
     getProjectsPaged: builder.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: "/projects",
-        params: { page: queryArg.page, per_page: queryArg.perPage },
+        params: {
+          namespace: queryArg["namespace"],
+          page: queryArg.page,
+          per_page: queryArg.perPage,
+        },
       }),
       transformResponse: (response, meta, queryArg) => {
         const projects = response as ProjectsList;
@@ -238,7 +246,7 @@ export const {
   //namespace hooks
   useGetNamespacesPagedQuery: useGetNamespacesQuery,
   useLazyGetNamespacesPagedQuery: useLazyGetNamespacesQuery,
-  useGetNamespacesByGroupSlugQuery,
+  useGetNamespacesByNamespaceSlugQuery,
 
   // storages hooks
   useGetStoragesV2Query,

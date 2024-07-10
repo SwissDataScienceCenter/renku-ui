@@ -13,17 +13,18 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
+
 import { Suspense, lazy } from "react";
 import PageLoader from "../../components/PageLoader";
 
-const GroupShow = lazy(() => import("./show/GroupShow"));
+const UserShow = lazy(() => import("./show/UserShow"));
 
-export default function LazyGroupList() {
+export default function LazyUserShow() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <GroupShow />
+      <UserShow />
     </Suspense>
   );
 }
