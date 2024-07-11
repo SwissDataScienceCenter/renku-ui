@@ -81,9 +81,16 @@ export type IncidentUpdates = IncidentUpdate[];
 
 export interface IncidentUpdate {
   id: string;
+  status: IncidentUpdateStatus;
   body: string;
   display_at: string;
 }
+
+export type IncidentUpdateStatus =
+  | "investigating"
+  | "identified"
+  | "monitoring"
+  | "resolved";
 
 export interface StatusPageOverallStatus {
   indicator: StatusIndicator;

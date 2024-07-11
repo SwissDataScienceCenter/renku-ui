@@ -46,6 +46,7 @@ import type {
   ScheduledMaintenance,
   StatusPageSummary,
 } from "../statuspage-api/statuspage.types";
+import StatusPageIncidentUpdates from "./StatusPageIncidentUpdates";
 
 const FIVE_MINUTES_MILLIS = 5 * 60 * 1_000;
 
@@ -132,7 +133,11 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
 
           <p className={cx("mt-3", "mb-0")}>
             For further information, see{" "}
-            <Link to={summary.page.url}>
+            <Link
+              to={summary.page.url}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
               {summary.page.url}
               <BoxArrowUpRight className={cx("bi", "ms-1")} />
             </Link>
@@ -243,18 +248,9 @@ function MaintenanceItem({ maintenance }: MaintenanceItemProps) {
       <h4 className={cx("fw-bold", "fs-6")}>
         {maintenance.name} on {displayStart} for {displayTime}
       </h4>
-      {maintenance.incident_updates.map((update) => (
-        <p key={update.id} className="mb-1">
-          {update.body}{" "}
-          <span className="time-caption" style={{ fontSize: "smaller" }}>
-            Posted at{" "}
-            {toHumanDateTime({
-              datetime: update.display_at,
-              format: "full",
-            })}
-          </span>
-        </p>
-      ))}
+      <StatusPageIncidentUpdates
+        incidentUpdates={maintenance.incident_updates}
+      />
     </Col>
   );
 }
