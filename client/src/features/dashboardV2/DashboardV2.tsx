@@ -182,7 +182,7 @@ function GroupsDashboard() {
 
       <GroupsList />
 
-      <CardFooter className="py-3">
+      <CardFooter className={cx("bg-white", "py-3")}>
         <Link to="/v2/groups" data-cy="view-my-groups-btn">
           View all my groups
         </Link>

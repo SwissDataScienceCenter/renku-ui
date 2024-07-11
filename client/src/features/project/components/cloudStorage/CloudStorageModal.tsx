@@ -475,7 +475,7 @@ export default function CloudStorageModal({
               reset();
             }}
           >
-            <ArrowCounterclockwise className={cx("bi", "me-1")} />
+            <ArrowCounterclockwise className={cx("me-2", "text-icon")} />
             Reset
           </Button>
         )}
