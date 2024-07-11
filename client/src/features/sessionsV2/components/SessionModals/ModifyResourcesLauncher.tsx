@@ -104,7 +104,7 @@ export function ModifyResourcesLauncherModal({
         <div className="field-group">{selector}</div>
       </ModalBody>
       <ModalFooter>
-        <Button color="outline-secondary" onClick={toggleModal}>
+        <Button color="outline-primary" onClick={toggleModal}>
           <XLg className={cx("me-2", "text-icon")} />
           Cancel
         </Button>

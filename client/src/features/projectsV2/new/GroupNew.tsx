@@ -145,7 +145,7 @@ function GroupMetadataForm() {
         />
         <div className={cx("d-flex", "justify-content-between")}>
           <Link
-            className={cx("btn", "btn-outline-secondary")}
+            className={cx("btn", "btn-outline-primary")}
             to={ABSOLUTE_ROUTES.v2.groups.root}
           >
             Cancel

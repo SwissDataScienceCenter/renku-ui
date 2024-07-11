@@ -133,15 +133,11 @@ function EditProjectMemberAccessForm({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="outline-secondary" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("me-2", "text-icon")} />
           Close
         </Button>
-        <Button
-          color="outline-primary"
-          onClick={handleSubmit(onSubmit)}
-          type="submit"
-        >
+        <Button color="primary" onClick={handleSubmit(onSubmit)} type="submit">
           <PencilSquare className={cx("me-2", "text-icon")} />
           Change access
         </Button>

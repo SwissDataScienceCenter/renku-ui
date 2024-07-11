@@ -131,7 +131,7 @@ export function SelectResourceClassModal({
       </ModalBody>
       <ModalFooter className="gap-2">
         <Link
-          className={cx("btn", "btn-outline-secondary")}
+          className={cx("btn", "btn-outline-primary")}
           to={projectUrl}
           data-cy="start-session-button"
         >

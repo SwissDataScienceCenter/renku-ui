@@ -168,7 +168,7 @@ export default function UpdateSessionLauncherModal({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="outline-secondary" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("me-2", "text-icon")} />
           Cancel
         </Button>

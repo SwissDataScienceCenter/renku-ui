@@ -137,7 +137,7 @@ function AddSessionCustomImageModal({
           />
         </ModalBody>
         <ModalFooter className="gap-2">
-          <Button color="outline-secondary" onClick={toggle}>
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("me-2", "text-icon")} />
             Cancel
           </Button>
@@ -251,7 +251,7 @@ function AddSessionExistingEnvModal({
         </Form>
       </ModalBody>
       <ModalFooter className="gap-2">
-        <Button color="outline-secondary" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("me-2", "text-icon")} />
           Cancel
         </Button>

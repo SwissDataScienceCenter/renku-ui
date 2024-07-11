@@ -300,7 +300,7 @@ function SessionLogs(props: LogBodyProps) {
           logs={logs}
           downloading={downloading}
           save={save}
-          color="outline-secondary"
+          color="outline-primary"
         />
       </div>
       <div>
