@@ -100,7 +100,6 @@ export default function AddOrEditCloudStorage({
   if (ContentByStep)
     return (
       <>
-        <AddStorageAdvancedToggle state={state} setState={setState} />
         <AddStorageBreadcrumbNavbar state={state} setState={setState} />
         <ContentByStep
           schema={schema}
@@ -191,9 +190,11 @@ interface AddStorageAdvancedForm {
   sourcePath: string;
   configuration: string;
 }
-export function AddStorageAdvanced({
-  storage,
+function AddStorageAdvanced({
   setStorage,
+  setState,
+  state,
+  storage,
 }: AddStorageStepProps) {
   const {
     control,
@@ -230,6 +231,7 @@ export function AddStorageAdvanced({
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-advanced">
+      <AddStorageAdvancedToggle state={state} setState={setState} />
       <div className="mb-3">
         <Controller
           name="sourcePath"
@@ -655,8 +657,11 @@ export function AddStorageType({
     () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
     [schema, state.showAllSchema, storage.schema]
   );
-  const setFinalSchema = (value: string) => {
-    setStorage({ schema: value });
+  const setFinalSchema = (schema: CloudStorageSchema) => {
+    setStorage({
+      schema: schema.prefix,
+      convenientMode: schema.convenientMode,
+    });
     if (state.showAllSchema) setState({ showAllSchema: false });
     (hasProviderShortlist(value) ||
       STORAGES_WITH_ACCESS_MODE.includes(value)) &&
@@ -674,7 +679,7 @@ export function AddStorageType({
         key={s.name}
         value={s.prefix}
         tag="div"
-        onClick={() => setFinalSchema(s.prefix)}
+        onClick={() => setFinalSchema(s)}
         data-cy={`data-storage-${s.prefix}`}
       >
         <p className="mb-0">
@@ -1005,6 +1010,10 @@ export function AddStorageOptions({
       <div className={cx("form-text", "text-muted")}>{sourcePathHelp.help}</div>
     </div>
   );
+  const selectedSchema = useMemo(
+    () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
+    [schema, state.showAllSchema, storage.schema]
+  ).find((s) => s.prefix === storage.schema);
 
   const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
     storage.schema ?? ""
@@ -1017,10 +1026,18 @@ export function AddStorageOptions({
         Please fill in all the options required to connect to your storage. Mind
         that the specific fields required depend on your storage configuration.
       </p>
+      {(selectedSchema &&
+        "convenientMode" in selectedSchema &&
+        selectedSchema.convenientMode) || (
+        <AddStorageAdvancedToggle state={state} setState={setState} />
+      )}
       {!hasAccessMode && sourcePath}
       {optionItems}
       {hasAccessMode && sourcePath}
-      {advancedOptions}
+      {(selectedSchema &&
+        "convenientMode" in selectedSchema &&
+        selectedSchema.convenientMode) ||
+        advancedOptions}
     </form>
   );
 }
@@ -1100,6 +1117,14 @@ export function AddStorageMount({
   const hasPasswordFieldWithInput = secretFields.some(
     (o) => storage.options && storage.options[o.name]
   );
+
+  const selectedSchema = useMemo(
+    () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
+    [schema, state.showAllSchema, storage.schema]
+  ).find((s) => s.prefix === storage.schema);
+  if (selectedSchema && selectedSchema.readOnly) {
+    storage.readOnly = true;
+  }
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-mount">

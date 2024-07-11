@@ -5064,5 +5064,50 @@
     "aliases": null,
     "hide": false,
     "metadata_info": null
+  },
+  {
+    "name": "openbis",
+    "description": "openBIS",
+    "prefix": "openbis",
+    "options": [
+      {
+        "name": "host",
+        "help": "openBIS host to connect to.\n\nE.g. \"openbis-eln-lims.ethz.ch\".",
+        "provider": "",
+        "default": "",
+        "short_opt": "",
+        "hide": 0,
+        "required": true,
+        "is_password": false,
+        "no_prefix": false,
+        "advanced": false,
+        "exclusive": false,
+        "sensitive": false,
+        "default_str": "",
+        "value_str": "",
+        "type": "string"
+      },
+      {
+        "name": "session_token",
+        "help": "openBIS session token",
+        "provider": "",
+        "default": "",
+        "short_opt": "",
+        "hide": 0,
+        "required": false,
+        "is_password": true,
+        "no_prefix": false,
+        "advanced": false,
+        "exclusive": false,
+        "sensitive": true,
+        "default_str": "",
+        "value_str": "",
+        "type": "string"
+      }
+    ],
+    "command_help": null,
+    "aliases": null,
+    "hide": false,
+    "metadata_info": null
   }
 ]

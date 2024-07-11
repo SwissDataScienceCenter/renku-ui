@@ -74,6 +74,11 @@ export const CLOUD_STORAGE_OVERRIDE = {
       description: "Cloud storage service for the Swiss university community",
       position: 4,
     },
+    openbis: {
+      position: 3,
+      convenientMode: true,
+      readOnly: true,
+    },
   } as Record<string, Partial<CloudStorageOverride>>,
 };
 
@@ -246,6 +251,7 @@ export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
   "webdav",
   "azureblob",
   "sftp",
+  "openbis",
 ];
 
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {
