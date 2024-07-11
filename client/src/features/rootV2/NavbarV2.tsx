@@ -53,12 +53,7 @@ function NavbarItemPlus() {
 
   return (
     <Dropdown isOpen={isOpen} toggle={toggleOpen} className="nav-item">
-      <DropdownToggle
-        className={cx("nav-link", "fs-5")}
-        nav
-        caret
-        id="plus-dropdown"
-      >
+      <DropdownToggle nav className={cx("nav-link", "fs-5")} id="plus-dropdown">
         <PlusCircleFill className="bi" id="createPlus" />
       </DropdownToggle>
       <DropdownMenu
@@ -100,7 +95,7 @@ function NavbarItemHelp() {
       toggle={toggleOpen}
       className="nav-item"
     >
-      <DropdownToggle className={cx("nav-link", "fs-5")} nav caret>
+      <DropdownToggle nav className={cx("nav-link", "fs-5")}>
         <QuestionCircle className="bi" id="helpDropdownToggle" />
       </DropdownToggle>
       <DropdownMenu

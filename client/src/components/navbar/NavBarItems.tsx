@@ -17,7 +17,11 @@
  */
 
 import cx from "classnames";
-import { Person, PlusCircleFill, QuestionCircle } from "react-bootstrap-icons";
+import {
+  PersonCircle,
+  PlusCircleFill,
+  QuestionCircle,
+} from "react-bootstrap-icons";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import {
@@ -300,12 +304,11 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
   return (
     <UncontrolledDropdown className="nav-item dropdown">
       <DropdownToggle
-        className={cx("nav-link", "fs-5")}
         nav
-        caret
+        className={cx("nav-link", "fs-5")}
         id="profile-dropdown"
       >
-        <Person className="bi" id="userIcon" />
+        <PersonCircle className="bi" id="userIcon" />
       </DropdownToggle>
       <DropdownMenu
         className={cx(
