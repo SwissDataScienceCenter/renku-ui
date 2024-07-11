@@ -43,12 +43,7 @@ export default function AddSessionLauncherButton({
           Add session
         </Button>
       ) : (
-        <Button
-          color="outline-primary"
-          data-cy={dataCy}
-          onClick={toggle}
-          size="sm"
-        >
+        <Button color="primary" data-cy={dataCy} onClick={toggle} size="sm">
           <PlusLg className="icon-text" />
         </Button>
       )}

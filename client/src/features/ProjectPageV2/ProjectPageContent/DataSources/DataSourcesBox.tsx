@@ -77,7 +77,7 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
             <AccessGuard
               disabled={null}
               enabled={
-                <Button color="outline-primary" onClick={toggle} size="sm">
+                <Button color="primary" onClick={toggle} size="sm">
                   <PlusLg className="icon-text" />
                 </Button>
               }
