@@ -54,7 +54,7 @@ const FETCH_DEFAULT = {
  */
 class APIClient {
   /**
-   * @param {string} apiUrl - base API url
+   * @param {string} apiUrl - base API url (i.e. the base url to the gateway)
    * @param {string} uiserverUrl - UI server base url, mainly used for authentication
    * @param {CoreApiVersionedUrlConfig} coreApiVersionedUrlConfig - helper object for computing versioned URLs.
    */
@@ -208,14 +208,14 @@ class APIClient {
     // This is invoked to check authentication.
     // ? It may be safer to invoke `LoginHelper.notifyLogout()`, but it doesn't seem to be necessary
     window.location = `${
-      this.uiserverUrl
+      this.baseUrl
     }/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
   doLogout() {
     // ? Whenever this will be used, remember to invoke `LoginHelper.notifyLogout()`
     window.location = `${
-      this.uiserverUrl
+      this.baseUrl
     }/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 

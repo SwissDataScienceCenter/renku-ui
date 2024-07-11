@@ -19,13 +19,13 @@
 import express from "express";
 import logger from "../logger";
 
-import { Authenticator } from "../authentication";
+import { IAuthenticator } from "../interfaces";
 
 let storageFailures = 0;
 
 function registerInternalRoutes(
   app: express.Application,
-  authenticator: Authenticator
+  authenticator: IAuthenticator
 ): void {
   // define a route handler for the default home page
   app.get("/", (req, res) => {

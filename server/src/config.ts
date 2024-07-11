@@ -30,17 +30,18 @@ const SERVER = {
   keepCookies: JSON.parse(process.env.SERVER_KEEP_COOKIES || "[]"),
 };
 
-const gatewayUrl = process.env.GATEWAY_URL || urlJoin(SERVER.url ?? "", "/api");
+// Http url for the k8s gateway service - not full external url of the gateway
+const gatewayUrl = process.env.GATEWAY_URL || "http://renku-gateway-auth";
 
 const DEPLOYMENT = {
   gatewayUrl,
   gatewayLoginUrl: urlJoin(
     gatewayUrl,
-    process.env.GATEWAY_LOGIN_PATH || "/auth/login"
+    process.env.GATEWAY_LOGIN_PATH || "/api/auth/login"
   ),
   gatewayLogoutUrl: urlJoin(
     gatewayUrl,
-    process.env.GATEWAY_LOGOUT_PATH || "/auth/logout"
+    process.env.GATEWAY_LOGOUT_PATH || "/api/auth/logout"
   ),
 };
 
@@ -62,7 +63,7 @@ const AUTHENTICATION = {
   clientId: process.env.AUTH_CLIENT_ID || "renku-ui",
   clientSecret: process.env.AUTH_CLIENT_SECRET,
   tokenExpirationTolerance: convertType(process.env.AUTH_TOKEN_TOLERANCE) || 10,
-  cookiesKey: "ui-server-session",
+  cookiesKey: "_renku_session",
   cookiesAnonymousKey: "anon-id",
   anonPrefix: "anon-", // ? this MUST start with a letter to prevent k8s limitations
   authHeaderField: "Authorization",
@@ -71,6 +72,7 @@ const AUTHENTICATION = {
   invalidHeaderExpired: "expired",
   retryConnectionAttempts: 10,
   storagePrefix: "AUTH_",
+  gatewaySessionHeaderKey: "Renku-Session",
 };
 
 const REDIS = {
