@@ -35,15 +35,17 @@ export default function GroupSimple({
   group,
 }: GroupSimpleProps) {
   const content = (
-    <Link
-      className={cx("text-decoration-none", "text-reset")}
-      data-cy="project-link"
-      to={generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
-        slug: group.slug,
-      })}
-    >
-      <h5 className="m-0">{group.name}</h5>
-      <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
+    <div>
+      <Link
+        className={cx("link-primary", "text-body")}
+        data-cy="project-link"
+        to={generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
+          slug: group.slug,
+        })}
+      >
+        <h5 className="m-0">{group.name}</h5>
+        <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
+      </Link>
 
       {group.description && <p className="mb-2">{group.description}</p>}
 
@@ -55,7 +57,7 @@ export default function GroupSimple({
           prefix="Created"
         />
       </div>
-    </Link>
+    </div>
   );
 
   return element === "card" ? (

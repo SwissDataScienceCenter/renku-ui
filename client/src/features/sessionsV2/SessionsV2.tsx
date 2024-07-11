@@ -19,8 +19,8 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
-  GearFill,
   PencilSquare,
+  PlayCircleFill,
   ThreeDotsVertical,
   Trash,
 } from "react-bootstrap-icons";
@@ -135,7 +135,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       >
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
-            <GearFill className={cx("me-2", "small", "text-icon")} />
+            <PlayCircleFill className={cx("me-2", "small", "text-icon")} />
             Sessions
           </h4>
           <Badge>{totalSessions}</Badge>

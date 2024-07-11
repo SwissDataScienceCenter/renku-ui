@@ -17,7 +17,7 @@
  */
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Pencil } from "react-bootstrap-icons";
+import { Pencil, Sliders } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   generatePath,
@@ -295,7 +295,10 @@ function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
           disabled={<h4 className="m-0">General settings</h4>}
           enabled={
             <>
-              <h4>General settings</h4>
+              <h4>
+                <Sliders className={cx("me-2", "small", "text-icon")} />
+                General settings
+              </h4>
               <p className="m-0">
                 Update your project title, description, visibility and
                 namespace.

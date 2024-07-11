@@ -36,23 +36,25 @@ export default function ProjectSimple({
   project,
 }: ProjectSimpleProps) {
   const content = (
-    <Link
+    <div
       className={cx(
-        "text-decoration-none",
-        "text-reset",
         element === "card-full-height" &&
           cx("d-flex", "flex-column", "flex-grow-1")
       )}
       data-cy="project-link"
-      to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace: project.namespace,
-        slug: project.slug,
-      })}
     >
-      <h5 className="m-0">{project.name}</h5>
-      <p className={cx("fst-italic", "mb-2")}>
-        {project.namespace}/{project.slug}
-      </p>
+      <Link
+        className={cx("link-primary", "text-body")}
+        to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: project.namespace,
+          slug: project.slug,
+        })}
+      >
+        <h5 className="m-0">{project.name}</h5>
+        <p className={cx("fst-italic", "mb-2")}>
+          {project.namespace}/{project.slug}
+        </p>
+      </Link>
 
       {project.description && <p className="mb-2">{project.description}</p>}
 
@@ -69,7 +71,7 @@ export default function ProjectSimple({
           prefix="Created"
         />
       </div>
-    </Link>
+    </div>
   );
 
   return element === "card" ? (

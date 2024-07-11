@@ -20,7 +20,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
   CheckCircleFill,
-  InfoCircleFill,
   Pencil,
   PencilSquare,
   SlashCircleFill,
@@ -404,7 +403,12 @@ export function RepositoryItem({
   const mainInteraction = !readonly
     ? {
         className: cx(
-          !readonly && ["cursor-pointer", "text-decoration-underline"]
+          !readonly && [
+            "cursor-pointer",
+            "link-primary",
+            "text-body",
+            "text-decoration-underline",
+          ]
         ),
         onClick: toggleDetails,
       }
@@ -414,7 +418,6 @@ export function RepositoryItem({
     <div className={cx("d-flex", "align-items-center", "gap-3")}>
       <div className={cx("align-items-center", "d-flex", "flex-row")}>
         <div {...mainInteraction}>
-          <InfoCircleFill className={cx("me-2", "text-icon")} />
           <span className={cx("me-2", !readonly && "fw-bold")}>
             {title || canonicalUrlStr || (
               <span className="fwd-italic">Unknown repository</span>

@@ -18,7 +18,13 @@
 
 import cx from "classnames";
 import React, { useCallback, useState, useRef } from "react";
-import { PeopleFill, PencilSquare, Trash, PlusLg } from "react-bootstrap-icons";
+import {
+  PeopleFill,
+  PencilSquare,
+  Trash,
+  PlusLg,
+  PersonFillGear,
+} from "react-bootstrap-icons";
 import {
   Button,
   Card,
@@ -337,7 +343,10 @@ export default function ProjectPageSettingsMembers({
           disabled={<h4 className="m-0">Members of the project</h4>}
           enabled={
             <>
-              <h4>Members of the project</h4>
+              <h4>
+                <PersonFillGear className={cx("me-2", "small", "text-icon")} />
+                Members of the project
+              </h4>
               <p className="m-0">Manage access permissions to the project</p>
             </>
           }

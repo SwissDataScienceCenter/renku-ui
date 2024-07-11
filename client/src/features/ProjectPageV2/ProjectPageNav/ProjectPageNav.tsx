@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { EyeFill, PencilSquare } from "react-bootstrap-icons";
+import { EyeFill, GearFill } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import { Nav, NavItem } from "reactstrap";
 
@@ -49,7 +49,7 @@ export default function ProjectPageNav({ project }: { project: Project }) {
         </NavItem>
         <NavItem>
           <RenkuNavLinkV2 end to={projectSettingsUrl} title="Settings">
-            <PencilSquare className={cx("me-2", "text-icon")} />
+            <GearFill className={cx("me-2", "text-icon")} />
             Settings
           </RenkuNavLinkV2>
         </NavItem>

@@ -18,8 +18,8 @@
 import cx from "classnames";
 import {
   FolderFill,
-  GearFill,
   PeopleFill,
+  PlayCircleFill,
   PlusLg,
 } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
@@ -40,7 +40,7 @@ import ProjectSimple from "../projectsV2/show/ProjectSimple";
 
 export default function DashboardV2() {
   return (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
+    <div className={cx("d-flex", "flex-column", "gap-4")}>
       <DashboardWelcome />
       <SessionsDashboard />
       <ProjectsDashboard />
@@ -81,7 +81,7 @@ function DashboardWelcome() {
       </Row>
       <Row>
         <Col>
-          <WarnAlert timeout={0} dismissible={false}>
+          <WarnAlert className="mb-0" timeout={0} dismissible={false}>
             <h4>
               Do not do any important work in the Renku 2.0 alpha preview!
             </h4>
@@ -232,7 +232,7 @@ function SessionsDashboard() {
         className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
       >
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
-          <GearFill className={cx("small", "text-icon")} />
+          <PlayCircleFill className={cx("small", "text-icon")} />
           Sessions
         </h4>
       </CardHeader>

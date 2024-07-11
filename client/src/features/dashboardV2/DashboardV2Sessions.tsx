@@ -107,7 +107,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
       <div className={cx("d-flex", "justify-content-between")}>
         <Link
           data-cy="list-session-link"
-          className="text-reset"
+          className={cx("link-primary", "text-body")}
           to={projectUrl}
         >
           <h5>

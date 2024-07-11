@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { DashCircleFill, InfoCircleFill } from "react-bootstrap-icons";
+import { DashCircleFill } from "react-bootstrap-icons";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
 import { Project } from "../../projectsV2/api/projectV2.api";
@@ -73,11 +73,12 @@ export default function SessionItem({
                   className={cx(
                     "cursor-pointer",
                     "d-inline-block",
+                    "link-primary",
+                    "text-body",
                     "text-decoration-underline"
                   )}
                   onClick={() => toggleSessionDetails()}
                 >
-                  <InfoCircleFill className={cx("me-2", "text-icon")} />
                   <span className="fw-bold" data-cy="session-name">
                     {name ? (
                       name

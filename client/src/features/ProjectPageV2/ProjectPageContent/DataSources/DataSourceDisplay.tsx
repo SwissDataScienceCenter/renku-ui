@@ -17,13 +17,7 @@
  */
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import {
-  InfoCircleFill,
-  Pencil,
-  ThreeDotsVertical,
-  Trash,
-  XLg,
-} from "react-bootstrap-icons";
+import { Pencil, ThreeDotsVertical, Trash, XLg } from "react-bootstrap-icons";
 import {
   Button,
   Col,
@@ -231,10 +225,14 @@ export function DataSourceDisplay({
     <ListGroupItem>
       <div className={cx("d-flex", "align-items-center", "gap-3")}>
         <div
-          className={cx("cursor-pointer", "text-decoration-underline")}
+          className={cx(
+            "cursor-pointer",
+            "link-primary",
+            "text-body",
+            "text-decoration-underline"
+          )}
           onClick={toggleDetails}
         >
-          <InfoCircleFill className={cx("me-2", "text-icon")} />
           <span>
             {storageName} {storageType}
           </span>
