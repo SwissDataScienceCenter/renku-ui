@@ -162,7 +162,7 @@ function ProjectList() {
     <div>No 2.0 projects.</div>
   ) : null;
 
-  if (noProjects) return <div className="card-body">{noProjects}</div>;
+  if (noProjects) return <div>{noProjects}</div>;
 
   return (
     <ListGroup flush data-cy="dashboard-project-list">
@@ -228,7 +228,7 @@ function GroupsList() {
     <div>No 2.0 groups.</div>
   ) : null;
 
-  if (noGroups) return <div className="card-body">{noGroups}</div>;
+  if (noGroups) return <div>{noGroups}</div>;
 
   return (
     <ListGroup flush data-cy="dashboard-group-list">

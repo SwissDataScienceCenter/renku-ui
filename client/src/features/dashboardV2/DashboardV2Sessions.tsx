@@ -54,7 +54,7 @@ export default function DashboardV2Sessions() {
     <div>No running sessions.</div>
   ) : null;
 
-  if (noSessions) return <div className="card-body">{noSessions}</div>;
+  if (noSessions) return <div>{noSessions}</div>;
 
   return (
     <ListGroup flush data-cy="dashboard-session-list">
