@@ -50,6 +50,7 @@ import {
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
+import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
@@ -386,24 +387,18 @@ export function RepositoryItem({
   showMenu = true,
 }: RepositoryItemProps) {
   const canonicalUrlStr = useMemo(() => `${url.replace(/.git$/i, "")}`, [url]);
-  const canonicalUrl = useMemo(() => {
-    try {
-      return new URL(canonicalUrlStr);
-    } catch (error) {
-      if (error instanceof TypeError) {
-        return null;
-      }
-      throw error;
-    }
-  }, [canonicalUrlStr]);
+  const canonicalUrl = useMemo(
+    () => safeNewUrl(canonicalUrlStr),
+    [canonicalUrlStr]
+  );
 
-  const title = canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
+  const title = canonicalUrl?.pathname.split("/").pop() ?? canonicalUrlStr;
 
   const urlDisplay = (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <RepositoryIcon
         className="flex-shrink-0"
-        provider={canonicalUrl?.origin}
+        provider={canonicalUrl?.origin ?? window.location.origin}
       />
       <div className={cx("d-flex", "flex-column")}>
         {canonicalUrl?.hostname && (

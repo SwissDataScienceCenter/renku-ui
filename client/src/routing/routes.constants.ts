@@ -20,10 +20,17 @@ export const ABSOLUTE_ROUTES = {
   root: "/",
   v2: {
     root: "/v2",
+    user: "/v2/user",
+    users: {
+      show: "/v2/users/:username",
+    },
     groups: {
       root: "/v2/groups",
       new: "/v2/groups/new",
-      show: "/v2/groups/:slug",
+      show: {
+        root: "/v2/groups/:slug",
+        settings: "/v2/groups/:slug/settings",
+      },
     },
     projects: {
       root: "/v2/projects",
@@ -57,10 +64,17 @@ export const RELATIVE_ROUTES = {
   root: "/",
   v2: {
     root: "v2/*",
+    user: "user",
+    users: {
+      show: "users/:username",
+    },
     groups: {
       root: "groups/*",
       new: "new",
-      show: ":slug",
+      show: {
+        root: ":slug/*",
+        settings: "settings",
+      },
     },
     projects: {
       root: "projects/*",

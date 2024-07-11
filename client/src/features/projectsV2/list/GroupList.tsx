@@ -22,7 +22,7 @@ import { generatePath, Link } from "react-router-dom-v5-compat";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
-import { Pagination } from "../../../components/Pagination";
+import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
@@ -36,7 +36,7 @@ interface GroupListGroupProps {
   group: GroupResponse;
 }
 function GroupListGroup({ group }: GroupListGroupProps) {
-  const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
+  const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
     slug: group.slug,
   });
   return (

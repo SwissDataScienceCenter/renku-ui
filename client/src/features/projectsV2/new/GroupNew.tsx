@@ -68,7 +68,7 @@ function GroupBeingCreated({
 
   useEffect(() => {
     if (result.isSuccess && result.data.slug) {
-      const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
+      const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
         slug: result.data.slug,
       });
       navigate(groupUrl);
