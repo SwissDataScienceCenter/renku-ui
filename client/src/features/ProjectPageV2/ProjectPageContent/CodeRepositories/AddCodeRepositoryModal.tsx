@@ -41,8 +41,6 @@ import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
-import stylesButton from "../../../../components/buttons/Buttons.module.scss";
-
 interface AddCodeRepositoryModalProps {
   project: Project;
   isOpen: boolean;
