@@ -98,6 +98,7 @@ function splitProjectSubRoute(subUrl) {
     projectPathWithNamespace: null,
     projectId: null,
     baseUrl: null,
+    somethingElse: null,
   };
   if (subUrl == null) return result;
 
