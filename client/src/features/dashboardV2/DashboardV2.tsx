@@ -99,6 +99,91 @@ function DashboardWelcome() {
   );
 }
 
+// function GroupsDashboard() {
+//   return (
+//     <div
+//       className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
+//       data-cy="groups-container"
+//     >
+//       <div
+//         className={cx(
+//           "d-flex",
+//           "justify-content-between",
+//           "align-items-center",
+//           "flex-wrap",
+//           "pb-3"
+//         )}
+//       >
+//         <h2>Groups</h2>
+//         <Link
+//           className={cx("btn", "btn-rk-green", "btn-icon-text")}
+//           to="/v2/groups/new"
+//         >
+//           <PlusLg className="bi" id="createPlus" />
+//           <span className="d-none d-sm-inline">Create new group</span>
+//         </Link>
+//       </div>
+//       <GroupsList />
+//       <div className={cx("d-flex", "justify-content-center", "mt-2")}>
+//         <Link
+//           to="/v2/groups"
+//           data-cy="view-my-groups-btn"
+//           className={cx(
+//             "btn",
+//             "btn-outline-rk-green",
+//             "d-flex",
+//             "align-items-center"
+//           )}
+//         >
+//           View all my groups
+//         </Link>
+//       </div>
+//     </div>
+//   );
+// }
+
+// function GroupsList() {
+//   const { data, error, isLoading } = useGetGroupsQuery({
+//     page: 1,
+//     perPage: 5,
+//   });
+
+//   if (isLoading)
+//     return (
+//       <div className={cx("d-flex", "justify-content-center", "w-100")}>
+//         <div className={cx("d-flex", "flex-column")}>
+//           <Loader className="me-2" />
+//           <div>Retrieving groups...</div>
+//         </div>
+//       </div>
+//     );
+//   if (error) return <div>Cannot show groups.</div>;
+
+//   if (data == null) return <div>No 2.0 groups.</div>;
+
+//   return (
+//     <div
+//       data-cy="dashboard-group-list"
+//       className={cx("d-flex", "flex-column", "gap-3", "mb-sm-2", "mb-md-4")}
+//     >
+//       {data.groups?.map((group) => (
+//         <DashboardListElement
+//           data-cy="list-group"
+//           key={group.id}
+//           element={{
+//             ...group,
+//             readableId: group.slug,
+//             visibility: "public",
+//             url: generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+//               slug: group.slug,
+//             }),
+//           }}
+//         />
+//       ))}
+//     </div>
+//   );
+// }
+
 function ProjectsDashboard() {
   return (
     <Card className="border-primary-subtle" data-cy="projects-container">

@@ -53,16 +53,11 @@ jobs:
         run: |
           sed -i -e"s/${{ steps.get_old_version.outputs.version }}/${{ steps.get_version.outputs.version }}/" Chart.yaml values.yaml
         working-directory: ./helm-chart/renku-ui
-      - name: Update changelog
-        run: |
-          SCRIPT="s/^\(# Changes\)/\1\n\n## [${{ steps.get_version.outputs.version }}](https:\/\/github.com\/SwissDataScienceCenter\/renku-ui\/compare\/${{ steps.get_old_version.outputs.version }}...${{ steps.get_version.outputs.version }}) (YYYY-MM-DD)\n\nTODO: Update me here./"
-          sed -i -e"$SCRIPT" CHANGELOG.md
-          head -n 10 CHANGELOG.md
       - name: Create Branch
         run: git switch -c "release-${{ steps.get_version.outputs.version }}"
       - name: Commit changes
         run: |
-          git add client server helm-chart CHANGELOG.md
+          git add client server helm-chart
           git commit -m "build: release ${{ steps.get_version.outputs.version }}"
           git push
       - name: Create Pull Request

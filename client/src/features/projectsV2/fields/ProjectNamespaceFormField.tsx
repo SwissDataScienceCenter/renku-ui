@@ -266,7 +266,7 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     isError,
     isFetching,
     requestId,
-  } = useGetNamespacesQuery({});
+  } = useGetNamespacesQuery({ minimumRole: "editor" });
 
   const [
     { data: allNamespaces, fetchedPages, hasMore, currentRequestId },
@@ -284,6 +284,7 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     const request = fetchNamespacesPage({
       page: fetchedPages + 1,
       perPage: namespacesFirstPage?.perPage,
+      minimumRole: "editor",
     });
     setState((prevState: PaginatedState<ResponseNamespace>) => ({
       ...prevState,

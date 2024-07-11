@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -15,67 +15,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import cx from "classnames";
-import { useState } from "react";
-import { Col, Row } from "reactstrap";
 import { Link } from "react-router-dom-v5-compat";
 
 import FormSchema from "../../../components/formschema/FormSchema";
-import { Loader } from "../../../components/Loader";
-import { Pagination } from "../../../components/Pagination";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
-import ProjectSimple from "../show/ProjectSimple";
+import ProjectListDisplay from "./ProjectV2ListDisplay";
 
-function ProjectList() {
-  const perPage = 10;
-  const [page, setPage] = useState(1);
-  const { data, error, isLoading } = useGetProjectsQuery({
-    page,
-    perPage,
-  });
+// function ProjectList() {
+//   const perPage = 10;
+//   const [page, setPage] = useState(1);
+//   const { data, error, isLoading } = useGetProjectsQuery({
+//     page,
+//     perPage,
+//   });
 
-  if (isLoading)
-    return (
-      <div className={cx("d-flex", "justify-content-center", "w-100")}>
-        <div className={cx("d-flex", "flex-column")}>
-          <Loader />
-          <div>Retrieving projects...</div>
-        </div>
-      </div>
-    );
-  if (error)
-    return (
-      <>
-        <p>Cannot show projects.</p>
-        <RtkOrNotebooksError error={error} />
-      </>
-    );
+//   if (isLoading)
+//     return (
+//       <div className={cx("d-flex", "justify-content-center", "w-100")}>
+//         <div className={cx("d-flex", "flex-column")}>
+//           <Loader />
+//           <div>Retrieving projects...</div>
+//         </div>
+//       </div>
+//     );
+//   if (error)
+//     return (
+//       <>
+//         <p>Cannot show projects.</p>
+//         <RtkOrNotebooksError error={error} />
+//       </>
+//     );
 
-  if (data == null || data.projects.length < 1) return <p>No V2 projects.</p>;
+//   if (data == null || data.projects.length < 1) return <p>No V2 projects.</p>;
 
-  return (
-    <>
-      <Row
-        className={cx("g-3", "row-cols-1", "row-cols-sm-2", "row-cols-xl-3")}
-      >
-        {data.projects?.map((project) => (
-          <Col key={project.id}>
-            <ProjectSimple element="card-full-height" project={project} />
-          </Col>
-        ))}
-      </Row>
-      <Pagination
-        currentPage={data.page}
-        perPage={perPage}
-        totalItems={data.total}
-        onPageChange={setPage}
-      />
-    </>
-  );
-}
+//   return (
+//     <>
+//       <Row
+//         className={cx("g-3", "row-cols-1", "row-cols-sm-2", "row-cols-xl-3")}
+//       >
+//         {data.projects?.map((project) => (
+//           <Col key={project.id}>
+//             <ProjectSimple element="card-full-height" project={project} />
+//           </Col>
+//         ))}
+//       </Row>
+//       <Pagination
+//         currentPage={data.page}
+//         perPage={perPage}
+//         totalItems={data.total}
+//         onPageChange={setPage}
+//       />
+//     </>
+//   );
+// }
 
 export default function ProjectV2List() {
   const newProjectUrl = ABSOLUTE_ROUTES.v2.projects.new;
@@ -97,7 +92,9 @@ export default function ProjectV2List() {
         </>
       }
     >
-      <ProjectList />
+      <ProjectListDisplay
+        emptyListElement={<p>There are no visible projects.</p>}
+      />
     </FormSchema>
   );
 }

@@ -67,14 +67,18 @@ const injectedRtkApi = api.injectEndpoints({
     getNamespaces: build.query<GetNamespacesApiResponse, GetNamespacesApiArg>({
       query: (queryArg) => ({
         url: `/namespaces`,
-        params: { page: queryArg.page, per_page: queryArg.perPage },
+        params: {
+          page: queryArg.page,
+          per_page: queryArg.perPage,
+          minimum_role: queryArg.minimumRole,
+        },
       }),
     }),
-    getNamespacesByGroupSlug: build.query<
-      GetNamespacesByGroupSlugApiResponse,
-      GetNamespacesByGroupSlugApiArg
+    getNamespacesByNamespaceSlug: build.query<
+      GetNamespacesByNamespaceSlugApiResponse,
+      GetNamespacesByNamespaceSlugApiArg
     >({
-      query: (queryArg) => ({ url: `/namespaces/${queryArg.groupSlug}` }),
+      query: (queryArg) => ({ url: `/namespaces/${queryArg.namespaceSlug}` }),
     }),
   }),
   overrideExisting: false,
@@ -134,11 +138,13 @@ export type GetNamespacesApiArg = {
   page?: number;
   /** The number of results per page */
   perPage?: number;
+  /** A minimum role to filter results by. */
+  minimumRole?: GroupRole;
 };
-export type GetNamespacesByGroupSlugApiResponse =
+export type GetNamespacesByNamespaceSlugApiResponse =
   /** status 200 The namespace */ NamespaceResponse;
-export type GetNamespacesByGroupSlugApiArg = {
-  groupSlug: Slug;
+export type GetNamespacesByNamespaceSlugApiArg = {
+  namespaceSlug: Slug;
 };
 export type Ulid = string;
 export type NamespaceName = string;
@@ -175,7 +181,7 @@ export type GroupPatchRequest = {
 export type UserId = string;
 export type UserEmail = string;
 export type UserFirstLastName = string;
-export type GroupRole = "editor" | "owner" | "viewer";
+export type GroupRole = "owner" | "editor" | "viewer";
 export type GroupMemberResponse = {
   id: UserId;
   email?: UserEmail;
@@ -209,5 +215,5 @@ export const {
   usePatchGroupsByGroupSlugMembersMutation,
   useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
   useGetNamespacesQuery,
-  useGetNamespacesByGroupSlugQuery,
+  useGetNamespacesByNamespaceSlugQuery,
 } = injectedRtkApi;
