@@ -380,9 +380,16 @@ export default function CloudStorageModal({
 
   // Visual elements
   const disableContinueButton =
-    state.step === 1 &&
-    (!storageDetails.schema ||
-      (schemaRequiresProvider && !storageDetails.provider));
+    (state.step === 1 &&
+      (!storageDetails.schema ||
+        (schemaRequiresProvider && !storageDetails.provider))) ||
+    (state.step === 2 &&
+      storageDetails.convenientMode &&
+      !(
+        storageDetails.sourcePath &&
+        storageDetails.options &&
+        Object.values(storageDetails.options).every((v) => v)
+      ));
 
   const isAddResultLoading = addResult.isLoading || addResultV2.isLoading;
   const isModifyResultLoading =
@@ -448,6 +455,7 @@ export default function CloudStorageModal({
           storageDetails={storageDetails}
           storageId={storageId}
           success={success}
+          disableContinueButton={disableContinueButton}
         />
       </ModalBody>
 

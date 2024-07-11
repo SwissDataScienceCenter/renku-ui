@@ -62,6 +62,11 @@ export const CLOUD_STORAGE_OVERRIDE = {
         "WebDAV compatible services, including PolyBox and SwitchDrive",
       position: 2,
     },
+    openbis: {
+      position: 3,
+      convenientMode: true,
+      readOnly: true,
+    },
   } as Record<string, Partial<CloudStorageOverride>>,
 };
 
@@ -122,7 +127,12 @@ export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
   },
 } as Record<string, Record<"help" | "placeholder", string>>;
 
-export const CLOUD_STORAGE_SCHEMA_SHORTLIST = ["s3", "webdav", "azureblob"];
+export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
+  "azureblob",
+  "openbis",
+  "s3",
+  "webdav",
+];
 
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {
   s3: ["AWS", "GCS", "Switch"],

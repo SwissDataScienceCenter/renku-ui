@@ -142,6 +142,8 @@ export function getSchemaStorage(
             name: override.name ?? element.name,
             description: override.description ?? element.description,
             position: override.position ?? element.position,
+            convenientMode: override.convenientMode ?? element.convenientMode,
+            readOnly: override.readOnly ?? element.readOnly,
           });
         }
       } else {
