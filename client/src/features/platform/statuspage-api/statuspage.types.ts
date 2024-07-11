@@ -37,11 +37,18 @@ export type StatusPageComponents = StatusPageComponent[];
 export interface StatusPageComponent {
   id: string;
   name: string;
-  status: string;
+  status: ComponentStatus;
   position: number;
   showcase: boolean;
   only_show_if_degraded: boolean;
 }
+
+export type ComponentStatus =
+  | "operational"
+  | "degraded_performance"
+  | "partial_outage"
+  | "major_outage"
+  | "under_maintenance";
 
 export type Incidents = Incident[];
 

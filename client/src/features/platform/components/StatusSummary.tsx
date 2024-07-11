@@ -18,11 +18,14 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { startCase } from "lodash-es";
 import { Fragment, useContext, useMemo } from "react";
 import {
   BoxArrowUpRight,
   CheckCircleFill,
   DashCircleFill,
+  ExclamationCircleFill,
+  WrenchAdjustableCircleFill,
   XCircleFill,
 } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
@@ -44,6 +47,7 @@ import { useGetUserInfoQuery } from "../../user/keycloakUser.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
 import type {
   ScheduledMaintenance,
+  StatusPageComponent,
   StatusPageSummary,
 } from "../statuspage-api/statuspage.types";
 import StatusPageIncidentUpdates from "./StatusPageIncidentUpdates";
@@ -173,15 +177,15 @@ function OverallStatus({ summary }: OverallStatusProps) {
   const indicator = summary.status.indicator;
 
   const alertColor =
-    indicator == "none"
+    indicator === "none"
       ? "alert-success"
-      : indicator == "minor"
+      : indicator === "minor"
       ? "alert-warning"
       : "alert-danger";
   const Icon =
-    indicator == "none"
+    indicator === "none"
       ? CheckCircleFill
-      : indicator == "minor"
+      : indicator === "minor"
       ? DashCircleFill
       : XCircleFill;
 
@@ -271,13 +275,49 @@ function ComponentsStatus({ summary }: ComponentsStatusProps) {
   return (
     <Row className={cx("row-cols-2", "gy-2")}>
       {components.map((component) => (
-        <Fragment key={component.id}>
-          <Col xs={6} className="fw-bold">
-            {component.name}
-          </Col>
-          <Col xs={6}>{component.status}</Col>
-        </Fragment>
+        <ComponentStatus key={component.id} component={component} />
       ))}
     </Row>
+  );
+}
+
+interface ComponentStatusProps {
+  component: StatusPageComponent;
+}
+
+function ComponentStatus({ component }: ComponentStatusProps) {
+  const { name, status } = component;
+
+  const statusStr = startCase(status);
+
+  const Icon =
+    status === "operational"
+      ? CheckCircleFill
+      : status === "under_maintenance"
+      ? WrenchAdjustableCircleFill
+      : status === "degraded_performance"
+      ? DashCircleFill
+      : status === "partial_outage"
+      ? ExclamationCircleFill
+      : XCircleFill;
+  const iconColor =
+    status === "operational"
+      ? "text-success"
+      : status === "under_maintenance"
+      ? "text-info"
+      : status === "degraded_performance"
+      ? "text-warning"
+      : "text-danger";
+
+  return (
+    <Fragment>
+      <Col xs={6} className="fw-bold">
+        {name}
+      </Col>
+      <Col xs={6}>
+        <Icon className={cx("bi", "me-1", iconColor)} />
+        {statusStr}
+      </Col>
+    </Fragment>
   );
 }

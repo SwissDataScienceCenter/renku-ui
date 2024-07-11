@@ -16,6 +16,8 @@
  * limitations under the License
  */
 
+import { startCase } from "lodash-es";
+
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import type {
   IncidentUpdate,
@@ -44,14 +46,7 @@ interface StatusPageIncidentUpdateProps {
 
 function StatusPageIncidentUpdate({ update }: StatusPageIncidentUpdateProps) {
   const { body, display_at, id, status } = update;
-  const title =
-    status === "identified"
-      ? "Identified"
-      : status === "investigating"
-      ? "Investigating"
-      : status === "monitoring"
-      ? "Monitoring"
-      : "Resolved";
+  const title = startCase(status);
 
   return (
     <p key={id} className="mb-1">
