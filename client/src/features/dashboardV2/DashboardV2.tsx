@@ -23,7 +23,15 @@ import {
   PlusLg,
 } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
-import { Card, CardFooter, CardHeader, Col, Row } from "reactstrap";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Col,
+  ListGroup,
+  Row,
+} from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
@@ -99,102 +107,21 @@ function DashboardWelcome() {
   );
 }
 
-// function GroupsDashboard() {
-//   return (
-//     <div
-//       className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
-//       data-cy="groups-container"
-//     >
-//       <div
-//         className={cx(
-//           "d-flex",
-//           "justify-content-between",
-//           "align-items-center",
-//           "flex-wrap",
-//           "pb-3"
-//         )}
-//       >
-//         <h2>Groups</h2>
-//         <Link
-//           className={cx("btn", "btn-rk-green", "btn-icon-text")}
-//           to="/v2/groups/new"
-//         >
-//           <PlusLg className="bi" id="createPlus" />
-//           <span className="d-none d-sm-inline">Create new group</span>
-//         </Link>
-//       </div>
-//       <GroupsList />
-//       <div className={cx("d-flex", "justify-content-center", "mt-2")}>
-//         <Link
-//           to="/v2/groups"
-//           data-cy="view-my-groups-btn"
-//           className={cx(
-//             "btn",
-//             "btn-outline-rk-green",
-//             "d-flex",
-//             "align-items-center"
-//           )}
-//         >
-//           View all my groups
-//         </Link>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function GroupsList() {
-//   const { data, error, isLoading } = useGetGroupsQuery({
-//     page: 1,
-//     perPage: 5,
-//   });
-
-//   if (isLoading)
-//     return (
-//       <div className={cx("d-flex", "justify-content-center", "w-100")}>
-//         <div className={cx("d-flex", "flex-column")}>
-//           <Loader className="me-2" />
-//           <div>Retrieving groups...</div>
-//         </div>
-//       </div>
-//     );
-//   if (error) return <div>Cannot show groups.</div>;
-
-//   if (data == null) return <div>No 2.0 groups.</div>;
-
-//   return (
-//     <div
-//       data-cy="dashboard-group-list"
-//       className={cx("d-flex", "flex-column", "gap-3", "mb-sm-2", "mb-md-4")}
-//     >
-//       {data.groups?.map((group) => (
-//         <DashboardListElement
-//           data-cy="list-group"
-//           key={group.id}
-//           element={{
-//             ...group,
-//             readableId: group.slug,
-//             visibility: "public",
-//             url: generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-//               slug: group.slug,
-//             }),
-//           }}
-//         />
-//       ))}
-//     </div>
-//   );
-// }
-
 function ProjectsDashboard() {
   return (
-    <Card className="border-primary-subtle" data-cy="projects-container">
-      <CardHeader
-        className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
-      >
+    <Card data-cy="projects-container">
+      <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
           <FolderFill className={cx("small", "text-icon")} />
           <span>Projects</span>
           <Link
-            className={cx("btn", "btn-primary", "btn-sm", "ms-auto", "my-auto")}
+            className={cx(
+              "btn",
+              "btn-outline-primary",
+              "btn-sm",
+              "ms-auto",
+              "my-auto"
+            )}
             to="/v2/projects/new"
           >
             <PlusLg className="text-icon" id="createPlus" />
@@ -202,9 +129,11 @@ function ProjectsDashboard() {
         </h4>
       </CardHeader>
 
-      <ProjectList />
+      <CardBody>
+        <ProjectList />
+      </CardBody>
 
-      <CardFooter className={cx("bg-white", "py-3")}>
+      <CardFooter>
         <Link to="/v2/projects" data-cy="view-my-projects-btn">
           View all my projects
         </Link>
@@ -236,28 +165,29 @@ function ProjectList() {
   if (noProjects) return <div className="card-body">{noProjects}</div>;
 
   return (
-    <ul
-      className={cx("list-group", "list-group-flush")}
-      data-cy="dashboard-project-list"
-    >
+    <ListGroup flush data-cy="dashboard-project-list">
       {data?.projects?.map((project) => (
         <ProjectSimple element="list-item" key={project.id} project={project} />
       ))}
-    </ul>
+    </ListGroup>
   );
 }
 
 function GroupsDashboard() {
   return (
-    <Card className="border-primary-subtle" data-cy="groups-container">
-      <CardHeader
-        className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
-      >
+    <Card data-cy="groups-container">
+      <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
           <PeopleFill className={cx("small", "text-icon")} />
           <span>Groups</span>
           <Link
-            className={cx("btn", "btn-primary", "btn-sm", "ms-auto", "my-auto")}
+            className={cx(
+              "btn",
+              "btn-outline-primary",
+              "btn-sm",
+              "ms-auto",
+              "my-auto"
+            )}
             to="/v2/groups/new"
           >
             <PlusLg className="text-icon" id="createPlus" />
@@ -265,7 +195,9 @@ function GroupsDashboard() {
         </h4>
       </CardHeader>
 
-      <GroupsList />
+      <CardBody>
+        <GroupsList />
+      </CardBody>
 
       <CardFooter className={cx("bg-white", "py-3")}>
         <Link to="/v2/groups" data-cy="view-my-groups-btn">
@@ -299,29 +231,27 @@ function GroupsList() {
   if (noGroups) return <div className="card-body">{noGroups}</div>;
 
   return (
-    <ul
-      className={cx("list-group", "list-group-flush")}
-      data-cy="dashboard-group-list"
-    >
+    <ListGroup flush data-cy="dashboard-group-list">
       {data?.groups?.map((group) => (
         <GroupSimple element="list-item" key={group.id} group={group} />
       ))}
-    </ul>
+    </ListGroup>
   );
 }
 
 function SessionsDashboard() {
   return (
-    <Card className="border-primary-subtle" data-cy="sessions-container">
-      <CardHeader
-        className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
-      >
+    <Card data-cy="sessions-container">
+      <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
           <PlayCircleFill className={cx("small", "text-icon")} />
           Sessions
         </h4>
       </CardHeader>
-      <DashboardV2Sessions />
+
+      <CardBody>
+        <DashboardV2Sessions />
+      </CardBody>
     </Card>
   );
 }

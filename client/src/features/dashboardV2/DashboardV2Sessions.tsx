@@ -2,7 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-import { ListGroupItem } from "reactstrap";
+import { ListGroup, ListGroupItem } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import { EnvironmentLogs } from "../../components/Logs";
@@ -57,14 +57,11 @@ export default function DashboardV2Sessions() {
   if (noSessions) return <div className="card-body">{noSessions}</div>;
 
   return (
-    <ul
-      className={cx("list-group", "list-group-flush")}
-      data-cy="dashboard-session-list"
-    >
+    <ListGroup flush data-cy="dashboard-session-list">
       {Object.entries(v2Sessions).map(([key, session]) => (
         <DashboardSession key={key} session={session} />
       ))}
-    </ul>
+    </ListGroup>
   );
 }
 

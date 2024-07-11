@@ -49,15 +49,13 @@ import {
   Row,
   UncontrolledDropdown,
 } from "reactstrap";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-
-import { skipToken } from "@reduxjs/toolkit/query";
 import {
   ErrorAlert,
   RenkuAlert,

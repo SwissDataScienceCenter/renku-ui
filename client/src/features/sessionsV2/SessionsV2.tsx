@@ -121,13 +121,10 @@ export default function SessionsV2({ project }: SessionsV2Props) {
     (launchers ? launchers?.length : 0) +
     Object.entries(orphanSessions)?.length;
   return (
-    <Card className="border-primary-subtle">
+    <Card>
       <CardHeader
         className={cx(
           "align-items-center",
-          "bg-primary",
-          "bg-opacity-10",
-          "border-primary-subtle",
           "d-flex",
           "justify-content-between"
         )}
@@ -157,31 +154,31 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       <CardBody>
         {loading}
         {errorAlert}
-        <p className="m-0">
+        <p>
           {totalSessions > 0
             ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
             : "Define interactive environments in which to do your work and share it  with others."}
         </p>
-      </CardBody>
 
-      {totalSessions > 0 && (
-        <ListGroup flush>
-          {launchers?.map((launcher) => (
-            <SessionItemDisplay
-              key={`launcher-${launcher.id}`}
-              launcher={launcher}
-              project={project}
-            />
-          ))}
-          {Object.entries(orphanSessions).map(([key, session]) => (
-            <OrphanSession
-              key={`orphan-${key}`}
-              session={session}
-              project={project}
-            />
-          ))}
-        </ListGroup>
-      )}
+        {totalSessions > 0 && (
+          <ListGroup flush>
+            {launchers?.map((launcher) => (
+              <SessionItemDisplay
+                key={`launcher-${launcher.id}`}
+                launcher={launcher}
+                project={project}
+              />
+            ))}
+            {Object.entries(orphanSessions).map(([key, session]) => (
+              <OrphanSession
+                key={`orphan-${key}`}
+                session={session}
+                project={project}
+              />
+            ))}
+          </ListGroup>
+        )}
+      </CardBody>
     </Card>
   );
 }

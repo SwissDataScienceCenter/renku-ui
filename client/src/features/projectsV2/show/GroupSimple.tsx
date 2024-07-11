@@ -39,7 +39,7 @@ export default function GroupSimple({
       <Link
         className={cx("link-primary", "text-body")}
         data-cy="project-link"
-        to={generatePath(ABSOLUTE_ROUTES.v2.groups.show, {
+        to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
           slug: group.slug,
         })}
       >

@@ -43,10 +43,8 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
 
   const totalRepositories = project.repositories?.length || 0;
   return (
-    <Card className="border-primary-subtle" data-cy="code-repositories-box">
-      <CardHeader
-        className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
-      >
+    <Card data-cy="code-repositories-box">
+      <CardHeader>
         <div
           className={cx(
             "align-items-center",
@@ -68,7 +66,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
             <AccessGuard
               disabled={null}
               enabled={
-                <Button color="primary" onClick={toggle} size="sm">
+                <Button color="outline-primary" onClick={toggle} size="sm">
                   <PlusLg className="icon-text" />
                 </Button>
               }
@@ -78,21 +76,21 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
           </div>
         </div>
       </CardHeader>
-      {totalRepositories === 0 ? (
-        <CardBody>
+      <CardBody>
+        {totalRepositories === 0 ? (
           <p className="m-0">
             Connect code repositories to save and share code.
           </p>
-        </CardBody>
-      ) : (
-        <ListGroup flush>
-          {project.repositories?.map((repositoryUrl, index) => (
-            <ListGroupItem key={index}>
-              <RepositoryItem project={project} url={repositoryUrl} />
-            </ListGroupItem>
-          ))}
-        </ListGroup>
-      )}
+        ) : (
+          <ListGroup flush>
+            {project.repositories?.map((repositoryUrl, index) => (
+              <ListGroupItem key={index}>
+                <RepositoryItem project={project} url={repositoryUrl} />
+              </ListGroupItem>
+            ))}
+          </ListGroup>
+        )}
+      </CardBody>
       <AddCodeRepositoryStep1Modal
         toggleModal={toggle}
         isOpen={isOpen}

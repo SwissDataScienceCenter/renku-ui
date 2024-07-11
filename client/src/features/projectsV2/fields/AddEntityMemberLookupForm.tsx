@@ -117,7 +117,7 @@ export default function AddEntityMemberEmailLookupForm({
       </ModalBody>
       <ModalFooter>
         <Button
-          color="primary-secondary"
+          color="outline-primary"
           onClick={toggle}
           data-cy="user-lookup-close-button"
         >

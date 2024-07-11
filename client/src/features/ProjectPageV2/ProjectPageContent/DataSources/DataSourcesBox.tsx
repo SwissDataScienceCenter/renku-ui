@@ -55,10 +55,8 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
   );
 
   return (
-    <Card className="border-primary-subtle" data-cy="data-source-box">
-      <CardHeader
-        className={cx("bg-primary", "bg-opacity-10", "border-primary-subtle")}
-      >
+    <Card data-cy="data-source-box">
+      <CardHeader>
         <div
           className={cx(
             "align-items-center",
@@ -77,7 +75,7 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
             <AccessGuard
               disabled={null}
               enabled={
-                <Button color="primary" onClick={toggle} size="sm">
+                <Button color="outline-primary" onClick={toggle} size="sm">
                   <PlusLg className="icon-text" />
                 </Button>
               }
@@ -87,29 +85,31 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
           </div>
         </div>
       </CardHeader>
-      {isLoading || isFetching || totalStorages === 0 ? (
-        <CardBody>
-          {isLoading || isFetching ? (
-            <Loader />
-          ) : (
-            <p className="m-0">
-              Add published datasets from data repositories, and connect to
-              cloud storage to read and write custom data.
-            </p>
-          )}
-        </CardBody>
-      ) : (
-        <ListGroup flush>
-          {data?.map((storage, index) => (
-            <DataSourceDisplay
-              key={index}
-              storage={storage}
-              projectId={project.id}
-            />
-          ))}
-          {contentLoading}
-        </ListGroup>
-      )}
+      <CardBody>
+        {isLoading || isFetching || totalStorages === 0 ? (
+          <>
+            {isLoading || isFetching ? (
+              <Loader />
+            ) : (
+              <p className="m-0">
+                Add published datasets from data repositories, and connect to
+                cloud storage to read and write custom data.
+              </p>
+            )}
+          </>
+        ) : (
+          <ListGroup flush>
+            {data?.map((storage, index) => (
+              <DataSourceDisplay
+                key={index}
+                storage={storage}
+                projectId={project.id}
+              />
+            ))}
+            {contentLoading}
+          </ListGroup>
+        )}
+      </CardBody>
       <AddCloudStorageModal
         currentStorage={null}
         isOpen={isOpen}

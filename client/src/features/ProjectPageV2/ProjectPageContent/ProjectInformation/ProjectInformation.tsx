@@ -88,19 +88,18 @@ export default function ProjectInformation({
 
   const information = (
     <div>
+      <p className="mb-0">Namespace:</p>
       <p>
-        <Link to={namespaceUrl}>
-          Namespace: <span className="fw-bold">{namespaceName}</span>
+        <Link className="fw-bold" to={namespaceUrl}>
+          {namespaceName}
         </Link>
       </p>
-      <div className={cx("d-flex", "flex-wrap", "mb-3")}>
-        <p className={cx("me-1", "mb-0")}>Visibility: </p>
-        <span className="fw-bold">
-          <VisibilityIcon visibility={project.visibility} />
-        </span>
-      </div>
+      <p className="mb-0">Visibility:</p>
+      <p className="fw-bold">
+        <VisibilityIcon visibility={project.visibility} />
+      </p>
+      <p className="mb-0">Created:</p>
       <p>
-        Created:{" "}
         <TimeCaption
           datetime={project.creation_date}
           className={cx("fw-bold", "fs-6")}
@@ -240,146 +239,5 @@ function ProjectInformationMembers({
         />
       )}
     </>
-  );
-}
-
-export default function ProjectInformation() {
-  const { project } = useProject();
-
-  const { data: members } = useGetProjectsByProjectIdMembersQuery({
-    projectId: project.id,
-  });
-  const totalMembers = members?.length ?? 0;
-  const totalKeywords = project.keywords?.length || 0;
-  const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
-    namespace: project.namespace ?? "",
-    slug: project.slug ?? "",
-  });
-  const membersUrl = `${settingsUrl}#members`;
-
-  const { data: namespace } = useGetNamespacesByNamespaceSlugQuery({
-    namespaceSlug: project.namespace,
-  });
-  const namespaceName = useMemo(
-    () => namespace?.name ?? project.namespace,
-    [namespace?.name, project.namespace]
-  );
-  const namespaceUrl = useMemo(
-    () =>
-      namespace?.namespace_kind === "group"
-        ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-            slug: project.namespace,
-          })
-        : generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-            username: project.namespace,
-          }),
-    [namespace?.namespace_kind, project.namespace]
-  );
-
-  return (
-    <aside className={cx("px-3", "pb-5", "pb-lg-2")}>
-      <div
-        className={cx(
-          "my-4",
-          "d-block",
-          "d-lg-none",
-          "d-sm-block",
-          "text-center"
-        )}
-      >
-        <ProjectImageView />
-      </div>
-      <div
-        className={cx(
-          "d-flex",
-          "align-items-center",
-          "justify-content-between",
-          "gap-2"
-        )}
-      >
-        <div className={cx("flex-grow-1", "border-bottom")}></div>
-        <MembershipGuard
-          disabled={
-            <EditButtonLink
-              disabled={true}
-              to={settingsUrl}
-              tooltip="Your role does not allow modifying project information"
-            />
-          }
-          enabled={
-            <EditButtonLink
-              data-cy="project-settings-edit"
-              to={settingsUrl}
-              tooltip="Modify project information"
-            />
-          }
-          members={members}
-          minimumRole="editor"
-        />
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>Namespace</div>
-        <div className="fw-bold" data-cy="project-namespace">
-          <Link to={namespaceUrl}>{namespaceName}</Link>
-        </div>
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>Visibility</div>
-        <VisibilityIcon
-          className={cx(
-            "fw-bold",
-            "justify-content-start",
-            "justify-content-lg-end"
-          )}
-          visibility={project.visibility}
-        />
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>
-          Created{" "}
-          <TimeCaption
-            datetime={project.creation_date}
-            className={cx("fw-bold", "fs-6")}
-          />
-        </div>
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>Members ({totalMembers})</div>
-        <ProjectInformationMembers members={members} membersUrl={membersUrl} />
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>Keywords ({totalKeywords})</div>
-        {totalKeywords == 0 ? (
-          <MembershipGuard
-            disabled={null}
-            enabled={
-              <UnderlineArrowLink
-                tooltip="Add project keywords"
-                text="Add keywords"
-                to={settingsUrl}
-              />
-            }
-            members={members}
-            minimumRole="editor"
-          />
-        ) : (
-          <div
-            className={cx(
-              "d-flex",
-              "flex-wrap",
-              "gap-2",
-              "justify-content-end",
-              "mt-2"
-            )}
-          >
-            {project.keywords?.map((keyword, index) => (
-              <span key={`keyword-${index}`} className={cx("fw-bold")}>
-                #{keyword}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-    </aside>
   );
 }

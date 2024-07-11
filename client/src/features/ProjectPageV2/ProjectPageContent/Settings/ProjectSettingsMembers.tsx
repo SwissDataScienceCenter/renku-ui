@@ -265,31 +265,20 @@ function ProjectPageSettingsMembersContent({
   }, []);
   if (isLoading)
     return (
-      <CardBody>
-        <p>
-          <Loader className="me-2" inline />
-          Loading members...
-        </p>
-      </CardBody>
+      <p>
+        <Loader className="me-2" inline />
+        Loading members...
+      </p>
     );
   if (error) {
     if (error.status === 401 || error.status === 404) return null;
-    return (
-      <CardBody>
-        <RtkErrorAlert error={error} />
-      </CardBody>
-    );
+    return <RtkErrorAlert error={error} />;
   }
-  if (members == null)
-    return (
-      <CardBody>
-        <p className="p-0">Could not load members</p>
-      </CardBody>
-    );
+  if (members == null) return <p className="p-0">Could not load members</p>;
   const totalMembers = members ? members?.length : 0;
   return (
     <>
-      <CardBody className={cx("d-flex", "justify-content-between")}>
+      <div className={cx("d-flex", "justify-content-between")}>
         <p className={cx("fw-bold", "my-auto")}>
           <PeopleFill className={cx("me-2", "text-icon")} />
           Members ({totalMembers})
@@ -310,7 +299,7 @@ function ProjectPageSettingsMembersContent({
             members={members}
           />
         </div>
-      </CardBody>
+      </div>
       <ProjectPageSettingsMembersList members={members} projectId={projectId} />
       <AddProjectMemberModal
         isOpen={isAddMemberModalOpen}
@@ -353,12 +342,14 @@ export default function ProjectPageSettingsMembers({
           members={members}
         />
       </CardHeader>
-      <ProjectPageSettingsMembersContent
-        error={error}
-        isLoading={isLoading}
-        members={members}
-        projectId={project.id}
-      />
+      <CardBody>
+        <ProjectPageSettingsMembersContent
+          error={error}
+          isLoading={isLoading}
+          members={members}
+          projectId={project.id}
+        />
+      </CardBody>
     </Card>
   );
 }

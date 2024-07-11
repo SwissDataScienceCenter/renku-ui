@@ -379,12 +379,12 @@ function EditButtonLink({
     <>
       <span ref={ref}>
         {disabled ? (
-          <Button color="primary" disabled>
+          <Button color="outline-primary" disabled>
             <PencilSquare className="text-icon" />
           </Button>
         ) : (
           <Link
-            className={cx("btn", "btn-sm", "btn-primary")}
+            className={cx("btn", "btn-sm", "btn-outline-primary")}
             data-cy={dataCy}
             to={to}
           >

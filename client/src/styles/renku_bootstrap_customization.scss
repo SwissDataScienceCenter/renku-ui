@@ -35,11 +35,24 @@ $nav-link-transition: none;
   border-bottom: 2px solid $nav-tabs-link-active-color !important;
 }
 
+// Adjust card and list group colors
+$card-cap-bg: transparent;
+$list-group-border-color: $card-border-color;
+
 // Adjust card and list group spacing
 $list-group-item-padding-y: $spacer;
+$list-group-item-padding-x: 0;
 $card-cap-padding-y: $spacer;
+.card-header {
+  border: 0 !important;
+  padding-top: $spacer !important;
+  padding-bottom: 0 !important;
+}
+.card-footer {
+  border: 0 !important;
+}
 
-// Adjust card headers
+// Adjust titles in card headers
 .card-header {
   h1,
   h2,
