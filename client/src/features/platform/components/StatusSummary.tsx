@@ -43,7 +43,9 @@ import {
   toHumanDateTime,
 } from "../../../utils/helpers/DateTimeUtils";
 import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
-import { useGetUserInfoQuery } from "../../user/keycloakUser.api";
+import keycloakUserApi, {
+  useGetUserInfoQuery,
+} from "../../user/keycloakUser.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
 import type {
   ScheduledMaintenance,
@@ -95,6 +97,14 @@ interface StatuspageDisplayProps {
 }
 
 function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
+  );
+  const { data: userInfo } =
+    keycloakUserApi.endpoints.getUserInfo.useQueryState(
+      userLogged ? undefined : skipToken
+    );
+
   const {
     data: summary,
     isLoading,
@@ -115,6 +125,12 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
         <p>
           Error: could not retrieve RenkuLab&apos;s status from statuspage.io.
         </p>
+        {userInfo?.isLoggedIn && userInfo.isAdmin && (
+          <p>
+            As a Renku administrator, you can see the current configuration in
+            the <Link to="/admin">admin panel</Link>.
+          </p>
+        )}
         <RtkOrNotebooksError error={error} dismissible={false} />
       </>
     );
