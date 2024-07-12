@@ -28,56 +28,6 @@
               }
             }
           },
-          "404": {
-            "description": "The platform configuration has not been initialized yet",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["platform"]
-      },
-      "post": {
-        "summary": "Create the initial configuration of RenkuLab",
-        "description": "Requires admin permissions.\nWill fail if the platform configuration already exists.\n",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlatformConfigPost"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "The initial platform configuration",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PlatformConfig"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "The platform configuration already exists",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "default": {
             "$ref": "#/components/responses/Error"
           }
@@ -113,16 +63,6 @@
               }
             }
           },
-          "404": {
-            "description": "The platform configuration has not been initialized yet",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "default": {
             "$ref": "#/components/responses/Error"
           }
@@ -140,52 +80,19 @@
           "etag": {
             "$ref": "#/components/schemas/ETag"
           },
-          "disable_ui": {
-            "$ref": "#/components/schemas/DisableUI"
-          },
-          "maintenance_banner": {
-            "$ref": "#/components/schemas/MaintenanceBanner"
-          },
-          "status_page_id": {
-            "$ref": "#/components/schemas/StatusPageId"
+          "incident_banner": {
+            "$ref": "#/components/schemas/IncidentBanner"
           }
         },
-        "required": [
-          "etag",
-          "disable_ui",
-          "maintenance_banner",
-          "status_page_id"
-        ],
-        "additionalProperties": false
-      },
-      "PlatformConfigPost": {
-        "description": "The initial configuration of RenkuLab",
-        "type": "object",
-        "properties": {
-          "disable_ui": {
-            "$ref": "#/components/schemas/DisableUI"
-          },
-          "maintenance_banner": {
-            "$ref": "#/components/schemas/MaintenanceBanner"
-          },
-          "status_page_id": {
-            "$ref": "#/components/schemas/StatusPageId"
-          }
-        },
+        "required": ["etag", "incident_banner"],
         "additionalProperties": false
       },
       "PlatformConfigPatch": {
         "description": "Patch of the configuration of RenkuLab",
         "type": "object",
         "properties": {
-          "disable_ui": {
-            "$ref": "#/components/schemas/DisableUI"
-          },
-          "maintenance_banner": {
-            "$ref": "#/components/schemas/MaintenanceBanner"
-          },
-          "status_page_id": {
-            "$ref": "#/components/schemas/StatusPageId"
+          "incident_banner": {
+            "$ref": "#/components/schemas/IncidentBanner"
           }
         },
         "additionalProperties": false
@@ -195,20 +102,10 @@
         "description": "Entity Tag",
         "example": "9EE498F9D565D0C41E511377425F32F3"
       },
-      "DisableUI": {
-        "type": "boolean",
-        "description": "Indicates wether to disable the User Interface of RenkuLab",
-        "default": false
-      },
-      "MaintenanceBanner": {
+      "IncidentBanner": {
         "type": "string",
-        "description": "The contents of the maintenance banner.\nThis value accepts content written using Markdown.\n",
-        "example": "RenkuLab is undergoing maintenance."
-      },
-      "StatusPageId": {
-        "type": "string",
-        "description": "The ID of a site on statuspage.io",
-        "example": "some-id"
+        "description": "The contents of the incident banner.\nThis value accepts content written using Markdown.\n",
+        "example": "RenkuLab is experiencing issues, some features may be unavailable."
       },
       "ErrorResponse": {
         "type": "object",

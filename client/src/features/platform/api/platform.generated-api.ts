@@ -7,16 +7,6 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: () => ({ url: `/platform/config` }),
     }),
-    postPlatformConfig: build.mutation<
-      PostPlatformConfigApiResponse,
-      PostPlatformConfigApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/platform/config`,
-        method: "POST",
-        body: queryArg.platformConfigPost,
-      }),
-    }),
     patchPlatformConfig: build.mutation<
       PatchPlatformConfigApiResponse,
       PatchPlatformConfigApiArg
@@ -35,11 +25,6 @@ export { injectedRtkApi as platformGeneratedApi };
 export type GetPlatformConfigApiResponse =
   /** status 200 The platform configuration */ PlatformConfig;
 export type GetPlatformConfigApiArg = void;
-export type PostPlatformConfigApiResponse =
-  /** status 201 The initial platform configuration */ PlatformConfig;
-export type PostPlatformConfigApiArg = {
-  platformConfigPost: PlatformConfigPost;
-};
 export type PatchPlatformConfigApiResponse =
   /** status 200 The updated platform configuration */ PlatformConfig;
 export type PatchPlatformConfigApiArg = {
@@ -48,14 +33,10 @@ export type PatchPlatformConfigApiArg = {
   platformConfigPatch: PlatformConfigPatch;
 };
 export type ETag = string;
-export type DisableUi = boolean;
-export type MaintenanceBanner = string;
-export type StatusPageId = string;
+export type IncidentBanner = string;
 export type PlatformConfig = {
   etag: ETag;
-  disable_ui: DisableUi;
-  maintenance_banner: MaintenanceBanner;
-  status_page_id: StatusPageId;
+  incident_banner: IncidentBanner;
 };
 export type ErrorResponse = {
   error: {
@@ -64,18 +45,8 @@ export type ErrorResponse = {
     message: string;
   };
 };
-export type PlatformConfigPost = {
-  disable_ui?: DisableUi;
-  maintenance_banner?: MaintenanceBanner;
-  status_page_id?: StatusPageId;
-};
 export type PlatformConfigPatch = {
-  disable_ui?: DisableUi;
-  maintenance_banner?: MaintenanceBanner;
-  status_page_id?: StatusPageId;
+  incident_banner?: IncidentBanner;
 };
-export const {
-  useGetPlatformConfigQuery,
-  usePostPlatformConfigMutation,
-  usePatchPlatformConfigMutation,
-} = injectedRtkApi;
+export const { useGetPlatformConfigQuery, usePatchPlatformConfigMutation } =
+  injectedRtkApi;

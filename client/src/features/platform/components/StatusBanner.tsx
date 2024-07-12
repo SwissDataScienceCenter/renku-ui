@@ -58,7 +58,7 @@ export default function StatusBanner({ params }: StatusBannerProps) {
   return (
     <StatusBannerDisplay
       summary={summary}
-      incidentBannerContent={platformConfig?.maintenance_banner ?? ""}
+      incidentBannerContent={platformConfig?.incident_banner ?? ""}
     />
   );
 }

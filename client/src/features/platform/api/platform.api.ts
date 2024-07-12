@@ -27,14 +27,8 @@ export const platformApi = platformGeneratedApi.enhanceEndpoints({
     patchPlatformConfig: {
       invalidatesTags: ["PlatformConfig"],
     },
-    postPlatformConfig: {
-      invalidatesTags: ["PlatformConfig"],
-    },
   },
 });
-export const {
-  useGetPlatformConfigQuery,
-  usePostPlatformConfigMutation,
-  usePatchPlatformConfigMutation,
-} = platformApi;
+export const { useGetPlatformConfigQuery, usePatchPlatformConfigMutation } =
+  platformApi;
 export type * from "./platform.generated-api";
