@@ -31,7 +31,7 @@ import {
   RCloneConfig,
   usePatchStoragesV2ByStorageIdMutation,
   usePostStoragesV2Mutation,
-} from "../../../projectsV2/api/storagesV2.api.ts";
+} from "../../../projectsV2/api/storagesV2.api";
 import {
   findSensitive,
   getCurrentStorageDetails,

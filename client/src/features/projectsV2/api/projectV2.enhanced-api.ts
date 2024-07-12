@@ -21,8 +21,8 @@ import {
   GetStoragesV2ApiResponse as GetStoragesV2ApiResponseOrig,
   GetStoragesV2ByStorageIdSecretsApiArg,
   GetStoragesV2ByStorageIdSecretsApiResponse,
-} from "./storagesV2.api.ts";
-import type { CloudStorageSecretGetList } from "./storagesV2.api.ts";
+} from "./storagesV2.api";
+import type { CloudStorageSecretGetList } from "./storagesV2.api";
 
 interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;

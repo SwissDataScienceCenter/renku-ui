@@ -107,7 +107,9 @@ export function DataSourceView({
             return (
               <div className="mt-2" key={key}>
                 <div>
-                  <small className="text-capitalize fw-bold">{key}</small>
+                  <small className={cx("text-capitalize", "fw-bold")}>
+                    {key}
+                  </small>
                 </div>
                 <div>{value}</div>
               </div>

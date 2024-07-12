@@ -44,7 +44,7 @@ import AddCloudStorageModal from "../../../project/components/cloudStorage/Cloud
 import {
   CloudStorageGetRead,
   useDeleteStoragesV2ByStorageIdMutation,
-} from "../../../projectsV2/api/storagesV2.api.ts";
+} from "../../../projectsV2/api/storagesV2.api";
 import sessionItemStyles from "../../../sessionsV2/SessionList/SessionItemDisplay.module.scss";
 import DataSourceCredentialsModal from "./DataSourceCredentialsModal.tsx";
 import { DataSourceView } from "./DataSourceView.tsx";

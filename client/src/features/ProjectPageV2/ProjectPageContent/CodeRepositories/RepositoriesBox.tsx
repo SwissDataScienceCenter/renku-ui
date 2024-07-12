@@ -20,10 +20,10 @@ import { useCallback, useState } from "react";
 import { CodeSquare } from "react-bootstrap-icons";
 
 import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
+import { Project } from "../../../projectsV2/api/projectV2.api";
 import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal.tsx";
 import AccessGuard from "../../utils/AccessGuard.tsx";
-import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
+import useProjectAccess from "../../utils/useProjectAccess.hook";
 import { RepositoryItem } from "./CodeRepositoryDisplay.tsx";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
