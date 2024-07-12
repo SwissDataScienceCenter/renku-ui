@@ -139,8 +139,8 @@ function CredentialsButtons({
           </span>
         ) : (
           <span>
-            {context === "session" ? "Continue" : "Test and Save"}{" "}
-            <ChevronRight className="bi" />
+            {context === "session" ? "Continue" : "Test and Save"}
+            <ChevronRight className={cx("bi", "ms-1")} />
           </span>
         )}
       </Button>
