@@ -28,7 +28,7 @@ import {
 } from "../../../projectsV2/api/projectV2.enhanced-api";
 import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
 import type { SessionStartCloudStorageConfiguration } from "../../../sessionsV2/startSessionOptionsV2.types";
-import SessionStartCloudStorageSecretsModal from "../../../sessionsV2/SessionStartCloudStorageSecretsModal";
+import CloudStorageSecretsModal from "../../../sessionsV2/CloudStorageSecretsModal";
 
 import useDataSourceConfiguration from "./useDataSourceConfiguration.hook";
 import { Loader } from "../../../../components/Loader";
@@ -188,7 +188,7 @@ export default function DataSourceCredentialsModal({
   }
 
   return (
-    <SessionStartCloudStorageSecretsModal
+    <CloudStorageSecretsModal
       cloudStorageConfigs={cloudStorageConfigs}
       context="storage"
       isOpen={isOpen}

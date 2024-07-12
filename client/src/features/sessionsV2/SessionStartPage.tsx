@@ -46,8 +46,8 @@ import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/project
 import { usePostStoragesV2ByStorageIdSecretsMutation } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
-import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
-import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
+import type { SessionLaunchModalCloudStorageConfiguration } from "./CloudStorageSecretsModal";
+import CloudStorageSecretsModal from "./CloudStorageSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
@@ -369,7 +369,7 @@ function StartSessionWithCloudStorageModal({
           title={`Starting session ${launcher.name}`}
           status={steps}
         />
-        <SessionStartCloudStorageSecretsModal
+        <CloudStorageSecretsModal
           isOpen={showCloudStorageSecretsModal}
           onCancel={onCancel}
           onStart={onStart}

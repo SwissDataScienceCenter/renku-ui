@@ -52,15 +52,15 @@ import type {
 } from "../project/components/cloudStorage/projectCloudStorage.types";
 import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { RCloneOption } from "../projectsV2/api/storagesV2.api";
-import type { SessionStartCloudStorageConfiguration } from "../sessionsV2/startSessionOptionsV2.types";
+import type { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 
 export type SessionLaunchModalCloudStorageConfiguration =
   SessionStartCloudStorageConfiguration;
 
 interface CredentialsButtonsProps
-  extends Pick<SessionStartCloudStorageSecretsModalProps, "onCancel"> {
-  context: Required<SessionStartCloudStorageSecretsModalProps["context"]>;
+  extends Pick<CloudStorageSecretsModalProps, "onCancel"> {
+  context: Required<CloudStorageSecretsModalProps["context"]>;
   hasSavedCredentials: boolean;
   onSkip: () => void;
   validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
@@ -92,8 +92,8 @@ function CredentialsButtons({
             </Button>
           </span>
           <UncontrolledTooltip target={skipButtonRef}>
-            Skip the connection test. At session launch, the storage will try
-            to mount
+            Skip the connection test. At session launch, the storage will try to
+            mount
             {validationResult.isError
               ? " using the provided credentials"
               : " without any credentials"}
@@ -329,7 +329,7 @@ function SensitiveFieldInput({
 }
 interface CloudStorageConfigurationSecretsProps {
   cloudStorageConfig: SessionLaunchModalCloudStorageConfiguration;
-  context: Required<SessionStartCloudStorageSecretsModalProps["context"]>;
+  context: Required<CloudStorageSecretsModalProps["context"]>;
   control: SensitiveFieldInputProps["control"];
 }
 
@@ -412,7 +412,7 @@ function CloudStorageConfigurationSecrets({
   );
 }
 
-interface SessionStartCloudStorageSecretsModalProps {
+interface CloudStorageSecretsModalProps {
   context?: "session" | "storage";
   isOpen: boolean;
   onCancel: () => void;
@@ -423,13 +423,13 @@ interface SessionStartCloudStorageSecretsModalProps {
     | SessionLaunchModalCloudStorageConfiguration[]
     | undefined;
 }
-export default function SessionStartCloudStorageSecretsModal({
+export default function CloudStorageSecretsModal({
   context = "session",
   isOpen,
   onCancel,
   onStart,
   cloudStorageConfigs: initialCloudStorageConfigs,
-}: SessionStartCloudStorageSecretsModalProps) {
+}: CloudStorageSecretsModalProps) {
   const noCredentialsConfigs = useMemo(
     () =>
       initialCloudStorageConfigs == null
