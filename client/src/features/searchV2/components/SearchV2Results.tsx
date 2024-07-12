@@ -22,7 +22,7 @@ import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
 import { ReactNode } from "react";
-import { Globe2, LockFill } from "react-bootstrap-icons";
+import { Globe2, Lock } from "react-bootstrap-icons";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -212,7 +212,7 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
         <div className={cx("flex-grow-1", "me-2")}>
           {visibility.toLowerCase() === "private" ? (
             <>
-              <LockFill className={cx("bi", "me-1")} />
+              <Lock className={cx("bi", "me-1")} />
               Private
             </>
           ) : (

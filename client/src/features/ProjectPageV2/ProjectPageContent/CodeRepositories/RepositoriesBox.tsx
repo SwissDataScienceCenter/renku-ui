@@ -17,7 +17,7 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { FileCodeFill, PlusLg } from "react-bootstrap-icons";
+import { FileCode, PlusLg } from "react-bootstrap-icons";
 
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal.tsx";
@@ -54,7 +54,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
         >
           <div className={cx("align-items-center", "d-flex")}>
             <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
-              <FileCodeFill className={cx("me-2", "small", "text-icon")} />
+              <FileCode className={cx("me-2", "small", "text-icon")} />
               Code Repositories
             </h4>
             {project?.repositories?.length != null && (

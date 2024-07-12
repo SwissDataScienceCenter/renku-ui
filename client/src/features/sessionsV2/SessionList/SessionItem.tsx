@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { DashCircleFill } from "react-bootstrap-icons";
+import { CircleFill } from "react-bootstrap-icons";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
 import { Project } from "../../projectsV2/api/projectV2.api";
@@ -80,7 +80,7 @@ export default function SessionItem({
                 <SessionStatusV2Label session={session} />
               ) : (
                 <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-                  <DashCircleFill
+                  <CircleFill
                     className={cx("me-1", "text-icon", "text-light-emphasis")}
                   />
                   <span className="text-dark-emphasis" data-cy="session-status">

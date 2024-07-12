@@ -18,13 +18,7 @@
 import cx from "classnames";
 import { Duration } from "luxon";
 import { ReactNode, useMemo } from "react";
-import {
-  CheckCircleFill,
-  Clock,
-  ExclamationCircleFill,
-  PauseCircleFill,
-  XCircleFill,
-} from "react-bootstrap-icons";
+import { CircleFill, Clock } from "react-bootstrap-icons";
 import { Badge } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
@@ -70,16 +64,12 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
   const badge =
     state === "running" && defaultImage ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <ExclamationCircleFill
-          className={cx("bi", "me-1", "text-warning-emphasis")}
-        />
+        <CircleFill className={cx("bi", "me-1", "text-warning-emphasis")} />
         <span className="text-warning-emphasis">Running Session</span>
       </SessionBadge>
     ) : state === "running" ? (
       <SessionBadge className={cx("border-success", "bg-success-subtle")}>
-        <CheckCircleFill
-          className={cx("bi", "me-1", "text-success-emphasis")}
-        />
+        <CircleFill className={cx("bi", "me-1", "text-success-emphasis")} />
         <span className="text-success-emphasis">Running Session</span>
       </SessionBadge>
     ) : state === "starting" ? (
@@ -102,12 +92,12 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
       </SessionBadge>
     ) : state === "hibernated" ? (
       <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-        <PauseCircleFill className={cx("bi", "me-1", "text-light-emphasis")} />
+        <CircleFill className={cx("bi", "me-1", "text-light-emphasis")} />
         <span className="text-dark-emphasis">Paused Session</span>
       </SessionBadge>
     ) : state === "failed" ? (
       <SessionBadge className={cx("border-danger", "bg-danger-subtle")}>
-        <XCircleFill
+        <CircleFill
           className={cx("bi", "me-1", "text-danger-emphasis")}
           size={16}
         />
@@ -115,7 +105,7 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
       </SessionBadge>
     ) : (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <ExclamationCircleFill className={cx("bi", "me-1", "text-warning")} />
+        <CircleFill className={cx("bi", "me-1", "text-warning")} />
         <span className="text-warning">Unknown status</span>
       </SessionBadge>
     );

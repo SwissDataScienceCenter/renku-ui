@@ -19,8 +19,8 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
-  PencilSquare,
-  PlayCircleFill,
+  Pencil,
+  PlayCircle,
   ThreeDotsVertical,
   Trash,
 } from "react-bootstrap-icons";
@@ -132,7 +132,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       >
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
-            <PlayCircleFill className={cx("me-2", "small", "text-icon")} />
+            <PlayCircle className={cx("me-2", "small", "text-icon")} />
             Sessions
           </h4>
           <Badge>{totalSessions}</Badge>
@@ -222,7 +222,7 @@ export function SessionV2Actions({
         </DropdownToggle>
         <DropdownMenu className="btn-with-menu-options" end>
           <DropdownItem onClick={toggleUpdate} data-cy="session-view-menu-edit">
-            <PencilSquare /> Edit Launcher
+            <Pencil /> Edit Launcher
           </DropdownItem>
           <DropdownItem
             onClick={toggleDelete}

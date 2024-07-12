@@ -16,7 +16,7 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { ChatSquareDotsFill, Github, JournalText } from "react-bootstrap-icons";
+import { ChatSquareDots, Github, JournalText } from "react-bootstrap-icons";
 import { useContext } from "react";
 import { Route, Routes } from "react-router-dom-v5-compat";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
@@ -106,9 +106,7 @@ function HelpGetting() {
               <h4 className="mb-0">
                 <ExternalIconLink
                   url={Links.GITTER}
-                  icon={
-                    <ChatSquareDotsFill className={cx("me-2", "text-icon")} />
-                  }
+                  icon={<ChatSquareDots className={cx("me-2", "text-icon")} />}
                   text="Gitter"
                 />
               </h4>

@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { PlayFill } from "react-bootstrap-icons";
+import { PlayCircle } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
@@ -49,7 +49,7 @@ export default function StartSessionButton({
       to={startUrl}
       data-cy="start-session-button"
     >
-      <PlayFill className={cx("me-2", "text-icon")} />
+      <PlayCircle className={cx("me-2", "text-icon")} />
       Launch
     </Link>
   );
@@ -63,7 +63,7 @@ export default function StartSessionButton({
       }}
       data-cy="start-custom-session-button"
     >
-      <PlayFill className={cx("me-2", "text-icon")} />
+      <PlayCircle className={cx("me-2", "text-icon")} />
       Custom launch
     </Link>
   );

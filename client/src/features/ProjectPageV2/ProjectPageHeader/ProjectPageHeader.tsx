@@ -19,7 +19,7 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import {
   Binoculars,
-  PencilSquare,
+  Pencil,
   ThreeDotsVertical,
   Trash,
 } from "react-bootstrap-icons";
@@ -133,7 +133,7 @@ function ProjectActions({ project, settingsUrl }: ProjectActionsProps) {
                   className={cx("text-decoration-none", "text-reset")}
                   to={settingsUrl}
                 >
-                  <PencilSquare className={cx("me-2", "text-icon")} />
+                  <Pencil className={cx("me-2", "text-icon")} />
                   Edit project information
                 </Link>
               </DropdownItem>

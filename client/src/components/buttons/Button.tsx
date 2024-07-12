@@ -27,12 +27,7 @@ import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Fragment, ReactNode, useRef, useState } from "react";
-import {
-  ArrowRight,
-  ChevronDown,
-  PencilSquare,
-  PlusLg,
-} from "react-bootstrap-icons";
+import { ArrowRight, ChevronDown, Pencil, PlusLg } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -380,7 +375,7 @@ function EditButtonLink({
       <span ref={ref}>
         {disabled ? (
           <Button color="outline-primary" disabled>
-            <PencilSquare className="text-icon" />
+            <Pencil className="text-icon" />
           </Button>
         ) : (
           <Link
@@ -388,7 +383,7 @@ function EditButtonLink({
             data-cy={dataCy}
             to={to}
           >
-            <PencilSquare className="text-icon" />
+            <Pencil className="text-icon" />
           </Link>
         )}
       </span>

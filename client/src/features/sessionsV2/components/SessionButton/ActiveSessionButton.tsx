@@ -28,7 +28,7 @@ import {
   PlayFill,
   Plugin,
   Tools,
-  TrashFill,
+  Trash,
   XLg,
 } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom-v5-compat";
@@ -318,7 +318,7 @@ export default function ActiveSessionButton({
             <PauseCircle className={cx("me-2", "text-icon")} />
           </span>
         ) : (
-          <TrashFill className={cx("me-2", "text-icon")} />
+          <Trash className={cx("me-2", "text-icon")} />
         )}
         {logged ? "Pause" : "Delete"}
       </Button>
@@ -344,7 +344,7 @@ export default function ActiveSessionButton({
       data-cy="delete-session-button"
       onClick={logged ? toggleStopSession : onStopSession}
     >
-      <TrashFill className={cx("me-2", "text-icon")} />
+      <Trash className={cx("me-2", "text-icon")} />
       Delete session
     </DropdownItem>
   );
@@ -480,7 +480,7 @@ function ConfirmDeleteModal({
           type="submit"
           onClick={onClick}
         >
-          <TrashFill className={cx("me-2", "text-icon")} /> Delete this session
+          <Trash className={cx("me-2", "text-icon")} /> Delete this session
         </Button>
       </ModalFooter>
     </Modal>

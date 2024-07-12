@@ -19,13 +19,10 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
-  CheckCircleFill,
   Pencil,
-  PencilSquare,
-  SlashCircleFill,
+  CircleFill,
   ThreeDotsVertical,
   Trash,
-  XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
@@ -188,7 +185,7 @@ function EditCodeRepositoryModal({
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
-              <PencilSquare className={cx("me-2", "text-icon")} />
+              <Pencil className={cx("me-2", "text-icon")} />
             )}
             Edit code repository
           </Button>
@@ -512,11 +509,11 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
   const badgeIcon = isLoading ? (
     <Loader className="me-1" inline size={16} />
   ) : permissions.pull && permissions.push ? (
-    <CheckCircleFill className={cx("me-1", "text-icon")} />
+    <CircleFill className={cx("me-1", "text-icon")} />
   ) : permissions.pull ? (
-    <SlashCircleFill className={cx("me-1", "text-icon")} />
+    <CircleFill className={cx("me-1", "text-icon")} />
   ) : (
-    <XCircleFill className={cx("me-1", "text-icon")} />
+    <CircleFill className={cx("me-1", "text-icon")} />
   );
 
   const badgeText = isLoading
@@ -863,7 +860,7 @@ function YesBadge() {
         "text-success-emphasis"
       )}
     >
-      <CheckCircleFill className={cx("bi", "me-1")} />
+      <CircleFill className={cx("bi", "me-1")} />
       Yes
     </Badge>
   );
@@ -881,7 +878,7 @@ function NoBadge() {
         "text-danger-emphasis"
       )}
     >
-      <XCircleFill className={cx("bi", "me-1")} />
+      <CircleFill className={cx("bi", "me-1")} />
       No
     </Badge>
   );

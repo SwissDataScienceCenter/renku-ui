@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Box2Fill, Gear, Link45deg, PlusLg, XLg } from "react-bootstrap-icons";
+import { Box2, Boxes, PlayCircle, PlusLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom-v5-compat";
 import {
@@ -117,7 +117,7 @@ function AddSessionCustomImageModal({
     >
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggle}>
-          <Link45deg className={cx("me-2", "text-icon")} />
+          <Boxes className={cx("me-2", "text-icon")} />
           Provide a custom image
         </ModalHeader>
         <ModalBody>
@@ -230,7 +230,7 @@ function AddSessionExistingEnvModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle}>
-        <Box2Fill className={cx("me-2", "text-icon")} />
+        <Box2 className={cx("me-2", "text-icon")} />
         Select an existing environment
       </ModalHeader>
       <ModalBody>
@@ -311,7 +311,7 @@ export function Step1AddSessionModal({
     <>
       <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>
-          <Gear className={cx("me-2", "text-icon")} />
+          <PlayCircle className={cx("me-2", "text-icon")} />
           Add session launcher
         </ModalHeader>
         <ModalBody>
@@ -334,7 +334,7 @@ export function Step1AddSessionModal({
                 data-cy="add-existing-environment"
                 onClick={() => goNextStep(false)}
               >
-                <Box2Fill className={cx("me-2", "text-icon")} />
+                <Box2 className={cx("me-2", "text-icon")} />
                 Select an existing environment
               </Button>
             </Col>
@@ -344,7 +344,7 @@ export function Step1AddSessionModal({
                 data-cy="add-custom-image"
                 onClick={() => goNextStep(true)}
               >
-                <Link45deg className={cx("me-2", "text-icon")} />
+                <Boxes className={cx("me-2", "text-icon")} />
                 Provide a custom image
               </Button>
             </Col>

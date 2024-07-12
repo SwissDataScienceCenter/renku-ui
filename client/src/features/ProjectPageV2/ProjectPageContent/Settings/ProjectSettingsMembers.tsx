@@ -19,11 +19,11 @@
 import cx from "classnames";
 import React, { useCallback, useState, useRef } from "react";
 import {
-  PeopleFill,
+  People,
   PencilSquare,
   Trash,
   PlusLg,
-  PersonFillGear,
+  PersonGear,
 } from "react-bootstrap-icons";
 import {
   Button,
@@ -280,7 +280,7 @@ function ProjectPageSettingsMembersContent({
     <>
       <div className={cx("d-flex", "justify-content-between")}>
         <p className={cx("fw-bold", "my-auto")}>
-          <PeopleFill className={cx("me-2", "text-icon")} />
+          <People className={cx("me-2", "text-icon")} />
           Members ({totalMembers})
         </p>
         <div className="my-auto">
@@ -333,7 +333,7 @@ export default function ProjectPageSettingsMembers({
           enabled={
             <>
               <h4>
-                <PersonFillGear className={cx("me-2", "small", "text-icon")} />
+                <PersonGear className={cx("me-2", "small", "text-icon")} />
                 Members of the project
               </h4>
               <p className="m-0">Manage access permissions to the project</p>

@@ -16,12 +16,7 @@
  * limitations under the License
  */
 import cx from "classnames";
-import {
-  FolderFill,
-  PeopleFill,
-  PlayCircleFill,
-  PlusLg,
-} from "react-bootstrap-icons";
+import { Folder, People, PlayCircle, PlusLg } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
 import {
   Card,
@@ -112,7 +107,7 @@ function ProjectsDashboard() {
     <Card data-cy="projects-container">
       <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
-          <FolderFill className={cx("small", "text-icon")} />
+          <Folder className={cx("small", "text-icon")} />
           <span>Projects</span>
           <Link
             className={cx(
@@ -178,7 +173,7 @@ function GroupsDashboard() {
     <Card data-cy="groups-container">
       <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
-          <PeopleFill className={cx("small", "text-icon")} />
+          <People className={cx("small", "text-icon")} />
           <span>Groups</span>
           <Link
             className={cx(
@@ -244,7 +239,7 @@ function SessionsDashboard() {
     <Card data-cy="sessions-container">
       <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
-          <PlayCircleFill className={cx("small", "text-icon")} />
+          <PlayCircle className={cx("small", "text-icon")} />
           Sessions
         </h4>
       </CardHeader>

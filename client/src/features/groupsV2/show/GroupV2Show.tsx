@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
-import { PencilSquare } from "react-bootstrap-icons";
+import { Pencil } from "react-bootstrap-icons";
 import {
   Link,
   generatePath,
@@ -176,7 +176,7 @@ function GroupSettingsButton({ group }: GroupSettingsButtonProps) {
             })}
             className={cx("btn", "btn-rk-green")}
           >
-            <PencilSquare className={cx("bi", "me-1")} />
+            <Pencil className={cx("bi", "me-1")} />
             Edit group settings
           </Link>
         </div>

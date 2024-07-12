@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Card, CardBody, CardHeader } from "reactstrap";
-import { InfoCircleFill } from "react-bootstrap-icons";
+import { InfoCircle } from "react-bootstrap-icons";
 
 import { TimeCaption } from "../../../../components/TimeCaption";
 import {
@@ -134,7 +134,7 @@ export default function ProjectInformation({
           )}
         >
           <h4 className="m-0">
-            <InfoCircleFill className={cx("me-2", "small", "text-icon")} />
+            <InfoCircle className={cx("me-2", "small", "text-icon")} />
             Info
           </h4>
 

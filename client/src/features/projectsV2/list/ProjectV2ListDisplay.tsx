@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { ReactNode, useCallback, useEffect, useMemo } from "react";
-import { Globe2, LockFill } from "react-bootstrap-icons";
+import { Globe2, Lock } from "react-bootstrap-icons";
 import {
   Link,
   generatePath,
@@ -209,7 +209,7 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
             <div className={cx("flex-grow-1", "me-2")}>
               {visibility === "private" ? (
                 <>
-                  <LockFill className={cx("bi", "me-1")} />
+                  <Lock className={cx("bi", "me-1")} />
                   Private
                 </>
               ) : (

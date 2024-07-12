@@ -18,12 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  ArrowLeft,
-  Journals,
-  PauseCircle,
-  TrashFill,
-} from "react-bootstrap-icons";
+import { ArrowLeft, Journals, PauseCircle, Trash } from "react-bootstrap-icons";
 import {
   Link,
   generatePath,
@@ -46,8 +41,7 @@ import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
 
 import styles from "../session/components/ShowSession.module.scss";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-
-const logo = "/static/public/img/logo.svg";
+import RenkuFrogIcon from "../../components/icons/RenkuIcon.tsx";
 
 export default function ShowSessionPage() {
   const {
@@ -230,8 +224,8 @@ export default function ShowSessionPage() {
             )}
           >
             <div className={cx("px-3", "text-white")}>{sessionName}</div>
-            <div className="px-3">
-              <img alt="Renku" className="d-block" height="22" src={logo} />
+            <div className={cx("px-3", "text-white")}>
+              <RenkuFrogIcon className="me-2" size={24} />
             </div>
           </div>
         </div>
@@ -340,7 +334,7 @@ function DeleteSessionBtn({ openDeleteSession }: DeleteSessionBtnProps) {
         innerRef={ref}
         onClick={openDeleteSession}
       >
-        <TrashFill className="text-icon" />
+        <Trash className="text-icon" />
         <span className="visually-hidden">{tooltip}</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>

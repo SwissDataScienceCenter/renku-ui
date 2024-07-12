@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useContext, useState } from "react";
 import {
   List,
-  PlusCircleFill,
+  PlusCircle,
   QuestionCircle,
   Search,
 } from "react-bootstrap-icons";
@@ -54,7 +54,7 @@ function NavbarItemPlus() {
   return (
     <Dropdown isOpen={isOpen} toggle={toggleOpen} className="nav-item">
       <DropdownToggle nav className={cx("nav-link", "fs-5")} id="plus-dropdown">
-        <PlusCircleFill className="bi" id="createPlus" />
+        <PlusCircle className="bi" id="createPlus" />
       </DropdownToggle>
       <DropdownMenu
         aria-labelledby="plus-menu"

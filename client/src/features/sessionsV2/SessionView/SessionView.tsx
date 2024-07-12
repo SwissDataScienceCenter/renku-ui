@@ -19,14 +19,14 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
+  Boxes,
   Clock,
   CodeSquare,
-  DashCircleFill,
+  CircleFill,
   Database,
   ExclamationTriangleFill,
   Globe2,
-  Link45deg,
-  PencilSquare,
+  Pencil,
 } from "react-bootstrap-icons";
 import {
   Button,
@@ -157,7 +157,7 @@ function SessionCardNotRunning({
       contentLabel={
         <div className="my-auto">
           <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-            <DashCircleFill
+            <CircleFill
               className={cx("me-1", "text-icon", "text-light-emphasis")}
             />
             <span className="text-dark-emphasis" data-cy="session-status">
@@ -212,7 +212,7 @@ function EnvironmentCard({
           <p className="m-0">
             {launcher.environment_kind === "container_image" ? (
               <>
-                <Link45deg className={cx("me-2", "text-icon")} />
+                <Boxes className={cx("me-2", "text-icon")} />
                 Custom image
               </>
             ) : (
@@ -416,7 +416,7 @@ export function SessionView({
                         size="sm"
                         tabIndex={0}
                       >
-                        <PencilSquare className="text-icon" />
+                        <Pencil className="text-icon" />
                       </Button>
                       <UncontrolledTooltip target="modify-session-environment-button">
                         Modify session environment
@@ -449,7 +449,7 @@ export function SessionView({
                       size="sm"
                       tabIndex={0}
                     >
-                      <PencilSquare className="text-icon" />
+                      <Pencil className="text-icon" />
                     </Button>
                     <UncontrolledTooltip target="modify-resource-class-button">
                       Set resource class

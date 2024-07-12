@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Trash, TrashFill } from "react-bootstrap-icons";
+import { Trash } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom-v5-compat";
 import { Button, Card, CardBody, CardHeader, Input } from "reactstrap";
 
@@ -73,7 +73,7 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
     <Card id="delete">
       <CardHeader>
         <h4>
-          <TrashFill className={cx("me-2", "small", "text-icon")} />
+          <Trash className={cx("me-2", "small", "text-icon")} />
           Delete project
         </h4>
         <p className="m-0">

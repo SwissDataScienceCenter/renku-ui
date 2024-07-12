@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { faSave, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import {
   Button,
@@ -45,6 +43,9 @@ import {
 import { Loader } from "./Loader";
 
 import "./Logs.css";
+import { FileEarmarkArrowDown } from "react-bootstrap-icons";
+import cx from "classnames";
+import { Refresh } from "../../storybook-static/sb-manager/Wayfinding-AUSNPVSH-QFGOSTNT.js";
 
 export interface ILogs {
   data: Record<string, string>;
@@ -173,7 +174,7 @@ const LogDownloadButton = ({
         save();
       }}
     >
-      <FontAwesomeIcon icon={faSave} />
+      <FileEarmarkArrowDown className={cx("me-2", "text-icon")} />
       {downloading ? " Downloading " : " Download"}
       {downloading && <Loader inline size={16} />}
     </Button>
@@ -294,7 +295,7 @@ function SessionLogs(props: LogBodyProps) {
           }}
           disabled={logs.fetching}
         >
-          <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
+          <Refresh className={cx("me-2", "text-icon")} /> Refresh logs
         </Button>
         <LogDownloadButton
           logs={logs}

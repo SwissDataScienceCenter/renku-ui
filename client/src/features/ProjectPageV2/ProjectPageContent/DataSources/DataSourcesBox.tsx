@@ -17,7 +17,7 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { DatabaseFill, PlusLg } from "react-bootstrap-icons";
+import { Database, PlusLg } from "react-bootstrap-icons";
 import { Loader } from "../../../../components/Loader.tsx";
 import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
@@ -66,7 +66,7 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
         >
           <div className={cx("align-items-center", "d-flex")}>
             <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
-              <DatabaseFill className={cx("me-2", "small", "text-icon")} />
+              <Database className={cx("me-2", "small", "text-icon")} />
               Data Sources
             </h4>
             <Badge>{totalStorages}</Badge>
