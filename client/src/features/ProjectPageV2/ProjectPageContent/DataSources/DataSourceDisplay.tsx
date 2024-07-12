@@ -198,7 +198,8 @@ export function DataSourceActions({
             onClick={toggleCredentials}
             data-cy="data-source-credentials"
           >
-            <Lock /> Update Credentials
+            <Lock className={cx("bi", "ms-1")} />
+            Update Credentials
           </DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>
