@@ -564,15 +564,14 @@ export default function SessionStartCloudStorageSecretsModal({
           />
 
           <div className="mt-3">
-            {!validationResult.isError ? (
-              <div>&nbsp;</div>
-            ) : context === "storage" ? (
+            {validationResult.isError && context === "storage" && (
               <div className="text-danger">
                 The data source could not be mounted. Please try different
                 credentials or rely on providing credentials at session launch
                 time.
               </div>
-            ) : (
+            )}
+            {validationResult.isError && context === "session" && (
               <div className="text-danger">
                 The data source could not be mounted. Please retry with
                 different credentials, or skip the test. If you skip, the data
