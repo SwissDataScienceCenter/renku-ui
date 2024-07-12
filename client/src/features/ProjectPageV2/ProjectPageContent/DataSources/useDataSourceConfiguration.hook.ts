@@ -25,13 +25,13 @@ import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api
 
 import type { SessionStartCloudStorageConfiguration } from "../../../sessionsV2/startSessionOptionsV2.types";
 
-interface StartSessionFromLauncherProps {
+interface UseDataSourceConfigurationArgs {
   storages: CloudStorageGetRead[] | undefined;
 }
 
 export default function useDataSourceConfiguration({
   storages,
-}: StartSessionFromLauncherProps) {
+}: UseDataSourceConfigurationArgs) {
   const { data: storagesSecrets } = useGetStorageSecretsByV2StorageIdQuery({
     storageIds: storages?.map((s) => s.storage.storage_id) ?? [],
   });
