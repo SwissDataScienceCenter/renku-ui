@@ -28,6 +28,8 @@ $input-box-shadow: transparent;
 // Adjust nav tabs
 $nav-tabs-link-active-bg: transparent;
 $nav-tabs-link-hover-border-color: transparent;
+$nav-tabs-link-active-color: $primary;
+$nav-link-color: $body-color;
 $nav-link-transition: none;
 .nav-tabs .nav-link {
   border: 0 !important;
