@@ -55,7 +55,9 @@ export default function ProjectSimple({
           {project.namespace}/{project.slug}
         </p>
 
-        {project.description && <p className="mb-2">{project.description}</p>}
+        {project.description && (
+          <p className="mb-2 text-truncate">{project.description}</p>
+        )}
 
         <div
           className={cx("d-flex", element === "card-full-height" && "mt-auto")}
