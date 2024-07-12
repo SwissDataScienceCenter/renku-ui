@@ -19,14 +19,20 @@
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Card, CardBody, CardHeader } from "reactstrap";
-import { InfoCircle } from "react-bootstrap-icons";
+import {
+  Bookmarks,
+  Clock,
+  Eye,
+  InfoCircle,
+  JournalAlbum,
+  People,
+} from "react-bootstrap-icons";
 
 import { TimeCaption } from "../../../../components/TimeCaption";
 import {
   EditButtonLink,
   UnderlineArrowLink,
 } from "../../../../components/buttons/Button";
-import VisibilityIcon from "../../../../components/entities/VisibilityIcon";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import type {
   ProjectMemberListResponse,
@@ -43,7 +49,6 @@ import { toSortedMembers } from "../../utils/roleUtils";
 
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import styles from "./ProjectInformation.module.scss";
-import UserAvatar from "../../../usersV2/show/UserAvatar";
 import { useMemo } from "react";
 
 const MAX_MEMBERS_DISPLAYED = 5;
@@ -87,34 +92,53 @@ export default function ProjectInformation({
   );
 
   const information = (
-    <div>
-      <p className="mb-0">Namespace:</p>
-      <p>
-        <Link className="fw-bold" to={namespaceUrl}>
-          {namespaceName}
-        </Link>
-      </p>
-      <p className="mb-0">Visibility:</p>
-      <p className="fw-bold">
-        <VisibilityIcon visibility={project.visibility} />
-      </p>
-      <p className="mb-0">Created:</p>
-      <p>
-        <TimeCaption
-          datetime={project.creation_date}
-          className={cx("fw-bold", "fs-6")}
-        />
-      </p>
+    <div className={cx("d-flex", "flex-column", "gap-2")}>
+      <div>
+        <p className="mb-0">
+          <JournalAlbum className={cx("me-2", "text-icon")} /> Namespace:
+        </p>
+        <p>
+          <Link className="ms-4" to={namespaceUrl}>
+            {namespaceName}
+          </Link>
+        </p>
+      </div>
+      <div>
+        <p className="mb-0">
+          <Eye className={cx("me-2", "text-icon")} />
+          Visibility:
+        </p>
+        <p className={cx("ms-4", "text-capitalize")}>
+          {project.visibility}
+          {/*<VisibilityIcon visibility={project.visibility} />*/}
+        </p>
+      </div>
+      <div>
+        <p className="mb-0">
+          <Clock className={cx("me-2", "text-icon")} />
+          Created:
+        </p>
+        <p className="ms-4">
+          <TimeCaption
+            datetime={project.creation_date}
+            className={cx("fs-6")}
+          />
+        </p>
+      </div>
       <div className="mb-3">
-        <p className="mb-1">Members ({totalMembers})</p>
+        <p className="mb-1">
+          <People className={cx("me-2", "text-icon")} />
+          Members ({totalMembers})
+        </p>
         <ProjectInformationMembers members={members} membersUrl={membersUrl} />
       </div>
       <div>
         <p className={cx(totalKeywords ? "mb-1" : "mb-0")}>
-          Keywords ({totalKeywords})
+          <Bookmarks className={cx("me-2", "text-icon")} /> Keywords (
+          {totalKeywords})
         </p>
         {project.keywords?.map((keyword, index) => (
-          <p key={`keyword-${index}`} className={cx("fw-bold", "mb-1")}>
+          <p key={`keyword-${index}`} className={cx("ms-4", "mb-1")}>
             #{keyword}
           </p>
         ))}
@@ -195,13 +219,13 @@ function ProjectInformationMember({
 
   if (memberData?.username) {
     return (
-      <div className={cx("fw-bold", "mb-1")}>
-        <div className={cx("d-inline-block", "me-1")}>
-          <UserAvatar
-            firstName={member.first_name}
-            lastName={member.last_name}
-          />
-        </div>
+      <div className={cx("mb-1", "ms-4")}>
+        {/*<div className={cx("d-inline-block", "me-1")}>*/}
+        {/*  <UserAvatar*/}
+        {/*    firstName={member.first_name}*/}
+        {/*    lastName={member.last_name}*/}
+        {/*  />*/}
+        {/*</div>*/}
         <Link
           to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
             username: memberData.username,
