@@ -46,14 +46,15 @@ export default function SessionItem({
   toggleSessionDetails,
 }: SessionItemProps) {
   return (
-    <ListGroupItem>
+    <ListGroupItem action>
       <Row className="g-2">
         <Col
-          className={cx("align-items-center", "d-flex")}
+          className={cx("align-items-center", "d-flex", "cursor-pointer")}
           xs={12}
           md={8}
           lg={9}
           xl={10}
+          onClick={() => toggleSessionDetails()}
         >
           <Row className="g-2">
             <Col
@@ -65,7 +66,6 @@ export default function SessionItem({
                 "link-primary",
                 "text-body"
               )}
-              onClick={() => toggleSessionDetails()}
             >
               <span className="fw-bold" data-cy="session-name">
                 {name ? (
@@ -91,7 +91,10 @@ export default function SessionItem({
             </Col>
             {session ? (
               <Col className={cx("align-items-center", "d-flex")} xs={12}>
-                <SessionStatusV2Description session={session} />
+                <SessionStatusV2Description
+                  session={session}
+                  showInfoDetails={false}
+                />
               </Col>
             ) : null}
           </Row>

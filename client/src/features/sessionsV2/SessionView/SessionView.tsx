@@ -347,7 +347,7 @@ export function SessionView({
   return (
     <Offcanvas
       key={`launcher-details-${key}`}
-      className="min-vw-50"
+      className="min-vw-50 w-auto"
       toggle={() => setToggleSessionView()}
       isOpen={toggleSessionView}
       direction="end"
@@ -498,7 +498,7 @@ export function SessionView({
               Data Sources ({dataSources?.length || 0})
             </h4>
             {dataSources && dataSources?.length > 0 ? (
-              <ListGroup>
+              <ListGroup flush>
                 {dataSources?.map((storage, index) => (
                   <ListGroupItem key={`storage-${index}`}>
                     <div>Name: {storage.storage.name}</div>
@@ -517,7 +517,7 @@ export function SessionView({
               Code Repositories ({project.repositories?.length || 0})
             </h4>
             {dataSources && dataSources?.length > 0 ? (
-              <ListGroup>
+              <ListGroup flush>
                 {project.repositories?.map((repositoryUrl, index) => (
                   <ListGroupItem key={`storage-${index}`}>
                     <RepositoryItem

@@ -2,7 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-import { ListGroup, ListGroupItem } from "reactstrap";
+import { Col, ListGroup, ListGroupItem, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import { EnvironmentLogs } from "../../components/Logs";
@@ -57,7 +57,7 @@ export default function DashboardV2Sessions() {
   if (noSessions) return <div>{noSessions}</div>;
 
   return (
-    <ListGroup flush data-cy="dashboard-session-list">
+    <ListGroup flush className="border-top" data-cy="dashboard-session-list">
       {Object.entries(v2Sessions).map(([key, session]) => (
         <DashboardSession key={key} session={session} />
       ))}
@@ -100,47 +100,68 @@ function DashboardSession({ session }: DashboardSessionProps) {
     : ABSOLUTE_ROUTES.v2.projects.root;
 
   return (
-    <ListGroupItem data-cy="list-session">
-      <div className={cx("d-flex", "justify-content-between")}>
-        <Link
-          data-cy="list-session-link"
-          className={cx("link-primary", "text-body")}
-          to={projectUrl}
-        >
-          <h5>
-            {project
-              ? project.namespace + "/" + project.slug
-              : projectId ?? "Unknown"}
-          </h5>
-        </Link>
-        <ActiveSessionButton
-          className="my-auto"
-          session={session}
-          showSessionUrl={showSessionUrl}
-        />
+    <ListGroupItem data-cy="list-session" action>
+      <div>
+        <Row className={cx("gap-2", "gap-md-0")}>
+          <Col xs={12} md={9} lg={10} className="order-2 order-md-1">
+            <Link
+              data-cy="list-session-link"
+              className={cx(
+                "link-primary",
+                "text-body",
+                "text-decoration-none"
+              )}
+              to={projectUrl}
+            >
+              <h6 className="fw-bold">
+                {project
+                  ? project.namespace + "/" + project.slug
+                  : projectId ?? "Unknown"}
+              </h6>
+              <p className="mb-2">
+                <b>Container image:</b> {image}
+              </p>
+            </Link>
+          </Col>
+          <Col
+            xs={12}
+            md={3}
+            lg={2}
+            className={cx("order-first", "order-md-2")}
+          >
+            <div className={cx("text-start", "text-md-end")}>
+              <ActiveSessionButton
+                className="my-auto"
+                session={session}
+                showSessionUrl={showSessionUrl}
+              />
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <div
+              className={cx(
+                "d-flex",
+                "justify-content-between",
+                "flex-wrap",
+                "gap-2",
+                "gap-md-0"
+              )}
+            >
+              <div className="d-flex">
+                <SessionStatusV2Label session={session} />
+              </div>
+              <div className="d-flex">
+                <SessionStatusV2Description session={session} />
+              </div>
+            </div>
+          </Col>
+        </Row>
         <EnvironmentLogs
           name={displayModal.targetServer}
           annotations={annotations}
         />
-      </div>
-      <div>
-        <p className="mb-2">
-          <b>Container image:</b> {image}
-        </p>
-      </div>
-      <div
-        className={cx(
-          "align-items-center",
-          "d-flex",
-          "justify-content-between"
-        )}
-      >
-        <div className="d-flex">
-          <SessionStatusV2Label session={session} />
-        </div>
-        <div className="d-flex">
-          <SessionStatusV2Description session={session} />
-        </div>
       </div>
     </ListGroupItem>
   );

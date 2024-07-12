@@ -47,6 +47,9 @@ export function SessionBadge({
 interface ActiveSessionV2Props {
   session: Session;
 }
+interface ActiveSessionDescV2Props extends ActiveSessionV2Props {
+  showInfoDetails?: boolean;
+}
 interface ActiveSessionTitleV2Props {
   session: Session;
   launcher?: SessionLauncher;
@@ -116,7 +119,10 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
     </div>
   );
 }
-export function SessionStatusV2Description({ session }: ActiveSessionV2Props) {
+export function SessionStatusV2Description({
+  session,
+  showInfoDetails = true,
+}: ActiveSessionDescV2Props) {
   const { annotations, started, status } = session;
 
   const cleanAnnotations = useMemo(
@@ -141,11 +147,13 @@ export function SessionStatusV2Description({ session }: ActiveSessionV2Props) {
         startTimestamp={started}
         status={status.state}
       />
-      <SessionListRowStatusExtraDetails
-        details={details}
-        status={status.state}
-        uid={session.name}
-      />
+      {showInfoDetails && (
+        <SessionListRowStatusExtraDetails
+          details={details}
+          status={status.state}
+          uid={session.name}
+        />
+      )}
     </div>
   );
 }

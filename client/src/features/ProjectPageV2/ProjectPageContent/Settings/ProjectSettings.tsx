@@ -348,7 +348,7 @@ export default function ProjectPageSettings() {
   }, [hash]);
 
   return (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
+    <div className={cx("d-flex", "flex-column", "gap-4")}>
       <ProjectSettingsMetadata project={project} />
       <ProjectPageSettingsMembers project={project} />
       <AccessGuard

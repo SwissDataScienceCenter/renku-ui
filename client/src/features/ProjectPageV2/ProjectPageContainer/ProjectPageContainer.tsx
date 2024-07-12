@@ -54,7 +54,7 @@ export default function ProjectPageContainer() {
         <Col xs={12}>
           <ProjectPageHeader project={data} />
         </Col>
-        <Col xs={12}>
+        <Col xs={12} className="mb-2">
           <div className="mb-3">
             <ProjectPageNav project={data} />
           </div>

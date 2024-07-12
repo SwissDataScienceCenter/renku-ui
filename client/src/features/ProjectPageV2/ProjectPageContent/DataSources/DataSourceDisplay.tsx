@@ -222,14 +222,15 @@ export function DataSourceDisplay({
   );
 
   return (
-    <ListGroupItem>
-      <div className={cx("d-flex", "align-items-center", "gap-3")}>
+    <ListGroupItem action>
+      <div className={cx("d-flex", "align-items-center")}>
         <div
           className={cx(
             "cursor-pointer",
             "link-primary",
             "text-body",
-            "text-decoration-underline"
+            "text-decoration-none",
+            "col-11"
           )}
           onClick={toggleDetails}
         >
@@ -237,7 +238,15 @@ export function DataSourceDisplay({
             {storageName} {storageType}
           </span>
         </div>
-        <div className={cx("d-flex", "ms-auto", "my-auto")}>
+        <div
+          className={cx(
+            "d-flex",
+            "ms-auto",
+            "my-auto",
+            "col-1",
+            "justify-content-end"
+          )}
+        >
           <DataSourceActions storage={storage} projectId={projectId} />
         </div>
       </div>

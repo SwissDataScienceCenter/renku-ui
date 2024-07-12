@@ -15,12 +15,12 @@
   color: var(--bs-dark) !important;
 
   &:hover {
-    color: var(--bs-gray-700) !important;
+    color: var(--bs-primary) !important;
   }
 
   &:first-child:active,
   &:active,
   &:focus {
-    color: var(--bs-gray-600) !important;
+    color: var(--bs-primary) !important;
   }
 }

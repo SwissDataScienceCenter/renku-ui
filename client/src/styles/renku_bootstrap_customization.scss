@@ -6,6 +6,8 @@ $font-family-base: "Inter", sans-serif;
 $primary: #006e58;
 $navy: #01192d;
 $enable-shadows: true;
+$shadow-renku: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+  rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
 // Variables and functions
 @import "~bootstrap/scss/functions";
@@ -19,8 +21,8 @@ $additional-colors: (
 $theme-colors: map-merge($theme-colors, $additional-colors);
 
 // Adjust shadows
-$card-box-shadow: $box-shadow-sm;
-$dropdown-box-shadow: $box-shadow-sm;
+$card-box-shadow: $shadow-renku;
+$dropdown-box-shadow: $shadow-renku;
 $input-box-shadow: transparent;
 
 // Adjust nav tabs
@@ -41,7 +43,6 @@ $list-group-border-color: $card-border-color;
 
 // Adjust card and list group spacing
 $list-group-item-padding-y: $spacer;
-$list-group-item-padding-x: 0;
 $card-cap-padding-y: $spacer;
 .card-header {
   border: 0 !important;

@@ -208,7 +208,7 @@ function ProjectPageSettingsMembersList({
 
   return (
     <>
-      <ListGroup flush>
+      <ListGroup flush className="border-top">
         {sortedMembers.map((d, i) => {
           return (
             <ProjectPageSettingsMembersListItem
@@ -278,7 +278,7 @@ function ProjectPageSettingsMembersContent({
   const totalMembers = members ? members?.length : 0;
   return (
     <>
-      <div className={cx("d-flex", "justify-content-between")}>
+      <div className={cx("d-flex", "justify-content-between", "mb-2")}>
         <p className={cx("fw-bold", "my-auto")}>
           <People className={cx("me-2", "text-icon")} />
           Members ({totalMembers})

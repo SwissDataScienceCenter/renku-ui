@@ -37,26 +37,24 @@ export default function GroupSimple({
   const content = (
     <div>
       <Link
-        className={cx("link-primary", "text-body")}
+        className={cx("link-primary", "text-body", "text-decoration-none")}
         data-cy="project-link"
         to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
           slug: group.slug,
         })}
       >
-        <h5 className="m-0">{group.name}</h5>
+        <h6 className="m-0 fw-bold">{group.name}</h6>
         <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
+        {group.description && <p className="mb-2">{group.description}</p>}
+        <div className="d-flex">
+          <VisibilityIcon className="text-primary" visibility="public" />
+          <TimeCaption
+            className={cx("ms-auto", "my-auto")}
+            datetime={group.creation_date}
+            prefix="Created"
+          />
+        </div>
       </Link>
-
-      {group.description && <p className="mb-2">{group.description}</p>}
-
-      <div className="d-flex">
-        <VisibilityIcon className="text-primary" visibility="public" />
-        <TimeCaption
-          className={cx("ms-auto", "my-auto")}
-          datetime={group.creation_date}
-          prefix="Created"
-        />
-      </div>
     </div>
   );
 
@@ -67,7 +65,9 @@ export default function GroupSimple({
   ) : element === "card-body" ? (
     <div className={cx("card-body", className)}>{content}</div>
   ) : element === "list-item" ? (
-    <li className={cx("list-group-item", className)}>{content}</li>
+    <li className={cx("list-group-item", "list-group-item-action", className)}>
+      {content}
+    </li>
   ) : (
     <div className={cx(className)}>{content}</div>
   );

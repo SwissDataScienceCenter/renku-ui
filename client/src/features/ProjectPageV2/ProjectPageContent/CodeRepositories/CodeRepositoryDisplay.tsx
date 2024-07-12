@@ -398,10 +398,9 @@ export function RepositoryItem({
             "cursor-pointer",
             "link-primary",
             "text-body",
-            "text-decoration-underline",
+            "text-decoration-none",
           ]
         ),
-        onClick: toggleDetails,
       }
     : {};
   // const urlDisplay = (
@@ -423,20 +422,37 @@ export function RepositoryItem({
   // );
 
   return (
-    <div className={cx("d-flex", "align-items-center", "gap-3")}>
-      <div className={cx("align-items-center", "d-flex", "flex-row")}>
+    <div className={cx("d-flex", "align-items-center")}>
+      <div
+        className={cx(
+          "align-items-center",
+          "d-flex",
+          "flex-row",
+          "col-11",
+          "cursor-pointer"
+        )}
+        onClick={toggleDetails}
+      >
         <div {...mainInteraction}>
           <span className={cx("me-2", !readonly && "fw-bold")}>
             {title || canonicalUrlStr || (
               <span className="fwd-italic">Unknown repository</span>
             )}
           </span>
+          <RepositoryPermissions repositoryUrl={url} />
         </div>
-        <RepositoryPermissions repositoryUrl={url} />
       </div>
       {!readonly && (
         <>
-          <div className={cx("d-flex", "ms-auto", "my-auto")}>
+          <div
+            className={cx(
+              "d-flex",
+              "ms-auto",
+              "my-auto",
+              "col-1",
+              "justify-content-end"
+            )}
+          >
             <CodeRepositoryActions project={project} url={url} />
           </div>
           <RepositoryView
@@ -607,7 +623,7 @@ function RepositoryView({
   return (
     <Offcanvas
       key={`data-source-details-${repositoryUrl}`}
-      className="min-vw-50"
+      className="min-vw-50 w-auto"
       toggle={toggleDetails}
       isOpen={showDetails}
       direction="end"

@@ -44,33 +44,33 @@ export default function ProjectSimple({
       data-cy="project-link"
     >
       <Link
-        className={cx("link-primary", "text-body")}
+        className={cx("link-primary", "text-body", "text-decoration-none")}
         to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
           namespace: project.namespace,
           slug: project.slug,
         })}
       >
-        <h5 className="m-0">{project.name}</h5>
+        <h6 className="m-0 fw-bold">{project.name}</h6>
         <p className={cx("fst-italic", "mb-2")}>
           {project.namespace}/{project.slug}
         </p>
+
+        {project.description && <p className="mb-2">{project.description}</p>}
+
+        <div
+          className={cx("d-flex", element === "card-full-height" && "mt-auto")}
+        >
+          <VisibilityIcon
+            className="text-primary"
+            visibility={project.visibility}
+          />
+          <TimeCaption
+            className={cx("ms-auto", "my-auto")}
+            datetime={project.creation_date}
+            prefix="Created"
+          />
+        </div>
       </Link>
-
-      {project.description && <p className="mb-2">{project.description}</p>}
-
-      <div
-        className={cx("d-flex", element === "card-full-height" && "mt-auto")}
-      >
-        <VisibilityIcon
-          className="text-primary"
-          visibility={project.visibility}
-        />
-        <TimeCaption
-          className={cx("ms-auto", "my-auto")}
-          datetime={project.creation_date}
-          prefix="Created"
-        />
-      </div>
     </div>
   );
 
@@ -85,7 +85,9 @@ export default function ProjectSimple({
   ) : element === "card-body" ? (
     <div className={cx("card-body", className)}>{content}</div>
   ) : element === "list-item" ? (
-    <li className={cx("list-group-item", className)}>{content}</li>
+    <li className={cx("list-group-item", "list-group-item-action", className)}>
+      {content}
+    </li>
   ) : (
     <div className={cx(className)}>{content}</div>
   );

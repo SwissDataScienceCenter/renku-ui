@@ -161,7 +161,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
         </p>
 
         {totalSessions > 0 && (
-          <ListGroup flush>
+          <ListGroup flush className="border-top">
             {launchers?.map((launcher) => (
               <SessionItemDisplay
                 key={`launcher-${launcher.id}`}
