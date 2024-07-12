@@ -93,7 +93,7 @@ function CredentialsButtons({
           </span>
           <UncontrolledTooltip target={skipButtonRef}>
             Skip the connection test. At session launch, the storage will try
-            mount
+            to mount
             {validationResult.isError
               ? " using the provided credentials"
               : " without any credentials"}
