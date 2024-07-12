@@ -46,7 +46,7 @@ import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/project
 import { usePostStoragesV2ByStorageIdSecretsMutation } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
-import type { SessionLaunchModalCloudStorageConfiguration } from "./CloudStorageSecretsModal";
+import type { CloudStorageConfiguration } from "./CloudStorageSecretsModal";
 import CloudStorageSecretsModal from "./CloudStorageSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
@@ -293,10 +293,7 @@ function shouldCloudStorageSaveCredentials(
 
 interface StartSessionWithCloudStorageModalProps
   extends Omit<SessionStartingProps, "cloudStorages"> {
-  cloudStorageConfigs: Omit<
-    SessionLaunchModalCloudStorageConfiguration,
-    "sensitiveFields"
-  >[];
+  cloudStorageConfigs: Omit<CloudStorageConfiguration, "sensitiveFields">[];
 }
 
 function StartSessionWithCloudStorageModal({
@@ -317,7 +314,7 @@ function StartSessionWithCloudStorageModal({
   }, [cloudStorageConfigs]);
 
   const onStart = useCallback(
-    (cloudStorageConfigs: SessionLaunchModalCloudStorageConfiguration[]) => {
+    (cloudStorageConfigs: CloudStorageConfiguration[]) => {
       setShowCloudStorageSecretsModal(false);
       dispatch(
         startSessionOptionsV2Slice.actions.setCloudStorage(cloudStorageConfigs)
