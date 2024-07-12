@@ -17,8 +17,14 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
-import { CheckLg, PersonFillX, TrashFill, XLg } from "react-bootstrap-icons";
+import { useCallback, useContext, useEffect, useState } from "react";
+import {
+  BoxArrowUpRight,
+  CheckLg,
+  PersonFillX,
+  TrashFill,
+  XLg,
+} from "react-bootstrap-icons";
 import {
   Button,
   Card,
@@ -30,11 +36,15 @@ import {
   ModalFooter,
 } from "reactstrap";
 
+import { Link } from "react-router-dom-v5-compat";
 import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
+import { Docs } from "../../utils/constants/Docs";
+import AppContext from "../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
 import {
@@ -49,6 +59,7 @@ import {
   ResourcePool,
 } from "../dataServices/dataServices.types";
 import { useGetPlatformConfigQuery } from "../platform/api/platform.api";
+import StatusBanner from "../platform/components/StatusBanner";
 import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
@@ -75,15 +86,53 @@ export default function AdminPage() {
 }
 
 function IncidentsAndMaintenanceSection() {
+  const { params } = useContext(AppContext);
+  const statusPageId =
+    params?.STATUSPAGE_ID ?? DEFAULT_APP_PARAMS.STATUSPAGE_ID;
+
   const result = useGetPlatformConfigQuery();
+
+  const statusPageManageUrl = `https://manage.statuspage.io/pages/${statusPageId}`;
 
   return (
     <section>
       <h2 className="fs-5">Incidents And Maintenance</h2>
-      <p>TODO</p>
-      <pre>
-        {JSON.stringify({ data: result.data, error: result.error }, null, 2)}
-      </pre>
+
+      <p>
+        <Link
+          to={Docs.rtdHowToGuide("admin/incidents-maintenance.html")}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          Renku documentation about incidents and maintenance
+          <BoxArrowUpRight className={cx("bi", "ms-1")} />
+        </Link>
+      </p>
+
+      <p>
+        Status Page ID:{" "}
+        {statusPageId ? (
+          <>
+            <Link
+              to={statusPageManageUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {statusPageId}
+            </Link>{" "}
+            (click to open the management page)
+          </>
+        ) : (
+          <span className="fst-italic">Not configured</span>
+        )}
+      </p>
+
+      <p>TODO: update incident banner</p>
+
+      <div>
+        <p>Current status banner</p>
+        <StatusBanner params={params} />
+      </div>
     </section>
   );
 }

@@ -82,7 +82,7 @@ function NoStatusPage() {
       </p>
       {userInfo?.isLoggedIn && userInfo.isAdmin && (
         <p className={cx("mb-0", "mt-1")}>
-          As a Renku administrator, you can configure the status page in the{" "}
+          As a Renku administrator, you can see the current configuration in the{" "}
           <Link to="/admin">admin panel</Link>.
         </p>
       )}
