@@ -19,7 +19,10 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 
-import { BoxArrowUpRight } from "react-bootstrap-icons";
+import {
+  BoxArrowUpRight,
+  WrenchAdjustableCircleFill,
+} from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
 import { Alert } from "reactstrap";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
@@ -30,6 +33,8 @@ import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
 import type {
   Incident,
   Incidents,
+  ScheduledMaintenance,
+  ScheduledMaintenances,
   StatusPageSummary,
 } from "../statuspage-api/statuspage.types";
 import StatusPageIncidentUpdates from "./StatusPageIncidentUpdates";
@@ -73,12 +78,17 @@ function StatusBannerDisplay({
   incidentBannerContent,
 }: StatusBannerDisplayProps) {
   const incidents = summary?.incidents ?? [];
+  const scheduledMaintenances = summary?.scheduled_maintenances ?? [];
 
   return (
     <>
       <IncidentsBanner
         incidents={incidents}
         incidentBannerContent={incidentBannerContent}
+        summaryPageUrl={summary?.page.url ?? ""}
+      />
+      <MaintenanceBanner
+        scheduledMaintenances={scheduledMaintenances}
         summaryPageUrl={summary?.page.url ?? ""}
       />
     </>
@@ -148,6 +158,8 @@ function StatusPageIncident({
   const color =
     incident.impact === "none"
       ? "dark"
+      : incident.impact === "maintenance"
+      ? "info"
       : incident.impact === "minor"
       ? "warning"
       : "danger";
@@ -189,6 +201,68 @@ function ManuallyDeclaredIncident({
     >
       <h3>Ongoing incident</h3>
       <LazyRenkuMarkdown markdownText={incidentBannerContent} />
+    </Alert>
+  );
+}
+
+interface MaintenanceBannerProps {
+  scheduledMaintenances: ScheduledMaintenances;
+  summaryPageUrl: string;
+}
+
+function MaintenanceBanner({
+  scheduledMaintenances,
+  summaryPageUrl,
+}: MaintenanceBannerProps) {
+  if (!scheduledMaintenances.length) {
+    return null;
+  }
+
+  return (
+    <>
+      {scheduledMaintenances.map((maintenance) => (
+        <StatusPageMaintenance
+          key={maintenance.id}
+          maintenance={maintenance}
+          summaryPageUrl={summaryPageUrl}
+        />
+      ))}
+    </>
+  );
+}
+
+interface StatusPageMaintenanceProps {
+  maintenance: ScheduledMaintenance;
+  summaryPageUrl: string;
+}
+
+function StatusPageMaintenance({
+  maintenance,
+  summaryPageUrl,
+}: StatusPageMaintenanceProps) {
+  const { name, incident_updates } = maintenance;
+
+  return (
+    <Alert
+      color="info"
+      className={cx("container-xxl", "renku-container")}
+      fade={false}
+    >
+      <h3>
+        <WrenchAdjustableCircleFill className={cx("bi", "me-1")} />
+        Maintenance: {name}
+      </h3>
+      <StatusPageIncidentUpdates incidentUpdates={incident_updates} />
+      {summaryPageUrl && (
+        <p className="mb-0">
+          For further information, see{" "}
+          <Link to={summaryPageUrl} target="_blank" rel="noreferrer noopener">
+            {summaryPageUrl}
+            <BoxArrowUpRight className={cx("bi", "ms-1")} />
+          </Link>
+          .
+        </p>
+      )}
     </Alert>
   );
 }

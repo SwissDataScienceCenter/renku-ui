@@ -179,12 +179,16 @@ function OverallStatus({ summary }: OverallStatusProps) {
   const alertColor =
     indicator === "none"
       ? "alert-success"
+      : indicator === "maintenance"
+      ? "alert-info"
       : indicator === "minor"
       ? "alert-warning"
       : "alert-danger";
   const Icon =
     indicator === "none"
       ? CheckCircleFill
+      : indicator === "maintenance"
+      ? WrenchAdjustableCircleFill
       : indicator === "minor"
       ? DashCircleFill
       : XCircleFill;

@@ -104,7 +104,12 @@ export interface StatusPageOverallStatus {
   description: string;
 }
 
-export type StatusIndicator = "none" | "minor" | "major" | "critical";
+export type StatusIndicator =
+  | "none"
+  | "maintenance"
+  | "minor"
+  | "major"
+  | "critical";
 
 export interface GetSummaryParams {
   statusPageId: string;
