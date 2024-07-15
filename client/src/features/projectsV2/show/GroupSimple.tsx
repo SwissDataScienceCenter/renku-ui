@@ -45,7 +45,19 @@ export default function GroupSimple({
       >
         <h6 className="m-0 fw-bold">{group.name}</h6>
         <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
-        {group.description && <p className="mb-2">{group.description}</p>}
+        {group.description && (
+          <p
+            className="mb-2"
+            style={{
+              display: "-webkit-box",
+              overflow: "hidden",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3,
+            }}
+          >
+            {group.description}
+          </p>
+        )}
         <div className="d-flex">
           <VisibilityIcon className="text-primary" visibility="public" />
           <TimeCaption

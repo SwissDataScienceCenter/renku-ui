@@ -56,7 +56,17 @@ export default function ProjectSimple({
         </p>
 
         {project.description && (
-          <p className="mb-2 text-truncate">{project.description}</p>
+          <p
+            className="mb-2"
+            style={{
+              display: "-webkit-box",
+              overflow: "hidden",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3,
+            }}
+          >
+            {project.description}
+          </p>
         )}
 
         <div
