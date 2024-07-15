@@ -18,11 +18,12 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import {
   BoxArrowUpRight,
   CheckCircleFill,
   XCircleFill,
+  XLg,
 } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
 
@@ -31,16 +32,19 @@ import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Docs } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
-import { useGetPlatformConfigQuery } from "../platform/api/platform.api";
+import {
+  useGetPlatformConfigQuery,
+  usePatchPlatformConfigMutation,
+} from "../platform/api/platform.api";
 import StatusBanner from "../platform/components/StatusBanner";
 import { useGetSummaryQuery } from "../platform/statuspage-api/statuspage.api";
+import { Button, Form, Label } from "reactstrap";
+import { useForm } from "react-hook-form";
 
 export default function IncidentsAndMaintenanceSection() {
   const { params } = useContext(AppContext);
   const statusPageId =
     params?.STATUSPAGE_ID ?? DEFAULT_APP_PARAMS.STATUSPAGE_ID;
-
-  const result = useGetPlatformConfigQuery();
 
   return (
     <section>
@@ -59,7 +63,7 @@ export default function IncidentsAndMaintenanceSection() {
 
       <StatusPageCheck statusPageId={statusPageId} />
 
-      <p>TODO: update incident banner</p>
+      <IncidentBannerSection />
 
       <div>
         <p>Current status banner</p>
@@ -99,7 +103,7 @@ function StatusPageCheck({ statusPageId }: StatusPageCheckProps) {
     <>
       <p>
         <XCircleFill className={cx("bi", "me-1", "text-danger")} />
-        Error: could not retrieve RenkuLab's status from statuspage.io.
+        Error: could not retrieve RenkuLab&apos;s status from statuspage.io.
       </p>
       {error && <RtkOrNotebooksError error={error} dismissible={false} />}
     </>
@@ -131,4 +135,98 @@ function StatusPageCheck({ statusPageId }: StatusPageCheckProps) {
       {checkContent}
     </>
   );
+}
+
+function IncidentBannerSection() {
+  const {
+    data: platformConfig,
+    isLoading,
+    error,
+  } = useGetPlatformConfigQuery();
+
+  const [patchPlatformConfig, result] = usePatchPlatformConfigMutation();
+
+  const {
+    register,
+    formState: { isDirty },
+    handleSubmit,
+    reset,
+  } = useForm<IncidentBannerForm>({
+    defaultValues: { incidentBanner: platformConfig?.incident_banner },
+  });
+
+  const onSubmit = useCallback(
+    (data: IncidentBannerForm) => {
+      const incidentBanner = data.incidentBanner.trim();
+
+      patchPlatformConfig({
+        "If-Match": platformConfig?.etag ?? "",
+        platformConfigPatch: { incident_banner: incidentBanner },
+      });
+    },
+    [patchPlatformConfig, platformConfig?.etag]
+  );
+
+  const onClearIncidentBanner = useCallback(
+    () => onSubmit({ incidentBanner: "" }),
+    [onSubmit]
+  );
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      reset({ incidentBanner: result.data.incident_banner });
+    }
+  }, [reset, result.data?.incident_banner, result.isSuccess]);
+
+  if (isLoading) {
+    return (
+      <p>
+        <Loader className="me-1" inline size={16} />
+        Loading platform configuration...
+      </p>
+    );
+  }
+
+  if (error || !platformConfig) {
+    return (
+      <div>
+        <p>Error: could not load platform configuration.</p>
+        {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+      </div>
+    );
+  }
+
+  return (
+    <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
+      <div className="mb-1">
+        <Label for="admin-incident-banner-content">Incident banner</Label>
+        <textarea
+          {...register("incidentBanner")}
+          id="admin-incident-banner-content"
+          className="form-control"
+        />
+      </div>
+      <div>
+        <Button type="submit" disabled={result.isLoading || !isDirty}>
+          Update incident banner
+        </Button>
+        {platformConfig.incident_banner && (
+          <Button
+            className="ms-2"
+            color="outline-danger"
+            disabled={result.isLoading}
+            onClick={onClearIncidentBanner}
+          >
+            <XLg className={cx("bi", "me-1")} />
+            Clear incident banner
+          </Button>
+        )}
+      </div>
+      {result.error && <RtkOrNotebooksError error={error} />}
+    </Form>
+  );
+}
+
+interface IncidentBannerForm {
+  incidentBanner: string;
 }
