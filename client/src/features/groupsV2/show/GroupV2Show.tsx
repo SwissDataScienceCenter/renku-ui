@@ -145,7 +145,7 @@ function GroupBadge() {
         "border",
         "border-success",
         "bg-success-subtle",
-        "text-success"
+        "text-success-emphasis"
       )}
       pill
     >

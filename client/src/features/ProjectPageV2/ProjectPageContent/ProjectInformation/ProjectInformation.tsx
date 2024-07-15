@@ -138,7 +138,7 @@ export default function ProjectInformation({
           <Badge>{totalKeywords}</Badge>
         </p>
         {project.keywords?.map((keyword, index) => (
-          <p key={`keyword-${index}`} className={cx("ms-4", "mb-1")}>
+          <p key={`keyword-${index}`} className={cx("mb-0", "ms-4")}>
             #{keyword}
           </p>
         ))}
@@ -219,7 +219,7 @@ function ProjectInformationMember({
 
   if (memberData?.username) {
     return (
-      <div className={cx("mb-1", "ms-4")}>
+      <div className="ms-4">
         <Link
           to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
             username: memberData.username,
