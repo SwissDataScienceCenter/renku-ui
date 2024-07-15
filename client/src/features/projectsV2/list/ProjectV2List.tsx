@@ -24,54 +24,6 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import WipBadge from "../shared/WipBadge";
 import ProjectListDisplay from "./ProjectV2ListDisplay";
 
-// function ProjectList() {
-//   const perPage = 10;
-//   const [page, setPage] = useState(1);
-//   const { data, error, isLoading } = useGetProjectsQuery({
-//     page,
-//     perPage,
-//   });
-
-//   if (isLoading)
-//     return (
-//       <div className={cx("d-flex", "justify-content-center", "w-100")}>
-//         <div className={cx("d-flex", "flex-column")}>
-//           <Loader />
-//           <div>Retrieving projects...</div>
-//         </div>
-//       </div>
-//     );
-//   if (error)
-//     return (
-//       <>
-//         <p>Cannot show projects.</p>
-//         <RtkOrNotebooksError error={error} />
-//       </>
-//     );
-
-//   if (data == null || data.projects.length < 1) return <p>No V2 projects.</p>;
-
-//   return (
-//     <>
-//       <Row
-//         className={cx("g-3", "row-cols-1", "row-cols-sm-2", "row-cols-xl-3")}
-//       >
-//         {data.projects?.map((project) => (
-//           <Col key={project.id}>
-//             <ProjectSimple element="card-full-height" project={project} />
-//           </Col>
-//         ))}
-//       </Row>
-//       <Pagination
-//         currentPage={data.page}
-//         perPage={perPage}
-//         totalItems={data.total}
-//         onPageChange={setPage}
-//       />
-//     </>
-//   );
-// }
-
 export default function ProjectV2List() {
   const newProjectUrl = ABSOLUTE_ROUTES.v2.projects.new;
   return (

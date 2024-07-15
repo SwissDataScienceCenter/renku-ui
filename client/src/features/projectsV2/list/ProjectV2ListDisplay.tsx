@@ -183,49 +183,55 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
     <Col>
       <Card className="h-100" data-cy="project-card">
         <CardBody className={cx("d-flex", "flex-column")}>
-          <h3 className="card-title">
-            <Link className={cx("link-offset-1")} to={projectUrl}>
-              {name}
-            </Link>
-          </h3>
-          <p className={cx("mb-2", "card-text")}>
+          <h5>
+            <Link to={projectUrl}>{name}</Link>
+          </h5>
+          <p>
             <Link to={namespaceUrl}>
               {"@"}
               {namespace}
             </Link>
           </p>
           {description && (
-            <p className={cx("mb-2", "card-text")}>{description}</p>
+            <p
+              style={{
+                display: "-webkit-box",
+                overflow: "hidden",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 3,
+              }}
+            >
+              {description}
+            </p>
           )}
           <div
             className={cx(
-              "mt-auto",
-              "mb-0",
-              "card-text",
+              "align-items-center",
               "d-flex",
-              "flex-wrap"
+              "flex-wrap",
+              "gap-2",
+              "justify-content-between",
+              "mt-auto"
             )}
           >
-            <div className={cx("flex-grow-1", "me-2")}>
-              {visibility === "private" ? (
+            <div>
+              {visibility.toLowerCase() === "private" ? (
                 <>
-                  <Lock className={cx("bi", "me-1")} />
+                  <Lock className={cx("me-2", "text-icon")} />
                   Private
                 </>
               ) : (
                 <>
-                  <Globe2 className={cx("bi", "me-1")} />
+                  <Globe2 className={cx("me-2", "text-icon")} />
                   Public
                 </>
               )}
             </div>
-            <div>
-              <TimeCaption
-                datetime={creationDate}
-                prefix="Created"
-                enableTooltip
-              />
-            </div>
+            <TimeCaption
+              datetime={creationDate}
+              prefix="Created"
+              enableTooltip
+            />
           </div>
         </CardBody>
       </Card>

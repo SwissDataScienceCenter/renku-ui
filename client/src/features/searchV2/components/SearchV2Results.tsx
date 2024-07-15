@@ -143,9 +143,7 @@ function SearchV2CardTitle({
   return (
     <CardHeader>
       <h5>
-        <Link className={cx("link-offset-1")} to={url}>
-          {children}
-        </Link>
+        <Link to={url}>{children}</Link>
       </h5>
 
       <p className={cx("fst-italic", "mb-0")}>{entityType}</p>
