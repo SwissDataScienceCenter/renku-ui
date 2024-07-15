@@ -18,19 +18,21 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { DateTime } from "luxon";
-import { useMemo, useState } from "react";
+import { Duration } from "luxon";
+import { useMemo } from "react";
 import {
   BoxArrowUpRight,
   WrenchAdjustableCircleFill,
 } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
+import { Link, useLocation } from "react-router-dom-v5-compat";
 import { Alert } from "reactstrap";
 
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import { AppParams } from "../../../utils/context/appParams.types";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import useNow from "../../../utils/customHooks/useNow.hook";
 import { ensureDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { useGetPlatformConfigQuery } from "../api/platform.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
@@ -43,7 +45,10 @@ import type {
 } from "../statuspage-api/statuspage.types";
 import StatusPageIncidentUpdates from "./StatusPageIncidentUpdates";
 
-const FIVE_MINUTES_MILLIS = 5 * 60 * 1_000;
+const FIVE_MINUTES_MILLIS = Duration.fromObject({ minutes: 5 }).valueOf();
+
+const SOON_MAINTENANCE_CUTOFF = Duration.fromObject({ days: 2 });
+const MAINTENANCE_CUTOFF = Duration.fromObject({ days: 7 });
 
 interface StatusBannerProps {
   params: AppParams | undefined;
@@ -228,6 +233,11 @@ function MaintenanceBanner({
   scheduledMaintenances,
   summaryPageUrl,
 }: MaintenanceBannerProps) {
+  const now = useNow();
+
+  // We display:
+  // 1. All ongoing maintenances
+  // 2. If no maintenance is ongoing, we display the next upcoming maintenance.
   const maintenancesToDisplay = useMemo(() => {
     const sortedMaintenances = [...scheduledMaintenances].sort((a, b) =>
       ensureDateTime(a.scheduled_for)
@@ -235,13 +245,16 @@ function MaintenanceBanner({
         .valueOf()
     );
     const ongoingMaintenances = sortedMaintenances.filter(
-      (m) => m.status === "in_progress" || m.status === "verifying"
+      (m) =>
+        m.status === "in_progress" ||
+        m.status === "verifying" ||
+        ensureDateTime(m.scheduled_for).diff(now).valueOf() < 0
     );
     if (ongoingMaintenances.length > 0) {
       return ongoingMaintenances;
     }
     return sortedMaintenances.slice(0, 1);
-  }, [scheduledMaintenances]);
+  }, [now, scheduledMaintenances]);
 
   if (!scheduledMaintenances.length) {
     return null;
@@ -274,13 +287,42 @@ function StatusPageMaintenance({
   const color =
     status === "in_progress" || status === "verifying" ? "warning" : "info";
 
-  const [now] = useState<DateTime>(DateTime.utc());
+  const now = useNow();
 
-  const ongoing = now.diff(ensureDateTime(scheduled_for)).valueOf() > 0;
+  const ongoing =
+    status === "in_progress" ||
+    status === "verifying" ||
+    ensureDateTime(scheduled_for).diff(now).valueOf() < 0;
 
   const caption = ongoing
     ? "Ongoing maintenance started"
     : "Maintenance scheduled in";
+
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
+  );
+
+  const location = useLocation();
+  const isDashboard =
+    (userLogged && location.pathname === "/") ||
+    location.pathname === "/v2" ||
+    location.pathname === "/v2/";
+
+  // 1. There is a scheduled maintenance in < 48 hours: show it on all pages except the landing page
+  // 2. There is a scheduled maintenance in < 7 days: show it on the v1 Dashboard and the v2 Dashboard
+  const shouldDisplay = useMemo(
+    () =>
+      ensureDateTime(scheduled_for).diff(now).valueOf() <
+        SOON_MAINTENANCE_CUTOFF.valueOf() ||
+      (isDashboard &&
+        ensureDateTime(scheduled_for).diff(now).valueOf() <
+          MAINTENANCE_CUTOFF.valueOf()),
+    [isDashboard, now, scheduled_for]
+  );
+
+  if (!shouldDisplay) {
+    return null;
+  }
 
   return (
     <Alert
