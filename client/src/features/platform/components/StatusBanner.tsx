@@ -39,6 +39,9 @@ import type {
 } from "../statuspage-api/statuspage.types";
 import StatusPageIncidentUpdates from "./StatusPageIncidentUpdates";
 import { TimeCaption } from "../../../components/TimeCaption";
+import { useState } from "react";
+import { DateTime } from "luxon";
+import { ensureDateTime } from "../../../utils/helpers/DateTimeUtils";
 
 const FIVE_MINUTES_MILLIS = 5 * 60 * 1_000;
 
@@ -241,17 +244,28 @@ function StatusPageMaintenance({
   maintenance,
   summaryPageUrl,
 }: StatusPageMaintenanceProps) {
-  const { name, incident_updates, scheduled_for } = maintenance;
+  const { name, incident_updates, scheduled_for, status } = maintenance;
+
+  const color =
+    status === "in_progress" || status === "verifying" ? "warning" : "info";
+
+  const [now] = useState<DateTime>(DateTime.utc());
+
+  const ongoing = now.diff(ensureDateTime(scheduled_for)).valueOf() > 0;
+
+  const caption = ongoing
+    ? "Ongoing maintenance started"
+    : "Maintenance scheduled in";
 
   return (
     <Alert
-      color="info"
+      color={color}
       className={cx("container-xxl", "renku-container")}
       fade={false}
     >
       <h3 className="fs-5">
         <WrenchAdjustableCircleFill className={cx("bi", "me-1")} />
-        Maintenance scheduled in{" "}
+        {caption}{" "}
         <TimeCaption datetime={scheduled_for} enableTooltip noCaption />: {name}
       </h3>
       <StatusPageIncidentUpdates incidentUpdates={incident_updates} />
