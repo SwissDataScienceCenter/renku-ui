@@ -374,7 +374,7 @@ function EditButtonLink({
     <>
       <span ref={ref}>
         {disabled ? (
-          <Button color="outline-primary" disabled>
+          <Button color="outline-primary" disabled size="sm">
             <Pencil className="text-icon" />
           </Button>
         ) : (

@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Card, CardBody, CardHeader } from "reactstrap";
+import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 import {
   Bookmarks,
   Clock,
@@ -92,10 +92,11 @@ export default function ProjectInformation({
   );
 
   const information = (
-    <div className={cx("d-flex", "flex-column", "gap-2")}>
+    <div className={cx("d-flex", "flex-column")}>
       <div>
-        <p className="mb-0">
-          <JournalAlbum className={cx("me-2", "text-icon")} /> Namespace:
+        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+          <JournalAlbum className="text-icon" />
+          Namespace:
         </p>
         <p>
           <Link className="ms-4" to={namespaceUrl}>
@@ -104,18 +105,15 @@ export default function ProjectInformation({
         </p>
       </div>
       <div>
-        <p className="mb-0">
-          <Eye className={cx("me-2", "text-icon")} />
+        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+          <Eye className="text-icon" />
           Visibility:
         </p>
-        <p className={cx("ms-4", "text-capitalize")}>
-          {project.visibility}
-          {/*<VisibilityIcon visibility={project.visibility} />*/}
-        </p>
+        <p className={cx("ms-4", "text-capitalize")}>{project.visibility}</p>
       </div>
       <div>
-        <p className="mb-0">
-          <Clock className={cx("me-2", "text-icon")} />
+        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+          <Clock className="text-icon" />
           Created:
         </p>
         <p className="ms-4">
@@ -126,16 +124,18 @@ export default function ProjectInformation({
         </p>
       </div>
       <div className="mb-3">
-        <p className="mb-1">
-          <People className={cx("me-2", "text-icon")} />
-          Members ({totalMembers})
+        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+          <People className="text-icon" />
+          <span>Members</span>
+          <Badge>{totalMembers}</Badge>
         </p>
         <ProjectInformationMembers members={members} membersUrl={membersUrl} />
       </div>
       <div>
-        <p className={cx(totalKeywords ? "mb-1" : "mb-0")}>
-          <Bookmarks className={cx("me-2", "text-icon")} /> Keywords (
-          {totalKeywords})
+        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+          <Bookmarks className="text-icon" />
+          <span>Keywords</span>
+          <Badge>{totalKeywords}</Badge>
         </p>
         {project.keywords?.map((keyword, index) => (
           <p key={`keyword-${index}`} className={cx("ms-4", "mb-1")}>
@@ -220,12 +220,6 @@ function ProjectInformationMember({
   if (memberData?.username) {
     return (
       <div className={cx("mb-1", "ms-4")}>
-        {/*<div className={cx("d-inline-block", "me-1")}>*/}
-        {/*  <UserAvatar*/}
-        {/*    firstName={member.first_name}*/}
-        {/*    lastName={member.last_name}*/}
-        {/*  />*/}
-        {/*</div>*/}
         <Link
           to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
             username: memberData.username,
