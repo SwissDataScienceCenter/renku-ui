@@ -20,7 +20,7 @@ import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { useMemo } from "react";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Table } from "reactstrap";
+import { ListGroup } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
@@ -68,19 +68,11 @@ export default function GroupV2MemberListDisplay({
   }
 
   return (
-    <Table hover>
-      <thead>
-        <tr>
-          <th scope="col">User</th>
-          <th scope="col">Role</th>
-        </tr>
-      </thead>
-      <tbody>
-        {sortedMembers?.map((member) => (
-          <GroupV2Member key={member.id} member={member} />
-        ))}
-      </tbody>
-    </Table>
+    <ListGroup className="mb-3">
+      {sortedMembers?.map((member) => (
+        <GroupV2Member key={member.id} member={member} />
+      ))}
+    </ListGroup>
   );
 }
 
@@ -102,33 +94,31 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
   const username = user.username;
 
   return (
-    <tr>
-      <th scope="row">
-        <Link
-          to={generatePath(ABSOLUTE_ROUTES.v2.users.show, { username })}
+    <>
+      <Link
+        className={cx("list-group-item-action", "list-group-item")}
+        to={generatePath(ABSOLUTE_ROUTES.v2.users.show, { username })}
+      >
+        <div
           className={cx(
-            "text-decoration-none",
+            "align-items-center",
             "d-flex",
-            "flex-column",
-            "flex-sm-row"
+            "gap-2",
+            "justify-content-between"
           )}
         >
-          <div className={cx("mb-1", "me-1", "pt-sm-1")}>
+          <div className={cx("align-items-center", "d-flex", "gap-2")}>
             <UserAvatar
               firstName={firstName}
               lastName={lastName}
               username={username}
             />
+            <span className={cx("fw-bold")}>{name ?? "Unknown user"}</span>{" "}
+            <span>{`@${username}`}</span>
           </div>
-          <div>
-            <div className={cx("fs-5", "text-decoration-underline")}>
-              {name ?? "Unknown user"}
-            </div>
-            <div>{`@${username}`}</div>
-          </div>
-        </Link>
-      </th>
-      <td>{capitalize(role)}</td>
-    </tr>
+          <p className="m-0">{capitalize(role)}</p>
+        </div>
+      </Link>
+    </>
   );
 }

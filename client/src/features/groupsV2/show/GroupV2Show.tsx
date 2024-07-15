@@ -91,9 +91,6 @@ export default function GroupV2Show() {
   return (
     <ContainerWrap>
       <div className={cx("d-flex", "flex-column", "flex-sm-row")}>
-        <div className={cx("mb-1", "me-3")}>
-          <UserAvatar username={group.name || slug} large />
-        </div>
         <div>
           <div
             className={cx(
@@ -101,18 +98,21 @@ export default function GroupV2Show() {
               "flex-row",
               "flex-wrap",
               "flex-sm-nowrap",
-              "align-items-start",
-              "h1"
+              "gap-2"
             )}
           >
-            <h1 className={cx("mb-0", "me-4")}>
-              {group.name ?? "Unknown group"}
-            </h1>
-            <div>
+            <div className={cx("align-items-center", "d-flex", "gap-2")}>
+              <UserAvatar username={group.name || slug} large />
+              <h2 className="mb-0">{group.name ?? "Unknown group"}</h2>
+            </div>
+            <div className={cx("align-items-center", "d-flex")}>
               <GroupBadge />
             </div>
           </div>
-          <p className="fs-4">{`@${slug}`}</p>
+          <p className="fst-italic">{`@${slug}`}</p>
+        </div>
+        <div className={cx("mb-3", "mb-sm-0", "ms-0", "ms-sm-auto")}>
+          <GroupSettingsButton group={group} />
         </div>
       </div>
 
@@ -121,16 +121,13 @@ export default function GroupV2Show() {
           <p>{group.description}</p>
         </section>
       )}
-
-      <GroupSettingsButton group={group} />
-
       <section>
-        <h2 className="fs-4">Group Members</h2>
+        <h4>Group Members</h4>
         <GroupV2MemberListDisplay group={slug} />
       </section>
 
       <section>
-        <h2 className="fs-4">Group Projects</h2>
+        <h4>Group Projects</h4>
         <ProjectV2ListDisplay
           namespace={slug}
           pageParam="projects_page"
@@ -169,17 +166,15 @@ function GroupSettingsButton({ group }: GroupSettingsButtonProps) {
   return (
     <MembershipGuard
       enabled={
-        <div className="mb-2">
-          <Link
-            to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.settings, {
-              slug: group.slug,
-            })}
-            className={cx("btn", "btn-rk-green")}
-          >
-            <Pencil className={cx("bi", "me-1")} />
-            Edit group settings
-          </Link>
-        </div>
+        <Link
+          to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.settings, {
+            slug: group.slug,
+          })}
+          className={cx("btn", "btn-outline-primary")}
+        >
+          <Pencil className={cx("bi", "me-2")} />
+          Edit settings
+        </Link>
       }
       disabled={null}
       members={members}
