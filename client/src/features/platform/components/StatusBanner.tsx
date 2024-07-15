@@ -38,6 +38,7 @@ import type {
   StatusPageSummary,
 } from "../statuspage-api/statuspage.types";
 import StatusPageIncidentUpdates from "./StatusPageIncidentUpdates";
+import { TimeCaption } from "../../../components/TimeCaption";
 
 const FIVE_MINUTES_MILLIS = 5 * 60 * 1_000;
 
@@ -240,7 +241,7 @@ function StatusPageMaintenance({
   maintenance,
   summaryPageUrl,
 }: StatusPageMaintenanceProps) {
-  const { name, incident_updates } = maintenance;
+  const { name, incident_updates, scheduled_for } = maintenance;
 
   return (
     <Alert
@@ -248,9 +249,10 @@ function StatusPageMaintenance({
       className={cx("container-xxl", "renku-container")}
       fade={false}
     >
-      <h3>
+      <h3 className="fs-5">
         <WrenchAdjustableCircleFill className={cx("bi", "me-1")} />
-        Maintenance: {name}
+        Maintenance scheduled in{" "}
+        <TimeCaption datetime={scheduled_for} enableTooltip noCaption />: {name}
       </h3>
       <StatusPageIncidentUpdates incidentUpdates={incident_updates} />
       {summaryPageUrl && (

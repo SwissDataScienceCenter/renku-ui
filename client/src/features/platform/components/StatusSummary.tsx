@@ -143,8 +143,6 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
           <h3>RenkuLab Status</h3>
           <OverallStatus summary={summary} />
 
-          <div>TODO</div>
-
           <h3>Scheduled Maintenance</h3>
           <ScheduledMaintenanceDisplay summary={summary} />
 
@@ -179,8 +177,6 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
           </p>
         </Col>
       </Row>
-      <pre>statusPageId = {statusPageId}</pre>
-      <pre>{JSON.stringify(summary, null, 2)}</pre>
     </>
   );
 }
