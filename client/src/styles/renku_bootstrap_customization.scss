@@ -44,8 +44,7 @@ $nav-link-transition: none;
 $card-cap-bg: transparent;
 $list-group-border-color: $card-border-color;
 
-// Adjust card and list group spacing
-$list-group-item-padding-y: $spacer;
+// Adjust card group spacing
 $card-cap-padding-y: $spacer;
 .card-header {
   border: 0 !important;
@@ -54,6 +53,17 @@ $card-cap-padding-y: $spacer;
 }
 .card-footer {
   border: 0 !important;
+}
+
+// Adjust list groups spacing
+$list-group-item-padding-y: $spacer;
+.list-group-flush {
+  border-top: 1px solid $list-group-border-color;
+
+  & > .list-group-item {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 // Adjust titles in card headers

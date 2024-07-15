@@ -208,7 +208,7 @@ function ProjectPageSettingsMembersList({
 
   return (
     <>
-      <ListGroup flush className="border-top">
+      <ListGroup flush>
         {sortedMembers.map((d, i) => {
           return (
             <ProjectPageSettingsMembersListItem

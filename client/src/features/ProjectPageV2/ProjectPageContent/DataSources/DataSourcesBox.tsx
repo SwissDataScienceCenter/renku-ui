@@ -98,7 +98,7 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
             )}
           </>
         ) : (
-          <ListGroup flush className="border-top">
+          <ListGroup flush>
             {data?.map((storage, index) => (
               <DataSourceDisplay
                 key={index}

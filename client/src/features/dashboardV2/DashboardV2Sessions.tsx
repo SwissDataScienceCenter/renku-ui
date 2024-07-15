@@ -57,7 +57,7 @@ export default function DashboardV2Sessions() {
   if (noSessions) return <div>{noSessions}</div>;
 
   return (
-    <ListGroup flush className="border-top" data-cy="dashboard-session-list">
+    <ListGroup flush data-cy="dashboard-session-list">
       {Object.entries(v2Sessions).map(([key, session]) => (
         <DashboardSession key={key} session={session} />
       ))}

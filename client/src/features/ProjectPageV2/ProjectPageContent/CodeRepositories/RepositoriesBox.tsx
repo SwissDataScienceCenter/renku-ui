@@ -82,7 +82,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
             Connect code repositories to save and share code.
           </p>
         ) : (
-          <ListGroup flush className="border-top">
+          <ListGroup flush>
             {project.repositories?.map((repositoryUrl, index) => (
               <ListGroupItem key={index} action>
                 <RepositoryItem project={project} url={repositoryUrl} />

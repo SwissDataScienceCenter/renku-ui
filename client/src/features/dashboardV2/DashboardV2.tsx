@@ -160,7 +160,7 @@ function ProjectList() {
   if (noProjects) return <div>{noProjects}</div>;
 
   return (
-    <ListGroup flush className="border-top" data-cy="dashboard-project-list">
+    <ListGroup flush data-cy="dashboard-project-list">
       {data?.projects?.map((project) => (
         <ProjectSimple element="list-item" key={project.id} project={project} />
       ))}
@@ -226,7 +226,7 @@ function GroupsList() {
   if (noGroups) return <div>{noGroups}</div>;
 
   return (
-    <ListGroup flush className="border-top" data-cy="dashboard-group-list">
+    <ListGroup flush data-cy="dashboard-group-list">
       {data?.groups?.map((group) => (
         <GroupSimple element="list-item" key={group.id} group={group} />
       ))}
