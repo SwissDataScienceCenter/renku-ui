@@ -73,17 +73,6 @@ export function AddCodeRepositoryStep1Modal({
               <Button
                 color="outline-primary"
                 onClick={() => openNextStep()}
-                // className={cx(
-                //   "w-100",
-                //   "bg-transparent",
-                //   "text-dark",
-                //   "rounded-3",
-                //   "my-2",
-                //   "py-3",
-                //   "border-black",
-                //   // styles.BorderDashed,
-                //   stylesButton.EmptyButton
-                // )}
                 data-cy="add-existing-repository-button"
               >
                 <Github className="bi me-2" />
@@ -93,21 +82,7 @@ export function AddCodeRepositoryStep1Modal({
               </Button>
             </Col>
             <Col className="d-grid" xs={12}>
-              <Button
-                color="outline-primary"
-                disabled
-                // className={cx(
-                //   "w-100",
-                //   "bg-transparent",
-                //   "text-dark",
-                //   "rounded-3",
-                //   "my-2",
-                //   "py-3",
-                //   "border-black",
-                //   // styles.BorderDashed,
-                //   stylesButton.EmptyButton
-                // )}
-              >
+              <Button color="outline-primary" disabled>
                 <PlusLg className="me-2" />
                 Create new repository
                 <Badge

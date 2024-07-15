@@ -18,7 +18,7 @@
 import cx from "classnames";
 import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { Card, CardBody, Col, Row } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import { setCreated, setCreatedBy, toggleFilter } from "../searchV2.slice";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
@@ -120,10 +120,10 @@ export function SearchV2FilterContainer({
   return (
     <Card className={cx("border", "rounded")}>
       <div data-cy={`search-filter-${name}`}>
-        <CardBody>
-          <p className={cx("form-text", "mb-1", "mt-0")}>{title}</p>
-          {children}
-        </CardBody>
+        <CardHeader>
+          <h6 className="mb-0">{title}</h6>
+        </CardHeader>
+        <CardBody>{children}</CardBody>
       </div>
     </Card>
   );
@@ -147,10 +147,7 @@ function SearchV2Filter({
         const id = `search-filter-${name}-${key}`;
 
         return (
-          <div
-            className={cx("form-rk-green", "d-flex", "align-items-center")}
-            key={id}
-          >
+          <div className={cx("d-flex", "gap-2")} key={id}>
             <input
               checked={checked}
               className="form-check-input"
@@ -159,10 +156,7 @@ function SearchV2Filter({
               onChange={() => toggleOption(key)}
               type="checkbox"
             />
-            <label
-              className={cx("form-check-label", "ms-2", "mt-1")}
-              htmlFor={id}
-            >
+            <label className={cx("form-check-label")} htmlFor={id}>
               {value}
             </label>
           </div>

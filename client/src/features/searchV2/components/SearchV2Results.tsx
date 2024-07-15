@@ -19,7 +19,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useDispatch } from "react-redux";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Card, CardBody, Col, Row } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import { ReactNode } from "react";
 import { Globe2, Lock } from "react-bootstrap-icons";
@@ -116,18 +116,16 @@ function SearchV2ResultsContent() {
     return <SearchV2ResultsUnknown key={`unknown-result-${index}`} />;
   });
 
-  return <Row className="gy-4">{resultsOutput}</Row>;
+  return <Row className="g-3">{resultsOutput}</Row>;
 }
 
 interface SearchV2ResultsCardProps {
   children?: ReactNode;
 }
-function SearchV2ResultsCard({ children }: SearchV2ResultsCardProps) {
+function SearchV2ResultsContainer({ children }: SearchV2ResultsCardProps) {
   return (
-    <Col xs={12} lg={6}>
-      <Card className={cx("border", "rounded", "h-100")} data-cy="search-card">
-        <CardBody className={cx("d-flex", "flex-column")}>{children}</CardBody>
-      </Card>
+    <Col xs={12} lg={6} xxl={4} data-cy="search-card">
+      <Card className="h-100">{children}</Card>
     </Col>
   );
 }
@@ -143,33 +141,15 @@ function SearchV2CardTitle({
   url,
 }: SearchV2CardTitleProps) {
   return (
-    <div
-      className={cx(
-        "d-flex",
-        "flex-row",
-        "flex-wrap",
-        "flex-sm-nowrap",
-        "align-items-start",
-        "h3"
-      )}
-    >
-      <h3 className={cx("card-title", "fw-medium", "me-2")}>
+    <CardHeader>
+      <h5>
         <Link className={cx("link-offset-1")} to={url}>
           {children}
         </Link>
-      </h3>
-      <div
-        className={cx(
-          "ms-auto",
-          "pt-1",
-          "fst-italic",
-          "fs-6",
-          "text-dark-emphasis"
-        )}
-      >
-        {entityType}
-      </div>
-    </div>
+      </h5>
+
+      <p className={cx("fst-italic", "mb-0")}>{entityType}</p>
+    </CardHeader>
   );
 }
 
@@ -195,38 +175,56 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
   });
 
   return (
-    <SearchV2ResultsCard>
+    <SearchV2ResultsContainer>
       <SearchV2CardTitle url={projectUrl} entityType="Project">
         {name}
       </SearchV2CardTitle>
-      <p className={cx("mb-2", "card-text")}>
-        <Link to={namespaceUrl}>
-          {"@"}
-          {namespace?.namespace}
-        </Link>
-      </p>
-      {description && <p className={cx("mb-2", "card-text")}>{description}</p>}
-      <div
-        className={cx("mt-auto", "mb-0", "card-text", "d-flex", "flex-wrap")}
-      >
-        <div className={cx("flex-grow-1", "me-2")}>
-          {visibility.toLowerCase() === "private" ? (
-            <>
-              <Lock className={cx("bi", "me-1")} />
-              Private
-            </>
-          ) : (
-            <>
-              <Globe2 className={cx("bi", "me-1")} />
-              Public
-            </>
+      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+        <p>
+          <Link to={namespaceUrl}>
+            {"@"}
+            {namespace?.namespace}
+          </Link>
+        </p>
+        {description && (
+          <p
+            style={{
+              display: "-webkit-box",
+              overflow: "hidden",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3,
+            }}
+          >
+            {description}
+          </p>
+        )}
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "flex-wrap",
+            "gap-2",
+            "justify-content-between",
+            "mt-auto"
           )}
-        </div>
-        <div>
+        >
+          <div>
+            {visibility.toLowerCase() === "private" ? (
+              <>
+                <Lock className={cx("me-2", "text-icon")} />
+                Private
+              </>
+            ) : (
+              <>
+                <Globe2 className={cx("me-2", "text-icon")} />
+                Public
+              </>
+            )}
+          </div>
           <TimeCaption datetime={creationDate} prefix="Created" enableTooltip />
         </div>
-      </div>
-    </SearchV2ResultsCard>
+      </CardBody>
+    </SearchV2ResultsContainer>
   );
 }
 
@@ -241,16 +239,33 @@ function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
   });
 
   return (
-    <SearchV2ResultsCard>
+    <SearchV2ResultsContainer>
       <SearchV2CardTitle url={groupUrl} entityType="Group">
         {name}
       </SearchV2CardTitle>
-      <p className={cx("mb-2", "card-text")}>
-        {"@"}
-        {namespace}
-      </p>
-      {description && <p className={cx("mb-0", "card-text")}>{description}</p>}
-    </SearchV2ResultsCard>
+      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+        <p>
+          <Link to={groupUrl}>
+            {"@"}
+            {namespace}
+          </Link>
+        </p>
+
+        {description && (
+          <p
+            className="mb-0"
+            style={{
+              display: "-webkit-box",
+              overflow: "hidden",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3,
+            }}
+          >
+            {description}
+          </p>
+        )}
+      </CardBody>
+    </SearchV2ResultsContainer>
   );
 }
 
@@ -270,23 +285,31 @@ function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
       : firstName || lastName || namespace;
 
   return (
-    <SearchV2ResultsCard>
+    <SearchV2ResultsContainer>
       <SearchV2CardTitle url={userUrl} entityType="User">
         {displayName}
       </SearchV2CardTitle>
-      <p className={cx("mb-0", "card-text")}>
-        {"@"}
-        {namespace}
-      </p>
-    </SearchV2ResultsCard>
+      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+        <p className="mb-0">
+          <Link to={userUrl}>
+            {"@"}
+            {namespace}
+          </Link>
+        </p>
+      </CardBody>
+    </SearchV2ResultsContainer>
   );
 }
 
 function SearchV2ResultsUnknown() {
   return (
-    <SearchV2ResultsCard>
-      <h4 className="mb-0">Unknown entity</h4>
-      <p className="form-text mb-0">This entity type is not supported yet.</p>
-    </SearchV2ResultsCard>
+    <SearchV2ResultsContainer>
+      <CardHeader>
+        <h5 className="mb-0">Unknown entity</h5>
+      </CardHeader>
+      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+        <p className="mb-0">This entity type is not supported yet.</p>
+      </CardBody>
+    </SearchV2ResultsContainer>
   );
 }
