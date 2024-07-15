@@ -225,7 +225,7 @@ export default function ShowSessionPage() {
           >
             <div className={cx("px-3", "text-white")}>{sessionName}</div>
             <div className={cx("px-3", "text-white")}>
-              <RenkuFrogIcon className="me-2" size={24} />
+              <RenkuFrogIcon size={24} />
             </div>
           </div>
         </div>
