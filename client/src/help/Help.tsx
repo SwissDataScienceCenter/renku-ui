@@ -35,15 +35,15 @@ import {
   ExternalIconLink,
 } from "../components/ExternalLinks";
 import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
-import { StatuspageDisplay, isStatusConfigured } from "../statuspage";
+import { isStatusConfigured } from "../statuspage";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import AppContext from "../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 
+import StatusSummary from "../features/platform/components/StatusSummary";
 import HelpRelease from "./HelpRelease";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
-import StatusSummary from "../features/platform/components/StatusSummary";
 
 type HelpNavProps = {
   statuspageId: string;
@@ -198,13 +198,11 @@ function HelpDocumentation() {
 }
 
 function HelpContent() {
-  const { model } = useContext(AppContext);
   return (
     <Routes>
       <Route path="/" element={<HelpGetting />} />
       <Route path="docs" element={<HelpDocumentation />} />
-      <Route path="status" element={<StatuspageDisplay model={model} />} />
-      <Route path="status-2" element={<StatusSummary />} />
+      <Route path="status" element={<StatusSummary />} />
       <Route path="release" element={<HelpRelease />} />
       <Route path="tos" element={<TermsOfService />} />
       <Route path="privacy" element={<PrivacyPolicy />} />

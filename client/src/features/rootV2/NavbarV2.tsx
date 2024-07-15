@@ -45,6 +45,7 @@ import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
+import StatusBanner from "../platform/components/StatusBanner";
 
 const RENKU_ALPHA_LOGO = "/static/public/img/logo-yellow.svg";
 
@@ -166,92 +167,99 @@ export default function NavbarV2() {
   }
 
   return (
-    <header
-      className={cx(
-        "bg-rk-blue",
-        "navbar",
-        "navbar-expand-lg",
-        "navbar-dark",
-        "p-0",
-        "rk-navbar"
-      )}
-    >
-      <Navbar
-        color="primary"
+    <>
+      <header
         className={cx(
-          "container-fluid",
-          "flex-wrap",
-          "flex-lg-nowrap",
-          "renku-container",
-          "px-2"
+          "bg-rk-blue",
+          "navbar",
+          "navbar-expand-lg",
+          "navbar-dark",
+          "p-0",
+          "rk-navbar"
         )}
       >
-        <div
+        <Navbar
+          color="primary"
           className={cx(
-            "text-white",
-            "d-flex",
-            "align-items-center",
+            "container-fluid",
             "flex-wrap",
-            "gap-2"
+            "flex-lg-nowrap",
+            "renku-container",
+            "px-2"
           )}
         >
-          <RenkuNavLinkV2
-            id="link-home"
-            data-cy="link-home"
-            to={ABSOLUTE_ROUTES.v2.root}
-            className={cx("navbar-brand", "me-2", "pb-0", "pt-0")}
-          >
-            <img
-              src={RENKU_ALPHA_LOGO}
-              alt="Renku v2 (alpha)"
-              className="pe-2"
-              height="50"
-            />
-          </RenkuNavLinkV2>
-          <WipBadge label="2.0 Alpha" />
-          <BackToV1Button outline={true} />
-        </div>
-        <NavbarToggler onClick={onToggle} className="border-0">
-          <List className={cx("bi", "text-rk-white")} />
-        </NavbarToggler>
-        <Collapse isOpen={isOpen} navbar>
-          <Nav
+          <div
             className={cx(
-              "flex-row",
-              "flex-wrap",
-              "flex-sm-nowrap",
-              "justify-content-end",
+              "text-white",
+              "d-flex",
               "align-items-center",
-              "ms-lg-auto"
+              "flex-wrap",
+              "gap-2"
             )}
-            navbar
           >
-            <NavItem className="me-3">
-              <RenkuNavLinkV2 end to={ABSOLUTE_ROUTES.v2.search} title="Search">
-                <Search className="bi" /> Search
-              </RenkuNavLinkV2>
-            </NavItem>
-            <NavItem className="me-3">
-              <RenkuNavLinkV2
-                end
-                to={ABSOLUTE_ROUTES.v2.root}
-                title="Dashboard"
-              >
-                Dashboard
-              </RenkuNavLinkV2>
-            </NavItem>
-            <NavItem className={cx("me-2", "nav-item", "col-auto")}>
-              <NavbarItemPlus />
-            </NavItem>
-            <NavItem className={cx("me-2", "nav-item", "col-auto")}>
-              <NavbarItemHelp />
-            </NavItem>
-            <NavItem className={cx("nav-item", "col-auto")}>
-              <RenkuToolbarItemUser params={params!} />
-            </NavItem>
-          </Nav>
-        </Collapse>
-      </Navbar>
-    </header>
+            <RenkuNavLinkV2
+              id="link-home"
+              data-cy="link-home"
+              to={ABSOLUTE_ROUTES.v2.root}
+              className={cx("navbar-brand", "me-2", "pb-0", "pt-0")}
+            >
+              <img
+                src={RENKU_ALPHA_LOGO}
+                alt="Renku v2 (alpha)"
+                className="pe-2"
+                height="50"
+              />
+            </RenkuNavLinkV2>
+            <WipBadge label="2.0 Alpha" />
+            <BackToV1Button outline={true} />
+          </div>
+          <NavbarToggler onClick={onToggle} className="border-0">
+            <List className={cx("bi", "text-rk-white")} />
+          </NavbarToggler>
+          <Collapse isOpen={isOpen} navbar>
+            <Nav
+              className={cx(
+                "flex-row",
+                "flex-wrap",
+                "flex-sm-nowrap",
+                "justify-content-end",
+                "align-items-center",
+                "ms-lg-auto"
+              )}
+              navbar
+            >
+              <NavItem className="me-3">
+                <RenkuNavLinkV2
+                  end
+                  to={ABSOLUTE_ROUTES.v2.search}
+                  title="Search"
+                >
+                  <Search className="bi" /> Search
+                </RenkuNavLinkV2>
+              </NavItem>
+              <NavItem className="me-3">
+                <RenkuNavLinkV2
+                  end
+                  to={ABSOLUTE_ROUTES.v2.root}
+                  title="Dashboard"
+                >
+                  Dashboard
+                </RenkuNavLinkV2>
+              </NavItem>
+              <NavItem className={cx("me-2", "nav-item", "col-auto")}>
+                <NavbarItemPlus />
+              </NavItem>
+              <NavItem className={cx("me-2", "nav-item", "col-auto")}>
+                <NavbarItemHelp />
+              </NavItem>
+              <NavItem className={cx("nav-item", "col-auto")}>
+                <RenkuToolbarItemUser params={params!} />
+              </NavItem>
+            </Nav>
+          </Collapse>
+        </Navbar>
+      </header>
+      <StatusBanner params={params} />
+    </>
   );
 }

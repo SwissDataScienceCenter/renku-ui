@@ -18,16 +18,20 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-
+import { DateTime } from "luxon";
+import { useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
   WrenchAdjustableCircleFill,
 } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
 import { Alert } from "reactstrap";
+
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
+import { TimeCaption } from "../../../components/TimeCaption";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import { AppParams } from "../../../utils/context/appParams.types";
+import { ensureDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { useGetPlatformConfigQuery } from "../api/platform.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
 import type {
@@ -38,10 +42,6 @@ import type {
   StatusPageSummary,
 } from "../statuspage-api/statuspage.types";
 import StatusPageIncidentUpdates from "./StatusPageIncidentUpdates";
-import { TimeCaption } from "../../../components/TimeCaption";
-import { useState } from "react";
-import { DateTime } from "luxon";
-import { ensureDateTime } from "../../../utils/helpers/DateTimeUtils";
 
 const FIVE_MINUTES_MILLIS = 5 * 60 * 1_000;
 
@@ -171,7 +171,12 @@ function StatusPageIncident({
   return (
     <Alert
       color={color}
-      className={cx("container-xxl", "renku-container")}
+      className={cx(
+        "container-xxl",
+        "renku-container",
+        "border-0",
+        "rounded-0"
+      )}
       fade={false}
     >
       <h3>Ongoing incident: {incident.name}</h3>
@@ -200,7 +205,12 @@ function ManuallyDeclaredIncident({
   return (
     <Alert
       color="danger"
-      className={cx("container-xxl", "renku-container")}
+      className={cx(
+        "container-xxl",
+        "renku-container",
+        "border-0",
+        "rounded-0"
+      )}
       fade={false}
     >
       <h3>Ongoing incident</h3>
@@ -218,13 +228,28 @@ function MaintenanceBanner({
   scheduledMaintenances,
   summaryPageUrl,
 }: MaintenanceBannerProps) {
+  const maintenancesToDisplay = useMemo(() => {
+    const sortedMaintenances = [...scheduledMaintenances].sort((a, b) =>
+      ensureDateTime(a.scheduled_for)
+        .diff(ensureDateTime(b.scheduled_for))
+        .valueOf()
+    );
+    const ongoingMaintenances = sortedMaintenances.filter(
+      (m) => m.status === "in_progress" || m.status === "verifying"
+    );
+    if (ongoingMaintenances.length > 0) {
+      return ongoingMaintenances;
+    }
+    return sortedMaintenances.slice(0, 1);
+  }, [scheduledMaintenances]);
+
   if (!scheduledMaintenances.length) {
     return null;
   }
 
   return (
     <>
-      {scheduledMaintenances.map((maintenance) => (
+      {maintenancesToDisplay.map((maintenance) => (
         <StatusPageMaintenance
           key={maintenance.id}
           maintenance={maintenance}
@@ -260,7 +285,12 @@ function StatusPageMaintenance({
   return (
     <Alert
       color={color}
-      className={cx("container-xxl", "renku-container")}
+      className={cx(
+        "container-xxl",
+        "renku-container",
+        "border-0",
+        "rounded-0"
+      )}
       fade={false}
     >
       <h3 className="fs-5">

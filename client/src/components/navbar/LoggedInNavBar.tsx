@@ -19,10 +19,11 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
+import StatusBanner from "../../features/platform/components/StatusBanner";
 import { NavBarWarnings } from "../../landing/NavBarWarnings";
-import { StatuspageBanner } from "../../statuspage";
+import { AppParams } from "../../utils/context/appParams.types";
 import { Url } from "../../utils/helpers/url";
 import { RenkuNavLink } from "../RenkuNavLink";
 import {
@@ -33,8 +34,6 @@ import {
   RenkuToolbarNotifications,
 } from "./NavBarItems";
 import { RENKU_LOGO } from "./navbar.constans";
-import StatusBanner from "../../features/platform/components/StatusBanner";
-import { AppParams } from "../../utils/context/appParams.types";
 
 interface LoggedInNavBarProps {
   model: unknown;
@@ -47,8 +46,6 @@ export default function LoggedInNavBar({
   notifications,
   params,
 }: LoggedInNavBarProps) {
-  const location = useLocation();
-
   const uiShortSha = params.UI_SHORT_SHA;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -130,11 +127,6 @@ export default function LoggedInNavBar({
         </Navbar>
       </header>
       <StatusBanner params={params} />
-      <StatuspageBanner
-        siteStatusUrl={Url.get(Url.pages.help.status)}
-        model={model}
-        location={location}
-      />
       <NavBarWarnings model={model} uiShortSha={uiShortSha} />
     </>
   );
