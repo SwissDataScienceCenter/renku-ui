@@ -535,10 +535,10 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
   const badgeText = isLoading
     ? ""
     : permissions.push
-    ? "push & pull"
+    ? "Push & pull"
     : permissions.pull
-    ? "pull only"
-    : "no access";
+    ? "Pull only"
+    : "No access";
 
   const badgeColorClasses = isLoading
     ? ["border-dark-subtle", "bg-light", "text-dark-emphasis"]
