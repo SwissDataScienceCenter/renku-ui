@@ -694,7 +694,7 @@ function RepositoryView({
                 <Col xs={6}>
                   Clone, Pull:{" "}
                   {isLoading ? (
-                    <Loader className="bi" inline size={16} />
+                    <Loader className="bi" inline size={12} />
                   ) : permissions.pull ? (
                     <YesBadge />
                   ) : (
@@ -704,7 +704,7 @@ function RepositoryView({
                 <Col xs={6}>
                   Push:{" "}
                   {isLoading ? (
-                    <Loader className="bi" inline size={16} />
+                    <Loader className="bi" inline size={12} />
                   ) : permissions.push ? (
                     <YesBadge />
                   ) : (
@@ -870,7 +870,6 @@ function YesBadge() {
       className={cx(
         "border",
         "rounded-pill",
-        "p-2",
         "border-success",
         "bg-success-subtle",
         "text-success-emphasis"
@@ -888,7 +887,6 @@ function NoBadge() {
       className={cx(
         "border",
         "rounded-pill",
-        "p-2",
         "border-danger",
         "bg-danger-subtle",
         "text-danger-emphasis"
