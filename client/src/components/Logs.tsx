@@ -43,9 +43,8 @@ import {
 import { Loader } from "./Loader";
 
 import "./Logs.css";
-import { FileEarmarkArrowDown } from "react-bootstrap-icons";
+import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
 import cx from "classnames";
-import { Refresh } from "../../storybook-static/sb-manager/Wayfinding-AUSNPVSH-QFGOSTNT.js";
 
 export interface ILogs {
   data: Record<string, string>;
@@ -295,7 +294,7 @@ function SessionLogs(props: LogBodyProps) {
           }}
           disabled={logs.fetching}
         >
-          <Refresh className={cx("me-2", "text-icon")} /> Refresh logs
+          <ArrowRepeat className={cx("me-2", "text-icon")} /> Refresh logs
         </Button>
         <LogDownloadButton
           logs={logs}
