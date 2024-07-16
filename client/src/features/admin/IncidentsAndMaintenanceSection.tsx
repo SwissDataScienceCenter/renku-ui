@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   BoxArrowUpRight,
   CheckCircleFill,
@@ -27,8 +27,20 @@ import {
 } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
 
+import { useForm } from "react-hook-form";
+import {
+  Alert,
+  Button,
+  Form,
+  Label,
+  Nav,
+  NavItem,
+  TabContent,
+  TabPane,
+} from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
 import { Docs } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
@@ -38,8 +50,6 @@ import {
 } from "../platform/api/platform.api";
 import StatusBanner from "../platform/components/StatusBanner";
 import { useGetSummaryQuery } from "../platform/statuspage-api/statuspage.api";
-import { Button, Form, Label } from "reactstrap";
-import { useForm } from "react-hook-form";
 
 export default function IncidentsAndMaintenanceSection() {
   const { params } = useContext(AppContext);
@@ -151,9 +161,11 @@ function IncidentBannerSection() {
     formState: { isDirty },
     handleSubmit,
     reset,
+    watch,
   } = useForm<IncidentBannerForm>({
     defaultValues: { incidentBanner: platformConfig?.incident_banner },
   });
+  const incidentBanner = watch("incidentBanner");
 
   const onSubmit = useCallback(
     (data: IncidentBannerForm) => {
@@ -178,6 +190,10 @@ function IncidentBannerSection() {
     }
   }, [reset, result.data?.incident_banner, result.isSuccess]);
 
+  const [tab, setTab] = useState<"write-tab" | "preview-tab">("write-tab");
+  const onClickWrite = useCallback(() => setTab("write-tab"), []);
+  const onClickPreview = useCallback(() => setTab("preview-tab"), []);
+
   if (isLoading) {
     return (
       <p>
@@ -200,11 +216,54 @@ function IncidentBannerSection() {
     <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-1">
         <Label for="admin-incident-banner-content">Incident banner</Label>
-        <textarea
-          {...register("incidentBanner")}
-          id="admin-incident-banner-content"
-          className="form-control"
-        />
+        <Nav tabs>
+          <NavItem>
+            <button
+              className={cx("nav-link", tab === "write-tab" && "active")}
+              onClick={onClickWrite}
+              type="button"
+            >
+              Write
+            </button>
+          </NavItem>
+          <NavItem>
+            <button
+              className={cx("nav-link", tab === "preview-tab" && "active")}
+              onClick={onClickPreview}
+              type="button"
+            >
+              Preview
+            </button>
+          </NavItem>
+        </Nav>
+        <TabContent activeTab={tab}>
+          <TabPane tabId="write-tab">
+            <textarea
+              {...register("incidentBanner")}
+              id="admin-incident-banner-content"
+              className={cx("form-control", "border-0")}
+            />
+          </TabPane>
+          <TabPane tabId="preview-tab">
+            {incidentBanner ? (
+              <Alert
+                color="danger"
+                className={cx(
+                  "container-xxl",
+                  "renku-container",
+                  "border-0",
+                  "rounded-0"
+                )}
+                fade={false}
+              >
+                <h3>Ongoing incident</h3>
+                <LazyRenkuMarkdown markdownText={incidentBanner} />
+              </Alert>
+            ) : (
+              <p className="fst-italic">No content</p>
+            )}
+          </TabPane>
+        </TabContent>
       </div>
       <div>
         <Button type="submit" disabled={result.isLoading || !isDirty}>
