@@ -16,32 +16,13 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { useCallback, useState } from "react";
-import {
-  Binoculars,
-  Pencil,
-  ThreeDotsVertical,
-  Trash,
-} from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router-dom-v5-compat";
-import {
-  Col,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Row,
-  UncontrolledDropdown,
-} from "reactstrap";
+import { generatePath } from "react-router-dom-v5-compat";
+import { Col, Row } from "reactstrap";
 
 import { UnderlineArrowLink } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
-import ProjectDeleteConfirmation from "../settings/ProjectDeleteConfirmation";
-import AccessGuard from "../utils/AccessGuard";
-import useProjectAccess from "../utils/useProjectAccess.hook";
-
-import dotsDropdownStyles from "../../../components/buttons/ThreeDots.module.scss";
 
 interface ProjectPageHeaderProps {
   project: Project;
@@ -62,11 +43,8 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
         </Col>
         <Col xs={12} lg={10}>
           <Row>
-            <Col className={cx("d-flex", "justify-content-between")}>
+            <Col>
               <h2 data-cy="project-name">{project.name}</h2>
-              <div className={cx("align-items-center", "d-flex")}>
-                <ProjectActions project={project} settingsUrl={settingsUrl} />
-              </div>
             </Col>
           </Row>
           <Col>
@@ -87,77 +65,5 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
         </Col>
       </Row>
     </header>
-  );
-}
-
-interface ProjectActionsProps extends ProjectPageHeaderProps {
-  settingsUrl: string;
-}
-function ProjectActions({ project, settingsUrl }: ProjectActionsProps) {
-  const { userRole } = useProjectAccess({ projectId: project.id });
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const toggleDelete = useCallback(() => {
-    setIsDeleteOpen((open) => !open);
-  }, []);
-
-  return (
-    <>
-      <UncontrolledDropdown>
-        <DropdownToggle
-          className={cx(
-            "bg-transparent",
-            "border-0",
-            "p-0",
-            "shadow-none",
-            dotsDropdownStyles.threeDots
-          )}
-        >
-          <ThreeDotsVertical className="fs-3" />
-        </DropdownToggle>
-        <DropdownMenu end>
-          <AccessGuard
-            disabled={
-              <DropdownItem>
-                <Link
-                  className={cx("text-decoration-none", "text-reset")}
-                  to={settingsUrl}
-                >
-                  <Binoculars className={cx("me-2", "text-icon")} />
-                  View project information
-                </Link>
-              </DropdownItem>
-            }
-            enabled={
-              <DropdownItem>
-                <Link
-                  className={cx("text-decoration-none", "text-reset")}
-                  to={settingsUrl}
-                >
-                  <Pencil className={cx("me-2", "text-icon")} />
-                  Edit project information
-                </Link>
-              </DropdownItem>
-            }
-            minimumRole="editor"
-            role={userRole}
-          />
-          <AccessGuard
-            disabled={null}
-            enabled={
-              <DropdownItem onClick={toggleDelete}>
-                <Trash className={cx("me-2", "text-icon")} />
-                Delete this project
-              </DropdownItem>
-            }
-            role={userRole}
-          />
-        </DropdownMenu>
-      </UncontrolledDropdown>
-      <ProjectDeleteConfirmation
-        isOpen={isDeleteOpen}
-        project={project}
-        toggle={toggleDelete}
-      />
-    </>
   );
 }
