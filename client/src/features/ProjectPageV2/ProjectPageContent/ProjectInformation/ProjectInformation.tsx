@@ -138,7 +138,7 @@ export default function ProjectInformation({
           <Badge>{totalKeywords}</Badge>
         </p>
         {project.keywords?.map((keyword, index) => (
-          <p key={`keyword-${index}`} className="ms-4">
+          <p key={`keyword-${index}`} className={cx("mb-0", "ms-4")}>
             #{keyword}
           </p>
         ))}
