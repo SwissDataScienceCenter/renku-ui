@@ -150,7 +150,7 @@ function SessionStarting({
 function doesCloudStorageNeedCredentials(
   config: SessionStartCloudStorageConfiguration
 ) {
-  if (config.active === false) return false;
+  if (!config.active) return false;
   return Object.values(config.sensitiveFieldValues).some(
     (value) => value === ""
   );
