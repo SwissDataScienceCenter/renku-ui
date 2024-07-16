@@ -37,7 +37,7 @@ import {
   useGetProjectsQuery,
 } from "../api/projectV2.enhanced-api";
 
-const DEFAULT_PER_PAGE = 10;
+const DEFAULT_PER_PAGE = 12;
 const DEFAULT_PAGE_PARAM = "page";
 
 interface ProjectListDisplayProps {
@@ -132,7 +132,9 @@ export default function ProjectListDisplay({
 
   return (
     <>
-      <Row className={cx("row-cols-1", "row-cols-sm-2", "g-3")}>
+      <Row
+        className={cx("row-cols-1", "row-cols-md-2", "row-cols-xxl-3", "g-3")}
+      >
         {data.projects?.map((project) => (
           <ProjectV2ListProject key={project.id} project={project} />
         ))}
