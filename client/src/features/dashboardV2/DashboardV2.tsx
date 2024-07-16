@@ -72,7 +72,7 @@ function DashboardWelcome() {
             />
             and see what&rsquo;s ahead on our{" "}
             <ExternalLink
-              url="https://github.com/SwissDataScienceCenter/renku-design-docs/blob/main/roadmap.md"
+              url="https://renku.notion.site/Roadmap-b1342b798b0141399dc39cb12afc60c9"
               iconAfter={true}
               role="text"
               title="roadmap"

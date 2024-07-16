@@ -27,7 +27,7 @@ type WipBadeProps = {
 
 export default function WipBadge({
   className,
-  label = "Alpha",
+  label = "Beta",
   text = "Renku 2.0 is under active development and features may not work as expected.",
 }: WipBadeProps) {
   const ref = useRef<HTMLElement>(null);
