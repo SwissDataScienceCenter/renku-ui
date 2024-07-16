@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, PlusLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Button,
@@ -246,12 +246,12 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
         <h4>Project Members</h4>
         <div>
           <Button
-            color="primary"
+            color="outline-primary"
             data-cy="group-add-member"
             onClick={toggleAddMemberModalOpen}
             size="sm"
           >
-            Add
+            <PlusLg className="text-icon" id="createPlus" />
           </Button>
         </div>
       </div>
