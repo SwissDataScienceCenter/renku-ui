@@ -21,8 +21,8 @@ import cx from "classnames";
 import { Badge, UncontrolledTooltip } from "reactstrap";
 
 interface WipBadeProps {
-  children?: ReactNode; //label
-  tooltip?: ReactNode; //text
+  children?: ReactNode;
+  tooltip?: ReactNode;
 }
 
 export default function WipBadge({
