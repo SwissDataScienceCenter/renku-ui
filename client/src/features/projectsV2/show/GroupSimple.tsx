@@ -26,7 +26,7 @@ import { TimeCaption } from "../../../components/TimeCaption";
 
 interface GroupSimpleProps {
   className?: string | string[];
-  element: "card" | "card-body" | "list-item" | "plain";
+  element: "card-body" | "list-item" | "plain";
   group: GroupSimple;
 }
 export default function GroupSimple({
@@ -35,52 +35,60 @@ export default function GroupSimple({
   group,
 }: GroupSimpleProps) {
   const content = (
-    <div>
-      <Link
-        className={cx("link-primary", "text-body", "text-decoration-none")}
-        data-cy="project-link"
-        to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-          slug: group.slug,
-        })}
-      >
-        <h6 className="m-0 fw-bold">{group.name}</h6>
-        <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
-        {group.description && (
-          <p
-            className="mb-2"
-            style={{
-              display: "-webkit-box",
-              overflow: "hidden",
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 3,
-            }}
-          >
-            {group.description}
-          </p>
-        )}
-        <div className="d-flex">
-          <VisibilityIcon className="text-primary" visibility="public" />
-          <TimeCaption
-            className={cx("ms-auto", "my-auto")}
-            datetime={group.creation_date}
-            prefix="Created"
-          />
-        </div>
-      </Link>
+    <div
+      className={cx(
+        element === "card-body" && cx("d-flex", "flex-column", "flex-grow-1")
+      )}
+      data-cy="group-item"
+    >
+      <h6 className="m-0 fw-bold">{group.name}</h6>
+      <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
+      {group.description && (
+        <p
+          className="mb-2"
+          style={{
+            display: "-webkit-box",
+            overflow: "hidden",
+            WebkitBoxOrient: "vertical",
+            WebkitLineClamp: 3,
+          }}
+        >
+          {group.description}
+        </p>
+      )}
+      <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
+        <VisibilityIcon className="text-primary" visibility="public" />
+        <TimeCaption
+          className={cx("ms-auto", "my-auto")}
+          datetime={group.creation_date}
+          enableTooltip
+          prefix="Created"
+        />
+      </div>
     </div>
   );
 
-  return element === "card" ? (
-    <div className={cx("card", className)}>
-      <div className="card-body">{content}</div>
-    </div>
-  ) : element === "card-body" ? (
-    <div className={cx("card-body", className)}>{content}</div>
-  ) : element === "list-item" ? (
-    <li className={cx("list-group-item", "list-group-item-action", className)}>
+  const elementClasses =
+    element === "card-body"
+      ? cx("card-body", "d-flex")
+      : element === "list-item"
+      ? cx("list-group-item", "list-group-item-action")
+      : "";
+
+  return (
+    <Link
+      className={cx(
+        "link-primary",
+        "text-body",
+        "text-decoration-none",
+        className,
+        elementClasses
+      )}
+      to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+        slug: group.slug,
+      })}
+    >
       {content}
-    </li>
-  ) : (
-    <div className={cx(className)}>{content}</div>
+    </Link>
   );
 }
