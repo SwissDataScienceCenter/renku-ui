@@ -92,57 +92,60 @@ export default function ProjectInformation({
   );
 
   const information = (
-    <div className={cx("d-flex", "flex-column")}>
-      <div>
-        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
-          <JournalAlbum className="text-icon" />
-          Namespace:
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <ProjectInformationBox
+        icon={<JournalAlbum className="text-icon" />}
+        title="Namespace:"
+      >
+        <p className="mb-0">
+          <Link to={namespaceUrl}>{namespaceName}</Link>
         </p>
-        <p>
-          <Link className="ms-4" to={namespaceUrl}>
-            {namespaceName}
-          </Link>
+      </ProjectInformationBox>
+      <ProjectInformationBox
+        icon={<Eye className="text-icon" />}
+        title="Visibility:"
+      >
+        <p className="mb-0">
+          <span className="text-capitalize">{project.visibility}</span>
         </p>
-      </div>
-      <div>
-        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
-          <Eye className="text-icon" />
-          Visibility:
-        </p>
-        <p className={cx("ms-4", "text-capitalize")}>{project.visibility}</p>
-      </div>
-      <div>
-        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
-          <Clock className="text-icon" />
-          Created:
-        </p>
-        <p className="ms-4">
+      </ProjectInformationBox>
+      <ProjectInformationBox
+        icon={<Clock className="text-icon" />}
+        title="Created:"
+      >
+        <p className="mb-0">
           <TimeCaption
             datetime={project.creation_date}
             className={cx("fs-6")}
           />
         </p>
-      </div>
-      <div className="mb-3">
-        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
-          <People className="text-icon" />
-          <span>Members</span>
-          <Badge>{totalMembers}</Badge>
-        </p>
+      </ProjectInformationBox>
+      <ProjectInformationBox
+        icon={<People className="text-icon" />}
+        title={
+          <>
+            <span>Members</span>
+            <Badge>{totalMembers}</Badge>
+          </>
+        }
+      >
         <ProjectInformationMembers members={members} membersUrl={membersUrl} />
-      </div>
-      <div>
-        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
-          <Bookmarks className="text-icon" />
-          <span>Keywords</span>
-          <Badge>{totalKeywords}</Badge>
-        </p>
+      </ProjectInformationBox>
+      <ProjectInformationBox
+        icon={<Bookmarks className="text-icon" />}
+        title={
+          <>
+            <span>Keywords</span>
+            <Badge>{totalKeywords}</Badge>
+          </>
+        }
+      >
         {project.keywords?.map((keyword, index) => (
-          <p key={`keyword-${index}`} className={cx("mb-0", "ms-4")}>
+          <p key={`keyword-${index}`} className="mb-0">
             #{keyword}
           </p>
         ))}
-      </div>
+      </ProjectInformationBox>
     </div>
   );
   return output === "plain" ? (
@@ -219,7 +222,7 @@ function ProjectInformationMember({
 
   if (memberData?.username) {
     return (
-      <div className="ms-4">
+      <p className="mb-0">
         <Link
           to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
             username: memberData.username,
@@ -227,7 +230,7 @@ function ProjectInformationMember({
         >
           {displayName}
         </Link>
-      </div>
+      </p>
     );
   }
 
@@ -257,5 +260,26 @@ function ProjectInformationMembers({
         />
       )}
     </>
+  );
+}
+
+interface ProjectInformationBoxProps {
+  children: React.ReactNode;
+  icon: React.ReactNode;
+  title: React.ReactNode;
+}
+function ProjectInformationBox({
+  children,
+  icon,
+  title,
+}: ProjectInformationBoxProps) {
+  return (
+    <div>
+      <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+        {icon}
+        {title}
+      </p>
+      <div className="ms-4">{children}</div>
+    </div>
   );
 }
