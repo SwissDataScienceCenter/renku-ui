@@ -585,7 +585,6 @@ function RepositoryView({
   return (
     <Offcanvas
       key={`data-source-details-${repositoryUrl}`}
-      className="min-vw-50 w-auto"
       toggle={toggleDetails}
       isOpen={showDetails}
       direction="end"

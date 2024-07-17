@@ -347,7 +347,6 @@ export function SessionView({
   return (
     <Offcanvas
       key={`launcher-details-${key}`}
-      className="min-vw-50 w-auto"
       toggle={() => setToggleSessionView()}
       isOpen={toggleSessionView}
       direction="end"
