@@ -125,9 +125,7 @@ function DashboardWelcome() {
     <>
       <Row className="mb-3">
         <Col>
-          <h2>
-            <b>Welcome to the Renku 2.0!</b>
-          </h2>
+          <h2 className="fw-bold">Welcome to the Renku 2.0 beta preview!</h2>
         </Col>
       </Row>
       <Row className="mb-3">
@@ -135,15 +133,14 @@ function DashboardWelcome() {
           <p>
             <b>Learn more about Renku 2.0</b> on our{" "}
             <ExternalLink
-              className="me-2"
               url="https://blog.renkulab.io/renku-2/"
               iconAfter={true}
               role="text"
               title="blog"
-            />
+            />{" "}
             and see what&rsquo;s ahead on our{" "}
             <ExternalLink
-              url="https://github.com/SwissDataScienceCenter/renku-design-docs/blob/main/roadmap.md"
+              url="https://renku.notion.site/Roadmap-b1342b798b0141399dc39cb12afc60c9"
               iconAfter={true}
               role="text"
               title="roadmap"
