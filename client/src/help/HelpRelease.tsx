@@ -157,7 +157,9 @@ function SearchRelease() {
     return <Loader inline size={16} />;
   }
   const searchVersion = data?.version;
-  const { taggedVersion, devHash } = parseChartVersion(searchVersion);
+  const { taggedVersion: taggedVersion_, devHash } =
+    parseChartVersion(searchVersion);
+  const taggedVersion = `v${taggedVersion_}`;
   return (
     <ComponentAndDevVersion
       componentUrl={RenkuRepositories.Search}
