@@ -840,7 +840,7 @@ class NotFoundInsideProject extends Component {
               <strong>
                 {" "}
                 {this.props.location.pathname.replace(
-                  this.props.match.url,
+                  this.props.subUrl,
                   ""
                 )}{" "}
               </strong>
@@ -905,6 +905,11 @@ function ProjectView(props) {
     props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
   const isShowSession = cleanSessionUrl === props.sessionShowUrl;
 
+  console.log({
+    settingsUrl: props.settingsUrl,
+    workflows: props.workflowsUrl,
+  });
+
   return [
     <ProjectPageTitle
       key="page-title"
@@ -954,14 +959,14 @@ function ProjectView(props) {
           <Route path={[props.workflowUrl, props.workflowsUrl]}>
             <ProjectViewWorkflows key="workflows" {...props} />
           </Route>
-          <CompatRoute path={props.settingsUrl}>
+          <Route path={props.settingsUrl}>
             <ProjectSettings
               key="settings"
               {...props}
               apiVersion={apiVersion}
               metadataVersion={metadataVersion}
             />
-          </CompatRoute>
+          </Route>
           <Route path={props.notebookServersUrl}>
             <ProjectSessionsRouter key="sessions" />
           </Route>
