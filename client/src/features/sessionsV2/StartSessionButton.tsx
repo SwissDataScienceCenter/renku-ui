@@ -69,7 +69,12 @@ export default function StartSessionButton({
   );
 
   return (
-    <ButtonWithMenuV2 color="primary" default={defaultAction} size="sm">
+    <ButtonWithMenuV2
+      color="primary"
+      default={defaultAction}
+      preventPropagation
+      size="sm"
+    >
       {customizeLaunch}
     </ButtonWithMenuV2>
   );

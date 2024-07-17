@@ -382,6 +382,7 @@ export default function ActiveSessionButton({
       className={cx(className)}
       color="primary"
       default={defaultAction}
+      preventPropagation
       size="sm"
     >
       {hibernateAction}

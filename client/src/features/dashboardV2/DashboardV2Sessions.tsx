@@ -100,69 +100,57 @@ function DashboardSession({ session }: DashboardSessionProps) {
     : ABSOLUTE_ROUTES.v2.projects.root;
 
   return (
-    <ListGroupItem data-cy="list-session" action>
-      <div>
-        <Row className={cx("gap-2", "gap-md-0")}>
-          <Col xs={12} md={9} lg={10} className="order-2 order-md-1">
-            <Link
-              data-cy="list-session-link"
-              className={cx(
-                "link-primary",
-                "text-body",
-                "text-decoration-none"
-              )}
-              to={projectUrl}
-            >
-              <h6 className="fw-bold">
-                {project
-                  ? project.namespace + "/" + project.slug
-                  : projectId ?? "Unknown"}
-              </h6>
-              <p className="mb-2">
-                <b>Container image:</b> {image}
-              </p>
-            </Link>
-          </Col>
-          <Col
-            xs={12}
-            md={3}
-            lg={2}
-            className={cx("order-first", "order-md-2")}
-          >
-            <div className={cx("text-start", "text-md-end")}>
-              <ActiveSessionButton
-                className="my-auto"
-                session={session}
-                showSessionUrl={showSessionUrl}
-              />
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <div
-              className={cx(
-                "d-flex",
-                "justify-content-between",
-                "flex-wrap",
-                "gap-2",
-                "gap-md-0"
-              )}
-            >
-              <div className="d-flex">
-                <SessionStatusV2Label session={session} />
-              </div>
-              <div className="d-flex">
-                <SessionStatusV2Description session={session} />
-              </div>
-            </div>
-          </Col>
-        </Row>
-        <EnvironmentLogs
-          name={displayModal.targetServer}
-          annotations={annotations}
-        />
-      </div>
-    </ListGroupItem>
+    <Link
+      className={cx(
+        "d-flex",
+        "flex-column",
+        "gap-3",
+        "link-primary",
+        "list-group-item-action",
+        "list-group-item",
+        "text-body",
+        "text-decoration-none"
+      )}
+      data-cy="list-session"
+      to={projectUrl}
+    >
+      <Row className="g-2">
+        <Col className="order-1" xs={12} md={9} lg={10}>
+          <div data-cy="list-session-link">
+            <h6 className="fw-bold">
+              {project
+                ? project.namespace + "/" + project.slug
+                : projectId ?? "Unknown"}
+            </h6>
+            <p className="mb-0">
+              <b>Container image:</b> {image}
+            </p>
+          </div>
+        </Col>
+        <Col className={cx("order-3", "order-md-2")} xs={12} md={3} lg={2}>
+          <div className={cx("text-start", "text-md-end")}>
+            <ActiveSessionButton
+              className="my-auto"
+              session={session}
+              showSessionUrl={showSessionUrl}
+            />
+          </div>
+        </Col>
+        <Col className={cx("order-2", "order-md-3")} xs={12}>
+          <Row className={cx("justify-content-between", "gap-2")}>
+            <Col xs={12} md="auto">
+              <SessionStatusV2Label session={session} />
+            </Col>
+            <Col xs={12} md="auto">
+              <SessionStatusV2Description session={session} />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+      <EnvironmentLogs
+        name={displayModal.targetServer}
+        annotations={annotations}
+      />
+    </Link>
   );
 }

@@ -46,15 +46,18 @@ export default function SessionItem({
   toggleSessionDetails,
 }: SessionItemProps) {
   return (
-    <ListGroupItem action>
+    <ListGroupItem
+      action
+      className="cursor-pointer"
+      onClick={() => toggleSessionDetails()}
+    >
       <Row className="g-2">
         <Col
-          className={cx("align-items-center", "d-flex", "cursor-pointer")}
+          className={cx("align-items-center", "d-flex")}
           xs={12}
           md={8}
           lg={9}
           xl={10}
-          onClick={() => toggleSessionDetails()}
         >
           <Row className="g-2">
             <Col
