@@ -19,7 +19,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useDispatch } from "react-redux";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import { ReactNode } from "react";
 import { Globe2, Lock } from "react-bootstrap-icons";
@@ -131,22 +131,44 @@ function SearchV2ResultsContainer({ children }: SearchV2ResultsCardProps) {
 }
 
 interface SearchV2CardTitleProps {
-  children?: ReactNode;
-  entityType: ReactNode;
-  url: string;
+  name: string;
+  nameUrl: string;
+  namespace: string;
+  namespaceUrl: string;
+  entityType?: "Project" | "Group" | "User";
 }
 function SearchV2CardTitle({
-  children,
   entityType,
-  url,
+  name,
+  nameUrl,
+  namespace,
+  namespaceUrl,
 }: SearchV2CardTitleProps) {
   return (
-    <CardHeader>
-      <h5>
-        <Link to={url}>{children}</Link>
-      </h5>
-
-      <p className={cx("fst-italic", "mb-0")}>{entityType}</p>
+    <CardHeader className={cx("d-flex", "gap-2")}>
+      <div>
+        <h5 className="mb-1">
+          <Link to={nameUrl}>{name}</Link>
+        </h5>
+        <p className="mb-0">
+          <Link to={namespaceUrl}>@{namespace}</Link>
+        </p>
+      </div>
+      {entityType && (
+        <div className={cx("mb-auto", "ms-auto")}>
+          <Badge
+            pill
+            className={cx(
+              "border",
+              "border-dark-subtle",
+              "bg-light",
+              "text-dark-emphasis"
+            )}
+          >
+            {entityType}
+          </Badge>
+        </div>
+      )}
     </CardHeader>
   );
 }
@@ -174,16 +196,14 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
 
   return (
     <SearchV2ResultsContainer>
-      <SearchV2CardTitle url={projectUrl} entityType="Project">
-        {name}
-      </SearchV2CardTitle>
+      <SearchV2CardTitle
+        entityType="Project"
+        name={name}
+        nameUrl={projectUrl}
+        namespace={namespace?.namespace ?? ""}
+        namespaceUrl={namespaceUrl}
+      />
       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
-        <p>
-          <Link to={namespaceUrl}>
-            {"@"}
-            {namespace?.namespace}
-          </Link>
-        </p>
         {description && (
           <p
             style={{
@@ -238,17 +258,15 @@ function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
 
   return (
     <SearchV2ResultsContainer>
-      <SearchV2CardTitle url={groupUrl} entityType="Group">
-        {name}
-      </SearchV2CardTitle>
-      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
-        <p>
-          <Link to={groupUrl}>
-            {"@"}
-            {namespace}
-          </Link>
-        </p>
+      <SearchV2CardTitle
+        entityType="Group"
+        name={name}
+        nameUrl={groupUrl}
+        namespace={namespace}
+        namespaceUrl={groupUrl}
+      />
 
+      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
         {description && (
           <p
             className="mb-0"
@@ -284,17 +302,14 @@ function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
 
   return (
     <SearchV2ResultsContainer>
-      <SearchV2CardTitle url={userUrl} entityType="User">
-        {displayName}
-      </SearchV2CardTitle>
-      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
-        <p className="mb-0">
-          <Link to={userUrl}>
-            {"@"}
-            {namespace}
-          </Link>
-        </p>
-      </CardBody>
+      <SearchV2CardTitle
+        entityType="User"
+        name={displayName || "unknown"}
+        nameUrl={userUrl}
+        namespace={namespace || "unknown"}
+        namespaceUrl={userUrl}
+      />
+      <CardBody />
     </SearchV2ResultsContainer>
   );
 }
