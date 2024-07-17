@@ -34,6 +34,7 @@ import {
   FormGroup,
   Input,
   Label,
+  ListGroupItem,
   Modal,
   ModalBody,
   ModalFooter,
@@ -366,18 +367,6 @@ export function RepositoryItem({
   );
 
   const title = canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
-  const mainInteraction = !readonly
-    ? {
-        className: cx(
-          !readonly && [
-            "cursor-pointer",
-            "link-primary",
-            "text-body",
-            "text-decoration-none",
-          ]
-        ),
-      }
-    : {};
   // ! Product team wants this restored -- keeping the code for the next iteration
   // const urlDisplay = (
   //   <div className={cx("d-flex", "align-items-center", "gap-2")}>
@@ -397,36 +386,49 @@ export function RepositoryItem({
   //   </div>
   // );
 
+  const listGroupProps = !readonly
+    ? {
+        action: true,
+        className: cx(
+          !readonly && ["cursor-pointer", "link-primary", "text-body"]
+        ),
+        onClick: toggleDetails,
+      }
+    : {};
+
   return (
-    <Row className={cx("align-items-center", "g-2")}>
-      <Col
-        className={cx("align-items-center", "cursor-pointer", "flex-row")}
-        onClick={toggleDetails}
-      >
-        <div {...mainInteraction}>
-          <span className={cx("me-2", !readonly && "fw-bold")}>
-            {title || canonicalUrlStr || (
-              <span className="fwd-italic">Unknown repository</span>
-            )}
-          </span>
-          <RepositoryPermissions repositoryUrl={url} />
-        </div>
-      </Col>
-      {!readonly && (
-        <>
-          <Col xs={12} sm="auto" className="ms-auto">
-            <CodeRepositoryActions project={project} url={url} />
+    <>
+      <ListGroupItem {...listGroupProps}>
+        <Row className={cx("align-items-center", "g-2")}>
+          <Col className={cx("align-items-center", "flex-row")}>
+            <div>
+              <span className={cx("me-2", !readonly && "fw-bold")}>
+                {title || canonicalUrlStr || (
+                  <span className="fwd-italic">Unknown repository</span>
+                )}
+              </span>
+              <RepositoryPermissions repositoryUrl={url} />
+            </div>
           </Col>
-          <RepositoryView
-            project={project}
-            repositoryUrl={url}
-            showDetails={showDetails}
-            title={title}
-            toggleDetails={toggleDetails}
-          />
-        </>
+          {!readonly && (
+            <>
+              <Col xs={12} sm="auto" className="ms-auto">
+                <CodeRepositoryActions project={project} url={url} />
+              </Col>
+            </>
+          )}
+        </Row>
+      </ListGroupItem>
+      {!readonly && (
+        <RepositoryView
+          project={project}
+          repositoryUrl={url}
+          showDetails={showDetails}
+          title={title}
+          toggleDetails={toggleDetails}
+        />
       )}
-    </Row>
+    </>
   );
 }
 
@@ -923,11 +925,11 @@ function RepositoryProviderDetails({
 
   if (provider) {
     return (
-      <>
-        <h6 className={cx("fs-5", "fw-bold", "mb-0")}>Git Provider</h6>
-        <p className="mb-0">{provider.display_name}</p>
-        <p className="mb-0">Status: {status}</p>
-      </>
+      <div>
+        <h5>Git provider</h5>
+        <p className="mb-2">{provider.display_name}</p>
+        <p>Status: {status}</p>
+      </div>
     );
   }
 

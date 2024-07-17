@@ -21,14 +21,15 @@ import { useCallback, useMemo, useState } from "react";
 import {
   Boxes,
   Clock,
-  CodeSquare,
   CircleFill,
   Database,
   ExclamationTriangleFill,
   Globe2,
   Pencil,
+  FileCode,
 } from "react-bootstrap-icons";
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -202,7 +203,7 @@ function EnvironmentCard({
 }) {
   return (
     <>
-      <Card className="bg-light">
+      <Card>
         <CardHeader tag="h5">
           {launcher.environment_kind === "global_environment"
             ? environment?.name || <span className="fst-italic">No name</span>
@@ -347,7 +348,7 @@ export function SessionView({
   return (
     <Offcanvas
       key={`launcher-details-${key}`}
-      toggle={() => setToggleSessionView()}
+      toggle={setToggleSessionView}
       isOpen={toggleSessionView}
       direction="end"
       backdrop={true}
@@ -358,7 +359,7 @@ export function SessionView({
             aria-label="Close"
             className="btn-close"
             data-bs-dismiss="offcanvas"
-            onClick={() => setToggleSessionView()}
+            onClick={setToggleSessionView}
           ></button>
         </div>
 
@@ -492,12 +493,17 @@ export function SessionView({
           </div>
 
           <div>
-            <h4>
-              <Database className={cx("me-2", "text-icon")} />
-              Data Sources ({dataSources?.length || 0})
-            </h4>
+            <div className={cx("align-items-center", "d-flex", "mb-2")}>
+              <h4
+                className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
+              >
+                <Database className={cx("me-2", "small", "text-icon")} />
+                Data Sources
+              </h4>
+              <Badge>{dataSources?.length || 0}</Badge>
+            </div>
             {dataSources && dataSources?.length > 0 ? (
-              <ListGroup flush>
+              <ListGroup>
                 {dataSources?.map((storage, index) => (
                   <ListGroupItem key={`storage-${index}`}>
                     <div>Name: {storage.storage.name}</div>
@@ -511,20 +517,26 @@ export function SessionView({
           </div>
 
           <div>
-            <h4>
-              <CodeSquare className={cx("me-2", "text-icon")} />
-              Code Repositories ({project.repositories?.length || 0})
-            </h4>
+            <div className={cx("align-items-center", "d-flex", "mb-2")}>
+              <h4
+                className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
+              >
+                <FileCode className={cx("me-2", "small", "text-icon")} />
+                Code Repositories
+              </h4>
+              {project?.repositories?.length != null && (
+                <Badge>{project?.repositories?.length}</Badge>
+              )}
+            </div>
             {dataSources && dataSources?.length > 0 ? (
-              <ListGroup flush>
+              <ListGroup>
                 {project.repositories?.map((repositoryUrl, index) => (
-                  <ListGroupItem key={`storage-${index}`}>
-                    <RepositoryItem
-                      project={project}
-                      readonly={true}
-                      url={repositoryUrl}
-                    />
-                  </ListGroupItem>
+                  <RepositoryItem
+                    key={`storage-${index}`}
+                    project={project}
+                    readonly={true}
+                    url={repositoryUrl}
+                  />
                 ))}
               </ListGroup>
             ) : (

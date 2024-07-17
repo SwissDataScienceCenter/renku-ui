@@ -196,31 +196,29 @@ export function DataSourceDisplay({
   );
 
   return (
-    <ListGroupItem action>
-      <Row className={cx("align-items-center", "g-2")}>
-        <Col
-          className={cx(
-            "cursor-pointer",
-            "link-primary",
-            "text-body",
-            "text-decoration-none"
-          )}
-          onClick={toggleDetails}
-        >
-          <span>
-            {storageName} {storageType}
-          </span>
-        </Col>
-        <Col xs={12} sm="auto" className="ms-auto">
-          <DataSourceActions storage={storage} projectId={projectId} />
-        </Col>
-      </Row>
+    <>
+      <ListGroupItem
+        action
+        className={cx("cursor-pointer", "link-primary", "text-body")}
+        onClick={toggleDetails}
+      >
+        <Row className={cx("align-items-center", "g-2")}>
+          <Col>
+            <span>
+              {storageName} {storageType}
+            </span>
+          </Col>
+          <Col xs={12} sm="auto" className="ms-auto">
+            <DataSourceActions storage={storage} projectId={projectId} />
+          </Col>
+        </Row>
+      </ListGroupItem>
       <DataSourceView
         storage={storage}
         setToggleView={toggleDetails}
         toggleView={toggleView}
         projectId={projectId}
       />
-    </ListGroupItem>
+    </>
   );
 }
