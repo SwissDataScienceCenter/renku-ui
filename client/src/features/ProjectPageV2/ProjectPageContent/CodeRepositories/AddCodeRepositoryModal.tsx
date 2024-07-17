@@ -77,7 +77,6 @@ export function AddCodeRepositoryStep1Modal({
               >
                 <Github className="bi me-2" />
                 <BootstrapGitLabIcon className="bi me-2" />
-                <RenkuFrogIcon className="me-2" size={24} />
                 Connect an existing repository
               </Button>
             </Col>

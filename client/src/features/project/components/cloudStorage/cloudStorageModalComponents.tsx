@@ -126,7 +126,7 @@ export function AddCloudStorageBodyContent({
   if (success)
     return (
       <SuccessAlert dismissible={false} timeout={0}>
-        <p className="p-0">
+        <p className="mb-0">
           The storage {addResultStorageName} has been successfully{" "}
           {storageId ? "updated" : "added"}.
         </p>
@@ -319,7 +319,7 @@ export function AddCloudStorageConnectionTestResult({
     <div className={cx("w-100", "my-0")}>
       {" "}
       <SuccessAlert timeout={0}>
-        <p className="p-0">The connection to the storage works correctly.</p>
+        <p className="mb-0">The connection to the storage works correctly.</p>
       </SuccessAlert>
     </div>
   );

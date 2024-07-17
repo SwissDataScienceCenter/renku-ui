@@ -274,7 +274,7 @@ function ProjectPageSettingsMembersContent({
     if (error.status === 401 || error.status === 404) return null;
     return <RtkErrorAlert error={error} />;
   }
-  if (members == null) return <p className="p-0">Could not load members</p>;
+  if (members == null) return <p className="mb-0">Could not load members</p>;
   const totalMembers = members ? members?.length : 0;
   return (
     <>

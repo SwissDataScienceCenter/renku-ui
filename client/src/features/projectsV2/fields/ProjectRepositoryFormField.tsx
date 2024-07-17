@@ -84,7 +84,7 @@ export default function ProjectRepositoryFormField({
             pattern: /^(http|https):\/\/[^ "]+$/,
           }}
         />
-        <Button onClick={onDelete}>
+        <Button color="outline-primary" onClick={onDelete}>
           <XLg className="text-icon" />
         </Button>
       </div>
@@ -92,7 +92,7 @@ export default function ProjectRepositoryFormField({
         Please provide a valid URL or remove the repository.
       </div>
       {index == 0 && (
-        <FormText className={"input-hint"}>
+        <FormText className="input-hint">
           A URL that refers to a git repository.
         </FormText>
       )}

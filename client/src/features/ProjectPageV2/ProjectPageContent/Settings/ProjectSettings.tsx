@@ -175,7 +175,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
       {error && <RtkErrorAlert error={error} />}
       {isSuccess && (
         <SuccessAlert dismissible={false} timeout={0}>
-          <p className="p-0">The project has been successfully updated.</p>
+          <p className="mb-0">The project has been successfully updated.</p>
         </SuccessAlert>
       )}
 

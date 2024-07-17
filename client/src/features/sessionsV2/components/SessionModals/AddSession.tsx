@@ -33,7 +33,7 @@ import {
   Row,
 } from "reactstrap";
 import { Loader } from "../../../../components/Loader";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
   CustomEnvFormContent,
@@ -128,7 +128,7 @@ function AddSessionCustomImageModal({
           <InfoAlert dismissible={false} timeout={0}>
             The image must be public.
           </InfoAlert>
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrNotebooksError error={result.error} />}
 
           <CustomEnvFormContent
             control={control}
@@ -239,7 +239,7 @@ function AddSessionExistingEnvModal({
             Reuse an environment already defined on RenkuLab to create an
             interactive session for your project.
           </p>
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrNotebooksError error={result.error} />}
           <ExistingEnvFormContent
             control={control}
             errors={errors}

@@ -29,7 +29,15 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
-import { Card, CardBody, Input, Label, Row } from "reactstrap";
+import {
+  Card,
+  CardBody,
+  Input,
+  Label,
+  ListGroup,
+  ListGroupItem,
+  Row,
+} from "reactstrap";
 import { Globe2 } from "react-bootstrap-icons";
 
 import { Loader } from "../../components/Loader";
@@ -496,7 +504,7 @@ export function ExistingEnvFormContent({
         name="environment_id"
         render={({ field }) => (
           <>
-            <ul className="list-group">
+            <ListGroup>
               {environments.map((environment) => (
                 <SessionEnvironmentItem
                   key={environment.id}
@@ -511,7 +519,7 @@ export function ExistingEnvFormContent({
                   defaultSessionClass={defaultSessionClass}
                 />
               ))}
-            </ul>
+            </ListGroup>
             <Input
               className={cx(errors.environment_id && "is-invalid")}
               id="addSessionLauncherEnvironmentId"
@@ -593,14 +601,12 @@ export function SessionEnvironmentItem({
     );
 
   return (
-    <li
+    <ListGroupItem
+      action
       className={cx(
-        "list-group-item",
-        "p-3",
         isSelected && orderCard && "order-first",
-        isSelected && "border",
-        isSelected && "border-primary",
-        isSelected && "bg-primary-subtle"
+        isSelected && "bg-primary",
+        isSelected && "bg-opacity-10"
       )}
       data-cy="global-environment-item"
     >
@@ -633,6 +639,6 @@ export function SessionEnvironmentItem({
         </Label>
         {isSelected && selector}
       </div>
-    </li>
+    </ListGroupItem>
   );
 }
