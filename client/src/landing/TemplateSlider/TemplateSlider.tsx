@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { clamp } from "lodash";
+import { clamp } from "lodash-es";
 import { DateTime, Duration } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "reactstrap";

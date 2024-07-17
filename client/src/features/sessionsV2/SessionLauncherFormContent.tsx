@@ -23,6 +23,7 @@ import {
   ControllerRenderProps,
   FieldErrors,
   FieldNamesMarkedBoolean,
+  UseFormResetField,
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
@@ -43,10 +44,18 @@ import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
 import { EnvironmentKind, SessionEnvironment } from "./sessionsV2.types";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { SingleValue } from "react-select";
 import { WarnAlert } from "../../components/Alert.jsx";
 import rkIconGlobalEnv from "../../styles/assets/globalEnvironment.svg";
+import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
+import {
+  ResourceClass,
+  ResourcePool,
+} from "../dataServices/dataServices.types";
+import { SessionClassSelector } from "../session/components/options/SessionClassOption";
 import styles from "./SessionLauncherForm.module.scss";
+import sessionViewStyles from "./SessionView/SessionView.module.scss";
 
 export interface SessionLauncherForm {
   name: string;
@@ -55,6 +64,7 @@ export interface SessionLauncherForm {
   environment_id: string;
   container_image: string;
   default_url: string;
+  resourceClass: ResourceClass;
 }
 
 /* Edit session launcher */
@@ -94,6 +104,7 @@ export default function SessionLauncherFormContent({
               id="addSessionLauncherName"
               placeholder="session name"
               type="text"
+              data-cy="edit-session-name"
               {...field}
             />
           )}
@@ -136,6 +147,7 @@ export default function SessionLauncherFormContent({
                   value={"global_environment"}
                   checked={field.value === "global_environment"}
                   disabled={environments && environments.length == 0}
+                  data-cy="edit-session-type-existing"
                 />
                 <Label
                   className={cx(
@@ -154,6 +166,7 @@ export default function SessionLauncherFormContent({
                   {...field}
                   value={"container_image"}
                   checked={field.value === "container_image"}
+                  data-cy="edit-session-type-custom"
                 />
                 <Label className="ms-2" for="addSessionLauncherContainerImage">
                   Custom Image
@@ -196,6 +209,8 @@ export default function SessionLauncherFormContent({
                       environment={environment}
                       field={field}
                       touchedFields={touchedFields}
+                      errors={errors}
+                      control={control}
                     />
                   ))}
                 </Row>
@@ -269,33 +284,33 @@ export default function SessionLauncherFormContent({
 interface CustomEnvFormContentProps {
   control: Control<SessionLauncherForm, unknown>;
   errors: FieldErrors<SessionLauncherForm>;
+  setValue: UseFormSetValue<SessionLauncherForm>;
 }
 export function CustomEnvFormContent({
   control,
   errors,
+  setValue,
 }: CustomEnvFormContentProps) {
+  const { data: resourcePools, isLoading: isLoadingResourcesPools } =
+    useGetResourcePoolsQuery({});
+
+  const onChangeResourceClass = (resourceClass: SingleValue<ResourceClass>) => {
+    if (resourceClass) setValue("resourceClass", resourceClass);
+  };
+
+  const defaultSessionClass = useMemo(
+    () =>
+      resourcePools
+        ?.filter((pool) => pool.default)
+        .flatMap((pool) => pool.classes)
+        .find((c) => c.default) ??
+      resourcePools?.find(() => true)?.classes[0] ??
+      undefined,
+    [resourcePools]
+  );
+
   return (
     <>
-      <div className={cx("mb-5", "mt-5")}>
-        <Label className="form-label" for="addSessionLauncherContainerImage">
-          Container Image
-        </Label>
-        <Controller
-          control={control}
-          name="container_image"
-          rules={{ required: true }}
-          render={({ field }) => (
-            <Input
-              className={cx(errors.container_image && "is-invalid")}
-              id="addSessionLauncherContainerImage"
-              placeholder="Docker image"
-              type="text"
-              {...field}
-            />
-          )}
-        />
-        <div className="invalid-feedback">Please provide a container image</div>
-      </div>
       <div className="mb-5">
         <Label className="form-label" for="addSessionLauncherName">
           Session launcher Name
@@ -309,6 +324,7 @@ export function CustomEnvFormContent({
               id="addSessionLauncherName"
               placeholder="session name"
               type="text"
+              data-cy="launcher-name-input"
               {...field}
             />
           )}
@@ -316,24 +332,90 @@ export function CustomEnvFormContent({
         />
         <div className="invalid-feedback">Please provide a name</div>
       </div>
-
-      <div>
-        <Label className="form-label" for="addSessionLauncherDefaultUrl">
-          Default URL (Optional)
+      <div className={cx("mb-5", "mt-5")}>
+        <Label className="form-label">Session launcher environment</Label>
+        <Card className={cx("border", sessionViewStyles.EnvironmentCard)}>
+          <CardBody className={cx("d-flex", "flex-column", "p-4")}>
+            <div className={cx("mb-5")}>
+              <Label
+                className="form-label"
+                for="addSessionLauncherContainerImage"
+              >
+                Container Image
+              </Label>
+              <Controller
+                control={control}
+                name="container_image"
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Input
+                    className={cx(errors.container_image && "is-invalid")}
+                    id="addSessionLauncherContainerImage"
+                    placeholder="Docker image"
+                    type="text"
+                    data-cy="custom-image-input"
+                    {...field}
+                  />
+                )}
+              />
+              <div className="invalid-feedback">
+                Please provide a container image
+              </div>
+            </div>
+            <div className={cx("mb-0")}>
+              <Label className="form-label" for="addSessionLauncherDefaultUrl">
+                Default URL (Optional)
+              </Label>
+              <Controller
+                control={control}
+                name="default_url"
+                render={({ field }) => (
+                  <Input
+                    className="form-control"
+                    id="addSessionLauncherDefaultUrl"
+                    placeholder="/lab"
+                    type="text"
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+      <div className={cx("mt-5", "mb-5")}>
+        <Label className="form-label" for="addSessionResourceClass">
+          Compute resources
         </Label>
-        <Controller
-          control={control}
-          name="default_url"
-          render={({ field }) => (
-            <Input
-              className="form-control"
-              id="addSessionLauncherDefaultUrl"
-              placeholder="/lab"
-              type="text"
-              {...field}
-            />
-          )}
-        />
+        {!isLoadingResourcesPools &&
+        resourcePools &&
+        resourcePools?.length > 0 ? (
+          <Controller
+            control={control}
+            name="resourceClass"
+            defaultValue={defaultSessionClass}
+            render={() => (
+              <>
+                <SessionClassSelector
+                  id="addSessionResourceClass"
+                  resourcePools={resourcePools}
+                  onChange={onChangeResourceClass}
+                  defaultSessionClass={defaultSessionClass}
+                />
+                {errors?.resourceClass && (
+                  <div className={cx("small", "text-danger")}>
+                    Please provide a resource class
+                  </div>
+                )}
+              </>
+            )}
+            rules={{ required: true }}
+          />
+        ) : (
+          <WarnAlert>
+            There are no one resource pool available to create a session
+          </WarnAlert>
+        )}
       </div>
     </>
   );
@@ -348,6 +430,7 @@ interface ExistingEnvFormContentProps {
   touchedFields: Partial<
     Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
   >;
+  resetField: UseFormResetField<SessionLauncherForm>;
 }
 export function ExistingEnvFormContent({
   control,
@@ -355,13 +438,26 @@ export function ExistingEnvFormContent({
   watch,
   setValue,
   touchedFields,
+  resetField,
 }: ExistingEnvFormContentProps) {
   const {
     data: environments,
     error,
     isLoading,
   } = useGetSessionEnvironmentsQuery();
+  const { data: resourcePools, isLoading: isLoadingResourcesPools } =
+    useGetResourcePoolsQuery({});
   const watchEnvironmentId = watch("environment_id");
+  const defaultSessionClass = useMemo(
+    () =>
+      resourcePools
+        ?.filter((pool) => pool.default)
+        .flatMap((pool) => pool.classes)
+        .find((c) => c.default) ??
+      resourcePools?.find(() => true)?.classes[0] ??
+      undefined,
+    [resourcePools]
+  );
 
   useEffect(() => {
     if (watchEnvironmentId == null) {
@@ -371,9 +467,23 @@ export function ExistingEnvFormContent({
       const selectedEnv = environments.filter(
         (e) => e.id === watchEnvironmentId
       );
-      if (selectedEnv) setValue("name", selectedEnv[0].name);
+      if (selectedEnv) {
+        setValue("name", selectedEnv[0].name);
+        resetField("resourceClass");
+        if (defaultSessionClass) setValue("resourceClass", defaultSessionClass);
+      }
     }
-  }, [watchEnvironmentId, setValue, environments]);
+  }, [
+    watchEnvironmentId,
+    setValue,
+    environments,
+    resetField,
+    defaultSessionClass,
+  ]);
+
+  const onChangeResourceClass = (resourceClass: SingleValue<ResourceClass>) => {
+    if (resourceClass) setValue("resourceClass", resourceClass);
+  };
 
   return (
     <>
@@ -402,6 +512,12 @@ export function ExistingEnvFormContent({
                     environment={environment}
                     field={field}
                     touchedFields={touchedFields}
+                    resourcePools={resourcePools}
+                    onChangeResourceClass={onChangeResourceClass}
+                    isLoadingResourcesPools={isLoadingResourcesPools}
+                    errors={errors}
+                    control={control}
+                    defaultSessionClass={defaultSessionClass}
                   />
                 ))}
                 <Input
@@ -436,12 +552,24 @@ interface SessionEnvironmentItemProps {
   touchedFields: Partial<
     Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
   >;
+  resourcePools?: ResourcePool[];
+  isLoadingResourcesPools?: boolean;
+  onChangeResourceClass?: (resourceClass: SingleValue<ResourceClass>) => void;
+  errors: FieldErrors<SessionLauncherForm>;
+  control: Control<SessionLauncherForm, unknown>;
+  defaultSessionClass?: ResourceClass;
 }
 
 export function SessionEnvironmentItem({
   environment,
+  control,
+  defaultSessionClass,
   field,
   touchedFields,
+  resourcePools,
+  isLoadingResourcesPools,
+  onChangeResourceClass,
+  errors,
 }: SessionEnvironmentItemProps) {
   const { creation_date, id, name, description } = environment;
   const isSelected = field.value === id;
@@ -453,10 +581,40 @@ export function SessionEnvironmentItem({
     if (!orderCard || isEnvironmentIdTouched) setOrderCard(false);
   }, [isSelected, orderCard, isEnvironmentIdTouched]);
 
+  const selector = !isLoadingResourcesPools &&
+    resourcePools &&
+    resourcePools?.length > 0 && (
+      <div className="mt-3">
+        <Controller
+          control={control}
+          name="resourceClass"
+          defaultValue={defaultSessionClass}
+          render={() => (
+            <>
+              <Label for="resource-class-selector">Compute resources </Label>
+              <SessionClassSelector
+                id="resource-class-selector"
+                resourcePools={resourcePools}
+                onChange={onChangeResourceClass}
+                defaultSessionClass={defaultSessionClass}
+              />
+              {errors.resourceClass && (
+                <Label className={cx("text-danger", "fs-small")}>
+                  Select compute resource to continue{" "}
+                </Label>
+              )}
+            </>
+          )}
+          rules={{ required: true }}
+        />
+      </div>
+    );
+
   return (
     <Col
       xs={12}
       className={cx("mb-3", isSelected && orderCard && "order-first")}
+      data-cy="global-environment-item"
     >
       <Input
         className="btn-check"
@@ -466,27 +624,27 @@ export function SessionEnvironmentItem({
         value={id}
         checked={isSelected}
       />
-      <Label
-        className={cx(
-          "d-block",
-          "h-100",
-          "w-100",
-          "rounded",
-          "focus-ring",
-          "focus-ring-primary",
-          "cursor-pointer",
-          styles.environmentLabel
-        )}
-        for={`addSessionLauncherGlobalEnvironment-${id}`}
-      >
-        <Card>
-          <CardBody
+      <Card>
+        <CardBody
+          className={cx(
+            isSelected
+              ? "border rounded border-rk-green bg-success-subtle"
+              : "border rounded border-dark-subtle",
+            !isSelected && styles.environmentCard
+          )}
+        >
+          <Label
             className={cx(
-              isSelected
-                ? "border rounded border-rk-green bg-success-subtle"
-                : "border rounded border-dark-subtle",
-              !isSelected && styles.environmentCard
+              "d-block",
+              "h-100",
+              "w-100",
+              "rounded",
+              "focus-ring",
+              "focus-ring-primary",
+              "cursor-pointer",
+              styles.environmentLabel
             )}
+            for={`addSessionLauncherGlobalEnvironment-${id}`}
           >
             <CardTitle className={cx("mb-0", "fs-5", "text-rk-green")} tag="h5">
               {name}
@@ -508,9 +666,10 @@ export function SessionEnvironmentItem({
                 prefix="Created"
               />
             </CardText>
-          </CardBody>
-        </Card>
-      </Label>
+          </Label>
+          {isSelected && selector}
+        </CardBody>
+      </Card>
     </Col>
   );
 }

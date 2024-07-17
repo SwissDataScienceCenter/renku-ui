@@ -220,6 +220,17 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    sessionImage(args?: NameOnlyFixture) {
+      const { name = "getSessionImage" } = args ?? {};
+      const response = { status: 200 };
+      cy.intercept(
+        "GET",
+        "/ui-server/api/notebooks/images?image_url=*",
+        response
+      ).as(name);
+      return this;
+    }
+
     sessionServersEmpty(args?: NameOnlyFixture) {
       const { name = "getSessionServers" } = args ?? {};
       const response = { body: { servers: {} } };

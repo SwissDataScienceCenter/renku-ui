@@ -38,9 +38,9 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
     namespace,
     slug,
   } = useParams<{
-    id: string | undefined;
-    namespace: string | undefined;
-    slug: string | undefined;
+    id: string;
+    namespace: string;
+    slug: string;
   }>();
 
   const [detailsOpen, setDetailsOpen] = useState(false);

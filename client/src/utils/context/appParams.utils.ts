@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { clamp } from "lodash";
+import { clamp } from "lodash-es";
 import type { DashboardMessageParams } from "../../features/dashboard/message/DashboardMessage.types";
 import type { HomepageParams } from "../../landing/anonymousHome.types";
 import type { CoreApiVersionedUrlConfig } from "../helpers/url";

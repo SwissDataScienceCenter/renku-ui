@@ -18,8 +18,7 @@
 
 import { useRef } from "react";
 import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile, faProjectDiagram } from "@fortawesome/free-solid-svg-icons";
+import { FileEarmarkFill, Diagram2 } from "react-bootstrap-icons";
 
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
 import { useHistory } from "react-router-dom";
@@ -48,7 +47,7 @@ export default function FileAndLineageSwitch({
           active={insideFile}
           innerRef={fileIconRef}
         >
-          <FontAwesomeIcon icon={faFile} />
+          <FileEarmarkFill className="bi" />
         </Button>
         <UncontrolledTooltip target={fileIconRef}>
           File content view
@@ -58,7 +57,7 @@ export default function FileAndLineageSwitch({
           onClick={performSwitch}
           active={!insideFile}
         >
-          <FontAwesomeIcon icon={faProjectDiagram} />
+          <Diagram2 className="bi" />
         </Button>
         <UncontrolledTooltip target={lineageIconRef}>
           File lineage view

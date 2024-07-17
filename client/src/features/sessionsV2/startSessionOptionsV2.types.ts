@@ -18,12 +18,23 @@
 
 import type {
   DockerImageStatus,
-  SessionCloudStorage,
   SessionEnvironmentVariable,
 } from "../session/startSessionOptions.types";
+import type { CloudStorageGetRead } from "../projectsV2/api/storagesV2.api";
+
+export interface SessionStartCloudStorageConfiguration {
+  active: boolean;
+  cloudStorage: CloudStorageGetRead;
+  sensitiveFieldDefinitions: {
+    friendlyName: string;
+    help: string;
+    name: string;
+  }[];
+  sensitiveFieldValues: Record<string, string>;
+}
 
 export interface StartSessionOptionsV2 {
-  cloudStorage: SessionCloudStorage[];
+  cloudStorage: SessionStartCloudStorageConfiguration[];
   defaultUrl: string;
   dockerImageStatus: DockerImageStatus;
   environmentVariables: SessionEnvironmentVariable[];

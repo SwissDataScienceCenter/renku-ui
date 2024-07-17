@@ -19,16 +19,17 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useDispatch } from "react-redux";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Button, Card, CardBody, Col, Row } from "reactstrap";
+import { Card, CardBody, Col, Row } from "reactstrap";
 
+import { ReactNode } from "react";
+import { Globe2, LockFill } from "react-bootstrap-icons";
 import { Loader } from "../../../components/Loader";
-import { Pagination } from "../../../components/Pagination";
+import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import searchV2Api from "../searchV2.api";
+import { Group, Project, User, searchV2Api } from "../api/searchV2Api.api";
 import { setCreatedBy, setPage } from "../searchV2.slice";
-import { ProjectSearchResult, UserSearchResult } from "../searchV2.types";
 
 export default function SearchV2Results() {
   const searchState = useAppSelector((state) => state.searchV2);
@@ -62,10 +63,10 @@ function SearchV2ResultsContent() {
   const dispatch = useDispatch();
   // get the search state
   const { search } = useAppSelector((state) => state.searchV2);
-  const searchResults = searchV2Api.endpoints.getSearchResults.useQueryState(
+  const searchResults = searchV2Api.endpoints.$get.useQueryState(
     search.lastSearch != null
       ? {
-          searchString: search.lastSearch,
+          q: search.lastSearch,
           page: search.page,
           perPage: search.perPage,
         }
@@ -79,7 +80,7 @@ function SearchV2ResultsContent() {
     return <p>Start searching by typing in the search bar above.</p>;
   }
 
-  if (!searchResults.data?.items.length) {
+  if (!searchResults.data?.items?.length) {
     return (
       <>
         <p>
@@ -102,105 +103,188 @@ function SearchV2ResultsContent() {
           project={entity}
         />
       );
+    } else if (entity.type === "Group") {
+      return (
+        <SearchV2ResultGroup key={`group-result-${entity.id}`} group={entity} />
+      );
     } else if (entity.type === "User") {
       return (
         <SearchV2ResultUser key={`user-result-${entity.id}`} user={entity} />
       );
     }
     // Unknown entity type, in case backend introduces new types before the UI catches up
-    return (
-      <SearchV2ResultsUnknown key={`unknown-result-${index}`} index={index} />
-    );
+    return <SearchV2ResultsUnknown key={`unknown-result-${index}`} />;
   });
 
   return <Row className="gy-4">{resultsOutput}</Row>;
 }
 
 interface SearchV2ResultsCardProps {
-  cardId: string;
-  children: React.ReactNode;
-  url?: string;
+  children?: ReactNode;
 }
-function SearchV2ResultsCard({ cardId, children }: SearchV2ResultsCardProps) {
+function SearchV2ResultsCard({ children }: SearchV2ResultsCardProps) {
   return (
-    <Col key={cardId} xs={12} lg={6}>
-      <div data-cy="search-card">
-        <Card className={cx("border", "rounded")}>
-          <CardBody>{children}</CardBody>
-        </Card>
-      </div>
+    <Col xs={12} lg={6}>
+      <Card className={cx("border", "rounded", "h-100")} data-cy="search-card">
+        <CardBody className={cx("d-flex", "flex-column")}>{children}</CardBody>
+      </Card>
     </Col>
   );
 }
 
+interface SearchV2CardTitleProps {
+  children?: ReactNode;
+  entityType: ReactNode;
+  url: string;
+}
+function SearchV2CardTitle({
+  children,
+  entityType,
+  url,
+}: SearchV2CardTitleProps) {
+  return (
+    <div
+      className={cx(
+        "d-flex",
+        "flex-row",
+        "flex-wrap",
+        "flex-sm-nowrap",
+        "align-items-start",
+        "h3"
+      )}
+    >
+      <h3 className={cx("card-title", "fw-medium", "me-2")}>
+        <Link className={cx("link-offset-1")} to={url}>
+          {children}
+        </Link>
+      </h3>
+      <div
+        className={cx(
+          "ms-auto",
+          "pt-1",
+          "fst-italic",
+          "fs-6",
+          "text-dark-emphasis"
+        )}
+      >
+        {entityType}
+      </div>
+    </div>
+  );
+}
+
 interface SearchV2ResultProjectProps {
-  project: ProjectSearchResult;
+  project: Project;
   searchByUser: (userId: string) => void;
 }
-function SearchV2ResultProject({
-  project,
-  searchByUser,
-}: SearchV2ResultProjectProps) {
-  const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-    namespace: project.namespace,
-    slug: project.slug,
+function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
+  const { creationDate, description, name, namespace, slug, visibility } =
+    project;
+
+  const namespaceUrl =
+    namespace?.type === "User"
+      ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+          username: namespace?.namespace ?? "",
+        })
+      : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+          slug: namespace?.namespace ?? "",
+        });
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace: namespace?.namespace ?? "",
+    slug,
   });
+
   return (
-    <SearchV2ResultsCard
-      key={`project-${project.id}`}
-      cardId={`project-card-${project.id}`}
-    >
-      <Link to={url}>
-        <h4 className="mb-0">{project.name}</h4>
-      </Link>
-      <p className={cx("form-text", "mb-0")}>
-        {project.slug} - {project.visibility}
+    <SearchV2ResultsCard>
+      <SearchV2CardTitle url={projectUrl} entityType="Project">
+        {name}
+      </SearchV2CardTitle>
+      <p className={cx("mb-2", "card-text")}>
+        <Link to={namespaceUrl}>
+          {"@"}
+          {namespace?.namespace}
+        </Link>
       </p>
-      <p className={cx("form-text", "text-rk-green")}>
-        <Button
-          className="pe-0 ps-1 pt-0 pb-0 mb-1"
-          color="link"
-          onClick={() => searchByUser(project.createdBy.id)}
-        >
-          user-{project.createdBy.id}
-        </Button>
+      {description && <p className={cx("mb-2", "card-text")}>{description}</p>}
+      <div
+        className={cx("mt-auto", "mb-0", "card-text", "d-flex", "flex-wrap")}
+      >
+        <div className={cx("flex-grow-1", "me-2")}>
+          {visibility.toLowerCase() === "private" ? (
+            <>
+              <LockFill className={cx("bi", "me-1")} />
+              Private
+            </>
+          ) : (
+            <>
+              <Globe2 className={cx("bi", "me-1")} />
+              Public
+            </>
+          )}
+        </div>
+        <div>
+          <TimeCaption datetime={creationDate} prefix="Created" enableTooltip />
+        </div>
+      </div>
+    </SearchV2ResultsCard>
+  );
+}
+
+interface SearchV2ResultGroupProps {
+  group: Group;
+}
+function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
+  const { name, namespace, description } = group;
+
+  const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+    slug: namespace,
+  });
+
+  return (
+    <SearchV2ResultsCard>
+      <SearchV2CardTitle url={groupUrl} entityType="Group">
+        {name}
+      </SearchV2CardTitle>
+      <p className={cx("mb-2", "card-text")}>
+        {"@"}
+        {namespace}
       </p>
-      <p>{project.description}</p>
-      <p className="form-text mb-0">
-        <TimeCaption datetime={project.creationDate} prefix="Created" />
-      </p>
+      {description && <p className={cx("mb-0", "card-text")}>{description}</p>}
     </SearchV2ResultsCard>
   );
 }
 
 interface SearchV2ResultUserProps {
-  user: UserSearchResult;
+  user: User;
 }
 function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
+  const { firstName, lastName, namespace } = user;
+
+  const userUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+    username: namespace ?? "",
+  });
+
+  const displayName =
+    firstName && lastName
+      ? `${firstName} ${lastName}`
+      : firstName || lastName || namespace;
+
   return (
-    <SearchV2ResultsCard
-      key={`user-${user.id}`}
-      cardId={`user-card-${user.id}`}
-    >
-      <p className="form-text mb-0">{user.id}</p>
-      <h4 className="mb-0">
-        {user.firstName} {user.lastName}
-      </h4>
-      <p className="form-text mb-0">{user.email}</p>
+    <SearchV2ResultsCard>
+      <SearchV2CardTitle url={userUrl} entityType="User">
+        {displayName}
+      </SearchV2CardTitle>
+      <p className={cx("mb-0", "card-text")}>
+        {"@"}
+        {namespace}
+      </p>
     </SearchV2ResultsCard>
   );
 }
 
-interface SearchV2ResultsUnknownProps {
-  index: number;
-}
-function SearchV2ResultsUnknown({ index }: SearchV2ResultsUnknownProps) {
+function SearchV2ResultsUnknown() {
   return (
-    <SearchV2ResultsCard
-      key={`unknown-${index}`}
-      cardId={`unknown-card-${index}`}
-      url="#"
-    >
+    <SearchV2ResultsCard>
       <h4 className="mb-0">Unknown entity</h4>
       <p className="form-text mb-0">This entity type is not supported yet.</p>
     </SearchV2ResultsCard>

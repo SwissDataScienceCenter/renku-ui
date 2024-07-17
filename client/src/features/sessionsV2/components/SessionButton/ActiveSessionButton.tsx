@@ -43,7 +43,7 @@ import {
   Row,
 } from "reactstrap";
 
-import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
+import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { EnvironmentLogs } from "../../../../components/Logs";
 import { ButtonWithMenu } from "../../../../components/buttons/Button";
@@ -57,7 +57,7 @@ import AppContext from "../../../../utils/context/appContext";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
+import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
@@ -69,6 +69,10 @@ import {
 } from "../../../session/sessions.api";
 import { Session, SessionStatusState } from "../../../session/sessions.types";
 import useWaitForSessionStatus from "../../../session/useWaitForSessionStatus.hook";
+import {
+  ErrorOrNotAvailableResourcePools,
+  FetchingResourcePools,
+} from "../SessionModals/ResourceClassWarning";
 
 interface ActiveSessionButtonProps {
   session: Session;
@@ -353,7 +357,7 @@ export default function ActiveSessionButton({
         onClick={toggleModifySession}
       >
         <Tools className={cx("bi", "me-1")} />
-        Modify session
+        Modify Session resources
       </DropdownItem>
     );
 
@@ -507,7 +511,7 @@ function ModifySessionModal({
       size="lg"
       toggle={toggleModal}
     >
-      <ModalHeader toggle={toggleModal}>Modify Session</ModalHeader>
+      <ModalHeader toggle={toggleModal}>Modify Session Resources</ModalHeader>
       <ModifySessionModalContent
         annotations={annotations}
         onModifySession={onModifySession}
@@ -591,27 +595,9 @@ function ModifySessionModalContent({
     );
 
   const selector = isLoading ? (
-    <div className="form-label">
-      <Loader className="me-1" inline size={16} />
-      Fetching available resource pools...
-    </div>
+    <FetchingResourcePools />
   ) : !resourcePools || resourcePools.length == 0 || isError ? (
-    <ErrorAlert dismissible={false}>
-      <h3 className={cx("fs-6", "fw-bold")}>
-        Error on loading available session resource pools
-      </h3>
-      <p className="mb-0">
-        Modifying the session is not possible at the moment. You can try to{" "}
-        <a
-          className={cx("btn", "btn-sm", "btn-primary", "mx-1")}
-          href={window.location.href}
-          onClick={() => window.location.reload()}
-        >
-          reload the page
-        </a>
-        .
-      </p>
-    </ErrorAlert>
+    <ErrorOrNotAvailableResourcePools />
   ) : (
     <SessionClassSelector
       resourcePools={resourcePools}

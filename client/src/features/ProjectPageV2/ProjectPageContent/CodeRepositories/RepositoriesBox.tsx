@@ -36,7 +36,10 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
   const totalRepositories = project.repositories?.length || 0;
   return (
     <>
-      <div className={cx("p-3", "d-flex", "justify-content-between")}>
+      <div
+        className={cx("p-3", "d-flex", "justify-content-between")}
+        data-cy="code-repositories-box"
+      >
         <div className="fw-bold">
           <CodeSquare size={20} className={cx("me-2")} />
           Code Repositories ({project?.repositories?.length})

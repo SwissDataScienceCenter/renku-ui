@@ -37,12 +37,12 @@ import {
   NavbarToggler,
 } from "reactstrap";
 
-import AppContext from "../../utils/context/appContext";
 import { ExternalDocsLink } from "../../components/ExternalLinks";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { Links } from "../../utils/constants/Docs";
+import AppContext from "../../utils/context/appContext";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
 
@@ -158,7 +158,7 @@ export default function NavbarV2() {
   }, []);
 
   const matchesShowSessionPage = useMatch(
-    "/v2/projects/:namespace/:slug/sessions/show/:session"
+    ABSOLUTE_ROUTES.v2.projects.show.sessions.show
   );
 
   if (matchesShowSessionPage) {
@@ -198,7 +198,7 @@ export default function NavbarV2() {
           <RenkuNavLinkV2
             id="link-home"
             data-cy="link-home"
-            to="/v2/"
+            to={ABSOLUTE_ROUTES.v2.root}
             className={cx("navbar-brand", "me-2", "pb-0", "pt-0")}
           >
             <img
@@ -227,12 +227,16 @@ export default function NavbarV2() {
             navbar
           >
             <NavItem className="me-3">
-              <RenkuNavLinkV2 end to="search" title="Search">
+              <RenkuNavLinkV2 end to={ABSOLUTE_ROUTES.v2.search} title="Search">
                 <Search className="bi" /> Search
               </RenkuNavLinkV2>
             </NavItem>
             <NavItem className="me-3">
-              <RenkuNavLinkV2 end to="/v2/" title="Dashboard">
+              <RenkuNavLinkV2
+                end
+                to={ABSOLUTE_ROUTES.v2.root}
+                title="Dashboard"
+              >
                 Dashboard
               </RenkuNavLinkV2>
             </NavItem>
