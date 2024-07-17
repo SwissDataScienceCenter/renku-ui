@@ -99,7 +99,7 @@ function FooterNavbarAnonymousLinks() {
 function FooterNavbarLoggedInLinks({ privacyLink }) {
   const helpLocation = location.pathname.startsWith("/v2")
     ? ABSOLUTE_ROUTES.v2.help.root
-    : "/help";
+    : Url.pages.help;
   return (
     <>
       <RenkuNavLink to={helpLocation} title="Help" />
@@ -155,6 +155,10 @@ function FooterNavbarInner({ location, params }) {
       ? `${taggedVersion} (dev)`
       : taggedVersion;
 
+  const releaseLocation = location.pathname.startsWith("/v2")
+    ? ABSOLUTE_ROUTES.v2.help.release
+    : Url.pages.help.release;
+
   const footer = (
     <footer>
       <div
@@ -176,7 +180,7 @@ function FooterNavbarInner({ location, params }) {
         <div className="navbar-nav" data-cy="version-info">
           <Link
             className={cx("d-flex", "ms-auto", "ms-lg-0", "nav-link", "p-0")}
-            to={Url.pages.help.release}
+            to={releaseLocation}
           >
             <img src={RENKU_LOGO} alt="Renku" height={44} />
             <span className={cx("my-auto", "ps-3")}>{displayVersion}</span>
