@@ -153,7 +153,7 @@ export function ButtonWithMenuV2(props: BButtonWithMenuV2Props) {
         data-cy="button-with-menu-dropdown"
         disabled={props.disabled}
       />
-      <DropdownMenu>{props.children}</DropdownMenu>
+      <DropdownMenu end>{props.children}</DropdownMenu>
     </UncontrolledDropdown>
   );
 }

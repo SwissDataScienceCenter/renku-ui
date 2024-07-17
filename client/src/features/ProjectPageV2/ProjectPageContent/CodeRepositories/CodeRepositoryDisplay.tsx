@@ -21,7 +21,6 @@ import {
   BoxArrowUpRight,
   Pencil,
   CircleFill,
-  ThreeDotsVertical,
   Trash,
   XLg,
 } from "react-bootstrap-icons";
@@ -31,8 +30,6 @@ import {
   Button,
   Col,
   DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
   Form,
   FormGroup,
   Input,
@@ -44,7 +41,6 @@ import {
   Offcanvas,
   OffcanvasBody,
   Row,
-  UncontrolledDropdown,
 } from "reactstrap";
 import { skipToken } from "@reduxjs/toolkit/query";
 
@@ -58,7 +54,6 @@ import {
   RenkuAlert,
   WarnAlert,
 } from "../../../../components/Alert";
-import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import connectedServicesApi, {
   useGetProvidersQuery,
@@ -71,6 +66,7 @@ import repositoriesApi, {
 import { Link, useLocation } from "react-router-dom-v5-compat";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import { Url } from "../../../../utils/helpers/url";
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -307,53 +303,32 @@ function CodeRepositoryActions({
     setIsEditOpen((open) => !open);
   }, []);
 
+  const defaultAction = (
+    <Button
+      className="text-nowrap"
+      color="outline-primary"
+      data-cy="code-repository-edit"
+      onClick={toggleEdit}
+      size="sm"
+    >
+      <Pencil className={cx("me-2", "text-icon")} />
+      Edit
+    </Button>
+  );
+
   return (
     <>
-      <UncontrolledDropdown>
-        <DropdownToggle
-          className={cx(
-            "p-0",
-            "bg-transparent",
-            "border-0",
-            "shadow-none",
-            dotsDropdownStyles.threeDotsDark
-          )}
-          data-cy="code-repository-actions"
-        >
-          <ThreeDotsVertical size={24} className="fs-3" />
-          <span className="visually-hidden">Actions</span>
-        </DropdownToggle>
-        <DropdownMenu
-          className={cx("text-end", "mx-0", "mt-2")}
-          end
-          data-cy="code-repository-menu"
-        >
-          <DropdownItem
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "gap-2",
-              "justify-content-start"
-            )}
-            onClick={toggleEdit}
-            data-cy="code-repository-edit"
-          >
-            <Pencil /> Edit code repository
-          </DropdownItem>
-          <DropdownItem
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "gap-2",
-              "justify-content-start"
-            )}
-            onClick={toggleDelete}
-            data-cy="code-repository-delete"
-          >
-            <Trash /> Remove code repository
-          </DropdownItem>
-        </DropdownMenu>
-      </UncontrolledDropdown>
+      <ButtonWithMenuV2
+        color="outline-primary"
+        default={defaultAction}
+        preventPropagation
+        size="sm"
+      >
+        <DropdownItem data-cy="code-repository-delete" onClick={toggleDelete}>
+          <Trash className={cx("me-2", "text-icon")} />
+          Remove
+        </DropdownItem>
+      </ButtonWithMenuV2>
       <CodeRepositoryDeleteModal
         repositoryUrl={url}
         isOpen={isDeleteOpen}
@@ -403,6 +378,7 @@ export function RepositoryItem({
         ),
       }
     : {};
+  // ! Product team wants this restored -- keeping the code for the next iteration
   // const urlDisplay = (
   //   <div className={cx("d-flex", "align-items-center", "gap-2")}>
   //     <RepositoryIcon
@@ -422,15 +398,9 @@ export function RepositoryItem({
   // );
 
   return (
-    <div className={cx("d-flex", "align-items-center")}>
-      <div
-        className={cx(
-          "align-items-center",
-          "d-flex",
-          "flex-row",
-          "col-11",
-          "cursor-pointer"
-        )}
+    <Row className={cx("align-items-center", "g-2")}>
+      <Col
+        className={cx("align-items-center", "cursor-pointer", "flex-row")}
         onClick={toggleDetails}
       >
         <div {...mainInteraction}>
@@ -441,20 +411,12 @@ export function RepositoryItem({
           </span>
           <RepositoryPermissions repositoryUrl={url} />
         </div>
-      </div>
+      </Col>
       {!readonly && (
         <>
-          <div
-            className={cx(
-              "d-flex",
-              "ms-auto",
-              "my-auto",
-              "col-1",
-              "justify-content-end"
-            )}
-          >
+          <Col xs={12} sm="auto" className="ms-auto">
             <CodeRepositoryActions project={project} url={url} />
-          </div>
+          </Col>
           <RepositoryView
             project={project}
             repositoryUrl={url}
@@ -464,7 +426,7 @@ export function RepositoryItem({
           />
         </>
       )}
-    </div>
+    </Row>
   );
 }
 

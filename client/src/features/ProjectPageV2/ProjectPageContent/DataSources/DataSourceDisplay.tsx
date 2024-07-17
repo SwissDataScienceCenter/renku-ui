@@ -17,30 +17,27 @@
  */
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Pencil, ThreeDotsVertical, Trash, XLg } from "react-bootstrap-icons";
+import { Pencil, Trash, XLg } from "react-bootstrap-icons";
 import {
   Button,
   Col,
   DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
   ListGroupItem,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
   Row,
-  UncontrolledDropdown,
 } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader.tsx";
-import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
 import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
 import {
   CloudStorageGetRead,
   useDeleteStoragesV2ByStorageIdMutation,
 } from "../../../projectsV2/api/storagesV2.api.ts";
 import { DataSourceView } from "./DataSourceView.tsx";
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button.tsx";
 
 interface DataSourceDeleteModalProps {
   storage: CloudStorageGetRead;
@@ -130,55 +127,32 @@ export function DataSourceActions({
     setIsEditOpen((open) => !open);
   }, []);
 
+  const defaultAction = (
+    <Button
+      className="text-nowrap"
+      color="outline-primary"
+      data-cy="data-source-edit"
+      onClick={toggleEdit}
+      size="sm"
+    >
+      <Pencil className={cx("me-2", "text-icon")} />
+      Edit
+    </Button>
+  );
+
   return (
     <>
-      <UncontrolledDropdown>
-        <DropdownToggle
-          className={cx(
-            "m-0",
-            "p-0",
-            "bg-transparent",
-            "d-flex",
-            "border-0",
-            "shadow-none",
-            dotsDropdownStyles.threeDotsDark
-          )}
-          data-cy="data-source-action"
-        >
-          <ThreeDotsVertical size={24} className="fs-3" />
-          <span className="visually-hidden">Actions</span>
-        </DropdownToggle>
-        <DropdownMenu
-          className={cx("text-end", "mx-0", "mt-2")}
-          end
-          data-cy="data-source-menu"
-        >
-          <DropdownItem
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "gap-2",
-              "justify-content-start"
-            )}
-            onClick={toggleDelete}
-            data-cy="data-source-delete"
-          >
-            <Trash /> Remove data sources
-          </DropdownItem>
-          <DropdownItem
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "gap-2",
-              "justify-content-start"
-            )}
-            onClick={toggleEdit}
-            data-cy="data-source-edit"
-          >
-            <Pencil /> Edit data source
-          </DropdownItem>
-        </DropdownMenu>
-      </UncontrolledDropdown>
+      <ButtonWithMenuV2
+        color="outline-primary"
+        default={defaultAction}
+        preventPropagation
+        size="sm"
+      >
+        <DropdownItem data-cy="data-source-delete" onClick={toggleDelete}>
+          <Trash className={cx("me-2", "text-icon")} />
+          Remove
+        </DropdownItem>
+      </ButtonWithMenuV2>
       <DataSourceDeleteModal
         storage={storage}
         isOpen={isDeleteOpen}
@@ -223,33 +197,24 @@ export function DataSourceDisplay({
 
   return (
     <ListGroupItem action>
-      <div className={cx("d-flex", "align-items-center")}>
-        <div
+      <Row className={cx("align-items-center", "g-2")}>
+        <Col
           className={cx(
             "cursor-pointer",
             "link-primary",
             "text-body",
-            "text-decoration-none",
-            "col-11"
+            "text-decoration-none"
           )}
           onClick={toggleDetails}
         >
           <span>
             {storageName} {storageType}
           </span>
-        </div>
-        <div
-          className={cx(
-            "d-flex",
-            "ms-auto",
-            "my-auto",
-            "col-1",
-            "justify-content-end"
-          )}
-        >
+        </Col>
+        <Col xs={12} sm="auto" className="ms-auto">
           <DataSourceActions storage={storage} projectId={projectId} />
-        </div>
-      </div>
+        </Col>
+      </Row>
       <DataSourceView
         storage={storage}
         setToggleView={toggleDetails}

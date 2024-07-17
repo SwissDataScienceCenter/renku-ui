@@ -18,23 +18,16 @@
 
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
-import {
-  Pencil,
-  PlayCircle,
-  ThreeDotsVertical,
-  Trash,
-} from "react-bootstrap-icons";
+import { Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import {
   Badge,
+  Button,
   Card,
   CardBody,
   CardHeader,
   DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
   ListGroup,
-  UncontrolledDropdown,
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
@@ -54,12 +47,11 @@ import { SessionView } from "./SessionView/SessionView";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
+import SessionItem from "./SessionList/SessionItem";
+import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
-
-import dotsDropdownStyles from "../../components/buttons/ThreeDots.module.scss";
-import SessionItem from "./SessionList/SessionItem";
 
 export function getShowSessionUrlByProject(
   project: Project,
@@ -201,38 +193,32 @@ export function SessionV2Actions({
     setIsDeleteOpen((open) => !open);
   }, []);
 
+  const defaultAction = (
+    <Button
+      className="text-nowrap"
+      color="outline-primary"
+      data-cy="session-view-menu-edit"
+      onClick={toggleUpdate}
+      size="sm"
+    >
+      <Pencil className={cx("me-2", "text-icon")} />
+      Edit
+    </Button>
+  );
+
   return (
     <>
-      <UncontrolledDropdown>
-        <DropdownToggle
-          className={cx(
-            "m-0",
-            "p-0",
-            "bg-transparent",
-            "d-flex",
-            "border-0",
-            "shadow-none",
-            dotsDropdownStyles.threeDotsDark
-          )}
-        >
-          <div data-cy="session-view-menu">
-            <ThreeDotsVertical size={24} />
-            <span className="visually-hidden">Actions</span>
-          </div>
-        </DropdownToggle>
-        <DropdownMenu className="btn-with-menu-options" end>
-          <DropdownItem onClick={toggleUpdate} data-cy="session-view-menu-edit">
-            <Pencil /> Edit Launcher
-          </DropdownItem>
-          <DropdownItem
-            onClick={toggleDelete}
-            data-cy="session-view-menu-delete"
-          >
-            <Trash /> Delete Launcher
-          </DropdownItem>
-        </DropdownMenu>
-      </UncontrolledDropdown>
-
+      <ButtonWithMenuV2
+        color="outline-primary"
+        default={defaultAction}
+        preventPropagation
+        size="sm"
+      >
+        <DropdownItem data-cy="session-view-menu-delete" onClick={toggleDelete}>
+          <Trash className={cx("me-2", "text-icon")} />
+          Delete
+        </DropdownItem>
+      </ButtonWithMenuV2>
       <UpdateSessionLauncherModal
         isOpen={isUpdateOpen}
         launcher={launcher}
