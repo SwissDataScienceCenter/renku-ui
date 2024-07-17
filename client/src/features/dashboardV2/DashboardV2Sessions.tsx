@@ -2,7 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Col, ListGroup, ListGroupItem, Row } from "reactstrap";
+import { Col, ListGroup, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import { EnvironmentLogs } from "../../components/Logs";
