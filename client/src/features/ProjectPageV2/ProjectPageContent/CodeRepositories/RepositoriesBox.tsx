@@ -31,7 +31,6 @@ import {
   CardBody,
   CardHeader,
   ListGroup,
-  ListGroupItem,
 } from "reactstrap";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
