@@ -57,7 +57,7 @@ export default function GroupSimple({
         </p>
       )}
       <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
-        <VisibilityIcon className="text-primary" visibility="public" />
+        <VisibilityIcon visibility="public" />
         <TimeCaption
           className={cx("ms-auto", "my-auto")}
           datetime={group.creation_date}
