@@ -126,7 +126,7 @@ function DashboardWelcome() {
       <Row className="mb-3">
         <Col>
           <h2>
-            <b>Welcome to the Renku 2.0 alpha preview!</b>
+            <b>Welcome to the Renku 2.0!</b>
           </h2>
         </Col>
       </Row>
@@ -156,12 +156,10 @@ function DashboardWelcome() {
       <Row>
         <Col>
           <WarnAlert timeout={0} dismissible={false}>
-            <h4>
-              Do not do any important work in the Renku 2.0 alpha preview!
-            </h4>
+            <h4>Do not do any important work in the Renku 2.0 beta preview!</h4>
             <p>
-              The alpha is for testing only. We do not guarantee saving and
-              persisting work in the alpha.
+              The beta is for testing only. We do not guarantee saving and
+              persisting work in the beta.
             </p>
             <div>
               You can go back to Renku 1.0 at any time.{" "}

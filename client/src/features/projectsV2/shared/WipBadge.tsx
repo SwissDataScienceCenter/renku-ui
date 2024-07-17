@@ -16,30 +16,31 @@
  * limitations under the License
  */
 
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
+import cx from "classnames";
 import { Badge, UncontrolledTooltip } from "reactstrap";
 
-type WipBadeProps = {
-  label?: string;
-  text?: string;
-};
+interface WipBadeProps {
+  children?: ReactNode; //label
+  tooltip?: ReactNode; //text
+}
 
 export default function WipBadge({
-  label = "Alpha",
-  text = "Renku 2.0 is under active development and features may not work as expected.",
+  children = "Beta",
+  tooltip = "Renku 2.0 is under active development and features may not work as expected.",
 }: WipBadeProps) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   return (
     <>
       <Badge
-        className="wip-badge text-primary"
+        className={cx("wip-badge", "text-primary")}
         color="rk-yellow"
         innerRef={ref}
       >
-        {label}
+        {children}
       </Badge>
-      <UncontrolledTooltip target={ref}>{text}</UncontrolledTooltip>
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
     </>
   );
 }
