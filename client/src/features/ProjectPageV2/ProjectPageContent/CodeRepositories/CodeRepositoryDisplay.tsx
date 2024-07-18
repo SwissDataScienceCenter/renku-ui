@@ -439,8 +439,16 @@ function RepositoryIcon({ className, provider }: RepositoryIconProps) {
     return null;
   }
 
-  // eslint-disable-next-line spellcheck/spell-checker
-  const iconUrl = new URL("/favicon.ico", provider);
+  const iconUrl = useMemo(
+    // eslint-disable-next-line spellcheck/spell-checker
+    () => safeNewUrl("/favicon.ico", provider),
+    [provider]
+  );
+
+  if (iconUrl == null) {
+    return null;
+  }
+
   return (
     <img
       className={className}
