@@ -1,7 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react";
-import SessionStatusIcon from "../../features/session/components/status/SessionStatusIcon.tsx";
 import { Badge } from "reactstrap";
-import { DashCircleFill } from "react-bootstrap-icons";
 
 export default {
   args: {
@@ -43,47 +41,6 @@ type Story = StoryObj<React.HTMLAttributes<HTMLDivElement>>;
 
 export const OnlyText_: Story = {
   render: (_args) => <Badge {..._args}>{_args.children}</Badge>,
-};
-
-export const BadgeWithIconAndDefaultColor: Story = {
-  render: (_args) => (
-    <Badge {..._args}>
-      <SessionStatusIcon defaultImage={false} status={"running"} />
-    </Badge>
-  ),
-};
-
-export const BadgeSuccessColor_: Story = {
-  render: (_args) => (
-    <Badge {..._args} color="success">
-      <SessionStatusIcon defaultImage={false} status={"running"} />
-    </Badge>
-  ),
-};
-
-export const BadgeWarningColor_: Story = {
-  render: (_args) => (
-    <Badge {..._args} color="warning">
-      <SessionStatusIcon defaultImage={false} status={"running"} />
-    </Badge>
-  ),
-};
-
-export const BadgeErrorColor_: Story = {
-  render: (_args) => (
-    <Badge {..._args} color="danger">
-      <SessionStatusIcon defaultImage={false} status={"failed"} />
-    </Badge>
-  ),
-};
-
-export const IconWithText_: Story = {
-  render: (_args) => (
-    <Badge {..._args} pill={true}>
-      <DashCircleFill className="me-2" />
-      Not Running
-    </Badge>
-  ),
 };
 
 export const BadgeSizes_: Story = {

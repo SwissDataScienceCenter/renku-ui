@@ -2,7 +2,7 @@ import cx from "classnames";
 import { StoryObj } from "@storybook/react";
 
 export default {
-  title: "Bootstrap/Spacing OUTDATED",
+  title: "Bootstrap/_Spacing",
   component: "div" as React.ElementType,
   parameters: {
     docs: {

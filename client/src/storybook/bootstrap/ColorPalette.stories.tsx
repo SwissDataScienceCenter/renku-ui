@@ -60,6 +60,7 @@ const colors: Color[] = [
   { name: "Info", hex: getComputedStyleValue("--bs-info") },
   { name: "Light", hex: getComputedStyleValue("--bs-light") },
   { name: "Dark", hex: getComputedStyleValue("--bs-dark") },
+  { name: "CUSTOM - Navy", hex: getComputedStyleValue("--bs-navy") },
 ];
 
 const Template = () => <ColorPalette colors={colors} />;
