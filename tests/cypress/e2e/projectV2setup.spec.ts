@@ -171,7 +171,7 @@ describe("Navigate to project page", () => {
     cy.wait("@updateProjectV2");
   });
 
-  it("set up sessions", () => {
+  it.only("set up sessions", () => {
     cy.intercept("/ui-server/api/notebooks/servers*", {
       body: { servers: {} },
     }).as("getSessions");

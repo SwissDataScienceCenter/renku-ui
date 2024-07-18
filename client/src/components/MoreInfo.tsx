@@ -22,15 +22,24 @@ import { InfoCircleFill } from "react-bootstrap-icons";
 import { PopoverBody, UncontrolledPopover } from "reactstrap";
 import LazyRenkuMarkdown from "./markdown/LazyRenkuMarkdown.tsx";
 
-export function MoreInfo({ help }: { help: string }) {
+export function MoreInfo({
+  help,
+  trigger = "hover focus",
+}: {
+  help: string;
+  trigger?: string;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
 
   return (
     <>
       <span ref={ref}>
-        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
+        <InfoCircleFill
+          className={cx("bi", "ms-1", "cursor-pointer")}
+          tabIndex={0}
+        />
       </span>
-      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
+      <UncontrolledPopover target={ref} placement="right" trigger={trigger}>
         <PopoverBody>
           <LazyRenkuMarkdown markdownText={help} />
         </PopoverBody>

@@ -57,6 +57,7 @@ import {
   MOUNT_DIRECTORY_DEFAULT,
 } from "./session.utils.ts";
 import { EnvironmentKind } from "./sessionsV2.types.ts";
+import InformativeIcon from "../../components/InformativeIcon.tsx";
 
 export interface SessionLauncherForm {
   name: string;
@@ -97,7 +98,12 @@ export default function SessionLauncherFormContent({
   } = useGetSessionEnvironmentsQuery();
   const watchEnvironmentKind = watch("environment_kind");
   const desc = getFormCustomValuesDesc();
-
+  const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
+  const toggleIsOpen = useCallback(
+    () =>
+      setIsAdvanceSettingsOpen((isAdvanceSettingOpen) => !isAdvanceSettingOpen),
+    []
+  );
   return (
     <>
       <div className="mb-3">
@@ -266,148 +272,174 @@ export default function SessionLauncherFormContent({
         />
         <div className="invalid-feedback">Please provide a container image</div>
       </div>
-
-      {
-        // start custom image values...
+      {watchEnvironmentKind === "container_image" && (
         <>
-          <div
-            className={cx(
-              watchEnvironmentKind !== "container_image" && "d-none",
-              "mb-3",
-              "col-3"
-            )}
-          >
-            <Label className="form-label" for="addSessionLauncherPort">
-              Port (Optional) <MoreInfo help={desc.port} />
-            </Label>
-            <Controller
-              control={control}
-              name="port"
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.port && "is-invalid")}
-                  id="addSessionLauncherPort"
-                  placeholder="8080"
-                  type="text"
-                  {...field}
-                />
-              )}
-            />
-          </div>
-
-          <div
-            className={cx(
-              watchEnvironmentKind !== "container_image" && "d-none",
-              "mb-3"
-            )}
-          >
-            <Label
-              className="form-label"
-              for="addSessionLauncherWorkingDirectory"
+          <div className="mb-3">
+            <span
+              className={cx("fw-bold", "cursor-pointer")}
+              onClick={toggleIsOpen}
             >
-              Working directory (Optional){" "}
-              <MoreInfo help={desc.workingDirectory} />
-            </Label>
-            <Controller
-              control={control}
-              name="workingDirectory"
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.workingDirectory && "is-invalid")}
-                  id="addSessionLauncherWorkingDirectory"
-                  placeholder="/"
-                  type="text"
-                  {...field}
-                />
-              )}
-            />
+              Advance settings{" "}
+              <ChevronFlippedIcon flipped={isAdvanceSettingOpen} />
+            </span>
           </div>
-
-          <div
-            className={cx(
-              watchEnvironmentKind !== "container_image" && "d-none",
-              "mb-3"
-            )}
-          >
-            <Label
-              className="form-label"
-              for="addSessionLauncherMountDirectory"
+          <Collapse isOpen={isAdvanceSettingOpen}>
+            <div
+              className={cx(
+                watchEnvironmentKind !== "container_image" && "d-none",
+                "mb-3",
+                "col-3"
+              )}
             >
-              Mount directory (Optional) <MoreInfo help={desc.mountDirectory} />
-            </Label>
-            <Controller
-              control={control}
-              name="mountDirectory"
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.mountDirectory && "is-invalid")}
-                  id="addSessionLauncherMountDirectory"
-                  placeholder=""
-                  type="text"
-                  {...field}
-                />
-              )}
-            />
-          </div>
+              <Label
+                className={cx("form-label", "me-2")}
+                for="addSessionLauncherPort"
+              >
+                Port (Optional)
+              </Label>
+              <InformativeIcon>{desc.port}</InformativeIcon>
+              <Controller
+                control={control}
+                name="port"
+                render={({ field }) => (
+                  <Input
+                    className={cx(errors.port && "is-invalid")}
+                    id="addSessionLauncherPort"
+                    placeholder="8080"
+                    type="text"
+                    {...field}
+                  />
+                )}
+              />
+            </div>
 
-          <div
-            className={cx(
-              watchEnvironmentKind !== "container_image" && "d-none",
-              "mb-3",
-              "col-3"
-            )}
-          >
-            <Label className="form-label" for="addSessionLauncherUid">
-              UID (Optional) <MoreInfo help={desc.uid} />
-            </Label>
-            <Controller
-              control={control}
-              name="uid"
-              rules={{ required: false, min: 1000 }}
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.uid && "is-invalid")}
-                  id="addSessionLauncherUID"
-                  placeholder="1000"
-                  type="text"
-                  {...field}
-                />
+            <div
+              className={cx(
+                watchEnvironmentKind !== "container_image" && "d-none",
+                "mb-3"
               )}
-            />
-          </div>
+            >
+              <Label
+                className={cx("form-label", "me-2")}
+                for="addSessionLauncherWorkingDirectory"
+              >
+                Working directory (Optional)
+              </Label>
+              <InformativeIcon>{desc.workingDirectory}</InformativeIcon>
+              <Controller
+                control={control}
+                name="workingDirectory"
+                render={({ field }) => (
+                  <Input
+                    className={cx(errors.workingDirectory && "is-invalid")}
+                    id="addSessionLauncherWorkingDirectory"
+                    placeholder="/"
+                    type="text"
+                    {...field}
+                  />
+                )}
+              />
+            </div>
 
-          <div
-            className={cx(
-              watchEnvironmentKind !== "container_image" && "d-none",
-              "mb-3",
-              "col-3"
-            )}
-          >
-            <Label className="form-label" for="addSessionLauncherGid">
-              GID (Optional) <MoreInfo help={desc.gid} />
-            </Label>
-            <Controller
-              control={control}
-              name="gid"
-              rules={{ required: false, min: 1000 }}
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.gid && "is-invalid")}
-                  id="addSessionLauncherGID"
-                  placeholder="1000"
-                  type="text"
-                  {...field}
-                />
+            <div
+              className={cx(
+                watchEnvironmentKind !== "container_image" && "d-none",
+                "mb-3"
               )}
-            />
-          </div>
+            >
+              <Label
+                className={cx("form-label", "me-2")}
+                for="addSessionLauncherMountDirectory"
+              >
+                Mount directory (Optional)
+              </Label>
+              <InformativeIcon>{desc.mountDirectory}</InformativeIcon>
+              <Controller
+                control={control}
+                name="mountDirectory"
+                render={({ field }) => (
+                  <Input
+                    className={cx(errors.mountDirectory && "is-invalid")}
+                    id="addSessionLauncherMountDirectory"
+                    placeholder=""
+                    type="text"
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+
+            <div
+              className={cx(
+                watchEnvironmentKind !== "container_image" && "d-none",
+                "mb-3",
+                "col-3"
+              )}
+            >
+              <Label
+                className={cx("form-label", "me-2")}
+                for="addSessionLauncherUid"
+              >
+                UID (Optional
+              </Label>
+              <InformativeIcon>{desc.uid}</InformativeIcon>
+              <Controller
+                control={control}
+                name="uid"
+                rules={{ required: false, min: 1000 }}
+                render={({ field }) => (
+                  <Input
+                    className={cx(errors.uid && "is-invalid")}
+                    id="addSessionLauncherUID"
+                    placeholder="1000"
+                    type="text"
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+
+            <div
+              className={cx(
+                watchEnvironmentKind !== "container_image" && "d-none",
+                "mb-3",
+                "col-3"
+              )}
+            >
+              <Label
+                className={cx("form-label", "me-2")}
+                for="addSessionLauncherGid"
+              >
+                GID (Optional)
+              </Label>
+              <InformativeIcon>{desc.gid}</InformativeIcon>
+              <Controller
+                control={control}
+                name="gid"
+                rules={{ required: false, min: 1000 }}
+                render={({ field }) => (
+                  <Input
+                    className={cx(errors.gid && "is-invalid")}
+                    id="addSessionLauncherGID"
+                    placeholder="1000"
+                    type="text"
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+          </Collapse>
         </>
-      }
+      )}
 
       <div>
-        <Label className="form-label" for="addSessionLauncherDefaultUrl">
+        <Label
+          className={cx("form-label", "me-2")}
+          for="addSessionLauncherDefaultUrl"
+        >
           Default URL
         </Label>
+        <MoreInfo help={desc.urlPath} trigger="trigger" />
         <Controller
           control={control}
           name="default_url"
@@ -562,11 +594,12 @@ export function CustomEnvFormContent({
               <div className={cx("my-5", "row")}>
                 <div className={cx("col-12", "col-md-9")}>
                   <Label
-                    className="form-label"
+                    className="form-label me-2"
                     for="addSessionLauncherDefaultUrl"
                   >
-                    Default URL (Optional) <MoreInfo help={desc.subUrlPath} />
+                    Default URL (Optional)
                   </Label>
+                  <MoreInfo trigger="legacy" help={desc.urlPath} />
                   <Controller
                     control={control}
                     name="default_url"
@@ -582,9 +615,13 @@ export function CustomEnvFormContent({
                   />
                 </div>
                 <div className={cx("col-12", "col-md-3")}>
-                  <Label className="form-label" for="addSessionLauncherPort">
-                    Port (Optional) <MoreInfo help={desc.port} />
+                  <Label
+                    className="form-label me-2"
+                    for="addSessionLauncherPort"
+                  >
+                    Port (Optional)
                   </Label>
+                  <MoreInfo trigger="legacy" help={desc.port} />
                   <Controller
                     control={control}
                     name="port"
@@ -605,12 +642,12 @@ export function CustomEnvFormContent({
               <div className={cx("mb-5", "row")}>
                 <div className="col-6">
                   <Label
-                    className="form-label"
+                    className="form-label me-2"
                     for="addSessionLauncherWorkingDirectory"
                   >
-                    Working Directory (Optional){" "}
-                    <MoreInfo help={desc.workingDirectory} />
+                    Working Directory (Optional)
                   </Label>
+                  <MoreInfo trigger="legacy" help={desc.workingDirectory} />
                   <Controller
                     control={control}
                     name="workingDirectory"
@@ -629,12 +666,12 @@ export function CustomEnvFormContent({
                 </div>
                 <div className="col-6">
                   <Label
-                    className="form-label"
+                    className="form-label me-2"
                     for="addSessionLauncherMountDirectory"
                   >
-                    Mount directory (Optional){" "}
-                    <MoreInfo help={desc.mountDirectory} />
+                    Mount directory (Optional)
                   </Label>
+                  <MoreInfo trigger="legacy" help={desc.mountDirectory} />
                   <Controller
                     control={control}
                     name="mountDirectory"
@@ -654,9 +691,13 @@ export function CustomEnvFormContent({
               </div>
               <div className={cx("mb-5", "row")}>
                 <div className="col-3">
-                  <Label className="form-label" for="addSessionLauncherUID">
-                    UID (Optional) <MoreInfo help={desc.uid} />
+                  <Label
+                    className="form-label me-2"
+                    for="addSessionLauncherUID"
+                  >
+                    UID (Optional)
                   </Label>
+                  <MoreInfo trigger="legacy" help={desc.uid} />
                   <Controller
                     control={control}
                     name="uid"
@@ -675,9 +716,13 @@ export function CustomEnvFormContent({
                   />
                 </div>
                 <div className="col-3">
-                  <Label className="form-label" for="addSessionLauncherGID">
-                    GID (Optional) <MoreInfo help={desc.gid} />
+                  <Label
+                    className="form-label me-2"
+                    for="addSessionLauncherGID"
+                  >
+                    GID (Optional)
                   </Label>
+                  <MoreInfo trigger="legacy" help={desc.gid} />
                   <Controller
                     control={control}
                     name="gid"
