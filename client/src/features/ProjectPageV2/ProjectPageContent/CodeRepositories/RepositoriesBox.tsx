@@ -65,7 +65,12 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
             <AccessGuard
               disabled={null}
               enabled={
-                <Button color="outline-primary" onClick={toggle} size="sm">
+                <Button
+                  data-cy="add-code-repository"
+                  color="outline-primary"
+                  onClick={toggle}
+                  size="sm"
+                >
                   <PlusLg className="icon-text" />
                 </Button>
               }

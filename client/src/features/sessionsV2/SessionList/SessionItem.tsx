@@ -49,6 +49,7 @@ export default function SessionItem({
     <ListGroupItem
       action
       className="cursor-pointer"
+      data-cy="session-launcher-item"
       onClick={() => toggleSessionDetails()}
     >
       <Row className="g-2">

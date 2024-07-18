@@ -75,7 +75,12 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
             <AccessGuard
               disabled={null}
               enabled={
-                <Button color="outline-primary" onClick={toggle} size="sm">
+                <Button
+                  data-cy="add-data-source"
+                  color="outline-primary"
+                  onClick={toggle}
+                  size="sm"
+                >
                   <PlusLg className="icon-text" />
                 </Button>
               }

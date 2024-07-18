@@ -67,6 +67,7 @@ export function DataSourceView({
           <button
             aria-label="Close"
             className="btn-close"
+            data-cy="data-source-view-back-button"
             data-bs-dismiss="offcanvas"
             onClick={setToggleView}
           ></button>

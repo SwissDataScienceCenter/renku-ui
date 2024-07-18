@@ -91,8 +91,10 @@ function GroupListDisplay() {
   if (!data.total) return <div>No renku v2 groups.</div>;
 
   return (
-    <>
-      <Row className={cx("row-cols-1", "row-cols-sm-2", "g-3")}>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <Row
+        className={cx("row-cols-1", "row-cols-md-2", "row-cols-xxl-3", "g-3")}
+      >
         {data.groups?.map((group) => (
           <GroupListGroup key={group.id} group={group} />
         ))}
@@ -108,7 +110,7 @@ function GroupListDisplay() {
           "rk-search-pagination"
         )}
       />
-    </>
+    </div>
   );
 }
 

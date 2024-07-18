@@ -131,7 +131,7 @@ export default function ProjectListDisplay({
   }
 
   return (
-    <>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Row
         className={cx("row-cols-1", "row-cols-md-2", "row-cols-xxl-3", "g-3")}
       >
@@ -150,7 +150,7 @@ export default function ProjectListDisplay({
           "rk-search-pagination"
         )}
       />
-    </>
+    </div>
   );
 }
 

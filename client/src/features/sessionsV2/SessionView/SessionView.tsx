@@ -358,6 +358,7 @@ export function SessionView({
           <button
             aria-label="Close"
             className="btn-close"
+            data-cy="get-back-session-view"
             data-bs-dismiss="offcanvas"
             onClick={setToggleSessionView}
           ></button>

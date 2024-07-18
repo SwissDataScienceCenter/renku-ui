@@ -294,7 +294,7 @@ describe("Edit v2 project", () => {
       .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("add-repository").click();
+    cy.getDataCy("add-code-repository").click();
     cy.contains("Connect an existing repository").click();
     cy.getDataCy("project-add-repository-url").type(
       "https://domain.name/repo3.git"
@@ -549,7 +549,7 @@ describe("Editor cannot maintain members", () => {
     cy.wait("@getDataServicesUser");
     cy.getDataCy("add-session-launcher").should("be.visible");
     cy.getDataCy("add-data-source").should("be.visible");
-    cy.getDataCy("add-repository").should("be.visible");
+    cy.getDataCy("add-code-repository").should("be.visible");
   });
 
   it("cannot change project members except self", () => {
@@ -600,7 +600,7 @@ describe("Viewer cannot edit project", () => {
     cy.wait("@getDataServicesUser");
     cy.getDataCy("add-session-launcher").should("not.exist");
     cy.getDataCy("add-data-source").should("not.exist");
-    cy.getDataCy("add-repository").should("not.exist");
+    cy.getDataCy("add-code-repository").should("not.exist");
   });
 });
 
