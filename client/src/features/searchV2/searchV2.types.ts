@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
+import type { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
+import type { Role } from "../projectsV2/api/projectV2.api";
 
 export interface DateFilter {
   option: DateFilterTypes;
@@ -25,7 +26,7 @@ export interface DateFilter {
 }
 export interface SearchV2State {
   filters: {
-    role: ("owner" | "member")[];
+    role: Role[];
     type: ("project" | "user")[];
     visibility: ("private" | "public")[];
     created: DateFilter;
