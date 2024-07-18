@@ -57,7 +57,7 @@ function DashboardWelcome() {
     <div>
       <Row>
         <Col>
-          <h2>Welcome to the Renku 2.0 alpha preview!</h2>
+          <h2>Welcome to the Renku 2.0 beta preview!</h2>
         </Col>
       </Row>
       <Row>
@@ -69,7 +69,7 @@ function DashboardWelcome() {
               iconAfter={true}
               role="text"
               title="blog"
-            />
+            />{" "}
             and see what&rsquo;s ahead on our{" "}
             <ExternalLink
               url="https://renku.notion.site/Roadmap-b1342b798b0141399dc39cb12afc60c9"
@@ -85,12 +85,10 @@ function DashboardWelcome() {
       <Row>
         <Col>
           <WarnAlert className="mb-0" timeout={0} dismissible={false}>
-            <h4>
-              Do not do any important work in the Renku 2.0 alpha preview!
-            </h4>
+            <h4>Do not do any important work in the Renku 2.0 beta preview!</h4>
             <p className="mb-2">
-              The alpha is for testing only. We do not guarantee saving and
-              persisting work in the alpha.
+              The beta is for testing only. We do not guarantee saving and
+              persisting work in the beta.
             </p>
             <div>
               You can go <BackToV1Button color="warning" /> at any time.

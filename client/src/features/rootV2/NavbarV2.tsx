@@ -172,9 +172,9 @@ export default function NavbarV2() {
             data-cy="link-home"
             to={ABSOLUTE_ROUTES.v2.root}
           >
-            <img src={RENKU_ALPHA_LOGO} alt="Renku v2 (alpha)" height="50" />
+            <img src={RENKU_ALPHA_LOGO} alt="Renku v2 (beta)" height="50" />
           </RenkuNavLinkV2>
-          <WipBadge label="2.0 Beta" />
+          <WipBadge>2.0 Beta</WipBadge>
           <BackToV1Button outline={true} />
         </div>
         <NavbarToggler onClick={onToggle} className="border-0">

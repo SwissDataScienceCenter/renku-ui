@@ -89,18 +89,21 @@ export default function WhoWeAre() {
               </div>
             </div>
             <div className={styles.whoWeAreLogos}>
-              <ExternalLink url={Links.SDSC} className="" role="link">
-                <img src={logo_SDSC} alt="SDSC" height="54" />
-              </ExternalLink>
+              <div>
+                <ExternalLink url={Links.SDSC} className="" role="link">
+                  <img src={logo_SDSC} alt="SDSC" height="54" />
+                </ExternalLink>
+                <div>Swiss Data Science Center</div>
+              </div>
               <div>
                 <ExternalLink url={Links.ETHZ} className="" role="link">
                   <img className="mb-2" src={logo_ETH} alt="ETH" height="25" />
                 </ExternalLink>
                 <div>
-                  Turnerstrasse 1,
+                  Wasserwerkstrasse 10,
                   <br />
                   8092 Zürich <br />
-                  +41 44 632 80 74
+                  +41 44 632 26 89
                 </div>
               </div>
               <div>

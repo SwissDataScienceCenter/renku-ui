@@ -15,22 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
+import { ReactNode, useRef } from "react";
 import cx from "classnames";
-import { useRef } from "react";
 import { Badge, UncontrolledTooltip } from "reactstrap";
 
-type WipBadeProps = {
+interface WipBadeProps {
   className?: string;
-  label?: string;
-  text?: string;
-};
+  children?: ReactNode;
+  tooltip?: ReactNode;
+}
 
 export default function WipBadge({
   className,
-  label = "Beta",
-  text = "Renku 2.0 is under active development and features may not work as expected.",
+  children = "Beta",
+  tooltip = "Renku 2.0 is under active development and features may not work as expected.",
 }: WipBadeProps) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -39,9 +40,9 @@ export default function WipBadge({
         color="warning"
         innerRef={ref}
       >
-        {label}
+        {children}
       </Badge>
-      <UncontrolledTooltip target={ref}>{text}</UncontrolledTooltip>
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
     </>
   );
 }
