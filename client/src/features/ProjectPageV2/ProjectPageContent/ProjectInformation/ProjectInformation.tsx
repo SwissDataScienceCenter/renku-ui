@@ -151,7 +151,7 @@ export default function ProjectInformation({
   return output === "plain" ? (
     information
   ) : (
-    <Card>
+    <Card data-cy="project-info-card">
       <CardHeader>
         <div
           className={cx(

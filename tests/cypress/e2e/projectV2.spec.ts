@@ -37,7 +37,7 @@ describe("Add new v2 project", () => {
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click(); // click on first option
-    cy.contains("Set Visibility").click();
+    cy.contains("Set visibility").click();
     cy.contains("Add repositories").click();
     cy.getDataCy("project-add-repository").click();
     cy.getDataCy("project-repository-input-0")
@@ -59,17 +59,17 @@ describe("Add new v2 project", () => {
       .first()
       .click();
     cy.contains("user1.uuid").should("exist");
-    cy.contains("Set Visibility").click();
-    cy.get(".rk-forms").contains("Back").click();
+    cy.contains("Set visibility").click();
+    cy.get("button").contains("Back").click();
     cy.contains("user1.uuid").should("exist");
   });
 
   it("prevents invalid input", () => {
-    cy.contains("button", "Set Visibility").click();
+    cy.contains("button", "Set visibility").click();
     cy.contains("Please provide a name").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").clear().type(newProjectTitle);
-    cy.contains("button", "Set Visibility").click();
+    cy.contains("button", "Set visibility").click();
     cy.contains(
       "Please provide a slug consisting of lowercase letters, numbers, and hyphens."
     ).should("be.visible");
@@ -79,7 +79,7 @@ describe("Add new v2 project", () => {
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click();
-    cy.contains("Set Visibility").click();
+    cy.contains("Set visibility").click();
 
     cy.contains("Define access").should("be.visible");
     cy.getDataCy("project-visibility-public").click();
@@ -183,8 +183,8 @@ describe("Navigate to project", () => {
       "contain.text",
       "Project 2 description"
     );
-    cy.getDataCy("project-visibility").should("contain.text", "Public");
-    cy.getDataCy("project-namespace").should("contain.text", "user1-uuid");
+    cy.getDataCy("project-info-card").contains("public");
+    cy.getDataCy("project-info-card").contains("user1-uuid");
   });
 
   it("shows at most 5 members, owners first", () => {
@@ -342,7 +342,7 @@ describe("Edit v2 project", () => {
       .deleteProjectV2Member({ memberId: projectMemberToRemove })
       .listProjectV2Members({ removeMemberId: projectMemberToRemove });
     cy.getDataCy("project-member-actions-1")
-      .find('[data-cy="more-menu"]')
+      .find('[data-cy="button-with-menu-dropdown"]')
       .click();
     cy.getDataCy("project-member-actions-1").contains("Remove").click();
     cy.getDataCy("remove-member-form").should("be.visible");
@@ -493,7 +493,6 @@ describe("Edit v2 project", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings");
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.get("a").contains("Delete").should("be.visible").click();
     cy.get("button")
       .contains("Delete project")
       .should("be.visible")
@@ -540,7 +539,6 @@ describe("Editor cannot maintain members", () => {
     cy.contains("test 2 v2-project").should("be.visible");
     cy.getDataCy("project-settings-edit").should("be.visible").click();
     cy.contains("a", "Overview").click();
-    cy.getDataCy("project-description-edit").should("be.visible").click();
   });
 
   it("can change project components", () => {
@@ -653,7 +651,6 @@ describe("launch sessions with cloud storage", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessionServers");
-    cy.wait("@sessionLaunchers");
 
     // ensure the data source is there
     cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
@@ -709,7 +706,6 @@ describe("launch sessions with cloud storage", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessionServers");
-    cy.wait("@sessionLaunchers");
 
     // ensure the data source is there
     cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
@@ -794,7 +790,6 @@ describe("launch sessions with cloud storage", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessionServers");
-    cy.wait("@sessionLaunchers");
 
     // start session
     cy.fixture("sessions/sessionsV2.json").then((sessions) => {
