@@ -64,7 +64,7 @@ export default function SearchV2Filters() {
       <SearchV2Filter
         key={filterName}
         name={filterName}
-        options={Object.entries(options).map(([key, value]) => ({
+        options={Object.entries(options as Object).map(([key, value]) => ({
           checked: (
             filters[filterName as keyof SearchV2State["filters"]] as string[]
           ).includes(key),

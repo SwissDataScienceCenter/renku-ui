@@ -32,20 +32,20 @@ const ROLE_FILTER: { [key in Role]: string } = {
 };
 
 export const AVAILABLE_FILTERS = {
-  role: ROLE_FILTER,
-  type: {
-    project: "Project",
-    group: "Group",
-    user: "User",
-  },
-  visibility: {
-    private: "Private",
-    public: "Public",
-  },
+  // role: ROLE_FILTER,
+  // type: {
+  //   project: "Project",
+  //   group: "Group",
+  //   user: "User",
+  // },
+  // visibility: {
+  //   private: "Private",
+  //   public: "Public",
+  // },
 };
 
 export const ANONYMOUS_USERS_EXCLUDE_FILTERS: (keyof typeof AVAILABLE_FILTERS)[] =
-  ["visibility", "role"];
+  []; //["visibility", "role"];
 
 export const AVAILABLE_SORTING: SortingItems = {
   scoreDesc: {
@@ -127,7 +127,7 @@ export const buildSearchQuery = (searchState: SearchV2State): string => {
     const filterPrefix = `${filterName}${FILTER_ASSIGNMENT_CHAR}`;
 
     const totalAvailableFilters = Object.keys(
-      AVAILABLE_FILTERS[filterName as "role" | "visibility" | "type"]
+      AVAILABLE_FILTERS[filterName as never /*"role" | "visibility" | "type"*/]
     ).length;
     // Exclude empty filters and filters where all members are selected, only role should add the filter even if both are selected
     if (

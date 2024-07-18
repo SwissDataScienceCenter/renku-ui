@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Globe2, LockFill } from "react-bootstrap-icons";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
@@ -29,11 +29,20 @@ import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { Group, Project, User, searchV2Api } from "../api/searchV2Api.api";
-import { setCreatedBy, setPage } from "../searchV2.slice";
+// import { setCreatedBy, setPage } from "../searchV2.slice";
 
 export default function SearchV2Results() {
-  const searchState = useAppSelector((state) => state.searchV2);
-  const dispatch = useDispatch();
+  const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
+  // const dispatch = useDispatch();
+
+  const [search, { data: searchResults }] =
+    searchV2Api.endpoints.getQuery.useLazyQuery();
+
+  useEffect(() => {
+    if (query != null) {
+      search({ page, perPage, q: query });
+    }
+  }, [page, perPage, query]);
 
   return (
     <Row data-cy="search-results">
@@ -45,11 +54,11 @@ export default function SearchV2Results() {
       </Col>
       <Col className="mt-4" xs={12}>
         <Pagination
-          currentPage={searchState.search.page}
-          perPage={searchState.search.perPage}
-          totalItems={searchState.search.totalResults}
+          currentPage={page}
+          perPage={perPage}
+          totalItems={searchResults?.pagingInfo.totalResult ?? 0}
           onPageChange={(page: number) => {
-            dispatch(setPage(page));
+            // dispatch(setPage(page));
           }}
           showDescription={true}
           className="rk-search-pagination"
@@ -60,23 +69,28 @@ export default function SearchV2Results() {
 }
 
 function SearchV2ResultsContent() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   // get the search state
-  const { search } = useAppSelector((state) => state.searchV2);
-  const searchResults = searchV2Api.endpoints.$get.useQueryState(
-    search.lastSearch != null
-      ? {
-          q: search.lastSearch,
-          page: search.page,
-          perPage: search.perPage,
-        }
-      : skipToken
+  const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
+  // const searchResults = searchV2Api.endpoints.getQuery.useQueryState(
+  //   search.lastSearch != null
+  //     ? {
+  //         q: search.lastSearch,
+  //         page: search.page,
+  //         perPage: search.perPage,
+  //       }
+  //     : skipToken
+  // );
+  const searchResults = searchV2Api.endpoints.getQuery.useQueryState(
+    query != null ? { page, perPage, q: query } : skipToken
   );
 
   if (searchResults.isFetching) {
     return <Loader />;
   }
-  if (search.lastSearch == null) {
+
+  // if (search.lastSearch == null) {
+  if (query == null) {
     return <p>Start searching by typing in the search bar above.</p>;
   }
 
@@ -84,8 +98,7 @@ function SearchV2ResultsContent() {
     return (
       <>
         <p>
-          No results for{" "}
-          <span className="fw-bold">{`"${search.lastSearch}"`}</span>.
+          No results for <span className="fw-bold">{`"${query}"`}</span>.
         </p>
         <p>You can try another search, or change some filters.</p>
       </>
@@ -97,7 +110,7 @@ function SearchV2ResultsContent() {
       return (
         <SearchV2ResultProject
           searchByUser={(userId) => {
-            dispatch(setCreatedBy(userId));
+            // dispatch(setCreatedBy(userId));
           }}
           key={`project-result-${entity.id}`}
           project={entity}

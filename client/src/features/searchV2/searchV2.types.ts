@@ -19,6 +19,14 @@
 import type { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
 import type { Role } from "../projectsV2/api/projectV2.api";
 
+export interface SearchV2StateV2 {
+  query: string | null;
+  page: number;
+  perPage: number;
+  // totalPages: number;
+  // totalResults: number;
+}
+
 export interface DateFilter {
   option: DateFilterTypes;
   from?: string;
