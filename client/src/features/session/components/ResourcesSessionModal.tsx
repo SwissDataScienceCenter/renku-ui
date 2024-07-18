@@ -60,26 +60,23 @@ export default function ResourcesSessionModal({
       scrollable
       toggle={toggleModal}
     >
-      <ModalHeader
-        className={cx("bg-body", "header-multiline")}
-        data-cy="modal-header"
-        toggle={toggleModal}
-      >
-        <div
-          className={cx(
-            "d-flex",
-            "flex-wrap",
-            "gap-sm-0",
-            "gap-md-0",
-            "gap-lg-3",
-            "gap-xl-3"
-          )}
-        >
-          <div className="pe-2">Resources</div>
+      <ModalHeader data-cy="modal-header" toggle={toggleModal}>
+        <div className={cx("d-flex", "flex-wrap", "gap-3")}>
+          <div>Resources</div>
           <Nav
             className={cx(styles.resourcesHeaderNav, "nav-pills-underline")}
             pills
           >
+            <NavItem data-cy="logs-tab" key={SESSION_TABS.logs} role="button">
+              <NavLink
+                className={cx(activeTab === SESSION_TABS.logs && "active")}
+                onClick={() => {
+                  setActiveTab(SESSION_TABS.logs);
+                }}
+              >
+                Logs
+              </NavLink>
+            </NavItem>
             <NavItem
               data-cy="cheat-sheet-tab"
               key={SESSION_TABS.commands}
@@ -104,20 +101,10 @@ export default function ResourcesSessionModal({
                 Documentation
               </NavLink>
             </NavItem>
-            <NavItem data-cy="logs-tab" key={SESSION_TABS.logs} role="button">
-              <NavLink
-                className={cx(activeTab === SESSION_TABS.logs && "active")}
-                onClick={() => {
-                  setActiveTab(SESSION_TABS.logs);
-                }}
-              >
-                Logs
-              </NavLink>
-            </NavItem>
           </Nav>
         </div>
       </ModalHeader>
-      <ModalBody className={cx("bg-body", "h-100", "pt-0")}>
+      <ModalBody className="h-100">
         <div className={cx("about-box", "h-100", "d-flex", "flex-column")}>
           <Resources activeTab={activeTab} sessionName={sessionName} />
         </div>
@@ -142,9 +129,7 @@ function Resources({ activeTab, sessionName }: ResourcesProps) {
           key={SESSION_TABS.commands}
           tabId={SESSION_TABS.commands}
         >
-          <div
-            className={cx(styles.resourcesCard, "bg-white", "border-radius-8")}
-          >
+          <div>
             <SessionCheatSheetGenerated />
           </div>
         </TabPane>
@@ -159,7 +144,7 @@ function Resources({ activeTab, sessionName }: ResourcesProps) {
               referrerPolicy="origin"
               sandbox="allow-same-origin allow-scripts"
               src={Docs.READ_THE_DOCS_ROOT}
-              style={{ borderRadius: "8px", height: "calc(100%)" }}
+              style={{ height: "calc(100vh - 200px)" }} // eslint-disable-line spellcheck/spell-checker
               title="documentation iframe"
               width="100%"
             />
@@ -170,9 +155,7 @@ function Resources({ activeTab, sessionName }: ResourcesProps) {
           key={SESSION_TABS.logs}
           tabId={SESSION_TABS.logs}
         >
-          <div
-            className={cx(styles.resourcesCard, "bg-white", "border-radius-8")}
-          >
+          <div>
             {logs && (
               <SessionLogs
                 fetchLogs={fetchLogs}

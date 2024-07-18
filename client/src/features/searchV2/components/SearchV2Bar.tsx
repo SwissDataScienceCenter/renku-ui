@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import cx from "classnames";
 import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Button, InputGroup } from "reactstrap";
@@ -54,7 +53,7 @@ export default function SearchV2Bar() {
     <InputGroup data-cy="search-bar">
       <input
         autoComplete="renku-search"
-        className={cx("form-control", "rounded-0", "rounded-start")}
+        className="form-control"
         data-cy="search-input"
         id="search-input"
         list="previous-searches"
@@ -70,8 +69,7 @@ export default function SearchV2Bar() {
         <datalist id="previous-searches">{previousSearchEntries}</datalist>
       )}
       <Button
-        className="rounded-end"
-        color="secondary"
+        color="primary"
         data-cy="search-button"
         id="search-button"
         onClick={startNewSearch}

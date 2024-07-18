@@ -27,12 +27,7 @@ import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Fragment, ReactNode, useRef, useState } from "react";
-import {
-  ArrowRight,
-  ChevronDown,
-  PencilSquare,
-  PlusLg,
-} from "react-bootstrap-icons";
+import { ArrowRight, ChevronDown, Pencil, PlusLg } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -41,6 +36,7 @@ import {
   Col,
   DropdownMenu,
   DropdownToggle,
+  UncontrolledDropdown,
   UncontrolledTooltip,
 } from "reactstrap";
 
@@ -115,6 +111,50 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
       {props.default}
       {options}
     </ButtonDropdown>
+  );
+}
+
+type BButtonWithMenuV2Props = {
+  children?:
+    | React.ReactElement[]
+    | React.ReactNode[]
+    | JSX.Element[]
+    | JSX.Element;
+  className?: string;
+  color?: string;
+  default: React.ReactNode;
+  direction?: "up" | "down" | "start" | "end";
+  disabled?: boolean;
+  id?: string;
+  preventPropagation?: boolean;
+  size?: string;
+};
+export function ButtonWithMenuV2(props: BButtonWithMenuV2Props) {
+  const additionalProps = props.preventPropagation
+    ? { onClick: (e: React.MouseEvent) => e.stopPropagation() }
+    : {};
+  return (
+    <UncontrolledDropdown
+      {...additionalProps}
+      className={cx(props.className)}
+      color={props.color ?? "primary"}
+      direction={props.direction ?? "down"}
+      disabled={props.disabled}
+      group
+      id={props.id}
+      size={props.size ?? "md"}
+    >
+      {props.default}
+      <DropdownToggle
+        caret
+        className="dropdown-toggle-split"
+        data-bs-toggle="dropdown"
+        color={props.color ?? "primary"}
+        data-cy="button-with-menu-dropdown"
+        disabled={props.disabled}
+      />
+      <DropdownMenu end>{props.children}</DropdownMenu>
+    </UncontrolledDropdown>
   );
 }
 
@@ -308,10 +348,10 @@ function UnderlineArrowLink({
   const ref = useRef(null);
   return (
     <>
-      <span ref={ref} className={buttonStyles.LinkUnderline}>
-        <Link className="text-decoration-none" to={to}>
+      <span ref={ref}>
+        <Link to={to}>
           {text}
-          <ArrowRight className={cx("bi", "ms-1")} />
+          <ArrowRight className={cx("ms-2", "text-icon")} />
         </Link>
       </span>
       <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
@@ -322,26 +362,33 @@ function UnderlineArrowLink({
 /*
  * Edit button
  */
+interface EditButtonLinkProps {
+  "data-cy"?: string;
+  disabled?: boolean;
+  to: string;
+  tooltip: ReactNode;
+}
 function EditButtonLink({
   "data-cy": dataCy,
   disabled = false,
   to,
   tooltip,
-}: {
-  "data-cy"?: string;
-  disabled?: boolean;
-  to: string;
-  tooltip: ReactNode;
-}) {
+}: EditButtonLinkProps) {
   const ref = useRef(null);
   return (
     <>
-      <span ref={ref} className={buttonStyles.LinkIcon}>
+      <span ref={ref}>
         {disabled ? (
-          <PencilSquare />
+          <Button color="outline-primary" disabled size="sm">
+            <Pencil className="text-icon" />
+          </Button>
         ) : (
-          <Link className="text-decoration-none" data-cy={dataCy} to={to}>
-            <PencilSquare />
+          <Link
+            className={cx("btn", "btn-sm", "btn-outline-primary")}
+            data-cy={dataCy}
+            to={to}
+          >
+            <Pencil className="text-icon" />
           </Link>
         )}
       </span>

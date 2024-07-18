@@ -17,6 +17,7 @@
  */
 import cx from "classnames";
 import { useState } from "react";
+import { Card, CardBody, Col, Row } from "reactstrap";
 import { generatePath, Link } from "react-router-dom-v5-compat";
 
 import ContainerWrap from "../../../components/container/ContainerWrap";
@@ -25,12 +26,10 @@ import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-
 import type { GroupResponse } from "../api/namespace.api";
 import { useGetGroupsQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
-
-import styles from "./projectV2List.module.scss";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 
 interface GroupListGroupProps {
   group: GroupResponse;
@@ -40,25 +39,35 @@ function GroupListGroup({ group }: GroupListGroupProps) {
     slug: group.slug,
   });
   return (
-    <div
-      data-cy="list-card"
-      className={cx("m-2", "rk-search-result-card", styles.listProjectWidth)}
-    >
-      <div className={cx("card", "card-entity", "p-3")}>
-        <h3>
-          <Link to={groupUrl}>{group.name}</Link>
-        </h3>
-        <div className="mb-2">{group.description}</div>
-        <div className={cx("align-items-baseline", "d-flex")}>
+    <Col>
+      <Card className="h-100" data-cy="group-card">
+        <CardBody className={cx("d-flex", "flex-column")}>
+          <h5 className="mb-3">
+            <Link to={groupUrl}>{group.name}</Link>
+          </h5>
+
+          {group.description && (
+            <p
+              style={{
+                display: "-webkit-box",
+                overflow: "hidden",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 3,
+              }}
+            >
+              {group.description}
+            </p>
+          )}
+
           <TimeCaption datetime={group.creation_date} prefix="Created" />
-        </div>
-      </div>
-    </div>
+        </CardBody>
+      </Card>
+    </Col>
   );
 }
 
 function GroupListDisplay() {
-  const perPage = 10;
+  const perPage = 12;
   const [page, setPage] = useState(1);
   const { data, error, isLoading } = useGetGroupsQuery({
     page,
@@ -69,22 +78,27 @@ function GroupListDisplay() {
     return (
       <div className={cx("d-flex", "justify-content-center", "w-100")}>
         <div className={cx("d-flex", "flex-column")}>
-          <Loader className="me-2" />
+          <Loader />
           <div>Retrieving groups...</div>
         </div>
       </div>
     );
-  if (error) return <div>Cannot show groups.</div>;
 
-  if (data == null) return <div>No renku v2 groups.</div>;
+  if (error || data == null) {
+    return <RtkOrNotebooksError error={error} dismissible={false} />;
+  }
+
+  if (!data.total) return <div>No renku v2 groups.</div>;
 
   return (
-    <>
-      <div className="d-flex flex-wrap w-100">
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <Row
+        className={cx("row-cols-1", "row-cols-md-2", "row-cols-xxl-3", "g-3")}
+      >
         {data.groups?.map((group) => (
           <GroupListGroup key={group.id} group={group} />
         ))}
-      </div>
+      </Row>
       <Pagination
         currentPage={data.page}
         perPage={perPage}
@@ -96,7 +110,7 @@ function GroupListDisplay() {
           "rk-search-pagination"
         )}
       />
-    </>
+    </div>
   );
 }
 
@@ -109,11 +123,12 @@ export default function GroupList() {
         title="List Groups"
         description={
           <>
-            <div>
-              All visible groups <WipBadge />{" "}
-            </div>
+            <p>
+              All visible groups
+              <WipBadge className="ms-2" />
+            </p>
             <div className="mt-3">
-              <Link className={cx("btn", "btn-secondary")} to={newGroupUrl}>
+              <Link className={cx("btn", "btn-primary")} to={newGroupUrl}>
                 Create New Group
               </Link>
             </div>

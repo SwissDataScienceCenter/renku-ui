@@ -17,14 +17,21 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { CodeSquare } from "react-bootstrap-icons";
+import { FileCode, PlusLg } from "react-bootstrap-icons";
 
-import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal.tsx";
 import AccessGuard from "../../utils/AccessGuard.tsx";
 import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
 import { RepositoryItem } from "./CodeRepositoryDisplay.tsx";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  ListGroup,
+} from "reactstrap";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
   const { userRole } = useProjectAccess({ projectId: project.id });
@@ -35,42 +42,66 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
 
   const totalRepositories = project.repositories?.length || 0;
   return (
-    <>
-      <div
-        className={cx("p-3", "d-flex", "justify-content-between")}
-        data-cy="code-repositories-box"
-      >
-        <div className="fw-bold">
-          <CodeSquare size={20} className={cx("me-2")} />
-          Code Repositories ({project?.repositories?.length})
+    <Card data-cy="code-repositories-box">
+      <CardHeader>
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "justify-content-between"
+          )}
+        >
+          <div className={cx("align-items-center", "d-flex")}>
+            <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
+              <FileCode className={cx("me-2", "small", "text-icon")} />
+              Code Repositories
+            </h4>
+            {project?.repositories?.length != null && (
+              <Badge>{project?.repositories?.length}</Badge>
+            )}
+          </div>
+
+          <div className="my-auto">
+            <AccessGuard
+              disabled={null}
+              enabled={
+                <Button
+                  data-cy="add-code-repository"
+                  color="outline-primary"
+                  onClick={toggle}
+                  size="sm"
+                >
+                  <PlusLg className="icon-text" />
+                </Button>
+              }
+              minimumRole="editor"
+              role={userRole}
+            />
+          </div>
         </div>
-        <AccessGuard
-          disabled={null}
-          enabled={
-            <PlusRoundButton data-cy="add-repository" handler={toggle} />
-          }
-          minimumRole="editor"
-          role={userRole}
-        />
-      </div>
-      <p className={cx("px-3", totalRepositories > 0 ? "d-none" : "")}>
-        Connect code repositories to save and share code.
-      </p>
-      <div className={cx("p-2", "ps-3", "pb-0")}>
-        {project.repositories?.map((repositoryUrl, index) => (
-          <RepositoryItem
-            key={index}
-            project={project}
-            url={repositoryUrl}
-            showMenu={true}
-          />
-        ))}
-      </div>
+      </CardHeader>
+      <CardBody>
+        {totalRepositories === 0 ? (
+          <p className="m-0">
+            Connect code repositories to save and share code.
+          </p>
+        ) : (
+          <ListGroup flush>
+            {project.repositories?.map((repositoryUrl, index) => (
+              <RepositoryItem
+                key={index}
+                project={project}
+                url={repositoryUrl}
+              />
+            ))}
+          </ListGroup>
+        )}
+      </CardBody>
       <AddCodeRepositoryStep1Modal
         toggleModal={toggle}
         isOpen={isOpen}
         project={project}
       />
-    </>
+    </Card>
   );
 }

@@ -2,20 +2,12 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import { SingleValue } from "react-select";
-import {
-  Button,
-  Col,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Row,
-} from "reactstrap";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { SessionClassSelector } from "../../../session/components/options/SessionClassOption";
+import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import { useUpdateSessionLauncherMutation } from "../../sessionsV2.api";
 import {
   ErrorOrNotAvailableResourcePools,
@@ -73,7 +65,7 @@ export function ModifyResourcesLauncherModal({
   ) : !resourcePools || resourcePools.length == 0 || isErrorResources ? (
     <ErrorOrNotAvailableResourcePools />
   ) : (
-    <SessionClassSelector
+    <SessionClassSelectorV2
       resourcePools={resourcePools}
       currentSessionClass={currentSessionClass}
       onChange={onChange}
@@ -88,36 +80,36 @@ export function ModifyResourcesLauncherModal({
       toggle={toggleModal}
     >
       <ModalHeader toggle={toggleModal}>Set default resource class</ModalHeader>
-      <ModalBody className="py-0">
-        <Row>
-          <Col>
-            {result.error && (
-              <ErrorOrNotAvailableResourcePools title="Error modifying resources" />
-            )}
-            {result.isSuccess && (
-              <SuccessAlert dismissible={false}>
-                <h3 className={cx("fs-6", "fw-bold")}>
-                  Default resource class updated
-                </h3>
-                <p className="mb-0">
-                  The session launcher’s default resource class has been
-                  changed. This change will apply the next time you launch a new
-                  session.
-                </p>
-              </SuccessAlert>
-            )}
-            <p>
-              These changes will apply the{" "}
-              <strong>next time you launch a new session</strong>. If you wish
-              to modify a currently running session, pause it and select ‘Modify
-              session’ in the session options.
+      <ModalBody>
+        {result.error && (
+          <ErrorOrNotAvailableResourcePools title="Error modifying resources" />
+        )}
+        {result.isSuccess && (
+          <SuccessAlert dismissible={false}>
+            <h3 className={cx("fs-6", "fw-bold")}>
+              Default resource class updated
+            </h3>
+            <p className="mb-0">
+              The session launcher’s default resource class has been changed.
+              This change will apply the next time you launch a new session.
             </p>
-            <div className="field-group">{selector}</div>
-          </Col>
-        </Row>
+          </SuccessAlert>
+        )}
+        <p>
+          These changes will apply the{" "}
+          <strong>next time you launch a new session</strong>. If you wish to
+          modify a currently running session, pause it and select ‘Modify
+          session’ in the session options.
+        </p>
+        <div className="field-group">{selector}</div>
       </ModalBody>
       <ModalFooter>
+        <Button color="outline-primary" onClick={toggleModal}>
+          <XLg className={cx("me-2", "text-icon")} />
+          Cancel
+        </Button>
         <Button
+          color="primary"
           disabled={
             isLoadingResources ||
             !resourcePools ||
@@ -131,15 +123,11 @@ export function ModifyResourcesLauncherModal({
           type="submit"
         >
           {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
+            <Loader className="me-2" inline size={16} />
           ) : (
-            <CheckLg className={cx("bi", "me-1")} />
+            <CheckLg className={cx("me-2", "text-icon")} />
           )}
           Modify resources
-        </Button>
-        <Button className="btn-outline-rk-green" onClick={toggleModal}>
-          <XLg className={cx("bi", "me-1")} />
-          Cancel
         </Button>
       </ModalFooter>
     </Modal>

@@ -50,7 +50,7 @@ export default function ProjectV2NewForm({
   currentStep,
 }: ProjectV2NewFormProps) {
   return (
-    <div className={cx("form-rk-green", "mb-4", "w-100")}>
+    <div>
       {currentStep === 0 && (
         <ProjectV2NewMetadataStepForm currentStep={currentStep} />
       )}
@@ -85,12 +85,8 @@ function ProjectV2NewAccessStepForm({ currentStep }: ProjectV2NewFormProps) {
   );
   return (
     <>
-      <h4>Define access</h4>
-      <Form
-        className="form-rk-green"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <h4 className={cx("d-none", "d-md-block")}>Define access</h4>
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ProjectVisibilityFormField
           name="visibility"
           control={control}
@@ -138,12 +134,8 @@ function ProjectV2NewMetadataStepForm({ currentStep }: ProjectV2NewFormProps) {
 
   return (
     <>
-      <h4>Describe the project</h4>
-      <Form
-        className="form-rk-green"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <h4 className={cx("d-none", "d-md-block")}>Describe the project</h4>
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ProjectNameFormField control={control} errors={errors} name="name" />
         <ProjectSlugFormField control={control} errors={errors} name="slug" />
         <ProjectNamespaceFormField
@@ -202,13 +194,12 @@ function ProjectV2NewRepositoryStepForm({
   );
   return (
     <>
-      <h4>Add Repositories</h4>
-      <Form
-        className="form-rk-green"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="mb-5">
+      <h4 className={cx("d-none", "d-md-block")}>Add Repositories</h4>
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+        <div className="mb-3">
+          {fields.length === 0 && (
+            <p className="fst-italic">No repositories added yet.</p>
+          )}
           {fields.map((f, i) => {
             return (
               <div key={f.id}>
@@ -223,8 +214,12 @@ function ProjectV2NewRepositoryStepForm({
               </div>
             );
           })}
-          <Button data-cy="project-add-repository" onClick={onAppend}>
-            <PlusLg /> repository
+          <Button
+            color="outline-primary"
+            data-cy="project-add-repository"
+            onClick={onAppend}
+          >
+            <PlusLg className="text-icon" /> Add repository
           </Button>
         </div>
         <ProjectFormSubmitGroup currentStep={currentStep} />

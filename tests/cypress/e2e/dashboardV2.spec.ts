@@ -39,9 +39,12 @@ describe("View v2 landing page", () => {
 
   it("view sessions", () => {
     cy.contains("Sessions").should("be.visible");
-    cy.getDataCy("dashboard-session-list")
-      .get("[data-cy=list-session]")
-      .should("have.length", 1)
+    cy.get("[data-cy=dashboard-session-list] > [data-cy=list-session]")
+      .contains("user1-uuid/test-2-v2-project")
+      .should("be.visible");
+    cy.get("[data-cy=dashboard-session-list] > [data-cy=list-session]")
+      .first()
+      .find("a.btn")
       .contains("Open")
       .should("be.visible")
       .click();
@@ -53,10 +56,8 @@ describe("View v2 landing page", () => {
 
   it("view projects", () => {
     cy.contains("Projects").should("be.visible");
-    cy.getDataCy("dashboard-project-list")
-      .get("[data-cy=list-project]")
-      .should("have.length", 5);
-    cy.getDataCy("list-project-link").first().click();
+    cy.getDataCy("dashboard-project-list").children().should("have.length", 5);
+    cy.getDataCy("dashboard-project-list").children().first().click();
     cy.location("pathname").should(
       "contain",
       "/v2/projects/user1-uuid/test-0-v2-project"
@@ -65,10 +66,8 @@ describe("View v2 landing page", () => {
 
   it("view groups", () => {
     cy.contains("Groups").should("be.visible");
-    cy.getDataCy("dashboard-group-list")
-      .get("[data-cy=list-group]")
-      .should("have.length", 5);
-    cy.getDataCy("list-group-link").first().click();
+    cy.getDataCy("dashboard-group-list").children().should("have.length", 5);
+    cy.getDataCy("group-item").first().click();
     cy.location("pathname").should("contain", "/v2/groups/test-0-group-v2");
   });
 

@@ -32,11 +32,12 @@ export default function ProjectV2List() {
       title="List Projects (V2)"
       description={
         <>
-          <div>
-            All visible projects <WipBadge />{" "}
-          </div>
-          <div className="mt-3">
-            <Link className={cx("btn", "btn-secondary")} to={newProjectUrl}>
+          <p>
+            All visible projects
+            <WipBadge className="ms-2" />
+          </p>
+          <div className="mb-3">
+            <Link className={cx("btn", "btn-primary")} to={newProjectUrl}>
               Create New Project
             </Link>
           </div>

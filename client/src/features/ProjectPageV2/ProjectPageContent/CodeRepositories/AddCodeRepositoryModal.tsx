@@ -17,7 +17,7 @@
  */
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CodeSquare, Github, PlusLg } from "react-bootstrap-icons";
+import { CodeSquare, Github, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Badge,
@@ -37,12 +37,8 @@ import {
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import BootstrapGitLabIcon from "../../../../components/icons/BootstrapGitLabIcon";
-import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-
-import stylesButton from "../../../../components/buttons/Buttons.module.scss";
-import styles from "../ProjectOverview/ProjectOverview.module.scss";
 
 interface AddCodeRepositoryModalProps {
   project: Project;
@@ -64,64 +60,34 @@ export function AddCodeRepositoryStep1Modal({
   }, [toggleModal]);
   return (
     <>
-      <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
+      <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>
-          <span className="d-flex align-items-center">
-            <CodeSquare size={20} className="me-3 mb-1" />
-            <small className="text-uppercase">Add code repositories</small>
-          </span>
+          <CodeSquare className={cx("me-2", "text-icon")} />
+          Add code repositories
         </ModalHeader>
-        <ModalBody className="pt-0">
-          <p className="fw-500 fst-normal">
-            Connect a code repository to save and share code.
-            <br />
-            You can skip this step and add your repositories later.
-          </p>
-          <Row className="mb-3">
-            <Col xs={12}>
+        <ModalBody>
+          <p>Connect a code repository to save and share code.</p>
+          <Row className="gap-3">
+            <Col className="d-grid" xs={12}>
               <Button
+                color="outline-primary"
                 onClick={() => openNextStep()}
-                className={cx(
-                  "w-100",
-                  "bg-transparent",
-                  "text-dark",
-                  "rounded-3",
-                  "my-2",
-                  "py-3",
-                  "border-black",
-                  styles.BorderDashed,
-                  stylesButton.EmptyButton
-                )}
                 data-cy="add-existing-repository-button"
               >
                 <Github className="bi me-2" />
                 <BootstrapGitLabIcon className="bi me-2" />
-                <RenkuFrogIcon className="me-2" size={24} />
                 Connect an existing repository
               </Button>
             </Col>
-            <Col xs={12}>
-              <Button
-                disabled
-                className={cx(
-                  "w-100",
-                  "bg-transparent",
-                  "text-dark",
-                  "rounded-3",
-                  "my-2",
-                  "py-3",
-                  "border-black",
-                  styles.BorderDashed,
-                  stylesButton.EmptyButton
-                )}
-              >
+            <Col className="d-grid" xs={12}>
+              <Button color="outline-primary" disabled>
                 <PlusLg className="me-2" />
                 Create new repository
                 <Badge
                   pill
                   className={cx(
                     "fst-italic",
-                    "text-warning",
+                    "text-warning-emphasis",
                     "bg-warning-subtle",
                     "border",
                     "border-warning",
@@ -191,10 +157,10 @@ function AddCodeRepositoryStep2Modal({
     <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggleModal}>
-          <RenkuFrogIcon className="me-2" size={30} />
+          <CodeSquare className={cx("me-2", "text-icon")} />
           Connect an existing code repository
         </ModalHeader>
-        <ModalBody className="py-0">
+        <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
           <p>Specify a code repository by its URL.</p>
           <Row>
@@ -228,27 +194,31 @@ function AddCodeRepositoryStep2Modal({
               </FormGroup>
             </Col>
           </Row>
-          <ModalFooter className="px-0">
-            <Button
-              color="rk-green"
-              className={cx("float-right", "mt-1", "ms-2")}
-              data-cy="add-code-repository-modal-button"
-              type="submit"
-            >
-              {result.isLoading ? (
-                <>
-                  <Loader className="me-1" inline size={16} />
-                  Adding code repository
-                </>
-              ) : (
-                <>
-                  <PlusLg className={cx("bi", "me-1")} />
-                  Add code repository
-                </>
-              )}
-            </Button>
-          </ModalFooter>
         </ModalBody>
+        <ModalFooter>
+          <Button color="outline-primary" onClick={toggleModal}>
+            <XLg className={cx("me-2", "text-icon")} />
+            Close
+          </Button>
+          <Button
+            color="primary"
+            data-cy="add-code-repository-modal-button"
+            disabled={result.isLoading}
+            type="submit"
+          >
+            {result.isLoading ? (
+              <>
+                <Loader className="me-2" inline size={16} />
+                Adding code repository
+              </>
+            ) : (
+              <>
+                <PlusLg className={cx("me-2", "text-icon")} />
+                Add code repository
+              </>
+            )}
+          </Button>
+        </ModalFooter>
       </Form>
     </Modal>
   );

@@ -89,15 +89,7 @@ export default function UserShow() {
 
   return (
     <ContainerWrap>
-      <div className={cx("d-flex", "flex-column", "flex-sm-row")}>
-        <div className={cx("mb-1", "me-3")}>
-          <UserAvatar
-            firstName={user.first_name}
-            lastName={user.last_name}
-            username={username}
-            large
-          />
-        </div>
+      <div className={cx("d-flex", "flex-column", "flex-sm-row", "gap-2")}>
         <div>
           <div
             className={cx(
@@ -105,22 +97,30 @@ export default function UserShow() {
               "flex-row",
               "flex-wrap",
               "flex-sm-nowrap",
-              "align-items-start",
-              "h1"
+              "gap-2"
             )}
           >
-            <h1 className={cx("mb-0", "me-4")}>{name ?? "Unknown user"}</h1>
-            <div>
+            <div className={cx("align-items-center", "d-flex", "gap-2")}>
+              <UserAvatar
+                firstName={user.first_name}
+                lastName={user.last_name}
+                username={username}
+                large
+              />
+              <h2 className="mb-0">{name ?? "Unknown user"}</h2>
+            </div>
+
+            <div className={cx("align-items-center", "d-flex", "gap-2")}>
               <UserBadge />
               <ItsYouBadge username={username} />
             </div>
           </div>
-          <p className="fs-4">{`@${username}`}</p>
+          <p className="fst-italic">{`@${username}`}</p>
         </div>
       </div>
 
       <section>
-        <h2 className="fs-4">Personal Projects</h2>
+        <h4>Personal Projects</h4>
         <ProjectV2ListDisplay
           namespace={username}
           pageParam="projects_page"
@@ -140,7 +140,7 @@ function UserBadge() {
         "border",
         "border-success",
         "bg-success-subtle",
-        "text-success"
+        "text-success-emphasis"
       )}
       pill
     >
@@ -160,11 +160,10 @@ function ItsYouBadge({ username }: ItsYouBadgeProps) {
     return (
       <Badge
         className={cx(
-          "ms-2",
           "border",
           "border-warning",
           "bg-warning-subtle",
-          "text-warning"
+          "text-warning-emphasis"
         )}
         pill
       >

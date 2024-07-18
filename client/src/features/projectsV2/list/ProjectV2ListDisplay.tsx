@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { ReactNode, useCallback, useEffect, useMemo } from "react";
-import { Globe2, LockFill } from "react-bootstrap-icons";
+import { Globe2, Lock } from "react-bootstrap-icons";
 import {
   Link,
   generatePath,
@@ -37,7 +37,7 @@ import {
   useGetProjectsQuery,
 } from "../api/projectV2.enhanced-api";
 
-const DEFAULT_PER_PAGE = 10;
+const DEFAULT_PER_PAGE = 12;
 const DEFAULT_PAGE_PARAM = "page";
 
 interface ProjectListDisplayProps {
@@ -131,8 +131,10 @@ export default function ProjectListDisplay({
   }
 
   return (
-    <>
-      <Row className={cx("row-cols-1", "row-cols-sm-2", "g-3")}>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <Row
+        className={cx("row-cols-1", "row-cols-md-2", "row-cols-xxl-3", "g-3")}
+      >
         {data.projects?.map((project) => (
           <ProjectV2ListProject key={project.id} project={project} />
         ))}
@@ -148,7 +150,7 @@ export default function ProjectListDisplay({
           "rk-search-pagination"
         )}
       />
-    </>
+    </div>
   );
 }
 
@@ -183,49 +185,55 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
     <Col>
       <Card className="h-100" data-cy="project-card">
         <CardBody className={cx("d-flex", "flex-column")}>
-          <h3 className="card-title">
-            <Link className={cx("link-offset-1")} to={projectUrl}>
-              {name}
-            </Link>
-          </h3>
-          <p className={cx("mb-2", "card-text")}>
+          <h5>
+            <Link to={projectUrl}>{name}</Link>
+          </h5>
+          <p>
             <Link to={namespaceUrl}>
               {"@"}
               {namespace}
             </Link>
           </p>
           {description && (
-            <p className={cx("mb-2", "card-text")}>{description}</p>
+            <p
+              style={{
+                display: "-webkit-box",
+                overflow: "hidden",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 3,
+              }}
+            >
+              {description}
+            </p>
           )}
           <div
             className={cx(
-              "mt-auto",
-              "mb-0",
-              "card-text",
+              "align-items-center",
               "d-flex",
-              "flex-wrap"
+              "flex-wrap",
+              "gap-2",
+              "justify-content-between",
+              "mt-auto"
             )}
           >
-            <div className={cx("flex-grow-1", "me-2")}>
-              {visibility === "private" ? (
+            <div>
+              {visibility.toLowerCase() === "private" ? (
                 <>
-                  <LockFill className={cx("bi", "me-1")} />
+                  <Lock className={cx("me-2", "text-icon")} />
                   Private
                 </>
               ) : (
                 <>
-                  <Globe2 className={cx("bi", "me-1")} />
+                  <Globe2 className={cx("me-2", "text-icon")} />
                   Public
                 </>
               )}
             </div>
-            <div>
-              <TimeCaption
-                datetime={creationDate}
-                prefix="Created"
-                enableTooltip
-              />
-            </div>
+            <TimeCaption
+              datetime={creationDate}
+              prefix="Created"
+              enableTooltip
+            />
           </div>
         </CardBody>
       </Card>

@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
-
 import { Button } from "reactstrap";
 
 import type { NewProjectV2State } from "./projectV2New.slice";
@@ -44,28 +43,32 @@ export default function ProjectFormSubmitGroup({
     <div className={cx("d-flex", "justify-content-between")}>
       <Button
         className={cx(currentStep > 0 ? "visible" : "invisible")}
-        color="outline-rk-green"
+        color="outline-primary"
         onClick={previousStep}
       >
         <ArrowLeft /> Back
       </Button>
       <div>
         {currentStep === 0 && (
-          <Button className="me-1" type="submit">
-            Set Visibility <ArrowRight />
+          <Button color="primary" type="submit">
+            Set visibility <ArrowRight />
           </Button>
         )}
         {currentStep === 1 && (
-          <Button className="me-1" type="submit">
+          <Button color="primary" type="submit">
             Add repositories <ArrowRight />
           </Button>
         )}
         {currentStep === 2 && (
-          <Button type="submit">
+          <Button color="primary" type="submit">
             Review <ArrowRight />
           </Button>
         )}
-        {currentStep === 3 && <Button type="submit">Create</Button>}
+        {currentStep === 3 && (
+          <Button color="primary" type="submit">
+            Create
+          </Button>
+        )}
       </div>
     </div>
   );

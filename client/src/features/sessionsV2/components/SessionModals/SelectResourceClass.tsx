@@ -29,7 +29,7 @@ import {
 } from "../../../dataServices/computeResources.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
-import { SessionClassSelector } from "../../../session/components/options/SessionClassOption";
+import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
@@ -79,7 +79,7 @@ export function SelectResourceClassModal({
   ) : !resourcePools || resourcePools.length == 0 || isError ? (
     <ErrorOrNotAvailableResourcePools />
   ) : (
-    <SessionClassSelector
+    <SessionClassSelectorV2
       resourcePools={resourcePools}
       currentSessionClass={currentSessionClass}
       onChange={onChange}
@@ -100,39 +100,20 @@ export function SelectResourceClassModal({
       <p>Resource class not available</p>
     );
 
-  const cancelLaunchSession = (
-    <Link
-      className={cx(
-        "btn",
-        "d-flex",
-        "align-items-center",
-        "py-1",
-        "px-2",
-        "ms-2",
-        "btn-outline-rk-green"
-      )}
-      to={projectUrl}
-      data-cy="start-session-button"
-    >
-      <XLg className={cx("bi", "me-1")} />
-      Cancel launch
-    </Link>
-  );
-
   return (
     <Modal centered isOpen={isOpen} size="lg">
-      <ModalHeader className={cx("fw-bold")}>
+      <ModalHeader>
         {isCustom
           ? "Modify session launch before start"
           : "Complete missing information for session launch"}
       </ModalHeader>
-      <ModalBody className="pt-0">
+      <ModalBody>
         {isCustom ? (
-          <p className={cx("mb-0", "pb-3")}>
+          <p>
             Please select one of your available resource classes to continue.
           </p>
         ) : (
-          <p className={cx("mb-0", "pb-3")}>
+          <p>
             You do not have access to the default resource class of this session
             launcher. Please select one of your available resource classes to
             continue.”
@@ -148,10 +129,17 @@ export function SelectResourceClassModal({
         )}
         <div className="field-group">{selector}</div>
       </ModalBody>
-      <ModalFooter className="pt-0">
-        {cancelLaunchSession}
+      <ModalFooter className="gap-2">
+        <Link
+          className={cx("btn", "btn-outline-primary")}
+          to={projectUrl}
+          data-cy="start-session-button"
+        >
+          <XLg className={cx("me-2", "text-icon")} />
+          Cancel launch
+        </Link>
         <Button
-          className={cx("ms-2", "btn-rk-green")}
+          color="primary"
           disabled={!currentSessionClass}
           onClick={onClick}
         >

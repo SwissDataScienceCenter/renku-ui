@@ -111,7 +111,7 @@ function ProgressStep({ step }: progressStepProps) {
     case StatusStepProgressBar.READY:
       content = (
         <>
-          <CheckCircleFill className="text-rk-green" />
+          <CheckCircleFill className="text-success" />
           {step.step}
         </>
       );
@@ -120,14 +120,14 @@ function ProgressStep({ step }: progressStepProps) {
       content = (
         <>
           <Loader className="d-inline-flex" inline size={16} />
-          <span className="text-rk-text-light">{step.step}</span>
+          <span>{step.step}</span>
         </>
       );
       break;
     case StatusStepProgressBar.FAILED:
       content = (
         <>
-          <XCircleFill className="text-rk-danger-shadow" />
+          <XCircleFill className="text-danger" />
           {step.step}
         </>
       );

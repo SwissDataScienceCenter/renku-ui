@@ -13,16 +13,14 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
 
-import cx from "classnames";
-import ProjectInformation from "./ProjectInformation/ProjectInformation";
-
-export default function ProjectInformationPage() {
-  return (
-    <div className={cx("d-block", "d-lg-none", "d-sm-block", "pt-4")}>
-      <ProjectInformation />
-    </div>
-  );
-}
+export type GroupSimple = {
+  id: string;
+  name: string;
+  slug: string;
+  creation_date: string | Date;
+  created_by: string;
+  description?: string;
+};
