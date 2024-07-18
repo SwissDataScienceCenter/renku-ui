@@ -203,12 +203,12 @@ export default function NavbarV2() {
           >
             <img
               src={RENKU_ALPHA_LOGO}
-              alt="Renku v2 (alpha)"
+              alt="Renku 2.0 (beta)"
               className="pe-2"
               height="50"
             />
           </RenkuNavLinkV2>
-          <WipBadge label="2.0 Alpha" />
+          <WipBadge>2.0 Beta</WipBadge>
           <BackToV1Button outline={true} />
         </div>
         <NavbarToggler onClick={onToggle} className="border-0">
