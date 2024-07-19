@@ -19,27 +19,22 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom-v5-compat";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import {
-  setPage,
-  setPerPage,
-  setQuery,
-  setSearchBarQuery,
-  setSort,
-} from "../searchV2.slice";
+import { setPage, setPerPage, setInitialQuery } from "../searchV2.slice";
 import { parseSearchQuery } from "../searchV2.utils";
 import { DEFAULT_SORTING_OPTION } from "../searchV2.constants";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 
 export default function useSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const dispatch = useAppDispatch();
+  const { initialQuery, query } = useAppSelector(({ searchV2 }) => searchV2);
 
   useEffect(() => {
     const query = searchParams.get("q");
 
     if (query == null) {
-      dispatch(setQuery(null));
-      dispatch(setSearchBarQuery(null));
+      dispatch(setInitialQuery({ query: null }));
       return;
     }
 
@@ -57,9 +52,13 @@ export default function useSearch() {
       return;
     }
 
-    dispatch(setQuery(query));
-    dispatch(setSearchBarQuery(searchBarQuery));
-    dispatch(setSort(sortingOption ?? DEFAULT_SORTING_OPTION));
+    dispatch(
+      setInitialQuery({
+        query,
+        searchBarQuery,
+        sort: sortingOption ?? DEFAULT_SORTING_OPTION,
+      })
+    );
   }, [dispatch, searchParams, setSearchParams]);
 
   useEffect(() => {
@@ -132,4 +131,15 @@ export default function useSearch() {
 
     dispatch(setPerPage(perPage));
   }, [dispatch, searchParams, setSearchParams]);
+
+  useEffect(() => {
+    if (query != null && query != initialQuery) {
+      setSearchParams((prev) => {
+        prev.set("q", query);
+        prev.set("page", "1");
+        prev.set("perPage", "10");
+        return prev;
+      });
+    }
+  }, [initialQuery, query, setSearchParams]);
 }

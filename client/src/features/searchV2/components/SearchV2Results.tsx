@@ -17,9 +17,13 @@
  */
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useCallback, useEffect } from "react";
 import { Globe2, LockFill } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+import {
+  Link,
+  generatePath,
+  useSearchParams,
+} from "react-router-dom-v5-compat";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -30,6 +34,8 @@ import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { Group, Project, User, searchV2Api } from "../api/searchV2Api.api";
 
 export default function SearchV2Results() {
+  const [, setSearchParams] = useSearchParams();
+
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
 
   const [search, { data: searchResults }] =
@@ -39,7 +45,17 @@ export default function SearchV2Results() {
     if (query != null) {
       search({ page, perPage, q: query });
     }
-  }, [page, perPage, query]);
+  }, [page, perPage, query, search]);
+
+  const onPageChange = useCallback(
+    (page: number) => {
+      setSearchParams((prev) => {
+        prev.set("page", `${page}`);
+        return prev;
+      });
+    },
+    [setSearchParams]
+  );
 
   return (
     <Row data-cy="search-results">
@@ -54,9 +70,7 @@ export default function SearchV2Results() {
           currentPage={page}
           perPage={perPage}
           totalItems={searchResults?.pagingInfo.totalResult ?? 0}
-          onPageChange={(page: number) => {
-            // dispatch(setPage(page));
-          }}
+          onPageChange={onPageChange}
           showDescription={true}
           className="rk-search-pagination"
         />

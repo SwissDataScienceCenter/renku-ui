@@ -23,15 +23,17 @@ import type {
   SearchV2State,
   SearchV2StateV2,
   SearchV2Totals,
+  SetInitialQueryParams,
   SortingItem,
   SortingOption,
   ToggleFilterPayload,
 } from "./searchV2.types";
-import { AVAILABLE_SORTING } from "./searchV2.utils";
+import { AVAILABLE_SORTING, buildSearchQuery2 } from "./searchV2.utils";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
 import { DEFAULT_SORTING_OPTION } from "./searchV2.constants";
 
 const initialState: SearchV2StateV2 = {
+  initialQuery: null,
   page: 1,
   perPage: 10,
   query: null,
@@ -43,8 +45,17 @@ export const searchV2Slice = createSlice({
   name: "searchV2",
   initialState,
   reducers: {
-    setQuery: (state, action: PayloadAction<string | null>) => {
-      state.query = action.payload;
+    setInitialQuery: (state, action: PayloadAction<SetInitialQueryParams>) => {
+      if (action.payload.query == null) {
+        state.initialQuery = null;
+        state.query = null;
+        state.searchBarQuery = null;
+      } else {
+        state.initialQuery = action.payload.query;
+        state.query = action.payload.query;
+        state.searchBarQuery = action.payload.searchBarQuery;
+        state.sort = action.payload.sort;
+      }
     },
     setPage: (state, action: PayloadAction<number>) => {
       state.page = action.payload;
@@ -54,18 +65,20 @@ export const searchV2Slice = createSlice({
     },
     setSort: (state, action: PayloadAction<SortingOption>) => {
       state.sort = action.payload;
+      state.query = buildSearchQuery2(state);
     },
     setSearchBarQuery: (state, action: PayloadAction<string | null>) => {
       state.searchBarQuery = action.payload;
+      state.query = buildSearchQuery2(state);
     },
     reset: () => initialState,
   },
 });
 
 export const {
+  setInitialQuery,
   setPage,
   setPerPage,
-  setQuery,
   setSort,
   setSearchBarQuery,
   reset,

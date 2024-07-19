@@ -20,6 +20,7 @@ import type { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx
 import type { Role } from "../projectsV2/api/projectV2.api";
 
 export interface SearchV2StateV2 {
+  initialQuery: string | null;
   query: string | null;
   page: number;
   perPage: number;
@@ -95,3 +96,13 @@ export interface DateFilterItem {
 export interface DateFilterItems {
   [key: string]: DateFilterItem;
 }
+
+export type SetInitialQueryParams =
+  | {
+      query: string;
+      searchBarQuery: string;
+      sort: SortingOption;
+    }
+  | {
+      query: null;
+    };

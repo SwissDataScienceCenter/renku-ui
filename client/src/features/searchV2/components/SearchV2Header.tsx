@@ -15,66 +15,96 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import cx from "classnames";
-import { useCallback } from "react";
-import { useDispatch } from "react-redux";
 import { skipToken } from "@reduxjs/toolkit/query";
+import cx from "classnames";
+import React, { useCallback } from "react";
 
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { AVAILABLE_SORTING } from "../searchV2.utils";
-import { setSorting } from "../searchV2.slice";
 import { searchV2Api } from "../api/searchV2Api.api";
+import { SORTING_OPTIONS } from "../searchV2.constants";
+import { setSort } from "../searchV2.slice";
 
 export default function SearchV2Header() {
-  const { search, sorting } = useAppSelector((state) => state.searchV2);
-  const dispatch = useDispatch();
-  const searchResults = searchV2Api.endpoints.$get.useQueryState(
-    search.lastSearch != null
-      ? {
-          q: search.lastSearch,
-          page: search.page,
-          perPage: search.perPage,
-        }
-      : skipToken
+  const dispatch = useAppDispatch();
+  const { page, perPage, query, sort } = useAppSelector(
+    ({ searchV2 }) => searchV2
   );
 
-  const searchQuery = search.lastSearch;
+  const searchResults = searchV2Api.endpoints.getQuery.useQueryState(
+    query != null ? { page, perPage, q: query } : skipToken
+  );
+
+  // const { search, sorting } = useAppSelector((state) => state.searchV2);
+  // const dispatch = useDispatch();
+  // const searchResults = searchV2Api.endpoints.$get.useQueryState(
+  //   search.lastSearch != null
+  //     ? {
+  //         q: search.lastSearch,
+  //         page: search.page,
+  //         perPage: search.perPage,
+  //       }
+  //     : skipToken
+  // );
+
+  // const searchQuery = search.lastSearch;
+
+  // const setNewSorting = useCallback(
+  //   (newSorting: keyof typeof AVAILABLE_SORTING) => {
+  //     for (const key of Object.keys(AVAILABLE_SORTING)) {
+  //       if (AVAILABLE_SORTING[key].sortingString === newSorting) {
+  //         dispatch(setSorting(AVAILABLE_SORTING[key]));
+  //         break;
+  //       }
+  //     }
+  //   },
+  //   [dispatch]
+  // );
+
+  // const handleOnChange = (newSorting: keyof typeof AVAILABLE_SORTING) => {
+  //   setNewSorting(newSorting);
+  // };
+
+  // const options = Object.values(AVAILABLE_SORTING).map((value) => (
+  //   <option key={value.sortingString} value={value.sortingString}>
+  //     {value.friendlyName}
+  //   </option>
+  // ));
+
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const sortingOption = SORTING_OPTIONS.find(
+        (opt) => opt.key === event.target.value
+      );
+      if (sortingOption) {
+        dispatch(setSort(sortingOption));
+      }
+    },
+    []
+  );
+
   const total =
     searchResults.data?.items?.length != null
       ? searchResults.data?.pagingInfo.totalResult
       : 0;
-  const setNewSorting = useCallback(
-    (newSorting: keyof typeof AVAILABLE_SORTING) => {
-      for (const key of Object.keys(AVAILABLE_SORTING)) {
-        if (AVAILABLE_SORTING[key].sortingString === newSorting) {
-          dispatch(setSorting(AVAILABLE_SORTING[key]));
-          break;
-        }
-      }
-    },
-    [dispatch]
-  );
 
-  const handleOnChange = (newSorting: keyof typeof AVAILABLE_SORTING) => {
-    setNewSorting(newSorting);
-  };
-
-  const options = Object.values(AVAILABLE_SORTING).map((value) => (
-    <option key={value.sortingString} value={value.sortingString}>
-      {value.friendlyName}
-    </option>
-  ));
   const resultsText = (
     <div className="rk-search-result-title">
       {total ? total : "No"} {total && total > 1 ? "results" : "result"}
-      {searchQuery != null && (
+      {query != null && (
         <span>
           {" "}
-          for <span className="fw-bold">{`"${searchQuery}"`}</span>
+          for <span className="fw-bold">{`"${query}"`}</span>
         </span>
       )}
     </div>
   );
+
+  const options = Object.values(SORTING_OPTIONS).map(({ key, label }) => (
+    <option key={key} value={key}>
+      {label}
+    </option>
+  ));
 
   return (
     <div
@@ -90,10 +120,8 @@ export default function SearchV2Header() {
           className="form-select"
           data-cy="search-sorting-select"
           name="sorting"
-          onChange={(e) => {
-            handleOnChange(e.target.value as keyof typeof AVAILABLE_SORTING);
-          }}
-          value={sorting.sortingString}
+          onChange={onChange}
+          value={sort.key}
         >
           {options}
         </select>

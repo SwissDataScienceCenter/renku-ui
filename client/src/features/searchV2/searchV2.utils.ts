@@ -21,6 +21,7 @@ import type {
   DateFilter,
   DateFilterItems,
   SearchV2State,
+  SearchV2StateV2,
   SortingItems,
   SortingOption,
 } from "./searchV2.types";
@@ -166,7 +167,10 @@ export const buildSearchQuery = (searchState: SearchV2State): string => {
 };
 
 export function parseSearchQuery(query: string) {
-  const terms = query.split(" ").map(parseTerm);
+  const terms = query
+    .split(" ")
+    .filter((term) => term != "")
+    .map(parseTerm);
 
   // Retain the last sorting option only
   const sortingOption = [...terms]
@@ -227,4 +231,21 @@ interface SortingInterpretation {
 
 function asQueryTerm(filter: SortingOption): string {
   return `${SORT_KEY}:${filter.key}`;
+}
+
+export function buildSearchQuery2(
+  state: Pick<SearchV2StateV2, "searchBarQuery" | "sort">
+): string {
+  const { searchBarQuery, sort } = state;
+
+  const draftQuery = [
+    ...(sort && sort.key !== DEFAULT_SORTING_OPTION.key
+      ? [asQueryTerm(sort)]
+      : []),
+    searchBarQuery,
+  ].join(" ");
+
+  const { canonicalQuery } = parseSearchQuery(draftQuery);
+
+  return canonicalQuery;
 }
