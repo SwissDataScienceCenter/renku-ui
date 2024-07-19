@@ -17,16 +17,17 @@
  */
 
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
+import type { Role } from "../projectsV2/api/projectV2.api";
+import { DEFAULT_SORTING_OPTION, SORTING_OPTIONS } from "./searchV2.constants";
 import type {
   DateFilter,
   DateFilterItems,
+  SearchEntityType,
   SearchV2State,
   SearchV2StateV2,
   SortingItems,
   SortingOption,
 } from "./searchV2.types";
-import type { Role } from "../projectsV2/api/projectV2.api";
-import { DEFAULT_SORTING_OPTION, SORTING_OPTIONS } from "./searchV2.constants";
 
 const ROLE_FILTER: { [key in Role]: string } = {
   owner: "Owner",
@@ -172,10 +173,12 @@ export function parseSearchQuery(query: string) {
     .filter((term) => term != "")
     .map(parseTerm);
 
+  // Retain the last filter value only
+  const typeFilterOption = [...terms].reverse().find(isTypeFilterInterpretation)
+    ?.interpretation.values;
+
   // Retain the last sorting option only
-  const sortingOption = [...terms]
-    .reverse()
-    .find(({ interpretation }) => interpretation?.key === "sort")
+  const sortingOption = [...terms].reverse().find(isSortingInterpretation)
     ?.interpretation?.sortingOption;
 
   const uninterpretedTerms = terms
@@ -183,6 +186,7 @@ export function parseSearchQuery(query: string) {
     .map(({ term }) => term);
 
   const canonicalQuery = [
+    // TODO
     ...(sortingOption && sortingOption.key !== DEFAULT_SORTING_OPTION.key
       ? [asQueryTerm(sortingOption)]
       : []),
@@ -222,11 +226,28 @@ interface InterpretedTerm {
   interpretation: Interpretation | null;
 }
 
-type Interpretation = SortingInterpretation;
+type Interpretation = TypeFilterInterpretation | SortingInterpretation;
+
+interface TypeFilterInterpretation {
+  key: "type";
+  values: Set<SearchEntityType>;
+}
 
 interface SortingInterpretation {
   key: "sort";
   sortingOption: SortingOption;
+}
+
+function isTypeFilterInterpretation(
+  term: InterpretedTerm
+): term is InterpretedTerm & { interpretation: TypeFilterInterpretation } {
+  return term.interpretation?.key === "type";
+}
+
+function isSortingInterpretation(
+  term: InterpretedTerm
+): term is InterpretedTerm & { interpretation: SortingInterpretation } {
+  return term.interpretation?.key === "sort";
 }
 
 function asQueryTerm(filter: SortingOption): string {

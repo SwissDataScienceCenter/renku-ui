@@ -27,6 +27,7 @@ import type {
   SortingItem,
   SortingOption,
   ToggleFilterPayload,
+  TypeFilterOption,
 } from "./searchV2.types";
 import { AVAILABLE_SORTING, buildSearchQuery2 } from "./searchV2.utils";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
@@ -39,6 +40,9 @@ const initialState: SearchV2StateV2 = {
   query: null,
   sort: DEFAULT_SORTING_OPTION,
   searchBarQuery: null,
+  filters: {
+    type: new Set(),
+  },
 };
 
 export const searchV2Slice = createSlice({
@@ -69,6 +73,17 @@ export const searchV2Slice = createSlice({
     },
     setSearchBarQuery: (state, action: PayloadAction<string | null>) => {
       state.searchBarQuery = action.payload;
+      state.query = buildSearchQuery2(state);
+    },
+    setTypeFilter: (
+      state,
+      action: PayloadAction<{ key: TypeFilterOption["key"]; value: boolean }>
+    ) => {
+      if (action.payload.value) {
+        state.filters.type.add(action.payload.key);
+      } else {
+        state.filters.type.delete(action.payload.key);
+      }
       state.query = buildSearchQuery2(state);
     },
     reset: () => initialState,

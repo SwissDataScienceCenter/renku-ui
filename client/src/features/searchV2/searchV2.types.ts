@@ -18,6 +18,7 @@
 
 import type { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
 import type { Role } from "../projectsV2/api/projectV2.api";
+import type { SearchEntity } from "./api/searchV2Api.api.ts";
 
 export interface SearchV2StateV2 {
   initialQuery: string | null;
@@ -26,12 +27,22 @@ export interface SearchV2StateV2 {
   perPage: number;
   searchBarQuery: string | null;
   sort: SortingOption;
+  filters: {
+    type: Set<SearchEntityType>;
+  };
 }
 
 export interface SortingOption {
   key: string;
   label: string;
 }
+
+export interface TypeFilterOption {
+  key: SearchEntityType;
+  label: string;
+}
+
+export type SearchEntityType = Lowercase<SearchEntity["type"]>;
 
 export interface DateFilter {
   option: DateFilterTypes;

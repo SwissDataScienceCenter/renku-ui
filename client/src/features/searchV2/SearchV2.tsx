@@ -18,7 +18,7 @@
 import { Col, Row } from "reactstrap";
 
 import SearchV2Bar from "./components/SearchV2Bar";
-// import SearchV2Filters from "./components/SearchV2Filters";
+import SearchV2Filters from "./components/SearchV2Filters";
 import SearchV2Header from "./components/SearchV2Header";
 import SearchV2Results from "./components/SearchV2Results";
 import useSearch from "./hooks/useSearch.hook";
@@ -45,7 +45,7 @@ export default function SearchV2() {
       </Row>
       <Row className="mb-3">
         <Col xs={12} sm={4} lg={3}>
-          {/* <SearchV2Filters /> */}
+          <SearchV2Filters />
         </Col>
         <Col xs={12} sm={8} lg={9}>
           <SearchV2Results />

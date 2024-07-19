@@ -20,7 +20,7 @@ import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
-import { setCreated, setCreatedBy, toggleFilter } from "../searchV2.slice";
+// import { setCreated, setCreatedBy, toggleFilter } from "../searchV2.slice";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import {
   DateFilter,
@@ -37,49 +37,49 @@ import { SearchV2DateFilter } from "./SearchV2DateFilter.tsx";
 import { SearchV2UserFilter } from "./SearchV2UserFilter.tsx";
 
 export default function SearchV2Filters() {
-  const dispatch = useDispatch();
-  const searchState = useAppSelector((state) => state.searchV2);
-  const { filters } = searchState;
-  const userLogged = useLegacySelector<User["logged"]>(
-    (state) => state.stateModel.user.logged
-  );
+  // const dispatch = useDispatch();
+  // const searchState = useAppSelector((state) => state.searchV2);
+  // const { filters } = searchState;
+  // const userLogged = useLegacySelector<User["logged"]>(
+  //   (state) => state.stateModel.user.logged
+  // );
 
-  const handleToggleFilter = useCallback(
-    (filter: keyof SearchV2State["filters"], value: string | DateFilter) => {
-      if (filter === "created") dispatch(setCreated(value as DateFilter));
-      else dispatch(toggleFilter({ filter, value: value as string }));
-    },
-    [dispatch]
-  );
+  // const handleToggleFilter = useCallback(
+  //   (filter: keyof SearchV2State["filters"], value: string | DateFilter) => {
+  //     if (filter === "created") dispatch(setCreated(value as DateFilter));
+  //     else dispatch(toggleFilter({ filter, value: value as string }));
+  //   },
+  //   [dispatch]
+  // );
 
-  const filtersList = Object.entries(AVAILABLE_FILTERS)
-    .filter(([filterName]) => {
-      if (!userLogged)
-        return !ANONYMOUS_USERS_EXCLUDE_FILTERS.includes(
-          filterName as keyof typeof AVAILABLE_FILTERS
-        );
-      return true;
-    })
-    .map(([filterName, options]) => (
-      <SearchV2Filter
-        key={filterName}
-        name={filterName}
-        options={Object.entries(options as Object).map(([key, value]) => ({
-          checked: (
-            filters[filterName as keyof SearchV2State["filters"]] as string[]
-          ).includes(key),
-          key,
-          value,
-        }))}
-        title={filterName.charAt(0).toUpperCase() + filterName.slice(1)}
-        toggleOption={(value: string) => {
-          handleToggleFilter(
-            filterName as keyof SearchV2State["filters"],
-            value
-          );
-        }}
-      />
-    ));
+  // const filtersList = Object.entries(AVAILABLE_FILTERS)
+  //   .filter(([filterName]) => {
+  //     if (!userLogged)
+  //       return !ANONYMOUS_USERS_EXCLUDE_FILTERS.includes(
+  //         filterName as keyof typeof AVAILABLE_FILTERS
+  //       );
+  //     return true;
+  //   })
+  //   .map(([filterName, options]) => (
+  //     <SearchV2Filter
+  //       key={filterName}
+  //       name={filterName}
+  //       options={Object.entries(options as Object).map(([key, value]) => ({
+  //         checked: (
+  //           filters[filterName as keyof SearchV2State["filters"]] as string[]
+  //         ).includes(key),
+  //         key,
+  //         value,
+  //       }))}
+  //       title={filterName.charAt(0).toUpperCase() + filterName.slice(1)}
+  //       toggleOption={(value: string) => {
+  //         handleToggleFilter(
+  //           filterName as keyof SearchV2State["filters"],
+  //           value
+  //         );
+  //       }}
+  //     />
+  //   ));
 
   return (
     <>
@@ -88,7 +88,7 @@ export default function SearchV2Filters() {
           <h3>Filters</h3>
         </Col>
         <Col className={cx("d-flex", "flex-column", "gap-3")}>
-          <SearchV2UserFilter
+          {/* <SearchV2UserFilter
             createdBy={filters["createdBy"]}
             removeUserFilter={() => dispatch(setCreatedBy(""))}
           />
@@ -100,7 +100,7 @@ export default function SearchV2Filters() {
             toggleOption={(value: DateFilter) => {
               handleToggleFilter("created", value);
             }}
-          />
+          /> */}
         </Col>
       </Row>
     </>

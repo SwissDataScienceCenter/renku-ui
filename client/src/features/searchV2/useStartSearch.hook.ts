@@ -16,70 +16,70 @@
  * limitations under the License
  */
 
-import { useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
+// import { useCallback, useEffect } from "react";
+// import { useDispatch } from "react-redux";
 
-import { setPage, setSearch, setTotals } from "./searchV2.slice";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { buildSearchQuery } from "./searchV2.utils";
-import { searchV2Api } from "./api/searchV2Api.api";
+// import { setPage, setSearch, setTotals } from "./searchV2.slice";
+// import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+// import { buildSearchQuery } from "./searchV2.utils";
+// import { searchV2Api } from "./api/searchV2Api.api";
 
-const useStartNewSearch = () => {
-  const dispatch = useDispatch();
-  const searchState = useAppSelector((state) => state.searchV2);
-  const [startSearch, searchResult] = searchV2Api.endpoints.$get.useLazyQuery();
+// const useStartNewSearch = () => {
+//   const dispatch = useDispatch();
+//   const searchState = useAppSelector((state) => state.searchV2);
+//   const [startSearch, searchResult] = searchV2Api.endpoints.$get.useLazyQuery();
 
-  // update the search slice and start the new query
-  const startNewSearch = useCallback(() => {
-    const searchQuery = buildSearchQuery(searchState);
+//   // update the search slice and start the new query
+//   const startNewSearch = useCallback(() => {
+//     const searchQuery = buildSearchQuery(searchState);
 
-    if (
-      searchResult.fulfilledTimeStamp &&
-      searchQuery === searchState.search.lastSearch &&
-      +new Date() - searchResult.fulfilledTimeStamp < 1000
-    )
-      return;
+//     if (
+//       searchResult.fulfilledTimeStamp &&
+//       searchQuery === searchState.search.lastSearch &&
+//       +new Date() - searchResult.fulfilledTimeStamp < 1000
+//     )
+//       return;
 
-    dispatch(setSearch(searchQuery));
-    const resetPage = searchState.search.lastSearch !== searchQuery;
-    if (resetPage) dispatch(setPage(1));
-    startSearch({
-      q: searchQuery,
-      page: resetPage ? 1 : searchState.search.page,
-      perPage: searchState.search.perPage,
-    });
-  }, [dispatch, searchState, startSearch, searchResult.fulfilledTimeStamp]);
+//     dispatch(setSearch(searchQuery));
+//     const resetPage = searchState.search.lastSearch !== searchQuery;
+//     if (resetPage) dispatch(setPage(1));
+//     startSearch({
+//       q: searchQuery,
+//       page: resetPage ? 1 : searchState.search.page,
+//       perPage: searchState.search.perPage,
+//     });
+//   }, [dispatch, searchState, startSearch, searchResult.fulfilledTimeStamp]);
 
-  // handle pagination results
-  useEffect(() => {
-    if (
-      searchResult.data &&
-      searchState.search.totalResults !==
-        searchResult.data?.pagingInfo.totalResult
-    ) {
-      dispatch(
-        setTotals({
-          results: searchResult.data?.pagingInfo.totalResult,
-          pages: searchResult.data?.pagingInfo.totalPages,
-        })
-      );
-    }
-  }, [
-    dispatch,
-    searchResult.data,
-    searchResult.data?.pagingInfo.totalResult,
-    searchResult.data?.pagingInfo.totalPages,
-    searchState.search.totalResults,
-  ]);
+//   // handle pagination results
+//   useEffect(() => {
+//     if (
+//       searchResult.data &&
+//       searchState.search.totalResults !==
+//         searchResult.data?.pagingInfo.totalResult
+//     ) {
+//       dispatch(
+//         setTotals({
+//           results: searchResult.data?.pagingInfo.totalResult,
+//           pages: searchResult.data?.pagingInfo.totalPages,
+//         })
+//       );
+//     }
+//   }, [
+//     dispatch,
+//     searchResult.data,
+//     searchResult.data?.pagingInfo.totalResult,
+//     searchResult.data?.pagingInfo.totalPages,
+//     searchState.search.totalResults,
+//   ]);
 
-  // handle changes that influence the UI appearance and requires a new backend search
-  useEffect(() => {
-    if (searchState.search.outdated) {
-      startNewSearch();
-    }
-  }, [searchState.search.outdated, startNewSearch]);
+//   // handle changes that influence the UI appearance and requires a new backend search
+//   useEffect(() => {
+//     if (searchState.search.outdated) {
+//       startNewSearch();
+//     }
+//   }, [searchState.search.outdated, startNewSearch]);
 
-  return { startNewSearch, searchResult };
-};
+//   return { startNewSearch, searchResult };
+// };
 
-export default useStartNewSearch;
+// export default useStartNewSearch;

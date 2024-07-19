@@ -16,7 +16,7 @@
  * limitations under the License
  */
 
-import type { SortingOption } from "./searchV2.types";
+import type { SortingOption, TypeFilterOption } from "./searchV2.types";
 
 export const SORT_KEY = "sort";
 
@@ -40,4 +40,10 @@ export const SORTING_OPTIONS: SortingOption[] = [
     key: "name-desc",
     label: "Name: reverse",
   },
+];
+
+export const TYPE_FILTER_OPTIONS: TypeFilterOption[] = [
+  { key: "project", label: "Project" },
+  { key: "group", label: "Group" },
+  { key: "user", label: "User" },
 ];
