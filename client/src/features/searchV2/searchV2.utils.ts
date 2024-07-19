@@ -17,13 +17,15 @@
  */
 
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
-import {
+import type {
   DateFilter,
   DateFilterItems,
   SearchV2State,
   SortingItems,
+  SortingOption,
 } from "./searchV2.types";
 import type { Role } from "../projectsV2/api/projectV2.api";
+import { DEFAULT_SORTING_OPTION, SORTING_OPTIONS } from "./searchV2.constants";
 
 const ROLE_FILTER: { [key in Role]: string } = {
   owner: "Owner",
@@ -162,3 +164,67 @@ export const buildSearchQuery = (searchState: SearchV2State): string => {
 
   return searchQueryItems.join(" ");
 };
+
+export function parseSearchQuery(query: string) {
+  const terms = query.split(" ").map(parseTerm);
+
+  // Retain the last sorting option only
+  const sortingOption = [...terms]
+    .reverse()
+    .find(({ interpretation }) => interpretation?.key === "sort")
+    ?.interpretation?.sortingOption;
+
+  const uninterpretedTerms = terms
+    .filter(({ interpretation }) => interpretation == null)
+    .map(({ term }) => term);
+
+  const canonicalQuery = [
+    ...(sortingOption && sortingOption.key !== DEFAULT_SORTING_OPTION.key
+      ? [asQueryTerm(sortingOption)]
+      : []),
+    ...uninterpretedTerms,
+  ].join(" ");
+
+  const searchBarQuery = uninterpretedTerms.join(" ");
+
+  return { canonicalQuery, searchBarQuery, sortingOption };
+}
+
+function parseTerm(term: string): InterpretedTerm {
+  const termLower = term.toLowerCase();
+
+  if (termLower.startsWith(`${SORT_KEY}:`)) {
+    const sortValue = termLower.slice(SORT_KEY.length + 1);
+    const matched = SORTING_OPTIONS.find((option) => option.key === sortValue);
+    if (matched) {
+      return {
+        term,
+        interpretation: {
+          key: "sort",
+          sortingOption: matched,
+        },
+      };
+    }
+  }
+
+  return {
+    term,
+    interpretation: null,
+  };
+}
+
+interface InterpretedTerm {
+  term: string;
+  interpretation: Interpretation | null;
+}
+
+type Interpretation = SortingInterpretation;
+
+interface SortingInterpretation {
+  key: "sort";
+  sortingOption: SortingOption;
+}
+
+function asQueryTerm(filter: SortingOption): string {
+  return `${SORT_KEY}:${filter.key}`;
+}

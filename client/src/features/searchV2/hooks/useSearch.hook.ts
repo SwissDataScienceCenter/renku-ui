@@ -19,7 +19,15 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom-v5-compat";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import { setPage, setPerPage, setQuery } from "../searchV2.slice";
+import {
+  setPage,
+  setPerPage,
+  setQuery,
+  setSearchBarQuery,
+  setSort,
+} from "../searchV2.slice";
+import { parseSearchQuery } from "../searchV2.utils";
+import { DEFAULT_SORTING_OPTION } from "../searchV2.constants";
 
 export default function useSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,8 +36,31 @@ export default function useSearch() {
 
   useEffect(() => {
     const query = searchParams.get("q");
+
+    if (query == null) {
+      dispatch(setQuery(null));
+      dispatch(setSearchBarQuery(null));
+      return;
+    }
+
+    const { canonicalQuery, searchBarQuery, sortingOption } =
+      parseSearchQuery(query);
+
+    if (query !== canonicalQuery) {
+      setSearchParams(
+        (prev) => {
+          prev.set("q", canonicalQuery);
+          return prev;
+        },
+        { replace: true }
+      );
+      return;
+    }
+
     dispatch(setQuery(query));
-  }, [dispatch, searchParams]);
+    dispatch(setSearchBarQuery(searchBarQuery));
+    dispatch(setSort(sortingOption ?? DEFAULT_SORTING_OPTION));
+  }, [dispatch, searchParams, setSearchParams]);
 
   useEffect(() => {
     const query = searchParams.get("q");

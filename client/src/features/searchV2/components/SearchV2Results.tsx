@@ -17,23 +17,20 @@
  */
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useDispatch } from "react-redux";
+import { ReactNode, useEffect } from "react";
+import { Globe2, LockFill } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
-import { ReactNode, useEffect } from "react";
-import { Globe2, LockFill } from "react-bootstrap-icons";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { Group, Project, User, searchV2Api } from "../api/searchV2Api.api";
-// import { setCreatedBy, setPage } from "../searchV2.slice";
 
 export default function SearchV2Results() {
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
-  // const dispatch = useDispatch();
 
   const [search, { data: searchResults }] =
     searchV2Api.endpoints.getQuery.useLazyQuery();
@@ -69,18 +66,8 @@ export default function SearchV2Results() {
 }
 
 function SearchV2ResultsContent() {
-  // const dispatch = useDispatch();
-  // get the search state
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
-  // const searchResults = searchV2Api.endpoints.getQuery.useQueryState(
-  //   search.lastSearch != null
-  //     ? {
-  //         q: search.lastSearch,
-  //         page: search.page,
-  //         perPage: search.perPage,
-  //       }
-  //     : skipToken
-  // );
+
   const searchResults = searchV2Api.endpoints.getQuery.useQueryState(
     query != null ? { page, perPage, q: query } : skipToken
   );

@@ -23,8 +23,13 @@ export interface SearchV2StateV2 {
   query: string | null;
   page: number;
   perPage: number;
-  // totalPages: number;
-  // totalResults: number;
+  searchBarQuery: string | null;
+  sort: SortingOption;
+}
+
+export interface SortingOption {
+  key: string;
+  label: string;
 }
 
 export interface DateFilter {

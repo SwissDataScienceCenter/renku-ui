@@ -18,23 +18,25 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import {
+import type {
   DateFilter,
   SearchV2State,
   SearchV2StateV2,
   SearchV2Totals,
   SortingItem,
+  SortingOption,
   ToggleFilterPayload,
 } from "./searchV2.types";
 import { AVAILABLE_SORTING } from "./searchV2.utils";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
+import { DEFAULT_SORTING_OPTION } from "./searchV2.constants";
 
 const initialState: SearchV2StateV2 = {
   page: 1,
   perPage: 10,
   query: null,
-  // totalPages: 0,
-  // totalResults: 0,
+  sort: DEFAULT_SORTING_OPTION,
+  searchBarQuery: null,
 };
 
 export const searchV2Slice = createSlice({
@@ -50,11 +52,24 @@ export const searchV2Slice = createSlice({
     setPerPage: (state, action: PayloadAction<number>) => {
       state.perPage = action.payload;
     },
+    setSort: (state, action: PayloadAction<SortingOption>) => {
+      state.sort = action.payload;
+    },
+    setSearchBarQuery: (state, action: PayloadAction<string | null>) => {
+      state.searchBarQuery = action.payload;
+    },
     reset: () => initialState,
   },
 });
 
-export const { setPage, setPerPage, setQuery, reset } = searchV2Slice.actions;
+export const {
+  setPage,
+  setPerPage,
+  setQuery,
+  setSort,
+  setSearchBarQuery,
+  reset,
+} = searchV2Slice.actions;
 
 // const initialState: SearchV2State = {
 //   search: {
