@@ -283,7 +283,7 @@ function SessionLogs(props: LogBodyProps) {
   // TODO: Revisit after #1219
   return (
     <>
-      <div className="text-nowrap mb-3">
+      <div className={cx("text-nowrap", "mb-3")}>
         <Button
           key="button"
           color="outline-primary"
