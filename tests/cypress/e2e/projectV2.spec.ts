@@ -810,7 +810,6 @@ describe("launch sessions with cloud storage", () => {
         req.reply({ body: sessions[0] });
       }).as("createSession");
     });
-    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("start-session-button").click();
     });
