@@ -21,7 +21,10 @@ import { useSearchParams } from "react-router-dom-v5-compat";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import { setPage, setPerPage, setInitialQuery } from "../searchV2.slice";
 import { parseSearchQuery } from "../searchV2.utils";
-import { DEFAULT_SORTING_OPTION } from "../searchV2.constants";
+import {
+  DEFAULT_SORTING_OPTION,
+  DEFAULT_TYPE_FILTER_OPTION,
+} from "../searchV2.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 
 export default function useSearch() {
@@ -38,7 +41,7 @@ export default function useSearch() {
       return;
     }
 
-    const { canonicalQuery, searchBarQuery, sortingOption } =
+    const { canonicalQuery, searchBarQuery, sortingOption, typeFilterOption } =
       parseSearchQuery(query);
 
     if (query !== canonicalQuery) {
@@ -57,6 +60,9 @@ export default function useSearch() {
         query,
         searchBarQuery,
         sort: sortingOption ?? DEFAULT_SORTING_OPTION,
+        filters: {
+          type: typeFilterOption ?? DEFAULT_TYPE_FILTER_OPTION,
+        },
       })
     );
   }, [dispatch, searchParams, setSearchParams]);

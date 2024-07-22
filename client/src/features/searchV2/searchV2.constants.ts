@@ -16,9 +16,36 @@
  * limitations under the License
  */
 
-import type { SortingOption, TypeFilterOption } from "./searchV2.types";
+import type {
+  FilterOptions,
+  SearchEntityType,
+  SortingOption,
+  TypeFilterOption,
+} from "./searchV2.types";
+
+export const TERM_SEPARATOR = " ";
+export const KEY_VALUE_SEPARATOR = ":";
+export const VALUES_SEPARATOR = ",";
+
+export const TYPE_FILTER_KEY = "type";
 
 export const SORT_KEY = "sort";
+
+export const DEFAULT_TYPE_FILTER_OPTION: FilterOptions["type"] = {
+  group: false,
+  project: false,
+  user: false,
+};
+
+export const TYPE_FILTER_OPTIONS: TypeFilterOption[] = [
+  { key: "project", label: "Project" },
+  { key: "group", label: "Group" },
+  { key: "user", label: "User" },
+];
+
+export const TYPE_FILTER_ALLOWED_VALUES: Set<string> = TYPE_FILTER_OPTIONS.map(
+  ({ key }) => key
+).reduce((set, key) => set.add(key), new Set<string>());
 
 export const DEFAULT_SORTING_OPTION: SortingOption = {
   key: "score-desc",
@@ -40,10 +67,4 @@ export const SORTING_OPTIONS: SortingOption[] = [
     key: "name-desc",
     label: "Name: reverse",
   },
-];
-
-export const TYPE_FILTER_OPTIONS: TypeFilterOption[] = [
-  { key: "project", label: "Project" },
-  { key: "group", label: "Group" },
-  { key: "user", label: "User" },
 ];

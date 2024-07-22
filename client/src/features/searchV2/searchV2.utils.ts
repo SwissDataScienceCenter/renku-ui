@@ -18,15 +18,27 @@
 
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
 import type { Role } from "../projectsV2/api/projectV2.api";
-import { DEFAULT_SORTING_OPTION, SORTING_OPTIONS } from "./searchV2.constants";
+import {
+  DEFAULT_SORTING_OPTION,
+  KEY_VALUE_SEPARATOR,
+  SORT_KEY,
+  SORTING_OPTIONS,
+  TERM_SEPARATOR,
+  TYPE_FILTER_ALLOWED_VALUES,
+  TYPE_FILTER_KEY,
+  TYPE_FILTER_OPTIONS,
+  VALUES_SEPARATOR,
+} from "./searchV2.constants";
 import type {
   DateFilter,
   DateFilterItems,
+  FilterOptions,
   SearchEntityType,
   SearchV2State,
   SearchV2StateV2,
   SortingItems,
   SortingOption,
+  TypeFilterOption,
 } from "./searchV2.types";
 
 const ROLE_FILTER: { [key in Role]: string } = {
@@ -109,16 +121,16 @@ export const AVAILABLE_DATE_FILTERS: DateFilterItems = {
 
 const DATE_FILTERS = ["created"];
 
-export const SORT_KEY = "sort";
+// export const SORT_KEY = "sort";
 
-export const FILTER_ASSIGNMENT_CHAR = ":";
+// export const FILTER_ASSIGNMENT_CHAR = ":";
 
 export const buildSearchQuery = (searchState: SearchV2State): string => {
   const query = searchState.search.query;
   const searchQueryItems: string[] = [];
 
   // Add sorting unless already re-defined by the user
-  const sortPrefix = `${SORT_KEY}${FILTER_ASSIGNMENT_CHAR}`;
+  const sortPrefix = `${SORT_KEY}${KEY_VALUE_SEPARATOR}`;
   if (!query.includes(sortPrefix))
     searchQueryItems.push(`${sortPrefix}${searchState.sorting.sortingString}`);
 
@@ -128,7 +140,7 @@ export const buildSearchQuery = (searchState: SearchV2State): string => {
     const filter = searchState.filters[
       filterName as keyof SearchV2State["filters"]
     ] as string[];
-    const filterPrefix = `${filterName}${FILTER_ASSIGNMENT_CHAR}`;
+    const filterPrefix = `${filterName}${KEY_VALUE_SEPARATOR}`;
 
     const totalAvailableFilters = Object.keys(
       AVAILABLE_FILTERS[filterName as never /*"role" | "visibility" | "type"*/]
@@ -169,7 +181,7 @@ export const buildSearchQuery = (searchState: SearchV2State): string => {
 
 export function parseSearchQuery(query: string) {
   const terms = query
-    .split(" ")
+    .split(TERM_SEPARATOR)
     .filter((term) => term != "")
     .map(parseTerm);
 
@@ -186,7 +198,12 @@ export function parseSearchQuery(query: string) {
     .map(({ term }) => term);
 
   const canonicalQuery = [
-    // TODO
+    ...(typeFilterOption &&
+    (typeFilterOption.group ||
+      typeFilterOption.project ||
+      typeFilterOption.user)
+      ? [asQueryTermFO(typeFilterOption)]
+      : []),
     ...(sortingOption && sortingOption.key !== DEFAULT_SORTING_OPTION.key
       ? [asQueryTerm(sortingOption)]
       : []),
@@ -195,14 +212,43 @@ export function parseSearchQuery(query: string) {
 
   const searchBarQuery = uninterpretedTerms.join(" ");
 
-  return { canonicalQuery, searchBarQuery, sortingOption };
+  return { canonicalQuery, searchBarQuery, sortingOption, typeFilterOption };
 }
 
+/** Attempt to parse `term` as a search option */
 function parseTerm(term: string): InterpretedTerm {
   const termLower = term.toLowerCase();
 
-  if (termLower.startsWith(`${SORT_KEY}:`)) {
-    const sortValue = termLower.slice(SORT_KEY.length + 1);
+  if (termLower.startsWith(`${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
+    const filterValues = termLower.slice(
+      TYPE_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
+    );
+    const values = filterValues.split(`${VALUES_SEPARATOR}`);
+    const matchedValues = values
+      .filter((value) => TYPE_FILTER_ALLOWED_VALUES.has(value))
+      .reduce(
+        (set, value) => set.add(value as SearchEntityType),
+        new Set<SearchEntityType>()
+      );
+    if (matchedValues.size == values.length) {
+      return {
+        term,
+        interpretation: {
+          key: "type",
+          values: {
+            group: matchedValues.has("group"),
+            project: matchedValues.has("project"),
+            user: matchedValues.has("user"),
+          },
+        },
+      };
+    }
+  }
+
+  if (termLower.startsWith(`${SORT_KEY}${KEY_VALUE_SEPARATOR}`)) {
+    const sortValue = termLower.slice(
+      SORT_KEY.length + KEY_VALUE_SEPARATOR.length
+    );
     const matched = SORTING_OPTIONS.find((option) => option.key === sortValue);
     if (matched) {
       return {
@@ -230,7 +276,7 @@ type Interpretation = TypeFilterInterpretation | SortingInterpretation;
 
 interface TypeFilterInterpretation {
   key: "type";
-  values: Set<SearchEntityType>;
+  values: FilterOptions["type"];
 }
 
 interface SortingInterpretation {
@@ -251,15 +297,27 @@ function isSortingInterpretation(
 }
 
 function asQueryTerm(filter: SortingOption): string {
-  return `${SORT_KEY}:${filter.key}`;
+  return `${SORT_KEY}${KEY_VALUE_SEPARATOR}${filter.key}`;
+}
+
+function asQueryTermFO(filter: FilterOptions["type"]): string {
+  const values = TYPE_FILTER_OPTIONS.map(({ key }) => key)
+    .filter((value) => filter[value])
+    .sort();
+  if (values.length == 0) {
+    return "";
+  }
+  const valuesStr = values.join(VALUES_SEPARATOR);
+  return `${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${valuesStr}`;
 }
 
 export function buildSearchQuery2(
-  state: Pick<SearchV2StateV2, "searchBarQuery" | "sort">
+  state: Pick<SearchV2StateV2, "searchBarQuery" | "sort" | "filters">
 ): string {
-  const { searchBarQuery, sort } = state;
+  const { filters, searchBarQuery, sort } = state;
 
   const draftQuery = [
+    asQueryTermFO(filters.type),
     ...(sort && sort.key !== DEFAULT_SORTING_OPTION.key
       ? [asQueryTerm(sort)]
       : []),

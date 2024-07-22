@@ -19,6 +19,7 @@ import cx from "classnames";
 import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Card, CardBody, Col, Row } from "reactstrap";
+import { startCase } from "lodash-es";
 
 // import { setCreated, setCreatedBy, toggleFilter } from "../searchV2.slice";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";

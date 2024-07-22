@@ -20,6 +20,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import type {
   DateFilter,
+  FilterOptions,
   SearchV2State,
   SearchV2StateV2,
   SearchV2Totals,
@@ -31,7 +32,10 @@ import type {
 } from "./searchV2.types";
 import { AVAILABLE_SORTING, buildSearchQuery2 } from "./searchV2.utils";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
-import { DEFAULT_SORTING_OPTION } from "./searchV2.constants";
+import {
+  DEFAULT_SORTING_OPTION,
+  DEFAULT_TYPE_FILTER_OPTION,
+} from "./searchV2.constants";
 
 const initialState: SearchV2StateV2 = {
   initialQuery: null,
@@ -41,7 +45,7 @@ const initialState: SearchV2StateV2 = {
   sort: DEFAULT_SORTING_OPTION,
   searchBarQuery: null,
   filters: {
-    type: new Set(),
+    type: DEFAULT_TYPE_FILTER_OPTION,
   },
 };
 
@@ -54,11 +58,14 @@ export const searchV2Slice = createSlice({
         state.initialQuery = null;
         state.query = null;
         state.searchBarQuery = null;
+        state.sort = DEFAULT_SORTING_OPTION;
+        state.filters = { type: DEFAULT_TYPE_FILTER_OPTION };
       } else {
         state.initialQuery = action.payload.query;
         state.query = action.payload.query;
         state.searchBarQuery = action.payload.searchBarQuery;
         state.sort = action.payload.sort;
+        state.filters = action.payload.filters;
       }
     },
     setPage: (state, action: PayloadAction<number>) => {
@@ -77,13 +84,12 @@ export const searchV2Slice = createSlice({
     },
     setTypeFilter: (
       state,
-      action: PayloadAction<{ key: TypeFilterOption["key"]; value: boolean }>
+      action: PayloadAction<{
+        key: keyof FilterOptions["type"];
+        value: boolean;
+      }>
     ) => {
-      if (action.payload.value) {
-        state.filters.type.add(action.payload.key);
-      } else {
-        state.filters.type.delete(action.payload.key);
-      }
+      state.filters.type[action.payload.key] = action.payload.value;
       state.query = buildSearchQuery2(state);
     },
     reset: () => initialState,

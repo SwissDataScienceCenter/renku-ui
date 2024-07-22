@@ -27,14 +27,16 @@ export interface SearchV2StateV2 {
   perPage: number;
   searchBarQuery: string | null;
   sort: SortingOption;
-  filters: {
-    type: Set<SearchEntityType>;
-  };
+  filters: FilterOptions;
 }
 
 export interface SortingOption {
   key: string;
   label: string;
+}
+
+export interface FilterOptions {
+  type: Set<SearchEntityType>;
 }
 
 export interface TypeFilterOption {
@@ -113,6 +115,7 @@ export type SetInitialQueryParams =
       query: string;
       searchBarQuery: string;
       sort: SortingOption;
+      filters: SearchV2StateV2["filters"];
     }
   | {
       query: null;
