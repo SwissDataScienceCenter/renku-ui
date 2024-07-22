@@ -1,8 +1,11 @@
+// Functions: should be imported first
+@import "~bootstrap/scss/functions";
+
 // Font
 @import "./fonts/fonts";
 $font-family-base: "Inter", sans-serif;
 
-// Redefine/add colors and shadow variables
+// Variables: note we re-define colors and shadow variables before importing
 $primary: #006e58;
 $body-color: #16192c;
 $navy: #01192d;
@@ -12,7 +15,6 @@ $shadow-renku: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
   rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
 // Variables and functions
-@import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/variables-dark";
 
