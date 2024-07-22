@@ -112,7 +112,7 @@ class RenkuAlert extends Component {
         data-cy={this.props.dataCy}
       >
         <div className={cx("d-flex", "gap-3")}>
-          <h1 className="my-auto">{alertIcon}</h1>
+          <div className={cx("fs-1", "my-auto")}>{alertIcon}</div>
           <div className={cx("my-auto", "overflow-auto", "w-100")}>
             {this.props.children}
           </div>
