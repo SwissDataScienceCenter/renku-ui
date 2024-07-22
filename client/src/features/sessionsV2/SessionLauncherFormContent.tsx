@@ -58,6 +58,7 @@ import {
 } from "./session.utils.ts";
 import { EnvironmentKind } from "./sessionsV2.types.ts";
 import InformativeIcon from "../../components/InformativeIcon.tsx";
+import { ExternalLink } from "../../components/ExternalLinks.tsx";
 
 export interface SessionLauncherForm {
   name: string;
@@ -599,7 +600,15 @@ export function CustomEnvFormContent({
                   >
                     Default URL (Optional)
                   </Label>
-                  <MoreInfo trigger="legacy" help={desc.urlPath} />
+                  <MoreInfo trigger="legacy" help={desc.urlPath}>
+                    <p>
+                      <ExternalLink
+                        role="text"
+                        title="Read more"
+                        url={Docs.rtdTopicGuide("sessions/session-basics.html")}
+                      />
+                    </p>
+                  </MoreInfo>
                   <Controller
                     control={control}
                     name="default_url"
@@ -647,7 +656,15 @@ export function CustomEnvFormContent({
                   >
                     Working Directory (Optional)
                   </Label>
-                  <MoreInfo trigger="legacy" help={desc.workingDirectory} />
+                  <MoreInfo trigger="legacy" help={desc.workingDirectory}>
+                    <p>
+                      <ExternalLink
+                        role="text"
+                        title="Read more"
+                        url={Docs.rtdTopicGuide("sessions/session-basics.html")}
+                      />
+                    </p>
+                  </MoreInfo>
                   <Controller
                     control={control}
                     name="workingDirectory"
@@ -671,7 +688,15 @@ export function CustomEnvFormContent({
                   >
                     Mount directory (Optional)
                   </Label>
-                  <MoreInfo trigger="legacy" help={desc.mountDirectory} />
+                  <MoreInfo trigger="legacy" help={desc.mountDirectory}>
+                    <p>
+                      <ExternalLink
+                        role="text"
+                        title="Read more"
+                        url={Docs.rtdTopicGuide("sessions/session-basics.html")}
+                      />
+                    </p>
+                  </MoreInfo>
                   <Controller
                     control={control}
                     name="mountDirectory"
