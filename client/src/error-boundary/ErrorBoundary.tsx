@@ -22,6 +22,7 @@ import { ReactNode, useCallback } from "react";
 
 import styles from "./ErrorBoundary.module.scss";
 import v2Styles from "../styles/renku_bootstrap.scss?inline";
+import { Helmet } from "react-helmet";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
@@ -52,7 +53,9 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
 function ErrorPage() {
   return (
     <>
-      <style type="text/css">{v2Styles}</style>
+      <Helmet>
+        <style type="text/css">{v2Styles}</style>
+      </Helmet>
       <div className={styles.error}>
         <div className={cx("container-xxl", "p-5")}>
           <div className={cx("p-4", "bg-white", "bg-opacity-75")}>
