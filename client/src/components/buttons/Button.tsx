@@ -114,12 +114,8 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
   );
 }
 
-type BButtonWithMenuV2Props = {
-  children?:
-    | React.ReactElement[]
-    | React.ReactNode[]
-    | JSX.Element[]
-    | JSX.Element;
+interface BButtonWithMenuV2Props {
+  children?: React.ReactNode;
   className?: string;
   color?: string;
   default: React.ReactNode;
@@ -128,32 +124,42 @@ type BButtonWithMenuV2Props = {
   id?: string;
   preventPropagation?: boolean;
   size?: string;
-};
-export function ButtonWithMenuV2(props: BButtonWithMenuV2Props) {
-  const additionalProps = props.preventPropagation
+}
+export function ButtonWithMenuV2({
+  children,
+  className,
+  color,
+  default: defaultButton,
+  direction,
+  disabled,
+  id,
+  preventPropagation,
+  size,
+}: BButtonWithMenuV2Props) {
+  const additionalProps = preventPropagation
     ? { onClick: (e: React.MouseEvent) => e.stopPropagation() }
     : {};
   return (
     <UncontrolledDropdown
       {...additionalProps}
-      className={cx(props.className)}
-      color={props.color ?? "primary"}
-      direction={props.direction ?? "down"}
-      disabled={props.disabled}
+      className={cx(className)}
+      color={color ?? "primary"}
+      direction={direction ?? "down"}
+      disabled={disabled}
       group
-      id={props.id}
-      size={props.size ?? "md"}
+      id={id}
+      size={size ?? "md"}
     >
-      {props.default}
+      {defaultButton}
       <DropdownToggle
         caret
         className="dropdown-toggle-split"
         data-bs-toggle="dropdown"
-        color={props.color ?? "primary"}
+        color={color ?? "primary"}
         data-cy="button-with-menu-dropdown"
-        disabled={props.disabled}
+        disabled={disabled}
       />
-      <DropdownMenu end>{props.children}</DropdownMenu>
+      <DropdownMenu end>{children}</DropdownMenu>
     </UncontrolledDropdown>
   );
 }
