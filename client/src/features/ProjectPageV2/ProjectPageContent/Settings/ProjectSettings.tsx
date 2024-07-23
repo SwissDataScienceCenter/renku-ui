@@ -296,7 +296,7 @@ function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
           enabled={
             <>
               <h4>
-                <Sliders className={cx("me-1", "small", "bi")} />
+                <Sliders className={cx("me-1", "bi")} />
                 General settings
               </h4>
               <p className="m-0">

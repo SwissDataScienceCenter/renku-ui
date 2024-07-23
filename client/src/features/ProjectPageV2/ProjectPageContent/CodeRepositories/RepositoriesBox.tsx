@@ -52,8 +52,8 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
           )}
         >
           <div className={cx("align-items-center", "d-flex")}>
-            <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
-              <FileCode className={cx("me-1", "small", "bi")} />
+            <h4 className={cx("mb-0", "me-2")}>
+              <FileCode className={cx("me-1", "bi")} />
               Code Repositories
             </h4>
             {project?.repositories?.length != null && (

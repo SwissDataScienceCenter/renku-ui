@@ -333,7 +333,7 @@ export default function ProjectPageSettingsMembers({
           enabled={
             <>
               <h4>
-                <PersonGear className={cx("me-1", "small", "bi")} />
+                <PersonGear className={cx("me-1", "bi")} />
                 Members of the project
               </h4>
               <p className="m-0">Manage access permissions to the project</p>

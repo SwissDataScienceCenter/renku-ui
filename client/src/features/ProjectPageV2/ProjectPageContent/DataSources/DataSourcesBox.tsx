@@ -65,8 +65,8 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
           )}
         >
           <div className={cx("align-items-center", "d-flex")}>
-            <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
-              <Database className={cx("me-1", "small", "bi")} />
+            <h4 className={cx("mb-0", "me-2")}>
+              <Database className={cx("me-1", "bi")} />
               Data Sources
             </h4>
             <Badge>{totalStorages}</Badge>

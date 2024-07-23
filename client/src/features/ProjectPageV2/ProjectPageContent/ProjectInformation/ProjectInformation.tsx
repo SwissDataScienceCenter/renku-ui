@@ -155,7 +155,7 @@ export default function ProjectInformation({
           )}
         >
           <h4 className="m-0">
-            <InfoCircle className={cx("me-1", "small", "bi")} />
+            <InfoCircle className={cx("me-1", "bi")} />
             Info
           </h4>
 

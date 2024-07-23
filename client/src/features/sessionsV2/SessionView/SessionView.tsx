@@ -493,10 +493,8 @@ export function SessionView({
 
           <div>
             <div className={cx("align-items-center", "d-flex", "mb-2")}>
-              <h4
-                className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
-              >
-                <Database className={cx("me-1", "small", "bi")} />
+              <h4 className={cx("mb-0", "me-2")}>
+                <Database className={cx("me-1", "bi")} />
                 Data Sources
               </h4>
               <Badge>{dataSources?.length || 0}</Badge>
@@ -520,7 +518,7 @@ export function SessionView({
               <h4
                 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
               >
-                <FileCode className={cx("me-1", "small", "bi")} />
+                <FileCode className={cx("me-1", "bi")} />
                 Code Repositories
               </h4>
               {project?.repositories?.length != null && (

@@ -103,23 +103,23 @@ function DashboardWelcome() {
 function ProjectsDashboard() {
   return (
     <Card data-cy="projects-container">
-      <CardHeader>
-        <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
-          <Folder className={cx("small", "bi")} />
+      <CardHeader className={cx("d-flex", "gap-2")}>
+        <h4 className="m-0">
+          <Folder className={cx("bi", "me-1")} />
           <span>Projects</span>
-          <Link
-            className={cx(
-              "btn",
-              "btn-outline-primary",
-              "btn-sm",
-              "ms-auto",
-              "my-auto"
-            )}
-            to="/v2/projects/new"
-          >
-            <PlusLg className="bi" id="createPlus" />
-          </Link>
         </h4>
+        <Link
+          className={cx(
+            "btn",
+            "btn-outline-primary",
+            "btn-sm",
+            "ms-auto",
+            "my-auto"
+          )}
+          to="/v2/projects/new"
+        >
+          <PlusLg className="bi" id="createPlus" />
+        </Link>
       </CardHeader>
 
       <CardBody>
@@ -169,23 +169,23 @@ function ProjectList() {
 function GroupsDashboard() {
   return (
     <Card data-cy="groups-container">
-      <CardHeader>
-        <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
-          <People className={cx("small", "bi")} />
+      <CardHeader className={cx("d-flex", "gap-2")}>
+        <h4 className="m-0">
+          <People className={cx("bi", "me-1")} />
           <span>Groups</span>
-          <Link
-            className={cx(
-              "btn",
-              "btn-outline-primary",
-              "btn-sm",
-              "ms-auto",
-              "my-auto"
-            )}
-            to="/v2/groups/new"
-          >
-            <PlusLg className="bi" id="createPlus" />
-          </Link>
         </h4>
+        <Link
+          className={cx(
+            "btn",
+            "btn-outline-primary",
+            "btn-sm",
+            "ms-auto",
+            "my-auto"
+          )}
+          to="/v2/groups/new"
+        >
+          <PlusLg className="bi" id="createPlus" />
+        </Link>
       </CardHeader>
 
       <CardBody>
@@ -235,9 +235,9 @@ function GroupsList() {
 function SessionsDashboard() {
   return (
     <Card data-cy="sessions-container">
-      <CardHeader>
-        <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
-          <PlayCircle className={cx("small", "bi")} />
+      <CardHeader className={cx("d-flex", "gap-2")}>
+        <h4 className="m-0">
+          <PlayCircle className={cx("bi", "me-1")} />
           Sessions
         </h4>
       </CardHeader>

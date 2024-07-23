@@ -73,7 +73,7 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
     <Card id="delete">
       <CardHeader>
         <h4>
-          <Trash className={cx("me-1", "small", "bi")} />
+          <Trash className={cx("me-1", "bi")} />
           Delete project
         </h4>
         <p className="m-0">
