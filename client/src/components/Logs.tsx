@@ -378,7 +378,7 @@ const EnvironmentLogsPresent = ({
   return (
     <Modal
       isOpen={!!logs.show}
-      className="modal-dynamic-width"
+      className="modal-xl"
       scrollable={true}
       toggle={() => {
         toggleLogs(name);
@@ -399,7 +399,7 @@ const EnvironmentLogsPresent = ({
           </small>
         </div>
       </ModalHeader>
-      <ModalBody className="logs-modal">
+      <ModalBody>
         <div className="mx-2">
           <SessionLogs fetchLogs={fetchLogs} logs={logs} name={name} />
         </div>
