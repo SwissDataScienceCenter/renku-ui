@@ -85,7 +85,7 @@ export default function SessionItem({
               ) : (
                 <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
                   <CircleFill
-                    className={cx("me-1", bi, "text-light-emphasis")}
+                    className={cx("me-1", "bi", "text-light-emphasis")}
                   />
                   <span className="text-dark-emphasis" data-cy="session-status">
                     Not Running

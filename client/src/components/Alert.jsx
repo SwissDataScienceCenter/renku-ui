@@ -85,10 +85,10 @@ class RenkuAlert extends Component {
 
   getIcon() {
     const icon = {
-      danger: <ExclamationTriangleFill className={cx(bi, "text-danger")} />,
-      info: <InfoCircleFill className={cx(bi, "text-info")} />,
-      warning: <ExclamationTriangleFill className={cx(bi, "text-warning")} />,
-      success: <CheckCircleFill className={cx(bi, "text-success")} />,
+      danger: <ExclamationTriangleFill className={cx("bi", "text-danger")} />,
+      info: <InfoCircleFill className={cx("bi", "text-info")} />,
+      warning: <ExclamationTriangleFill className={cx("bi", "text-warning")} />,
+      success: <CheckCircleFill className={cx("bi", "text-success")} />,
     }[this.props.color];
 
     return icon;
