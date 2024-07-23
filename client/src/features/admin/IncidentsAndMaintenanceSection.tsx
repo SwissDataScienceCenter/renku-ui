@@ -25,8 +25,8 @@ import {
   XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom-v5-compat";
 import {
   Alert,
   Button,
@@ -48,7 +48,6 @@ import {
   useGetPlatformConfigQuery,
   usePatchPlatformConfigMutation,
 } from "../platform/api/platform.api";
-import StatusBanner from "../platform/components/StatusBanner";
 import { useGetSummaryQuery } from "../platform/statuspage-api/statuspage.api";
 
 export default function IncidentsAndMaintenanceSection() {
@@ -74,11 +73,6 @@ export default function IncidentsAndMaintenanceSection() {
       <StatusPageCheck statusPageId={statusPageId} />
 
       <IncidentBannerSection />
-
-      <div>
-        <p>Current status banner</p>
-        <StatusBanner params={params} />
-      </div>
     </section>
   );
 }
