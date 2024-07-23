@@ -72,8 +72,8 @@ $list-group-item-padding-y: $spacer;
   }
 }
 
-// Adjust list groups hover interaction
-.list-group-flush > .list-group-item.list-group-item-action {
+// Adjust list groups hover interaction when used in cards
+.card .list-group-flush > .list-group-item.list-group-item-action {
   &::before {
     bottom: 0;
     content: "";
