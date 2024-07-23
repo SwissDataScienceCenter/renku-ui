@@ -61,9 +61,11 @@ $card-cap-padding-y: $spacer;
   border: 0 !important;
 }
 
-// Adjust list groups spacing
+// Adjust list groups vertical spacing
 $list-group-item-padding-y: $spacer;
-.list-group-flush {
+
+// Adjust flush list groups spacing and borders when used in cards
+.card .list-group-flush {
   border-top: 1px solid $list-group-border-color;
 
   & > .list-group-item {
@@ -72,8 +74,8 @@ $list-group-item-padding-y: $spacer;
   }
 }
 
-// Adjust list groups hover interaction
-.list-group-flush > .list-group-item.list-group-item-action {
+// Adjust flush list groups hover interaction when used in cards
+.card .list-group-flush > .list-group-item.list-group-item-action {
   &::before {
     bottom: 0;
     content: "";
