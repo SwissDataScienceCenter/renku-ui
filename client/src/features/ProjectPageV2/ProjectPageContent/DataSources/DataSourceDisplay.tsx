@@ -184,9 +184,12 @@ export function DataSourceDisplay({
   }, []);
 
   const storageType = storageSensitive?.storage_type ? (
-    <span className="fst-italic" data-cy="data-storage-type">
-      (type: {storageSensitive?.storage_type})
-    </span>
+    <>
+      {" "}
+      <span className="fst-italic" data-cy="data-storage-type">
+        (type: {storageSensitive.storage_type})
+      </span>
+    </>
   ) : null;
 
   const storageName = (
@@ -205,7 +208,8 @@ export function DataSourceDisplay({
         <Row className={cx("align-items-center", "g-2")}>
           <Col>
             <span>
-              {storageName} {storageType}
+              {storageName}
+              {storageType}
             </span>
           </Col>
           <Col xs={12} sm="auto" className="ms-auto">
