@@ -17,12 +17,15 @@
  */
 
 /** Returns a new URL instance or null if `url` is not a valid URL string. */
-export function safeNewUrl(url: string | undefined | null): URL | null {
+export function safeNewUrl(
+  url: URL | string | undefined | null,
+  base?: URL | string | undefined
+): URL | null {
   if (url == null) {
     return null;
   }
   try {
-    return new URL(url);
+    return new URL(url, base);
   } catch (error) {
     if (error instanceof TypeError) {
       return null;
