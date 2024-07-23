@@ -388,14 +388,9 @@ export function RepositoryItem({
 
   const listGroupProps = !readonly
     ? {
+        action: true,
         className: cx(
-          !readonly && [
-            "cursor-pointer",
-            "list-group-item-action",
-            "list-group-item-action-extended",
-            "link-primary",
-            "text-body",
-          ]
+          !readonly && ["cursor-pointer", "link-primary", "text-body"]
         ),
         onClick: toggleDetails,
       }

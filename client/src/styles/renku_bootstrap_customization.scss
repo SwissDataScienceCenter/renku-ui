@@ -72,6 +72,22 @@ $list-group-item-padding-y: $spacer;
   }
 }
 
+// Adjust list groups hover interaction
+.list-group-flush > .list-group-item.list-group-item-action {
+  &::before {
+    bottom: 0;
+    content: "";
+    left: -$spacer;
+    position: absolute;
+    right: -$spacer;
+    top: 0;
+    z-index: -1;
+  }
+  &:hover::before {
+    background-color: $list-group-hover-bg;
+  }
+}
+
 // Adjust titles in card headers
 .card-header {
   h1,

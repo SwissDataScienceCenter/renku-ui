@@ -96,11 +96,7 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
   return (
     <>
       <Link
-        className={cx(
-          "list-group-item",
-          "list-group-item-action",
-          "list-group-item-action-extended"
-        )}
+        className={cx("list-group-item-action", "list-group-item")}
         to={generatePath(ABSOLUTE_ROUTES.v2.users.show, { username })}
       >
         <div

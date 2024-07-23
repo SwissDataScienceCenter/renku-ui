@@ -47,11 +47,8 @@ export default function SessionItem({
 }: SessionItemProps) {
   return (
     <ListGroupItem
-      className={cx(
-        "cursor-pointer",
-        "list-group-item-action",
-        "list-group-item-action-extended"
-      )}
+      action
+      className="cursor-pointer"
       data-cy="session-launcher-item"
       onClick={() => toggleSessionDetails()}
     >

@@ -201,13 +201,8 @@ export function DataSourceDisplay({
   return (
     <>
       <ListGroupItem
-        className={cx(
-          "cursor-pointer",
-          "link-primary",
-          "list-group-item-action",
-          "list-group-item-action-extended",
-          "text-body"
-        )}
+        action
+        className={cx("cursor-pointer", "link-primary", "text-body")}
         onClick={toggleDetails}
       >
         <Row className={cx("align-items-center", "g-2")}>

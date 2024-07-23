@@ -77,11 +77,7 @@ export default function ProjectSimple({
     element === "card-body"
       ? cx("card-body", "d-flex")
       : element === "list-item"
-      ? cx(
-          "list-group-item",
-          "list-group-item-action",
-          "list-group-item-action-extended"
-        )
+      ? cx("list-group-item", "list-group-item-action")
       : "";
 
   return (
