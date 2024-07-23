@@ -25,7 +25,7 @@ import {
   WrenchAdjustableCircleFill,
 } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router-dom-v5-compat";
-import { Alert } from "reactstrap";
+import { Alert, Container } from "reactstrap";
 
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -176,26 +176,25 @@ function StatusPageIncident({
   return (
     <Alert
       color={color}
-      className={cx(
-        "container-xxl",
-        "renku-container",
-        "border-0",
-        "rounded-0"
-      )}
+      className={cx("border-0", "rounded-0", "mb-0")}
       fade={false}
     >
-      <h3>Ongoing incident: {incident.name}</h3>
-      <StatusPageIncidentUpdates incidentUpdates={incident.incident_updates} />
-      {summaryPageUrl && (
-        <p className="mb-0">
-          For further information, see{" "}
-          <Link to={summaryPageUrl} target="_blank" rel="noreferrer noopener">
-            {summaryPageUrl}
-            <BoxArrowUpRight className={cx("bi", "ms-1")} />
-          </Link>
-          .
-        </p>
-      )}
+      <Container className={cx("container-xxl", "renku-container")}>
+        <h3>Ongoing incident: {incident.name}</h3>
+        <StatusPageIncidentUpdates
+          incidentUpdates={incident.incident_updates}
+        />
+        {summaryPageUrl && (
+          <p className="mb-0">
+            For further information, see{" "}
+            <Link to={summaryPageUrl} target="_blank" rel="noreferrer noopener">
+              {summaryPageUrl}
+              <BoxArrowUpRight className={cx("bi", "ms-1")} />
+            </Link>
+            .
+          </p>
+        )}
+      </Container>
     </Alert>
   );
 }
@@ -210,16 +209,13 @@ function ManuallyDeclaredIncident({
   return (
     <Alert
       color="danger"
-      className={cx(
-        "container-xxl",
-        "renku-container",
-        "border-0",
-        "rounded-0"
-      )}
+      className={cx("border-0", "rounded-0", "mb-0")}
       fade={false}
     >
-      <h3>Ongoing incident</h3>
-      <LazyRenkuMarkdown markdownText={incidentBannerContent} />
+      <Container className={cx("container-xxl", "renku-container")}>
+        <h3>Ongoing incident</h3>
+        <LazyRenkuMarkdown markdownText={incidentBannerContent} />
+      </Container>
     </Alert>
   );
 }
@@ -327,30 +323,28 @@ function StatusPageMaintenance({
   return (
     <Alert
       color={color}
-      className={cx(
-        "container-xxl",
-        "renku-container",
-        "border-0",
-        "rounded-0"
-      )}
+      className={cx("border-0", "rounded-0", "mb-0")}
       fade={false}
     >
-      <h3 className="fs-5">
-        <WrenchAdjustableCircleFill className={cx("bi", "me-1")} />
-        {caption}{" "}
-        <TimeCaption datetime={scheduled_for} enableTooltip noCaption />: {name}
-      </h3>
-      <StatusPageIncidentUpdates incidentUpdates={incident_updates} />
-      {summaryPageUrl && (
-        <p className="mb-0">
-          For further information, see{" "}
-          <Link to={summaryPageUrl} target="_blank" rel="noreferrer noopener">
-            {summaryPageUrl}
-            <BoxArrowUpRight className={cx("bi", "ms-1")} />
-          </Link>
-          .
-        </p>
-      )}
+      <Container className={cx("container-xxl", "renku-container")}>
+        <h3 className="fs-5">
+          <WrenchAdjustableCircleFill className={cx("bi", "me-1")} />
+          {caption}{" "}
+          <TimeCaption datetime={scheduled_for} enableTooltip noCaption />:{" "}
+          {name}
+        </h3>
+        <StatusPageIncidentUpdates incidentUpdates={incident_updates} />
+        {summaryPageUrl && (
+          <p className="mb-0">
+            For further information, see{" "}
+            <Link to={summaryPageUrl} target="_blank" rel="noreferrer noopener">
+              {summaryPageUrl}
+              <BoxArrowUpRight className={cx("bi", "ms-1")} />
+            </Link>
+            .
+          </p>
+        )}
+      </Container>
     </Alert>
   );
 }
