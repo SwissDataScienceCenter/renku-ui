@@ -260,12 +260,12 @@ export default function ActiveSessionButton({
   const defaultAction =
     status === "stopping" || isStopping ? (
       <Button color="primary" data-cy="stopping-btn" disabled>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Deleting
       </Button>
     ) : isHibernating ? (
       <Button color="primary" data-cy="stopping-btn" disabled>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Pausing
       </Button>
     ) : status === "starting" || status === "running" ? (
@@ -274,7 +274,7 @@ export default function ActiveSessionButton({
         data-cy="open-session"
         to={showSessionUrl}
       >
-        <Plugin className={cx("me-2", "text-icon")} />
+        <Plugin className={cx("bi", "me-1")} />
         Open
       </Link>
     ) : status === "hibernated" ? (
@@ -286,12 +286,12 @@ export default function ActiveSessionButton({
       >
         {isResuming ? (
           <>
-            <Loader className="me-2" inline size={16} />
+            <Loader className="me-1" inline size={16} />
             Resuming
           </>
         ) : (
           <>
-            <PlayFill className={cx("me-2", "text-icon")} />
+            <PlayFill className={cx("bi", "me-1")} />
             Resume
           </>
         )}
@@ -303,7 +303,7 @@ export default function ActiveSessionButton({
         data-cy="modify-session-button"
         onClick={toggleModifySession}
       >
-        <Tools className={cx("me-2", "text-icon")} />
+        <Tools className={cx("bi", "me-1")} />
         Modify
       </Button>
     ) : (
@@ -315,10 +315,10 @@ export default function ActiveSessionButton({
       >
         {logged ? (
           <span className="align-self-start">
-            <PauseCircle className={cx("me-2", "text-icon")} />
+            <PauseCircle className={cx("bi", "me-1")} />
           </span>
         ) : (
-          <Trash className={cx("me-2", "text-icon")} />
+          <Trash className={cx("bi", "me-1")} />
         )}
         {logged ? "Pause" : "Delete"}
       </Button>
@@ -334,7 +334,7 @@ export default function ActiveSessionButton({
         disabled={status === "starting"}
         onClick={onHibernateSession}
       >
-        <PauseCircle className={cx("me-2", "text-icon")} />
+        <PauseCircle className={cx("bi", "me-1")} />
         Pause session
       </DropdownItem>
     );
@@ -344,7 +344,7 @@ export default function ActiveSessionButton({
       data-cy="delete-session-button"
       onClick={logged ? toggleStopSession : onStopSession}
     >
-      <Trash className={cx("me-2", "text-icon")} />
+      <Trash className={cx("bi", "me-1")} />
       Delete session
     </DropdownItem>
   );
@@ -357,7 +357,7 @@ export default function ActiveSessionButton({
         data-cy="modify-session-button"
         onClick={toggleModifySession}
       >
-        <Tools className={cx("me-2", "text-icon")} />
+        <Tools className={cx("bi", "me-1")} />
         Modify session resources
       </DropdownItem>
     );
@@ -365,14 +365,14 @@ export default function ActiveSessionButton({
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
     <DropdownItem href={session.url} target="_blank">
-      <BoxArrowUpRight className={cx("me-2", "text-icon")} />
+      <BoxArrowUpRight className={cx("bi", "me-1")} />
       Open in new tab
     </DropdownItem>
   );
 
   const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
-      <FileEarmarkText className={cx("me-2", "text-icon")} />
+      <FileEarmarkText className={cx("bi", "me-1")} />
       Get logs
     </DropdownItem>
   );
@@ -471,7 +471,7 @@ function ConfirmDeleteModal({
           disabled={isStopping}
           onClick={toggleModal}
         >
-          <XLg className={cx("me-2", "text-icon")} />
+          <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
         <Button
@@ -481,7 +481,7 @@ function ConfirmDeleteModal({
           type="submit"
           onClick={onClick}
         >
-          <Trash className={cx("me-2", "text-icon")} /> Delete this session
+          <Trash className={cx("bi", "me-1")} /> Delete this session
         </Button>
       </ModalFooter>
     </Modal>

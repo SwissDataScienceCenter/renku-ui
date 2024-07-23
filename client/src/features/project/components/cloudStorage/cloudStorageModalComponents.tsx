@@ -71,7 +71,7 @@ export function AddCloudStorageBackButton({
         data-cy="cloud-storage-edit-close-button"
         onClick={() => toggle()}
       >
-        <XLg className={cx("me-2", "text-icon")} />
+        <XLg className={cx("bi", "me-1")} />
         {success ? "Close" : "Cancel"}
       </Button>
     );
@@ -87,7 +87,7 @@ export function AddCloudStorageBackButton({
         });
       }}
     >
-      <ChevronLeft className={cx("me-2", "text-icon")} />
+      <ChevronLeft className={cx("bi", "me-1")} />
       Back
     </Button>
   );
@@ -176,13 +176,13 @@ export function AddCloudStorageHeaderContent({
   if (isV2)
     return (
       <>
-        <Database className={cx("bi", "me-2")} /> {storageId ? "Edit" : "Add"}{" "}
+        <Database className={cx("bi", "me-1")} /> {storageId ? "Edit" : "Add"}{" "}
         data source
       </>
     );
   return (
     <>
-      <CloudFill className={cx("bi", "me-2")} />
+      <CloudFill className={cx("bi", "me-1")} />
       {storageId ? "Edit" : "Add"} Cloud Storage
     </>
   );
@@ -287,7 +287,7 @@ export function AddCloudStorageContinueButton({
           });
         }}
       >
-        Next <ChevronRight className={cx("ms-2", "text-icon")} />
+        Next <ChevronRight className={cx("bi", "ms-1")} />
       </Button>
       {disableContinueButton && (
         <UncontrolledTooltip placement="top" target={`${continueButtonId}-div`}>

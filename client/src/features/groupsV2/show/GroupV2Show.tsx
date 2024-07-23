@@ -172,7 +172,7 @@ function GroupSettingsButton({ group }: GroupSettingsButtonProps) {
           })}
           className={cx("btn", "btn-outline-primary")}
         >
-          <Pencil className={cx("bi", "me-2")} />
+          <Pencil className={cx("bi", "me-1")} />
           Edit settings
         </Link>
       }

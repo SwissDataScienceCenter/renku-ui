@@ -357,7 +357,7 @@ function UnderlineArrowLink({
       <span ref={ref}>
         <Link to={to}>
           {text}
-          <ArrowRight className={cx("ms-2", "text-icon")} />
+          <ArrowRight className={cx("bi", "ms-1")} />
         </Link>
       </span>
       <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
@@ -386,7 +386,7 @@ function EditButtonLink({
       <span ref={ref}>
         {disabled ? (
           <Button color="outline-primary" disabled size="sm">
-            <Pencil className="text-icon" />
+            <Pencil className="bi" />
           </Button>
         ) : (
           <Link
@@ -394,7 +394,7 @@ function EditButtonLink({
             data-cy={dataCy}
             to={to}
           >
-            <Pencil className="text-icon" />
+            <Pencil className="bi" />
           </Link>
         )}
       </span>

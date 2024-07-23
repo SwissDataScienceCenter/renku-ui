@@ -235,9 +235,9 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
             type="submit"
           >
             {isUpdating ? (
-              <Loader className="me-2" inline size={16} />
+              <Loader className="me-1" inline size={16} />
             ) : (
-              <Pencil className={cx("me-2", "text-icon")} />
+              <Pencil className={cx("bi", "me-1")} />
             )}
             Update project
           </Button>
@@ -296,7 +296,7 @@ function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
           enabled={
             <>
               <h4>
-                <Sliders className={cx("me-2", "small", "text-icon")} />
+                <Sliders className={cx("me-1", "small", "bi")} />
                 General settings
               </h4>
               <p className="m-0">

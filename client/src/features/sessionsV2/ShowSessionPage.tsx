@@ -259,7 +259,7 @@ function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
         innerRef={ref}
         onClick={toggleModalResources}
       >
-        <Journals className="text-icon" />
+        <Journals className="bi" />
         <span className="visually-hidden">Resources</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
@@ -300,7 +300,7 @@ function PauseSessionBtn({ openPauseSession }: PauseSessionBtnProps) {
         innerRef={ref}
         onClick={openPauseSession}
       >
-        <PauseCircle className="text-icon" />
+        <PauseCircle className="bi" />
         <span className="visually-hidden">{tooltip}</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
@@ -334,7 +334,7 @@ function DeleteSessionBtn({ openDeleteSession }: DeleteSessionBtnProps) {
         innerRef={ref}
         onClick={openDeleteSession}
       >
-        <Trash className="text-icon" />
+        <Trash className="bi" />
         <span className="visually-hidden">{tooltip}</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>

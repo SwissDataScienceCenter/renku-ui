@@ -137,11 +137,11 @@ function AddGroupMemberAccessForm({
       </ModalBody>
       <ModalFooter>
         <Button color="outline-primary" onClick={toggle}>
-          <XLg className={cx("me-2", "text-icon")} />
+          <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
         <Button color="primary" onClick={handleSubmit(onSubmit)} type="submit">
-          <PlusLg className={cx("me-2", "text-icon")} />
+          <PlusLg className={cx("bi", "me-1")} />
           Add Member
         </Button>
       </ModalFooter>

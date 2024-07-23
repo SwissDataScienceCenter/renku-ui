@@ -117,7 +117,7 @@ function AddSessionCustomImageModal({
     >
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggle}>
-          <Boxes className={cx("me-2", "text-icon")} />
+          <Boxes className={cx("bi", "me-1")} />
           Provide a custom image
         </ModalHeader>
         <ModalBody>
@@ -138,7 +138,7 @@ function AddSessionCustomImageModal({
         </ModalBody>
         <ModalFooter className="gap-2">
           <Button color="outline-primary" onClick={toggle}>
-            <XLg className={cx("me-2", "text-icon")} />
+            <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
           <Button
@@ -148,9 +148,9 @@ function AddSessionCustomImageModal({
             type="submit"
           >
             {result.isLoading ? (
-              <Loader className="me-2" inline size={16} />
+              <Loader className="me-1" inline size={16} />
             ) : (
-              <PlusLg className={cx("me-2", "text-icon")} />
+              <PlusLg className={cx("bi", "me-1")} />
             )}
             Add Session launcher
           </Button>
@@ -230,7 +230,7 @@ function AddSessionExistingEnvModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle}>
-        <Box2 className={cx("me-2", "text-icon")} />
+        <Box2 className={cx("bi", "me-1")} />
         Select an existing environment
       </ModalHeader>
       <ModalBody>
@@ -252,7 +252,7 @@ function AddSessionExistingEnvModal({
       </ModalBody>
       <ModalFooter className="gap-2">
         <Button color="outline-primary" onClick={toggle}>
-          <XLg className={cx("me-2", "text-icon")} />
+          <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
         <Button
@@ -264,12 +264,12 @@ function AddSessionExistingEnvModal({
         >
           {result.isLoading ? (
             <>
-              <Loader className="me-2" inline size={16} />
+              <Loader className="me-1" inline size={16} />
               Adding Session launcher
             </>
           ) : (
             <>
-              <PlusLg className={cx("me-2", "text-icon")} />
+              <PlusLg className={cx("bi", "me-1")} />
               Add Session launcher
             </>
           )}
@@ -311,7 +311,7 @@ export function Step1AddSessionModal({
     <>
       <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>
-          <PlayCircle className={cx("me-2", "text-icon")} />
+          <PlayCircle className={cx("bi", "me-1")} />
           Add session launcher
         </ModalHeader>
         <ModalBody>
@@ -334,7 +334,7 @@ export function Step1AddSessionModal({
                 data-cy="add-existing-environment"
                 onClick={() => goNextStep(false)}
               >
-                <Box2 className={cx("me-2", "text-icon")} />
+                <Box2 className={cx("bi", "me-1")} />
                 Select an existing environment
               </Button>
             </Col>
@@ -344,7 +344,7 @@ export function Step1AddSessionModal({
                 data-cy="add-custom-image"
                 onClick={() => goNextStep(true)}
               >
-                <Boxes className={cx("me-2", "text-icon")} />
+                <Boxes className={cx("bi", "me-1")} />
                 Provide a custom image
               </Button>
             </Col>

@@ -49,7 +49,7 @@ export default function StartSessionButton({
       to={startUrl}
       data-cy="start-session-button"
     >
-      <PlayCircle className={cx("me-2", "text-icon")} />
+      <PlayCircle className={cx("bi", "me-1")} />
       Launch
     </Link>
   );
@@ -63,7 +63,7 @@ export default function StartSessionButton({
       }}
       data-cy="start-custom-session-button"
     >
-      <PlayCircle className={cx("me-2", "text-icon")} />
+      <PlayCircle className={cx("bi", "me-1")} />
       Custom launch
     </Link>
   );

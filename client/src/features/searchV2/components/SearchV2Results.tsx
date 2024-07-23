@@ -229,12 +229,12 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
           <div>
             {visibility.toLowerCase() === "private" ? (
               <>
-                <Lock className={cx("me-2", "text-icon")} />
+                <Lock className={cx("bi", "me-1")} />
                 Private
               </>
             ) : (
               <>
-                <Globe2 className={cx("me-2", "text-icon")} />
+                <Globe2 className={cx("bi", "me-1")} />
                 Public
               </>
             )}

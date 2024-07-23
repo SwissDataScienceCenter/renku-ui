@@ -101,7 +101,7 @@ function GroupDeleteConfirmation({
       </ModalBody>
       <ModalFooter>
         <Button color="outline-danger" onClick={toggle}>
-          <XLg className={cx("me-2", "text-icon")} />
+          <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
         <Button
@@ -110,9 +110,9 @@ function GroupDeleteConfirmation({
           onClick={onDelete}
         >
           {result.isLoading ? (
-            <Loader className="me-2" inline size={16} />
+            <Loader className="me-1" inline size={16} />
           ) : (
-            <CheckLg className={cx("me-2", "text-icon")} />
+            <CheckLg className={cx("bi", "me-1")} />
           )}
           Yes, delete group
         </Button>
@@ -251,7 +251,7 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
             onClick={toggleAddMemberModalOpen}
             size="sm"
           >
-            <PlusLg className="text-icon" id="createPlus" />
+            <PlusLg className="bi" id="createPlus" />
           </Button>
         </div>
       </div>

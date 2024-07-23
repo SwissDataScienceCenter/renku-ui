@@ -96,7 +96,7 @@ export default function ProjectDeleteConfirmation({
       </ModalBody>
       <ModalFooter className="gap-2">
         <Button color="outline-danger" onClick={toggle}>
-          <XLg className={cx("me-2", "text-icon")} />
+          <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
         <Button
@@ -105,9 +105,9 @@ export default function ProjectDeleteConfirmation({
           onClick={onDelete}
         >
           {result.isLoading ? (
-            <Loader className="me-2" inline size={16} />
+            <Loader className="me-1" inline size={16} />
           ) : (
-            <Trash className={cx("me-2", "text-icon")} />
+            <Trash className={cx("bi", "me-1")} />
           )}
           Delete project
         </Button>

@@ -50,7 +50,7 @@ function GroupBeingCreatedLoader() {
   return (
     <div className={cx("d-flex", "justify-content-center", "w-100")}>
       <div className={cx("d-flex", "flex-column")}>
-        <Loader className="me-2" />
+        <Loader className="me-1" />
         <div>Creating group...</div>
       </div>
     </div>

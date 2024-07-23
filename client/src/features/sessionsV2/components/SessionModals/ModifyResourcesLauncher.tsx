@@ -105,7 +105,7 @@ export function ModifyResourcesLauncherModal({
       </ModalBody>
       <ModalFooter>
         <Button color="outline-primary" onClick={toggleModal}>
-          <XLg className={cx("me-2", "text-icon")} />
+          <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
         <Button
@@ -123,9 +123,9 @@ export function ModifyResourcesLauncherModal({
           type="submit"
         >
           {result.isLoading ? (
-            <Loader className="me-2" inline size={16} />
+            <Loader className="me-1" inline size={16} />
           ) : (
-            <CheckLg className={cx("me-2", "text-icon")} />
+            <CheckLg className={cx("bi", "me-1")} />
           )}
           Modify resources
         </Button>

@@ -510,7 +510,7 @@ function CustomMenuList({
               size="sm"
             >
               {isFetchingMore ? (
-                <Loader className="me-2" inline size={16} />
+                <Loader className="me-1" inline size={16} />
               ) : (
                 <ThreeDots className={cx("bi", "me-2")} />
               )}

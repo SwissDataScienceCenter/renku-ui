@@ -84,7 +84,7 @@ function HelpGetting() {
               <h4 className="mb-0">
                 <ExternalIconLink
                   url={Links.DISCOURSE}
-                  icon={<JournalText className={cx("me-2", "text-icon")} />}
+                  icon={<JournalText className={cx("bi", "me-1")} />}
                   text="Forum"
                 />
               </h4>
@@ -106,7 +106,7 @@ function HelpGetting() {
               <h4 className="mb-0">
                 <ExternalIconLink
                   url={Links.GITTER}
-                  icon={<ChatSquareDots className={cx("me-2", "text-icon")} />}
+                  icon={<ChatSquareDots className={cx("bi", "me-1")} />}
                   text="Gitter"
                 />
               </h4>
@@ -126,7 +126,7 @@ function HelpGetting() {
               <h4 className="mb-0">
                 <ExternalIconLink
                   url={Links.GITHUB}
-                  icon={<Github className={cx("me-2", "text-icon")} />}
+                  icon={<Github className={cx("bi", "me-1")} />}
                   text="GitHub"
                 />
               </h4>

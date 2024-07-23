@@ -147,7 +147,7 @@ function SessionCardNotRunning({
       color="dark"
       contentDescription={
         <div>
-          <Clock className={cx("me-2", "text-icon")} />
+          <Clock className={cx("bi", "me-1")} />
           <TimeCaption
             datetime={launcher.creation_date}
             enableTooltip
@@ -158,9 +158,7 @@ function SessionCardNotRunning({
       contentLabel={
         <div className="my-auto">
           <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-            <CircleFill
-              className={cx("me-1", "text-icon", "text-light-emphasis")}
-            />
+            <CircleFill className={cx("me-1", bi, "text-light-emphasis")} />
             <span className="text-dark-emphasis" data-cy="session-status">
               Not Running
             </span>
@@ -213,12 +211,12 @@ function EnvironmentCard({
           <p className="m-0">
             {launcher.environment_kind === "container_image" ? (
               <>
-                <Boxes className={cx("me-2", "text-icon")} />
+                <Boxes className={cx("bi", "me-1")} />
                 Custom image
               </>
             ) : (
               <>
-                <Globe2 className={cx("me-2", "text-icon")} />
+                <Globe2 className={cx("bi", "me-1")} />
                 Global environment
               </>
             )}
@@ -237,7 +235,7 @@ function EnvironmentCard({
                 <CommandCopy command={environment?.container_image || ""} />
               </div>
               <div>
-                <Clock className={cx("me-2", "text-icon")} />
+                <Clock className={cx("bi", "me-1")} />
                 Created by <strong>Renku</strong> on{" "}
                 {toHumanDateTime({
                   datetime: launcher.creation_date,
@@ -417,7 +415,7 @@ export function SessionView({
                         size="sm"
                         tabIndex={0}
                       >
-                        <Pencil className="text-icon" />
+                        <Pencil className="bi" />
                       </Button>
                       <UncontrolledTooltip target="modify-session-environment-button">
                         Modify session environment
@@ -450,7 +448,7 @@ export function SessionView({
                       size="sm"
                       tabIndex={0}
                     >
-                      <Pencil className="text-icon" />
+                      <Pencil className="bi" />
                     </Button>
                     <UncontrolledTooltip target="modify-resource-class-button">
                       Set resource class
@@ -498,7 +496,7 @@ export function SessionView({
               <h4
                 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
               >
-                <Database className={cx("me-2", "small", "text-icon")} />
+                <Database className={cx("me-1", "small", "bi")} />
                 Data Sources
               </h4>
               <Badge>{dataSources?.length || 0}</Badge>
@@ -522,7 +520,7 @@ export function SessionView({
               <h4
                 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
               >
-                <FileCode className={cx("me-2", "small", "text-icon")} />
+                <FileCode className={cx("me-1", "small", "bi")} />
                 Code Repositories
               </h4>
               {project?.repositories?.length != null && (

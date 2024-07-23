@@ -85,7 +85,7 @@ export default function ProjectRepositoryFormField({
           }}
         />
         <Button color="outline-primary" onClick={onDelete}>
-          <XLg className="text-icon" />
+          <XLg className="bi" />
         </Button>
       </div>
       <div className="invalid-feedback">

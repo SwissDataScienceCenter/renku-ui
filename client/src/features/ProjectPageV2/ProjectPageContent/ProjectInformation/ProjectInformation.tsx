@@ -94,25 +94,19 @@ export default function ProjectInformation({
   const information = (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <ProjectInformationBox
-        icon={<JournalAlbum className="text-icon" />}
+        icon={<JournalAlbum className="bi" />}
         title="Namespace:"
       >
         <p className="mb-0">
           <Link to={namespaceUrl}>{namespaceName}</Link>
         </p>
       </ProjectInformationBox>
-      <ProjectInformationBox
-        icon={<Eye className="text-icon" />}
-        title="Visibility:"
-      >
+      <ProjectInformationBox icon={<Eye className="bi" />} title="Visibility:">
         <p className="mb-0">
           <span className="text-capitalize">{project.visibility}</span>
         </p>
       </ProjectInformationBox>
-      <ProjectInformationBox
-        icon={<Clock className="text-icon" />}
-        title="Created:"
-      >
+      <ProjectInformationBox icon={<Clock className="bi" />} title="Created:">
         <p className="mb-0">
           <TimeCaption
             datetime={project.creation_date}
@@ -121,7 +115,7 @@ export default function ProjectInformation({
         </p>
       </ProjectInformationBox>
       <ProjectInformationBox
-        icon={<People className="text-icon" />}
+        icon={<People className="bi" />}
         title={
           <>
             <span>Members</span>
@@ -132,7 +126,7 @@ export default function ProjectInformation({
         <ProjectInformationMembers members={members} membersUrl={membersUrl} />
       </ProjectInformationBox>
       <ProjectInformationBox
-        icon={<Bookmarks className="text-icon" />}
+        icon={<Bookmarks className="bi" />}
         title={
           <>
             <span>Keywords</span>
@@ -161,7 +155,7 @@ export default function ProjectInformation({
           )}
         >
           <h4 className="m-0">
-            <InfoCircle className={cx("me-2", "small", "text-icon")} />
+            <InfoCircle className={cx("me-1", "small", "bi")} />
             Info
           </h4>
 

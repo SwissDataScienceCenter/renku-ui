@@ -116,7 +116,7 @@ function CustomMenuList({
               {isFetchingMore ? (
                 <Loader inline size={16} />
               ) : (
-                <ThreeDots className="text-icon" />
+                <ThreeDots className="bi" />
               )}
               <span className="ms-2">Fetch more</span>
             </Button>
@@ -394,7 +394,7 @@ function RefreshNamespaceButton({ refresh }: RefreshNamespaceButtonProps) {
         onClick={refresh}
         size="sm"
       >
-        <ArrowRepeat className="text-icon" />
+        <ArrowRepeat className="bi" />
       </Button>
       <UncontrolledTooltip placement="top" target={ref}>
         Refresh namespaces

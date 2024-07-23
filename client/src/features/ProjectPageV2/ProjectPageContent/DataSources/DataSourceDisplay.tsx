@@ -96,7 +96,7 @@ function DataSourceDeleteModal({
           >
             {isLoading ? (
               <>
-                <Loader className="me-2" inline size={16} />
+                <Loader className="me-1" inline size={16} />
                 Deleting data source
               </>
             ) : (
@@ -135,7 +135,7 @@ export function DataSourceActions({
       onClick={toggleEdit}
       size="sm"
     >
-      <Pencil className={cx("me-2", "text-icon")} />
+      <Pencil className={cx("bi", "me-1")} />
       Edit
     </Button>
   );
@@ -149,7 +149,7 @@ export function DataSourceActions({
         size="sm"
       >
         <DropdownItem data-cy="data-source-delete" onClick={toggleDelete}>
-          <Trash className={cx("me-2", "text-icon")} />
+          <Trash className={cx("bi", "me-1")} />
           Remove
         </DropdownItem>
       </ButtonWithMenuV2>

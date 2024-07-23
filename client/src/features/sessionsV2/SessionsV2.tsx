@@ -124,7 +124,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       >
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
-            <PlayCircle className={cx("me-2", "small", "text-icon")} />
+            <PlayCircle className={cx("me-1", "small", "bi")} />
             Sessions
           </h4>
           <Badge>{totalSessions}</Badge>
@@ -201,7 +201,7 @@ export function SessionV2Actions({
       onClick={toggleUpdate}
       size="sm"
     >
-      <Pencil className={cx("me-2", "text-icon")} />
+      <Pencil className={cx("bi", "me-1")} />
       Edit
     </Button>
   );
@@ -215,7 +215,7 @@ export function SessionV2Actions({
         size="sm"
       >
         <DropdownItem data-cy="session-view-menu-delete" onClick={toggleDelete}>
-          <Trash className={cx("me-2", "text-icon")} />
+          <Trash className={cx("bi", "me-1")} />
           Delete
         </DropdownItem>
       </ButtonWithMenuV2>

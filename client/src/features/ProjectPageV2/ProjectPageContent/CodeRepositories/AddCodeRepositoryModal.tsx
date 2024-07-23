@@ -62,7 +62,7 @@ export function AddCodeRepositoryStep1Modal({
     <>
       <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>
-          <CodeSquare className={cx("me-2", "text-icon")} />
+          <CodeSquare className={cx("bi", "me-1")} />
           Add code repositories
         </ModalHeader>
         <ModalBody>
@@ -157,7 +157,7 @@ function AddCodeRepositoryStep2Modal({
     <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggleModal}>
-          <CodeSquare className={cx("me-2", "text-icon")} />
+          <CodeSquare className={cx("bi", "me-1")} />
           Connect an existing code repository
         </ModalHeader>
         <ModalBody>
@@ -197,7 +197,7 @@ function AddCodeRepositoryStep2Modal({
         </ModalBody>
         <ModalFooter>
           <Button color="outline-primary" onClick={toggleModal}>
-            <XLg className={cx("me-2", "text-icon")} />
+            <XLg className={cx("bi", "me-1")} />
             Close
           </Button>
           <Button
@@ -208,12 +208,12 @@ function AddCodeRepositoryStep2Modal({
           >
             {result.isLoading ? (
               <>
-                <Loader className="me-2" inline size={16} />
+                <Loader className="me-1" inline size={16} />
                 Adding code repository
               </>
             ) : (
               <>
-                <PlusLg className={cx("me-2", "text-icon")} />
+                <PlusLg className={cx("bi", "me-1")} />
                 Add code repository
               </>
             )}

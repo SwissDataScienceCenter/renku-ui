@@ -479,7 +479,7 @@ export function ExistingEnvFormContent({
   if (isLoading)
     return (
       <p>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Loading environments...
       </p>
     );
@@ -625,7 +625,7 @@ export function SessionEnvironmentItem({
         >
           <h5>{name}</h5>
           <p className="mb-2">
-            <Globe2 className={cx("me-2", "text-icon")} />
+            <Globe2 className={cx("bi", "me-1")} />
             Global environment
           </p>
           {description ? <p className="mb-2">description</p> : null}

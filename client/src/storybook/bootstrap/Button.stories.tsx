@@ -67,7 +67,7 @@ export const Button_: Story = {
 export const ButtonWithIcon_: Story = {
   render: ({ text, ..._args }) => (
     <Button {..._args}>
-      <PencilSquare className={cx("me-2", "text-icon")} />
+      <PencilSquare className={cx("bi", "me-1")} />
       {text}
     </Button>
   ),
@@ -100,7 +100,7 @@ export const ButtonWithDropdown_: Story = {
       <div className="d-flex gap-3 my-3">
         <UncontrolledDropdown direction="down" group size="sm">
           <Button color="outline-primary">
-            <PencilSquare className={cx("me-2", "text-icon")} /> Edit sm
+            <PencilSquare className={cx("bi", "me-1")} /> Edit sm
           </Button>
           <DropdownToggle
             caret
@@ -109,7 +109,7 @@ export const ButtonWithDropdown_: Story = {
           />
           <DropdownMenu>
             <DropdownItem>
-              <Trash className={cx("me-2", "text-icon")} /> Remove
+              <Trash className={cx("bi", "me-1")} /> Remove
             </DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
@@ -118,10 +118,10 @@ export const ButtonWithDropdown_: Story = {
           <DropdownToggle caret data-bs-toggle="dropdown" color="primary" />
           <DropdownMenu>
             <DropdownItem>
-              <Pencil className={cx("me-2", "text-icon")} /> Customize launch
+              <Pencil className={cx("bi", "me-1")} /> Customize launch
             </DropdownItem>
             <DropdownItem>
-              <Pencil className={cx("me-2", "text-icon")} /> Edit launch
+              <Pencil className={cx("bi", "me-1")} /> Edit launch
             </DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
@@ -129,7 +129,7 @@ export const ButtonWithDropdown_: Story = {
       <div className="d-flex gap-3 my-3">
         <UncontrolledDropdown direction="down" group size="md">
           <Button color="outline-primary">
-            <PencilSquare className={cx("me-2", "text-icon")} /> Edit md
+            <PencilSquare className={cx("bi", "me-1")} /> Edit md
           </Button>
           <DropdownToggle
             caret
@@ -138,7 +138,7 @@ export const ButtonWithDropdown_: Story = {
           />
           <DropdownMenu>
             <DropdownItem>
-              <Trash className={cx("me-2", "text-icon")} /> Remove
+              <Trash className={cx("bi", "me-1")} /> Remove
             </DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
@@ -147,10 +147,10 @@ export const ButtonWithDropdown_: Story = {
           <DropdownToggle caret data-bs-toggle="dropdown" color="primary" />
           <DropdownMenu>
             <DropdownItem>
-              <Pencil className={cx("me-2", "text-icon")} /> Customize launch
+              <Pencil className={cx("bi", "me-1")} /> Customize launch
             </DropdownItem>
             <DropdownItem>
-              <Pencil className={cx("me-2", "text-icon")} /> Edit launch
+              <Pencil className={cx("bi", "me-1")} /> Edit launch
             </DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
@@ -158,7 +158,7 @@ export const ButtonWithDropdown_: Story = {
       <div className="d-flex gap-3 my-3">
         <UncontrolledDropdown direction="down" group size="lg">
           <Button color="outline-primary">
-            <PencilSquare className={cx("me-2", "text-icon")} /> Edit lg
+            <PencilSquare className={cx("bi", "me-1")} /> Edit lg
           </Button>
           <DropdownToggle
             caret
@@ -167,7 +167,7 @@ export const ButtonWithDropdown_: Story = {
           />
           <DropdownMenu>
             <DropdownItem>
-              <Trash className={cx("me-2", "text-icon")} /> Remove
+              <Trash className={cx("bi", "me-1")} /> Remove
             </DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
@@ -176,10 +176,10 @@ export const ButtonWithDropdown_: Story = {
           <DropdownToggle caret data-bs-toggle="dropdown" color="primary" />
           <DropdownMenu>
             <DropdownItem>
-              <Pencil className={cx("me-2", "text-icon")} /> Customize launch
+              <Pencil className={cx("bi", "me-1")} /> Customize launch
             </DropdownItem>
             <DropdownItem>
-              <Pencil className={cx("me-2", "text-icon")} /> Edit launch
+              <Pencil className={cx("bi", "me-1")} /> Edit launch
             </DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>

@@ -105,7 +105,7 @@ function ProjectsDashboard() {
     <Card data-cy="projects-container">
       <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
-          <Folder className={cx("small", "text-icon")} />
+          <Folder className={cx("small", bi)} />
           <span>Projects</span>
           <Link
             className={cx(
@@ -117,7 +117,7 @@ function ProjectsDashboard() {
             )}
             to="/v2/projects/new"
           >
-            <PlusLg className="text-icon" id="createPlus" />
+            <PlusLg className="bi" id="createPlus" />
           </Link>
         </h4>
       </CardHeader>
@@ -171,7 +171,7 @@ function GroupsDashboard() {
     <Card data-cy="groups-container">
       <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
-          <People className={cx("small", "text-icon")} />
+          <People className={cx("small", bi)} />
           <span>Groups</span>
           <Link
             className={cx(
@@ -183,7 +183,7 @@ function GroupsDashboard() {
             )}
             to="/v2/groups/new"
           >
-            <PlusLg className="text-icon" id="createPlus" />
+            <PlusLg className="bi" id="createPlus" />
           </Link>
         </h4>
       </CardHeader>
@@ -237,7 +237,7 @@ function SessionsDashboard() {
     <Card data-cy="sessions-container">
       <CardHeader>
         <h4 className={cx("align-items-center", "d-flex", "m-0", "gap-2")}>
-          <PlayCircle className={cx("small", "text-icon")} />
+          <PlayCircle className={cx("small", bi)} />
           Sessions
         </h4>
       </CardHeader>

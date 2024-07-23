@@ -171,7 +171,7 @@ function EditCodeRepositoryModal({
         </ModalBody>
         <ModalFooter>
           <Button color="outline-primary" onClick={toggleModal}>
-            <XLg className={cx("me-2", "text-icon")} />
+            <XLg className={cx("bi", "me-1")} />
             Close
           </Button>
           <Button
@@ -182,7 +182,7 @@ function EditCodeRepositoryModal({
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
-              <Pencil className={cx("me-2", "text-icon")} />
+              <Pencil className={cx("bi", "me-1")} />
             )}
             Edit code repository
           </Button>
@@ -260,7 +260,7 @@ function CodeRepositoryDeleteModal({
       <ModalFooter>
         <div className={cx("d-flex", "justify-content-end", "gap-2")}>
           <Button color="outline-danger" onClick={toggleModal}>
-            <XLg className={cx("me-2", "text-icon")} />
+            <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
           <Button
@@ -271,12 +271,12 @@ function CodeRepositoryDeleteModal({
           >
             {result.isLoading ? (
               <>
-                <Loader className="me-2" inline size={16} />
+                <Loader className="me-1" inline size={16} />
                 Deleting code repository
               </>
             ) : (
               <>
-                <Trash className={cx("me-2", "text-icon")} />
+                <Trash className={cx("bi", "me-1")} />
                 Remove repository
               </>
             )}
@@ -312,7 +312,7 @@ function CodeRepositoryActions({
       onClick={toggleEdit}
       size="sm"
     >
-      <Pencil className={cx("me-2", "text-icon")} />
+      <Pencil className={cx("bi", "me-1")} />
       Edit
     </Button>
   );
@@ -326,7 +326,7 @@ function CodeRepositoryActions({
         size="sm"
       >
         <DropdownItem data-cy="code-repository-delete" onClick={toggleDelete}>
-          <Trash className={cx("me-2", "text-icon")} />
+          <Trash className={cx("bi", "me-1")} />
           Remove
         </DropdownItem>
       </ButtonWithMenuV2>
@@ -489,11 +489,11 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
   const badgeIcon = isLoading ? (
     <Loader className="me-1" inline size={16} />
   ) : permissions.pull && permissions.push ? (
-    <CircleFill className={cx("me-1", "text-icon")} />
+    <CircleFill className={cx("me-1", bi)} />
   ) : permissions.pull ? (
-    <CircleFill className={cx("me-1", "text-icon")} />
+    <CircleFill className={cx("me-1", bi)} />
   ) : (
-    <CircleFill className={cx("me-1", "text-icon")} />
+    <CircleFill className={cx("me-1", bi)} />
   );
 
   const badgeText = isLoading

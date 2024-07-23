@@ -173,7 +173,7 @@ const LogDownloadButton = ({
         save();
       }}
     >
-      <FileEarmarkArrowDown className={cx("me-2", "text-icon")} />
+      <FileEarmarkArrowDown className={cx("bi", "me-1")} />
       {downloading ? " Downloading " : " Download"}
       {downloading && <Loader inline size={16} />}
     </Button>
@@ -294,7 +294,7 @@ function SessionLogs(props: LogBodyProps) {
           }}
           disabled={logs.fetching}
         >
-          <ArrowRepeat className={cx("me-2", "text-icon")} /> Refresh logs
+          <ArrowRepeat className={cx("bi", "me-1")} /> Refresh logs
         </Button>
         <LogDownloadButton
           logs={logs}

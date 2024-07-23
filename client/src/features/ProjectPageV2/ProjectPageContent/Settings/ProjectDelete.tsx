@@ -73,7 +73,7 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
     <Card id="delete">
       <CardHeader>
         <h4>
-          <Trash className={cx("me-2", "small", "text-icon")} />
+          <Trash className={cx("me-1", "small", "bi")} />
           Delete project
         </h4>
         <p className="m-0">
@@ -101,9 +101,9 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
             onClick={onDelete}
           >
             {result.isLoading ? (
-              <Loader className="me-2" inline size={16} />
+              <Loader className="me-1" inline size={16} />
             ) : (
-              <Trash className={cx("me-2", "text-icon")} />
+              <Trash className={cx("bi", "me-1")} />
             )}
             Delete project
           </Button>

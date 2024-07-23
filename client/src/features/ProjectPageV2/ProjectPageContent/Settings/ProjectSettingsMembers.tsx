@@ -75,7 +75,7 @@ function MemberActionMenu({
       onClick={onEdit}
       size="sm"
     >
-      <PencilSquare className={cx("me-2", "text-icon")} /> Edit
+      <PencilSquare className={cx("bi", "me-1")} /> Edit
     </Button>
   );
   return (
@@ -88,7 +88,7 @@ function MemberActionMenu({
           size="sm"
         >
           <DropdownItem onClick={onRemove}>
-            <Trash className={cx("me-2", "text-icon")} /> Remove
+            <Trash className={cx("bi", "me-1")} /> Remove
           </DropdownItem>
         </ButtonWithMenuV2>
       </span>
@@ -129,7 +129,7 @@ function ProjectMemberAction({
             data-cy={`project-member-remove-${index}`}
             onClick={onRemove}
           >
-            <Trash className={cx("me-2", "text-icon")} />
+            <Trash className={cx("bi", "me-1")} />
             Remove
           </Button>
         ),
@@ -266,7 +266,7 @@ function ProjectPageSettingsMembersContent({
   if (isLoading)
     return (
       <p>
-        <Loader className="me-2" inline />
+        <Loader className="me-1" inline />
         Loading members...
       </p>
     );
@@ -280,7 +280,7 @@ function ProjectPageSettingsMembersContent({
     <>
       <div className={cx("d-flex", "justify-content-between", "mb-2")}>
         <p className={cx("fw-bold", "my-auto")}>
-          <People className={cx("me-2", "text-icon")} />
+          <People className={cx("bi", "me-1")} />
           Members ({totalMembers})
         </p>
         <div className="my-auto">
@@ -333,7 +333,7 @@ export default function ProjectPageSettingsMembers({
           enabled={
             <>
               <h4>
-                <PersonGear className={cx("me-2", "small", "text-icon")} />
+                <PersonGear className={cx("me-1", "small", "bi")} />
                 Members of the project
               </h4>
               <p className="m-0">Manage access permissions to the project</p>

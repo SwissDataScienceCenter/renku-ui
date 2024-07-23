@@ -64,7 +64,7 @@ export default function GroupV2Settings() {
                 slug: group.slug,
               })}
             >
-              <ArrowLeft className={cx("me-2", "text-icon")} />
+              <ArrowLeft className={cx("bi", "me-1")} />
               Back to group
             </Link>
           </div>

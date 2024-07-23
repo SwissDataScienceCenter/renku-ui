@@ -65,7 +65,7 @@ export default function NotFound({
           <div>
             <Link to="/">
               <Button color="primary" className="btn-rk-green">
-                <HouseFill className={cx("me-2", "text-icon")} />
+                <HouseFill className={cx("bi", "me-1")} />
                 Return Home
               </Button>
             </Link>

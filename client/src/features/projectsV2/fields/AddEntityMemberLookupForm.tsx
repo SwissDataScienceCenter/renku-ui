@@ -121,7 +121,7 @@ export default function AddEntityMemberEmailLookupForm({
           onClick={toggle}
           data-cy="user-lookup-close-button"
         >
-          <XLg className={cx("me-2", "text-icon")} />
+          <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
         <Button
@@ -130,7 +130,7 @@ export default function AddEntityMemberEmailLookupForm({
           onClick={handleSubmit(onSubmit)}
           type="submit"
         >
-          <PlusLg className={cx("me-2", "text-icon")} />
+          <PlusLg className={cx("bi", "me-1")} />
           Add Member
         </Button>
       </ModalFooter>
