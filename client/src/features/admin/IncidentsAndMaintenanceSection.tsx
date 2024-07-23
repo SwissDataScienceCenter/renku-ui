@@ -26,7 +26,6 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
-
 import { useForm } from "react-hook-form";
 import {
   Alert,
@@ -38,6 +37,7 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
@@ -214,7 +214,7 @@ function IncidentBannerSection() {
 
   return (
     <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-1">
+      <div className={cx("d-flex", "flex-column", "gap-1", "mb-1")}>
         <Label for="admin-incident-banner-content">Incident banner</Label>
         <Nav tabs>
           <NavItem>
