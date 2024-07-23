@@ -492,10 +492,6 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
 
   const badgeIcon = isLoading ? (
     <Loader className="me-1" inline size={16} />
-  ) : permissions.pull && permissions.push ? (
-    <CircleFill className={cx("me-1", "bi")} />
-  ) : permissions.pull ? (
-    <CircleFill className={cx("me-1", "bi")} />
   ) : (
     <CircleFill className={cx("me-1", "bi")} />
   );
