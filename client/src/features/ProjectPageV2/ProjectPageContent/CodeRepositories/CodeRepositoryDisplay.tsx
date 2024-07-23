@@ -491,13 +491,13 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
   ]);
 
   const badgeIcon = isLoading ? (
-    <Loader className="me-1" inline size={16} />
+    <Loader className="me-1" inline size={12} />
   ) : (
     <CircleFill className={cx("me-1", "bi")} />
   );
 
   const badgeText = isLoading
-    ? ""
+    ? null
     : permissions.push
     ? "Push & pull"
     : permissions.pull
@@ -515,7 +515,7 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
   return (
     <Badge pill className={cx("border", badgeColorClasses)}>
       {badgeIcon}
-      <span className="fw-normal">{badgeText}</span>
+      {badgeText && <span className="fw-normal">{badgeText}</span>}
     </Badge>
   );
 }
@@ -573,16 +573,10 @@ function RepositoryView({
     () => `${repositoryUrl.replace(/.git$/i, "")}`,
     [repositoryUrl]
   );
-  const canonicalUrl = useMemo(() => {
-    try {
-      return new URL(canonicalUrlStr);
-    } catch (error) {
-      if (error instanceof TypeError) {
-        return null;
-      }
-      throw error;
-    }
-  }, [canonicalUrlStr]);
+  const canonicalUrl = useMemo(
+    () => safeNewUrl(canonicalUrlStr),
+    [canonicalUrlStr]
+  );
 
   return (
     <Offcanvas
