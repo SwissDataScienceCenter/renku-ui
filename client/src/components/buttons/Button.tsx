@@ -136,6 +136,7 @@ export function ButtonWithMenuV2({
   preventPropagation,
   size,
 }: BButtonWithMenuV2Props) {
+  // ! Temporary workaround to quickly implement a design solution -- to be removed ASAP #3250
   const additionalProps = preventPropagation
     ? { onClick: (e: React.MouseEvent) => e.stopPropagation() }
     : {};
@@ -153,7 +154,7 @@ export function ButtonWithMenuV2({
       {defaultButton}
       <DropdownToggle
         caret
-        className="dropdown-toggle-split"
+        className={cx("border-start-0", "dropdown-toggle-split")}
         data-bs-toggle="dropdown"
         color={color ?? "primary"}
         data-cy="button-with-menu-dropdown"
