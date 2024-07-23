@@ -30,6 +30,10 @@ import { Link } from "react-router-dom-v5-compat";
 import {
   Alert,
   Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Collapse,
   Form,
   Label,
   Nav,
@@ -40,6 +44,7 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
 import { Docs } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
@@ -184,6 +189,9 @@ function IncidentBannerSection() {
     }
   }, [reset, result.data?.incident_banner, result.isSuccess]);
 
+  const [isOpen, setIsOpen] = useState(false);
+  const onToggleOpen = useCallback(() => setIsOpen((open) => !open), []);
+
   const [tab, setTab] = useState<"write-tab" | "preview-tab">("write-tab");
   const onClickWrite = useCallback(() => setTab("write-tab"), []);
   const onClickPreview = useCallback(() => setTab("preview-tab"), []);
@@ -207,76 +215,109 @@ function IncidentBannerSection() {
   }
 
   return (
-    <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
-      <div className={cx("d-flex", "flex-column", "gap-1", "mb-1")}>
-        <Label for="admin-incident-banner-content">Incident banner</Label>
-        <Nav tabs>
-          <NavItem>
-            <button
-              className={cx("nav-link", tab === "write-tab" && "active")}
-              onClick={onClickWrite}
-              type="button"
-            >
-              Write
-            </button>
-          </NavItem>
-          <NavItem>
-            <button
-              className={cx("nav-link", tab === "preview-tab" && "active")}
-              onClick={onClickPreview}
-              type="button"
-            >
-              Preview
-            </button>
-          </NavItem>
-        </Nav>
-        <TabContent activeTab={tab}>
-          <TabPane tabId="write-tab">
-            <textarea
-              {...register("incidentBanner")}
-              id="admin-incident-banner-content"
-              className={cx("form-control", "border-0")}
-            />
-          </TabPane>
-          <TabPane tabId="preview-tab">
-            {incidentBanner ? (
-              <Alert
-                color="danger"
-                className={cx(
-                  "container-xxl",
-                  "renku-container",
-                  "border-0",
-                  "rounded-0"
-                )}
-                fade={false}
-              >
-                <h3>Ongoing incident</h3>
-                <LazyRenkuMarkdown markdownText={incidentBanner} />
-              </Alert>
-            ) : (
-              <p className="fst-italic">No content</p>
-            )}
-          </TabPane>
-        </TabContent>
-      </div>
-      <div>
-        <Button type="submit" disabled={result.isLoading || !isDirty}>
-          Update incident banner
-        </Button>
-        {platformConfig.incident_banner && (
-          <Button
-            className="ms-2"
-            color="outline-danger"
-            disabled={result.isLoading}
-            onClick={onClearIncidentBanner}
-          >
-            <XLg className={cx("bi", "me-1")} />
-            Clear incident banner
-          </Button>
-        )}
-      </div>
-      {result.error && <RtkOrNotebooksError error={error} />}
-    </Form>
+    <Card className="mb-3">
+      <CardHeader
+        className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
+        tag="h5"
+      >
+        <button
+          className={cx(
+            "d-flex",
+            "gap-3",
+            "align-items-center",
+            "w-100",
+            "p-3",
+            "bg-transparent",
+            "border-0",
+            "fw-bold"
+          )}
+          onClick={onToggleOpen}
+          type="button"
+        >
+          Incident banner
+          <div className="ms-auto">
+            <ChevronFlippedIcon flipped={isOpen} />
+          </div>
+        </button>
+      </CardHeader>
+      <Collapse isOpen={isOpen}>
+        <CardBody className="pt-0">
+          <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
+            <div className={cx("d-flex", "flex-column", "gap-1", "mb-1")}>
+              <Label for="admin-incident-banner-content">Incident banner</Label>
+              <Nav tabs>
+                <NavItem>
+                  <button
+                    className={cx("nav-link", tab === "write-tab" && "active")}
+                    onClick={onClickWrite}
+                    type="button"
+                  >
+                    Write
+                  </button>
+                </NavItem>
+                <NavItem>
+                  <button
+                    className={cx(
+                      "nav-link",
+                      tab === "preview-tab" && "active"
+                    )}
+                    onClick={onClickPreview}
+                    type="button"
+                  >
+                    Preview
+                  </button>
+                </NavItem>
+              </Nav>
+              <TabContent activeTab={tab}>
+                <TabPane tabId="write-tab">
+                  <textarea
+                    {...register("incidentBanner")}
+                    id="admin-incident-banner-content"
+                    className={cx("form-control", "border-0", "bg-body")}
+                  />
+                </TabPane>
+                <TabPane tabId="preview-tab">
+                  {incidentBanner ? (
+                    <Alert
+                      color="danger"
+                      className={cx(
+                        "container-xxl",
+                        "renku-container",
+                        "border-0",
+                        "rounded-0"
+                      )}
+                      fade={false}
+                    >
+                      <h3>Ongoing incident</h3>
+                      <LazyRenkuMarkdown markdownText={incidentBanner} />
+                    </Alert>
+                  ) : (
+                    <p className="fst-italic">No content</p>
+                  )}
+                </TabPane>
+              </TabContent>
+            </div>
+            <div>
+              <Button type="submit" disabled={result.isLoading || !isDirty}>
+                Update incident banner
+              </Button>
+              {platformConfig.incident_banner && (
+                <Button
+                  className="ms-2"
+                  color="outline-danger"
+                  disabled={result.isLoading}
+                  onClick={onClearIncidentBanner}
+                >
+                  <XLg className={cx("bi", "me-1")} />
+                  Clear incident banner
+                </Button>
+              )}
+            </div>
+            {result.error && <RtkOrNotebooksError error={error} />}
+          </Form>
+        </CardBody>
+      </Collapse>
+    </Card>
   );
 }
 
