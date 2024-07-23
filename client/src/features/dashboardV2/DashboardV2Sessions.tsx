@@ -107,6 +107,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
         "gap-3",
         "link-primary",
         "list-group-item-action",
+        "list-group-item-action-extended",
         "list-group-item",
         "text-body",
         "text-decoration-none"

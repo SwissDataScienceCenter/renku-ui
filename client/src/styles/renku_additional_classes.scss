@@ -2,7 +2,7 @@
 // ? Add new one only when strictly necessary. Prefer combining existing bootstrap classes in all
 // ? other cases.
 
-// align boostrap icons when used inline as/with text
+// Align boostrap icons when used inline as/with text
 .bi {
   display: inline-flex;
   height: 1em;
@@ -13,4 +13,22 @@
 // Force the cursor to be a pointer
 .cursor-pointer {
   cursor: pointer !important;
+}
+
+// Introduce an extended hover effect for list groups with hover interaction
+.list-group-flush > .list-group-item.list-group-item-action {
+  &.list-group-item-action-extended {
+    &::before {
+      bottom: 0;
+      content: "";
+      left: -$spacer;
+      position: absolute;
+      right: -$spacer;
+      top: 0;
+      z-index: -1;
+    }
+    &:hover::before {
+      background-color: $list-group-hover-bg;
+    }
+  }
 }
