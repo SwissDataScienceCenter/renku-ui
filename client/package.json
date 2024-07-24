@@ -22,10 +22,11 @@
     "storybook-wait-server": "wait-on http://127.0.0.1:6006",
     "storybook-test": "test-storybook",
     "storybook-compile-and-test": "concurrently -k -s first -n 'BUILD,TEST' -c 'magenta,blue' 'npm run storybook-build && npm run storybook-start-server' 'npm run storybook-wait-server && npm run storybook-test'",
-    "generate-api": "npm run generate-api:dataServicesUser && npm run generate-api:namespaceV2 && npm run generate-api:projectV2 && npm run generate-api:searchV2",
+    "generate-api": "npm run generate-api:dataServicesUser && npm run generate-api:namespaceV2 && npm run generate-api:projectV2 && generate-api:platform && npm run generate-api:searchV2",
     "generate-api:dataServicesUser": "rtk-query-codegen-openapi src/features/user/dataServicesUser.api/dataServicesUser.api-config.ts",
     "generate-api:namespaceV2": "rtk-query-codegen-openapi src/features/projectsV2/api/namespace.api-config.ts",
     "generate-api:projectV2": "rtk-query-codegen-openapi src/features/projectsV2/api/projectV2.api-config.ts",
+    "generate-api:platform": "rtk-query-codegen-openapi src/features/platform/api/platform.api-config.ts",
     "generate-api:searchV2": "rtk-query-codegen-openapi src/features/searchV2/api/searchV2.api-config.ts"
   },
   "type": "module",
