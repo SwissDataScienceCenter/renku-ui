@@ -256,12 +256,12 @@ describe("dashboard message", () => {
     cy.wait("@getNoActiveProjects");
   };
 
-  // // it("does not display a message when disabled", () => {
-  // //   fixtures.config();
-  // //   visitDashboardPage();
+  it("does not display a message when disabled", () => {
+    fixtures.config();
+    visitDashboardPage();
 
-  // //   cy.getDataCy("dashboard-message").should("not.exist");
-  // // });
+    cy.getDataCy("dashboard-message").should("not.exist");
+  });
 
   it("displays a dissmissible simple info message", () => {
     fixtures.configWithDashboardMessage({
