@@ -44,6 +44,7 @@ import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
+import StatusBanner from "../platform/components/StatusBanner";
 
 const RENKU_ALPHA_LOGO = "/static/public/img/logo-yellow.svg";
 
@@ -156,68 +157,78 @@ export default function NavbarV2() {
   }
 
   return (
-    <header className={cx("bg-navy", "navbar-expand-lg")} data-bs-theme="dark">
-      <div className={cx("navbar", "px-2", "px-sm-3", "py-2")}>
-        <div
-          className={cx(
-            "align-items-center",
-            "d-flex",
-            "flex-wrap",
-            "gap-3",
-            "text-white"
-          )}
-        >
-          <RenkuNavLinkV2
-            id="link-home"
-            data-cy="link-home"
-            to={ABSOLUTE_ROUTES.v2.root}
-          >
-            <img src={RENKU_ALPHA_LOGO} alt="Renku v2 (beta)" height="50" />
-          </RenkuNavLinkV2>
-          <WipBadge>2.0 Beta</WipBadge>
-          <BackToV1Button outline={true} />
-        </div>
-        <NavbarToggler onClick={onToggle} className="border-0">
-          <List className={cx("bi", "text-rk-white")} />
-        </NavbarToggler>
-        <Collapse isOpen={isOpen} navbar>
-          <Nav
+    <>
+      <header
+        className={cx("bg-navy", "navbar-expand-lg")}
+        data-bs-theme="dark"
+      >
+        <div className={cx("navbar", "px-2", "px-sm-3", "py-2")}>
+          <div
             className={cx(
               "align-items-center",
-              "flex-row",
+              "d-flex",
+              "flex-wrap",
               "gap-3",
-              "gap-lg-0",
-              "justify-content-end",
-              "ms-lg-auto"
+              "text-white"
             )}
-            navbar
           >
-            <NavItem>
-              <RenkuNavLinkV2 end to={ABSOLUTE_ROUTES.v2.search} title="Search">
-                <Search className="bi" /> Search
-              </RenkuNavLinkV2>
-            </NavItem>
-            <NavItem>
-              <RenkuNavLinkV2
-                end
-                to={ABSOLUTE_ROUTES.v2.root}
-                title="Dashboard"
-              >
-                Dashboard
-              </RenkuNavLinkV2>
-            </NavItem>
-            <NavItem>
-              <NavbarItemPlus />
-            </NavItem>
-            <NavItem>
-              <NavbarItemHelp />
-            </NavItem>
-            <NavItem>
-              <RenkuToolbarItemUser params={params!} />
-            </NavItem>
-          </Nav>
-        </Collapse>
-      </div>
-    </header>
+            <RenkuNavLinkV2
+              id="link-home"
+              data-cy="link-home"
+              to={ABSOLUTE_ROUTES.v2.root}
+            >
+              <img src={RENKU_ALPHA_LOGO} alt="Renku v2 (beta)" height="50" />
+            </RenkuNavLinkV2>
+            <WipBadge>2.0 Beta</WipBadge>
+            <BackToV1Button outline={true} />
+          </div>
+          <NavbarToggler onClick={onToggle} className="border-0">
+            <List className={cx("bi", "text-rk-white")} />
+          </NavbarToggler>
+          <Collapse isOpen={isOpen} navbar>
+            <Nav
+              className={cx(
+                "align-items-center",
+                "flex-row",
+                "gap-3",
+                "gap-lg-0",
+                "justify-content-end",
+                "ms-lg-auto"
+              )}
+              navbar
+            >
+              <NavItem>
+                <RenkuNavLinkV2
+                  end
+                  to={ABSOLUTE_ROUTES.v2.search}
+                  title="Search"
+                >
+                  <Search className="bi" /> Search
+                </RenkuNavLinkV2>
+              </NavItem>
+              <NavItem>
+                <RenkuNavLinkV2
+                  end
+                  to={ABSOLUTE_ROUTES.v2.root}
+                  title="Dashboard"
+                >
+                  Dashboard
+                </RenkuNavLinkV2>
+              </NavItem>
+              <NavItem>
+                <NavbarItemPlus />
+              </NavItem>
+              <NavItem>
+                <NavbarItemHelp />
+              </NavItem>
+              <NavItem>
+                <RenkuToolbarItemUser params={params!} />
+              </NavItem>
+            </Nav>
+          </Collapse>
+        </div>
+      </header>
+      <StatusBanner params={params} />
+    </>
   );
 }

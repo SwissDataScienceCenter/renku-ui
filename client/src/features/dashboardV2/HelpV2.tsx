@@ -20,6 +20,7 @@ import { ChatSquareDots, Github, JournalText } from "react-bootstrap-icons";
 import { useContext } from "react";
 import { Route, Routes } from "react-router-dom-v5-compat";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
+
 import {
   ExternalDocsLink,
   ExternalIconLink,
@@ -28,10 +29,11 @@ import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
 import PrivacyPolicy from "../../help/PrivacyPolicy";
 import TermsOfService from "../../help/TermsOfService";
-import { StatuspageDisplay, isStatusConfigured } from "../../statuspage";
+import { isStatusConfigured } from "../../statuspage";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
+import StatusSummary from "../platform/components/StatusSummary";
 
 type HelpNavProps = {
   statuspageId: string;
@@ -148,12 +150,11 @@ function HelpGetting() {
 }
 
 function HelpContent() {
-  const { model } = useContext(AppContext);
   return (
     <Routes>
       <Route path="/" element={<HelpGetting />} />
       <Route path="contact" element={<HelpGetting />} />
-      <Route path="status" element={<StatuspageDisplay model={model} />} />
+      <Route path="status" element={<StatusSummary />} />
       <Route path="release" element={<HelpRelease />} />
       <Route path="tos" element={<TermsOfService />} />
       <Route path="privacy" element={<PrivacyPolicy />} />
