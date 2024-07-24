@@ -124,12 +124,7 @@ export default function AddEntityMemberEmailLookupForm({
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button
-          color="primary"
-          disabled={true}
-          onClick={handleSubmit(onSubmit)}
-          type="submit"
-        >
+        <Button color="primary" disabled={true} type="submit">
           <PlusLg className={cx("bi", "me-1")} />
           Add Member
         </Button>
