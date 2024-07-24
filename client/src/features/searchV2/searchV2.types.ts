@@ -16,107 +16,147 @@
  * limitations under the License.
  */
 
-import type { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
-import type { Role } from "../projectsV2/api/projectV2.api";
 import type { SearchEntity } from "./api/searchV2Api.api.ts";
 
 export interface SearchV2StateV2 {
-  initialQuery: string | null;
-  query: string | null;
+  filters: SearchFilters;
+  initialQuery: string;
   page: number;
   perPage: number;
-  searchBarQuery: string | null;
-  sort: SortingOption;
-  filters: FilterOptions;
+  query: string;
+  searchBarQuery: string;
+  sortBy: SortBy;
 }
 
-export interface SortingOption {
-  key: string;
-  label: string;
+export type SearchOption = SearchFilter | SortBy;
+
+export interface SearchFilters {
+  type: TypeFilter;
 }
 
-export interface FilterOptions {
-  type: Set<SearchEntityType>;
-}
+export type SearchFilter = TypeFilter;
 
-export interface TypeFilterOption {
-  key: SearchEntityType;
-  label: string;
+export interface TypeFilter {
+  key: "type";
+  /** Note: `values` should be interpreted as a set */
+  values: SearchEntityType[];
 }
 
 export type SearchEntityType = Lowercase<SearchEntity["type"]>;
 
-export interface DateFilter {
-  option: DateFilterTypes;
-  from?: string;
-  to?: string;
-}
-export interface SearchV2State {
-  filters: {
-    role: Role[];
-    type: ("project" | "user")[];
-    visibility: ("private" | "public")[];
-    created: DateFilter;
-    createdBy: string;
-  };
-  search: {
-    history: {
-      search: string;
-      query: string;
-    }[];
-    lastSearch: string | null;
-    outdated: boolean;
-    page: number;
-    perPage: number;
-    query: string;
-    totalPages: number;
-    totalResults: number;
-  };
-  sorting: SortingItem;
+export interface SortBy {
+  key: "sort";
+  value: SortByValue;
 }
 
-export interface SearchV2Totals {
-  pages: number;
-  results: number;
+export type SortByValue =
+  | "score-desc"
+  | "created-desc"
+  | "created-asc"
+  | "name-asc"
+  | "name-desc";
+
+// Types related to parsing a search query
+export interface ParseSearchQueryResult {
+  canonicalQuery: string;
+  filters: SearchFilters;
+  searchBarQuery: string;
+  sortBy: SortBy;
 }
 
-export interface ToggleFilterPayload {
-  filter: keyof SearchV2State["filters"];
-  value: string;
+export interface InterpretedTerm {
+  term: string;
+  interpretation: SearchOption | null;
 }
 
-export interface SearchV2FilterOptions {
-  checked: boolean;
-  key: string;
-  value: string;
-}
+// interface TypeFilterInterpretation {
+//   key: "type";
+//   values: FilterOptions["type"];
+// }
 
-export interface SortingItem {
-  friendlyName: string;
-  sortingString: string;
-}
+// export interface SortingOption {
+//   key: string;
+//   label: string;
+// }
 
-export interface SortingItems {
-  [key: string]: SortingItem;
-}
+// export interface FilterOptions {
+//   type: Set<SearchEntityType>;
+// }
 
-export interface DateFilterItem {
-  friendlyName: string;
-  getDateString:
-    | ((filter: string, from?: string, to?: string) => string)
-    | (() => string);
-}
-export interface DateFilterItems {
-  [key: string]: DateFilterItem;
-}
+// export interface TypeFilterOption {
+//   key: SearchEntityType;
+//   label: string;
+// }
 
-export type SetInitialQueryParams =
-  | {
-      query: string;
-      searchBarQuery: string;
-      sort: SortingOption;
-      filters: SearchV2StateV2["filters"];
-    }
-  | {
-      query: null;
-    };
+// export type SearchEntityType = Lowercase<SearchEntity["type"]>;
+
+// export interface DateFilter {
+//   option: DateFilterTypes;
+//   from?: string;
+//   to?: string;
+// }
+// export interface SearchV2State {
+//   filters: {
+//     role: Role[];
+//     type: ("project" | "user")[];
+//     visibility: ("private" | "public")[];
+//     created: DateFilter;
+//     createdBy: string;
+//   };
+//   search: {
+//     history: {
+//       search: string;
+//       query: string;
+//     }[];
+//     lastSearch: string | null;
+//     outdated: boolean;
+//     page: number;
+//     perPage: number;
+//     query: string;
+//     totalPages: number;
+//     totalResults: number;
+//   };
+//   sorting: SortingItem;
+// }
+
+// export interface SearchV2Totals {
+//   pages: number;
+//   results: number;
+// }
+
+// export interface ToggleFilterPayload {
+//   filter: keyof SearchV2State["filters"];
+//   value: string;
+// }
+
+// export interface SearchV2FilterOptions {
+//   checked: boolean;
+//   key: string;
+//   value: string;
+// }
+
+// export interface SortingItem {
+//   friendlyName: string;
+//   sortingString: string;
+// }
+
+// export interface SortingItems {
+//   [key: string]: SortingItem;
+// }
+
+// export interface DateFilterItem {
+//   friendlyName: string;
+//   getDateString:
+//     | ((filter: string, from?: string, to?: string) => string)
+//     | (() => string);
+// }
+// export interface DateFilterItems {
+//   [key: string]: DateFilterItem;
+// }
+
+export interface SetInitialQueryParams {
+  filters: SearchFilters;
+  query: string;
+  searchBarQuery: string;
+  sortBy: SortBy;
+}

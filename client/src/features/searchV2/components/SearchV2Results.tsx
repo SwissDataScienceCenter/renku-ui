@@ -13,9 +13,9 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
-import { skipToken } from "@reduxjs/toolkit/query";
+
 import cx from "classnames";
 import { ReactNode, useCallback, useEffect } from "react";
 import { Globe2, LockFill } from "react-bootstrap-icons";
@@ -82,9 +82,11 @@ export default function SearchV2Results() {
 function SearchV2ResultsContent() {
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
 
-  const searchResults = searchV2Api.endpoints.getQuery.useQueryState(
-    query != null ? { page, perPage, q: query } : skipToken
-  );
+  const searchResults = searchV2Api.endpoints.getQuery.useQueryState({
+    page,
+    perPage,
+    q: query,
+  });
 
   if (searchResults.isFetching) {
     return <Loader />;
@@ -110,7 +112,7 @@ function SearchV2ResultsContent() {
     if (entity.type === "Project") {
       return (
         <SearchV2ResultProject
-          searchByUser={(userId) => {
+          searchByUser={(_userId) => {
             // dispatch(setCreatedBy(userId));
           }}
           key={`project-result-${entity.id}`}

@@ -16,16 +16,13 @@
  * limitations under the License
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom-v5-compat";
+
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import { setPage, setPerPage, setInitialQuery } from "../searchV2.slice";
-import { parseSearchQuery } from "../searchV2.utils";
-import {
-  DEFAULT_SORTING_OPTION,
-  DEFAULT_TYPE_FILTER_OPTION,
-} from "../searchV2.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { setInitialQuery, setPage, setPerPage } from "../searchV2.slice";
+import { parseSearchQuery } from "../searchV2.utils";
 
 export default function useSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,15 +30,13 @@ export default function useSearch() {
   const dispatch = useAppDispatch();
   const { initialQuery, query } = useAppSelector(({ searchV2 }) => searchV2);
 
+  // Used to prevent double history pushes
+  const queryRef = useRef<string>(query);
+
   useEffect(() => {
-    const query = searchParams.get("q");
+    const query = searchParams.get("q") ?? "";
 
-    if (query == null) {
-      dispatch(setInitialQuery({ query: null }));
-      return;
-    }
-
-    const { canonicalQuery, searchBarQuery, sortingOption, typeFilterOption } =
+    const { canonicalQuery, filters, searchBarQuery, sortBy } =
       parseSearchQuery(query);
 
     if (query !== canonicalQuery) {
@@ -57,12 +52,10 @@ export default function useSearch() {
 
     dispatch(
       setInitialQuery({
+        filters,
         query,
         searchBarQuery,
-        sort: sortingOption ?? DEFAULT_SORTING_OPTION,
-        filters: {
-          type: typeFilterOption ?? DEFAULT_TYPE_FILTER_OPTION,
-        },
+        sortBy,
       })
     );
   }, [dispatch, searchParams, setSearchParams]);
@@ -139,13 +132,18 @@ export default function useSearch() {
   }, [dispatch, searchParams, setSearchParams]);
 
   useEffect(() => {
-    if (query != null && query != initialQuery) {
+    if (query != initialQuery) {
+      if (queryRef.current === query) {
+        return;
+      }
+
       setSearchParams((prev) => {
         prev.set("q", query);
         prev.set("page", "1");
         prev.set("perPage", "10");
         return prev;
       });
+      queryRef.current = query;
     }
   }, [initialQuery, query, setSearchParams]);
 }
