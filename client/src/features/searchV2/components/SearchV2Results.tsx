@@ -28,7 +28,13 @@ import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { Group, Project, User, searchV2Api } from "../api/searchV2Api.api";
+import {
+  Group,
+  Project,
+  SearchEntity,
+  User,
+  searchV2Api,
+} from "../api/searchV2Api.api";
 import { setCreatedBy, setPage } from "../searchV2.slice";
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 
@@ -132,16 +138,16 @@ function SearchV2ResultsContainer({ children }: SearchV2ResultsCardProps) {
 }
 
 interface SearchV2CardTitleProps {
+  entityType?: SearchEntity["type"];
+  entityUrl: string;
   name: string;
-  nameUrl: string;
   namespace: string;
   namespaceUrl: string;
-  entityType?: "Project" | "Group" | "User";
 }
 function SearchV2CardTitle({
   entityType,
+  entityUrl,
   name,
-  nameUrl,
   namespace,
   namespaceUrl,
 }: SearchV2CardTitleProps) {
@@ -149,7 +155,7 @@ function SearchV2CardTitle({
     <CardHeader className={cx("d-flex", "gap-2")}>
       <div>
         <h5 className="mb-1">
-          <Link to={nameUrl}>{name}</Link>
+          <Link to={entityUrl}>{name}</Link>
         </h5>
         <p className="mb-0">
           <Link to={namespaceUrl}>@{namespace}</Link>
@@ -199,8 +205,8 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
     <SearchV2ResultsContainer>
       <SearchV2CardTitle
         entityType="Project"
+        entityUrl={projectUrl}
         name={name}
-        nameUrl={projectUrl}
         namespace={namespace?.namespace ?? ""}
         namespaceUrl={namespaceUrl}
       />
@@ -250,8 +256,8 @@ function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
     <SearchV2ResultsContainer>
       <SearchV2CardTitle
         entityType="Group"
+        entityUrl={groupUrl}
         name={name}
-        nameUrl={groupUrl}
         namespace={namespace}
         namespaceUrl={groupUrl}
       />
@@ -284,8 +290,8 @@ function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
     <SearchV2ResultsContainer>
       <SearchV2CardTitle
         entityType="User"
+        entityUrl={userUrl}
         name={displayName || "unknown"}
-        nameUrl={userUrl}
         namespace={namespace || "unknown"}
         namespaceUrl={userUrl}
       />
