@@ -19,46 +19,41 @@
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 
-import { Project } from "../api/projectV2.api";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
+import { GroupResponse } from "../api/namespace.api";
 
-interface ProjectSimpleProps {
-  className?: string | string[];
+interface GroupShortHandDisplayProps {
+  className?: string;
   element: "card-body" | "list-item" | "plain";
-  project: Project;
+  group: GroupResponse;
 }
-
-export default function ProjectSimple({
+export default function GroupShortHandDisplay({
   className,
   element,
-  project,
-}: ProjectSimpleProps) {
+  group,
+}: GroupShortHandDisplayProps) {
   const content = (
     <div
       className={cx(
-        element === "card-body" && cx("d-flex", "flex-column", "flex-grow-1")
+        element === "card-body" && ["d-flex", "flex-column", "flex-grow-1"]
       )}
-      data-cy="project-item"
+      data-cy="group-item"
     >
-      <h6 className="m-0 fw-bold">{project.name}</h6>
-      <p className={cx("fst-italic", "mb-2")}>
-        @{project.namespace}/{project.slug}
-      </p>
-
-      {project.description && (
+      <h6 className="m-0 fw-bold">{group.name}</h6>
+      <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
+      {group.description && (
         <ClampedParagraph className="mb-2">
-          {project.description}
+          {group.description}
         </ClampedParagraph>
       )}
-
       <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
-        <VisibilityIcon visibility={project.visibility} />
+        <VisibilityIcon visibility="public" />
         <TimeCaption
           className={cx("ms-auto", "my-auto")}
-          datetime={project.creation_date}
+          datetime={group.creation_date}
           enableTooltip
           prefix="Created"
         />
@@ -68,9 +63,9 @@ export default function ProjectSimple({
 
   const elementClasses =
     element === "card-body"
-      ? cx("card-body", "d-flex")
+      ? ["card-body", "d-flex"]
       : element === "list-item"
-      ? cx("list-group-item", "list-group-item-action")
+      ? ["list-group-item", "list-group-item-action"]
       : "";
 
   return (
@@ -82,9 +77,8 @@ export default function ProjectSimple({
         className,
         elementClasses
       )}
-      to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace: project.namespace,
-        slug: project.slug,
+      to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+        slug: group.slug,
       })}
     >
       {content}

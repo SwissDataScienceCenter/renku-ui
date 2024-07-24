@@ -38,8 +38,8 @@ import {
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import DashboardV2Sessions from "./DashboardV2Sessions";
-import GroupSimple from "../projectsV2/show/GroupSimple";
-import ProjectSimple from "../projectsV2/show/ProjectSimple";
+import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
+import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 
 export default function DashboardV2() {
   return (
@@ -160,7 +160,11 @@ function ProjectList() {
   return (
     <ListGroup flush data-cy="dashboard-project-list">
       {data?.projects?.map((project) => (
-        <ProjectSimple element="list-item" key={project.id} project={project} />
+        <ProjectShortHandDisplay
+          element="list-item"
+          key={project.id}
+          project={project}
+        />
       ))}
     </ListGroup>
   );
@@ -226,7 +230,11 @@ function GroupsList() {
   return (
     <ListGroup flush data-cy="dashboard-group-list">
       {data?.groups?.map((group) => (
-        <GroupSimple element="list-item" key={group.id} group={group} />
+        <GroupShortHandDisplay
+          element="list-item"
+          key={group.id}
+          group={group}
+        />
       ))}
     </ListGroup>
   );

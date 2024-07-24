@@ -19,41 +19,46 @@
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 
-import type { GroupSimple } from "./GroupSimple.types";
+import { Project } from "../api/projectV2.api";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 
-interface GroupSimpleProps {
+interface ProjectShortHandDisplayProps {
   className?: string | string[];
   element: "card-body" | "list-item" | "plain";
-  group: GroupSimple;
+  project: Project;
 }
-export default function GroupSimple({
+
+export default function ProjectShortHandDisplay({
   className,
   element,
-  group,
-}: GroupSimpleProps) {
+  project,
+}: ProjectShortHandDisplayProps) {
   const content = (
     <div
       className={cx(
         element === "card-body" && cx("d-flex", "flex-column", "flex-grow-1")
       )}
-      data-cy="group-item"
+      data-cy="project-item"
     >
-      <h6 className="m-0 fw-bold">{group.name}</h6>
-      <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
-      {group.description && (
+      <h6 className="m-0 fw-bold">{project.name}</h6>
+      <p className={cx("fst-italic", "mb-2")}>
+        @{project.namespace}/{project.slug}
+      </p>
+
+      {project.description && (
         <ClampedParagraph className="mb-2">
-          {group.description}
+          {project.description}
         </ClampedParagraph>
       )}
+
       <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
-        <VisibilityIcon visibility="public" />
+        <VisibilityIcon visibility={project.visibility} />
         <TimeCaption
           className={cx("ms-auto", "my-auto")}
-          datetime={group.creation_date}
+          datetime={project.creation_date}
           enableTooltip
           prefix="Created"
         />
@@ -77,8 +82,9 @@ export default function GroupSimple({
         className,
         elementClasses
       )}
-      to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-        slug: group.slug,
+      to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+        namespace: project.namespace,
+        slug: project.slug,
       })}
     >
       {content}
