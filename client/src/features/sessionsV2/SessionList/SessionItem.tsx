@@ -50,7 +50,7 @@ export default function SessionItem({
       action
       className="cursor-pointer"
       data-cy="session-launcher-item"
-      onClick={() => toggleSessionDetails()}
+      onClick={toggleSessionDetails}
     >
       <Row className="g-2">
         <Col

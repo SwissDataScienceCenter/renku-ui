@@ -17,7 +17,7 @@
  */
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
   Boxes,
   Clock,
@@ -74,10 +74,10 @@ import { ModifyResourcesLauncherModal } from "../components/SessionModals/Modify
 
 interface SessionCardContentProps {
   color: string;
-  contentDescription: React.ReactNode;
-  contentLabel: React.ReactNode;
-  contentResources?: React.ReactNode;
-  contentSession: React.ReactNode;
+  contentDescription: ReactNode;
+  contentLabel: ReactNode;
+  contentResources?: ReactNode;
+  contentSession: ReactNode;
 }
 function SessionCardContent({
   color,
