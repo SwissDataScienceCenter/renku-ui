@@ -30,6 +30,7 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { Group, Project, User, searchV2Api } from "../api/searchV2Api.api";
 import { setCreatedBy, setPage } from "../searchV2.slice";
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 
 export default function SearchV2Results() {
   const searchState = useAppSelector((state) => state.searchV2);
@@ -204,18 +205,7 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
         namespaceUrl={namespaceUrl}
       />
       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
-        {description && (
-          <p
-            style={{
-              display: "-webkit-box",
-              overflow: "hidden",
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 3,
-            }}
-          >
-            {description}
-          </p>
-        )}
+        {description && <ClampedParagraph>{description}</ClampedParagraph>}
         <div
           className={cx(
             "align-items-center",
@@ -268,17 +258,7 @@ function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
 
       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
         {description && (
-          <p
-            className="mb-0"
-            style={{
-              display: "-webkit-box",
-              overflow: "hidden",
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 3,
-            }}
-          >
-            {description}
-          </p>
+          <ClampedParagraph className="mb-0">{description}</ClampedParagraph>
         )}
       </CardBody>
     </SearchV2ResultsContainer>

@@ -23,6 +23,7 @@ import type { GroupSimple } from "./GroupSimple.types";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 
 interface GroupSimpleProps {
   className?: string | string[];
@@ -44,17 +45,9 @@ export default function GroupSimple({
       <h6 className="m-0 fw-bold">{group.name}</h6>
       <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
       {group.description && (
-        <p
-          className="mb-2"
-          style={{
-            display: "-webkit-box",
-            overflow: "hidden",
-            WebkitBoxOrient: "vertical",
-            WebkitLineClamp: 3,
-          }}
-        >
+        <ClampedParagraph className="mb-2">
           {group.description}
-        </p>
+        </ClampedParagraph>
       )}
       <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
         <VisibilityIcon visibility="public" />

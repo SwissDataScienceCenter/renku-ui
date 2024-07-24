@@ -36,6 +36,7 @@ import {
   useGetNamespacesByNamespaceSlugQuery,
   useGetProjectsQuery,
 } from "../api/projectV2.enhanced-api";
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 
 const DEFAULT_PER_PAGE = 12;
 const DEFAULT_PAGE_PARAM = "page";
@@ -194,18 +195,7 @@ function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
               {namespace}
             </Link>
           </p>
-          {description && (
-            <p
-              style={{
-                display: "-webkit-box",
-                overflow: "hidden",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 3,
-              }}
-            >
-              {description}
-            </p>
-          )}
+          {description && <ClampedParagraph>{description}</ClampedParagraph>}
           <div
             className={cx(
               "align-items-center",

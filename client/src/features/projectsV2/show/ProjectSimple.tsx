@@ -23,6 +23,7 @@ import { Project } from "../api/projectV2.api";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 
 interface ProjectSimpleProps {
   className?: string | string[];
@@ -48,17 +49,9 @@ export default function ProjectSimple({
       </p>
 
       {project.description && (
-        <p
-          className="mb-2"
-          style={{
-            display: "-webkit-box",
-            overflow: "hidden",
-            WebkitBoxOrient: "vertical",
-            WebkitLineClamp: 3,
-          }}
-        >
+        <ClampedParagraph className="mb-2">
           {project.description}
-        </p>
+        </ClampedParagraph>
       )}
 
       <div className={cx("d-flex", element === "card-body" && "mt-auto")}>

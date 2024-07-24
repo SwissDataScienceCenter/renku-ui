@@ -30,6 +30,7 @@ import type { GroupResponse } from "../api/namespace.api";
 import { useGetGroupsQuery } from "../api/projectV2.enhanced-api";
 import WipBadge from "../shared/WipBadge";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 
 interface GroupListGroupProps {
   group: GroupResponse;
@@ -47,16 +48,9 @@ function GroupListGroup({ group }: GroupListGroupProps) {
           </h5>
 
           {group.description && (
-            <p
-              style={{
-                display: "-webkit-box",
-                overflow: "hidden",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 3,
-              }}
-            >
+            <ClampedParagraph className="mb-2">
               {group.description}
-            </p>
+            </ClampedParagraph>
           )}
 
           <TimeCaption datetime={group.creation_date} prefix="Created" />
