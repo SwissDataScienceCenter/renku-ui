@@ -51,11 +51,9 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 value="public"
                 checked={field.value === "public"}
               />
-              <Label
-                for="project-visibility-public"
-                className={cx("cursor-pointer")}
-              >
-                Public <Globe className="bi" />
+              <Label for="project-visibility-public" className="cursor-pointer">
+                <Globe className={cx("bi", "me-1")} />
+                Public
               </Label>
             </div>
             <div className="d-flex gap-2">
@@ -70,9 +68,10 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
               />
               <Label
                 for="project-visibility-private"
-                className={cx("cursor-pointer")}
+                className="cursor-pointer"
               >
-                Private <Lock className="bi" />
+                <Lock className={cx("bi", "me-1")} />
+                Private
               </Label>
             </div>
           </div>
