@@ -51,17 +51,20 @@ export default function ProjectFormSubmitGroup({
       <div>
         {currentStep === 0 && (
           <Button color="primary" type="submit">
-            Set visibility <ArrowRight />
+            Set visibility
+            <ArrowRight className="ms-1" />
           </Button>
         )}
         {currentStep === 1 && (
           <Button color="primary" type="submit">
-            Add repositories <ArrowRight />
+            Add repositories
+            <ArrowRight className="ms-1" />
           </Button>
         )}
         {currentStep === 2 && (
           <Button color="primary" type="submit">
-            Review <ArrowRight />
+            Review
+            <ArrowRight className="ms-1" />
           </Button>
         )}
         {currentStep === 3 && (

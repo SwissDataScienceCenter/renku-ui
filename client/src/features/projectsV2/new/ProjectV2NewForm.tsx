@@ -219,7 +219,8 @@ function ProjectV2NewRepositoryStepForm({
             data-cy="project-add-repository"
             onClick={onAppend}
           >
-            <PlusLg className="bi" /> Add repository
+            <PlusLg className={cx("bi", "me-1")} />
+            Add repository
           </Button>
         </div>
         <ProjectFormSubmitGroup currentStep={currentStep} />

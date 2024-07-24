@@ -68,7 +68,8 @@ function ProjectV2NewHeader({
     <>
       <p>
         V2 Projects let you group together related resources and control who can
-        access them. <WipBadge />
+        access them.
+        <WipBadge className="ms-1" />
       </p>
       {currentStep === 0 && <ProjectV2NewMetadataStepHeader />}
       {currentStep === 1 && <ProjectV2NewAccessStepHeader />}
