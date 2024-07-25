@@ -50,7 +50,6 @@ import { recentUserActivityApi } from "../../features/recentUserActivity/RecentU
 import repositoriesApi from "../../features/repositories/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
-// import secretsApi from "../../features/secrets/secrets.api";
 import sessionsApi from "../../features/session/sessions.api";
 import sessionSidecarApi from "../../features/session/sidecar.api";
 import startSessionSlice from "../../features/session/startSession.slice";
@@ -107,7 +106,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [repositoriesApi.reducerPath]: repositoriesApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
-    // [secretsApi.reducerPath]: secretsApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
@@ -146,7 +144,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(recentUserActivityApi.middleware)
         .concat(repositoriesApi.middleware)
         .concat(searchV2Api.middleware)
-        // .concat(secretsApi.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionSidecarApi.middleware)

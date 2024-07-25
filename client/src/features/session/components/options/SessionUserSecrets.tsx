@@ -21,18 +21,17 @@ import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Card, CardBody, Collapse, Input, Label } from "reactstrap";
 
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
 import { User } from "../../../../model/renkuModels.types";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { Url } from "../../../../utils/helpers/url";
-import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-// import { useGetSecretsQuery } from "../../../secrets/secrets.api";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { setSecretsList, setSecretsPath } from "../../startSessionOptionsSlice";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import { SessionSecrets } from "../../startSessionOptions.types";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { Url } from "../../../../utils/helpers/url";
 import { useGetUserSecretsQuery } from "../../../user/dataServicesUser.api/dataServicesUser.api";
+import { SessionSecrets } from "../../startSessionOptions.types";
+import { setSecretsList, setSecretsPath } from "../../startSessionOptionsSlice";
 
 export default function SessionUserSecrets() {
   const secretsUrl = Url.get(Url.pages.secrets);
