@@ -1,75 +1,75 @@
-import { dataServicesUserEmptyApi as api } from "./dataServicesUser-empty.api";
-const injectedRtkApi = api.injectEndpoints({
-  endpoints: (build) => ({
-    getUser: build.query<GetUserApiResponse, GetUserApiArg>({
-      query: () => ({ url: `/user` }),
-    }),
-    getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
-      query: (queryArg) => ({
-        url: `/users`,
-        params: { exact_email: queryArg.exactEmail },
-      }),
-    }),
-    getUsersByUserId: build.query<
-      GetUsersByUserIdApiResponse,
-      GetUsersByUserIdApiArg
-    >({
-      query: (queryArg) => ({ url: `/users/${queryArg.userId}` }),
-    }),
-    getError: build.query<GetErrorApiResponse, GetErrorApiArg>({
-      query: () => ({ url: `/error` }),
-    }),
-    getVersion: build.query<GetVersionApiResponse, GetVersionApiArg>({
-      query: () => ({ url: `/version` }),
-    }),
-  }),
-  overrideExisting: false,
-});
-export { injectedRtkApi as dataServicesUserApi };
-export type GetUserApiResponse =
-  /** status 200 The currently logged in user */ UserWithId;
-export type GetUserApiArg = void;
-export type GetUsersApiResponse =
-  /** status 200 The list of users in the service (this is a subset of what is in Keycloak) */ UsersWithId;
-export type GetUsersApiArg = {
-  /** Return the user(s) with an exact match on the email provided */
-  exactEmail?: string;
-};
-export type GetUsersByUserIdApiResponse =
-  /** status 200 The requested user */ UserWithId;
-export type GetUsersByUserIdApiArg = {
-  userId: string;
-};
-export type GetErrorApiResponse = unknown;
-export type GetErrorApiArg = void;
-export type GetVersionApiResponse = /** status 200 The error */ Version;
-export type GetVersionApiArg = void;
-export type UserId = string;
-export type Username = string;
-export type UserEmail = string;
-export type UserFirstLastName = string;
-export type UserWithId = {
-  id: UserId;
-  username: Username;
-  email?: UserEmail;
-  first_name?: UserFirstLastName;
-  last_name?: UserFirstLastName;
-};
-export type ErrorResponse = {
-  error: {
-    code: number;
-    detail?: string;
-    message: string;
-  };
-};
-export type UsersWithId = UserWithId[];
-export type Version = {
-  version: string;
-};
+/*!
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { dataServicesUserGeneratedApi } from "./dataServicesUser.generated-api";
+
+export const dataServicesUserApi =
+  dataServicesUserGeneratedApi.enhanceEndpoints({
+    addTagTypes: ["User", "UserSecret", "UserSecretKey"],
+    endpoints: {
+      getUser: {
+        providesTags: (result) =>
+          result ? [{ type: "User", id: result.id }] : [],
+      },
+      getUsers: {
+        providesTags: (result) =>
+          result
+            ? [
+                ...result.map(({ id }) => ({ type: "User" as const, id })),
+                "User",
+              ]
+            : ["User"],
+      },
+      getUsersByUserId: {
+        providesTags: (result) =>
+          result ? [{ type: "User", id: result.id }] : [],
+      },
+      getUserSecretKey: {
+        providesTags: ["UserSecretKey"],
+      },
+      getUserSecrets: {
+        providesTags: ["UserSecret", { type: "UserSecret", id: "LIST" }],
+      },
+      getUserSecretsBySecretId: {
+        providesTags: (result) =>
+          result ? [{ type: "UserSecret", id: result.id }] : [],
+      },
+      postUserSecrets: {
+        invalidatesTags: ["UserSecret"],
+      },
+      patchUserSecretsBySecretId: {
+        invalidatesTags: (result) =>
+          result ? [{ type: "UserSecret", id: result.id }] : ["UserSecret"],
+      },
+      deleteUserSecretsBySecretId: {
+        invalidatesTags: ["UserSecret"],
+      },
+    },
+  });
 export const {
   useGetUserQuery,
   useGetUsersQuery,
   useGetUsersByUserIdQuery,
-  useGetErrorQuery,
-  useGetVersionQuery,
-} = injectedRtkApi;
+  useGetUserSecretKeyQuery,
+  useGetUserSecretsQuery,
+  useGetUserSecretsBySecretIdQuery,
+  usePostUserSecretsMutation,
+  usePatchUserSecretsBySecretIdMutation,
+  useDeleteUserSecretsBySecretIdMutation,
+} = dataServicesUserApi;
+export type * from "./dataServicesUser.generated-api";

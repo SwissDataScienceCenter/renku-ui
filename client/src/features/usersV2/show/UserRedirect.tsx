@@ -34,7 +34,7 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
-import { useGetUserQuery } from "../../user/dataServicesUser.api";
+import { useGetUserQuery } from "../../user/dataServicesUser.api/dataServicesUser.api";
 
 export default function UserRedirect() {
   const navigate = useNavigate();

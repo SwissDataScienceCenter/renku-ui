@@ -34,7 +34,7 @@ import {
   useGetNamespacesByNamespaceSlugQuery,
   useGetProjectsByProjectIdMembersQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
-import { useGetUsersByUserIdQuery } from "../../../user/dataServicesUser.api";
+import { useGetUsersByUserIdQuery } from "../../../user/dataServicesUser.api/dataServicesUser.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import MembershipGuard from "../../utils/MembershipGuard";
 import { toSortedMembers } from "../../utils/roleUtils";

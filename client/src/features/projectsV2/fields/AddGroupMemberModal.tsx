@@ -35,7 +35,7 @@ import {
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
-import type { UserWithId } from "../../user/dataServicesUser.api";
+import type { UserWithId } from "../../user/dataServicesUser.api/dataServicesUser.api";
 
 import type {
   GroupMemberResponseList,

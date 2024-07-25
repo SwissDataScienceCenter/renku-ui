@@ -21,9 +21,9 @@ import { useCallback, useEffect, useState } from "react";
 import { TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-import { useDeleteSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { SecretDetails } from "./secrets.types";
+import { useDeleteUserSecretsBySecretIdMutation } from "../user/dataServicesUser.api/dataServicesUser.api";
 
 interface SecretsDeleteProps {
   secret: SecretDetails;
@@ -36,9 +36,10 @@ export default function SecretDelete({ secret }: SecretsDeleteProps) {
   }, []);
 
   // Handle posting data
-  const [deleteSecretMutation, result] = useDeleteSecretMutation();
+  const [deleteSecretMutation, result] =
+    useDeleteUserSecretsBySecretIdMutation();
   const deleteSecret = useCallback(() => {
-    deleteSecretMutation(secret.id);
+    deleteSecretMutation({ secretId: secret.id });
   }, [deleteSecretMutation, secret.id]);
 
   // Automatically close the modal when the secret is modified

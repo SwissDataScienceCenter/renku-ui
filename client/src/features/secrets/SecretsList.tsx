@@ -20,12 +20,12 @@ import cx from "classnames";
 import { Col, Container, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
-import { useGetSecretsQuery } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import SecretsListItem from "./SecretsListItem";
+import { useGetUserSecretsQuery } from "../user/dataServicesUser.api/dataServicesUser.api";
 
 export default function SecretsList() {
-  const secrets = useGetSecretsQuery();
+  const secrets = useGetUserSecretsQuery({});
 
   if (secrets.isLoading) return <Loader />;
 
