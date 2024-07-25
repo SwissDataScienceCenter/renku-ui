@@ -20,14 +20,27 @@ import cx from "classnames";
 import { Card, CardBody, Col, Row } from "reactstrap";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { useCallback, useMemo } from "react";
-import type { SearchFilter, SearchFilters } from "../searchV2.types";
+import type {
+  SearchEntityType,
+  SearchEntityVisibility,
+  SearchFilter,
+  SearchFilters,
+} from "../searchV2.types";
 import { filtersAsArray } from "../searchV2.utils";
 import {
   FILTER_KEY_LABELS,
+  FILTER_VALUE_LABELS,
   ROLE_FILTER_ALLOWED_VALUES,
   TYPE_FILTER_ALLOWED_VALUES,
+  VISIBILITY_FILTER_ALLOWED_VALUES,
 } from "../searchV2.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import {
+  toggleRoleFilterValue,
+  toggleTypeFilterValue,
+  toggleVisibilityFilterValue,
+} from "../searchV2.slice";
+import type { Role } from "../../projectsV2/api/projectV2.api";
 
 // import cx from "classnames";
 // import React, { useCallback } from "react";
@@ -140,14 +153,20 @@ function SearchV2Filter({ filter }: SearchV2FilterProps) {
   const { label } = FILTER_KEY_LABELS[key];
 
   const options =
-    key === "role" ? ROLE_FILTER_ALLOWED_VALUES : TYPE_FILTER_ALLOWED_VALUES;
+    key === "role"
+      ? ROLE_FILTER_ALLOWED_VALUES
+      : key === "type"
+      ? TYPE_FILTER_ALLOWED_VALUES
+      : key === "visibility"
+      ? VISIBILITY_FILTER_ALLOWED_VALUES
+      : [];
 
   return (
     <Card className={cx("border", "rounded")} data-cy={`search-filter-${key}`}>
       <CardBody>
         <p className={cx("form-text", "mb-1", "mt-0")}>{label}</p>
         {options.map((option) => (
-          <SearchV2FilterOption key={option} filterKey={key} option={option} />
+          <SearchV2FilterOption key={option} filter={filter} option={option} />
         ))}
       </CardBody>
     </Card>
@@ -155,85 +174,51 @@ function SearchV2Filter({ filter }: SearchV2FilterProps) {
 }
 
 interface SearchV2FilterOptionProps {
-  filterKey: SearchFilter["key"];
+  filter: SearchFilter;
   option: SearchFilter["values"][number];
 }
 
-function SearchV2FilterOption({
-  filterKey,
-  option,
-}: SearchV2FilterOptionProps) {
+function SearchV2FilterOption({ filter, option }: SearchV2FilterOptionProps) {
+  const { key, values } = filter;
+
+  const isChecked = useMemo(
+    () => !!values.find((value) => value === option),
+    [option, values]
+  );
+
   const dispatch = useAppDispatch();
 
   const onToggle = useCallback(() => {
-    if (filterKey === "role") {
+    if (key === "role") {
+      dispatch(toggleRoleFilterValue(option as Role));
+      return;
     }
-  }, []);
+    if (key === "type") {
+      dispatch(toggleTypeFilterValue({ value: option as SearchEntityType }));
+      return;
+    }
+    if (key === "visibility") {
+      dispatch(toggleVisibilityFilterValue(option as SearchEntityVisibility));
+    }
+  }, [dispatch, key, option]);
 
-  return null;
+  const id = `search-filter-${key}-${option}`;
+
+  const { label } = FILTER_VALUE_LABELS[option];
+
+  return (
+    <div className={cx("form-rk-green", "d-flex", "align-items-center")}>
+      <input
+        checked={isChecked}
+        className="form-check-input"
+        data-cy={id}
+        id={id}
+        onChange={onToggle}
+        type="checkbox"
+      />
+      <label className={cx("form-check-label", "ms-2", "mt-1")} htmlFor={id}>
+        {label}
+      </label>
+    </div>
+  );
 }
-
-// interface SearchV2FilterContainerProps {
-//   children: React.ReactNode;
-//   name: string;
-//   title: string;
-// }
-// export function SearchV2FilterContainer({
-//   children,
-//   name,
-//   title,
-// }: SearchV2FilterContainerProps) {
-//   return (
-//     <Card className={cx("border", "rounded")}>
-//       <div data-cy={`search-filter-${name}`}>
-//         <CardBody>
-//           <p className={cx("form-text", "mb-1", "mt-0")}>{title}</p>
-//           {children}
-//         </CardBody>
-//       </div>
-//     </Card>
-//   );
-// }
-
-// interface SearchV2FilterProps {
-//   name: string;
-//   options: SearchV2FilterOptions[];
-//   title: string;
-//   toggleOption: (key: string) => void;
-// }
-// function SearchV2Filter({
-//   name,
-//   options,
-//   title,
-//   toggleOption,
-// }: SearchV2FilterProps) {
-//   return (
-//     <SearchV2FilterContainer name={name} title={title}>
-//       {options.map(({ checked, key, value }) => {
-//         const id = `search-filter-${name}-${key}`;
-
-//         return (
-//           <div
-//             className={cx("form-rk-green", "d-flex", "align-items-center")}
-//             key={id}
-//           >
-//             <input
-//               checked={checked}
-//               className="form-check-input"
-//               data-cy={id}
-//               id={id}
-//               onChange={() => toggleOption(key)}
-//               type="checkbox"
-//             />
-//             <label
-//               className={cx("form-check-label", "ms-2", "mt-1")}
-//               htmlFor={id}
-//             >
-//               {value}
-//             </label>
-//           </div>
-//         );
-//       })}
-//     </SearchV2FilterContainer>
-//   );
-// }

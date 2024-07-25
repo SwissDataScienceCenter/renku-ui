@@ -30,6 +30,9 @@ import {
   ROLE_FILTER_ALLOWED_VALUES,
   DEFAULT_ROLE_FILTER,
   DEFAULT_TYPE_FILTER,
+  DEFAULT_VISIBILITY_FILTER,
+  VISIBILITY_FILTER_KEY,
+  VISIBILITY_FILTER_ALLOWED_VALUES,
 } from "./searchV2.constants";
 import type {
   InterpretedTerm,
@@ -41,6 +44,7 @@ import type {
   SearchV2StateV2,
   SortBy,
   TypeFilter,
+  VisibilityFilter,
 } from "./searchV2.types";
 
 // const ROLE_FILTER: { [key in Role]: string } = {
@@ -197,9 +201,15 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     .reverse()
     .find(isTypeFilterInterpretation)?.interpretation;
 
+  // Retain the last filter option only
+  const visibilityFilterOption = [...terms]
+    .reverse()
+    .find(isVisibilityFilterInterpretation)?.interpretation;
+
   const filters: SearchFilters = {
     role: roleFilterOption ?? DEFAULT_ROLE_FILTER,
     type: typeFilterOption ?? DEFAULT_TYPE_FILTER,
+    visibility: visibilityFilterOption ?? DEFAULT_VISIBILITY_FILTER,
   };
 
   // Retain the last sorting option only
@@ -207,7 +217,12 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     [...terms].reverse().find(isSortByInterpretation)?.interpretation ??
     DEFAULT_SORT_BY;
 
-  const optionsAsTerms = [roleFilterOption, typeFilterOption, sortByOption]
+  const optionsAsTerms = [
+    roleFilterOption,
+    typeFilterOption,
+    visibilityFilterOption,
+    sortByOption,
+  ]
     .map(asQueryTerm)
     .filter((term) => term !== "");
 
@@ -276,6 +291,27 @@ export function parseTerm(term: string): InterpretedTerm {
     }
   }
 
+  if (termLower.startsWith(`${VISIBILITY_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
+    const filterValues = termLower.slice(
+      VISIBILITY_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
+    );
+    const values = filterValues.split(`${VALUES_SEPARATOR}`);
+    const [allowedValues, hasUnallowedValue] = filterAllowedValues(
+      values,
+      VISIBILITY_FILTER_ALLOWED_VALUES
+    );
+    const matchedValues = makeValuesSetAsArray(allowedValues);
+    if (!hasUnallowedValue) {
+      return {
+        term,
+        interpretation: {
+          key: "visibility",
+          values: matchedValues,
+        },
+      };
+    }
+  }
+
   if (termLower.startsWith(`${SORT_BY_KEY}${KEY_VALUE_SEPARATOR}`)) {
     const sortValue = termLower.slice(
       SORT_BY_KEY.length + KEY_VALUE_SEPARATOR.length
@@ -336,6 +372,12 @@ function isTypeFilterInterpretation(
   return term.interpretation?.key === "type";
 }
 
+function isVisibilityFilterInterpretation(
+  term: InterpretedTerm
+): term is InterpretedTerm & { interpretation: VisibilityFilter } {
+  return term.interpretation?.key === "visibility";
+}
+
 function isSortByInterpretation(
   term: InterpretedTerm
 ): term is InterpretedTerm & { interpretation: SortBy } {
@@ -363,6 +405,14 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
     return `${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${valuesStr}`;
   }
 
+  if (option.key === "visibility" && option.values.length == 0) {
+    return "";
+  }
+  if (option.key === "visibility") {
+    const valuesStr = option.values.join(VALUES_SEPARATOR);
+    return `${VISIBILITY_FILTER_KEY}${KEY_VALUE_SEPARATOR}${valuesStr}`;
+  }
+
   if (option.key === "sort" && option.value === DEFAULT_SORT_BY.value) {
     return "";
   }
@@ -378,7 +428,12 @@ export function buildSearchQuery2(
 ): string {
   const { filters, searchBarQuery, sortBy } = state;
 
-  const optionsAsTerms = [filters.role, filters.type, sortBy]
+  const optionsAsTerms = [
+    filters.role,
+    filters.type,
+    filters.visibility,
+    sortBy,
+  ]
     .map(asQueryTerm)
     .filter((term) => term !== "");
 
@@ -390,5 +445,5 @@ export function buildSearchQuery2(
 }
 
 export function filtersAsArray(filters: SearchFilters): SearchFilter[] {
-  return [filters.role, filters.type];
+  return [filters.role, filters.type, filters.visibility];
 }

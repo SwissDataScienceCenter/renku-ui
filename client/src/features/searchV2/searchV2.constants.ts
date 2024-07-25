@@ -20,10 +20,13 @@ import type { Role } from "../projectsV2/api/projectV2.api";
 import type {
   RoleFilter,
   SearchEntityType,
+  SearchEntityVisibility,
+  SearchFilter,
   SearchFilters,
   SortBy,
   SortByValue,
   TypeFilter,
+  VisibilityFilter,
 } from "./searchV2.types";
 
 export const TERM_SEPARATOR = " ";
@@ -57,11 +60,43 @@ export const TYPE_FILTER_ALLOWED_VALUES: SearchEntityType[] = [
   "user",
 ];
 
+// Visibility filter constants
+
+export const VISIBILITY_FILTER_KEY: VisibilityFilter["key"] = "visibility";
+
+export const DEFAULT_VISIBILITY_FILTER: VisibilityFilter = {
+  key: "visibility",
+  values: [],
+};
+
+export const VISIBILITY_FILTER_ALLOWED_VALUES: SearchEntityVisibility[] = [
+  "private",
+  "public",
+];
+
+// Labels for all filters
+
 export const FILTER_KEY_LABELS: {
   [key in keyof SearchFilters]: { label: string };
 } = {
   role: { label: "Role" },
   type: { label: "Type" },
+  visibility: { label: "Visibility" },
+};
+
+export const FILTER_VALUE_LABELS: {
+  [key in SearchFilter["values"][number]]: { label: string };
+} = {
+  owner: { label: "Owner" },
+  editor: { label: "Editor" },
+  viewer: { label: "Viewer" },
+
+  group: { label: "Group" },
+  project: { label: "Project" },
+  user: { label: "User" },
+
+  private: { label: "Private" },
+  public: { label: "Public" },
 };
 
 // Sort by constants

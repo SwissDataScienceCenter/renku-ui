@@ -17,7 +17,7 @@
  */
 
 import type { Role } from "../projectsV2/api/projectV2.api.ts";
-import type { SearchEntity } from "./api/searchV2Api.api.ts";
+import type { SearchEntity, Visibility } from "./api/searchV2Api.api.ts";
 
 export interface SearchV2StateV2 {
   filters: SearchFilters;
@@ -34,9 +34,10 @@ export type SearchOption = SearchFilter | SortBy;
 export interface SearchFilters {
   role: RoleFilter;
   type: TypeFilter;
+  visibility: VisibilityFilter;
 }
 
-export type SearchFilter = RoleFilter | TypeFilter;
+export type SearchFilter = RoleFilter | TypeFilter | VisibilityFilter;
 
 export interface RoleFilter {
   key: "role";
@@ -51,6 +52,14 @@ export interface TypeFilter {
 }
 
 export type SearchEntityType = Lowercase<SearchEntity["type"]>;
+
+export interface VisibilityFilter {
+  key: "visibility";
+  /** Note: `values` should be interpreted as a set */
+  values: SearchEntityVisibility[];
+}
+
+export type SearchEntityVisibility = Lowercase<Visibility>;
 
 export interface SortBy {
   key: "sort";

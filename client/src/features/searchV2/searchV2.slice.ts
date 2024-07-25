@@ -22,9 +22,11 @@ import {
   DEFAULT_ROLE_FILTER,
   DEFAULT_SORT_BY,
   DEFAULT_TYPE_FILTER,
+  DEFAULT_VISIBILITY_FILTER,
 } from "./searchV2.constants";
 import type {
   SearchEntityType,
+  SearchEntityVisibility,
   SearchV2StateV2,
   SetInitialQueryParams,
   SortBy,
@@ -37,6 +39,7 @@ const initialState: SearchV2StateV2 = {
   filters: {
     role: DEFAULT_ROLE_FILTER,
     type: DEFAULT_TYPE_FILTER,
+    visibility: DEFAULT_VISIBILITY_FILTER,
   },
   initialQuery: "",
   page: 1,
@@ -99,6 +102,19 @@ export const searchV2Slice = createSlice({
       state.filters.type.values = Array.from(asSet).sort();
       state.query = buildSearchQuery2(state);
     },
+    toggleVisibilityFilterValue: (
+      state,
+      action: PayloadAction<SearchEntityVisibility>
+    ) => {
+      const asSet = valuesAsSet(state.filters.visibility.values);
+      if (asSet.has(action.payload)) {
+        asSet.delete(action.payload);
+      } else {
+        asSet.add(action.payload);
+      }
+      state.filters.visibility.values = Array.from(asSet).sort();
+      state.query = buildSearchQuery2(state);
+    },
     reset: () => initialState,
   },
 });
@@ -109,5 +125,8 @@ export const {
   setPerPage,
   setSortBy,
   setSearchBarQuery,
+  toggleRoleFilterValue,
+  toggleTypeFilterValue,
+  toggleVisibilityFilterValue,
   reset,
 } = searchV2Slice.actions;
