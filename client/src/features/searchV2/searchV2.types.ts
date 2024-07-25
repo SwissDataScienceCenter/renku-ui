@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 
+import { DateTime } from "luxon";
 import type { Role } from "../projectsV2/api/projectV2.api.ts";
 import type { SearchEntity, Visibility } from "./api/searchV2Api.api.ts";
 
 export interface SearchV2StateV2 {
+  dateFilters: SearchDateFilters;
   filters: SearchFilters;
   initialQuery: string;
   page: number;
@@ -29,7 +31,27 @@ export interface SearchV2StateV2 {
   sortBy: SortBy;
 }
 
-export type SearchOption = SearchFilter | SortBy;
+export type SearchOption = SearchFilter | SearchDateFilter | SortBy;
+
+export interface SearchDateFilters {
+  created: CreationDateFilter;
+}
+
+export type SearchDateFilter = CreationDateFilter;
+
+export interface CreationDateFilter {
+  key: "created";
+  after?: AfterDateValue;
+  before?: BeforeDateValue;
+}
+
+export type AfterDateValue =
+  | "today-7d"
+  | "today-31d"
+  | "today-90d"
+  | { date: DateTime };
+
+export type BeforeDateValue = "today-90d" | { date: DateTime };
 
 export interface SearchFilters {
   role: RoleFilter;
@@ -76,6 +98,7 @@ export type SortByValue =
 // Types related to parsing a search query
 export interface ParseSearchQueryResult {
   canonicalQuery: string;
+  dateFilters: SearchDateFilters;
   filters: SearchFilters;
   searchBarQuery: string;
   sortBy: SortBy;
@@ -172,6 +195,7 @@ export interface InterpretedTerm {
 // }
 
 export interface SetInitialQueryParams {
+  dateFilters: SearchDateFilters;
   filters: SearchFilters;
   query: string;
   searchBarQuery: string;

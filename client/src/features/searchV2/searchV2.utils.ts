@@ -16,6 +16,7 @@
  * limitations under the License
  */
 
+import { DateTime } from "luxon";
 import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 import {
   TERM_SEPARATOR,
@@ -33,11 +34,20 @@ import {
   DEFAULT_VISIBILITY_FILTER,
   VISIBILITY_FILTER_KEY,
   VISIBILITY_FILTER_ALLOWED_VALUES,
+  CREATION_DATE_FILTER_KEY,
+  KEY_GREATER_THAN_VALUE,
+  DATE_FILTER_AFTER_KNOWN_VALUES,
+  KEY_LESS_THAN_VALUE,
+  DATE_FILTER_BEFORE_KNOWN_VALUES,
+  DATE_AFTER_LEEWAY,
+  DATE_BEFORE_LEEWAY,
 } from "./searchV2.constants";
 import type {
+  CreationDateFilter,
   InterpretedTerm,
   ParseSearchQueryResult,
   RoleFilter,
+  SearchDateFilters,
   SearchFilter,
   SearchFilters,
   SearchOption,
@@ -53,20 +63,22 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     .filter((term) => term != "")
     .map(parseTerm);
 
-  // Retain the last filter option only
-  const roleFilterOption = [...terms]
-    .reverse()
-    .find(isRoleFilterInterpretation)?.interpretation;
+  const reversedTerms = [...terms].reverse();
 
   // Retain the last filter option only
-  const typeFilterOption = [...terms]
-    .reverse()
-    .find(isTypeFilterInterpretation)?.interpretation;
+  const roleFilterOption = reversedTerms.find(
+    isRoleFilterInterpretation
+  )?.interpretation;
 
   // Retain the last filter option only
-  const visibilityFilterOption = [...terms]
-    .reverse()
-    .find(isVisibilityFilterInterpretation)?.interpretation;
+  const typeFilterOption = reversedTerms.find(
+    isTypeFilterInterpretation
+  )?.interpretation;
+
+  // Retain the last filter option only
+  const visibilityFilterOption = reversedTerms.find(
+    isVisibilityFilterInterpretation
+  )?.interpretation;
 
   const filters: SearchFilters = {
     role: roleFilterOption ?? DEFAULT_ROLE_FILTER,
@@ -74,15 +86,38 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     visibility: visibilityFilterOption ?? DEFAULT_VISIBILITY_FILTER,
   };
 
+  const createdAfterFilterOption = reversedTerms
+    .filter(isCreationDateFilterInterpretation)
+    .map(({ interpretation }) => interpretation)
+    .find(({ after }) => after != null)?.after;
+  const createdBeforeFilterOption = reversedTerms
+    .filter(isCreationDateFilterInterpretation)
+    .map(({ interpretation }) => interpretation)
+    .find(({ before }) => before != null)?.before;
+  const creationDateFilterOption: CreationDateFilter = {
+    key: "created",
+    ...(createdAfterFilterOption != null
+      ? { after: createdAfterFilterOption }
+      : {}),
+    ...(createdBeforeFilterOption != null
+      ? { before: createdBeforeFilterOption }
+      : {}),
+  };
+
+  const dateFilters: SearchDateFilters = {
+    created: creationDateFilterOption,
+  };
+
   // Retain the last sorting option only
-  const sortByOption =
-    [...terms].reverse().find(isSortByInterpretation)?.interpretation ??
-    DEFAULT_SORT_BY;
+  const sortByOption = reversedTerms.find(
+    isSortByInterpretation
+  )?.interpretation;
 
   const optionsAsTerms = [
     roleFilterOption,
     typeFilterOption,
     visibilityFilterOption,
+    creationDateFilterOption,
     sortByOption,
   ]
     .map(asQueryTerm)
@@ -98,9 +133,10 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
 
   return {
     canonicalQuery,
+    dateFilters,
     filters,
     searchBarQuery,
-    sortBy: sortByOption,
+    sortBy: sortByOption ?? DEFAULT_SORT_BY,
   };
 }
 
@@ -174,13 +210,76 @@ export function parseTerm(term: string): InterpretedTerm {
     }
   }
 
+  if (
+    termLower.startsWith(`${CREATION_DATE_FILTER_KEY}${KEY_GREATER_THAN_VALUE}`)
+  ) {
+    const filterValue = termLower.slice(
+      CREATION_DATE_FILTER_KEY.length + KEY_GREATER_THAN_VALUE.length
+    );
+    const matchedKnownValue = DATE_FILTER_AFTER_KNOWN_VALUES.find(
+      (value) => value === filterValue
+    );
+    if (matchedKnownValue) {
+      return {
+        term,
+        interpretation: {
+          key: "created",
+          after: matchedKnownValue,
+        },
+      };
+    }
+    if (filterValue.endsWith(DATE_AFTER_LEEWAY)) {
+      const filterValue_ = filterValue.slice(0, -DATE_AFTER_LEEWAY.length);
+      const parsed = DateTime.fromISO(filterValue_, { zone: "utc" });
+      if (parsed.isValid && filterValue_ === parsed.toISODate()) {
+        return {
+          term,
+          interpretation: {
+            key: "created",
+            after: { date: parsed },
+          },
+        };
+      }
+    }
+  }
+  if (
+    termLower.startsWith(`${CREATION_DATE_FILTER_KEY}${KEY_LESS_THAN_VALUE}`)
+  ) {
+    const filterValue = termLower.slice(
+      CREATION_DATE_FILTER_KEY.length + KEY_LESS_THAN_VALUE.length
+    );
+    const matchedKnownValue = DATE_FILTER_BEFORE_KNOWN_VALUES.find(
+      (value) => value === filterValue
+    );
+    if (matchedKnownValue) {
+      return {
+        term,
+        interpretation: {
+          key: "created",
+          before: matchedKnownValue,
+        },
+      };
+    }
+    if (filterValue.endsWith(DATE_BEFORE_LEEWAY)) {
+      const filterValue_ = filterValue.slice(0, -DATE_BEFORE_LEEWAY.length);
+      const parsed = DateTime.fromISO(filterValue_, { zone: "utc" });
+      if (parsed.isValid && filterValue_ === parsed.toISODate()) {
+        return {
+          term,
+          interpretation: {
+            key: "created",
+            before: { date: parsed },
+          },
+        };
+      }
+    }
+  }
+
   if (termLower.startsWith(`${SORT_BY_KEY}${KEY_VALUE_SEPARATOR}`)) {
     const sortValue = termLower.slice(
       SORT_BY_KEY.length + KEY_VALUE_SEPARATOR.length
     );
-    const matched = SORT_BY_ALLOWED_VALUES.find(
-      (option) => option === sortValue
-    );
+    const matched = SORT_BY_ALLOWED_VALUES.find((value) => value === sortValue);
     if (matched) {
       return {
         term,
@@ -240,6 +339,12 @@ function isVisibilityFilterInterpretation(
   return term.interpretation?.key === "visibility";
 }
 
+function isCreationDateFilterInterpretation(
+  term: InterpretedTerm
+): term is InterpretedTerm & { interpretation: CreationDateFilter } {
+  return term.interpretation?.key === "created";
+}
+
 function isSortByInterpretation(
   term: InterpretedTerm
 ): term is InterpretedTerm & { interpretation: SortBy } {
@@ -275,6 +380,37 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
     return `${VISIBILITY_FILTER_KEY}${KEY_VALUE_SEPARATOR}${valuesStr}`;
   }
 
+  if (
+    option.key === "created" &&
+    option.after == null &&
+    option.before == null
+  ) {
+    return "";
+  }
+  if (option.key === "created") {
+    const afterValueStr =
+      typeof option.after === "string"
+        ? option.after
+        : option.after?.date != null
+        ? `${option.after.date.toISODate()}${DATE_AFTER_LEEWAY}`
+        : "";
+    const afterStr = afterValueStr
+      ? `${CREATION_DATE_FILTER_KEY}${KEY_GREATER_THAN_VALUE}${afterValueStr}`
+      : "";
+    const beforeValueStr =
+      typeof option.before === "string"
+        ? option.before
+        : option.before?.date != null
+        ? `${option.before.date.toISODate()}${DATE_BEFORE_LEEWAY}`
+        : "";
+    const beforeStr = beforeValueStr
+      ? `${CREATION_DATE_FILTER_KEY}${KEY_LESS_THAN_VALUE}${beforeValueStr}`
+      : "";
+    return [afterStr, beforeStr]
+      .filter((term) => term != "")
+      .join(TERM_SEPARATOR);
+  }
+
   if (option.key === "sort" && option.value === DEFAULT_SORT_BY.value) {
     return "";
   }
@@ -286,14 +422,18 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
 }
 
 export function buildSearchQuery2(
-  state: Pick<SearchV2StateV2, "searchBarQuery" | "sortBy" | "filters">
+  state: Pick<
+    SearchV2StateV2,
+    "searchBarQuery" | "sortBy" | "filters" | "dateFilters"
+  >
 ): string {
-  const { filters, searchBarQuery, sortBy } = state;
+  const { dateFilters, filters, searchBarQuery, sortBy } = state;
 
   const optionsAsTerms = [
     filters.role,
     filters.type,
     filters.visibility,
+    dateFilters.created,
     sortBy,
   ]
     .map(asQueryTerm)

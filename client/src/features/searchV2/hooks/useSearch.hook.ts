@@ -36,7 +36,7 @@ export default function useSearch() {
   useEffect(() => {
     const query = searchParams.get("q") ?? "";
 
-    const { canonicalQuery, filters, searchBarQuery, sortBy } =
+    const { canonicalQuery, dateFilters, filters, searchBarQuery, sortBy } =
       parseSearchQuery(query);
 
     if (query !== canonicalQuery) {
@@ -52,6 +52,7 @@ export default function useSearch() {
 
     dispatch(
       setInitialQuery({
+        dateFilters,
         filters,
         query,
         searchBarQuery,

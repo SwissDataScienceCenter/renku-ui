@@ -19,6 +19,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
+  DEFAULT_CREATION_DATE_FILTER,
   DEFAULT_ROLE_FILTER,
   DEFAULT_SORT_BY,
   DEFAULT_TYPE_FILTER,
@@ -36,6 +37,9 @@ import type { Role } from "../projectsV2/api/projectV2.api";
 import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 
 const initialState: SearchV2StateV2 = {
+  dateFilters: {
+    created: DEFAULT_CREATION_DATE_FILTER,
+  },
   filters: {
     role: DEFAULT_ROLE_FILTER,
     type: DEFAULT_TYPE_FILTER,
@@ -54,11 +58,13 @@ export const searchV2Slice = createSlice({
   initialState,
   reducers: {
     setInitialQuery: (state, action: PayloadAction<SetInitialQueryParams>) => {
-      const { filters, query, searchBarQuery, sortBy } = action.payload;
+      const { dateFilters, filters, query, searchBarQuery, sortBy } =
+        action.payload;
       state.initialQuery = query;
       state.query = query;
       state.searchBarQuery = searchBarQuery;
       state.filters = filters;
+      state.dateFilters = dateFilters;
       state.sortBy = sortBy;
     },
     setPage: (state, action: PayloadAction<number>) => {

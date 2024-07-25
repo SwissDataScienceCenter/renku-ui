@@ -18,6 +18,9 @@
 
 import type { Role } from "../projectsV2/api/projectV2.api";
 import type {
+  AfterDateValue,
+  BeforeDateValue,
+  CreationDateFilter,
   RoleFilter,
   SearchEntityType,
   SearchEntityVisibility,
@@ -31,7 +34,8 @@ import type {
 
 export const TERM_SEPARATOR = " ";
 export const KEY_VALUE_SEPARATOR = ":";
-// TODO: less than, greater than
+export const KEY_LESS_THAN_VALUE = "<";
+export const KEY_GREATER_THAN_VALUE = ">";
 export const VALUES_SEPARATOR = ",";
 
 // Role filter constants
@@ -73,6 +77,25 @@ export const VISIBILITY_FILTER_ALLOWED_VALUES: SearchEntityVisibility[] = [
   "private",
   "public",
 ];
+
+// Creation date filter constants
+
+export const CREATION_DATE_FILTER_KEY: CreationDateFilter["key"] = "created";
+
+export const DATE_AFTER_LEEWAY = "-1d";
+export const DATE_BEFORE_LEEWAY = "+1d";
+
+export const DEFAULT_CREATION_DATE_FILTER: CreationDateFilter = {
+  key: "created",
+};
+
+export const DATE_FILTER_AFTER_KNOWN_VALUES: AfterDateValue[] = [
+  "today-7d",
+  "today-31d",
+  "today-90d",
+];
+
+export const DATE_FILTER_BEFORE_KNOWN_VALUES: BeforeDateValue[] = ["today-90d"];
 
 // Labels for all filters
 
