@@ -152,7 +152,7 @@ function AddSessionCustomImageModal({
             ) : (
               <PlusLg className={cx("bi", "me-1")} />
             )}
-            Add Session launcher
+            Add session launcher
           </Button>
         </ModalFooter>
       </Form>
@@ -270,7 +270,7 @@ function AddSessionExistingEnvModal({
           ) : (
             <>
               <PlusLg className={cx("bi", "me-1")} />
-              Add Session launcher
+              Add session launcher
             </>
           )}
         </Button>
