@@ -344,7 +344,8 @@ function EditDatasetButton({
   locked,
   maintainer,
 }) {
-  if (!insideProject || !maintainer) return null;
+  if (!insideProject) return null;
+  if (!maintainer) return null;
   if (locked) {
     return (
       <span className="float-right mb-1" id="editDatasetTooltip">
