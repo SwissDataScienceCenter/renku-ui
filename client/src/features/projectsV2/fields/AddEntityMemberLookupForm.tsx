@@ -17,15 +17,15 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect, useState } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-
 import { Button, Form, Input, Label, ModalBody, ModalFooter } from "reactstrap";
 
-import { useGetUsersQuery } from "../../user/dataServicesUser.api";
-import type { UserWithId } from "../../user/dataServicesUser.api";
+import {
+  useGetUsersQuery,
+  type UserWithId,
+} from "../../user/dataServicesUser.api/dataServicesUser.api";
 
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 

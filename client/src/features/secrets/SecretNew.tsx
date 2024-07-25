@@ -33,11 +33,14 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import secretsApi, { useAddSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { AddSecretForm } from "./secrets.types";
 import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
+import {
+  dataServicesUserApi,
+  usePostUserSecretsMutation,
+} from "../user/dataServicesUser.api/dataServicesUser.api";
 
 import styles from "./secrets.module.scss";
 
@@ -69,11 +72,12 @@ export default function SecretsNew() {
   });
 
   // Handle fetching/posting data
-  const [getSecrets, secrets] = secretsApi.useLazyGetSecretsQuery();
-  const [addSecretMutation, result] = useAddSecretMutation();
+  const [getSecrets, secrets] =
+    dataServicesUserApi.useLazyGetUserSecretsQuery();
+  const [addSecretMutation, result] = usePostUserSecretsMutation();
   const onSubmit = useCallback(
     (newSecret: AddSecretForm) => {
-      addSecretMutation(newSecret);
+      addSecretMutation({ secretPost: { ...newSecret, kind: "general" } });
     },
     [addSecretMutation]
   );
@@ -81,7 +85,7 @@ export default function SecretsNew() {
   // Force fetching the secrets when trying to add a new one to try to prevent duplicates
   useEffect(() => {
     if (showModal) {
-      getSecrets();
+      getSecrets({});
     }
   }, [getSecrets, showModal]);
 

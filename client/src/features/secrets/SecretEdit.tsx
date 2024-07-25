@@ -38,8 +38,8 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { useEditSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { usePatchUserSecretsBySecretIdMutation } from "../user/dataServicesUser.api/dataServicesUser.api";
 import { EditSecretForm, SecretDetails } from "./secrets.types";
 import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
 
@@ -75,10 +75,10 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
   });
 
   // Handle posting data
-  const [editSecretMutation, result] = useEditSecretMutation();
+  const [editSecretMutation, result] = usePatchUserSecretsBySecretIdMutation();
   const onSubmit = useCallback(
     (newSecret: EditSecretForm) => {
-      editSecretMutation({ id: secret.id, ...newSecret });
+      editSecretMutation({ secretId: secret.id, secretPatch: newSecret });
     },
     [editSecretMutation, secret.id]
   );

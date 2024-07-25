@@ -21,10 +21,10 @@ import type { ConfigFile } from "@rtk-query/codegen-openapi";
 import path from "path";
 
 const config: ConfigFile = {
-  apiFile: "./dataServicesUser-empty.api.ts",
+  apiFile: "./dataServicesUser.empty-api.ts",
   apiImport: "dataServicesUserEmptyApi",
-  outputFile: "./dataServicesUser.api.ts",
-  exportName: "dataServicesUserApi",
+  outputFile: "./dataServicesUser.generated-api.ts",
+  exportName: "dataServicesUserGeneratedApi",
   hooks: true,
   schemaFile: path.join(__dirname, "dataServicesUser.openapi.json"),
 };

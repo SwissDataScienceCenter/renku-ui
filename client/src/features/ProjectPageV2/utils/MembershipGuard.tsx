@@ -17,14 +17,15 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useGetUserQuery } from "../../../features/user/dataServicesUser.api";
+
+import { useGetUserQuery } from "../../../features/user/dataServicesUser.api/dataServicesUser.api";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import type {
   ProjectMemberListResponse,
   ProjectMemberResponse,
-} from "../../projectsV2/api/projectV2.api.ts";
-import AccessGuard from "./AccessGuard.tsx";
-import { toNumericRole } from "./roleUtils.ts";
+} from "../../projectsV2/api/projectV2.api";
+import AccessGuard from "./AccessGuard";
+import { toNumericRole } from "./roleUtils";
 
 interface SelfOverride {
   disabled: React.ReactNode | undefined;

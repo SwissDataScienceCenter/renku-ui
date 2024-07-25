@@ -28,8 +28,8 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toSortedMembers } from "../../ProjectPageV2/utils/roleUtils";
 import type { ProjectMemberResponse } from "../../projectsV2/api/projectV2.api";
 import { useGetGroupsByGroupSlugMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import { useGetUsersByUserIdQuery } from "../../user/dataServicesUser.api";
 import UserAvatar from "../../usersV2/show/UserAvatar";
+import { useGetUsersByUserIdQuery } from "../../user/dataServicesUser.api/dataServicesUser.api";
 
 interface GroupV2MemberListDisplayProps {
   group: string;

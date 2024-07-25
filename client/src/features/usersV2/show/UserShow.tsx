@@ -35,7 +35,7 @@ import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import {
   useGetUserQuery,
   useGetUsersByUserIdQuery,
-} from "../../user/dataServicesUser.api";
+} from "../../user/dataServicesUser.api/dataServicesUser.api";
 import UserAvatar from "./UserAvatar";
 
 export default function UserShow() {

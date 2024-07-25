@@ -35,6 +35,27 @@
         "tags": ["users"]
       }
     },
+    "/user/secret_key": {
+      "get": {
+        "summary": "Get the current users secret key",
+        "responses": {
+          "200": {
+            "description": "The secret key of the currently logged in user.\nThis endpoint is not publicly accessible.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSecretKey"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["secrets"]
+      }
+    },
     "/users": {
       "get": {
         "summary": "List all users",
@@ -106,6 +127,180 @@
           }
         },
         "tags": ["users"]
+      }
+    },
+    "/user/secrets": {
+      "get": {
+        "summary": "List all secrets for a user (keys only)",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Filter results based on secret kind",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/SecretKind",
+              "default": "general"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user's secrets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SecretsList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The user does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["secrets"]
+      },
+      "post": {
+        "summary": "Create a new secret for the user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecretPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Secret successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SecretWithId"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["secrets"]
+      }
+    },
+    "/user/secrets/{secret_id}": {
+      "get": {
+        "summary": "Get a secret key by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "secret_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The secret",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SecretWithId"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The user does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["secrets"]
+      },
+      "patch": {
+        "summary": "Change a secret",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "secret_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecretPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Secret successfully changed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SecretWithId"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["secrets"]
+      },
+      "delete": {
+        "summary": "Delete a secret",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "secret_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The secret was deleted or didn't exist"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["secrets"]
       }
     },
     "/error": {
@@ -246,9 +441,12 @@
           },
           "modification_date": {
             "$ref": "#/components/schemas/ModificationDate"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SecretKind"
           }
         },
-        "required": ["id", "name", "modification_date"],
+        "required": ["id", "name", "modification_date", "kind"],
         "example": {
           "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
           "name": "S3-Credentials",
@@ -265,9 +463,12 @@
           },
           "value": {
             "$ref": "#/components/schemas/SecretValue"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SecretKind"
           }
         },
-        "required": ["name", "value"]
+        "required": ["name", "value", "kind"]
       },
       "SecretPatch": {
         "type": "object",
@@ -306,6 +507,11 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 5000
+      },
+      "SecretKind": {
+        "description": "Kind of secret",
+        "type": "string",
+        "enum": ["general", "storage"]
       },
       "ErrorResponse": {
         "type": "object",
