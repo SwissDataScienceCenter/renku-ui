@@ -66,17 +66,16 @@ function DataSourceDeleteModal({
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <ModalHeader className="text-danger" toggle={toggleModal}>
-        Remove Data Source
+        Remove data source
       </ModalHeader>
-      <ModalBody className="py-0">
+      <ModalBody>
         <Row>
           <Col>
             <p>
               Are you sure about removing this data source from the project?
             </p>
-            <p>
-              Data source:{" "}
-              <code className="fw-bold fs-6">{storage.storage.name}</code>
+            <p className="mb-0">
+              Data source: <code>{storage.storage.name}</code>
             </p>
           </Col>
         </Row>

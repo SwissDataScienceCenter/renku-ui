@@ -244,7 +244,7 @@ function CodeRepositoryDeleteModal({
       <ModalHeader className="text-danger" toggle={toggleModal}>
         Remove Code Repository
       </ModalHeader>
-      <ModalBody className="py-0">
+      <ModalBody>
         <Row>
           <Col>
             {result.error && <RtkOrNotebooksError error={result.error} />}
@@ -258,30 +258,28 @@ function CodeRepositoryDeleteModal({
         </Row>
       </ModalBody>
       <ModalFooter>
-        <div className={cx("d-flex", "justify-content-end", "gap-2")}>
-          <Button color="outline-danger" onClick={toggleModal}>
-            <XLg className={cx("bi", "me-1")} />
-            Cancel
-          </Button>
-          <Button
-            color="danger"
-            data-cy="delete-code-repository-modal-button"
-            type="submit"
-            onClick={onDeleteCodeRepository}
-          >
-            {result.isLoading ? (
-              <>
-                <Loader className="me-1" inline size={16} />
-                Deleting code repository
-              </>
-            ) : (
-              <>
-                <Trash className={cx("bi", "me-1")} />
-                Remove repository
-              </>
-            )}
-          </Button>
-        </div>
+        <Button color="outline-danger" onClick={toggleModal}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="danger"
+          data-cy="delete-code-repository-modal-button"
+          type="submit"
+          onClick={onDeleteCodeRepository}
+        >
+          {result.isLoading ? (
+            <>
+              <Loader className="me-1" inline size={16} />
+              Deleting code repository
+            </>
+          ) : (
+            <>
+              <Trash className={cx("bi", "me-1")} />
+              Remove repository
+            </>
+          )}
+        </Button>
       </ModalFooter>
     </Modal>
   );
