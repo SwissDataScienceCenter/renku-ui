@@ -16,6 +16,7 @@
  * limitations under the License
  */
 
+import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 import {
   TERM_SEPARATOR,
   DEFAULT_SORT_BY,
@@ -25,10 +26,16 @@ import {
   TYPE_FILTER_ALLOWED_VALUES,
   SORT_BY_KEY,
   SORT_BY_ALLOWED_VALUES,
+  ROLE_FILTER_KEY,
+  ROLE_FILTER_ALLOWED_VALUES,
+  DEFAULT_ROLE_FILTER,
+  DEFAULT_TYPE_FILTER,
 } from "./searchV2.constants";
 import type {
   InterpretedTerm,
   ParseSearchQueryResult,
+  RoleFilter,
+  SearchFilter,
   SearchFilters,
   SearchOption,
   SearchV2StateV2,
@@ -181,12 +188,18 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     .map(parseTerm);
 
   // Retain the last filter option only
+  const roleFilterOption = [...terms]
+    .reverse()
+    .find(isRoleFilterInterpretation)?.interpretation;
+
+  // Retain the last filter option only
   const typeFilterOption = [...terms]
     .reverse()
     .find(isTypeFilterInterpretation)?.interpretation;
 
   const filters: SearchFilters = {
-    type: typeFilterOption ?? { key: "type", values: [] },
+    role: roleFilterOption ?? DEFAULT_ROLE_FILTER,
+    type: typeFilterOption ?? DEFAULT_TYPE_FILTER,
   };
 
   // Retain the last sorting option only
@@ -194,7 +207,7 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     [...terms].reverse().find(isSortByInterpretation)?.interpretation ??
     DEFAULT_SORT_BY;
 
-  const optionsAsTerms = [typeFilterOption, sortByOption]
+  const optionsAsTerms = [roleFilterOption, typeFilterOption, sortByOption]
     .map(asQueryTerm)
     .filter((term) => term !== "");
 
@@ -217,6 +230,30 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
 /** Attempt to parse `term` as a search option */
 export function parseTerm(term: string): InterpretedTerm {
   const termLower = term.toLowerCase();
+
+  if (termLower.startsWith(`${ROLE_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
+    const filterValues = termLower.slice(
+      ROLE_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
+    );
+    const values = filterValues.split(`${VALUES_SEPARATOR}`);
+    const [allowedValues, hasUnallowedValue] = filterAllowedValues(
+      values,
+      ROLE_FILTER_ALLOWED_VALUES
+    );
+    const matchedValues = makeValuesSetAsArray(
+      allowedValues,
+      (a, b) => toNumericRole(b) - toNumericRole(a)
+    );
+    if (!hasUnallowedValue) {
+      return {
+        term,
+        interpretation: {
+          key: "role",
+          values: matchedValues,
+        },
+      };
+    }
+  }
 
   if (termLower.startsWith(`${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
     const filterValues = termLower.slice(
@@ -267,8 +304,11 @@ export function valuesAsSet<T>(values: T[]): Set<T> {
   return values.reduce((set, value) => set.add(value), new Set<T>());
 }
 
-export function makeValuesSetAsArray<T extends string>(values: T[]): T[] {
-  return Array.from(valuesAsSet(values)).sort();
+export function makeValuesSetAsArray<T extends string>(
+  values: T[],
+  compareFn?: ((a: T, b: T) => number) | undefined
+): T[] {
+  return Array.from(valuesAsSet(values)).sort(compareFn);
 }
 
 export function filterAllowedValues<T extends string>(
@@ -282,6 +322,12 @@ export function filterAllowedValues<T extends string>(
     values.filter(isAllowed),
     !!values.find((value) => !isAllowed(value)),
   ];
+}
+
+function isRoleFilterInterpretation(
+  term: InterpretedTerm
+): term is InterpretedTerm & { interpretation: RoleFilter } {
+  return term.interpretation?.key === "role";
 }
 
 function isTypeFilterInterpretation(
@@ -299,6 +345,14 @@ function isSortByInterpretation(
 function asQueryTerm(option: SearchOption | null | undefined): string {
   if (option == null) {
     return "";
+  }
+
+  if (option.key === "role" && option.values.length == 0) {
+    return "";
+  }
+  if (option.key === "role") {
+    const valuesStr = option.values.join(VALUES_SEPARATOR);
+    return `${ROLE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${valuesStr}`;
   }
 
   if (option.key === "type" && option.values.length == 0) {
@@ -324,7 +378,7 @@ export function buildSearchQuery2(
 ): string {
   const { filters, searchBarQuery, sortBy } = state;
 
-  const optionsAsTerms = [filters.type, sortBy]
+  const optionsAsTerms = [filters.role, filters.type, sortBy]
     .map(asQueryTerm)
     .filter((term) => term !== "");
 
@@ -333,4 +387,8 @@ export function buildSearchQuery2(
   const { canonicalQuery } = parseSearchQuery(draftQuery);
 
   return canonicalQuery;
+}
+
+export function filtersAsArray(filters: SearchFilters): SearchFilter[] {
+  return [filters.role, filters.type];
 }

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import type { Role } from "../projectsV2/api/projectV2.api.ts";
 import type { SearchEntity } from "./api/searchV2Api.api.ts";
 
 export interface SearchV2StateV2 {
@@ -31,10 +32,17 @@ export interface SearchV2StateV2 {
 export type SearchOption = SearchFilter | SortBy;
 
 export interface SearchFilters {
+  role: RoleFilter;
   type: TypeFilter;
 }
 
-export type SearchFilter = TypeFilter;
+export type SearchFilter = RoleFilter | TypeFilter;
+
+export interface RoleFilter {
+  key: "role";
+  /** Note: `values` should be interpreted as a set */
+  values: Role[];
+}
 
 export interface TypeFilter {
   key: "type";

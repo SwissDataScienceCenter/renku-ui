@@ -18,7 +18,11 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { DEFAULT_SORT_BY, DEFAULT_TYPE_FILTER } from "./searchV2.constants";
+import {
+  DEFAULT_ROLE_FILTER,
+  DEFAULT_SORT_BY,
+  DEFAULT_TYPE_FILTER,
+} from "./searchV2.constants";
 import type {
   SearchEntityType,
   SearchV2StateV2,
@@ -26,34 +30,12 @@ import type {
   SortBy,
 } from "./searchV2.types";
 import { buildSearchQuery2, valuesAsSet } from "./searchV2.utils";
-
-// import type {
-//   DateFilter,
-//   FilterOptions,
-//   SearchEntityType,
-//   SearchV2State,
-//   SearchV2StateV2,
-//   SearchV2Totals,
-//   SetInitialQueryParams,
-//   SortingItem,
-//   SortingOption,
-//   ToggleFilterPayload,
-//   TypeFilterOption,
-// } from "./searchV2.types";
-// import {
-//   AVAILABLE_SORTING,
-//   buildSearchQuery2,
-//   makeValuesSetAsArray,
-//   valuesAsSet,
-// } from "./searchV2.utils";
-// import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
-// import {
-//   DEFAULT_SORTING_OPTION,
-//   DEFAULT_TYPE_FILTER_OPTION,
-// } from "./searchV2.constants";
+import type { Role } from "../projectsV2/api/projectV2.api";
+import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 
 const initialState: SearchV2StateV2 = {
   filters: {
+    role: DEFAULT_ROLE_FILTER,
     type: DEFAULT_TYPE_FILTER,
   },
   initialQuery: "",
@@ -88,6 +70,18 @@ export const searchV2Slice = createSlice({
     },
     setSearchBarQuery: (state, action: PayloadAction<string>) => {
       state.searchBarQuery = action.payload;
+      state.query = buildSearchQuery2(state);
+    },
+    toggleRoleFilterValue: (state, action: PayloadAction<Role>) => {
+      const asSet = valuesAsSet(state.filters.role.values);
+      if (asSet.has(action.payload)) {
+        asSet.delete(action.payload);
+      } else {
+        asSet.add(action.payload);
+      }
+      state.filters.role.values = Array.from(asSet).sort(
+        (a, b) => toNumericRole(b) - toNumericRole(a)
+      );
       state.query = buildSearchQuery2(state);
     },
     toggleTypeFilterValue: (

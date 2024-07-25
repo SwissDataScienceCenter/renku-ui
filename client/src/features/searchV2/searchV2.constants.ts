@@ -16,8 +16,11 @@
  * limitations under the License
  */
 
+import type { Role } from "../projectsV2/api/projectV2.api";
 import type {
+  RoleFilter,
   SearchEntityType,
+  SearchFilters,
   SortBy,
   SortByValue,
   TypeFilter,
@@ -28,9 +31,20 @@ export const KEY_VALUE_SEPARATOR = ":";
 // TODO: less than, greater than
 export const VALUES_SEPARATOR = ",";
 
+// Role filter constants
+
+export const ROLE_FILTER_KEY: RoleFilter["key"] = "role";
+
+export const DEFAULT_ROLE_FILTER: RoleFilter = {
+  key: "role",
+  values: [],
+};
+
+export const ROLE_FILTER_ALLOWED_VALUES: Role[] = ["owner", "editor", "viewer"];
+
 // Type filter constants
 
-export const TYPE_FILTER_KEY = "type";
+export const TYPE_FILTER_KEY: TypeFilter["key"] = "type";
 
 export const DEFAULT_TYPE_FILTER: TypeFilter = {
   key: "type",
@@ -43,9 +57,16 @@ export const TYPE_FILTER_ALLOWED_VALUES: SearchEntityType[] = [
   "user",
 ];
 
+export const FILTER_KEY_LABELS: {
+  [key in keyof SearchFilters]: { label: string };
+} = {
+  role: { label: "Role" },
+  type: { label: "Type" },
+};
+
 // Sort by constants
 
-export const SORT_BY_KEY = "sort";
+export const SORT_BY_KEY: SortBy["key"] = "sort";
 
 export const DEFAULT_SORT_BY: SortBy = {
   key: "sort",
@@ -67,43 +88,3 @@ export const SORT_BY_LABELS: { [key in SortByValue]: { label: string } } = {
   "name-asc": { label: "Name: alphabetical" },
   "name-desc": { label: "Name: reverse" },
 };
-
-// export const DEFAULT_TYPE_FILTER_OPTION: FilterOptions["type"] = {
-//   group: false,
-//   project: false,
-//   user: false,
-// };
-
-// export const TYPE_FILTER_OPTIONS: TypeFilterOption[] = [
-//   { key: "project", label: "Project" },
-//   { key: "group", label: "Group" },
-//   { key: "user", label: "User" },
-// ];
-
-// export const TYPE_FILTER_ALLOWED_VALUES: SearchEntityType[] = [
-//   "group",
-//   "project",
-//   "user",
-// ];
-
-// export const DEFAULT_SORTING_OPTION: SortingOption = {
-//   key: "score-desc",
-//   label: "Score: best match",
-// };
-
-// export const SORTING_OPTIONS: SortingOption[] = [
-//   DEFAULT_SORTING_OPTION,
-//   { key: "created-desc", label: "Newest" },
-//   {
-//     key: "created-asc",
-//     label: "Oldest",
-//   },
-//   {
-//     key: "name-asc",
-//     label: "Name: alphabetical",
-//   },
-//   {
-//     key: "name-desc",
-//     label: "Name: reverse",
-//   },
-// ];

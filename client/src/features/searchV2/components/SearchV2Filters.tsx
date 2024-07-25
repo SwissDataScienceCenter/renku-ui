@@ -15,27 +15,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import cx from "classnames";
-import React, { useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { Card, CardBody, Col, Row } from "reactstrap";
-import { startCase } from "lodash-es";
 
-// import { setCreated, setCreatedBy, toggleFilter } from "../searchV2.slice";
+import cx from "classnames";
+import { Card, CardBody, Col, Row } from "reactstrap";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { useCallback, useMemo } from "react";
+import type { SearchFilter, SearchFilters } from "../searchV2.types";
+import { filtersAsArray } from "../searchV2.utils";
 import {
-  DateFilter,
-  SearchV2FilterOptions,
-  SearchV2State,
-} from "../searchV2.types";
-import {
-  ANONYMOUS_USERS_EXCLUDE_FILTERS,
-  AVAILABLE_FILTERS,
-} from "../searchV2.utils";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { User } from "../../../model/renkuModels.types";
-import { SearchV2DateFilter } from "./SearchV2DateFilter.tsx";
-import { SearchV2UserFilter } from "./SearchV2UserFilter.tsx";
+  FILTER_KEY_LABELS,
+  ROLE_FILTER_ALLOWED_VALUES,
+  TYPE_FILTER_ALLOWED_VALUES,
+} from "../searchV2.constants";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+
+// import cx from "classnames";
+// import React, { useCallback } from "react";
+// import { useDispatch } from "react-redux";
+// import { Card, CardBody, Col, Row } from "reactstrap";
+// import { startCase } from "lodash-es";
+
+// // import { setCreated, setCreatedBy, toggleFilter } from "../searchV2.slice";
+// import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+// import {
+//   DateFilter,
+//   SearchV2FilterOptions,
+//   SearchV2State,
+// } from "../searchV2.types";
+// import {
+//   ANONYMOUS_USERS_EXCLUDE_FILTERS,
+//   AVAILABLE_FILTERS,
+// } from "../searchV2.utils";
+// import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+// import { User } from "../../../model/renkuModels.types";
+// import { SearchV2DateFilter } from "./SearchV2DateFilter.tsx";
+// import { SearchV2UserFilter } from "./SearchV2UserFilter.tsx";
 
 export default function SearchV2Filters() {
   // const dispatch = useDispatch();
@@ -82,6 +96,10 @@ export default function SearchV2Filters() {
   //     />
   //   ));
 
+  const { filters } = useAppSelector(({ searchV2 }) => searchV2);
+
+  const filtersArray = useMemo(() => filtersAsArray(filters), [filters]);
+
   return (
     <>
       <Row className="mb-3" data-cy="search-filters">
@@ -89,6 +107,10 @@ export default function SearchV2Filters() {
           <h3>Filters</h3>
         </Col>
         <Col className={cx("d-flex", "flex-column", "gap-3")}>
+          {filtersArray.map((filter) => (
+            <SearchV2Filter key={filter.key} filter={filter} />
+          ))}
+
           {/* <SearchV2UserFilter
             createdBy={filters["createdBy"]}
             removeUserFilter={() => dispatch(setCreatedBy(""))}
@@ -108,67 +130,110 @@ export default function SearchV2Filters() {
   );
 }
 
-interface SearchV2FilterContainerProps {
-  children: React.ReactNode;
-  name: string;
-  title: string;
+interface SearchV2FilterProps {
+  filter: SearchFilter;
 }
-export function SearchV2FilterContainer({
-  children,
-  name,
-  title,
-}: SearchV2FilterContainerProps) {
+
+function SearchV2Filter({ filter }: SearchV2FilterProps) {
+  const { key } = filter;
+
+  const { label } = FILTER_KEY_LABELS[key];
+
+  const options =
+    key === "role" ? ROLE_FILTER_ALLOWED_VALUES : TYPE_FILTER_ALLOWED_VALUES;
+
   return (
-    <Card className={cx("border", "rounded")}>
-      <div data-cy={`search-filter-${name}`}>
-        <CardBody>
-          <p className={cx("form-text", "mb-1", "mt-0")}>{title}</p>
-          {children}
-        </CardBody>
-      </div>
+    <Card className={cx("border", "rounded")} data-cy={`search-filter-${key}`}>
+      <CardBody>
+        <p className={cx("form-text", "mb-1", "mt-0")}>{label}</p>
+        {options.map((option) => (
+          <SearchV2FilterOption key={option} filterKey={key} option={option} />
+        ))}
+      </CardBody>
     </Card>
   );
 }
 
-interface SearchV2FilterProps {
-  name: string;
-  options: SearchV2FilterOptions[];
-  title: string;
-  toggleOption: (key: string) => void;
+interface SearchV2FilterOptionProps {
+  filterKey: SearchFilter["key"];
+  option: SearchFilter["values"][number];
 }
-function SearchV2Filter({
-  name,
-  options,
-  title,
-  toggleOption,
-}: SearchV2FilterProps) {
-  return (
-    <SearchV2FilterContainer name={name} title={title}>
-      {options.map(({ checked, key, value }) => {
-        const id = `search-filter-${name}-${key}`;
 
-        return (
-          <div
-            className={cx("form-rk-green", "d-flex", "align-items-center")}
-            key={id}
-          >
-            <input
-              checked={checked}
-              className="form-check-input"
-              data-cy={id}
-              id={id}
-              onChange={() => toggleOption(key)}
-              type="checkbox"
-            />
-            <label
-              className={cx("form-check-label", "ms-2", "mt-1")}
-              htmlFor={id}
-            >
-              {value}
-            </label>
-          </div>
-        );
-      })}
-    </SearchV2FilterContainer>
-  );
+function SearchV2FilterOption({
+  filterKey,
+  option,
+}: SearchV2FilterOptionProps) {
+  const dispatch = useAppDispatch();
+
+  const onToggle = useCallback(() => {
+    if (filterKey === "role") {
+    }
+  }, []);
+
+  return null;
 }
+
+// interface SearchV2FilterContainerProps {
+//   children: React.ReactNode;
+//   name: string;
+//   title: string;
+// }
+// export function SearchV2FilterContainer({
+//   children,
+//   name,
+//   title,
+// }: SearchV2FilterContainerProps) {
+//   return (
+//     <Card className={cx("border", "rounded")}>
+//       <div data-cy={`search-filter-${name}`}>
+//         <CardBody>
+//           <p className={cx("form-text", "mb-1", "mt-0")}>{title}</p>
+//           {children}
+//         </CardBody>
+//       </div>
+//     </Card>
+//   );
+// }
+
+// interface SearchV2FilterProps {
+//   name: string;
+//   options: SearchV2FilterOptions[];
+//   title: string;
+//   toggleOption: (key: string) => void;
+// }
+// function SearchV2Filter({
+//   name,
+//   options,
+//   title,
+//   toggleOption,
+// }: SearchV2FilterProps) {
+//   return (
+//     <SearchV2FilterContainer name={name} title={title}>
+//       {options.map(({ checked, key, value }) => {
+//         const id = `search-filter-${name}-${key}`;
+
+//         return (
+//           <div
+//             className={cx("form-rk-green", "d-flex", "align-items-center")}
+//             key={id}
+//           >
+//             <input
+//               checked={checked}
+//               className="form-check-input"
+//               data-cy={id}
+//               id={id}
+//               onChange={() => toggleOption(key)}
+//               type="checkbox"
+//             />
+//             <label
+//               className={cx("form-check-label", "ms-2", "mt-1")}
+//               htmlFor={id}
+//             >
+//               {value}
+//             </label>
+//           </div>
+//         );
+//       })}
+//     </SearchV2FilterContainer>
+//   );
+// }
