@@ -77,7 +77,7 @@ export default function GroupV2Show() {
   }, [namespace?.namespace_kind, navigate, slug]);
 
   if (!slug) {
-    return <LazyNotFound />;
+    return <LazyNotFound isV2={true} />;
   }
 
   if (isLoading) {

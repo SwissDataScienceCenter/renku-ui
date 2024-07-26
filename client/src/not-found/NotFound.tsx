@@ -25,22 +25,26 @@
 import cx from "classnames";
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "reactstrap";
+import { Col, Row } from "reactstrap";
 
-import { HouseFill } from "react-bootstrap-icons";
+import { ArrowLeft } from "react-bootstrap-icons";
 
+import styles from "../features/projectsV2/notFound/NotFound.module.scss";
 import "./NotFound.css";
+import NotFoundImage from "./NotFoundImage.tsx";
 
 interface NotFoundProps {
   title?: string;
   description?: string | ReactNode;
   children?: ReactNode;
+  isV2?: boolean;
 }
 
 export default function NotFound({
   title: title_,
   description: description_,
   children,
+  isV2,
 }: NotFoundProps) {
   const title = title_ ?? "Page not found";
   const description =
@@ -53,30 +57,45 @@ export default function NotFound({
     descriptionType === "boolean"
       ? "p"
       : "div";
+
   return (
-    <div className="not-found-box">
-      <div className={cx("container-xxl", "p-5")}>
-        <div className={cx("p-4", "bg-white", "bg-opacity-75")}>
-          <h1 data-cy="not-found-title">404</h1>
-          <h3 className="mb-4" data-cy="not-found-subtitle">
-            {title}
-          </h3>
-          <Tag data-cy="not-found-description">{description}</Tag>
-          <div>
-            <Link to="/">
-              <Button color="primary" className="btn-rk-green">
-                <HouseFill className={cx("bi", "me-1")} />
-                Return Home
-              </Button>
-            </Link>
-          </div>
-        </div>
-        {children == null ? null : (
-          <div className="mt-4" data-cy="not-found-children">
-            {children}
-          </div>
-        )}
+    <>
+      <div className={cx("d-flex", "justify-content-center", "mx-auto")}>
+        <Row>
+          <Col className={cx("p-4", "mt-5")}>
+            <h1
+              className={cx(
+                isV2 ? "text-primary" : "text-rk-green",
+                "fw-bold",
+                "mt-3",
+                "d-flex",
+                "align-items-center",
+                "gap-3"
+              )}
+            >
+              <NotFoundImage className={styles.errorNotFoundImg} />
+              {title}
+            </h1>
+            <div className={cx("text-start", "mt-3")}>
+              <Tag data-cy="not-found-description">{description}</Tag>
+            </div>
+            <div className="py-3">
+              <Link
+                to="/"
+                className={cx("btn", isV2 ? "btn-primary" : "btn-rk-green")}
+              >
+                <ArrowLeft className={cx("bi", "me-1")} />
+                Return to home
+              </Link>
+            </div>
+            {children == null ? null : (
+              <div className="mt-4" data-cy="not-found-children">
+                {children}
+              </div>
+            )}
+          </Col>
+        </Row>
       </div>
-    </div>
+    </>
   );
 }

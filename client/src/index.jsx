@@ -105,7 +105,7 @@ configFetch.then((valuesRead) => {
     root.render(
       <Provider store={model.reduxStore}>
         <Router>
-          <AppErrorBoundary>
+          <AppErrorBoundary params={params}>
             <LoginHandler />
             <FeatureFlagHandler />
             <StyleHandler />
@@ -138,7 +138,7 @@ function FeatureFlagHandler() {
   return null;
 }
 
-function StyleHandler() {
+export function StyleHandler() {
   return (
     <Switch>
       <CompatRoute path="/v2">
