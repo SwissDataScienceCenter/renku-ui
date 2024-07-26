@@ -1,0 +1,17 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.errorNotFoundContainer {
+  max-width: 600px;
+  @include media-breakpoint-up(md) {
+    width: 600px;
+  }
+}
+
+.errorNotFoundImg {
+  width: 100%;
+  max-width: 200px;
+}

@@ -22,10 +22,10 @@ import PageLoader from "../components/PageLoader";
 
 const NotFound = lazy(() => import("./NotFound"));
 
-export default function LazyNotFound() {
+export default function LazyNotFound({ isV2 }: { isV2?: boolean }) {
   return (
     <Suspense fallback={<PageLoader />}>
-      <NotFound />
+      <NotFound isV2={isV2} />
     </Suspense>
   );
 }

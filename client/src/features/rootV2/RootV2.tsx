@@ -125,7 +125,7 @@ export default function RootV2() {
             path="*"
             element={
               <ContainerWrap fullSize>
-                <LazyNotFound />
+                <LazyNotFound isV2={true} />
               </ContainerWrap>
             }
           />
@@ -153,7 +153,7 @@ function GroupsV2Routes() {
         path="*"
         element={
           <ContainerWrap fullSize>
-            <LazyNotFound />
+            <LazyNotFound isV2={true} />
           </ContainerWrap>
         }
       />
@@ -196,7 +196,7 @@ function ProjectsV2Routes() {
           path="*"
           element={
             <ContainerWrap fullSize>
-              <LazyNotFound />
+              <LazyNotFound isV2={true} />
             </ContainerWrap>
           }
         />
@@ -232,7 +232,7 @@ function ProjectSessionsRoutes() {
         path="*"
         element={
           <ContainerWrap fullSize>
-            <LazyNotFound />
+            <LazyNotFound isV2={true} />
           </ContainerWrap>
         }
       />
