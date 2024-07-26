@@ -18,19 +18,17 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { EyeFill, EyeSlashFill, PlusLg, XLg } from "react-bootstrap-icons";
+import { PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   Form,
   Input,
-  InputGroup,
   Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  UncontrolledTooltip,
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
@@ -44,12 +42,6 @@ export default function SecretsNew() {
   const [showModal, setShowModal] = useState(false);
   const toggleModal = useCallback(() => {
     setShowModal((showModal) => !showModal);
-  }, []);
-
-  // Hide/show the secret value
-  const [showPlainText, setShowPlainText] = useState(false);
-  const toggleShowPlainText = useCallback(() => {
-    setShowPlainText((showPlainText) => !showPlainText);
   }, []);
 
   // Set up the form
@@ -86,7 +78,6 @@ export default function SecretsNew() {
   useEffect(() => {
     if (result.isSuccess) {
       toggleModal();
-      setShowPlainText(false);
       reset();
     }
   }, [reset, result.isSuccess, toggleModal]);
@@ -143,54 +134,35 @@ export default function SecretsNew() {
           <Label className="form-label" for="new-secret-value">
             Value
           </Label>
-          <InputGroup>
-            <Controller
-              control={control}
-              name="value"
-              render={({ field }) => (
-                <Input
-                  id="new-secret-value"
-                  type={showPlainText ? "textarea" : "password"}
-                  {...field}
-                  autoComplete="off one-time-code"
-                  className={cx(
-                    "rounded-0",
-                    "rounded-start",
-                    errors.value && "is-invalid"
-                  )}
-                  spellCheck="false"
-                  {...(showPlainText ? { rows: 6 } : {})}
-                />
-              )}
-              rules={{
-                required: "Please provide a value.",
-                validate: (value) =>
-                  value.length > SECRETS_VALUE_LENGTH_LIMIT
-                    ? `Value cannot exceed ${SECRETS_VALUE_LENGTH_LIMIT} characters.`
-                    : undefined,
-              }}
-            />
-            <Button
-              className="rounded-end"
-              id="secret-new-show-value"
-              onClick={() => toggleShowPlainText()}
-            >
-              {showPlainText ? (
-                <EyeFill className="bi" />
-              ) : (
-                <EyeSlashFill className="bi" />
-              )}
-              <UncontrolledTooltip
-                placement="top"
-                target="secret-new-show-value"
-              >
-                {showPlainText ? "Hide secret value" : "Show secret value"}
-              </UncontrolledTooltip>
-            </Button>
-            {errors.value && (
-              <div className="invalid-feedback">{errors.value.message}</div>
+          <Controller
+            control={control}
+            name="value"
+            render={({ field }) => (
+              <Input
+                id="new-secret-value"
+                type="textarea"
+                {...field}
+                autoComplete="off one-time-code"
+                className={cx(
+                  "rounded-0",
+                  "rounded-start",
+                  errors.value && "is-invalid"
+                )}
+                spellCheck="false"
+                rows={6}
+              />
             )}
-          </InputGroup>
+            rules={{
+              required: "Please provide a value.",
+              validate: (value) =>
+                value.length > SECRETS_VALUE_LENGTH_LIMIT
+                  ? `Value cannot exceed ${SECRETS_VALUE_LENGTH_LIMIT} characters.`
+                  : undefined,
+            }}
+          />
+          {errors.value && (
+            <div className="invalid-feedback">{errors.value.message}</div>
+          )}
         </div>
       </Form>
     </>
