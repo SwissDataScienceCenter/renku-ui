@@ -1,16 +1,16 @@
 [
   {
-    "id": "user1-uuid",
+    "id": "0945f006-e117-49b7-8966-4c0842146313",
     "email": "user1@email.com",
     "role": "owner"
   },
   {
     "id": "user2-uuid",
     "email": "user2@email.com",
-    "role": "member"
+    "role": "editor"
   },
   {
     "id": "user3-uuid",
-    "role": "member"
+    "role": "viewer"
   }
 ]

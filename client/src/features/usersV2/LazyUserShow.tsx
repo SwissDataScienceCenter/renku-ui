@@ -16,4 +16,15 @@
  * limitations under the License.
  */
 
-export type SettingEditOption = "metadata" | "members" | null;
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
+
+const UserShow = lazy(() => import("./show/UserShow"));
+
+export default function LazyUserShow() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <UserShow />
+    </Suspense>
+  );
+}

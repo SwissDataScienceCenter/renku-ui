@@ -17,34 +17,10 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { SearchApiParams, SearchApiResponse } from "./searchV2.types";
 
-const searchV2Api = createApi({
-  reducerPath: "searchV2Api",
-  baseQuery: fetchBaseQuery({
-    // eslint-disable-next-line spellcheck/spell-checker
-    baseUrl: "/ui-server/api/search",
-  }),
-  tagTypes: ["SearchV2"],
-  endpoints: (builder) => ({
-    getSearchResults: builder.query<SearchApiResponse, SearchApiParams>({
-      query: (params) => {
-        return {
-          method: "GET",
-          params: {
-            q: params.searchString,
-            page: params.page,
-            per_page: params.perPage,
-          },
-          url: "",
-        };
-      },
-      extraOptions: {
-        refetchOnMountOrArgChange: 1,
-      },
-    }),
-  }),
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const statuspageEmptyApi = createApi({
+  baseQuery: fetchBaseQuery(),
+  endpoints: () => ({}),
+  reducerPath: "statuspageApi",
 });
-
-export default searchV2Api;
-export const { useGetSearchResultsQuery } = searchV2Api;

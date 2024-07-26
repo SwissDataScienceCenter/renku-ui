@@ -48,7 +48,7 @@ import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-a
 import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import repositoriesApi from "../../features/repositories/repositories.api";
-import searchV2Api from "../../features/searchV2/searchV2.api";
+import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import secretsApi from "../../features/secrets/secrets.api";
 import sessionsApi from "../../features/session/sessions.api";
@@ -65,6 +65,8 @@ import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "../feature-flags/featureFlags.slice";
+import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
+import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -95,6 +97,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [keycloakUserApi.reducerPath]: keycloakUserApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
+    [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
@@ -108,6 +111,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
+    [statuspageApi.reducerPath]: statuspageApi.reducer,
     [termsApi.reducerPath]: termsApi.reducer,
     [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
@@ -132,6 +136,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(inactiveKgProjectsApi.middleware)
         .concat(keycloakUserApi.middleware)
         .concat(kgSearchApi.middleware)
+        .concat(platformApi.middleware)
         .concat(projectCloudStorageApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectGitLabApi.middleware)
@@ -146,6 +151,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionSidecarApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsV2Api.middleware)
+        .concat(statuspageApi.middleware)
         .concat(termsApi.middleware)
         .concat(userPreferencesApi.middleware)
         .concat(versionsApi.middleware)
