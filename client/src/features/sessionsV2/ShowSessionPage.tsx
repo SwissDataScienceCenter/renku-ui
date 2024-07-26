@@ -20,8 +20,8 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Journals, PauseCircle, Trash } from "react-bootstrap-icons";
 import {
-  Link,
   generatePath,
+  Link,
   useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
@@ -38,10 +38,14 @@ import SessionUnavailable from "../session/components/SessionUnavailable";
 import StartSessionProgressBar from "../session/components/StartSessionProgressBar";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import RenkuFrogIcon from "../../components/icons/RenkuIcon.tsx";
 
+import RenkuFrogIcon from "../../components/icons/RenkuIcon.tsx";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import styles from "../session/components/ShowSession.module.scss";
+import {
+  calculateFaviconStatus,
+  SessionFavicon,
+} from "./components/SessionFavicon/SessionFavicon.tsx";
 
 export default function ShowSessionPage() {
   const {
@@ -149,6 +153,8 @@ export default function ShowSessionPage() {
       toggleModal={togglePauseOrDeleteSession}
     />
   );
+
+  const faviconState = calculateFaviconStatus(thisSession, isLoading);
 
   const content =
     !isLoading && thisSession == null ? (

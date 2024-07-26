@@ -52,6 +52,7 @@ import {
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLauncherState from "./useSessionLaunchState.hook";
+import { SessionFavicon } from "./components/SessionFavicon/SessionFavicon";
 
 interface SessionStartingProps extends StartSessionFromLauncherProps {
   containerImage: string;
@@ -132,6 +133,7 @@ function SessionStarting({
 
   return (
     <div>
+      <SessionFavicon status="waiting" />
       {error && <RtkErrorAlert error={error} dismissible={false} />}
 
       <div className={cx("progress-box-small", "progress-box-small--steps")}>
@@ -324,6 +326,7 @@ function StartSessionFromLauncher({
 
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <SessionFavicon status="waiting" />
       <ProgressStepsIndicator
         description="Preparing to start session"
         type={ProgressType.Determinate}
