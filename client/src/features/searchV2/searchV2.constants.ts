@@ -22,6 +22,8 @@ import type {
   BeforeDateValue,
   CreationDateFilter,
   RoleFilter,
+  SearchDateFilter,
+  SearchDateFilters,
   SearchEntityType,
   SearchEntityVisibility,
   SearchFilter,
@@ -97,14 +99,29 @@ export const DATE_FILTER_AFTER_KNOWN_VALUES: AfterDateValue[] = [
 
 export const DATE_FILTER_BEFORE_KNOWN_VALUES: BeforeDateValue[] = ["today-90d"];
 
+export const CREATION_DATE_FILTER_PREDEFINED_FILTERS: {
+  optionKey: string;
+  filter: CreationDateFilter;
+}[] = [
+  { optionKey: "all", filter: DEFAULT_CREATION_DATE_FILTER },
+  { optionKey: "last-week", filter: { key: "created", after: "today-7d" } },
+  { optionKey: "last-month", filter: { key: "created", after: "today-31d" } },
+  { optionKey: "last-90-days", filter: { key: "created", after: "today-90d" } },
+  {
+    optionKey: "older-than-90-days",
+    filter: { key: "created", before: "today-90d" },
+  },
+];
+
 // Labels for all filters
 
 export const FILTER_KEY_LABELS: {
-  [key in keyof SearchFilters]: { label: string };
+  [key in keyof SearchFilters | keyof SearchDateFilters]: { label: string };
 } = {
   role: { label: "Role" },
   type: { label: "Type" },
   visibility: { label: "Visibility" },
+  created: { label: "Creation date" },
 };
 
 export const FILTER_VALUE_LABELS: {
@@ -120,6 +137,20 @@ export const FILTER_VALUE_LABELS: {
 
   private: { label: "Private" },
   public: { label: "Public" },
+};
+
+export const DATE_FILTER_AFTER_VALUE_LABELS: {
+  [key in SearchDateFilter["after"] & string]: { label: string };
+} = {
+  "today-7d": { label: "Last week" },
+  "today-31d": { label: "Last month" },
+  "today-90d": { label: "Last 90 days" },
+};
+
+export const DATE_FILTER_BEFORE_VALUE_LABELS: {
+  [key in SearchDateFilter["before"] & string]: { label: string };
+} = {
+  "today-90d": { label: "Older than 90 days" },
 };
 
 // Sort by constants

@@ -41,6 +41,7 @@ import type {
   SearchFilter,
 } from "../searchV2.types";
 import { filtersAsArray } from "../searchV2.utils";
+import SearchV2DateFilters from "./SearchV2DateFilters";
 
 export default function SearchV2Filters() {
   const { filters } = useAppSelector(({ searchV2 }) => searchV2);
@@ -57,7 +58,7 @@ export default function SearchV2Filters() {
           {filtersArray.map((filter) => (
             <SearchV2Filter key={filter.key} filter={filter} />
           ))}
-          <SearchV2CreationDateFilter />
+          <SearchV2DateFilters />
         </Col>
       </Row>
     </>
@@ -142,8 +143,4 @@ function SearchV2FilterOption({ filter, option }: SearchV2FilterOptionProps) {
       </label>
     </div>
   );
-}
-
-function SearchV2CreationDateFilter() {
-  return null;
 }

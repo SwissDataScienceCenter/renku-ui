@@ -26,6 +26,7 @@ import {
   DEFAULT_VISIBILITY_FILTER,
 } from "./searchV2.constants";
 import type {
+  CreationDateFilter,
   SearchEntityType,
   SearchEntityVisibility,
   SearchV2StateV2,
@@ -121,6 +122,13 @@ export const searchV2Slice = createSlice({
       state.filters.visibility.values = Array.from(asSet).sort();
       state.query = buildSearchQuery2(state);
     },
+    selectCreationDateFilter: (
+      state,
+      action: PayloadAction<CreationDateFilter>
+    ) => {
+      state.dateFilters.created = action.payload;
+      state.query = buildSearchQuery2(state);
+    },
     reset: () => initialState,
   },
 });
@@ -134,5 +142,6 @@ export const {
   toggleRoleFilterValue,
   toggleTypeFilterValue,
   toggleVisibilityFilterValue,
+  selectCreationDateFilter,
   reset,
 } = searchV2Slice.actions;

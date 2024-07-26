@@ -19,34 +19,37 @@
 import { DateTime } from "luxon";
 import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 import {
-  TERM_SEPARATOR,
-  DEFAULT_SORT_BY,
-  TYPE_FILTER_KEY,
-  KEY_VALUE_SEPARATOR,
-  VALUES_SEPARATOR,
-  TYPE_FILTER_ALLOWED_VALUES,
-  SORT_BY_KEY,
-  SORT_BY_ALLOWED_VALUES,
-  ROLE_FILTER_KEY,
-  ROLE_FILTER_ALLOWED_VALUES,
-  DEFAULT_ROLE_FILTER,
-  DEFAULT_TYPE_FILTER,
-  DEFAULT_VISIBILITY_FILTER,
-  VISIBILITY_FILTER_KEY,
-  VISIBILITY_FILTER_ALLOWED_VALUES,
   CREATION_DATE_FILTER_KEY,
-  KEY_GREATER_THAN_VALUE,
-  DATE_FILTER_AFTER_KNOWN_VALUES,
-  KEY_LESS_THAN_VALUE,
-  DATE_FILTER_BEFORE_KNOWN_VALUES,
   DATE_AFTER_LEEWAY,
   DATE_BEFORE_LEEWAY,
+  DATE_FILTER_AFTER_KNOWN_VALUES,
+  DATE_FILTER_BEFORE_KNOWN_VALUES,
+  DEFAULT_ROLE_FILTER,
+  DEFAULT_SORT_BY,
+  DEFAULT_TYPE_FILTER,
+  DEFAULT_VISIBILITY_FILTER,
+  KEY_GREATER_THAN_VALUE,
+  KEY_LESS_THAN_VALUE,
+  KEY_VALUE_SEPARATOR,
+  ROLE_FILTER_ALLOWED_VALUES,
+  ROLE_FILTER_KEY,
+  SORT_BY_ALLOWED_VALUES,
+  SORT_BY_KEY,
+  TERM_SEPARATOR,
+  TYPE_FILTER_ALLOWED_VALUES,
+  TYPE_FILTER_KEY,
+  VALUES_SEPARATOR,
+  VISIBILITY_FILTER_ALLOWED_VALUES,
+  VISIBILITY_FILTER_KEY,
 } from "./searchV2.constants";
 import type {
+  AfterDateValue,
+  BeforeDateValue,
   CreationDateFilter,
   InterpretedTerm,
   ParseSearchQueryResult,
   RoleFilter,
+  SearchDateFilter,
   SearchDateFilters,
   SearchFilter,
   SearchFilters,
@@ -96,12 +99,7 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     .find(({ before }) => before != null)?.before;
   const creationDateFilterOption: CreationDateFilter = {
     key: "created",
-    ...(createdAfterFilterOption != null
-      ? { after: createdAfterFilterOption }
-      : {}),
-    ...(createdBeforeFilterOption != null
-      ? { before: createdBeforeFilterOption }
-      : {}),
+    ...mergeDateFilters(createdAfterFilterOption, createdBeforeFilterOption),
   };
 
   const dateFilters: SearchDateFilters = {
@@ -421,6 +419,41 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
   return "";
 }
 
+function mergeDateFilters(
+  after: AfterDateValue | undefined,
+  before: BeforeDateValue | undefined
+): {
+  after?: AfterDateValue;
+  before?: BeforeDateValue;
+} {
+  const merged = {
+    ...(after != null ? { after } : {}),
+    ...(before != null ? { before } : {}),
+  };
+
+  if (merged.after == null || merged.before == null) {
+    return merged;
+  }
+
+  // ? Providing both `after` and `before` as predefined tokens is not supported
+  const today = DateTime.utc().startOf("day");
+  if (typeof merged.after === "string") {
+    const adjusted: AfterDateValue =
+      merged.after === "today-7d"
+        ? { date: today.minus({ days: 7 }) }
+        : merged.after === "today-31d"
+        ? { date: today.minus({ days: 31 }) }
+        : { date: today.minus({ days: 90 }) };
+    merged.after = adjusted;
+  }
+  if (typeof merged.before === "string") {
+    const adjusted: BeforeDateValue = { date: today.minus({ days: 90 }) };
+    merged.before = adjusted;
+  }
+
+  return merged;
+}
+
 export function buildSearchQuery2(
   state: Pick<
     SearchV2StateV2,
@@ -448,4 +481,10 @@ export function buildSearchQuery2(
 
 export function filtersAsArray(filters: SearchFilters): SearchFilter[] {
   return [filters.role, filters.type, filters.visibility];
+}
+
+export function dateFiltersAsArray(
+  dateFilters: SearchDateFilters
+): SearchDateFilter[] {
+  return [dateFilters.created];
 }
