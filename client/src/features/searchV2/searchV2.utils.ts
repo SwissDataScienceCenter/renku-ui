@@ -147,7 +147,7 @@ export function parseTerm(term: string): InterpretedTerm {
       ROLE_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
     );
     const values = filterValues.split(`${VALUES_SEPARATOR}`);
-    const [allowedValues, hasUnallowedValue] = filterAllowedValues(
+    const [allowedValues, hasDisallowedValue] = filterAllowedValues(
       values,
       ROLE_FILTER_ALLOWED_VALUES
     );
@@ -155,7 +155,7 @@ export function parseTerm(term: string): InterpretedTerm {
       allowedValues,
       (a, b) => toNumericRole(b) - toNumericRole(a)
     );
-    if (!hasUnallowedValue) {
+    if (!hasDisallowedValue) {
       return {
         term,
         interpretation: {
@@ -171,12 +171,12 @@ export function parseTerm(term: string): InterpretedTerm {
       TYPE_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
     );
     const values = filterValues.split(`${VALUES_SEPARATOR}`);
-    const [allowedValues, hasUnallowedValue] = filterAllowedValues(
+    const [allowedValues, hasDisallowedValue] = filterAllowedValues(
       values,
       TYPE_FILTER_ALLOWED_VALUES
     );
     const matchedValues = makeValuesSetAsArray(allowedValues);
-    if (!hasUnallowedValue) {
+    if (!hasDisallowedValue) {
       return {
         term,
         interpretation: {
@@ -192,12 +192,12 @@ export function parseTerm(term: string): InterpretedTerm {
       VISIBILITY_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
     );
     const values = filterValues.split(`${VALUES_SEPARATOR}`);
-    const [allowedValues, hasUnallowedValue] = filterAllowedValues(
+    const [allowedValues, hasDisallowedValue] = filterAllowedValues(
       values,
       VISIBILITY_FILTER_ALLOWED_VALUES
     );
     const matchedValues = makeValuesSetAsArray(allowedValues);
-    if (!hasUnallowedValue) {
+    if (!hasDisallowedValue) {
       return {
         term,
         interpretation: {

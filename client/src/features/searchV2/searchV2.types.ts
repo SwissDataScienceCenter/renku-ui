@@ -17,8 +17,9 @@
  */
 
 import { DateTime } from "luxon";
-import type { Role } from "../projectsV2/api/projectV2.api.ts";
-import type { SearchEntity, Visibility } from "./api/searchV2Api.api.ts";
+
+import type { Role } from "../projectsV2/api/projectV2.api";
+import type { SearchEntity, Visibility } from "./api/searchV2Api.api";
 
 export interface SearchV2StateV2 {
   dateFilters: SearchDateFilters;
@@ -108,91 +109,6 @@ export interface InterpretedTerm {
   term: string;
   interpretation: SearchOption | null;
 }
-
-// interface TypeFilterInterpretation {
-//   key: "type";
-//   values: FilterOptions["type"];
-// }
-
-// export interface SortingOption {
-//   key: string;
-//   label: string;
-// }
-
-// export interface FilterOptions {
-//   type: Set<SearchEntityType>;
-// }
-
-// export interface TypeFilterOption {
-//   key: SearchEntityType;
-//   label: string;
-// }
-
-// export type SearchEntityType = Lowercase<SearchEntity["type"]>;
-
-// export interface DateFilter {
-//   option: DateFilterTypes;
-//   from?: string;
-//   to?: string;
-// }
-// export interface SearchV2State {
-//   filters: {
-//     role: Role[];
-//     type: ("project" | "user")[];
-//     visibility: ("private" | "public")[];
-//     created: DateFilter;
-//     createdBy: string;
-//   };
-//   search: {
-//     history: {
-//       search: string;
-//       query: string;
-//     }[];
-//     lastSearch: string | null;
-//     outdated: boolean;
-//     page: number;
-//     perPage: number;
-//     query: string;
-//     totalPages: number;
-//     totalResults: number;
-//   };
-//   sorting: SortingItem;
-// }
-
-// export interface SearchV2Totals {
-//   pages: number;
-//   results: number;
-// }
-
-// export interface ToggleFilterPayload {
-//   filter: keyof SearchV2State["filters"];
-//   value: string;
-// }
-
-// export interface SearchV2FilterOptions {
-//   checked: boolean;
-//   key: string;
-//   value: string;
-// }
-
-// export interface SortingItem {
-//   friendlyName: string;
-//   sortingString: string;
-// }
-
-// export interface SortingItems {
-//   [key: string]: SortingItem;
-// }
-
-// export interface DateFilterItem {
-//   friendlyName: string;
-//   getDateString:
-//     | ((filter: string, from?: string, to?: string) => string)
-//     | (() => string);
-// }
-// export interface DateFilterItems {
-//   [key: string]: DateFilterItem;
-// }
 
 export interface SetInitialQueryParams {
   dateFilters: SearchDateFilters;

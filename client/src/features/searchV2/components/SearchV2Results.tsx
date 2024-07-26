@@ -112,9 +112,6 @@ function SearchV2ResultsContent() {
     if (entity.type === "Project") {
       return (
         <SearchV2ResultProject
-          searchByUser={(_userId) => {
-            // dispatch(setCreatedBy(userId));
-          }}
           key={`project-result-${entity.id}`}
           project={entity}
         />
@@ -191,7 +188,6 @@ function SearchV2CardTitle({
 
 interface SearchV2ResultProjectProps {
   project: Project;
-  searchByUser: (userId: string) => void;
 }
 function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
   const { creationDate, description, name, namespace, slug, visibility } =
