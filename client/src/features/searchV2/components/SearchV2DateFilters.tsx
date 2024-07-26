@@ -17,7 +17,8 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
+import { DateTime } from "luxon";
+import { useCallback, useMemo, useState } from "react";
 import { Card, CardBody } from "reactstrap";
 
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
@@ -76,6 +77,7 @@ function SearchV2DateFilter({ dateFilter }: SearchV2DateFilterProps) {
             optionKey={option.optionKey}
           />
         ))}
+        <SearchV2DateFilterCustomOption dateFilter={dateFilter} />
       </CardBody>
     </Card>
   );
@@ -134,89 +136,138 @@ function SearchV2DateFilterOption({
   );
 }
 
-// import cx from "classnames";
-// import { DateTime } from "luxon";
-// import { ChangeEvent } from "react";
-// import { Input } from "reactstrap";
+interface SearchV2DateFilterCustomOptionProps {
+  dateFilter: SearchDateFilter;
+}
 
-// import { DateFilter } from "../searchV2.types.ts";
-// import { DateFilterTypes } from "../../../components/dateFilter/DateFilter.tsx";
-// import { SearchV2FilterContainer } from "./SearchV2Filters.tsx";
-// import { AVAILABLE_DATE_FILTERS } from "../searchV2.utils.ts";
+function SearchV2DateFilterCustomOption({
+  dateFilter,
+}: SearchV2DateFilterCustomOptionProps) {
+  const [today] = useState(DateTime.now().startOf("day"));
 
-// interface SearchV2DateFilterProps {
-//   name: string;
-//   checked: DateFilter;
-//   title: string;
-//   toggleOption: (key: DateFilter) => void;
-// }
-// export function SearchV2DateFilter({
-//   name,
-//   title,
-//   checked,
-//   toggleOption,
-// }: SearchV2DateFilterProps) {
-//   const now = DateTime.utc();
-//   const datesInput = checked.option === DateFilterTypes.custom && (
-//     <>
-//       <div>
-//         <label className="px-2 author-label">From:</label>
-//         <Input
-//           type="date"
-//           name="start"
-//           max={now.toISODate()}
-//           onChange={(e: ChangeEvent<HTMLInputElement>) =>
-//             toggleOption({ ...checked, from: e.target.value })
-//           }
-//           value={checked.from || ""}
-//         />
-//       </div>
-//       <div>
-//         <label className="px-2 author-label">To:</label>
-//         <Input
-//           type="date"
-//           name="end"
-//           max={now.toISODate()}
-//           onChange={(e: ChangeEvent<HTMLInputElement>) =>
-//             toggleOption({ ...checked, to: e.target.value })
-//           }
-//           value={checked.to || ""}
-//         />
-//       </div>
-//     </>
-//   );
+  const id = `search-filter-${dateFilter.key}-custom`;
 
-//   const filterKeys = Object.keys(AVAILABLE_DATE_FILTERS) as string[];
-//   return (
-//     <SearchV2FilterContainer name={name} title={title}>
-//       {filterKeys.map((key) => {
-//         const label = AVAILABLE_DATE_FILTERS[key].friendlyName;
-//         const id = `search-filter-${name}-${key}`;
-//         const isChecked = key === checked.option;
+  const isChecked = useMemo(
+    () =>
+      (dateFilter.after != null && typeof dateFilter.after !== "string") ||
+      (dateFilter.before != null && typeof dateFilter.before !== "string"),
+    [dateFilter.after, dateFilter.before]
+  );
 
-//         return (
-//           <div
-//             className={cx("form-rk-green", "d-flex", "align-items-center")}
-//             key={id}
-//           >
-//             <input
-//               checked={isChecked}
-//               className="form-check-input"
-//               data-cy={id}
-//               id={id}
-//               onChange={() => toggleOption({ option: key as DateFilterTypes })}
-//               type="radio"
-//             />
-//             <label
-//               className={cx("form-check-label", "ms-2", "mt-1")}
-//               htmlFor={id}
-//             >
-//               {label}
-//             </label>
-//           </div>
-//         );
-//       })}
-//       {datesInput}
-//     </SearchV2FilterContainer>
-//   );
-// }
+  const afterDate = useMemo(
+    () => (typeof dateFilter.after === "object" ? dateFilter.after.date : null),
+    [dateFilter.after]
+  );
+  const beforeDate = useMemo(
+    () =>
+      typeof dateFilter.before === "object" ? dateFilter.before.date : null,
+    [dateFilter.before]
+  );
+
+  const dispatch = useAppDispatch();
+
+  const onChange = useCallback(() => {
+    if (dateFilter.key === "created" && !isChecked) {
+      dispatch(
+        selectCreationDateFilter({
+          key: "created",
+          before: { date: today },
+        })
+      );
+    }
+  }, [dateFilter.key, dispatch, isChecked, today]);
+
+  const onChangeAfter = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.value == "") {
+        dispatch(
+          selectCreationDateFilter({
+            ...dateFilter,
+            after: undefined,
+          })
+        );
+        return;
+      }
+
+      const newAfter = DateTime.fromISO(event.target.value, { zone: "utc" });
+      if (newAfter.isValid) {
+        dispatch(
+          selectCreationDateFilter({
+            ...dateFilter,
+            after: { date: newAfter },
+          })
+        );
+      }
+    },
+    [dateFilter, dispatch]
+  );
+
+  const onChangeBefore = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.value == "") {
+        dispatch(
+          selectCreationDateFilter({
+            ...dateFilter,
+            before: undefined,
+          })
+        );
+        return;
+      }
+
+      const newBefore = DateTime.fromISO(event.target.value, { zone: "utc" });
+      if (newBefore.isValid) {
+        dispatch(
+          selectCreationDateFilter({
+            ...dateFilter,
+            before: { date: newBefore },
+          })
+        );
+      }
+    },
+    [dateFilter, dispatch]
+  );
+
+  return (
+    <>
+      <div className={cx("form-rk-green", "d-flex", "align-items-center")}>
+        <input
+          checked={isChecked}
+          className="form-check-input"
+          data-cy={id}
+          id={id}
+          onChange={onChange}
+          type="radio"
+        />
+        <label className={cx("form-check-label", "ms-2", "mt-1")} htmlFor={id}>
+          Custom
+        </label>
+      </div>
+      {isChecked && (
+        <>
+          <div>
+            <label className="px-2 author-label">From:</label>
+            <input
+              className="form-control"
+              type="date"
+              name="after"
+              max={today.toISODate()}
+              onChange={onChangeAfter}
+              value={afterDate?.toISODate() ?? ""}
+            />
+          </div>
+          <div>
+            <label className="px-2 author-label">To:</label>
+            <input
+              className="form-control"
+              type="date"
+              name="before"
+              max={today.toISODate()}
+              onChange={onChangeBefore}
+              value={beforeDate?.toISODate() ?? ""}
+            />
+          </div>
+        </>
+      )}
+    </>
+  );
+}
