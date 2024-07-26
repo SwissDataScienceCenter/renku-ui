@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import cx from "classnames";
 import { faDiscourse, faGitter } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Github } from "react-bootstrap-icons";
+import cx from "classnames";
 import { useContext } from "react";
+import { Github } from "react-bootstrap-icons";
 import { Route, Routes } from "react-router-dom-v5-compat";
 import { Nav, NavItem } from "reactstrap";
 import {
@@ -30,10 +30,11 @@ import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
 import PrivacyPolicy from "../../help/PrivacyPolicy";
 import TermsOfService from "../../help/TermsOfService";
-import { StatuspageDisplay, isStatusConfigured } from "../../statuspage";
+import { isStatusConfigured } from "../../statuspage";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
+import StatusSummary from "../platform/components/StatusSummary";
 
 type HelpNavProps = {
   statuspageId: string;
@@ -143,12 +144,11 @@ function HelpGetting() {
 }
 
 function HelpContent() {
-  const { model } = useContext(AppContext);
   return (
     <Routes>
       <Route path="/" element={<HelpGetting />} />
       <Route path="contact" element={<HelpGetting />} />
-      <Route path="status" element={<StatuspageDisplay model={model} />} />
+      <Route path="status" element={<StatusSummary />} />
       <Route path="release" element={<HelpRelease />} />
       <Route path="tos" element={<TermsOfService />} />
       <Route path="privacy" element={<PrivacyPolicy />} />

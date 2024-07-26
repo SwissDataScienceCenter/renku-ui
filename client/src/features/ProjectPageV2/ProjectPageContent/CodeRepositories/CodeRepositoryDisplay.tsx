@@ -435,12 +435,16 @@ interface RepositoryIconProps {
 }
 
 function RepositoryIcon({ className, provider }: RepositoryIconProps) {
-  if (provider == null) {
+  const iconUrl = useMemo(
+    // eslint-disable-next-line spellcheck/spell-checker
+    () => (provider != null ? safeNewUrl("/favicon.ico", provider) : null),
+    [provider]
+  );
+
+  if (iconUrl == null) {
     return null;
   }
 
-  // eslint-disable-next-line spellcheck/spell-checker
-  const iconUrl = new URL("/favicon.ico", provider);
   return (
     <img
       className={className}

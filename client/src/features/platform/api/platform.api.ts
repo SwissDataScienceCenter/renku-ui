@@ -16,20 +16,19 @@
  * limitations under the License.
  */
 
-/** Returns a new URL instance or null if `url` is not a valid URL string. */
-export function safeNewUrl(
-  url: URL | string | undefined | null,
-  base?: URL | string | undefined
-): URL | null {
-  if (url == null) {
-    return null;
-  }
-  try {
-    return new URL(url, base);
-  } catch (error) {
-    if (error instanceof TypeError) {
-      return null;
-    }
-    throw error;
-  }
-}
+import { platformGeneratedApi } from "./platform.generated-api";
+
+export const platformApi = platformGeneratedApi.enhanceEndpoints({
+  addTagTypes: ["PlatformConfig"],
+  endpoints: {
+    getPlatformConfig: {
+      providesTags: ["PlatformConfig"],
+    },
+    patchPlatformConfig: {
+      invalidatesTags: ["PlatformConfig"],
+    },
+  },
+});
+export const { useGetPlatformConfigQuery, usePatchPlatformConfigMutation } =
+  platformApi;
+export type * from "./platform.generated-api";

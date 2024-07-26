@@ -53,6 +53,7 @@ import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
+import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
@@ -66,6 +67,7 @@ export default function AdminPage() {
   return (
     <>
       <h1 className={cx("fs-2", "mb-3")}>Admin Panel</h1>
+      <IncidentsAndMaintenanceSection />
       <ComputeResourcesSection />
       <SessionEnvironmentsSection />
     </>

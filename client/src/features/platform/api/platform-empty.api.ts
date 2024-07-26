@@ -16,20 +16,11 @@
  * limitations under the License.
  */
 
-/** Returns a new URL instance or null if `url` is not a valid URL string. */
-export function safeNewUrl(
-  url: URL | string | undefined | null,
-  base?: URL | string | undefined
-): URL | null {
-  if (url == null) {
-    return null;
-  }
-  try {
-    return new URL(url, base);
-  } catch (error) {
-    if (error instanceof TypeError) {
-      return null;
-    }
-    throw error;
-  }
-}
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const platformEmptyApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
+  endpoints: () => ({}),
+  reducerPath: "platformApi",
+});

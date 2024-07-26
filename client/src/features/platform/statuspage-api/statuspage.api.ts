@@ -13,23 +13,23 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
 
-/** Returns a new URL instance or null if `url` is not a valid URL string. */
-export function safeNewUrl(
-  url: URL | string | undefined | null,
-  base?: URL | string | undefined
-): URL | null {
-  if (url == null) {
-    return null;
-  }
-  try {
-    return new URL(url, base);
-  } catch (error) {
-    if (error instanceof TypeError) {
-      return null;
-    }
-    throw error;
-  }
-}
+import { statuspageEmptyApi } from "./statuspage-empty.api";
+import { GetSummaryParams, StatusPageSummary } from "./statuspage.types";
+
+export const statuspageApi = statuspageEmptyApi.injectEndpoints({
+  endpoints: (build) => ({
+    getSummary: build.query<StatusPageSummary, GetSummaryParams>({
+      query: ({ statusPageId }) => {
+        return {
+          url: `https://${statusPageId}.statuspage.io/api/v2/summary.json`,
+        };
+      },
+    }),
+  }),
+  overrideExisting: false,
+});
+
+export const { useGetSummaryQuery } = statuspageApi;

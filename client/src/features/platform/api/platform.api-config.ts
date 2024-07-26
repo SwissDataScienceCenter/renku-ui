@@ -16,20 +16,17 @@
  * limitations under the License.
  */
 
-/** Returns a new URL instance or null if `url` is not a valid URL string. */
-export function safeNewUrl(
-  url: URL | string | undefined | null,
-  base?: URL | string | undefined
-): URL | null {
-  if (url == null) {
-    return null;
-  }
-  try {
-    return new URL(url, base);
-  } catch (error) {
-    if (error instanceof TypeError) {
-      return null;
-    }
-    throw error;
-  }
-}
+// Run `npm run generate-api:platform` to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
+
+const config: ConfigFile = {
+  apiFile: "./platform-empty.api.ts",
+  apiImport: "platformEmptyApi",
+  outputFile: "./platform.generated-api.ts",
+  exportName: "platformGeneratedApi",
+  hooks: true,
+  schemaFile: path.join(__dirname, "platform.openapi.json"),
+};
+
+export default config;
