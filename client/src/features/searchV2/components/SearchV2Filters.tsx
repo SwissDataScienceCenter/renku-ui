@@ -17,16 +17,12 @@
  */
 
 import cx from "classnames";
-import { Card, CardBody, Col, Row } from "reactstrap";
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { useCallback, useMemo } from "react";
-import type {
-  SearchEntityType,
-  SearchEntityVisibility,
-  SearchFilter,
-  SearchFilters,
-} from "../searchV2.types";
-import { filtersAsArray } from "../searchV2.utils";
+import { Card, CardBody, Col, Row } from "reactstrap";
+
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import type { Role } from "../../projectsV2/api/projectV2.api";
 import {
   FILTER_KEY_LABELS,
   FILTER_VALUE_LABELS,
@@ -34,13 +30,17 @@ import {
   TYPE_FILTER_ALLOWED_VALUES,
   VISIBILITY_FILTER_ALLOWED_VALUES,
 } from "../searchV2.constants";
-import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import {
   toggleRoleFilterValue,
   toggleTypeFilterValue,
   toggleVisibilityFilterValue,
 } from "../searchV2.slice";
-import type { Role } from "../../projectsV2/api/projectV2.api";
+import type {
+  SearchEntityType,
+  SearchEntityVisibility,
+  SearchFilter,
+} from "../searchV2.types";
+import { filtersAsArray } from "../searchV2.utils";
 
 export default function SearchV2Filters() {
   const { filters } = useAppSelector(({ searchV2 }) => searchV2);
