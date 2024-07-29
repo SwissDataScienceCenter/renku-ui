@@ -310,14 +310,14 @@ export function valuesAsSet<T>(values: T[]): Set<T> {
   return values.reduce((set, value) => set.add(value), new Set<T>());
 }
 
-export function makeValuesSetAsArray<T extends string>(
+function makeValuesSetAsArray<T extends string>(
   values: T[],
   compareFn?: ((a: T, b: T) => number) | undefined
 ): T[] {
   return Array.from(valuesAsSet(values)).sort(compareFn);
 }
 
-export function filterAllowedValues<T extends string>(
+function filterAllowedValues<T extends string>(
   values: string[],
   allowedValues: T[]
 ): [T[], boolean] {
