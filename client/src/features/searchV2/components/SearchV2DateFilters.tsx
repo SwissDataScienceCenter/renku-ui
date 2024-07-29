@@ -94,12 +94,14 @@ function SearchV2DateFilterOption({
   option,
   optionKey,
 }: SearchV2DateFilterOptionProps) {
-  const { after, before } = option;
+  const { value } = option;
+  const { after, before } = value;
 
   const isChecked = useMemo(
     () =>
-      option.after === dateFilter.after && option.before === dateFilter.before,
-    [dateFilter, option]
+      option.value.after === dateFilter.value.after &&
+      option.value.before === dateFilter.value.before,
+    [dateFilter.value, option.value]
   );
 
   const dispatch = useAppDispatch();
@@ -149,19 +151,26 @@ function SearchV2DateFilterCustomOption({
 
   const isChecked = useMemo(
     () =>
-      (dateFilter.after != null && typeof dateFilter.after !== "string") ||
-      (dateFilter.before != null && typeof dateFilter.before !== "string"),
-    [dateFilter.after, dateFilter.before]
+      (dateFilter.value.after != null &&
+        typeof dateFilter.value.after !== "string") ||
+      (dateFilter.value.before != null &&
+        typeof dateFilter.value.before !== "string"),
+    [dateFilter.value.after, dateFilter.value.before]
   );
 
   const afterDate = useMemo(
-    () => (typeof dateFilter.after === "object" ? dateFilter.after.date : null),
-    [dateFilter.after]
+    () =>
+      typeof dateFilter.value.after === "object"
+        ? dateFilter.value.after.date
+        : null,
+    [dateFilter.value.after]
   );
   const beforeDate = useMemo(
     () =>
-      typeof dateFilter.before === "object" ? dateFilter.before.date : null,
-    [dateFilter.before]
+      typeof dateFilter.value.before === "object"
+        ? dateFilter.value.before.date
+        : null,
+    [dateFilter.value.before]
   );
 
   const dispatch = useAppDispatch();
@@ -171,7 +180,7 @@ function SearchV2DateFilterCustomOption({
       dispatch(
         selectCreationDateFilter({
           key: "created",
-          before: { date: today },
+          value: { before: { date: today } },
         })
       );
     }
@@ -183,7 +192,7 @@ function SearchV2DateFilterCustomOption({
         dispatch(
           selectCreationDateFilter({
             ...dateFilter,
-            after: undefined,
+            value: { ...dateFilter.value, after: undefined },
           })
         );
         return;
@@ -194,7 +203,7 @@ function SearchV2DateFilterCustomOption({
         dispatch(
           selectCreationDateFilter({
             ...dateFilter,
-            after: { date: newAfter },
+            value: { ...dateFilter.value, after: { date: newAfter } },
           })
         );
       }
@@ -208,7 +217,7 @@ function SearchV2DateFilterCustomOption({
         dispatch(
           selectCreationDateFilter({
             ...dateFilter,
-            before: undefined,
+            value: { ...dateFilter.value, before: undefined },
           })
         );
         return;
@@ -219,7 +228,7 @@ function SearchV2DateFilterCustomOption({
         dispatch(
           selectCreationDateFilter({
             ...dateFilter,
-            before: { date: newBefore },
+            value: { ...dateFilter.value, before: { date: newBefore } },
           })
         );
       }

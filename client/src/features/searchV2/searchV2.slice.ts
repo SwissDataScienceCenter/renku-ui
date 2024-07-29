@@ -29,7 +29,7 @@ import type {
   CreationDateFilter,
   SearchEntityType,
   SearchEntityVisibility,
-  SearchV2StateV2,
+  SearchV2State,
   SetInitialQueryParams,
   SortBy,
 } from "./searchV2.types";
@@ -37,7 +37,7 @@ import { buildSearchQuery2, valuesAsSet } from "./searchV2.utils";
 import type { Role } from "../projectsV2/api/projectV2.api";
 import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 
-const initialState: SearchV2StateV2 = {
+const initialState: SearchV2State = {
   dateFilters: {
     created: DEFAULT_CREATION_DATE_FILTER,
   },

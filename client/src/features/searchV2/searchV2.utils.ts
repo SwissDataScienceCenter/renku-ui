@@ -54,7 +54,7 @@ import type {
   SearchFilter,
   SearchFilters,
   SearchOption,
-  SearchV2StateV2,
+  SearchV2State,
   SortBy,
   TypeFilter,
   VisibilityFilter,
@@ -69,41 +69,44 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
   const reversedTerms = [...terms].reverse();
 
   // Retain the last filter option only
-  const roleFilterOption = reversedTerms.find(
+  const roleFilter = reversedTerms.find(
     isRoleFilterInterpretation
   )?.interpretation;
 
   // Retain the last filter option only
-  const typeFilterOption = reversedTerms.find(
+  const typeFilter = reversedTerms.find(
     isTypeFilterInterpretation
   )?.interpretation;
 
   // Retain the last filter option only
-  const visibilityFilterOption = reversedTerms.find(
+  const visibilityFilter = reversedTerms.find(
     isVisibilityFilterInterpretation
   )?.interpretation;
 
   const filters: SearchFilters = {
-    role: roleFilterOption ?? DEFAULT_ROLE_FILTER,
-    type: typeFilterOption ?? DEFAULT_TYPE_FILTER,
-    visibility: visibilityFilterOption ?? DEFAULT_VISIBILITY_FILTER,
+    role: roleFilter ?? DEFAULT_ROLE_FILTER,
+    type: typeFilter ?? DEFAULT_TYPE_FILTER,
+    visibility: visibilityFilter ?? DEFAULT_VISIBILITY_FILTER,
   };
 
-  const createdAfterFilterOption = reversedTerms
+  const createdAfterFilterValue = reversedTerms
     .filter(isCreationDateFilterInterpretation)
     .map(({ interpretation }) => interpretation)
-    .find(({ after }) => after != null)?.after;
-  const createdBeforeFilterOption = reversedTerms
+    .find(({ value }) => value.after != null)?.value.after;
+  const createdBeforeFilterValue = reversedTerms
     .filter(isCreationDateFilterInterpretation)
     .map(({ interpretation }) => interpretation)
-    .find(({ before }) => before != null)?.before;
-  const creationDateFilterOption: CreationDateFilter = {
+    .find(({ value }) => value != null)?.value.before;
+  const creationDateFilter: CreationDateFilter = {
     key: "created",
-    ...mergeDateFilters(createdAfterFilterOption, createdBeforeFilterOption),
+    value: mergeDateFilterValues(
+      createdAfterFilterValue,
+      createdBeforeFilterValue
+    ),
   };
 
   const dateFilters: SearchDateFilters = {
-    created: creationDateFilterOption,
+    created: creationDateFilter,
   };
 
   // Retain the last sorting option only
@@ -112,10 +115,10 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
   )?.interpretation;
 
   const optionsAsTerms = [
-    roleFilterOption,
-    typeFilterOption,
-    visibilityFilterOption,
-    creationDateFilterOption,
+    roleFilter,
+    typeFilter,
+    visibilityFilter,
+    creationDateFilter,
     sortByOption,
   ]
     .map(asQueryTerm)
@@ -222,7 +225,9 @@ export function parseTerm(term: string): InterpretedTerm {
         term,
         interpretation: {
           key: "created",
-          after: matchedKnownValue,
+          value: {
+            after: matchedKnownValue,
+          },
         },
       };
     }
@@ -234,7 +239,9 @@ export function parseTerm(term: string): InterpretedTerm {
           term,
           interpretation: {
             key: "created",
-            after: { date: parsed },
+            value: {
+              after: { date: parsed },
+            },
           },
         };
       }
@@ -254,7 +261,9 @@ export function parseTerm(term: string): InterpretedTerm {
         term,
         interpretation: {
           key: "created",
-          before: matchedKnownValue,
+          value: {
+            before: matchedKnownValue,
+          },
         },
       };
     }
@@ -266,7 +275,9 @@ export function parseTerm(term: string): InterpretedTerm {
           term,
           interpretation: {
             key: "created",
-            before: { date: parsed },
+            value: {
+              before: { date: parsed },
+            },
           },
         };
       }
@@ -380,26 +391,26 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
 
   if (
     option.key === "created" &&
-    option.after == null &&
-    option.before == null
+    option.value.after == null &&
+    option.value.before == null
   ) {
     return "";
   }
   if (option.key === "created") {
     const afterValueStr =
-      typeof option.after === "string"
-        ? option.after
-        : option.after?.date != null
-        ? `${option.after.date.toISODate()}${DATE_AFTER_LEEWAY}`
+      typeof option.value.after === "string"
+        ? option.value.after
+        : option.value.after?.date != null
+        ? `${option.value.after.date.toISODate()}${DATE_AFTER_LEEWAY}`
         : "";
     const afterStr = afterValueStr
       ? `${CREATION_DATE_FILTER_KEY}${KEY_GREATER_THAN_VALUE}${afterValueStr}`
       : "";
     const beforeValueStr =
-      typeof option.before === "string"
-        ? option.before
-        : option.before?.date != null
-        ? `${option.before.date.toISODate()}${DATE_BEFORE_LEEWAY}`
+      typeof option.value.before === "string"
+        ? option.value.before
+        : option.value.before?.date != null
+        ? `${option.value.before.date.toISODate()}${DATE_BEFORE_LEEWAY}`
         : "";
     const beforeStr = beforeValueStr
       ? `${CREATION_DATE_FILTER_KEY}${KEY_LESS_THAN_VALUE}${beforeValueStr}`
@@ -419,7 +430,7 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
   return "";
 }
 
-function mergeDateFilters(
+function mergeDateFilterValues(
   after: AfterDateValue | undefined,
   before: BeforeDateValue | undefined
 ): {
@@ -456,7 +467,7 @@ function mergeDateFilters(
 
 export function buildSearchQuery2(
   state: Pick<
-    SearchV2StateV2,
+    SearchV2State,
     "searchBarQuery" | "sortBy" | "filters" | "dateFilters"
   >
 ): string {

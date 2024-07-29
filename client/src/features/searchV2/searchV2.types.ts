@@ -21,7 +21,7 @@ import { DateTime } from "luxon";
 import type { Role } from "../projectsV2/api/projectV2.api";
 import type { SearchEntity, Visibility } from "./api/searchV2Api.api";
 
-export interface SearchV2StateV2 {
+export interface SearchV2State {
   dateFilters: SearchDateFilters;
   filters: SearchFilters;
   initialQuery: string;
@@ -40,11 +40,15 @@ export interface SearchDateFilters {
 
 export type SearchDateFilter = CreationDateFilter;
 
-export interface CreationDateFilter {
-  key: "created";
-  after?: AfterDateValue;
-  before?: BeforeDateValue;
-}
+type SearchDateFilterBase<K extends string> = {
+  key: K;
+  value: {
+    after?: AfterDateValue;
+    before?: BeforeDateValue;
+  };
+};
+
+export type CreationDateFilter = SearchDateFilterBase<"created">;
 
 export type AfterDateValue =
   | "today-7d"
@@ -62,25 +66,22 @@ export interface SearchFilters {
 
 export type SearchFilter = RoleFilter | TypeFilter | VisibilityFilter;
 
-export interface RoleFilter {
-  key: "role";
+type SearchFilterBase<K extends string, V> = {
+  key: K;
   /** Note: `values` should be interpreted as a set */
-  values: Role[];
-}
+  values: V[];
+};
 
-export interface TypeFilter {
-  key: "type";
-  /** Note: `values` should be interpreted as a set */
-  values: SearchEntityType[];
-}
+export type RoleFilter = SearchFilterBase<"role", Role>;
+
+export type TypeFilter = SearchFilterBase<"type", SearchEntityType>;
 
 export type SearchEntityType = Lowercase<SearchEntity["type"]>;
 
-export interface VisibilityFilter {
-  key: "visibility";
-  /** Note: `values` should be interpreted as a set */
-  values: SearchEntityVisibility[];
-}
+export type VisibilityFilter = SearchFilterBase<
+  "visibility",
+  SearchEntityVisibility
+>;
 
 export type SearchEntityVisibility = Lowercase<Visibility>;
 
