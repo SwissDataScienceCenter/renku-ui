@@ -119,6 +119,8 @@ export interface CloudStorageSchema {
   hide?: boolean;
   prefix: string; // ? weird naming; it's the machine readable name
   position?: number;
+  convenientMode?: boolean; // ? Disables the advanced mode
+  readOnly?: boolean; // ? Forces read-only access
   options: CloudStorageSchemaOptions[];
 }
 
@@ -155,6 +157,7 @@ export type CloudStorageDetails = {
   sourcePath?: string;
   mountPoint?: string;
   readOnly?: boolean;
+  convenientMode?: boolean;
 };
 
 export interface TestCloudStorageConnectionParams {
