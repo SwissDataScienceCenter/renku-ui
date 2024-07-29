@@ -62,19 +62,7 @@ export default function useSearch() {
   }, [dispatch, searchParams, setSearchParams]);
 
   useEffect(() => {
-    const query = searchParams.get("q");
     const pageRaw = searchParams.get("page");
-
-    if (query == null) {
-      setSearchParams(
-        (prev) => {
-          prev.delete("page");
-          return prev;
-        },
-        { replace: true }
-      );
-      return;
-    }
 
     const page = parseInt(pageRaw ?? "", 10);
     if (isNaN(page) || page < 1) {
@@ -92,19 +80,7 @@ export default function useSearch() {
   }, [dispatch, searchParams, setSearchParams]);
 
   useEffect(() => {
-    const query = searchParams.get("q");
     const perPageRaw = searchParams.get("perPage");
-
-    if (query == null) {
-      setSearchParams(
-        (prev) => {
-          prev.delete("perPage");
-          return prev;
-        },
-        { replace: true }
-      );
-      return;
-    }
 
     const perPage = parseInt(perPageRaw ?? "", 10);
     if (isNaN(perPage) || perPage < 1) {

@@ -32,6 +32,7 @@ import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { Group, Project, User, searchV2Api } from "../api/searchV2Api.api";
+import useClampSearchPage from "../hooks/useClampSearchPage.hook";
 
 export default function SearchV2Results() {
   const [, setSearchParams] = useSearchParams();
@@ -42,10 +43,10 @@ export default function SearchV2Results() {
     searchV2Api.endpoints.getQuery.useLazyQuery();
 
   useEffect(() => {
-    if (query != null) {
-      search({ page, perPage, q: query });
-    }
+    search({ page, perPage, q: query });
   }, [page, perPage, query, search]);
+
+  useClampSearchPage({ totalPages: searchResults?.pagingInfo.totalPages });
 
   const onPageChange = useCallback(
     (page: number) => {

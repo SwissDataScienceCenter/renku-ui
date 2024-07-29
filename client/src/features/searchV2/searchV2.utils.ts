@@ -142,7 +142,7 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
 }
 
 /** Attempt to parse `term` as a search option */
-export function parseTerm(term: string): InterpretedTerm {
+function parseTerm(term: string): InterpretedTerm {
   const termLower = term.toLowerCase();
 
   if (termLower.startsWith(`${ROLE_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
@@ -465,7 +465,7 @@ function mergeDateFilterValues(
   return merged;
 }
 
-export function buildSearchQuery2(
+export function buildSearchQuery(
   state: Pick<
     SearchV2State,
     "searchBarQuery" | "sortBy" | "filters" | "dateFilters"

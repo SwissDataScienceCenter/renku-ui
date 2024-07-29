@@ -33,7 +33,7 @@ import type {
   SetInitialQueryParams,
   SortBy,
 } from "./searchV2.types";
-import { buildSearchQuery2, valuesAsSet } from "./searchV2.utils";
+import { buildSearchQuery, valuesAsSet } from "./searchV2.utils";
 import type { Role } from "../projectsV2/api/projectV2.api";
 import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 
@@ -76,11 +76,11 @@ export const searchV2Slice = createSlice({
     },
     setSortBy: (state, action: PayloadAction<SortBy>) => {
       state.sortBy = action.payload;
-      state.query = buildSearchQuery2(state);
+      state.query = buildSearchQuery(state);
     },
     setSearchBarQuery: (state, action: PayloadAction<string>) => {
       state.searchBarQuery = action.payload;
-      state.query = buildSearchQuery2(state);
+      state.query = buildSearchQuery(state);
     },
     toggleRoleFilterValue: (state, action: PayloadAction<Role>) => {
       const asSet = valuesAsSet(state.filters.role.values);
@@ -92,7 +92,7 @@ export const searchV2Slice = createSlice({
       state.filters.role.values = Array.from(asSet).sort(
         (a, b) => toNumericRole(b) - toNumericRole(a)
       );
-      state.query = buildSearchQuery2(state);
+      state.query = buildSearchQuery(state);
     },
     toggleTypeFilterValue: (
       state,
@@ -107,7 +107,7 @@ export const searchV2Slice = createSlice({
         asSet.add(action.payload.value);
       }
       state.filters.type.values = Array.from(asSet).sort();
-      state.query = buildSearchQuery2(state);
+      state.query = buildSearchQuery(state);
     },
     toggleVisibilityFilterValue: (
       state,
@@ -120,14 +120,14 @@ export const searchV2Slice = createSlice({
         asSet.add(action.payload);
       }
       state.filters.visibility.values = Array.from(asSet).sort();
-      state.query = buildSearchQuery2(state);
+      state.query = buildSearchQuery(state);
     },
     selectCreationDateFilter: (
       state,
       action: PayloadAction<CreationDateFilter>
     ) => {
       state.dateFilters.created = action.payload;
-      state.query = buildSearchQuery2(state);
+      state.query = buildSearchQuery(state);
     },
     reset: () => initialState,
   },

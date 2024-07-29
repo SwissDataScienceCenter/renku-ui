@@ -16,87 +16,92 @@
  * limitations under the License.
  */
 
-// import { describe, expect, it } from "vitest";
+import {
+  DEFAULT_CREATION_DATE_FILTER,
+  DEFAULT_ROLE_FILTER,
+  DEFAULT_SORT_BY,
+  DEFAULT_TYPE_FILTER,
+  DEFAULT_VISIBILITY_FILTER,
+} from "./searchV2.constants";
+import { buildSearchQuery, parseSearchQuery } from "./searchV2.utils";
 
-// import { buildSearchQuery } from "./searchV2.utils";
-// import { SearchV2State } from "./searchV2.types";
-// import { DateFilterTypes } from "../../components/dateFilter/DateFilter.tsx";
+describe("Renku 2.0 search utilities", () => {
+  describe("parseSearchQuery()", () => {
+    it("parses the empty string", () => {
+      const { canonicalQuery, dateFilters, filters, searchBarQuery, sortBy } =
+        parseSearchQuery("");
 
-export {};
+      expect(canonicalQuery).toBe("");
+      expect(searchBarQuery).toBe("");
 
-// describe("Test the searchV2.utils functions", () => {
-//   it("function buildSearchQuery ", () => {
-//     const searchState: SearchV2State = {
-//       filters: {
-//         role: [],
-//         type: [],
-//         visibility: [],
-//         created: {
-//           option: DateFilterTypes.all,
-//         },
-//         createdBy: "",
-//       },
-//       search: {
-//         history: [],
-//         lastSearch: "something else",
-//         outdated: false,
-//         page: 1,
-//         perPage: 10,
-//         query: "test",
-//         totalPages: 0,
-//         totalResults: 0,
-//       },
-//       sorting: {
-//         friendlyName: "Best match",
-//         sortingString: "score-desc",
-//       },
-//     };
+      expect(dateFilters.created.value).toStrictEqual({});
 
-//     // Adds sorting to the default string
-//     expect(buildSearchQuery(searchState)).toEqual("sort:score-desc test");
+      expect(filters.role.values).toStrictEqual([]);
+      expect(filters.type.values).toStrictEqual([]);
+      expect(filters.visibility.values).toStrictEqual([]);
 
-//     // Adds filters to the default string
-//     searchState.filters = {
-//       role: [],
-//       type: ["project"],
-//       visibility: ["private"],
-//       created: {
-//         option: DateFilterTypes.all,
-//       },
-//       createdBy: "",
-//     };
-//     expect(buildSearchQuery(searchState)).toEqual(
-//       "sort:score-desc type:project visibility:private test"
-//     );
+      expect(sortBy.value).toBe(DEFAULT_SORT_BY.value);
+    });
 
-//     // Let users override sorting
-//     searchState.search.query = "test sort:name-asc";
-//     expect(buildSearchQuery(searchState)).toEqual(
-//       "type:project visibility:private test sort:name-asc"
-//     );
+    it("parses a query with filters", () => {
+      const query =
+        "role:editor type:group,user visibility:private created>today-31d sort:name-asc test";
+      const { canonicalQuery, dateFilters, filters, searchBarQuery, sortBy } =
+        parseSearchQuery(query);
 
-//     // Let users override filters
-//     searchState.search.query = "test sort:name-desc type:user";
-//     expect(buildSearchQuery(searchState)).toEqual(
-//       "visibility:private test sort:name-desc type:user"
-//     );
+      expect(canonicalQuery).toBe(query);
+      expect(searchBarQuery).toBe("test");
 
-//     //Update date filter
-//     searchState.filters.created.option = DateFilterTypes.last90days;
-//     expect(buildSearchQuery(searchState)).toEqual(
-//       "visibility:private created>today-90d test sort:name-desc type:user"
-//     );
+      expect(dateFilters.created.value).toStrictEqual({ after: "today-31d" });
 
-//     //Update createdBy filter
-//     searchState.filters.createdBy = "abc";
-//     expect(buildSearchQuery(searchState)).toEqual(
-//       "visibility:private created>today-90d createdBy:abc test sort:name-desc type:user"
-//     );
+      expect(filters.role.values).toStrictEqual(["editor"]);
+      expect(filters.type.values).toStrictEqual(["group", "user"]);
+      expect(filters.visibility.values).toStrictEqual(["private"]);
 
-//     //Update role filter
-//     searchState.filters.role = ["owner"];
-//     expect(buildSearchQuery(searchState)).toEqual(
-//       "role:owner visibility:private created>today-90d createdBy:abc test sort:name-desc type:user"
-//     );
-//   });
-// });
+      expect(sortBy.value).toBe("name-asc");
+    });
+  });
+
+  describe("buildSearchQuery()", () => {
+    it("builds the empty query", () => {
+      const result = buildSearchQuery({
+        dateFilters: {
+          created: DEFAULT_CREATION_DATE_FILTER,
+        },
+        filters: {
+          role: DEFAULT_ROLE_FILTER,
+          type: DEFAULT_TYPE_FILTER,
+          visibility: DEFAULT_VISIBILITY_FILTER,
+        },
+        searchBarQuery: "",
+        sortBy: DEFAULT_SORT_BY,
+      });
+
+      expect(result).toBe("");
+    });
+
+    it("builds a complex query", () => {
+      const result = buildSearchQuery({
+        dateFilters: {
+          created: {
+            key: "created",
+            value: {
+              before: "today-90d",
+            },
+          },
+        },
+        filters: {
+          role: { key: "role", values: ["editor"] },
+          type: { key: "type", values: ["group", "user"] },
+          visibility: { key: "visibility", values: ["private"] },
+        },
+        searchBarQuery: "test",
+        sortBy: { key: "sort", value: "name-desc" },
+      });
+
+      expect(result).toBe(
+        "role:editor type:group,user visibility:private created<today-90d sort:name-desc test"
+      );
+    });
+  });
+});
