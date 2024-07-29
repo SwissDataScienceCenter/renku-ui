@@ -18,32 +18,23 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import {
-  EyeFill,
-  EyeSlashFill,
-  PencilSquare,
-  XLg,
-} from "react-bootstrap-icons";
+import { PencilSquare, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   Form,
   Input,
-  InputGroup,
   Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  UncontrolledTooltip,
 } from "reactstrap";
 
-import { useEditSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { useEditSecretMutation } from "./secrets.api";
 import { EditSecretForm, SecretDetails } from "./secrets.types";
 import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
-
-import styles from "./secrets.module.scss";
 
 interface SecretsEditProps {
   secret: SecretDetails;
@@ -53,12 +44,6 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
   const [showModal, setShowModal] = useState(false);
   const toggleModal = useCallback(() => {
     setShowModal((showModal) => !showModal);
-  }, []);
-
-  // Hide/show the secret value
-  const [showPlainText, setShowPlainText] = useState(false);
-  const toggleShowPlainText = useCallback(() => {
-    setShowPlainText((showPlainText) => !showPlainText);
   }, []);
 
   // Set up the form
@@ -71,7 +56,6 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
     defaultValues: {
       value: "",
     },
-    mode: "all",
   });
 
   // Handle posting data
@@ -103,7 +87,14 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
         Replace
       </Button>
 
-      <Modal isOpen={showModal} toggle={toggleModal}>
+      <Modal
+        backdrop="static"
+        centered
+        fullscreen="md"
+        isOpen={showModal}
+        size="md"
+        toggle={toggleModal}
+      >
         <ModalHeader toggle={toggleModal}>
           Replace Secret <code>{secret.name}</code>
         </ModalHeader>
@@ -123,55 +114,35 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
               <Label className="form-label" for="edit-secret-value">
                 Value
               </Label>
-              <InputGroup>
-                <Controller
-                  control={control}
-                  name="value"
-                  render={({ field }) => (
-                    <Input
-                      autoComplete="off"
-                      className={cx(
-                        "form-control",
-                        "rounded-0",
-                        "rounded-start",
-                        !showPlainText && styles.blurredText,
-                        errors.value && "is-invalid"
-                      )}
-                      id="edit-secret-value"
-                      spellCheck="false"
-                      type="textarea"
-                      {...field}
-                    />
-                  )}
-                  rules={{
-                    required: "Please provide a value.",
-                    validate: (value) =>
-                      value.length > SECRETS_VALUE_LENGTH_LIMIT
-                        ? `Value cannot exceed ${SECRETS_VALUE_LENGTH_LIMIT} characters.`
-                        : undefined,
-                  }}
-                />
-                <Button
-                  className="rounded-end"
-                  id="secret-new-show-value"
-                  onClick={() => toggleShowPlainText()}
-                >
-                  {showPlainText ? (
-                    <EyeFill className="bi" />
-                  ) : (
-                    <EyeSlashFill className="bi" />
-                  )}
-                  <UncontrolledTooltip
-                    placement="top"
-                    target="secret-new-show-value"
-                  >
-                    Hide/show secret value
-                  </UncontrolledTooltip>
-                </Button>
-                {errors.value && (
-                  <div className="invalid-feedback">{errors.value.message}</div>
+              <Controller
+                control={control}
+                name="value"
+                render={({ field }) => (
+                  <Input
+                    id="edit-secret-value"
+                    type="textarea"
+                    {...field}
+                    autoComplete="off one-time-code"
+                    className={cx(
+                      "rounded-0",
+                      "rounded-start",
+                      errors.value && "is-invalid"
+                    )}
+                    spellCheck="false"
+                    rows={6}
+                  />
                 )}
-              </InputGroup>
+                rules={{
+                  required: "Please provide a value.",
+                  validate: (value) =>
+                    value.length > SECRETS_VALUE_LENGTH_LIMIT
+                      ? `Value cannot exceed ${SECRETS_VALUE_LENGTH_LIMIT} characters.`
+                      : undefined,
+                }}
+              />
+              {errors.value && (
+                <div className="invalid-feedback">{errors.value.message}</div>
+              )}
             </div>
           </Form>
         </ModalBody>
