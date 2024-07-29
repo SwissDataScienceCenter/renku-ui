@@ -41,13 +41,16 @@ import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
 
 import RenkuFrogIcon from "../../components/icons/RenkuIcon.tsx";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import { setFavicon } from "../display";
 import styles from "../session/components/ShowSession.module.scss";
 import {
   calculateFaviconStatus,
-  SessionFavicon,
-} from "./components/SessionFavicon/SessionFavicon.tsx";
+  FAVICON_BY_SESSION_STATUS,
+} from "./session.utils";
 
 export default function ShowSessionPage() {
+  const dispatch = useAppDispatch();
   const {
     namespace,
     slug,
@@ -69,6 +72,18 @@ export default function ShowSessionPage() {
     }
     return Object.values(sessions).find(({ name }) => name === sessionName);
   }, [sessionName, sessions]);
+
+  useEffect(() => {
+    const faviconState = calculateFaviconStatus(
+      thisSession?.status?.state,
+      isLoading
+    );
+    dispatch(setFavicon(FAVICON_BY_SESSION_STATUS[faviconState]));
+    return () => {
+      // cleanup and set favicon to default
+      dispatch(setFavicon("/favicon.ico"));
+    };
+  }, [thisSession?.status?.state, isLoading, dispatch]);
 
   const [isTheSessionReady, setIsTheSessionReady] = useState(false);
 
@@ -153,8 +168,6 @@ export default function ShowSessionPage() {
       toggleModal={togglePauseOrDeleteSession}
     />
   );
-
-  const faviconState = calculateFaviconStatus(thisSession, isLoading);
 
   const content =
     !isLoading && thisSession == null ? (

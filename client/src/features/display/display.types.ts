@@ -27,6 +27,7 @@ interface SessionConfig {
 }
 
 interface Display {
+  favicon: string;
   modals: {
     ssh: {
       show: boolean;

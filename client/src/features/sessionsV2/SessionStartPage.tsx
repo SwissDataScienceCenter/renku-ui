@@ -37,6 +37,7 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
+import { setFavicon } from "../display";
 import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
@@ -44,6 +45,7 @@ import { useStartRenku2SessionMutation } from "../session/sessions.api";
 import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
 import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
+import { FAVICON_BY_SESSION_STATUS } from "./session.utils";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
@@ -52,7 +54,6 @@ import {
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLauncherState from "./useSessionLaunchState.hook";
-import { SessionFavicon } from "./components/SessionFavicon/SessionFavicon";
 
 interface SessionStartingProps extends StartSessionFromLauncherProps {
   containerImage: string;
@@ -67,6 +68,7 @@ function SessionStarting({
 }: SessionStartingProps) {
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [
     startSession,
@@ -89,12 +91,14 @@ function SessionStarting({
       sessionClass: startSessionOptionsV2.sessionClass,
       storage: startSessionOptionsV2.storage,
     });
+    dispatch(setFavicon(FAVICON_BY_SESSION_STATUS.waiting));
   }, [
     containerImage,
     launcher.id,
     project.id,
     startSession,
     startSessionOptionsV2,
+    dispatch,
   ]);
 
   // Navigate to the session page when it is ready
@@ -133,7 +137,6 @@ function SessionStarting({
 
   return (
     <div>
-      <SessionFavicon status="waiting" />
       {error && <RtkErrorAlert error={error} dismissible={false} />}
 
       <div className={cx("progress-box-small", "progress-box-small--steps")}>
@@ -260,6 +263,7 @@ function StartSessionFromLauncher({
   launcher,
   project,
 }: StartSessionFromLauncherProps) {
+  const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const hasCustomQuery = searchParams.has("custom");
   const startSessionOptionsV2 = useAppSelector(
@@ -284,6 +288,12 @@ function StartSessionFromLauncher({
     startSessionOptionsV2.dockerImageStatus === "available" &&
     startSessionOptionsV2.sessionClass !== 0 &&
     !isFetchingOrLoadingStorages;
+
+  useEffect(() => {
+    if (!allDataFetched || needsCredentials) {
+      dispatch(setFavicon(FAVICON_BY_SESSION_STATUS.waiting));
+    }
+  }, [allDataFetched, needsCredentials, dispatch]);
 
   if (allDataFetched && !needsCredentials)
     return (
@@ -326,7 +336,6 @@ function StartSessionFromLauncher({
 
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
-      <SessionFavicon status="waiting" />
       <ProgressStepsIndicator
         description="Preparing to start session"
         type={ProgressType.Determinate}
