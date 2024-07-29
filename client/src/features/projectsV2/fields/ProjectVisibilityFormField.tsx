@@ -56,7 +56,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 Public
               </Label>
             </div>
-            <div className="d-flex gap-2">
+            <div className={cx("d-flex", "gap-2")}>
               <Input
                 type="radio"
                 className={cx(errors.visibility && "is-invalid")}
