@@ -38,10 +38,10 @@ import SessionUnavailable from "../session/components/SessionUnavailable";
 import StartSessionProgressBar from "../session/components/StartSessionProgressBar";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
-
-import styles from "../session/components/ShowSession.module.scss";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import RenkuFrogIcon from "../../components/icons/RenkuIcon.tsx";
+
+import styles from "../session/components/ShowSession.module.scss";
 
 export default function ShowSessionPage() {
   const {
@@ -180,32 +180,32 @@ export default function ShowSessionPage() {
   const backButton = (
     <Link
       className={cx(
-        "fullscreen-back-button",
-        "btn",
-        "bg-white",
-        "text-dark",
-        "d-flex",
         "align-items-center",
-        "gap-2",
-        "no-focus"
+        "btn",
+        "d-flex",
+        "no-focus",
+        "shadow-none",
+        "p-0"
       )}
       role="button"
       to={backUrl}
     >
-      <ArrowLeft className="text-rk-dark" title="back" /> Back
+      <ArrowLeft className="me-1" title="back" />
+      Back
     </Link>
   );
 
   return (
     <div className={cx("bg-white", "p-0")}>
       <div className={cx("d-lg-flex", "flex-column")}>
-        <div className={cx(styles.fullscreenHeader, "d-flex", "gap-3")}>
+        <div className={cx("d-flex", styles.fullscreenHeader)}>
           <div
             className={cx(
+              "align-items-center",
               "d-flex",
-              "gap-3",
               "flex-grow-0",
-              "align-items-center"
+              "gap-3",
+              "px-3"
             )}
           >
             {backButton}
@@ -248,11 +248,12 @@ function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
     <div>
       <Button
         className={cx(
-          "border-0",
           "bg-transparent",
-          "text-dark",
+          "border-0",
+          "no-focus",
           "p-0",
-          "no-focus"
+          "shadow-none",
+          "text-dark"
         )}
         data-cy="resources-button"
         id="resources-button"
@@ -289,11 +290,12 @@ function PauseSessionBtn({ openPauseSession }: PauseSessionBtnProps) {
     <div>
       <Button
         className={cx(
-          "border-0",
           "bg-transparent",
-          "text-dark",
+          "border-0",
+          "no-focus",
           "p-0",
-          "no-focus"
+          "shadow-none",
+          "text-dark"
         )}
         data-cy={buttonId}
         id={buttonId}
@@ -323,11 +325,12 @@ function DeleteSessionBtn({ openDeleteSession }: DeleteSessionBtnProps) {
     <div>
       <Button
         className={cx(
-          "border-0",
           "bg-transparent",
-          "text-dark",
+          "border-0",
+          "no-focus",
           "p-0",
-          "no-focus"
+          "shadow-none",
+          "text-dark"
         )}
         data-cy={buttonId}
         id={buttonId}
