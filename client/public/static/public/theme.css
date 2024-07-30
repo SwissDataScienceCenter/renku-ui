@@ -50,41 +50,127 @@ body {
 }
 
 .btn-rk-green {
-  color: white;
-  font-size: 1rem;
-  line-height: 1.5;
-  background-color: #009568;
-  border-color: #009568;
-  border-radius: 1000px;
-  padding: 5px 20px;
-  font-weight: 400;
-  text-decoration: none;
+  color: black;
+  font-weight: bold;
 }
 
 .btn-rk-green:hover {
-  color: white;
-  background-color: #26a57f;
-  border-color: #1aa077;
+  color: #006e58;
 }
 
 .btn-rk-green:active {
-  color: white;
-  background-color: #26a57f;
-  border-color: #1aa077;
+  color: #006e58;
 }
 
 .content {
-  background-position: center;
-  background-size: cover;
-  /* calc 100vh - footer height - header height */
   height: calc(100vh - 75px - 70px);
-  background-image: url("./img/404@0.25x.png");
-  color: #d26a98;
+  color: #000;
   overflow: auto;
   width: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
+}
+
+/* Define the keyframes for the background animation */
+@keyframes changeBackgroundXL {
+  0% {
+    background-image: url("./img/redirect/frog/X-Large_1.png");
+  }
+  25% {
+    background-image: url("./img/redirect/frog/X-Large_2.png");
+  }
+  50% {
+    background-image: url("./img/redirect/frog/X-Large_3.png");
+  }
+  75% {
+    background-image: url("./img/redirect/frog/X-Large_4.png");
+  }
+  100% {
+    background-image: url("./img/redirect/frog/X-Large_5.png");
+  }
+}
+@keyframes changeBackgroundL {
+  0% {
+    background-image: url("./img/redirect/frog/Large_1.png");
+  }
+  25% {
+    background-image: url("./img/redirect/frog/Large_2.png");
+  }
+  50% {
+    background-image: url("./img/redirect/frog/Large_3.png");
+  }
+  75% {
+    background-image: url("./img/redirect/frog/Large_4.png");
+  }
+  100% {
+    background-image: url("./img/redirect/frog/Large_5.png");
+  }
+}
+@keyframes changeBackgroundS {
+  0% {
+    background-image: url("./img/redirect/frog/Small_1.png");
+  }
+  25% {
+    background-image: url("./img/redirect/frog/Small_2.png");
+  }
+  50% {
+    background-image: url("./img/redirect/frog/Small_3.png");
+  }
+  75% {
+    background-image: url("./img/redirect/frog/Small_4.png");
+  }
+  100% {
+    background-image: url("./img/redirect/frog/Small_5.png");
+  }
+}
+@keyframes changeBackgroundXS {
+  0% {
+    background-image: url("./img/redirect/frog/X-Small_1.png");
+  }
+  25% {
+    background-image: url("./img/redirect/frog/X-Small_2.png");
+  }
+  50% {
+    background-image: url("./img/redirect/frog/X-Small_3.png");
+  }
+  75% {
+    background-image: url("./img/redirect/frog/X-Small_4.png");
+  }
+  100% {
+    background-image: url("./img/redirect/frog/X-Small_5.png");
+  }
+}
+
+.content {
+  background-image: url("./img/redirect/frog/X-Large_5.png");
+  background-position: center;
+  background-size: inherit;
+  background-repeat: no-repeat;
+  overflow: auto;
+  width: 100%;
+  animation: changeBackgroundXL 5s step-end;
+  top: 35%;
+}
+@media (max-width: 992px) {
+  .content {
+    background-image: url("./img/redirect/frog/Large_5.png");
+    animation: changeBackgroundL 5s step-end;
+  }
+}
+
+@media (max-width: 576px) {
+  .content {
+    background-image: url("./img/redirect/frog/Small_5.png");
+    animation: changeBackgroundS 5s step-end;
+  }
+}
+
+@media (max-width: 400px) {
+  .content {
+    background-image: url("./img/redirect/frog/X-Small_5.png");
+    animation: changeBackgroundXS 5s step-end;
+  }
 }
 
 .content-text {
@@ -97,10 +183,11 @@ body {
 .content h1 {
   font-weight: bold;
   font-size: xx-large;
+  color: #006e58;
 }
 
 .content p {
-  font-size: x-large;
+  font-size: 16px;
   line-height: 1.2;
   word-break: break-all;
 }
@@ -114,18 +201,5 @@ body {
 @media (min-width: 1024px) {
   .content-text {
     margin: 10% 50px;
-  }
-}
-
-@media (min-width: 1500px) {
-  .content {
-    background-image: url("./img/404@0.5x.png");
-  }
-}
-
-@media (min-width: 2200px) {
-  .content {
-    background-image: url("./img/404@0.75x.png");
-    padding: 0 4rem;
   }
 }
