@@ -62,8 +62,10 @@ const FormSchema = ({
   ) : null;
   return (
     <Row>
-      <Col className="col-12 col-md-3">{header}</Col>
-      <Col className="col-12 col-md-9">
+      <Col xs={12} md={4} xl={3}>
+        {header}
+      </Col>
+      <Col xs={12} md={8} xl={9}>
         <div>{children}</div>
       </Col>
     </Row>
