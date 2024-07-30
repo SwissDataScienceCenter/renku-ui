@@ -37,7 +37,7 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
-import { setFavicon } from "../display";
+import { resetFavicon, setFavicon } from "../display";
 import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
@@ -293,6 +293,10 @@ function StartSessionFromLauncher({
     if (!allDataFetched || needsCredentials) {
       dispatch(setFavicon(FAVICON_BY_SESSION_STATUS.waiting));
     }
+    return () => {
+      // cleanup and set favicon to default
+      dispatch(resetFavicon());
+    };
   }, [allDataFetched, needsCredentials, dispatch]);
 
   if (allDataFetched && !needsCredentials)

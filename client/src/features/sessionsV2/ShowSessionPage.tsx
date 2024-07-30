@@ -20,8 +20,8 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Journals, PauseCircle, Trash } from "react-bootstrap-icons";
 import {
-  generatePath,
   Link,
+  generatePath,
   useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
@@ -39,15 +39,12 @@ import StartSessionProgressBar from "../session/components/StartSessionProgressB
 import { useGetSessionsQuery } from "../session/sessions.api";
 import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
 
-import RenkuFrogIcon from "../../components/icons/RenkuIcon.tsx";
+import RenkuFrogIcon from "../../components/icons/RenkuIcon";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import { setFavicon } from "../display";
+import { resetFavicon, setFavicon } from "../display";
 import styles from "../session/components/ShowSession.module.scss";
-import {
-  calculateFaviconStatus,
-  FAVICON_BY_SESSION_STATUS,
-} from "./session.utils";
+import { getSessionFavicon } from "./session.utils";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
@@ -74,14 +71,14 @@ export default function ShowSessionPage() {
   }, [sessionName, sessions]);
 
   useEffect(() => {
-    const faviconState = calculateFaviconStatus(
+    const faviconByStatus = getSessionFavicon(
       thisSession?.status?.state,
       isLoading
     );
-    dispatch(setFavicon(FAVICON_BY_SESSION_STATUS[faviconState]));
+    dispatch(setFavicon(faviconByStatus));
     return () => {
       // cleanup and set favicon to default
-      dispatch(setFavicon("/favicon.ico"));
+      dispatch(resetFavicon());
     };
   }, [thisSession?.status?.state, isLoading, dispatch]);
 

@@ -15,39 +15,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import { SessionStatusState } from "../session/sessions.types.ts";
+import { FaviconSet } from "../display/display.types";
+import { SessionStatusState } from "../session/sessions.types";
 
 export type FaviconStatus = "running" | "waiting" | "error" | "pause";
 
-export function calculateFaviconStatus(
+export function getSessionFavicon(
   sessionState?: SessionStatusState,
   isLoading?: boolean
-): FaviconStatus {
+): FaviconSet {
   if (isLoading) {
-    return "waiting";
+    return FAVICON_BY_SESSION_STATUS["waiting"];
   }
 
   if (!sessionState) {
-    return "error";
+    return FAVICON_BY_SESSION_STATUS["error"];
   }
 
   switch (sessionState) {
     case "hibernated":
-      return "pause";
+      return FAVICON_BY_SESSION_STATUS["pause"];
     case "stopping":
-      return "waiting";
+      return FAVICON_BY_SESSION_STATUS["waiting"];
     case "running":
-      return "running";
+      return FAVICON_BY_SESSION_STATUS["running"];
     case "failed":
-      return "error";
+      return FAVICON_BY_SESSION_STATUS["error"];
     default:
-      return "waiting";
+      return FAVICON_BY_SESSION_STATUS["waiting"];
   }
 }
 
 export const FAVICON_BY_SESSION_STATUS = {
-  running: "/faviconPlay.svg",
-  waiting: "/faviconWarning.svg",
-  error: "/faviconError.svg",
-  pause: "/faviconPause.svg",
+  running: {
+    ico: "/src/styles/assets/favicon.ico",
+    png_16x: "/src/styles/assets/favicon-16x16.png",
+    png_32x: "/src/styles/assets/favicon-32x32.png",
+    svg: "/src/styles/assets/faviconPlay.svg",
+  },
+  waiting: {
+    ico: "/src/styles/assets/favicon.ico",
+    png_16x: "/src/styles/assets/favicon-16x16.png",
+    png_32x: "/src/styles/assets/favicon-32x32.png",
+    svg: "/src/styles/assets/faviconWarning.svg",
+  },
+  error: {
+    ico: "/src/styles/assets/favicon.ico",
+    png_16x: "/src/styles/assets/favicon-16x16.png",
+    png_32x: "/src/styles/assets/favicon-32x32.png",
+    svg: "/src/styles/assets/faviconError.svg",
+  },
+  pause: {
+    ico: "/src/styles/assets/favicon.ico",
+    png_16x: "/src/styles/assets/favicon-16x16.png",
+    png_32x: "/src/styles/assets/favicon-32x32.png",
+    svg: "/src/styles/assets/faviconPause.svg",
+  },
 };

@@ -20,7 +20,7 @@ import { useEffect } from "react";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook.ts";
 
 export function Favicon() {
-  const faviconPath = useAppSelector(({ display }) => display.favicon);
+  const faviconSet = useAppSelector(({ display }) => display.favicon);
 
   useEffect(() => {
     const removeExistingFavicon = () => {
@@ -47,10 +47,11 @@ export function Favicon() {
     };
 
     removeExistingFavicon();
-    addFavicon(faviconPath, "icon", "32x32");
-    addFavicon(faviconPath, "icon", "16x16");
-    addFavicon(faviconPath, "shortcut icon");
-  }, [faviconPath]);
+    addFavicon(faviconSet.svg, "icon");
+    addFavicon(faviconSet.png_32x, "icon", "32x32");
+    addFavicon(faviconSet.png_16x, "icon", "16x16");
+    addFavicon(faviconSet.ico, "shortcut icon");
+  }, [faviconSet]);
 
   return null;
 }
