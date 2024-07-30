@@ -24,10 +24,11 @@ import {
   BoxArrowUpRight,
   CheckLg,
   FileEarmarkText,
+  PauseCircle,
   PlayFill,
+  Plugin,
   Tools,
   Trash,
-  TrashFill,
   XLg,
 } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom-v5-compat";
@@ -46,8 +47,7 @@ import {
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { EnvironmentLogs } from "../../../../components/Logs";
-import { ButtonWithMenu } from "../../../../components/buttons/Button";
-import SessionPausedIcon from "../../../../components/icons/SessionPausedIcon";
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { User } from "../../../../model/renkuModels.types";
 import { NotebooksHelper } from "../../../../notebooks";
 import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
@@ -62,7 +62,7 @@ import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
 import UnsavedWorkWarning from "../../../session/components/UnsavedWorkWarning";
-import { SessionClassSelector } from "../../../session/components/options/SessionClassOption";
+import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
@@ -75,11 +75,13 @@ import {
 } from "../SessionModals/ResourceClassWarning";
 
 interface ActiveSessionButtonProps {
+  className?: string;
   session: Session;
   showSessionUrl: string;
 }
 
 export default function ActiveSessionButton({
+  className,
   session,
   showSessionUrl,
 }: ActiveSessionButtonProps) {
@@ -257,30 +259,27 @@ export default function ActiveSessionButton({
 
   const defaultAction =
     status === "stopping" || isStopping ? (
-      <Button className={buttonClassName} data-cy="stopping-btn" disabled>
+      <Button color="primary" data-cy="stopping-btn" disabled>
         <Loader className="me-1" inline size={16} />
         Deleting
       </Button>
     ) : isHibernating ? (
-      <Button className={buttonClassName} data-cy="stopping-btn" disabled>
+      <Button color="primary" data-cy="stopping-btn" disabled>
         <Loader className="me-1" inline size={16} />
         Pausing
       </Button>
     ) : status === "starting" || status === "running" ? (
       <Link
-        className={cx(buttonClassName, "d-inline-flex")}
+        className={cx("btn", "btn-primary")}
         data-cy="open-session"
         to={showSessionUrl}
       >
-        <img
-          className={cx("rk-icon", "rk-icon-md", "me-1")}
-          src="/connect.svg"
-        />
+        <Plugin className={cx("bi", "me-1")} />
         Open
       </Link>
     ) : status === "hibernated" ? (
       <Button
-        className={buttonClassName}
+        color="primary"
         data-cy="resume-session-button"
         disabled={isResuming}
         onClick={onResumeSession}
@@ -299,6 +298,7 @@ export default function ActiveSessionButton({
       </Button>
     ) : failedScheduling ? (
       <Button
+        color="primary"
         className={buttonClassName}
         data-cy="modify-session-button"
         onClick={toggleModifySession}
@@ -308,16 +308,17 @@ export default function ActiveSessionButton({
       </Button>
     ) : (
       <Button
+        color="primary"
         className={buttonClassName}
         data-cy={logged ? "pause-session-button" : "delete-session-button"}
         onClick={logged ? onHibernateSession : onStopSession}
       >
         {logged ? (
           <span className="align-self-start">
-            <SessionPausedIcon size={16} />
+            <PauseCircle className={cx("bi", "me-1")} />
           </span>
         ) : (
-          <TrashFill className={cx("bi", "me-1")} />
+          <Trash className={cx("bi", "me-1")} />
         )}
         {logged ? "Pause" : "Delete"}
       </Button>
@@ -333,7 +334,7 @@ export default function ActiveSessionButton({
         disabled={status === "starting"}
         onClick={onHibernateSession}
       >
-        <SessionPausedIcon className={cx("bi", "me-1")} size={16} />
+        <PauseCircle className={cx("bi", "me-1")} />
         Pause session
       </DropdownItem>
     );
@@ -357,7 +358,7 @@ export default function ActiveSessionButton({
         onClick={toggleModifySession}
       >
         <Tools className={cx("bi", "me-1")} />
-        Modify Session resources
+        Modify session resources
       </DropdownItem>
     );
 
@@ -377,11 +378,12 @@ export default function ActiveSessionButton({
   );
 
   return (
-    <ButtonWithMenu
-      className="py-1"
-      color="rk-green"
+    <ButtonWithMenuV2
+      className={cx(className)}
+      color="primary"
       default={defaultAction}
-      isPrincipal
+      preventPropagation
+      size="sm"
     >
       {hibernateAction}
       {deleteAction}
@@ -413,7 +415,7 @@ export default function ActiveSessionButton({
         name={displayModal.targetServer}
         annotations={cleanAnnotations}
       />
-    </ButtonWithMenu>
+    </ButtonWithMenuV2>
   );
 }
 
@@ -599,7 +601,7 @@ function ModifySessionModalContent({
   ) : !resourcePools || resourcePools.length == 0 || isError ? (
     <ErrorOrNotAvailableResourcePools />
   ) : (
-    <SessionClassSelector
+    <SessionClassSelectorV2
       resourcePools={resourcePools}
       currentSessionClass={currentSessionClass}
       onChange={onChange}

@@ -436,7 +436,7 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
   if (isLoading) {
     return (
       <div>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Loading users...
       </div>
     );

@@ -18,13 +18,7 @@
 import cx from "classnames";
 import { Duration } from "luxon";
 import { ReactNode, useMemo } from "react";
-import {
-  CheckCircleFill,
-  Clock,
-  ExclamationCircleFill,
-  PauseCircleFill,
-  XCircleFill,
-} from "react-bootstrap-icons";
+import { CircleFill, Clock } from "react-bootstrap-icons";
 import { Badge } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
@@ -53,6 +47,9 @@ export function SessionBadge({
 interface ActiveSessionV2Props {
   session: Session;
 }
+interface ActiveSessionDescV2Props extends ActiveSessionV2Props {
+  showInfoDetails?: boolean;
+}
 interface ActiveSessionTitleV2Props {
   session: Session;
   launcher?: SessionLauncher;
@@ -70,49 +67,48 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
   const badge =
     state === "running" && defaultImage ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <ExclamationCircleFill
-          className={cx("bi", "me-1", "text-warning")}
-          size={16}
-        />
-        <span className="text-warning">Running Session</span>
+        <CircleFill className={cx("bi", "me-1", "text-warning-emphasis")} />
+        <span className="text-warning-emphasis">Running Session</span>
       </SessionBadge>
     ) : state === "running" ? (
       <SessionBadge className={cx("border-success", "bg-success-subtle")}>
-        <CheckCircleFill
-          className={cx("bi", "me-1", "text-success")}
-          size={16}
-        />
+        <CircleFill className={cx("bi", "me-1", "text-success-emphasis")} />
         <span className="text-success-emphasis">Running Session</span>
       </SessionBadge>
     ) : state === "starting" ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <Loader size={16} className={cx("me-1", "text-warning")} inline />
-        <span className="text-warning">Starting Session</span>
+        <Loader
+          size={12}
+          className={cx("me-1", "text-warning-emphasis")}
+          inline
+        />
+        <span className="text-warning-emphasis">Starting Session</span>
       </SessionBadge>
     ) : state === "stopping" ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <Loader size={16} className={cx("me-1", "text-warning")} inline />
-        <span className="text-warning">Stopping Session</span>
+        <Loader
+          size={12}
+          className={cx("me-1", "text-warning-emphasis")}
+          inline
+        />
+        <span className="text-warning-emphasis">Stopping Session</span>
       </SessionBadge>
     ) : state === "hibernated" ? (
       <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-        <PauseCircleFill
-          className={cx("bi", "me-1", "text-light-emphasis")}
-          size={16}
-        />
-        <span className="text-dark">Paused Session</span>
+        <CircleFill className={cx("bi", "me-1", "text-light-emphasis")} />
+        <span className="text-dark-emphasis">Paused Session</span>
       </SessionBadge>
     ) : state === "failed" ? (
       <SessionBadge className={cx("border-danger", "bg-danger-subtle")}>
-        <XCircleFill className={cx("bi", "me-1", "text-danger")} size={16} />
-        <span className="text-danger">Error in Session</span>
+        <CircleFill
+          className={cx("bi", "me-1", "text-danger-emphasis")}
+          size={16}
+        />
+        <span className="text-danger-emphasis">Error in Session</span>
       </SessionBadge>
     ) : (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <ExclamationCircleFill
-          className={cx("bi", "me-1", "text-warning")}
-          size={16}
-        />
+        <CircleFill className={cx("bi", "me-1", "text-warning")} />
         <span className="text-warning">Unknown status</span>
       </SessionBadge>
     );
@@ -123,7 +119,10 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
     </div>
   );
 }
-export function SessionStatusV2Description({ session }: ActiveSessionV2Props) {
+export function SessionStatusV2Description({
+  session,
+  showInfoDetails = true,
+}: ActiveSessionDescV2Props) {
   const { annotations, started, status } = session;
 
   const cleanAnnotations = useMemo(
@@ -148,11 +147,13 @@ export function SessionStatusV2Description({ session }: ActiveSessionV2Props) {
         startTimestamp={started}
         status={status.state}
       />
-      <SessionListRowStatusExtraDetails
-        details={details}
-        status={status.state}
-        uid={session.name}
-      />
+      {showInfoDetails && (
+        <SessionListRowStatusExtraDetails
+          details={details}
+          status={status.state}
+          uid={session.name}
+        />
+      )}
     </div>
   );
 }
@@ -163,31 +164,22 @@ export function SessionStatusV2Title({
   const { status } = session;
   const state = status.state;
 
-  return state === "running" && !launcher ? (
-    <small>
-      <i>You are currently running a orphan session</i>
-    </small>
-  ) : state === "running" ? (
-    <small>
-      <i>You are currently running a session from this launcher</i>
-    </small>
-  ) : state === "starting" ? (
-    <small>
-      <i>You are currently starting a session from this launcher</i>
-    </small>
-  ) : state === "stopping" ? (
-    <small>
-      <i>You are currently stopping a session from this launcher</i>
-    </small>
-  ) : state === "hibernated" ? (
-    <small>
-      <i>You have a paused session from this launcher</i>
-    </small>
-  ) : state === "failed" ? (
-    <small>
-      <i>An error was encountered while attempting to launch this session.</i>
-    </small>
-  ) : null;
+  const text =
+    state === "running" && !launcher
+      ? "You are currently running a orphan session"
+      : state === "running"
+      ? "You are currently running a session from this launcher"
+      : state === "starting"
+      ? "You are currently starting a session from this launcher"
+      : state === "stopping"
+      ? "You are currently stopping a session from this launcher"
+      : state === "hibernated"
+      ? "You have a paused session from this launcher"
+      : state === "failed"
+      ? "An error was encountered while attempting to launch this session."
+      : null;
+
+  return text ? <p className={cx("fst-italic", "mb-2")}>{text}</p> : null;
 }
 interface SessionStatusV2TextProps {
   annotations: NotebookAnnotations;

@@ -360,12 +360,12 @@ function SessionActions({ className, session }: SessionActionsProps) {
   const defaultAction =
     status === "stopping" || isStopping ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Deleting
       </Button>
     ) : isHibernating ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Pausing
       </Button>
     ) : status === "starting" || status === "running" ? (
@@ -389,7 +389,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
       >
         {isResuming ? (
           <>
-            <Loader className="me-2" inline size={16} />
+            <Loader className="me-1" inline size={16} />
             Resuming
           </>
         ) : (

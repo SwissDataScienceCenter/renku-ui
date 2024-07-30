@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Form, InputGroup } from "reactstrap";
@@ -59,7 +58,7 @@ export default function SearchV2Bar() {
       <InputGroup data-cy="search-bar">
         <input
           autoComplete="renku-search"
-          className={cx("form-control", "rounded-0", "rounded-start")}
+          className="form-control"
           data-cy="search-input"
           id="search-input"
           placeholder="Search..."
@@ -67,8 +66,7 @@ export default function SearchV2Bar() {
           {...register("searchBarQuery", { onBlur: onSubmit })}
         />
         <Button
-          className="rounded-end"
-          color="secondary"
+          color="primary"
           data-cy="search-button"
           id="search-button"
           type="submit"

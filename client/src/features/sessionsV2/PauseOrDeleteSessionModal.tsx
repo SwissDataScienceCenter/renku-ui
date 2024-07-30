@@ -26,7 +26,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
-import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { InfoAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
@@ -146,37 +146,29 @@ function AnonymousDeleteSessionModal({
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
       <ModalBody>
-        <Row>
-          <Col>
-            <p>Are you sure you want to delete this session?</p>
-            <div className="d-flex justify-content-end">
-              <Button
-                className={cx("float-right", "mt-1", "btn-outline-rk-green")}
-                disabled={isStopping}
-                onClick={toggleModal}
-              >
-                Back to Session
-              </Button>
-              <Button
-                className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
-                data-cy="delete-session-modal-button"
-                disabled={isStopping}
-                type="submit"
-                onClick={onStopSession}
-              >
-                {isStopping ? (
-                  <>
-                    <Loader className="me-2" inline size={16} />
-                    Deleting session
-                  </>
-                ) : (
-                  <>Delete Session</>
-                )}
-              </Button>
-            </div>
-          </Col>
-        </Row>
+        <p>Are you sure you want to delete this session?</p>
       </ModalBody>
+      <ModalFooter>
+        <Button
+          color="outline-primary"
+          data-cy="delete-session-modal-button"
+          disabled={isStopping}
+          type="submit"
+          onClick={onStopSession}
+        >
+          {isStopping ? (
+            <>
+              <Loader className="me-1" inline size={16} />
+              Deleting session
+            </>
+          ) : (
+            <>Delete Session</>
+          )}
+        </Button>
+        <Button color="primary" disabled={isStopping} onClick={toggleModal}>
+          Back to Session
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 }
@@ -195,14 +187,14 @@ function LoggedPauseOrDeleteSessionModal({
         {action === "pause" ? "Pause Session" : "Delete Session"}
       </ModalHeader>
       {action === "pause" ? (
-        <PauseSessionModalBody
+        <PauseSessionModalContent
           session={session}
           sessionName={sessionName}
           toggleAction={toggleAction}
           toggleModal={toggleModal}
         />
       ) : (
-        <DeleteSessionModalBody
+        <DeleteSessionModalContent
           session={session}
           sessionName={sessionName}
           toggleAction={toggleAction}
@@ -213,14 +205,17 @@ function LoggedPauseOrDeleteSessionModal({
   );
 }
 
-type ModalBodyProps = Omit<PauseOrDeleteSessionModalProps, "action" | "isOpen">;
+type ModalContentProps = Omit<
+  PauseOrDeleteSessionModalProps,
+  "action" | "isOpen"
+>;
 
-function PauseSessionModalBody({
+function PauseSessionModalContent({
   session,
   sessionName,
   toggleAction,
   toggleModal,
-}: ModalBodyProps) {
+}: ModalContentProps) {
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
 
   const navigate = useNavigate();
@@ -279,67 +274,65 @@ function PauseSessionModalBody({
     : "a period";
 
   return (
-    <ModalBody>
-      <Row>
-        <Col>
-          <p>
-            Are you sure you want to pause this session? The current state of
-            the session (new and edited files) will be preserved while the
-            session is paused.
-          </p>
-          {hibernatedSecondsThreshold > 0 && (
-            <InfoAlert dismissible={false} timeout={0}>
-              Please note that paused session are deleted after{" "}
-              {hibernationThreshold} of inactivity.
-            </InfoAlert>
+    <>
+      <ModalBody>
+        <p>
+          Are you sure you want to pause this session? The current state of the
+          session (new and edited files) will be preserved while the session is
+          paused.
+        </p>
+        {hibernatedSecondsThreshold > 0 && (
+          <InfoAlert dismissible={false} timeout={0}>
+            Please note that paused session are deleted after{" "}
+            {hibernationThreshold} of inactivity.
+          </InfoAlert>
+        )}
+        <div className="my-2">
+          <Button
+            className={cx("float-right", "p-0")}
+            color="link"
+            disabled={isStopping}
+            onClick={toggleAction}
+          >
+            Delete session instead?
+          </Button>
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          color="outline-primary"
+          disabled={isStopping}
+          onClick={toggleModal}
+        >
+          Back to Session
+        </Button>
+        <Button
+          color="primary"
+          data-cy="pause-session-modal-button"
+          disabled={isStopping || session?.status.state === "starting"}
+          type="submit"
+          onClick={onHibernateSession}
+        >
+          {isStopping ? (
+            <>
+              <Loader className="me-1" inline size={16} />
+              Pausing session
+            </>
+          ) : (
+            <>Pause Session</>
           )}
-          <div className="my-2">
-            <Button
-              className={cx("float-right", "p-0")}
-              color="link"
-              disabled={isStopping}
-              onClick={toggleAction}
-            >
-              Delete session instead?
-            </Button>
-          </div>
-          <div className="d-flex justify-content-end">
-            <Button
-              className={cx("float-right", "mt-1", "btn-outline-rk-green")}
-              disabled={isStopping}
-              onClick={toggleModal}
-            >
-              Back to Session
-            </Button>
-            <Button
-              className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
-              data-cy="pause-session-modal-button"
-              disabled={isStopping || session?.status.state === "starting"}
-              type="submit"
-              onClick={onHibernateSession}
-            >
-              {isStopping ? (
-                <>
-                  <Loader className="me-2" inline size={16} />
-                  Pausing session
-                </>
-              ) : (
-                <>Pause Session</>
-              )}
-            </Button>
-          </div>
-        </Col>
-      </Row>
-    </ModalBody>
+        </Button>
+      </ModalFooter>
+    </>
   );
 }
 
-function DeleteSessionModalBody({
+function DeleteSessionModalContent({
   session,
   sessionName,
   toggleAction,
   toggleModal,
-}: ModalBodyProps) {
+}: ModalContentProps) {
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
 
   const navigate = useNavigate();
@@ -388,58 +381,52 @@ function DeleteSessionModalBody({
     : null;
 
   return (
-    <ModalBody>
-      <Row>
-        <Col>
-          <p>Are you sure you want to delete this session?</p>
-          <p className="fw-bold">
-            Deleting a session will permanently remove any unsaved work.
-          </p>
-          {session != null && annotations != null && (
-            <UnsavedWorkWarning
-              annotations={annotations}
-              sessionName={sessionName}
-              status={session.status.state}
-            />
+    <>
+      <ModalBody>
+        <p>Are you sure you want to delete this session?</p>
+        <p className="fw-bold">
+          Deleting a session will permanently remove any unsaved work.
+        </p>
+        {session != null && annotations != null && (
+          <UnsavedWorkWarning
+            annotations={annotations}
+            sessionName={sessionName}
+            status={session.status.state}
+          />
+        )}
+        <div className="my-2">
+          <Button
+            className={cx("float-right", "p-0")}
+            color="link"
+            disabled={isStopping}
+            onClick={toggleAction}
+          >
+            Pause session instead?
+          </Button>
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          color="outline-primary"
+          data-cy="delete-session-modal-button"
+          disabled={isStopping}
+          type="submit"
+          onClick={onStopSession}
+        >
+          {isStopping ? (
+            <>
+              <Loader className="me-1" inline size={16} />
+              Deleting session
+            </>
+          ) : (
+            <>Delete Session</>
           )}
-          <div className="my-2">
-            <Button
-              className={cx("float-right", "p-0")}
-              color="link"
-              disabled={isStopping}
-              onClick={toggleAction}
-            >
-              Pause session instead?
-            </Button>
-          </div>
-          <div className="d-flex justify-content-end">
-            <Button
-              className={cx("float-right", "mt-1", "btn-outline-rk-green")}
-              disabled={isStopping}
-              onClick={toggleModal}
-            >
-              Back to Session
-            </Button>
-            <Button
-              className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
-              data-cy="delete-session-modal-button"
-              disabled={isStopping}
-              type="submit"
-              onClick={onStopSession}
-            >
-              {isStopping ? (
-                <>
-                  <Loader className="me-2" inline size={16} />
-                  Deleting session
-                </>
-              ) : (
-                <>Delete Session</>
-              )}
-            </Button>
-          </div>
-        </Col>
-      </Row>
-    </ModalBody>
+        </Button>
+        <Button color="primary" disabled={isStopping} onClick={toggleModal}>
+          Back to Session
+        </Button>
+      </ModalFooter>
+    </>
   );
 }
 

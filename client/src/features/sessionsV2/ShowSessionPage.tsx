@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Journals } from "react-bootstrap-icons";
+import { ArrowLeft, Journals, PauseCircle, Trash } from "react-bootstrap-icons";
 import {
   Link,
   generatePath,
@@ -29,7 +27,6 @@ import {
 } from "react-router-dom-v5-compat";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
-import SessionPausedIcon from "../../components/icons/SessionPausedIcon";
 import { User } from "../../model/renkuModels.types";
 import { SESSION_TABS } from "../../notebooks/Notebooks.present";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
@@ -41,11 +38,10 @@ import SessionUnavailable from "../session/components/SessionUnavailable";
 import StartSessionProgressBar from "../session/components/StartSessionProgressBar";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import RenkuFrogIcon from "../../components/icons/RenkuIcon.tsx";
 
 import styles from "../session/components/ShowSession.module.scss";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-
-const logo = "/static/public/img/logo.svg";
 
 export default function ShowSessionPage() {
   const {
@@ -184,32 +180,32 @@ export default function ShowSessionPage() {
   const backButton = (
     <Link
       className={cx(
-        "fullscreen-back-button",
-        "btn",
-        "bg-white",
-        "text-dark",
-        "d-flex",
         "align-items-center",
-        "gap-2",
-        "no-focus"
+        "btn",
+        "d-flex",
+        "no-focus",
+        "shadow-none",
+        "p-0"
       )}
       role="button"
       to={backUrl}
     >
-      <ArrowLeft className="text-rk-dark" title="back" /> Back
+      <ArrowLeft className="me-1" title="back" />
+      Back
     </Link>
   );
 
   return (
     <div className={cx("bg-white", "p-0")}>
       <div className={cx("d-lg-flex", "flex-column")}>
-        <div className={cx(styles.fullscreenHeader, "d-flex", "gap-3")}>
+        <div className={cx("d-flex", styles.fullscreenHeader)}>
           <div
             className={cx(
+              "align-items-center",
               "d-flex",
-              "gap-3",
               "flex-grow-0",
-              "align-items-center"
+              "gap-3",
+              "px-3"
             )}
           >
             {backButton}
@@ -219,19 +215,17 @@ export default function ShowSessionPage() {
           </div>
           <div
             className={cx(
-              "d-flex",
               "align-items-center",
-              "justify-content-between",
               "bg-primary",
+              "d-flex",
               "flex-grow-1",
+              "justify-content-between",
               "py-2"
             )}
           >
-            <div className={cx("px-3", "text-rk-green", "fw-bold")}>
-              {sessionName}
-            </div>
-            <div className="px-3">
-              <img alt="Renku" className="d-block" height="22" src={logo} />
+            <div className={cx("px-3", "text-white")}>{sessionName}</div>
+            <div className={cx("px-3", "text-white")}>
+              <RenkuFrogIcon size={24} />
             </div>
           </div>
         </div>
@@ -254,18 +248,19 @@ function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
     <div>
       <Button
         className={cx(
-          "border-0",
           "bg-transparent",
-          "text-dark",
+          "border-0",
+          "no-focus",
           "p-0",
-          "no-focus"
+          "shadow-none",
+          "text-dark"
         )}
         data-cy="resources-button"
         id="resources-button"
         innerRef={ref}
         onClick={toggleModalResources}
       >
-        <Journals className="text-rk-dark" />
+        <Journals className="bi" />
         <span className="visually-hidden">Resources</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
@@ -295,18 +290,19 @@ function PauseSessionBtn({ openPauseSession }: PauseSessionBtnProps) {
     <div>
       <Button
         className={cx(
-          "border-0",
           "bg-transparent",
-          "text-dark",
+          "border-0",
+          "no-focus",
           "p-0",
-          "no-focus"
+          "shadow-none",
+          "text-dark"
         )}
         data-cy={buttonId}
         id={buttonId}
         innerRef={ref}
         onClick={openPauseSession}
       >
-        <SessionPausedIcon className="text-rk-dark" size={16} />
+        <PauseCircle className="bi" />
         <span className="visually-hidden">{tooltip}</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
@@ -329,18 +325,19 @@ function DeleteSessionBtn({ openDeleteSession }: DeleteSessionBtnProps) {
     <div>
       <Button
         className={cx(
-          "border-0",
           "bg-transparent",
-          "text-dark",
+          "border-0",
+          "no-focus",
           "p-0",
-          "no-focus"
+          "shadow-none",
+          "text-dark"
         )}
         data-cy={buttonId}
         id={buttonId}
         innerRef={ref}
         onClick={openDeleteSession}
       >
-        <FontAwesomeIcon className="text-rk-dark" icon={faTrash} />
+        <Trash className="bi" />
         <span className="visually-hidden">{tooltip}</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>

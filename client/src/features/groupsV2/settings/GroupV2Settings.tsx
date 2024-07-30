@@ -55,26 +55,30 @@ export default function GroupV2Settings() {
 
   return (
     <ContainerWrap>
-      <h1>{group.name ?? "Unknown group"}</h1>
-      <div>
-        <Link
-          to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-            slug: group.slug,
-          })}
-        >
-          <ArrowLeft className={cx("bi", "me-1")} />
-          Back to group
-        </Link>
+      <div className={cx("d-flex", "flex-column", "gap-3")}>
+        <div>
+          <h2>{group.name ?? "Unknown group"}</h2>
+          <div>
+            <Link
+              to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+                slug: group.slug,
+              })}
+            >
+              <ArrowLeft className={cx("bi", "me-1")} />
+              Back to group
+            </Link>
+          </div>
+        </div>
+
+        <section>
+          <h4>General settings</h4>
+          <GroupMetadataForm group={group} />
+        </section>
+
+        <section>
+          <GroupMembersForm group={group} />
+        </section>
       </div>
-
-      <section className="mt-2">
-        <h2 className="fs-4">General settings</h2>
-        <GroupMetadataForm group={group} />
-      </section>
-
-      <section className="mt-4">
-        <GroupMembersForm group={group} />
-      </section>
     </ContainerWrap>
   );
 }

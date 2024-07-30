@@ -431,10 +431,7 @@ export default function CloudStorageModal({
         <AddCloudStorageHeaderContent isV2={isV2} storageId={storageId} />
       </ModalHeader>
 
-      <ModalBody
-        data-cy="cloud-storage-edit-body"
-        className={isV2 ? "pt-0" : ""}
-      >
+      <ModalBody data-cy="cloud-storage-edit-body">
         <AddCloudStorageBodyContent
           addResultStorageName={addResultStorageName}
           isV2={isV2}

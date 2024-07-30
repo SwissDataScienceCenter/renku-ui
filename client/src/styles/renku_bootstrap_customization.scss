@@ -1,0 +1,102 @@
+// Functions: should be imported first
+@import "~bootstrap/scss/functions";
+
+// Font
+@import "./fonts/fonts";
+$font-family-base: "Inter", sans-serif;
+
+// Variables: note we re-define colors and shadow variables before importing
+$primary: #006e58;
+$body-color: #16192c;
+$navy: #01192d;
+$info: #0f7396;
+$enable-shadows: true;
+$shadow-renku: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+  rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+// Variables and functions
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+
+// Add navy color
+$additional-colors: (
+  "navy": $navy,
+);
+$theme-colors: map-merge($theme-colors, $additional-colors);
+
+// Adjust shadows
+$card-box-shadow: $shadow-renku;
+$dropdown-box-shadow: $shadow-renku;
+$input-box-shadow: transparent;
+
+// Adjust Offcanvas
+$offcanvas-horizontal-width: 500px;
+
+// Adjust nav tabs
+$nav-tabs-link-active-bg: transparent;
+$nav-tabs-link-hover-border-color: transparent;
+$nav-tabs-link-active-color: $primary;
+$nav-link-color: $body-color;
+$nav-link-transition: none;
+.nav-tabs .nav-link {
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+}
+.nav-tabs .nav-link.active {
+  border-bottom: 2px solid $nav-tabs-link-active-color !important;
+}
+
+// Adjust card and list group colors
+$card-cap-bg: transparent;
+$list-group-border-color: $card-border-color;
+
+// Adjust card group spacing
+$card-cap-padding-y: $spacer;
+.card-header {
+  border: 0 !important;
+  padding-top: $spacer !important;
+  padding-bottom: 0 !important;
+}
+.card-footer {
+  border: 0 !important;
+}
+
+// Adjust list groups vertical spacing
+$list-group-item-padding-y: $spacer;
+
+// Adjust flush list groups spacing and borders when used in cards
+.card .list-group-flush {
+  border-top: 1px solid $list-group-border-color;
+
+  & > .list-group-item {
+    padding-left: 0;
+    padding-right: 0;
+
+    &.list-group-item-action {
+      &::before {
+        bottom: 0;
+        content: "";
+        left: -$spacer;
+        position: absolute;
+        right: -$spacer;
+        top: 0;
+        z-index: -1;
+      }
+      &:hover::before {
+        background-color: $list-group-hover-bg;
+      }
+    }
+  }
+}
+
+// Adjust titles in card headers
+.card-header {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+  }
+}

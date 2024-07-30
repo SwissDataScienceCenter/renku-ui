@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
-import { Card, CardBody, Col, Row } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
@@ -85,8 +85,10 @@ function SearchV2Filter({ filter }: SearchV2FilterProps) {
 
   return (
     <Card className={cx("border", "rounded")} data-cy={`search-filter-${key}`}>
+      <CardHeader>
+        <h6 className="mb-0">{label}</h6>
+      </CardHeader>
       <CardBody>
-        <p className={cx("form-text", "mb-1", "mt-0")}>{label}</p>
         {options.map((option) => (
           <SearchV2FilterOption key={option} filter={filter} option={option} />
         ))}
@@ -129,7 +131,7 @@ function SearchV2FilterOption({ filter, option }: SearchV2FilterOptionProps) {
   const { label } = FILTER_VALUE_LABELS[option];
 
   return (
-    <div className={cx("form-rk-green", "d-flex", "align-items-center")}>
+    <div className={cx("d-flex", "gap-2")}>
       <input
         checked={isChecked}
         className="form-check-input"
@@ -138,7 +140,7 @@ function SearchV2FilterOption({ filter, option }: SearchV2FilterOptionProps) {
         onChange={onToggle}
         type="checkbox"
       />
-      <label className={cx("form-check-label", "ms-2", "mt-1")} htmlFor={id}>
+      <label className="form-check-label" htmlFor={id}>
         {label}
       </label>
     </div>

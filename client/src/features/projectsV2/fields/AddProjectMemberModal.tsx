@@ -136,11 +136,11 @@ function AddProjectMemberAccessForm({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button onClick={handleSubmit(onSubmit)} type="submit">
+        <Button color="primary" onClick={handleSubmit(onSubmit)} type="submit">
           <PlusLg className={cx("bi", "me-1")} />
           Add Member
         </Button>

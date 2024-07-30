@@ -17,11 +17,10 @@
  */
 
 import cx from "classnames";
-import { PlayFill } from "react-bootstrap-icons";
+import { PlayCircle } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 
-import { DropdownItem } from "reactstrap";
-import { ButtonWithMenu } from "../../components/buttons/Button";
+import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 
 interface StartSessionButtonProps {
@@ -46,52 +45,37 @@ export default function StartSessionButton({
 
   const defaultAction = (
     <Link
-      className={cx(
-        "btn",
-        "btn-rk-green",
-        "d-flex",
-        "align-items-center",
-        "py-1",
-        "px-2"
-      )}
+      className={cx("btn", "btn-sm", "btn-primary")}
       to={startUrl}
       data-cy="start-session-button"
     >
-      <PlayFill className={cx("bi", "me-1")} />
+      <PlayCircle className={cx("bi", "me-1")} />
       Launch
     </Link>
   );
 
   const customizeLaunch = (
-    <DropdownItem data-cy="custom-launch-button">
-      <Link
-        className={cx(
-          "d-flex",
-          "align-items-center",
-          "py-1",
-          "px-2",
-          "text-decoration-none"
-        )}
-        to={{
-          pathname: startUrl,
-          search: new URLSearchParams({ custom: "1" }).toString(),
-        }}
-        data-cy="start-custom-session-button"
-      >
-        <PlayFill className={cx("bi", "me-1")} />
-        Custom launch
-      </Link>
-    </DropdownItem>
+    <Link
+      className="dropdown-item"
+      to={{
+        pathname: startUrl,
+        search: new URLSearchParams({ custom: "1" }).toString(),
+      }}
+      data-cy="start-custom-session-button"
+    >
+      <PlayCircle className={cx("bi", "me-1")} />
+      Custom launch
+    </Link>
   );
 
   return (
-    <ButtonWithMenu
-      className="py-1"
-      color="rk-green"
+    <ButtonWithMenuV2
+      color="primary"
       default={defaultAction}
-      isPrincipal
+      preventPropagation
+      size="sm"
     >
       {customizeLaunch}
-    </ButtonWithMenu>
+    </ButtonWithMenuV2>
   );
 }

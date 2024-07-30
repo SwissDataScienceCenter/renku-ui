@@ -1,0 +1,16 @@
+// Renku specific classes.
+// ? Add new one only when strictly necessary. Prefer combining existing bootstrap classes in all
+// ? other cases.
+
+// align boostrap icons when used inline as/with text
+.bi {
+  display: inline-flex;
+  height: 1em;
+  vertical-align: -0.125em;
+  width: 1em;
+}
+
+// Force the cursor to be a pointer
+.cursor-pointer {
+  cursor: pointer !important;
+}

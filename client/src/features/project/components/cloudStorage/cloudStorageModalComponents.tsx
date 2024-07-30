@@ -67,7 +67,7 @@ export function AddCloudStorageBackButton({
   if (state.step <= 1 || success)
     return (
       <Button
-        className="btn-outline-rk-green"
+        color="outline-primary"
         data-cy="cloud-storage-edit-close-button"
         onClick={() => toggle()}
       >
@@ -77,7 +77,7 @@ export function AddCloudStorageBackButton({
     );
   return (
     <Button
-      className="btn-outline-rk-green"
+      color="outline-primary"
       data-cy="cloud-storage-edit-back-button"
       disabled={validationResult.isLoading}
       onClick={() => {
@@ -126,7 +126,7 @@ export function AddCloudStorageBodyContent({
   if (success)
     return (
       <SuccessAlert dismissible={false} timeout={0}>
-        <p className="p-0">
+        <p className="mb-0">
           The storage {addResultStorageName} has been successfully{" "}
           {storageId ? "updated" : "added"}.
         </p>
@@ -176,15 +176,13 @@ export function AddCloudStorageHeaderContent({
   if (isV2)
     return (
       <>
-        <Database className={cx("bi", "me-2")} />{" "}
-        <span className="text-uppercase">
-          {storageId ? "Edit" : "Add"} data source
-        </span>
+        <Database className={cx("bi", "me-1")} /> {storageId ? "Edit" : "Add"}{" "}
+        data source
       </>
     );
   return (
     <>
-      <CloudFill className={cx("bi", "me-2")} />
+      <CloudFill className={cx("bi", "me-1")} />
       {storageId ? "Edit" : "Add"} Cloud Storage
     </>
   );
@@ -220,6 +218,7 @@ export function AddCloudStorageContinueButton({
     return (
       <div id={`${addButtonId}-div`} className="d-inline-block">
         <Button
+          color="primary"
           data-cy="cloud-storage-edit-update-button"
           id={`${addButtonId}-button`}
           disabled={disableAddButton}
@@ -272,6 +271,7 @@ export function AddCloudStorageContinueButton({
   return (
     <div id={`${continueButtonId}-div`} className="d-inline-block">
       <Button
+        color="primary"
         id={`${continueButtonId}-button`}
         data-cy="cloud-storage-edit-next-button"
         disabled={disableContinueButton}
@@ -287,7 +287,7 @@ export function AddCloudStorageContinueButton({
           });
         }}
       >
-        Next <ChevronRight className={cx("bi", "me-1")} />
+        Next <ChevronRight className={cx("bi", "ms-1")} />
       </Button>
       {disableContinueButton && (
         <UncontrolledTooltip placement="top" target={`${continueButtonId}-div`}>
@@ -319,7 +319,7 @@ export function AddCloudStorageConnectionTestResult({
     <div className={cx("w-100", "my-0")}>
       {" "}
       <SuccessAlert timeout={0}>
-        <p className="p-0">The connection to the storage works correctly.</p>
+        <p className="mb-0">The connection to the storage works correctly.</p>
       </SuccessAlert>
     </div>
   );
@@ -363,18 +363,17 @@ function TestConnectionAndContinueButtons({
         Test connection <ChevronRight className={cx("bi", "me-1")} />
       </>
     );
-  const testConnectionColorClass = testIsSuccess
-    ? "btn-outline-rk-green"
+  const testConnectionColor = testIsSuccess
+    ? "outline-primary"
     : testIsFailure
-    ? "btn-danger"
-    : "btn-secondary";
+    ? "danger"
+    : "outline-primary";
   const testConnectionSection = (
     <div id={divTestId} className="d-inline-block">
       <Button
-        color=""
+        color={testConnectionColor}
         id={buttonTestId}
         data-cy={buttonTestId}
-        className={cx(testConnectionColorClass)}
         disabled={testIsOngoing}
         onClick={() => actionTest()}
       >
@@ -395,10 +394,10 @@ function TestConnectionAndContinueButtons({
     </>
   ) : null;
   const continueColorClass = testIsSuccess
-    ? "btn-secondary"
+    ? "btn-primary"
     : testIsFailure
     ? "btn-outline-danger"
-    : "btn-outline-rk-green";
+    : "btn-primary";
   const continueSection =
     !testIsFailure && !testIsSuccess ? null : (
       <div id={divContinueId} className={cx("d-inline-block", "ms-2")}>

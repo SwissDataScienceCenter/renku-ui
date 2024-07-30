@@ -688,7 +688,7 @@ function AddStorageType({
             pill
             className={cx(
               "fst-italic",
-              "text-warning",
+              "text-warning-emphasis",
               "bg-warning-subtle",
               "border",
               "border-warning",

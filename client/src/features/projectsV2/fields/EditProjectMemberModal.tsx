@@ -103,12 +103,8 @@ function EditProjectMemberAccessForm({
 
   return (
     <>
-      <ModalBody>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+      <ModalBody className="pb-0">
+        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkErrorAlert error={result.error} />}
           <div
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
@@ -137,11 +133,11 @@ function EditProjectMemberAccessForm({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button onClick={handleSubmit(onSubmit)} type="submit">
+        <Button color="primary" onClick={handleSubmit(onSubmit)} type="submit">
           <PencilSquare className={cx("bi", "me-1")} />
           Change access
         </Button>

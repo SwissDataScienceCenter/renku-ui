@@ -18,6 +18,8 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
+import type { Role } from "../projectsV2/api/projectV2.api";
 import {
   DEFAULT_CREATION_DATE_FILTER,
   DEFAULT_ROLE_FILTER,
@@ -34,8 +36,6 @@ import type {
   SortBy,
 } from "./searchV2.types";
 import { buildSearchQuery, valuesAsSet } from "./searchV2.utils";
-import type { Role } from "../projectsV2/api/projectV2.api";
-import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 
 const initialState: SearchV2State = {
   dateFilters: {

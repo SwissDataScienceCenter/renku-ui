@@ -76,7 +76,7 @@ export default function SearchV2Header() {
       className={cx("align-items-center", "d-flex", "justify-content-between")}
       data-cy="search-header"
     >
-      <div className={cx("align-items-center", "d-flex", "gap-4")}>
+      <div className={cx("align-items-center", "d-flex", "gap-3")}>
         {resultsText}
       </div>
       <div className={cx("align-items-center", "d-flex")}>

@@ -21,11 +21,13 @@ import cx from "classnames";
 import { Badge, UncontrolledTooltip } from "reactstrap";
 
 interface WipBadeProps {
+  className?: string;
   children?: ReactNode;
   tooltip?: ReactNode;
 }
 
 export default function WipBadge({
+  className,
   children = "Beta",
   tooltip = "Renku 2.0 is under active development and features may not work as expected.",
 }: WipBadeProps) {
@@ -34,8 +36,8 @@ export default function WipBadge({
   return (
     <>
       <Badge
-        className={cx("wip-badge", "text-primary")}
-        color="rk-yellow"
+        className={cx("text-bg-warning", className)}
+        color="warning"
         innerRef={ref}
       >
         {children}

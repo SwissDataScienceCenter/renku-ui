@@ -65,9 +65,9 @@ describe("List v2 groups", () => {
 
   it("list groups", () => {
     cy.contains("List Groups").should("be.visible");
-    cy.contains("test 10 group-v2").should("not.exist");
+    cy.contains("test 15 group-v2").should("not.exist");
     cy.get(".page-item").find("a").contains("2").click();
-    cy.contains("test 10 group-v2").should("be.visible");
+    cy.contains("test 15 group-v2").should("be.visible");
   });
 
   it("shows groups", () => {
@@ -103,7 +103,7 @@ describe("Edit v2 group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.contains("Edit group settings").should("be.visible").click();
+    cy.contains("Edit settings").should("be.visible").click();
     cy.getDataCy("group-name-input").clear().type("new name");
     cy.getDataCy("group-slug-input").clear().type("new-slug");
     cy.getDataCy("group-description-input").clear().type("new description");
@@ -154,7 +154,7 @@ describe("Edit v2 group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.contains("Edit group settings").should("be.visible").click();
+    cy.contains("Edit settings").should("be.visible").click();
     cy.contains("user1@email.com").should("be.visible");
     cy.contains("user3-uuid").should("be.visible");
     fixtures
@@ -162,7 +162,7 @@ describe("Edit v2 group", () => {
       .listGroupV2Members({ removeUserId: groupMemberToRemove });
     cy.getDataCy("delete-member-2").should("be.visible").click();
     cy.contains("user3-uuid").should("not.exist");
-    cy.contains("Add").should("be.visible").click();
+    cy.get("[data-cy=group-add-member]").should("be.visible").click();
     cy.getDataCy("add-project-member-email").clear().type("foo@bar.com");
     cy.contains("Lookup").should("be.visible").click();
     cy.wait("@getExactUserSuccess");
@@ -177,7 +177,7 @@ describe("Edit v2 group", () => {
     cy.get("button").contains("Add Member").should("be.visible").click();
     cy.contains("foo@bar.com").should("be.visible");
 
-    cy.contains("Add").should("be.visible").click();
+    cy.get("[data-cy=group-add-member]").should("be.visible").click();
     cy.getDataCy("add-project-member-email").clear().type("noone@bar.com");
     cy.contains("Lookup").should("be.visible").click();
     cy.wait("@getExactUserFail");
@@ -195,7 +195,7 @@ describe("Edit v2 group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.contains("Edit group settings").should("be.visible").click();
+    cy.contains("Edit settings").should("be.visible").click();
     cy.getDataCy("group-description-input").clear().type("new description");
     cy.get("button").contains("Delete").should("be.visible").click();
     cy.get("button")

@@ -284,7 +284,7 @@ export function EditVisibility({
   const content = isLoadingQueries ? (
     <>
       <div className="form-label">Visibility</div>
-      <Loader className="ms-2" inline size={16} />
+      <Loader className="ms-1" inline size={16} />
     </>
   ) : !indexingStatusData?.activated ? (
     <>

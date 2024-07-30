@@ -17,15 +17,22 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { Database } from "react-bootstrap-icons";
+import { Database, PlusLg } from "react-bootstrap-icons";
 import { Loader } from "../../../../components/Loader.tsx";
-import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
 import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
 import { Project } from "../../../projectsV2/api/projectV2.api.ts";
 import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api.ts";
 import AccessGuard from "../../utils/AccessGuard.tsx";
 import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
 import { DataSourceDisplay } from "./DataSourceDisplay.tsx";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  ListGroup,
+} from "reactstrap";
 
 export function DataSourcesDisplay({ project }: { project: Project }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,41 +55,66 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
   );
 
   return (
-    <>
-      <div
-        className={cx("p-3", "d-flex", "justify-content-between")}
-        data-cy="data-source-box"
-      >
-        <div className="fw-bold">
-          <Database size={20} className={cx("me-2")} />
-          Data Sources ({totalStorages})
-        </div>
-        <AccessGuard
-          disabled={null}
-          enabled={
-            <PlusRoundButton data-cy="add-data-source" handler={toggle} />
-          }
-          minimumRole="editor"
-          role={userRole}
-        />
-      </div>
-      {!isLoading && !isFetching && totalStorages === 0 ? (
-        <p className="px-3">
-          Add published datasets from data repositories, and connect to cloud
-          storage to read and write custom data.
-        </p>
-      ) : (
-        <div className={cx("p-0", "pb-0", "m-0")}>
-          {data?.map((storage, index) => (
-            <DataSourceDisplay
-              key={index}
-              storage={storage}
-              projectId={project.id}
+    <Card data-cy="data-source-box">
+      <CardHeader>
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "justify-content-between"
+          )}
+        >
+          <div className={cx("align-items-center", "d-flex")}>
+            <h4 className={cx("mb-0", "me-2")}>
+              <Database className={cx("me-1", "bi")} />
+              Data Sources
+            </h4>
+            <Badge>{totalStorages}</Badge>
+          </div>
+          <div className="my-auto">
+            <AccessGuard
+              disabled={null}
+              enabled={
+                <Button
+                  data-cy="add-data-source"
+                  color="outline-primary"
+                  onClick={toggle}
+                  size="sm"
+                >
+                  <PlusLg className="icon-text" />
+                </Button>
+              }
+              minimumRole="editor"
+              role={userRole}
             />
-          ))}
-          {contentLoading}
+          </div>
         </div>
-      )}
+      </CardHeader>
+      <CardBody>
+        {isLoading || isFetching || totalStorages === 0 ? (
+          <>
+            {isLoading || isFetching ? (
+              <Loader />
+            ) : (
+              <p className="m-0">
+                Add published datasets from data repositories, and connect to
+                cloud storage to read and write custom data.
+              </p>
+            )}
+          </>
+        ) : (
+          <ListGroup flush>
+            {data?.map((storage, index) => (
+              <DataSourceDisplay
+                key={index}
+                storage={storage}
+                projectId={project.id}
+              />
+            ))}
+            {contentLoading}
+          </ListGroup>
+        )}
+      </CardBody>
       <AddCloudStorageModal
         currentStorage={null}
         isOpen={isOpen}
@@ -90,6 +122,6 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
         projectId={project.id}
         isV2
       />
-    </>
+    </Card>
   );
 }

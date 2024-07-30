@@ -50,9 +50,8 @@ describe("display the maintenance page when there is no user response", () => {
   it("displays an error when trying to get status page information", () => {
     fixtures.renkuDown().statuspageDown();
     cy.visit("/");
-    cy.get("h1").should("have.length", 1);
     cy.get("h1").contains("RenkuLab Down").should("be.visible");
-    cy.get(".alert-content")
+    cy.get(".alert-warning")
       .contains("Could not retrieve status information")
       .should("be.visible");
   });

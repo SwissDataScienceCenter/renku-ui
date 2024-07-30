@@ -73,12 +73,9 @@ describe("Navigate to project page", () => {
     cy.getDataCy("data-source-title").should("contain.text", "example-storage");
     cy.getDataCy("data-source-view-back-button").click();
 
-    cy.getDataCy("data-source-action").first().click();
-    cy.getDataCy("data-source-menu").should("be.visible");
-
     // edit data source
     fixtures.patchCloudStorage({ name: "patchCloudStorage2", isV2: true });
-    cy.getDataCy("data-source-edit").click();
+    cy.getDataCy("data-source-edit").first().click();
     cy.get("#sourcePath").type("2");
     cy.getDataCy("test-cloud-storage-button")
       .filter(":enabled")
@@ -93,13 +90,9 @@ describe("Navigate to project page", () => {
       .first()
       .click();
     cy.wait("@patchCloudStorage2");
-    cy.get('button[data-cy="cloud-storage-edit-close-button"]')
-      .filter(":visible")
-      .first()
-      .click();
 
     // delete data source
-    cy.getDataCy("data-source-action").first().click();
+    cy.getDataCy("button-with-menu-dropdown").first().click();
     cy.getDataCy("data-source-delete").click();
     cy.getDataCy("delete-data-source-modal-button").click();
     cy.wait("@deleteCloudStorageV2");
@@ -154,7 +147,7 @@ describe("Navigate to project page", () => {
       name: "getProjectAfterUpdate",
       fixture: "projectV2/update-projectV2-one-repository.json",
     });
-    cy.getDataCy("add-repository").click();
+    cy.getDataCy("add-code-repository").click();
 
     cy.getDataCy("add-existing-repository-button").click();
     cy.getDataCy("project-add-repository-url").type(
@@ -165,9 +158,6 @@ describe("Navigate to project page", () => {
     cy.wait("@updateProjectV2");
     cy.wait("@getProjectAfterUpdate");
 
-    cy.getDataCy("code-repository-actions").first().click();
-    cy.getDataCy("code-repository-menu").should("be.visible");
-
     // edit code repository
     cy.getDataCy("code-repository-edit").click();
     cy.getDataCy("project-edit-repository-url").type("2");
@@ -175,7 +165,7 @@ describe("Navigate to project page", () => {
     cy.wait("@updateProjectV2");
 
     // delete code repository
-    cy.getDataCy("code-repository-actions").first().click();
+    cy.getDataCy("button-with-menu-dropdown").first().click();
     cy.getDataCy("code-repository-delete").click();
     cy.getDataCy("delete-code-repository-modal-button").click();
     cy.wait("@updateProjectV2");
@@ -225,7 +215,8 @@ describe("Navigate to project page", () => {
     // check session launcher view and edit session launcher
     cy.getDataCy("session-name").click();
     cy.getDataCy("session-view-title").should("contain.text", "Session-custom");
-    cy.getDataCy("session-view-menu").click();
+    cy.getDataCy("session-view-menu-edit").should("be.visible");
+    cy.get(".offcanvas [data-cy=button-with-menu-dropdown]").first().click();
     cy.getDataCy("session-view-menu-delete").should("be.visible");
     cy.getDataCy("session-view-menu-edit").should("be.visible").click();
     cy.getDataCy("edit-session-name").clear().type("Session custom");

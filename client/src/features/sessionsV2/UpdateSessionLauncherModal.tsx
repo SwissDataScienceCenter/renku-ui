@@ -155,12 +155,8 @@ export default function UpdateSessionLauncherModal({
       scrollable
     >
       <ModalHeader toggle={toggle}>Edit session {launcher.name}</ModalHeader>
-      <ModalBody className="pt-0">
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+      <ModalBody>
+        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkErrorAlert error={result.error} />}
 
           <SessionLauncherFormContent
@@ -172,15 +168,16 @@ export default function UpdateSessionLauncherModal({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
         <Button
-          disabled={result.isLoading || !isDirty}
-          type="submit"
-          onClick={handleSubmit(onSubmit)}
+          color="primary"
           data-cy="edit-session-button"
+          disabled={result.isLoading || !isDirty}
+          onClick={handleSubmit(onSubmit)}
+          type="submit"
         >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
