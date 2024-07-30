@@ -1,0 +1,26 @@
+@import "~bootstrap/scss/functions";
+
+[data-bs-theme="navy"] {
+  .navbar {
+    background-color: var(--bs-navy);
+    --bs-navbar-color: var(--bs-gray-400);
+    --bs-navbar-active-color: var(--bs-white);
+    --bs-navbar-hover-color: var(--bs-white);
+  }
+
+  .dropdown-menu {
+    --bs-dropdown-border-color: var(--bs-gray-800);
+    --bs-dropdown-divider-bg: var(--bs-gray-800);
+
+    --bs-dropdown-bg: var(--bs-navy);
+    --bs-dropdown-link-color: var(--bs-gray-400);
+
+    --bs-dropdown-link-hover-color: var(--bs-white);
+    --bs-dropdown-link-hover-bg: var(--bs-gray-800);
+
+    --bs-dropdown-link-active-color: var(--bs-white);
+    --bs-dropdown-link-active-bg: var(--bs-navy);
+
+    --bs-dropdown-link-disabled-color: var(--bs-gray-600);
+  }
+}
