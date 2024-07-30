@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
-import { Card, CardBody } from "reactstrap";
+import { Card, CardBody, CardHeader } from "reactstrap";
 
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
@@ -67,8 +67,10 @@ function SearchV2DateFilter({ dateFilter }: SearchV2DateFilterProps) {
       className={cx("border", "rounded")}
       data-cy={`search-date-filter-${key}`}
     >
+      <CardHeader>
+        <h6 className="mb-0">{label}</h6>
+      </CardHeader>
       <CardBody>
-        <p className={cx("form-text", "mb-1", "mt-0")}>{label}</p>
         {predefinedOptions.map((option) => (
           <SearchV2DateFilterOption
             key={option.optionKey}
@@ -122,7 +124,7 @@ function SearchV2DateFilterOption({
   const id = `search-filter-${dateFilter.key}-${optionKey}`;
 
   return (
-    <div className={cx("form-rk-green", "d-flex", "align-items-center")}>
+    <div className={cx("d-flex", "gap-2")}>
       <input
         checked={isChecked}
         className="form-check-input"
@@ -131,7 +133,7 @@ function SearchV2DateFilterOption({
         onChange={onChange}
         type="radio"
       />
-      <label className={cx("form-check-label", "ms-2", "mt-1")} htmlFor={id}>
+      <label className="form-check-label" htmlFor={id}>
         {label}
       </label>
     </div>
@@ -238,7 +240,7 @@ function SearchV2DateFilterCustomOption({
 
   return (
     <>
-      <div className={cx("form-rk-green", "d-flex", "align-items-center")}>
+      <div className={cx("d-flex", "gap-2")}>
         <input
           checked={isChecked}
           className="form-check-input"
@@ -247,14 +249,14 @@ function SearchV2DateFilterCustomOption({
           onChange={onChange}
           type="radio"
         />
-        <label className={cx("form-check-label", "ms-2", "mt-1")} htmlFor={id}>
+        <label className="form-check-label" htmlFor={id}>
           Custom
         </label>
       </div>
       {isChecked && (
         <>
           <div>
-            <label className="px-2 author-label">From:</label>
+            <label className={cx("px-2", "author-label")}>From:</label>
             <input
               className="form-control"
               type="date"
@@ -265,7 +267,7 @@ function SearchV2DateFilterCustomOption({
             />
           </div>
           <div>
-            <label className="px-2 author-label">To:</label>
+            <label className={cx("px-2", "author-label")}>To:</label>
             <input
               className="form-control"
               type="date"
