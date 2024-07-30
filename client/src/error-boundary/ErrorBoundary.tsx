@@ -21,18 +21,15 @@ import cx from "classnames";
 import { ReactNode, useCallback } from "react";
 
 import { ArrowLeft } from "react-bootstrap-icons";
-import { FooterNavbar } from "../landing/NavBar.jsx";
 import OopsImage from "../not-found/OopsImage.tsx";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook.ts";
-import styles from "./ErrorBoundary.module.scss";
 import { StyleHandler } from "../index.jsx";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
-  params: unknown;
 }
 
-export function AppErrorBoundary({ children, params }: AppErrorBoundaryProps) {
+export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
   const logged = useLegacySelector((state) => state.stateModel.user.logged);
   // Handle chunk load errors by reloading the page
   const onError = useCallback((error: Error) => {
@@ -48,7 +45,7 @@ export function AppErrorBoundary({ children, params }: AppErrorBoundaryProps) {
     }
   }, []);
 
-  const fallbackErrorPage = <ErrorPage logged={logged} params={params} />;
+  const fallbackErrorPage = <ErrorPage logged={logged} />;
 
   return (
     <Sentry.ErrorBoundary onError={onError} fallback={fallbackErrorPage}>
@@ -57,32 +54,16 @@ export function AppErrorBoundary({ children, params }: AppErrorBoundaryProps) {
   );
 }
 
-const ErrorPage = ({
-  logged,
-  params,
-}: {
-  logged: boolean;
-  params: unknown;
-}) => {
+const ErrorPage = ({ logged }: { logged: boolean }) => {
   const isV2 = location.pathname.startsWith("/v2");
   return (
     <>
       <StyleHandler />
       <div
-        className={cx(
-          styles.error,
-          "d-flex",
-          "align-items-center",
-          "justify-content-center"
-        )}
+        className={cx("d-flex", "flex-column", "align-items-center", "mt-5")}
       >
         <div className={cx("p-4")}>
-          <OopsImage
-            className={cx(
-              styles.errorOopsImg,
-              isV2 ? "text-primary" : "text-rk-green"
-            )}
-          />
+          <OopsImage className={cx(isV2 ? "text-primary" : "text-rk-green")} />
           <h3
             className={cx(
               isV2 ? "text-primary" : "text-rk-green",
@@ -121,7 +102,6 @@ const ErrorPage = ({
           </p>
         </div>
       </div>
-      <FooterNavbar params={params} />
     </>
   );
 };

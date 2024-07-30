@@ -105,7 +105,7 @@ configFetch.then((valuesRead) => {
     root.render(
       <Provider store={model.reduxStore}>
         <Router>
-          <AppErrorBoundary params={params}>
+          <AppErrorBoundary>
             <LoginHandler />
             <FeatureFlagHandler />
             <StyleHandler />

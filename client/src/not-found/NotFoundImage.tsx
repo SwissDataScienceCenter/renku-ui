@@ -16,12 +16,7 @@
  * limitations under the License
  */
 
-interface NotFoundImageProps {
-  className?: string;
-  id?: string;
-}
-
-export default function NotFoundImage({ className, id }: NotFoundImageProps) {
+export default function NotFoundImage() {
   return (
     <svg
       width="213"
@@ -30,8 +25,6 @@ export default function NotFoundImage({ className, id }: NotFoundImageProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      className={className}
-      id={id}
       <g>
         <path
           d="M0 65.1199V52.0799L32.69 0.569946H43.93V18.6199H37.28L16.67 51.2399V51.8499H63.13V65.1199H0ZM37.59 78.8799V61.1399L37.9 55.3699V0.569946H53.43V78.8799H37.6H37.59Z"

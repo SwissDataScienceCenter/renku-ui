@@ -28,8 +28,6 @@ import { Link } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 
 import { ArrowLeft } from "react-bootstrap-icons";
-
-import styles from "../features/projectsV2/notFound/NotFound.module.scss";
 import "./NotFound.css";
 import NotFoundImage from "./NotFoundImage.tsx";
 
@@ -73,7 +71,7 @@ export default function NotFound({
                 "gap-3"
               )}
             >
-              <NotFoundImage className={styles.errorNotFoundImg} />
+              <NotFoundImage />
               {title}
             </h1>
             <div className={cx("text-start", "mt-3")}>

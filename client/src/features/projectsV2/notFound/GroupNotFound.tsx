@@ -66,7 +66,7 @@ export default function GroupNotFound({ error }: GroupNotFoundProps) {
                 "gap-3"
               )}
             >
-              <NotFoundImage className={styles.errorNotFoundImg} />
+              <NotFoundImage />
               Group not found
             </h3>
             <div className={cx("text-start", "mt-3")}>
