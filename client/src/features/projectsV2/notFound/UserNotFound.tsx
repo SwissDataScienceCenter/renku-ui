@@ -67,7 +67,7 @@ export default function UserNotFound({ error }: UserNotFoundProps) {
                 "gap-3"
               )}
             >
-              <NotFoundImage className={styles.errorNotFoundImg} />
+              <NotFoundImage />
               User not found
             </h3>
             <div className={cx("text-start", "mt-3")}>
