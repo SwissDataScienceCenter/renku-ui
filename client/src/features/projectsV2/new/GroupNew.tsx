@@ -39,12 +39,10 @@ import WipBadge from "../shared/WipBadge";
 
 function GroupNewHeader() {
   return (
-    <>
-      <div className="mb-2">
-        Groups let you group together related projects and control who can
-        access them. {"  "} <WipBadge />
-      </div>
-    </>
+    <p>
+      Groups let you group together related projects and control who can access
+      them. <WipBadge />
+    </p>
   );
 }
 
@@ -52,7 +50,7 @@ function GroupBeingCreatedLoader() {
   return (
     <div className={cx("d-flex", "justify-content-center", "w-100")}>
       <div className={cx("d-flex", "flex-column")}>
-        <Loader className="me-2" />
+        <Loader className="me-1" />
         <div>Creating group...</div>
       </div>
     </div>
@@ -126,11 +124,7 @@ function GroupMetadataForm() {
   return (
     <>
       <h4>Describe the group</h4>
-      <Form
-        className="form-rk-green"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <NameFormField
           control={control}
           entityName="group"
@@ -151,13 +145,15 @@ function GroupMetadataForm() {
         />
         <div className={cx("d-flex", "justify-content-between")}>
           <Link
-            className={cx("btn", "btn-primary")}
+            className={cx("btn", "btn-outline-primary")}
             to={ABSOLUTE_ROUTES.v2.groups.root}
           >
             Cancel
           </Link>
           <div>
-            <Button type="submit">Create</Button>
+            <Button color="primary" type="submit">
+              Create
+            </Button>
           </div>
         </div>
       </Form>

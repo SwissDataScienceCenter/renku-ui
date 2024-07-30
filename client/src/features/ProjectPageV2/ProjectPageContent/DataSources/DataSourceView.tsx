@@ -17,8 +17,8 @@
  */
 import cx from "classnames";
 import { useMemo } from "react";
-import { ArrowLeft } from "react-bootstrap-icons";
 import { Offcanvas, OffcanvasBody } from "reactstrap";
+
 import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem";
 import { getCredentialFieldDefinitions } from "../../../project/utils/projectCloudStorage.utils";
 import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
@@ -57,67 +57,62 @@ export function DataSourceView({
   return (
     <Offcanvas
       key={`data-source-details-${storageDefinition.storage_id}`}
-      className="bg-white"
       toggle={setToggleView}
       isOpen={toggleView}
       direction="end"
       backdrop={true}
     >
       <OffcanvasBody>
-        <div
-          className="d-flex justify-content-start gap-2 align-items-center mb-4"
-          role="button"
-          onClick={setToggleView}
-          data-cy="data-source-view-back-button"
-        >
-          <ArrowLeft size={24} />
-          Back
+        <div className="mb-3">
+          <button
+            aria-label="Close"
+            className="btn-close"
+            data-cy="data-source-view-back-button"
+            data-bs-dismiss="offcanvas"
+            onClick={setToggleView}
+          ></button>
         </div>
-        <div className="d-flex justify-content-between align-items-center mt-3">
-          <div>
-            <label className="fst-italic fs-small">Data source</label>
-            <h2 className="fw-bold" data-cy="data-source-title">
+
+        <div className="mb-4">
+          <div className={cx("d-flex", "justify-content-between")}>
+            <h2 className="m-0" data-cy="data-source-title">
               {storageDefinition.name}
             </h2>
+            <div className="my-auto">
+              <DataSourceActions storage={storage} projectId={projectId} />
+            </div>
           </div>
-          <DataSourceActions storage={storage} projectId={projectId} />
+
+          <p className={cx("fst-italic", "m-0")}>Data source</p>
         </div>
         <section data-cy="data-source-details-section">
-          <div className="mt-3">
-            <div className={cx("fs-small", "fw-bold")}>
+          <div>
+            <p className={cx("fw-bold", "m-0")}>
               Mount point {"("}this is where the storage will be mounted during
               sessions{")"}
-            </div>
-            <div>{storageDefinition.target_path}</div>
+            </p>
+            <p>{storageDefinition.target_path}</p>
           </div>
           {Object.keys(storageDefinition.configuration).map((key) => (
-            <div className="mt-2" key={key}>
-              <div>
-                <small className="text-capitalize fw-bold">{key}</small>
-              </div>
-              <div>{storageDefinition.configuration[key]?.toString()}</div>
+            <div key={key}>
+              <p className={cx("fw-bold", "m-0")}>{key}</p>
+              <p>{storageDefinition.configuration[key]?.toString()}</p>
             </div>
           ))}
-          <div className="mt-3">
-            <div>
-              <small className="fw-bold">Source path</small>
-            </div>
-            <div>{storageDefinition.source_path}</div>
+          <div>
+            <p className={cx("fw-bold", "m-0")}>Source path</p>
+            <p>{storageDefinition.source_path}</p>
           </div>
-          <div className="mt-3" data-cy="requires-credentials-section">
-            <div>
-              <small className="fw-bold">Requires credentials</small>
-            </div>
-            <div>{anySensitiveField ? "Yes" : "No"}</div>
+          <div data-cy="requires-credentials-section">
+            <p className={cx("fw-bold", "m-0")}>Requires credentials</p>
+            <p>{anySensitiveField ? "Yes" : "No"}</p>
           </div>
           {anySensitiveField &&
             requiredCredentials &&
             requiredCredentials.length > 0 && (
-              <div className="mt-3">
-                <div>
-                  <small className="fw-bold">Required credentials</small>
-                </div>
-                <ul className={cx("ps-4", "mb-0")}>
+              <div>
+                <p className={cx("fw-bold", "m-0")}>Required credentials</p>
+                <ul className="mb-3">
                   {requiredCredentials.map(({ name, help }, index) => (
                     <li key={index}>
                       {name}
@@ -127,15 +122,13 @@ export function DataSourceView({
                 </ul>
               </div>
             )}
-          <div className="mt-3">
-            <div>
-              <small className="fw-bold">Access mode</small>
-            </div>
-            <div>
+          <div>
+            <p className={cx("fw-bold", "m-0")}>Access mode</p>
+            <p>
               {storageDefinition.readonly
                 ? "Force Read-only"
                 : "Allow Read-Write (requires adequate privileges on the storage)"}
-            </div>
+            </p>
           </div>
         </section>
       </OffcanvasBody>

@@ -17,14 +17,22 @@
  */
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Pencil } from "react-bootstrap-icons";
+import { Pencil, Sliders } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   generatePath,
   useLocation,
   useNavigate,
 } from "react-router-dom-v5-compat";
-import { Button, Form, Input, Label } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Form,
+  Input,
+  Label,
+} from "reactstrap";
 
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
@@ -167,15 +175,11 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
       {error && <RtkErrorAlert error={error} />}
       {isSuccess && (
         <SuccessAlert dismissible={false} timeout={0}>
-          <p className="p-0">The project has been successfully updated.</p>
+          <p className="mb-0">The project has been successfully updated.</p>
         </SuccessAlert>
       )}
 
-      <Form
-        className="form-rk-green"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ProjectNameFormField name="name" control={control} errors={errors} />
         <AccessGuard
           disabled={
@@ -226,14 +230,14 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
         />
         <div className={cx("d-flex", "justify-content-end")}>
           <Button
+            color="primary"
             disabled={isUpdating || !isDirty}
-            className="me-1"
             type="submit"
           >
             {isUpdating ? (
               <Loader className="me-1" inline size={16} />
             ) : (
-              <Pencil size={16} className={cx("bi", "me-1")} />
+              <Pencil className={cx("bi", "me-1")} />
             )}
             Update project
           </Button>
@@ -285,29 +289,34 @@ function ProjectSettingsDisplay({ project }: ProjectPageSettingsProps) {
 function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
   const { userRole } = useProjectAccess({ projectId: project.id });
   return (
-    <>
-      <h4 className="fw-bold">General settings</h4>
-      <AccessGuard
-        disabled={null}
-        enabled={
-          <small>
-            Update your project title, description, visibility and namespace.
-          </small>
-        }
-        role={userRole}
-      />
-      <div
-        id="general"
-        className={cx("bg-white", "rounded-3", "mt-3", "p-3", "p-md-4")}
-      >
+    <Card id="general">
+      <CardHeader>
+        <AccessGuard
+          disabled={<h4 className="m-0">General settings</h4>}
+          enabled={
+            <>
+              <h4>
+                <Sliders className={cx("me-1", "bi")} />
+                General settings
+              </h4>
+              <p className="m-0">
+                Update your project title, description, visibility and
+                namespace.
+              </p>
+            </>
+          }
+          role={userRole}
+        />
+      </CardHeader>
+      <CardBody>
         <AccessGuard
           disabled={<ProjectSettingsDisplay project={project} />}
           enabled={<ProjectSettingsEditForm project={project} />}
           minimumRole="editor"
           role={userRole}
         />
-      </div>
-    </>
+      </CardBody>
+    </Card>
   );
 }
 
@@ -339,20 +348,12 @@ export default function ProjectPageSettings() {
   }, [hash]);
 
   return (
-    <div className={cx("pb-5", "pt-0")}>
-      <div id="general" className={cx("px-2", "px-md-5", "pt-4")}>
-        <ProjectSettingsMetadata project={project} />
-      </div>
-      <div id="members" className={cx("px-2", "px-md-5", "pt-4")}>
-        <ProjectPageSettingsMembers project={project} />
-      </div>
+    <div className={cx("d-flex", "flex-column", "gap-4")}>
+      <ProjectSettingsMetadata project={project} />
+      <ProjectPageSettingsMembers project={project} />
       <AccessGuard
         disabled={null}
-        enabled={
-          <div id="delete" className={cx("px-2", "px-md-5", "pt-4")}>
-            <ProjectPageDelete project={project} />
-          </div>
-        }
+        enabled={<ProjectPageDelete project={project} />}
         role={userRole}
       />
     </div>

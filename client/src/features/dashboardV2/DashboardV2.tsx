@@ -16,39 +16,34 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { PlusLg } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Col, Row } from "reactstrap";
+import { Folder, People, PlayCircle, PlusLg } from "react-bootstrap-icons";
+import { Link } from "react-router-dom-v5-compat";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Col,
+  ListGroup,
+  Row,
+} from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
-import { TimeCaption } from "../../components/TimeCaption";
-import VisibilityIcon from "../../components/entities/VisibilityIcon";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import type { Project } from "../projectsV2/api/projectV2.api";
 import {
   useGetGroupsQuery,
   useGetProjectsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
-
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import DashboardV2Sessions from "./DashboardV2Sessions";
-
-import "../dashboard/Dashboard.scss";
-import styles from "./Dashboard.module.scss";
-
-type ListElement = Pick<
-  Project,
-  "name" | "description" | "visibility" | "creation_date"
-> & {
-  readableId: string;
-  url: string;
-};
+import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
+import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 
 export default function DashboardV2() {
   return (
-    <div>
+    <div className={cx("d-flex", "flex-column", "gap-4")}>
       <DashboardWelcome />
       <SessionsDashboard />
       <ProjectsDashboard />
@@ -57,79 +52,16 @@ export default function DashboardV2() {
   );
 }
 
-interface DashboardListElementProps {
-  "data-cy": string;
-  element: ListElement;
-}
-
-function DashboardListElement({
-  "data-cy": dataCy,
-  element,
-}: DashboardListElementProps) {
-  return (
-    <div data-cy={dataCy} className={cx(styles.containerEntityListBar, "p-3")}>
-      <div
-        className={cx(styles.entityTitle, "text-truncate", "cursor-pointer")}
-      >
-        <Link
-          data-cy={`${dataCy}-link`}
-          className="text-decoration-none"
-          to={element.url}
-        >
-          <div className={cx("text-truncate")}>
-            <span className={cx("card-title", "text-truncate")}>
-              {element.name}
-            </span>
-          </div>
-        </Link>
-      </div>
-      <div
-        className={cx(
-          styles.entityIdentifier,
-          "text-truncate",
-          "cursor-pointer",
-          "mb-3"
-        )}
-      >
-        <Link
-          data-cy={`${dataCy}-link`}
-          className="text-decoration-none"
-          to={element.url}
-        >
-          <div className={cx("fst-italic", "text-truncate")}>
-            {element.readableId}
-          </div>
-        </Link>
-      </div>
-      <div className={cx(styles.entityDescription, "cursor-pointer")}>
-        <Link className="text-decoration-none" to={element.url}>
-          <div className={cx("card-text", "text-rk-dark", "m-0")}>
-            {element.description}
-          </div>
-        </Link>
-      </div>
-      <div className={cx(styles.entityTypeVisibility, "align-items-baseline")}>
-        <span className={cx("text-rk-green")}>
-          <VisibilityIcon visibility={element.visibility} />
-        </span>
-      </div>
-      <div className={cx(styles.entityDate)}>
-        <TimeCaption datetime={element.creation_date} prefix="Created" />
-      </div>
-    </div>
-  );
-}
-
 function DashboardWelcome() {
   return (
-    <>
-      <Row className="mb-3">
+    <div>
+      <Row>
         <Col>
-          <h2 className="fw-bold">Welcome to the Renku 2.0 beta preview!</h2>
+          <h2>Welcome to the Renku 2.0 beta preview!</h2>
         </Col>
       </Row>
-      <Row className="mb-3">
-        <Col md={7}>
+      <Row>
+        <Col>
           <p>
             <b>Learn more about Renku 2.0</b> on our{" "}
             <ExternalLink
@@ -152,148 +84,54 @@ function DashboardWelcome() {
       </Row>
       <Row>
         <Col>
-          <WarnAlert timeout={0} dismissible={false}>
+          <WarnAlert className="mb-0" timeout={0} dismissible={false}>
             <h4>Do not do any important work in the Renku 2.0 beta preview!</h4>
-            <p>
+            <p className="mb-2">
               The beta is for testing only. We do not guarantee saving and
               persisting work in the beta.
             </p>
             <div>
-              You can go back to Renku 1.0 at any time.{" "}
-              <BackToV1Button color="warning" />
+              You can go <BackToV1Button color="warning" /> at any time.
             </div>
           </WarnAlert>
         </Col>
       </Row>
-    </>
-  );
-}
-
-function GroupsDashboard() {
-  return (
-    <div
-      className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
-      data-cy="groups-container"
-    >
-      <div
-        className={cx(
-          "d-flex",
-          "justify-content-between",
-          "align-items-center",
-          "flex-wrap",
-          "pb-3"
-        )}
-      >
-        <h2>Groups</h2>
-        <Link
-          className={cx("btn", "btn-rk-green", "btn-icon-text")}
-          to="/v2/groups/new"
-        >
-          <PlusLg className="bi" id="createPlus" />
-          <span className="d-none d-sm-inline">Create new group</span>
-        </Link>
-      </div>
-      <GroupsList />
-      <div className={cx("d-flex", "justify-content-center", "mt-2")}>
-        <Link
-          to="/v2/groups"
-          data-cy="view-my-groups-btn"
-          className={cx(
-            "btn",
-            "btn-outline-rk-green",
-            "d-flex",
-            "align-items-center"
-          )}
-        >
-          View all my groups
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function GroupsList() {
-  const { data, error, isLoading } = useGetGroupsQuery({
-    page: 1,
-    perPage: 5,
-  });
-
-  if (isLoading)
-    return (
-      <div className={cx("d-flex", "justify-content-center", "w-100")}>
-        <div className={cx("d-flex", "flex-column")}>
-          <Loader className="me-2" />
-          <div>Retrieving groups...</div>
-        </div>
-      </div>
-    );
-  if (error) return <div>Cannot show groups.</div>;
-
-  if (data == null) return <div>No 2.0 groups.</div>;
-
-  return (
-    <div
-      data-cy="dashboard-group-list"
-      className={cx("d-flex", "flex-column", "gap-3", "mb-sm-2", "mb-md-4")}
-    >
-      {data.groups?.map((group) => (
-        <DashboardListElement
-          data-cy="list-group"
-          key={group.id}
-          element={{
-            ...group,
-            readableId: group.slug,
-            visibility: "public",
-            url: generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-              slug: group.slug,
-            }),
-          }}
-        />
-      ))}
     </div>
   );
 }
 
 function ProjectsDashboard() {
   return (
-    <div
-      className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
-      data-cy="projects-container"
-    >
-      <div
-        className={cx(
-          "d-flex",
-          "justify-content-between",
-          "align-items-center",
-          "flex-wrap",
-          "pb-3"
-        )}
-      >
-        <h2>Projects</h2>
+    <Card data-cy="projects-container">
+      <CardHeader className={cx("d-flex", "gap-2")}>
+        <h4 className="m-0">
+          <Folder className={cx("bi", "me-1")} />
+          <span>Projects</span>
+        </h4>
         <Link
-          className={cx("btn", "btn-rk-green", "btn-icon-text")}
+          className={cx(
+            "btn",
+            "btn-outline-primary",
+            "btn-sm",
+            "ms-auto",
+            "my-auto"
+          )}
           to="/v2/projects/new"
         >
           <PlusLg className="bi" id="createPlus" />
-          <span className="d-none d-sm-inline">Create new project</span>
         </Link>
-      </div>
-      <ProjectList />
-      <div className={cx("d-flex", "justify-content-center", "mt-2")}>
-        <Link
-          to="/v2/projects"
-          data-cy="view-my-projects-btn"
-          className={cx(
-            "btn",
-            "btn-outline-rk-green",
-            "d-flex",
-            "align-items-center"
-          )}
-        >
+      </CardHeader>
+
+      <CardBody>
+        <ProjectList />
+      </CardBody>
+
+      <CardFooter>
+        <Link to="/v2/projects" data-cy="view-my-projects-btn">
           View all my projects
         </Link>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 }
 
@@ -303,59 +141,118 @@ function ProjectList() {
     perPage: 5,
   });
 
-  if (isLoading)
-    return (
-      <div className={cx("d-flex", "justify-content-center", "w-100")}>
-        <div className={cx("d-flex", "flex-column")}>
-          <Loader className="me-2" />
-          <div>Retrieving projects...</div>
-        </div>
-      </div>
-    );
-  if (error) return <div>Cannot show projects.</div>;
+  const noProjects = isLoading ? (
+    <div className={cx("d-flex", "flex-column", "mx-auto")}>
+      <Loader />
+      <p className={cx("mx-auto", "my-3")}>Retrieving projects...</p>
+    </div>
+  ) : error ? (
+    <div>
+      <p>Cannot show projects.</p>
+      <RtkOrNotebooksError error={error} />
+    </div>
+  ) : data == null || data?.total === 0 ? (
+    <div>No 2.0 projects.</div>
+  ) : null;
 
-  if (data == null) return <div>No 2.0 projects.</div>;
+  if (noProjects) return <div>{noProjects}</div>;
 
   return (
-    <div
-      data-cy="dashboard-project-list"
-      className={cx("d-flex", "flex-column", "gap-3", "mb-sm-2", "mb-md-4")}
-    >
-      {data.projects?.map((project) => (
-        <DashboardListElement
-          data-cy="list-project"
+    <ListGroup flush data-cy="dashboard-project-list">
+      {data?.projects?.map((project) => (
+        <ProjectShortHandDisplay
+          element="list-item"
           key={project.id}
-          element={{
-            ...project,
-            readableId: `${project.namespace}/${project.slug}`,
-            url: generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-              namespace: project.namespace,
-              slug: project.slug,
-            }),
-          }}
+          project={project}
         />
       ))}
+    </ListGroup>
+  );
+}
+
+function GroupsDashboard() {
+  return (
+    <Card data-cy="groups-container">
+      <CardHeader className={cx("d-flex", "gap-2")}>
+        <h4 className="m-0">
+          <People className={cx("bi", "me-1")} />
+          <span>Groups</span>
+        </h4>
+        <Link
+          className={cx(
+            "btn",
+            "btn-outline-primary",
+            "btn-sm",
+            "ms-auto",
+            "my-auto"
+          )}
+          to="/v2/groups/new"
+        >
+          <PlusLg className="bi" id="createPlus" />
+        </Link>
+      </CardHeader>
+
+      <CardBody>
+        <GroupsList />
+      </CardBody>
+
+      <CardFooter className={cx("bg-white", "py-3")}>
+        <Link to="/v2/groups" data-cy="view-my-groups-btn">
+          View all my groups
+        </Link>
+      </CardFooter>
+    </Card>
+  );
+}
+
+function GroupsList() {
+  const { data, error, isLoading } = useGetGroupsQuery({
+    page: 1,
+    perPage: 5,
+  });
+
+  const noGroups = isLoading ? (
+    <div className={cx("d-flex", "flex-column", "mx-auto")}>
+      <Loader />
+      <p className={cx("mx-auto", "my-3")}>Retrieving groups...</p>
     </div>
+  ) : error ? (
+    <div>
+      <p>Cannot show groups.</p>
+      <RtkOrNotebooksError error={error} />
+    </div>
+  ) : data == null || data?.total === 0 ? (
+    <div>No 2.0 groups.</div>
+  ) : null;
+
+  if (noGroups) return <div>{noGroups}</div>;
+
+  return (
+    <ListGroup flush data-cy="dashboard-group-list">
+      {data?.groups?.map((group) => (
+        <GroupShortHandDisplay
+          element="list-item"
+          key={group.id}
+          group={group}
+        />
+      ))}
+    </ListGroup>
   );
 }
 
 function SessionsDashboard() {
   return (
-    <div
-      className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
-      data-cy="sessions-container"
-    >
-      <div
-        className={cx(
-          "d-flex",
-          "justify-content-between",
-          "align-items-center",
-          "flex-wrap"
-        )}
-      >
-        <h2>Sessions</h2>
-      </div>
-      <DashboardV2Sessions />
-    </div>
+    <Card data-cy="sessions-container">
+      <CardHeader className={cx("d-flex", "gap-2")}>
+        <h4 className="m-0">
+          <PlayCircle className={cx("bi", "me-1")} />
+          Sessions
+        </h4>
+      </CardHeader>
+
+      <CardBody>
+        <DashboardV2Sessions />
+      </CardBody>
+    </Card>
   );
 }

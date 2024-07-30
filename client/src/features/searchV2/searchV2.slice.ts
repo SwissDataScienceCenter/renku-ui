@@ -34,7 +34,7 @@ const initialState: SearchV2State = {
     lastSearch: null,
     outdated: false,
     page: 1,
-    perPage: 10,
+    perPage: 12,
     query: "",
     totalPages: 0,
     totalResults: 0,

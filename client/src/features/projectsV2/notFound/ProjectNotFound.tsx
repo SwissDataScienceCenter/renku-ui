@@ -68,11 +68,11 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
     );
 
   return (
-    <ContainerWrap fullSize className="container-lg">
-      <Row className="mt-3">
+    <ContainerWrap>
+      <Row>
         <Col>
           <h1>Error 404</h1>
-          <h2>Project not found</h2>
+          <h2 className="mb-3">Project not found</h2>
 
           <p>{notFoundText}</p>
           <p>
@@ -83,7 +83,7 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
           <div>
             <Link
               to={ABSOLUTE_ROUTES.v2.projects.root}
-              className={cx("btn", "btn-rk-green")}
+              className={cx("btn", "btn-outline-primary")}
             >
               <ArrowLeft className={cx("bi", "me-1")} />
               Return to the projects list
@@ -92,8 +92,8 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
 
           {error && (
             <>
-              <div className={cx("mt-3", "mb-1")}>
-                <Button color="link" className="p-0" onClick={onClickDetails}>
+              <div className="my-3">
+                <Button color="outline-secondary" onClick={onClickDetails}>
                   Show error details
                 </Button>
               </div>

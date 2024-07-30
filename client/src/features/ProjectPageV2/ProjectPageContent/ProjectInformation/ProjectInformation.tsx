@@ -18,13 +18,21 @@
 
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
+import { Badge, Card, CardBody, CardHeader } from "reactstrap";
+import {
+  Bookmarks,
+  Clock,
+  Eye,
+  InfoCircle,
+  JournalAlbum,
+  People,
+} from "react-bootstrap-icons";
 
 import { TimeCaption } from "../../../../components/TimeCaption";
 import {
   EditButtonLink,
   UnderlineArrowLink,
 } from "../../../../components/buttons/Button";
-import VisibilityIcon from "../../../../components/entities/VisibilityIcon";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import type {
   ProjectMemberListResponse,
@@ -40,108 +48,17 @@ import MembershipGuard from "../../utils/MembershipGuard";
 import { toSortedMembers } from "../../utils/roleUtils";
 
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
-
 import styles from "./ProjectInformation.module.scss";
-import UserAvatar from "../../../usersV2/show/UserAvatar";
 import { useMemo } from "react";
-
-export function ProjectImageView() {
-  return (
-    <div className={cx(styles.projectPageImgPlaceholder)}>
-      <img
-        src={projectPreviewImg}
-        className="rounded-2"
-        alt="Project image preview"
-      />
-    </div>
-  );
-}
-
-function ProjectInformationMember({
-  member,
-}: {
-  member: ProjectMemberResponse;
-}) {
-  const { data: memberData } = useGetUsersByUserIdQuery({ userId: member.id });
-
-  const displayName =
-    member.first_name && member.last_name
-      ? `${member.first_name} ${member.last_name}`
-      : member.last_name
-      ? member.last_name
-      : member.email
-      ? member.email
-      : member.id;
-
-  if (memberData?.username) {
-    return (
-      <div className={cx("fw-bold", "mb-1")}>
-        <div className={cx("d-inline-block", "me-1")}>
-          <UserAvatar
-            firstName={member.first_name}
-            lastName={member.last_name}
-          />
-        </div>
-        <Link
-          to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-            username: memberData.username,
-          })}
-        >
-          {displayName}
-        </Link>
-      </div>
-    );
-  }
-
-  return <div className={cx("fw-bold", "mb-1")}>{displayName}</div>;
-}
-
-interface ProjectInformationMembersProps {
-  members: ProjectMemberListResponse | undefined;
-  membersUrl: string;
-}
 
 const MAX_MEMBERS_DISPLAYED = 5;
 
-function ProjectInformationMembers({
-  members,
-  membersUrl,
-}: ProjectInformationMembersProps) {
-  if (members == null) return null;
-  if (members.length == 0) {
-    return (
-      <MembershipGuard
-        disabled={null}
-        enabled={
-          <UnderlineArrowLink
-            tooltip="Add project members"
-            text="Add members"
-            to={membersUrl}
-          />
-        }
-        members={members}
-        minimumRole="editor"
-      />
-    );
-  }
-  const sortedMembers = toSortedMembers(members);
-  return (
-    <>
-      {sortedMembers.slice(0, MAX_MEMBERS_DISPLAYED).map((member, index) => (
-        <ProjectInformationMember key={index} member={member} />
-      ))}
-      {members.length > MAX_MEMBERS_DISPLAYED && (
-        <UnderlineArrowLink
-          tooltip="View all project members"
-          text="All members"
-          to={membersUrl}
-        />
-      )}
-    </>
-  );
+interface ProjectInformationProps {
+  output?: "plain" | "card";
 }
-
-export default function ProjectInformation() {
+export default function ProjectInformation({
+  output = "plain",
+}: ProjectInformationProps) {
   const { project } = useProject();
 
   const { data: members } = useGetProjectsByProjectIdMembersQuery({
@@ -174,110 +91,189 @@ export default function ProjectInformation() {
     [namespace?.namespace_kind, project.namespace]
   );
 
-  return (
-    <aside className={cx("px-3", "pb-5", "pb-lg-2")}>
-      <div
-        className={cx(
-          "my-4",
-          "d-block",
-          "d-lg-none",
-          "d-sm-block",
-          "text-center"
-        )}
+  const information = (
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <ProjectInformationBox
+        icon={<JournalAlbum className="bi" />}
+        title="Namespace:"
       >
-        <ProjectImageView />
-      </div>
-      <div
-        className={cx(
-          "d-flex",
-          "align-items-center",
-          "justify-content-between",
-          "gap-2"
-        )}
-      >
-        <div className={cx("flex-grow-1", "border-bottom")}></div>
-        <MembershipGuard
-          disabled={
-            <EditButtonLink
-              disabled={true}
-              to={settingsUrl}
-              tooltip="Your role does not allow modifying project information"
-            />
-          }
-          enabled={
-            <EditButtonLink
-              data-cy="project-settings-edit"
-              to={settingsUrl}
-              tooltip="Modify project information"
-            />
-          }
-          members={members}
-          minimumRole="editor"
-        />
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>Namespace</div>
-        <div className="fw-bold" data-cy="project-namespace">
+        <p className="mb-0">
           <Link to={namespaceUrl}>{namespaceName}</Link>
-        </div>
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>Visibility</div>
-        <VisibilityIcon
-          className={cx(
-            "fw-bold",
-            "justify-content-start",
-            "justify-content-lg-end"
-          )}
-          visibility={project.visibility}
-        />
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>
-          Created{" "}
+        </p>
+      </ProjectInformationBox>
+      <ProjectInformationBox icon={<Eye className="bi" />} title="Visibility:">
+        <p className="mb-0">
+          <span className="text-capitalize">{project.visibility}</span>
+        </p>
+      </ProjectInformationBox>
+      <ProjectInformationBox icon={<Clock className="bi" />} title="Created:">
+        <p className="mb-0">
           <TimeCaption
             datetime={project.creation_date}
-            className={cx("fw-bold", "fs-6")}
+            className={cx("fs-6")}
           />
-        </div>
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>Members ({totalMembers})</div>
+        </p>
+      </ProjectInformationBox>
+      <ProjectInformationBox
+        icon={<People className="bi" />}
+        title={
+          <>
+            <span>Members</span>
+            <Badge>{totalMembers}</Badge>
+          </>
+        }
+      >
         <ProjectInformationMembers members={members} membersUrl={membersUrl} />
-      </div>
-      <div className={cx("border-bottom", "py-3", "text-start", "text-lg-end")}>
-        <div>Keywords ({totalKeywords})</div>
-        {totalKeywords == 0 ? (
-          <MembershipGuard
-            disabled={null}
-            enabled={
-              <UnderlineArrowLink
-                tooltip="Add project keywords"
-                text="Add keywords"
-                to={settingsUrl}
-              />
-            }
-            members={members}
-            minimumRole="editor"
-          />
-        ) : (
-          <div
-            className={cx(
-              "d-flex",
-              "flex-wrap",
-              "gap-2",
-              "justify-content-end",
-              "mt-2"
-            )}
-          >
-            {project.keywords?.map((keyword, index) => (
-              <span key={`keyword-${index}`} className={cx("fw-bold")}>
-                #{keyword}
-              </span>
-            ))}
+      </ProjectInformationBox>
+      <ProjectInformationBox
+        icon={<Bookmarks className="bi" />}
+        title={
+          <>
+            <span>Keywords</span>
+            <Badge>{totalKeywords}</Badge>
+          </>
+        }
+      >
+        {project.keywords?.map((keyword, index) => (
+          <p key={`keyword-${index}`} className="mb-0">
+            #{keyword}
+          </p>
+        ))}
+      </ProjectInformationBox>
+    </div>
+  );
+  return output === "plain" ? (
+    information
+  ) : (
+    <Card data-cy="project-info-card">
+      <CardHeader>
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "justify-content-between"
+          )}
+        >
+          <h4 className="m-0">
+            <InfoCircle className={cx("me-1", "bi")} />
+            Info
+          </h4>
+
+          <div>
+            <MembershipGuard
+              disabled={
+                <EditButtonLink
+                  disabled={true}
+                  to={settingsUrl}
+                  tooltip="Your role does not allow modifying project information"
+                />
+              }
+              enabled={
+                <EditButtonLink
+                  data-cy="project-settings-edit"
+                  to={settingsUrl}
+                  tooltip="Modify project information"
+                />
+              }
+              members={members}
+              minimumRole="editor"
+            />
           </div>
-        )}
-      </div>
-    </aside>
+        </div>
+      </CardHeader>
+      <CardBody>{information}</CardBody>
+    </Card>
+  );
+}
+
+export function ProjectImageView() {
+  return (
+    <div className={cx(styles.projectPageImgPlaceholder)}>
+      <img
+        src={projectPreviewImg}
+        className={cx("mb-3", "rounded-2")}
+        alt="Project image preview"
+      />
+    </div>
+  );
+}
+
+function ProjectInformationMember({
+  member,
+}: {
+  member: ProjectMemberResponse;
+}) {
+  const { data: memberData } = useGetUsersByUserIdQuery({ userId: member.id });
+
+  const displayName =
+    member.first_name && member.last_name
+      ? `${member.first_name} ${member.last_name}`
+      : member.last_name
+      ? member.last_name
+      : member.email
+      ? member.email
+      : member.id;
+
+  if (memberData?.username) {
+    return (
+      <p className="mb-0">
+        <Link
+          to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+            username: memberData.username,
+          })}
+        >
+          {displayName}
+        </Link>
+      </p>
+    );
+  }
+
+  return <div className={cx("fw-bold", "mb-1")}>{displayName}</div>;
+}
+
+interface ProjectInformationMembersProps {
+  members: ProjectMemberListResponse | undefined;
+  membersUrl: string;
+}
+function ProjectInformationMembers({
+  members,
+  membersUrl,
+}: ProjectInformationMembersProps) {
+  if (members == null) return null;
+  const sortedMembers = toSortedMembers(members);
+  return (
+    <>
+      {sortedMembers.slice(0, MAX_MEMBERS_DISPLAYED).map((member, index) => (
+        <ProjectInformationMember key={index} member={member} />
+      ))}
+      {members.length > MAX_MEMBERS_DISPLAYED && (
+        <UnderlineArrowLink
+          tooltip="View all project members"
+          text="All members"
+          to={membersUrl}
+        />
+      )}
+    </>
+  );
+}
+
+interface ProjectInformationBoxProps {
+  children: React.ReactNode;
+  icon: React.ReactNode;
+  title: React.ReactNode;
+}
+function ProjectInformationBox({
+  children,
+  icon,
+  title,
+}: ProjectInformationBoxProps) {
+  return (
+    <div>
+      <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+        {icon}
+        {title}
+      </p>
+      <div className="ms-4">{children}</div>
+    </div>
   );
 }

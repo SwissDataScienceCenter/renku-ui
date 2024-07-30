@@ -311,7 +311,7 @@ function SaveSessionBody({
   );
   const saveText = saving ? (
     <span>
-      <Loader className="me-2" inline size={16} />
+      <Loader className="me-1" inline size={16} />
       Saving Session
     </span>
   ) : (

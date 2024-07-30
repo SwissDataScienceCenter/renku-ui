@@ -21,6 +21,8 @@ import cx from "classnames";
 import { ReactNode, useCallback } from "react";
 
 import styles from "./ErrorBoundary.module.scss";
+import v2Styles from "../styles/renku_bootstrap.scss?inline";
+import { Helmet } from "react-helmet";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
@@ -50,33 +52,35 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
 
 function ErrorPage() {
   return (
-    <div className={styles.error}>
-      <div className="container-xxl pt-5 renku-container d-flex flex-column h-100">
-        <div className={cx(styles.errorTitle, "align-self-start")}>
-          <h1 className="fw-bold h1">Application Error</h1>
-          <h3>Ooops! It looks like we are having some issues!</h3>
-        </div>
-        <div
-          className={cx(
-            styles.errorMain,
-            "p-5 rounded my-auto d-flex flex-row align-items-baseline"
-          )}
-        >
-          You can try to{" "}
-          <a
-            className="btn btn-rk-green mx-1"
-            href={window.location.href}
-            onClick={() => window.location.reload()}
-          >
-            reload the page
-          </a>{" "}
-          or go to the{" "}
-          <a className="btn btn-rk-green mx-1" href="/">
-            Renku home page
-          </a>
-          .
+    <>
+      <Helmet>
+        <style type="text/css">{v2Styles}</style>
+      </Helmet>
+      <div className={styles.error}>
+        <div className={cx("container-xxl", "p-5")}>
+          <div className={cx("p-4", "bg-white", "bg-opacity-75")}>
+            <h1>Application Error</h1>
+            <h3 className="mb-4">
+              Ooops! It looks like we are having some issues!
+            </h3>
+
+            <p className="mb-0">
+              You can try to{" "}
+              <a
+                className={cx("btn", "btn-primary", "mx-1")}
+                href={window.location.href}
+                onClick={() => window.location.reload()}
+              >
+                reload the page
+              </a>{" "}
+              or go to the{" "}
+              <a className={cx("btn", "btn-primary", "mx-1")} href="/">
+                Renku home page
+              </a>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

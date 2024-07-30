@@ -15,14 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import cx from "classnames";
-import ProjectInformation from "./ProjectInformation/ProjectInformation";
 
-export default function ProjectInformationPage() {
+interface ClampedParagraphProps {
+  children: React.ReactNode;
+  className?: string;
+  lines?: number;
+}
+export default function ClampedParagraph({
+  children,
+  className,
+  lines = 3,
+}: ClampedParagraphProps) {
+  const style = {
+    display: "-webkit-box",
+    overflow: "hidden",
+    WebkitBoxOrient: "vertical" as const,
+    WebkitLineClamp: lines,
+  };
+
   return (
-    <div className={cx("d-block", "d-lg-none", "d-sm-block", "pt-4")}>
-      <ProjectInformation />
-    </div>
+    <p className={cx(className)} style={style}>
+      {children}
+    </p>
   );
 }

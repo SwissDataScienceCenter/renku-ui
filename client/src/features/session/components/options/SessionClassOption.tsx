@@ -455,7 +455,6 @@ interface SessionClassSelectorProps {
   onChange?: (newValue: SingleValue<ResourceClass>) => void;
   disabled?: boolean;
 }
-
 export const SessionClassSelector = ({
   id,
   resourcePools,
@@ -595,6 +594,121 @@ const selectComponents: SelectComponentsConfig<
     );
   },
 };
+
+export const SessionClassSelectorV2 = ({
+  id,
+  resourcePools,
+  currentSessionClass,
+  defaultSessionClass,
+  onChange,
+  disabled,
+}: SessionClassSelectorProps) => {
+  const { data: nbVersion } = useGetNotebooksVersionQuery();
+  const options = useMemo(
+    () =>
+      makeGroupedOptions(
+        resourcePools,
+        nbVersion?.defaultCullingThresholds?.registered.idle
+      ),
+    [resourcePools, nbVersion]
+  );
+
+  return (
+    <div data-cy="session-class-select">
+      <Select
+        id={id}
+        classNames={selectClassNamesV2}
+        components={selectComponentsV2}
+        defaultValue={defaultSessionClass}
+        getOptionLabel={(option) => option.name}
+        getOptionValue={(option) => `${option.id}`}
+        isClearable={false}
+        isDisabled={disabled}
+        isSearchable={false}
+        onChange={onChange}
+        options={options}
+        unstyled
+        value={currentSessionClass}
+      />
+      <SessionClassThresholds
+        defaultHibernation={
+          nbVersion?.defaultCullingThresholds?.registered?.hibernation
+        }
+        defaultIdle={nbVersion?.defaultCullingThresholds?.registered?.idle}
+        currentSessionClass={currentSessionClass}
+        resourcePools={resourcePools}
+      />
+    </div>
+  );
+};
+
+const selectComponentsV2: SelectComponentsConfig<
+  ResourceClass,
+  false,
+  OptionGroup
+> = {
+  DropdownIndicator: (props) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        <ChevronDown className="bi" />
+      </components.DropdownIndicator>
+    );
+  },
+  Option: (props: OptionProps<ResourceClass, false, OptionGroup>) => {
+    const { data: sessionClass } = props;
+    return (
+      <components.Option {...props}>
+        <OptionOrSingleValueContent sessionClass={sessionClass} />
+      </components.Option>
+    );
+  },
+  SingleValue: (props: SingleValueProps<ResourceClass, false, OptionGroup>) => {
+    const { data: sessionClass } = props;
+    return (
+      <components.SingleValue {...props}>
+        <OptionOrSingleValueContent sessionClass={sessionClass} />
+      </components.SingleValue>
+    );
+  },
+  GroupHeading: (
+    props: GroupHeadingProps<ResourceClass, false, OptionGroup>
+  ) => {
+    return (
+      <components.GroupHeading {...props}>
+        <span className={cx("text-uppercase", "me-1")}>{props.data.label}</span>
+        {props.data.maxIdle && (
+          <span> (paused after {props.data.maxIdle} of inactivity)</span>
+        )}
+      </components.GroupHeading>
+    );
+  },
+};
+
+const selectClassNamesV2: ClassNamesConfig<ResourceClass, false, OptionGroup> =
+  {
+    control: ({ menuIsOpen }) =>
+      cx(
+        menuIsOpen ? "rounded-top" : "rounded",
+        "border",
+        "cursor-pointer",
+        styles.control2
+      ),
+    dropdownIndicator: () => cx("pe-2"),
+    groupHeading: () => cx("px-2", styles.groupHeading),
+    menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0"),
+    menuList: () => cx("d-grid", "gap-2"),
+    option: ({ isFocused, isSelected }) =>
+      cx(
+        "d-grid",
+        "gap-1",
+        "p-2",
+        styles.option,
+        isFocused && styles.optionIsFocused,
+        !isFocused && isSelected && styles.optionIsSelected
+      ),
+    placeholder: () => cx("px-2"),
+    singleValue: () => cx("d-grid", "gap-1", "px-2", styles.singleValue),
+  };
 
 interface OptionOrSingleValueContentProps {
   sessionClass: ResourceClass;

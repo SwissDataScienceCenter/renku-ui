@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
+import { Button, FormText, Label, UncontrolledTooltip } from "reactstrap";
+import { ArrowRepeat, ChevronDown, ThreeDots } from "react-bootstrap-icons";
+import type { FieldValues } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import Select, {
   ClassNamesConfig,
   components,
@@ -31,10 +32,6 @@ import Select, {
   SingleValue,
   SingleValueProps,
 } from "react-select";
-import { Button, FormText, Label, UncontrolledTooltip } from "reactstrap";
-
-import type { FieldValues } from "react-hook-form";
-import { Controller } from "react-hook-form";
 
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
@@ -61,7 +58,7 @@ const selectComponents: SelectComponentsConfig<
   DropdownIndicator: (props) => {
     return (
       <components.DropdownIndicator {...props}>
-        <ChevronDown size="20" />
+        <ChevronDown className="icon-text" />
       </components.DropdownIndicator>
     );
   },
@@ -109,19 +106,19 @@ function CustomMenuList({
       <components.MenuList {...props}>
         {props.children}
         {hasMore && (
-          <div className={cx("d-flex", "px-3", "pt-1")}>
+          <div className={cx("d-grid")}>
             <Button
-              className={cx("btn-outline-rk-green")}
+              className={cx("rounded-0", "rounded-bottom")}
+              color="secondary"
               disabled={isFetchingMore}
               onClick={onFetchMore}
-              size="sm"
             >
               {isFetchingMore ? (
-                <Loader className="me-2" inline size={16} />
+                <Loader inline size={16} />
               ) : (
-                <ThreeDots className={cx("bi", "me-2")} />
+                <ThreeDots className="bi" />
               )}
-              Fetch more
+              <span className="ms-2">Fetch more</span>
             </Button>
           </div>
         )}
@@ -181,43 +178,25 @@ function NamespaceSelector({
 
 const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
   control: ({ menuIsOpen }) =>
-    cx(
-      menuIsOpen ? "rounded-top" : "rounded",
-      "border",
-      "py-2",
-      styles.control,
-      menuIsOpen && styles.controlIsOpen
-    ),
+    cx(menuIsOpen ? "rounded-top" : "rounded", "border", styles.control),
   dropdownIndicator: () => cx("pe-3"),
-  menu: () =>
-    cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
+  menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0"),
   menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected }) =>
     cx(
       "d-flex",
       "flex-column",
       "flex-sm-row",
-      "align-items-start",
-      "align-items-sm-center",
       "column-gap-3",
       "px-3",
-      "py-1",
+      "py-2",
       styles.option,
       isFocused && styles.optionIsFocused,
       !isFocused && isSelected && styles.optionIsSelected
     ),
   placeholder: () => cx("px-3"),
   singleValue: () =>
-    cx(
-      "d-flex",
-      "flex-column",
-      "flex-sm-row",
-      "align-items-start",
-      "align-items-sm-center",
-      "column-gap-3",
-      "px-3",
-      styles.singleValue
-    ),
+    cx("d-flex", "flex-column", "flex-sm-row", "column-gap-3", "px-3"),
 };
 
 export default function ProjectNamespaceFormField<T extends FieldValues>({
@@ -409,13 +388,13 @@ function RefreshNamespaceButton({ refresh }: RefreshNamespaceButtonProps) {
   return (
     <>
       <Button
-        className={cx("ms-2", "p-0")}
-        color="link"
+        className="ms-2"
+        color="outline-primary"
         innerRef={ref}
         onClick={refresh}
         size="sm"
       >
-        <FontAwesomeIcon icon={faSyncAlt} />
+        <ArrowRepeat className="bi" />
       </Button>
       <UncontrolledTooltip placement="top" target={ref}>
         Refresh namespaces

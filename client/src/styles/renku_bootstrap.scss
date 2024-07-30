@@ -1,0 +1,15 @@
+// ? Bootstrap customization reference:
+// ? https://getbootstrap.com/docs/5.3/customize/sass/
+
+// 1: Optional default variable overrides here (functions unavailable)
+
+@import "renku_bootstrap_customization.scss"; // Changes to bootstrap variables
+
+// 2: Import Bootstrap
+
+@import "~bootstrap/scss/bootstrap";
+
+// 3: Optional custom code here
+
+@import "icons/icons.scss"; // Icons will be temporarily pahsed out and re-imported
+@import "renku_additional_classes.scss"; // Additional classes

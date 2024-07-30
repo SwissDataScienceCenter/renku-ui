@@ -18,20 +18,22 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, PlusLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
   Input,
+  ListGroup,
+  ListGroupItem,
   Modal,
   ModalBody,
   ModalFooter,
-  Table,
+  ModalHeader,
 } from "reactstrap";
+import { capitalize } from "lodash-es";
 
 import { Loader } from "../../../components/Loader";
-
 import type {
   GroupMemberResponse,
   GroupPatchRequest,
@@ -43,7 +45,6 @@ import {
   useGetGroupsByGroupSlugMembersQuery,
   usePatchGroupsByGroupSlugMutation,
 } from "../api/projectV2.enhanced-api";
-
 import AddGroupMemberModal from "../fields/AddGroupMemberModal";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
@@ -84,11 +85,9 @@ function GroupDeleteConfirmation({
 
   return (
     <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalHeader>Are you absolutely sure?</ModalHeader>
       <ModalBody>
-        <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
-          Are you absolutely sure?
-        </h3>
-        <p className="mb-0">
+        <p>
           Deleting a group{" "}
           <strong>will also delete all projects in the group</strong>, and
           deleted groups and projects cannot be restored. Please type{" "}
@@ -100,13 +99,12 @@ function GroupDeleteConfirmation({
           onChange={onChange}
         />
       </ModalBody>
-      <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+      <ModalFooter>
+        <Button color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
         <Button
-          className="ms-2"
           color="danger"
           disabled={typedName !== group.slug.trim()}
           onClick={onDelete}
@@ -130,7 +128,7 @@ function GroupEditSubmitGroup({ isUpdating }: GroupEditSubmitGroupProps) {
   return (
     <div className={cx("d-flex", "justify-content-between")}>
       <div>
-        <Button disabled={isUpdating} className="me-1" type="submit">
+        <Button color="primary" disabled={isUpdating} type="submit">
           {isUpdating && <Loader inline={true} size={16} />} Update
         </Button>
       </div>
@@ -184,17 +182,8 @@ export function GroupMetadataForm({ group }: GroupMetadataFormProps) {
 
   return (
     <div>
-      <div className="text-end">
-        <Button color="outline-danger" onClick={toggle}>
-          Delete
-        </Button>
-      </div>
       <GroupDeleteConfirmation isOpen={isOpen} group={group} toggle={toggle} />
-      <Form
-        className="form-rk-green"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <NameFormField
           control={control}
           entityName="group"
@@ -213,7 +202,12 @@ export function GroupMetadataForm({ group }: GroupMetadataFormProps) {
           errors={errors}
           name="description"
         />
-        <GroupEditSubmitGroup isUpdating={isUpdating} />
+        <div className={cx("d-flex", "gap-2")}>
+          <Button className="ms-auto" color="outline-danger" onClick={toggle}>
+            Delete
+          </Button>
+          <GroupEditSubmitGroup isUpdating={isUpdating} />
+        </div>
         {updateGroupResult.isError && <div>There was an error</div>}
       </Form>
     </div>
@@ -248,35 +242,50 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
     );
   return (
     <>
-      <div className={cx("d-flex", "justify-content-between")}>
+      <div className={cx("d-flex", "gap-2", "mb-3")}>
         <h4>Project Members</h4>
         <div>
-          <Button data-cy="group-add-member" onClick={toggleAddMemberModalOpen}>
-            Add
+          <Button
+            color="outline-primary"
+            data-cy="group-add-member"
+            onClick={toggleAddMemberModalOpen}
+            size="sm"
+          >
+            <PlusLg className="bi" id="createPlus" />
           </Button>
         </div>
       </div>
-      <Table>
-        <tbody>
-          {data.map((d, i) => {
-            return (
-              <tr key={d.id}>
-                <td>{d.email ?? d.id}</td>
-                <td>{d.role}</td>
-                <td>
+      <ListGroup>
+        {data.map((d, i) => {
+          return (
+            <ListGroupItem key={d.id}>
+              <div
+                className={cx(
+                  "align-items-center",
+                  "d-flex",
+                  "gap-2",
+                  "justify-content-between"
+                )}
+              >
+                <p className={cx("d-flex", "mb-0", "gap-2")}>
+                  <span className="fw-bold">{d.email ?? d.id}</span>
+                  <span>{capitalize(d.role)}</span>
+                </p>
+                <div>
                   <Button
                     color="outline-danger"
                     data-cy={`delete-member-${i}`}
                     onClick={() => onDelete(d)}
+                    size="sm"
                   >
                     Delete
                   </Button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+                </div>
+              </div>
+            </ListGroupItem>
+          );
+        })}
+      </ListGroup>
       <AddGroupMemberModal
         isOpen={isAddMemberModalOpen}
         members={data}

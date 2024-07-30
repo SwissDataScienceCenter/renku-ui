@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useContext, useState } from "react";
 import {
   List,
-  PlusCircleFill,
+  PlusCircle,
   QuestionCircle,
   Search,
 } from "react-bootstrap-icons";
@@ -33,7 +33,6 @@ import {
   DropdownToggle,
   Nav,
   NavItem,
-  Navbar,
   NavbarToggler,
 } from "reactstrap";
 
@@ -55,13 +54,8 @@ function NavbarItemPlus() {
 
   return (
     <Dropdown isOpen={isOpen} toggle={toggleOpen} className="nav-item">
-      <DropdownToggle
-        className={cx("nav-link", "fs-5", "ps-sm-2", "pe-2")}
-        nav
-        caret
-        id="plus-dropdown"
-      >
-        <PlusCircleFill className="bi" id="createPlus" />
+      <DropdownToggle nav className={cx("nav-link", "fs-5")} id="plus-dropdown">
+        <PlusCircle className="bi" id="createPlus" />
       </DropdownToggle>
       <DropdownMenu
         aria-labelledby="plus-menu"
@@ -102,11 +96,7 @@ function NavbarItemHelp() {
       toggle={toggleOpen}
       className="nav-item"
     >
-      <DropdownToggle
-        className={cx("nav-link", "fs-5", "px-2", "ps-sm-2")}
-        nav
-        caret
-      >
+      <DropdownToggle nav className={cx("nav-link", "fs-5")}>
         <QuestionCircle className="bi" id="helpDropdownToggle" />
       </DropdownToggle>
       <DropdownMenu
@@ -169,46 +159,25 @@ export default function NavbarV2() {
   return (
     <>
       <header
-        className={cx(
-          "bg-rk-blue",
-          "navbar",
-          "navbar-expand-lg",
-          "navbar-dark",
-          "p-0",
-          "rk-navbar"
-        )}
+        className={cx("bg-navy", "navbar-expand-lg")}
+        data-bs-theme="dark"
       >
-        <Navbar
-          color="primary"
-          className={cx(
-            "container-fluid",
-            "flex-wrap",
-            "flex-lg-nowrap",
-            "renku-container",
-            "px-2"
-          )}
-        >
+        <div className={cx("navbar", "px-2", "px-sm-3", "py-2")}>
           <div
             className={cx(
-              "text-white",
-              "d-flex",
               "align-items-center",
+              "d-flex",
               "flex-wrap",
-              "gap-2"
+              "gap-3",
+              "text-white"
             )}
           >
             <RenkuNavLinkV2
               id="link-home"
               data-cy="link-home"
               to={ABSOLUTE_ROUTES.v2.root}
-              className={cx("navbar-brand", "me-2", "pb-0", "pt-0")}
             >
-              <img
-                src={RENKU_ALPHA_LOGO}
-                alt="Renku 2.0 (beta)"
-                className="pe-2"
-                height="50"
-              />
+              <img src={RENKU_ALPHA_LOGO} alt="Renku v2 (beta)" height="50" />
             </RenkuNavLinkV2>
             <WipBadge>2.0 Beta</WipBadge>
             <BackToV1Button outline={true} />
@@ -219,16 +188,16 @@ export default function NavbarV2() {
           <Collapse isOpen={isOpen} navbar>
             <Nav
               className={cx(
-                "flex-row",
-                "flex-wrap",
-                "flex-sm-nowrap",
-                "justify-content-end",
                 "align-items-center",
+                "flex-row",
+                "gap-3",
+                "gap-lg-0",
+                "justify-content-end",
                 "ms-lg-auto"
               )}
               navbar
             >
-              <NavItem className="me-3">
+              <NavItem>
                 <RenkuNavLinkV2
                   end
                   to={ABSOLUTE_ROUTES.v2.search}
@@ -237,7 +206,7 @@ export default function NavbarV2() {
                   <Search className="bi" /> Search
                 </RenkuNavLinkV2>
               </NavItem>
-              <NavItem className="me-3">
+              <NavItem>
                 <RenkuNavLinkV2
                   end
                   to={ABSOLUTE_ROUTES.v2.root}
@@ -246,18 +215,18 @@ export default function NavbarV2() {
                   Dashboard
                 </RenkuNavLinkV2>
               </NavItem>
-              <NavItem className={cx("me-2", "nav-item", "col-auto")}>
+              <NavItem>
                 <NavbarItemPlus />
               </NavItem>
-              <NavItem className={cx("me-2", "nav-item", "col-auto")}>
+              <NavItem>
                 <NavbarItemHelp />
               </NavItem>
-              <NavItem className={cx("nav-item", "col-auto")}>
+              <NavItem>
                 <RenkuToolbarItemUser params={params!} />
               </NavItem>
             </Nav>
           </Collapse>
-        </Navbar>
+        </div>
       </header>
       <StatusBanner params={params} />
     </>

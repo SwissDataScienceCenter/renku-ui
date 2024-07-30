@@ -15,13 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import { faDiscourse, faGitter } from "@fortawesome/free-brands-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { ChatSquareDots, Github, JournalText } from "react-bootstrap-icons";
 import { useContext } from "react";
-import { Github } from "react-bootstrap-icons";
 import { Route, Routes } from "react-router-dom-v5-compat";
-import { Nav, NavItem } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
+
 import {
   ExternalDocsLink,
   ExternalIconLink,
@@ -45,17 +44,7 @@ function HelpNav({ statuspageId }: HelpNavProps) {
   const privacyPolicyConfigured = params.TERMS_PAGES_ENABLED;
   const termsConfigured = privacyPolicyConfigured;
   return (
-    <Nav
-      pills
-      className={cx(
-        "d-flex",
-        "flex-row",
-        "flex-lg-column",
-        "nav-pills-underline",
-        "text-nowrap"
-      )}
-    >
-      <h4 className={cx("d-none", "d-lg-block")}>Help</h4>
+    <Nav tabs className="mb-3">
       <NavItem>
         <RenkuNavLinkV2 end to=".">
           Getting Help
@@ -84,62 +73,79 @@ function HelpNav({ statuspageId }: HelpNavProps) {
 }
 
 function HelpGetting() {
-  const flexBasis = "500px";
   return (
-    <>
-      <div key="intro" className={cx("d-flex", "mb-3")}>
-        <div style={{ flex: "0 1", flexBasis }}>
-          There are several channels available for getting help with RenkuLab.
-          Depending on your needs, one or another may be better for you.
-        </div>
-      </div>
-      <div key="main1" className={cx("d-flex", "mb-3", "flex-wrap")}>
-        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
-          <h3>
-            <ExternalIconLink
-              url={Links.DISCOURSE}
-              icon={<FontAwesomeIcon icon={faDiscourse} color="dark" />}
-              text="Forum"
-            />
-          </h3>
-          <p>
-            We maintain a{" "}
-            <ExternalDocsLink url={Links.DISCOURSE} title="help forum" /> for
-            discussion about Renku. This is a good place to ask questions and
-            find answers.
-          </p>
-        </div>
-        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
-          <h3>
-            <ExternalIconLink
-              url={Links.GITTER}
-              icon={<FontAwesomeIcon icon={faGitter} color="dark" />}
-              text="Gitter"
-            />
-          </h3>
-          <p>
-            Want to reach out to the development team live? Contact us on{" "}
-            <ExternalDocsLink url={Links.GITTER} title="Gitter" />, we would be
-            happy to chat with you.
-          </p>
-        </div>
-        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
-          <h3>
-            <ExternalIconLink
-              url={Links.GITHUB}
-              icon={<Github className="bi" />}
-              text="GitHub"
-            />
-          </h3>
-          <p>
-            Renku is open source and being developed on{" "}
-            <ExternalDocsLink url={Links.GITHUB} title="GitHub" />. This is the
-            best place to report issues and ask for new features, but feel free
-            to contact us with questions, comments, or any kind of feedback.
-          </p>
-        </div>
-      </div>
-    </>
+    <div>
+      <p>
+        There are several channels available for getting help with RenkuLab.
+        Depending on your needs, one or another may be better for you.
+      </p>
+      <Row className="g-3">
+        <Col xs={12} md={6}>
+          <Card>
+            <CardHeader>
+              <h4 className="mb-0">
+                <ExternalIconLink
+                  url={Links.DISCOURSE}
+                  icon={<JournalText className={cx("bi", "me-1")} />}
+                  text="Forum"
+                />
+              </h4>
+            </CardHeader>
+            <CardBody>
+              <p className="mb-0">
+                We maintain a{" "}
+                <ExternalDocsLink url={Links.DISCOURSE} title="help forum" />{" "}
+                for discussion about Renku. This is a good place to ask
+                questions and find answers.
+              </p>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col xs={12} md={6}>
+          <Card>
+            <CardHeader>
+              <h4 className="mb-0">
+                <ExternalIconLink
+                  url={Links.GITTER}
+                  icon={<ChatSquareDots className={cx("bi", "me-1")} />}
+                  text="Gitter"
+                />
+              </h4>
+            </CardHeader>
+            <CardBody>
+              <p className="mb-0">
+                Want to reach out to the development team live? Contact us on{" "}
+                <ExternalDocsLink url={Links.GITTER} title="Gitter" />, we would
+                be happy to chat with you.
+              </p>
+            </CardBody>
+          </Card>
+        </Col>
+        <Col xs={12} md={6}>
+          <Card>
+            <CardHeader>
+              <h4 className="mb-0">
+                <ExternalIconLink
+                  url={Links.GITHUB}
+                  icon={<Github className={cx("bi", "me-1")} />}
+                  text="GitHub"
+                />
+              </h4>
+            </CardHeader>
+            <CardBody>
+              <p className="mb-0">
+                Renku is open source and being developed on{" "}
+                <ExternalDocsLink url={Links.GITHUB} title="GitHub" />. This is
+                the best place to report issues and ask for new features, but
+                feel free to contact us with questions, comments, or any kind of
+                feedback.
+              </p>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+    </div>
   );
 }
 
@@ -162,13 +168,16 @@ export default function Help() {
     params?.STATUSPAGE_ID ?? DEFAULT_APP_PARAMS.STATUSPAGE_ID;
 
   return (
-    <div className={cx("d-flex", "flex-column", "flex-lg-row")}>
-      <div className="me-lg-5">
+    <Row>
+      <Col xs={12}>
+        <h2>Help</h2>
+      </Col>
+      <Col xs={12}>
         <HelpNav statuspageId={statuspageId} />
-      </div>
-      <div className={cx("mt-4", "mt-lg-0")}>
+      </Col>
+      <Col xs={12}>
         <HelpContent />
-      </div>
-    </div>
+      </Col>
+    </Row>
   );
 }
