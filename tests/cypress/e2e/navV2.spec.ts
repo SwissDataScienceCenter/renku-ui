@@ -46,6 +46,6 @@ describe("View v2 landing page", () => {
   it("create new project", () => {
     cy.get("#plus-dropdown").click();
     cy.getDataCy("navbar-project-new").click();
-    cy.contains("New Project (V2)").should("be.visible");
+    cy.contains("New Project").should("be.visible");
   });
 });

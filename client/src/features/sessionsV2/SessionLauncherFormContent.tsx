@@ -29,15 +29,7 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
-import {
-  Card,
-  CardBody,
-  Input,
-  Label,
-  ListGroup,
-  ListGroupItem,
-  Row,
-} from "reactstrap";
+import { Input, Label, ListGroup, ListGroupItem, Row } from "reactstrap";
 import { Globe2 } from "react-bootstrap-icons";
 
 import { Loader } from "../../components/Loader";
@@ -45,12 +37,9 @@ import { TimeCaption } from "../../components/TimeCaption";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
 import { EnvironmentKind, SessionEnvironment } from "./sessionsV2.types";
-import { WarnAlert } from "../../components/Alert.jsx";
+import { ErrorAlert, WarnAlert } from "../../components/Alert.jsx";
 import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
-import {
-  ResourceClass,
-  ResourcePool,
-} from "../dataServices/dataServices.types";
+import { ResourceClass } from "../dataServices/dataServices.types";
 import { SessionClassSelectorV2 } from "../session/components/options/SessionClassOption";
 
 export interface SessionLauncherForm {
@@ -429,8 +418,11 @@ export function ExistingEnvFormContent({
     error,
     isLoading,
   } = useGetSessionEnvironmentsQuery();
-  const { data: resourcePools, isLoading: isLoadingResourcesPools } =
-    useGetResourcePoolsQuery({});
+  const {
+    data: resourcePools,
+    error: resourcePoolsError,
+    isLoading: isLoadingResourcesPools,
+  } = useGetResourcePoolsQuery({});
   const watchEnvironmentId = watch("environment_id");
   const defaultSessionClass = useMemo(
     () =>
@@ -469,25 +461,21 @@ export function ExistingEnvFormContent({
     if (resourceClass) setValue("resourceClass", resourceClass);
   };
 
-  if (error)
-    return (
-      <div>
-        <p>Cannot load environments</p>
-        <RtkErrorAlert dismissible={false} error={error} />
-      </div>
-    );
-  if (isLoading)
+  if (error) return <RtkErrorAlert dismissible={false} error={error} />;
+  if (resourcePoolsError)
+    return <RtkErrorAlert dismissible={false} error={resourcePoolsError} />;
+  if (isLoading || isLoadingResourcesPools)
     return (
       <p>
         <Loader className="me-1" inline size={16} />
-        Loading environments...
+        Loading environments and resource pools...
       </p>
     );
   if (!environments)
     return (
-      <p>
-        <p>Cannot load environments</p>
-      </p>
+      <ErrorAlert dismissible={false}>
+        Cannot load environments. Please try again later.
+      </ErrorAlert>
     );
   if (environments && environments.length === 0)
     return (
@@ -498,68 +486,86 @@ export function ExistingEnvFormContent({
     );
 
   return (
-    <>
-      <Controller
-        control={control}
-        name="environment_id"
-        render={({ field }) => (
-          <>
-            <ListGroup>
-              {environments.map((environment) => (
-                <SessionEnvironmentItem
-                  key={environment.id}
-                  environment={environment}
-                  field={field}
-                  touchedFields={touchedFields}
-                  resourcePools={resourcePools}
-                  onChangeResourceClass={onChangeResourceClass}
-                  isLoadingResourcesPools={isLoadingResourcesPools}
-                  errors={errors}
-                  control={control}
-                  defaultSessionClass={defaultSessionClass}
-                />
-              ))}
-            </ListGroup>
-            <Input
-              className={cx(errors.environment_id && "is-invalid")}
-              id="addSessionLauncherEnvironmentId"
-              type="hidden"
-              {...field}
-            />
-            <div className="invalid-feedback">Please choose an environment</div>
-          </>
-        )}
-        rules={{ required: true }}
-      />
-    </>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <div>
+        <Label for="resource-class-selector">Resource class</Label>
+        <Controller
+          control={control}
+          name="resourceClass"
+          defaultValue={defaultSessionClass}
+          render={() => (
+            <>
+              <SessionClassSelectorV2
+                defaultSessionClass={defaultSessionClass}
+                id="resource-class-selector"
+                onChange={onChangeResourceClass}
+                resourcePools={resourcePools ?? []}
+              />
+              {errors.resourceClass && (
+                <p className={cx("mb-0", "small", "text-danger")}>
+                  Please select a resource class.
+                </p>
+              )}
+            </>
+          )}
+          rules={{ required: true }}
+        />
+      </div>
+
+      <div>
+        <Label className="form-label" for="addSessionLauncherEnvironmentId">
+          Environment
+        </Label>
+        <Controller
+          control={control}
+          name="environment_id"
+          render={({ field }) => (
+            <>
+              <ListGroup>
+                {environments.map((environment) => (
+                  <SessionEnvironmentItem
+                    key={environment.id}
+                    environment={environment}
+                    field={field}
+                    touchedFields={touchedFields}
+                    errors={errors}
+                    control={control}
+                  />
+                ))}
+              </ListGroup>
+              <Input
+                className={cx(errors.environment_id && "is-invalid")}
+                id="addSessionLauncherEnvironmentId"
+                type="hidden"
+                {...field}
+              />
+              <div className="invalid-feedback">
+                Please choose an environment
+              </div>
+            </>
+          )}
+          rules={{ required: true }}
+        />
+      </div>
+    </div>
   );
 }
 
 /* Environment Item */
 interface SessionEnvironmentItemProps {
+  control: Control<SessionLauncherForm, unknown>;
   environment: SessionEnvironment;
+  errors: FieldErrors<SessionLauncherForm>;
   field: ControllerRenderProps<SessionLauncherForm, "environment_id">;
   touchedFields: Partial<
     Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
   >;
-  resourcePools?: ResourcePool[];
-  isLoadingResourcesPools?: boolean;
-  onChangeResourceClass?: (resourceClass: SingleValue<ResourceClass>) => void;
-  errors: FieldErrors<SessionLauncherForm>;
-  control: Control<SessionLauncherForm, unknown>;
-  defaultSessionClass?: ResourceClass;
 }
 
 export function SessionEnvironmentItem({
   environment,
-  control,
-  defaultSessionClass,
   field,
   touchedFields,
-  resourcePools,
-  isLoadingResourcesPools,
-  onChangeResourceClass,
-  errors,
 }: SessionEnvironmentItemProps) {
   const { creation_date, id, name, description } = environment;
   const isSelected = field.value === id;
@@ -570,35 +576,6 @@ export function SessionEnvironmentItem({
   useEffect(() => {
     if (!orderCard || isEnvironmentIdTouched) setOrderCard(false);
   }, [isSelected, orderCard, isEnvironmentIdTouched]);
-
-  const selector = !isLoadingResourcesPools &&
-    resourcePools &&
-    resourcePools?.length > 0 && (
-      <Card className="mt-2">
-        <Controller
-          control={control}
-          name="resourceClass"
-          defaultValue={defaultSessionClass}
-          render={() => (
-            <CardBody>
-              <Label for="resource-class-selector">Compute resources</Label>
-              <SessionClassSelectorV2
-                id="resource-class-selector"
-                resourcePools={resourcePools}
-                onChange={onChangeResourceClass}
-                defaultSessionClass={defaultSessionClass}
-              />
-              {errors.resourceClass && (
-                <Label className={cx("text-danger", "fs-small")}>
-                  Select compute resource to continue{" "}
-                </Label>
-              )}
-            </CardBody>
-          )}
-          rules={{ required: true }}
-        />
-      </Card>
-    );
 
   return (
     <ListGroupItem
@@ -628,7 +605,7 @@ export function SessionEnvironmentItem({
             <Globe2 className={cx("bi", "me-1")} />
             Global environment
           </p>
-          {description ? <p className="mb-2">description</p> : null}
+          {description ? <p className="mb-2">{description}</p> : null}
           <p className="m-0">
             <TimeCaption
               datetime={creation_date}
@@ -637,7 +614,6 @@ export function SessionEnvironmentItem({
             />
           </p>
         </Label>
-        {isSelected && selector}
       </div>
     </ListGroupItem>
   );
