@@ -59,6 +59,7 @@ export default function useSearch() {
         sortBy,
       })
     );
+    queryRef.current = query;
   }, [dispatch, searchParams, setSearchParams]);
 
   useEffect(() => {
