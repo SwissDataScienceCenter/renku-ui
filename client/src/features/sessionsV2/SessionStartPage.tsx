@@ -45,7 +45,6 @@ import { useStartRenku2SessionMutation } from "../session/sessions.api";
 import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
 import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
-import { FAVICON_BY_SESSION_STATUS } from "./session.utils";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
@@ -91,7 +90,7 @@ function SessionStarting({
       sessionClass: startSessionOptionsV2.sessionClass,
       storage: startSessionOptionsV2.storage,
     });
-    dispatch(setFavicon(FAVICON_BY_SESSION_STATUS.waiting));
+    dispatch(setFavicon("waiting"));
   }, [
     containerImage,
     launcher.id,
@@ -291,7 +290,7 @@ function StartSessionFromLauncher({
 
   useEffect(() => {
     if (!allDataFetched || needsCredentials) {
-      dispatch(setFavicon(FAVICON_BY_SESSION_STATUS.waiting));
+      dispatch(setFavicon("waiting"));
     }
     return () => {
       // cleanup and set favicon to default

@@ -17,10 +17,11 @@
  */
 
 import { useEffect } from "react";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook.ts";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import { FAVICON_BY_SESSION_STATUS } from "../sessionsV2/session.utils.ts";
 
 export function Favicon() {
-  const faviconSet = useAppSelector(({ display }) => display.favicon);
+  const favicon = useAppSelector(({ display }) => display.favicon);
 
   useEffect(() => {
     const removeExistingFavicon = () => {
@@ -47,11 +48,12 @@ export function Favicon() {
     };
 
     removeExistingFavicon();
-    addFavicon(faviconSet.svg, "icon");
-    addFavicon(faviconSet.png_32x, "icon", "32x32");
-    addFavicon(faviconSet.png_16x, "icon", "16x16");
+    const faviconSet = FAVICON_BY_SESSION_STATUS[favicon];
     addFavicon(faviconSet.ico, "shortcut icon");
-  }, [faviconSet]);
+    addFavicon(faviconSet.png_32x32, "icon", "32x32");
+    addFavicon(faviconSet.png_16x16, "icon", "16x16");
+    addFavicon(faviconSet.svg, "icon");
+  }, [favicon]);
 
   return null;
 }

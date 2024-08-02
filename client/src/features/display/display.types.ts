@@ -32,8 +32,15 @@ interface FaviconSet {
   png_16x: string;
   svg: string;
 }
+
+export type FaviconStatus =
+  | "general"
+  | "running"
+  | "waiting"
+  | "error"
+  | "pause";
 interface Display {
-  favicon: FaviconSet;
+  favicon: FaviconStatus;
   modals: {
     ssh: {
       show: boolean;

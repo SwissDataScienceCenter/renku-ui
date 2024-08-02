@@ -43,8 +43,8 @@ import RenkuFrogIcon from "../../components/icons/RenkuIcon";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import { resetFavicon, setFavicon } from "../display";
-import styles from "../session/components/ShowSession.module.scss";
 import { getSessionFavicon } from "./session.utils";
+import styles from "../session/components/ShowSession.module.scss";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
