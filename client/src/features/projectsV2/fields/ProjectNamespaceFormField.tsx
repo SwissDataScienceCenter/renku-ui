@@ -18,20 +18,20 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button, FormText, Label, UncontrolledTooltip } from "reactstrap";
 import { ArrowRepeat, ChevronDown, ThreeDots } from "react-bootstrap-icons";
 import type { FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import Select, {
   ClassNamesConfig,
-  components,
   GroupBase,
   MenuListProps,
   OptionProps,
   SelectComponentsConfig,
   SingleValue,
   SingleValueProps,
+  components,
 } from "react-select";
+import { Button, FormText, Label, UncontrolledTooltip } from "reactstrap";
 
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
@@ -43,9 +43,10 @@ import {
   useLazyGetNamespacesQuery,
 } from "../api/projectV2.enhanced-api";
 
+import { useDispatch } from "react-redux";
+import { NamespaceResponseList } from "../api/namespace.api.ts";
 import type { GenericFormFieldProps } from "./formField.types";
 import styles from "./ProjectNamespaceFormField.module.scss";
-import { useDispatch } from "react-redux";
 
 type ResponseNamespaces = GetNamespacesApiResponse["namespaces"];
 type ResponseNamespace = ResponseNamespaces[number];
@@ -292,18 +293,33 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     }));
   }, [namespacesFirstPage?.perPage, fetchNamespacesPage, fetchedPages]);
 
+  const setDefaultNamespace = useCallback(
+    (namespaces: NamespaceResponseList) => {
+      const userNamespace = namespaces.filter(
+        (namespace) => namespace.namespace_kind === "user"
+      );
+
+      if (userNamespace.length && !value) {
+        onChange(userNamespace[0]);
+      }
+    },
+    [onChange, value]
+  );
+
   useEffect(() => {
     if (namespacesFirstPage == null) {
       return;
     }
+    const hasMore = namespacesFirstPage.totalPages > namespacesFirstPage.page;
     setState({
       data: namespacesFirstPage.namespaces,
       fetchedPages: namespacesFirstPage.page ?? 0,
       hasMore: namespacesFirstPage.totalPages > namespacesFirstPage.page,
       currentRequestId: "",
     });
-    ``;
-  }, [namespacesFirstPage, requestId]);
+    if (!hasMore && namespacesFirstPage.namespaces.length)
+      setDefaultNamespace(namespacesFirstPage.namespaces);
+  }, [namespacesFirstPage, requestId, setDefaultNamespace]);
 
   useEffect(() => {
     if (
@@ -313,19 +329,28 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     ) {
       return;
     }
+    const hasMore =
+      namespacesPageResult.currentData.totalPages >
+      namespacesPageResult.currentData.page;
+    const namespacesAvailable = [
+      ...allNamespaces,
+      ...namespacesPageResult.currentData.namespaces,
+    ];
     setState({
-      data: [...allNamespaces, ...namespacesPageResult.currentData.namespaces],
+      data: namespacesAvailable,
       fetchedPages: namespacesPageResult.currentData.page ?? 0,
-      hasMore:
-        namespacesPageResult.currentData.totalPages >
-        namespacesPageResult.currentData.page,
+      hasMore,
       currentRequestId: "",
     });
+    if (!hasMore && namespacesAvailable.length)
+      setDefaultNamespace(namespacesAvailable);
   }, [
     allNamespaces,
     namespacesPageResult.currentData,
     namespacesPageResult.requestId,
     currentRequestId,
+    onChange,
+    setDefaultNamespace,
   ]);
 
   if (isFetching) {
