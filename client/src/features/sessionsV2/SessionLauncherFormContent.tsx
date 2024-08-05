@@ -75,17 +75,17 @@ export interface SessionLauncherForm {
 }
 export interface CustomSessionLauncherForm extends SessionLauncherForm {
   port: number;
-  workingDirectory: string;
+  working_directory: string;
   uid: number;
   gid: number;
-  mountDirectory: string;
+  mount_directory: string;
 }
 
 /* Edit session launcher */
 interface SessionLauncherFormContentProps {
-  control: Control<SessionLauncherForm | CustomSessionLauncherForm, unknown>;
+  control: Control<CustomSessionLauncherForm, unknown>;
   errors: FieldErrors<CustomSessionLauncherForm>;
-  watch: UseFormWatch<SessionLauncherForm | CustomSessionLauncherForm>;
+  watch: UseFormWatch<CustomSessionLauncherForm>;
   touchedFields: Partial<
     Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
   >;
@@ -168,7 +168,7 @@ export default function SessionLauncherFormContent({
                   type="radio"
                   {...field}
                   value={"global_environment"}
-                  checked={field.value === "global_environment"}
+                  checked={field.value === "GLOBAL"}
                   disabled={environments && environments.length == 0}
                   data-cy="edit-session-type-existing"
                 />
@@ -185,7 +185,7 @@ export default function SessionLauncherFormContent({
                   type="radio"
                   {...field}
                   value={"container_image"}
-                  checked={field.value === "container_image"}
+                  checked={field.value === "CUSTOM"}
                   data-cy="edit-session-type-custom"
                 />
                 <Label className="ms-2" for="addSessionLauncherContainerImage">
@@ -196,11 +196,7 @@ export default function SessionLauncherFormContent({
           )}
         />
       </div>
-      <div
-        className={cx(
-          watchEnvironmentKind !== "global_environment" && "d-none"
-        )}
-      >
+      <div className={cx(watchEnvironmentKind !== "GLOBAL" && "d-none")}>
         <div className="form-label">Environment</div>
         {isLoading && (
           <p>
@@ -244,17 +240,14 @@ export default function SessionLauncherFormContent({
               </>
             )}
             rules={{
-              required: watchEnvironmentKind === "global_environment",
+              required: watchEnvironmentKind === "GLOBAL",
             }}
           />
         )}
       </div>
 
       <div
-        className={cx(
-          watchEnvironmentKind !== "container_image" && "d-none",
-          "mb-3"
-        )}
+        className={cx(watchEnvironmentKind !== "CUSTOM" && "d-none", "mb-3")}
       >
         <Label className="form-label" for="addSessionLauncherContainerImage">
           Container Image
@@ -271,11 +264,11 @@ export default function SessionLauncherFormContent({
               {...field}
             />
           )}
-          rules={{ required: watchEnvironmentKind === "container_image" }}
+          rules={{ required: watchEnvironmentKind === "CUSTOM" }}
         />
         <div className="invalid-feedback">Please provide a container image</div>
       </div>
-      {watchEnvironmentKind === "container_image" && (
+      {watchEnvironmentKind === "CUSTOM" && (
         <>
           <div className="mb-3">
             <span
@@ -289,7 +282,7 @@ export default function SessionLauncherFormContent({
           <Collapse isOpen={isAdvanceSettingOpen}>
             <div
               className={cx(
-                watchEnvironmentKind !== "container_image" && "d-none",
+                watchEnvironmentKind !== "CUSTOM" && "d-none",
                 "mb-3",
                 "col-3"
               )}
@@ -318,7 +311,7 @@ export default function SessionLauncherFormContent({
 
             <div
               className={cx(
-                watchEnvironmentKind !== "container_image" && "d-none",
+                watchEnvironmentKind !== "CUSTOM" && "d-none",
                 "mb-3"
               )}
             >
@@ -331,10 +324,10 @@ export default function SessionLauncherFormContent({
               <InformativeIcon>{desc.workingDirectory}</InformativeIcon>
               <Controller
                 control={control}
-                name="workingDirectory"
+                name="working_directory"
                 render={({ field }) => (
                   <Input
-                    className={cx(errors.workingDirectory && "is-invalid")}
+                    className={cx(errors.working_directory && "is-invalid")}
                     id="addSessionLauncherWorkingDirectory"
                     placeholder="/"
                     type="text"
@@ -346,7 +339,7 @@ export default function SessionLauncherFormContent({
 
             <div
               className={cx(
-                watchEnvironmentKind !== "container_image" && "d-none",
+                watchEnvironmentKind !== "CUSTOM" && "d-none",
                 "mb-3"
               )}
             >
@@ -359,10 +352,10 @@ export default function SessionLauncherFormContent({
               <InformativeIcon>{desc.mountDirectory}</InformativeIcon>
               <Controller
                 control={control}
-                name="mountDirectory"
+                name="mount_directory"
                 render={({ field }) => (
                   <Input
-                    className={cx(errors.mountDirectory && "is-invalid")}
+                    className={cx(errors.mount_directory && "is-invalid")}
                     id="addSessionLauncherMountDirectory"
                     placeholder=""
                     type="text"
@@ -374,7 +367,7 @@ export default function SessionLauncherFormContent({
 
             <div
               className={cx(
-                watchEnvironmentKind !== "container_image" && "d-none",
+                watchEnvironmentKind !== "CUSTOM" && "d-none",
                 "mb-3",
                 "col-3"
               )}
@@ -404,7 +397,7 @@ export default function SessionLauncherFormContent({
 
             <div
               className={cx(
-                watchEnvironmentKind !== "container_image" && "d-none",
+                watchEnvironmentKind !== "CUSTOM" && "d-none",
                 "mb-3",
                 "col-3"
               )}
@@ -519,50 +512,11 @@ export function CustomEnvFormContent({
         />
         <div className="invalid-feedback">Please provide a name</div>
       </div>
-      <div className="mb-3">
-        <Label className="form-label" for="addSessionLauncherContainerImage">
-          Container Image
-        </Label>
-        <Controller
-          control={control}
-          name="container_image"
-          rules={{ required: true }}
-          render={({ field }) => (
-            <Input
-              className={cx(errors.container_image && "is-invalid")}
-              id="addSessionLauncherContainerImage"
-              placeholder="Docker image"
-              type="text"
-              data-cy="custom-image-input"
-              {...field}
-            />
-          )}
-        />
-        <div className="invalid-feedback">Please provide a container image</div>
-      </div>
-      <div className="mb-3">
-        <Label className="form-label" for="addSessionLauncherDefaultUrl">
-          Default URL (Optional)
-        </Label>
-        <Controller
-          control={control}
-          name="default_url"
-          render={({ field }) => (
-            <Input
-              className="form-control"
-              id="addSessionLauncherDefaultUrl"
-              placeholder="/lab"
-              type="text"
-              {...field}
-            />
-          )}
-        />
-      </div>
-      <div className={cx("mb-5", "mt-5")}>
+      <div className={cx("mb-3")}>
         <Label className="form-label">Session launcher environment</Label>
         <Card className={cx("border")}>
           <CardBody className={cx("d-flex", "flex-column", "p-4")}>
-            <div className={cx("mb-5")}>
+            <div className={cx("mb-3")}>
               <Label
                 className="form-label"
                 for="addSessionLauncherContainerImage"
@@ -595,7 +549,7 @@ export function CustomEnvFormContent({
               </span>
             </div>
             <Collapse isOpen={isAdvanceSettingOpen}>
-              <div className={cx("my-5", "row")}>
+              <div className={cx("my-3", "row")}>
                 <div className={cx("col-12", "col-md-9")}>
                   <Label
                     className="form-label me-2"
@@ -651,7 +605,7 @@ export function CustomEnvFormContent({
                   />
                 </div>
               </div>
-              <div className={cx("mb-5", "row")}>
+              <div className={cx("mb-3", "row")}>
                 <div className="col-6">
                   <Label
                     className="form-label me-2"
@@ -670,11 +624,11 @@ export function CustomEnvFormContent({
                   </MoreInfo>
                   <Controller
                     control={control}
-                    name="workingDirectory"
+                    name="working_directory"
                     rules={{ required: false }}
                     render={({ field }) => (
                       <Input
-                        className={cx(errors.workingDirectory && "is-invalid")}
+                        className={cx(errors.working_directory && "is-invalid")}
                         id="addSessionLauncherWorkingDirectory"
                         placeholder=""
                         type="text"
@@ -702,11 +656,11 @@ export function CustomEnvFormContent({
                   </MoreInfo>
                   <Controller
                     control={control}
-                    name="mountDirectory"
+                    name="mount_directory"
                     rules={{ required: false }}
                     render={({ field }) => (
                       <Input
-                        className={cx(errors.mountDirectory && "is-invalid")}
+                        className={cx(errors.mount_directory && "is-invalid")}
                         id="addSessionLauncherMountDirectory"
                         placeholder={MOUNT_DIRECTORY_DEFAULT}
                         type="text"
@@ -717,7 +671,7 @@ export function CustomEnvFormContent({
                   />
                 </div>
               </div>
-              <div className={cx("mb-5", "row")}>
+              <div className={cx("mb-3", "row")}>
                 <div className="col-3">
                   <Label
                     className="form-label me-2"
@@ -813,14 +767,14 @@ export function CustomEnvFormContent({
 
 /* Add existing session launcher */
 interface ExistingEnvFormContentProps {
-  control: Control<SessionLauncherForm, unknown>;
-  errors: FieldErrors<SessionLauncherForm>;
-  watch: UseFormWatch<SessionLauncherForm>;
-  setValue: UseFormSetValue<SessionLauncherForm>;
+  control: Control<CustomSessionLauncherForm, unknown>;
+  errors: FieldErrors<CustomSessionLauncherForm>;
+  watch: UseFormWatch<CustomSessionLauncherForm>;
+  setValue: UseFormSetValue<CustomSessionLauncherForm>;
   touchedFields: Partial<
-    Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
+    Readonly<FieldNamesMarkedBoolean<CustomSessionLauncherForm>>
   >;
-  resetField: UseFormResetField<SessionLauncherForm>;
+  resetField: UseFormResetField<CustomSessionLauncherForm>;
 }
 export function ExistingEnvFormContent({
   control,
@@ -944,15 +898,15 @@ export function ExistingEnvFormContent({
 /* Environment Item */
 interface SessionEnvironmentItemProps {
   environment: SessionEnvironment;
-  field: ControllerRenderProps<SessionLauncherForm, "environment_id">;
+  field: ControllerRenderProps<CustomSessionLauncherForm, "environment_id">;
   touchedFields: Partial<
-    Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
+    Readonly<FieldNamesMarkedBoolean<CustomSessionLauncherForm>>
   >;
   resourcePools?: ResourcePool[];
   isLoadingResourcesPools?: boolean;
   onChangeResourceClass?: (resourceClass: SingleValue<ResourceClass>) => void;
-  errors: FieldErrors<SessionLauncherForm>;
-  control: Control<SessionLauncherForm, unknown>;
+  errors: FieldErrors<CustomSessionLauncherForm>;
+  control: Control<CustomSessionLauncherForm, unknown>;
   defaultSessionClass?: ResourceClass;
 }
 

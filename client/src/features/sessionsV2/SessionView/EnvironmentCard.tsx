@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types.ts";
+import { SessionLauncher } from "../sessionsV2.types.ts";
 import { Card, CardBody, Col, Row } from "reactstrap";
 import cx from "classnames";
 import { Clock, Globe2, Link45deg } from "react-bootstrap-icons";
@@ -28,15 +28,16 @@ export function CustomEnvironmentValues({
 }: {
   launcher: SessionLauncher;
 }) {
+  const environment = launcher.environment;
   return (
-    launcher.environment_kind === "container_image" && (
+    environment.environment_kind === "CUSTOM" && (
       <>
         <Row>
           <Col xs={3} className={cx("py-1", "d-flex", "align-items-center")}>
             <label>Default URL:</label>
           </Col>
           <Col xs={9} className={cx("py-1")}>
-            <CommandCopy command={`${launcher.default_url ?? ""}`} />
+            <CommandCopy command={`${environment.default_url ?? ""}`} />
           </Col>
         </Row>
         <Row>
@@ -44,7 +45,7 @@ export function CustomEnvironmentValues({
             <label>Working directory:</label>
           </Col>
           <Col xs={9} className={cx("py-1")}>
-            <CommandCopy command={`${launcher.workingDirectory ?? ""}`} />
+            <CommandCopy command={`${environment.working_directory ?? ""}`} />
           </Col>
         </Row>
         <Row>
@@ -52,7 +53,7 @@ export function CustomEnvironmentValues({
             <label>Mount directory:</label>
           </Col>
           <Col xs={9} className={cx("py-1")}>
-            <CommandCopy command={`${launcher.mountDirectory ?? ""}`} />
+            <CommandCopy command={`${environment.mount_directory ?? ""}`} />
           </Col>
         </Row>
         <Row>
@@ -60,7 +61,7 @@ export function CustomEnvironmentValues({
             <label>Port:</label>
           </Col>
           <Col xs={4} className={cx("py-1")}>
-            <CommandCopy command={`${launcher.port ?? ""}`} />
+            <CommandCopy command={`${environment.port ?? ""}`} />
           </Col>
         </Row>
         <Row>
@@ -68,7 +69,7 @@ export function CustomEnvironmentValues({
             <label>UID:</label>
           </Col>
           <Col xs={4} className={cx("py-1")}>
-            <CommandCopy command={`${launcher.uid ?? ""}`} />
+            <CommandCopy command={`${environment.uid ?? ""}`} />
           </Col>
         </Row>
         <Row>
@@ -76,20 +77,15 @@ export function CustomEnvironmentValues({
             <label>GUI:</label>
           </Col>
           <Col xs={4} className={cx("py-1")}>
-            <CommandCopy command={`${launcher.gid ?? ""}`} />
+            <CommandCopy command={`${environment.gid ?? ""}`} />
           </Col>
         </Row>
       </>
     )
   );
 }
-export function EnvironmentCard({
-  launcher,
-  environment,
-}: {
-  launcher: SessionLauncher;
-  environment?: SessionEnvironment;
-}) {
+export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
+  const environment = launcher.environment;
   return (
     <>
       <Card className={cx("border")}>
@@ -107,7 +103,7 @@ export function EnvironmentCard({
               <div className={cx("d-flex", "gap-3")}>
                 <h5 className={cx("fw-bold", "mb-0")}>
                   <small>
-                    {launcher.environment_kind === "global_environment"
+                    {environment.environment_kind === "GLOBAL"
                       ? environment?.name || ""
                       : launcher.name}
                   </small>
@@ -123,7 +119,7 @@ export function EnvironmentCard({
                 "py-2"
               )}
             >
-              {launcher.environment_kind === "container_image" ? (
+              {environment.environment_kind === "CUSTOM" ? (
                 <div className="d-flex align-items-center gap-2">
                   <Link45deg size={24} />
                   Custom image
@@ -135,7 +131,7 @@ export function EnvironmentCard({
                 </div>
               )}
             </Col>
-            {launcher.environment_kind === "global_environment" ? (
+            {environment.environment_kind === "GLOBAL" ? (
               <>
                 <Col
                   xs={12}
@@ -193,10 +189,10 @@ export function EnvironmentCard({
                     <label>Container image:</label>
                   </Col>
                   <Col xs={9} className={cx("py-1")}>
-                    <CommandCopy command={launcher.container_image} />
+                    <CommandCopy command={environment.container_image} />
                   </Col>
                 </Row>
-                {launcher.environment_kind === "container_image" && (
+                {environment.environment_kind === "CUSTOM" && (
                   <CustomEnvironmentValues launcher={launcher} />
                 )}
               </>

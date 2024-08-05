@@ -59,7 +59,6 @@ import {
   SessionStatusV2Label,
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
-import sessionsV2Api from "../sessionsV2.api";
 import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
 
 import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
@@ -204,13 +203,13 @@ export function EnvironmentCardOLD({
     <>
       <Card>
         <CardHeader tag="h5">
-          {launcher.environment_kind === "global_environment"
+          {launcher.environment.environment_kind === "GLOBAL"
             ? environment?.name || <span className="fst-italic">No name</span>
             : launcher.name}
         </CardHeader>
         <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
           <p className="m-0">
-            {launcher.environment_kind === "container_image" ? (
+            {launcher.environment.environment_kind === "CUSTOM" ? (
               <>
                 <Boxes className={cx("bi", "me-1")} />
                 Custom image
@@ -222,7 +221,7 @@ export function EnvironmentCardOLD({
               </>
             )}
           </p>
-          {launcher.environment_kind === "global_environment" ? (
+          {launcher.environment.environment_kind === "GLOBAL" ? (
             <>
               <p className="m-0">
                 {environment?.description ? (
@@ -247,7 +246,9 @@ export function EnvironmentCardOLD({
           ) : (
             <div>
               <label>Container image:</label>
-              <CommandCopy command={launcher.container_image || ""} />
+              <CommandCopy
+                command={launcher.environment?.container_image || ""}
+              />
             </div>
           )}
         </CardBody>
@@ -280,19 +281,7 @@ export function SessionView({
   const { data: members } = useGetProjectsByProjectIdMembersQuery({
     projectId: project.id,
   });
-  const { data: environments, isLoading } =
-    sessionsV2Api.endpoints.getSessionEnvironments.useQueryState(
-      launcher && launcher.environment_kind === "global_environment"
-        ? undefined
-        : skipToken
-    );
-  const environment = useMemo(() => {
-    if (!launcher || launcher.environment_kind === "container_image")
-      return undefined;
-    if (launcher.environment_kind === "global_environment" && environments)
-      return environments?.find((env) => env.id === launcher.environment_id);
-    return undefined;
-  }, [environments, launcher]);
+  const environment = launcher?.environment;
 
   const { data: dataSources } = useGetStoragesV2Query({
     projectId: project.id,
@@ -401,7 +390,7 @@ export function SessionView({
               </div>
             )}
           </div>
-          {launcher && !isLoading && (
+          {launcher && (
             <div>
               <div className={cx("d-flex", "justify-content-between", "mb-2")}>
                 <h4 className="my-auto">Session Environment</h4>
@@ -427,7 +416,7 @@ export function SessionView({
                   minimumRole="editor"
                 />
               </div>
-              <EnvironmentCard launcher={launcher} environment={environment} />
+              <EnvironmentCard launcher={launcher} />
               <UpdateSessionLauncherModal
                 isOpen={isUpdateOpen}
                 launcher={launcher}
@@ -482,8 +471,11 @@ export function SessionView({
               upon launch
             </p>
             <div>
-              {launcher && launcher.default_url ? (
-                <CommandCopy command={launcher.default_url} noMargin />
+              {launcher && launcher.environment.default_url ? (
+                <CommandCopy
+                  command={launcher.environment.default_url}
+                  noMargin
+                />
               ) : environment && environment.default_url ? (
                 <CommandCopy command={environment.default_url} noMargin />
               ) : (
