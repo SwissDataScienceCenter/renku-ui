@@ -38,12 +38,16 @@ import SessionUnavailable from "../session/components/SessionUnavailable";
 import StartSessionProgressBar from "../session/components/StartSessionProgressBar";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import RenkuFrogIcon from "../../components/icons/RenkuIcon.tsx";
 
+import RenkuFrogIcon from "../../components/icons/RenkuIcon";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import { resetFavicon, setFavicon } from "../display";
+import { getSessionFavicon } from "./session.utils";
 import styles from "../session/components/ShowSession.module.scss";
 
 export default function ShowSessionPage() {
+  const dispatch = useAppDispatch();
   const {
     namespace,
     slug,
@@ -65,6 +69,18 @@ export default function ShowSessionPage() {
     }
     return Object.values(sessions).find(({ name }) => name === sessionName);
   }, [sessionName, sessions]);
+
+  useEffect(() => {
+    const faviconByStatus = getSessionFavicon(
+      thisSession?.status?.state,
+      isLoading
+    );
+    dispatch(setFavicon(faviconByStatus));
+    return () => {
+      // cleanup and set favicon to default
+      dispatch(resetFavicon());
+    };
+  }, [thisSession?.status?.state, isLoading, dispatch]);
 
   const [isTheSessionReady, setIsTheSessionReady] = useState(false);
 
