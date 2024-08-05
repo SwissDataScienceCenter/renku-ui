@@ -60,7 +60,7 @@ import {
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import sessionsV2Api from "../sessionsV2.api";
-import { SessionLauncher } from "../sessionsV2.types";
+import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
 
 import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
 import {
@@ -71,6 +71,7 @@ import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/proj
 import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import { EnvironmentCard } from "./EnvironmentCard";
+import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils.ts";
 
 interface SessionCardContentProps {
   color: string;
@@ -192,7 +193,7 @@ function getSessionColor(state: string) {
     : "dark";
 }
 
-function EnvironmentCard({
+export function EnvironmentCardOLD({
   launcher,
   environment,
 }: {

@@ -19,7 +19,6 @@
 import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types.ts";
 import { Card, CardBody, Col, Row } from "reactstrap";
 import cx from "classnames";
-import sessionViewStyles from "./SessionView.module.scss";
 import { Clock, Globe2, Link45deg } from "react-bootstrap-icons";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy.tsx";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils.ts";
@@ -93,7 +92,7 @@ export function EnvironmentCard({
 }) {
   return (
     <>
-      <Card className={cx("border", sessionViewStyles.EnvironmentCard)}>
+      <Card className={cx("border")}>
         <CardBody className={cx("d-flex", "flex-column")}>
           <Row>
             <Col

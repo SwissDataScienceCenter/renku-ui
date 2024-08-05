@@ -17,13 +17,15 @@
  */
 
 import cx from "classnames";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useEffect, useState, useCallback } from "react";
 import { SingleValue } from "react-select";
 import {
   Control,
   Controller,
+  ControllerRenderProps,
   FieldErrors,
   FieldNamesMarkedBoolean,
+  UseFormResetField,
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
@@ -50,15 +52,17 @@ import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon.tsx";
 import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import {
   ResourceClass,
+  ResourcePool,
 } from "../dataServices/dataServices.types";
 import { SessionClassSelectorV2 } from "../session/components/options/SessionClassOption";
 import {
   getFormCustomValuesDesc,
   MOUNT_DIRECTORY_DEFAULT,
 } from "./session.utils.ts";
-import { EnvironmentKind } from "./sessionsV2.types.ts";
+import { EnvironmentKind, SessionEnvironment } from "./sessionsV2.types.ts";
 import InformativeIcon from "../../components/InformativeIcon.tsx";
 import { ExternalLink } from "../../components/ExternalLinks.tsx";
+import { Docs } from "../../utils/constants/Docs.js";
 
 export interface SessionLauncherForm {
   name: string;
@@ -146,7 +150,6 @@ export default function SessionLauncherFormContent({
           )}
         />
       </div>
-
       <div className="mb-3">
         <div className="form-label">Environment Type</div>
 
@@ -193,7 +196,6 @@ export default function SessionLauncherFormContent({
           )}
         />
       </div>
-
       <div
         className={cx(
           watchEnvironmentKind !== "global_environment" && "d-none"
@@ -555,6 +557,7 @@ export function CustomEnvFormContent({
             />
           )}
         />
+      </div>
       <div className={cx("mb-5", "mt-5")}>
         <Label className="form-label">Session launcher environment</Label>
         <Card className={cx("border")}>
