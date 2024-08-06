@@ -23,6 +23,11 @@ import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { setInitialQuery, setPage, setPerPage } from "../searchV2.slice";
 import { parseSearchQuery } from "../searchV2.utils";
+import {
+  DEFAULT_PAGE_SIZE,
+  FIRST_PAGE,
+  MAX_PAGE_SIZE,
+} from "../searchV2.constants";
 
 export default function useSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -69,7 +74,7 @@ export default function useSearch() {
     if (isNaN(page) || page < 1) {
       setSearchParams(
         (prev) => {
-          prev.set("page", "1");
+          prev.set("page", FIRST_PAGE);
           return prev;
         },
         { replace: true }
@@ -87,7 +92,7 @@ export default function useSearch() {
     if (isNaN(perPage) || perPage < 1) {
       setSearchParams(
         (prev) => {
-          prev.set("perPage", "10");
+          prev.set("perPage", DEFAULT_PAGE_SIZE);
           return prev;
         },
         { replace: true }
@@ -98,7 +103,7 @@ export default function useSearch() {
     if (perPage > 100) {
       setSearchParams(
         (prev) => {
-          prev.set("perPage", "100");
+          prev.set("perPage", MAX_PAGE_SIZE);
           return prev;
         },
         { replace: true }
@@ -117,8 +122,8 @@ export default function useSearch() {
 
       setSearchParams((prev) => {
         prev.set("q", query);
-        prev.set("page", "1");
-        prev.set("perPage", "10");
+        prev.set("page", FIRST_PAGE);
+        prev.set("perPage", DEFAULT_PAGE_SIZE);
         return prev;
       });
       queryRef.current = query;

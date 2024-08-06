@@ -256,7 +256,7 @@ function SearchV2DateFilterCustomOption({
       {isChecked && (
         <>
           <div>
-            <label className={cx("px-2", "author-label")}>From:</label>
+            <label className="px-2">From:</label>
             <input
               className="form-control"
               type="date"
@@ -267,7 +267,7 @@ function SearchV2DateFilterCustomOption({
             />
           </div>
           <div>
-            <label className={cx("px-2", "author-label")}>To:</label>
+            <label className="px-2">To:</label>
             <input
               className="form-control"
               type="date"
