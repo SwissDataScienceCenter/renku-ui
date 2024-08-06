@@ -130,7 +130,7 @@ function addErrorNotification({
       : "Unknown error";
   notifications.addError(
     NOTIFICATION_TOPICS.SESSION_START,
-    "Unable to stop the current session",
+    "Unable to resume the current session",
     undefined,
     undefined,
     undefined,
