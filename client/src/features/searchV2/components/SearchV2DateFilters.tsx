@@ -256,7 +256,7 @@ function SearchV2DateFilterCustomOption({
       {isChecked && (
         <>
           <div>
-            <label className="px-2">From:</label>
+            <label>From:</label>
             <input
               className="form-control"
               type="date"
@@ -267,7 +267,7 @@ function SearchV2DateFilterCustomOption({
             />
           </div>
           <div>
-            <label className="px-2">To:</label>
+            <label>To:</label>
             <input
               className="form-control"
               type="date"
