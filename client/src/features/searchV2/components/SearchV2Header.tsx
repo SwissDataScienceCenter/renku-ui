@@ -55,7 +55,13 @@ export default function SearchV2Header() {
 
   const resultsText = (
     <div className="rk-search-result-title">
-      {total ? total : "No"} {total && total > 1 ? "results" : "result"}
+      {searchResults.isFetching ? (
+        "Loading results"
+      ) : (
+        <>
+          {total ? total : "No"} {total && total > 1 ? "results" : "result"}
+        </>
+      )}
       {query != null && (
         <span>
           {" "}
