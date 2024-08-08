@@ -46,6 +46,7 @@ import {
 import { Loader } from "../../components/Loader";
 
 import { useTestCloudStorageConnectionMutation } from "../project/components/cloudStorage/projectCloudStorage.api";
+import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../project/components/cloudStorage/projectCloudStorage.constants";
 import type {
   CloudStorageDetailsOptions,
   TestCloudStorageConnectionParams,
@@ -504,7 +505,11 @@ function SensitiveFieldWidget({
       return (
         <div className="mt-2">
           <Label htmlFor={field.name}>{field.friendlyName}</Label>
-          <Input id={field.name} value="<saved secret>" readOnly />
+          <Input
+            id={field.name}
+            value={CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE}
+            readOnly
+          />
         </div>
       );
     }

@@ -24,6 +24,7 @@ import {
 } from "./projectCloudStorage.types";
 
 export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
+export const CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE = "<saved secret>";
 
 export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
   "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
