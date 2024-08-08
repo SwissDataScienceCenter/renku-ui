@@ -37,11 +37,15 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
   CustomEnvFormContent,
+  CustomSessionLauncherForm,
   ExistingEnvFormContent,
   SessionLauncherForm,
 } from "../../SessionLauncherFormContent";
 import { useAddSessionLauncherMutation } from "../../sessionsV2.api";
-import { SessionLauncherEnvironment } from "../../sessionsV2.types";
+import {
+  SessionLauncherEnvironment,
+  SessionLauncherEnvironmentParams,
+} from "../../sessionsV2.types";
 import { InfoAlert } from "../../../../components/Alert";
 
 interface AddSessionLauncherModalProps {
@@ -66,27 +70,41 @@ function AddSessionCustomImageModal({
     handleSubmit,
     reset,
     setValue,
-  } = useForm<SessionLauncherForm, unknown>({
+  } = useForm<CustomSessionLauncherForm, unknown>({
     defaultValues: {
       name: "",
-      environment_kind: "container_image",
+      environment_kind: "CUSTOM",
       container_image: "",
       default_url: "",
     },
   });
   const onSubmit = useCallback(
-    (data: SessionLauncherForm) => {
-      const { default_url, name } = data;
+    (data: CustomSessionLauncherForm) => {
+      const {
+        default_url,
+        name,
+        port,
+        working_directory,
+        uid,
+        gid,
+        mount_directory,
+      } = data;
       const environment: SessionLauncherEnvironment = {
-        environment_kind: "container_image",
+        name,
+        port,
+        working_directory,
+        mount_directory,
+        gid,
+        uid,
+        environment_kind: "CUSTOM",
         container_image: data.container_image,
+        default_url: default_url.trim() ? default_url : undefined,
       };
       addSessionLauncher({
         project_id: projectId ?? "",
         resource_class_id: data.resourceClass.id,
         name,
-        default_url: default_url.trim() ? default_url : undefined,
-        ...environment,
+        environment,
       });
     },
     [addSessionLauncher, projectId]
@@ -179,27 +197,25 @@ function AddSessionExistingEnvModal({
     watch,
     setValue,
     resetField,
-  } = useForm<SessionLauncherForm, unknown>({
+  } = useForm<CustomSessionLauncherForm, unknown>({
     defaultValues: {
       name: "",
-      environment_kind: "global_environment",
+      environment_kind: "GLOBAL",
       environment_id: "",
       default_url: "",
     },
   });
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
-      const { default_url, name, resourceClass } = data;
-      const environment: SessionLauncherEnvironment = {
-        environment_kind: "global_environment",
-        environment_id: data.environment_id,
+      const { name, resourceClass } = data;
+      const environment: SessionLauncherEnvironmentParams = {
+        id: data.environment_id,
       };
       addSessionLauncher({
         project_id: projectId ?? "",
         resource_class_id: resourceClass.id,
         name,
-        default_url: default_url.trim() ? default_url : undefined,
-        ...environment,
+        environment,
       });
     },
     [addSessionLauncher, projectId]

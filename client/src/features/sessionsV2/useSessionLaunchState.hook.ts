@@ -50,7 +50,7 @@ export default function useSessionLauncherState({
   project,
   isCustomLaunch,
 }: StartSessionFromLauncherProps) {
-  const { environment_kind, default_url } = launcher;
+  const { environment_kind, default_url } = launcher.environment;
 
   const {
     data: storages,
@@ -66,23 +66,24 @@ export default function useSessionLauncherState({
     resourcePools,
   });
 
+  //TODO ANDREA: DO WE STILL NEED THIS?
   const { data: environments } = useGetSessionEnvironmentsQuery(
-    environment_kind === "global_environment" ? undefined : skipToken
+    environment_kind === "GLOBAL" ? undefined : skipToken
   );
 
   const environment = useMemo(
     () =>
-      launcher.environment_kind === "global_environment" &&
-      environments?.find((env) => env.id === launcher.environment_id),
+      launcher.environment.environment_kind === "GLOBAL" &&
+      environments?.find((env) => env.id === launcher.environment.id),
     [environments, launcher]
   );
 
   const containerImage =
-    environment_kind === "global_environment" && environment
+    environment_kind === "GLOBAL" && environment
       ? environment.container_image
-      : environment_kind === "global_environment"
+      : environment_kind === "GLOBAL"
       ? "unknown"
-      : launcher.container_image;
+      : launcher.environment.container_image;
 
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2

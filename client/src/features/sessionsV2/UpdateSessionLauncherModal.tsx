@@ -32,7 +32,7 @@ import {
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import SessionLauncherFormContent, {
-  SessionLauncherForm,
+  CustomSessionLauncherForm,
 } from "./SessionLauncherFormContent";
 import {
   useGetSessionEnvironmentsQuery,
@@ -40,7 +40,7 @@ import {
 } from "./sessionsV2.api";
 import {
   SessionLauncher,
-  SessionLauncherEnvironment,
+  SessionLauncherEnvironmentParams,
 } from "./sessionsV2.types";
 
 interface UpdateSessionLauncherModalProps {
@@ -64,41 +64,60 @@ export default function UpdateSessionLauncherModal({
     reset,
     setValue,
     watch,
-  } = useForm<SessionLauncherForm>({
+  } = useForm<CustomSessionLauncherForm>({
     defaultValues: {
       name: launcher.name,
       description: launcher.description ?? "",
-      environment_kind: launcher.environment_kind,
+      environment_kind: launcher.environment.environment_kind,
       environment_id:
-        launcher.environment_kind === "global_environment"
-          ? launcher.environment_id
+        launcher.environment.environment_kind === "GLOBAL"
+          ? launcher.environment.id
           : "",
       container_image:
-        launcher.environment_kind === "container_image"
-          ? launcher.container_image
+        launcher.environment.environment_kind === "CUSTOM"
+          ? launcher.environment.container_image
           : "",
-      default_url: launcher.default_url ?? "",
+      default_url: launcher.environment.default_url ?? "",
+      port: launcher.environment.port,
+      working_directory: launcher.environment.working_directory,
+      mount_directory: launcher.environment.mount_directory,
+      uid: launcher.environment.uid,
+      gid: launcher.environment.gid,
     },
   });
   const onSubmit = useCallback(
-    (data: SessionLauncherForm) => {
-      const { default_url, description, name } = data;
-      const environment: SessionLauncherEnvironment =
-        data.environment_kind === "global_environment"
+    (data: CustomSessionLauncherForm) => {
+      const {
+        default_url,
+        description,
+        name,
+        port,
+        working_directory,
+        uid,
+        gid,
+        mount_directory,
+      } = data;
+      const environment: SessionLauncherEnvironmentParams =
+        data.environment_kind === "GLOBAL"
           ? {
-              environment_kind: "global_environment",
-              environment_id: data.environment_id,
+              id: data.environment_id,
             }
           : {
-              environment_kind: "container_image",
+              environment_kind: "CUSTOM",
               container_image: data.container_image,
+              name: data.name, // TODO ANDREA: create own variable for environment name
+              default_url: default_url.trim() ? default_url : undefined,
+              port,
+              working_directory,
+              mount_directory,
+              uid,
+              gid,
             };
       updateSessionLauncher({
         launcherId: launcher.id,
         name,
         description: description.trim() ? description : undefined,
-        default_url: default_url.trim() ? default_url : undefined,
-        ...environment,
+        environment,
       });
     },
     [launcher.id, updateSessionLauncher]
@@ -109,7 +128,7 @@ export default function UpdateSessionLauncherModal({
       return;
     }
     if (environments.length == 0) {
-      setValue("environment_kind", "container_image");
+      setValue("environment_kind", "CUSTOM");
     }
   }, [environments, setValue]);
 
@@ -131,16 +150,21 @@ export default function UpdateSessionLauncherModal({
     reset({
       name: launcher.name,
       description: launcher.description ?? "",
-      environment_kind: launcher.environment_kind,
+      environment_kind: launcher.environment.environment_kind,
       environment_id:
-        launcher.environment_kind === "global_environment"
-          ? launcher.environment_id
+        launcher.environment.environment_kind === "GLOBAL"
+          ? launcher.environment.id
           : "",
       container_image:
-        launcher.environment_kind === "container_image"
-          ? launcher.container_image
+        launcher.environment.environment_kind === "CUSTOM"
+          ? launcher.environment.container_image
           : "",
-      default_url: launcher.default_url ?? "",
+      default_url: launcher.environment.default_url ?? "",
+      port: launcher.environment.port,
+      working_directory: launcher.environment.working_directory,
+      mount_directory: launcher.environment.mount_directory,
+      uid: launcher.environment.uid,
+      gid: launcher.environment.gid,
     });
   }, [launcher, reset]);
 

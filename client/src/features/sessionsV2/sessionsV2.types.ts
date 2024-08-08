@@ -32,22 +32,42 @@ export type SessionLauncher = {
   project_id: string;
   name: string;
   creation_date: string;
-  default_url?: string;
   description?: string;
   resource_class_id?: number;
+  environment: SessionLauncherEnvironment;
+};
+
+export type EnvironmentKind = "GLOBAL" | "CUSTOM";
+
+export type SessionLauncherEnvironment = {
+  id?: string;
+  name: string;
+  description?: string;
+  container_image: string;
+  default_url?: string;
+  uid?: number;
+  gid?: number;
+  working_directory?: string;
+  mount_directory?: string;
+  port?: number;
   environment_kind: EnvironmentKind;
-} & SessionLauncherEnvironment;
+};
 
-export type EnvironmentKind = "global_environment" | "container_image";
-
-export type SessionLauncherEnvironment =
+export type SessionLauncherEnvironmentParams =
   | {
-      environment_kind: Extract<EnvironmentKind, "global_environment">;
-      environment_id: string;
+      id: string;
     }
   | {
-      environment_kind: Extract<EnvironmentKind, "container_image">;
+      name: string;
+      description?: string;
       container_image: string;
+      default_url?: string;
+      uid?: number;
+      gid?: number;
+      working_directory?: string;
+      mount_directory?: string;
+      port?: number;
+      environment_kind: EnvironmentKind;
     };
 
 export type SessionLauncherList = SessionLauncher[];
@@ -57,23 +77,19 @@ export interface GetProjectSessionLaunchersParams {
 }
 
 export type AddSessionLauncherParams = {
-  default_url?: string;
   description?: string;
   name: string;
   project_id: string;
   resource_class_id?: number;
-  environment_kind: EnvironmentKind;
-} & SessionLauncherEnvironment;
+  environment: SessionLauncherEnvironmentParams;
+};
 
 export interface UpdateSessionLauncherParams {
   launcherId?: string;
-  default_url?: string;
   description?: string;
   name?: string;
-  environment_kind?: EnvironmentKind;
-  environment_id?: string;
   resource_class_id?: number;
-  container_image?: string;
+  environment?: SessionLauncherEnvironmentParams;
 }
 
 export interface DeleteSessionLauncherParams {

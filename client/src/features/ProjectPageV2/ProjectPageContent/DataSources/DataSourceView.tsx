@@ -18,8 +18,7 @@
 import cx from "classnames";
 import { useMemo } from "react";
 import { Offcanvas, OffcanvasBody } from "reactstrap";
-
-import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem";
+import { MoreInfo } from "../../../../components/MoreInfo.tsx";
 import { getCredentialFieldDefinitions } from "../../../project/utils/projectCloudStorage.utils";
 import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
 import { DataSourceActions } from "./DataSourceDisplay";
@@ -116,7 +115,7 @@ export function DataSourceView({
                   {requiredCredentials.map(({ name, help }, index) => (
                     <li key={index}>
                       {name}
-                      {help && <CredentialMoreInfo help={help} />}
+                      {help && <MoreInfo help={help} />}
                     </li>
                   ))}
                 </ul>

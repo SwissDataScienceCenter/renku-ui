@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { EyeFill, EyeSlashFill, InfoCircleFill } from "react-bootstrap-icons";
+import { EyeFill, EyeSlashFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -27,16 +27,14 @@ import {
   Input,
   InputGroup,
   Label,
-  PopoverBody,
   Row,
-  UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../../api-client";
 import { Loader } from "../../../../components/Loader";
+import { MoreInfo } from "../../../../components/MoreInfo.tsx";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -300,7 +298,7 @@ function CredentialField({
       <Label className="form-label" for={`credentials-${item.name}`}>
         {item.name}
         <span className={cx("fw-bold", "text-danger")}>*</span>
-        <CredentialMoreInfo help={item.help} />
+        <MoreInfo help={item.help} />
       </Label>
       <InputGroup>
         <Input
@@ -332,22 +330,5 @@ function CredentialField({
         </UncontrolledTooltip>
       </InputGroup>
     </div>
-  );
-}
-
-function CredentialMoreInfo({ help }: { help: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-
-  return (
-    <>
-      <span ref={ref}>
-        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
-      </span>
-      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
-        <PopoverBody>
-          <LazyRenkuMarkdown markdownText={help} />
-        </PopoverBody>
-      </UncontrolledPopover>
-    </>
   );
 }
