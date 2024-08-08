@@ -445,7 +445,7 @@ function addErrorNotification({
       : "Unknown error";
   notifications.addError(
     NOTIFICATION_TOPICS.SESSION_START,
-    "Unable to stop the current session",
+    "Unable to delete the current session",
     undefined,
     undefined,
     undefined,
