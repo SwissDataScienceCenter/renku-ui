@@ -413,6 +413,10 @@ export default function CloudStorageModal({
     : "Please go back and select a provider";
   const isResultLoading = isAddResultLoading || isModifyResultLoading;
 
+  const hasStoredCredentialsInConfig = Object.values(
+    storageDetails.options ?? {}
+  ).some((value) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN);
+
   return (
     <Modal
       backdrop="static"
@@ -491,6 +495,7 @@ export default function CloudStorageModal({
             addOrEditStorage={addOrEditStorage}
             disableAddButton={disableAddButton}
             disableContinueButton={disableContinueButton}
+            hasStoredCredentialsInConfig={hasStoredCredentialsInConfig}
             isResultLoading={isResultLoading}
             setStateSafe={setStateSafe}
             state={state}

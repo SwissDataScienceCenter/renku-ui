@@ -48,6 +48,8 @@ import {
 
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+  CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
   CLOUD_STORAGE_TOTAL_STEPS,
 } from "./projectCloudStorage.constants";
 import {
@@ -479,12 +481,14 @@ function CheckboxOptionItem({
 interface PasswordOptionItemProps {
   control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   defaultValue: string | undefined;
+  isV2?: boolean;
   onFieldValueChange: (option: string, value: string) => void;
   option: CloudStorageSchemaOptions;
 }
 function PasswordOptionItem({
   control,
   defaultValue,
+  isV2,
   onFieldValueChange,
   option,
 }: PasswordOptionItemProps) {
@@ -492,6 +496,15 @@ function PasswordOptionItem({
   const toggleShowPassword = useCallback(() => {
     setShowPassword((showPassword) => !showPassword);
   }, []);
+
+  if (isV2 && defaultValue == CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN) {
+    return (
+      <PasswordOptionItemStored
+        defaultValue={CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE}
+        {...{ control, option }}
+      />
+    );
+  }
 
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
@@ -505,9 +518,20 @@ function PasswordOptionItem({
           />
         </div>
         <UncontrolledTooltip placement="top" target={tooltipContainerId}>
-          This field contains sensitive data (E.G. password, access token, ...).
-          RenkuLab does not store passwords, so you will be asked this value
-          again when starting a session.
+          {isV2 ? (
+            <span>
+              This field contains sensitive data (E.G. password, access token,
+              ...), which is specific to the user. You can store this value as a
+              secret, in which case it will be used for any session you start,
+              but the value will not be available to other users.
+            </span>
+          ) : (
+            <span>
+              This field contains sensitive data (E.G. password, access token,
+              ...). RenkuLab does not store passwords, so you will be asked this
+              value again when starting a session.
+            </span>
+          )}
         </UncontrolledTooltip>
       </label>
 
@@ -544,10 +568,54 @@ function PasswordOptionItem({
             placement="top"
             target={`show-password-${option.name}`}
           >
-            Hide/show sensistive data
+            Hide/show sensitive data
           </UncontrolledTooltip>
         </Button>
       </InputGroup>
+    </>
+  );
+}
+
+function PasswordOptionItemStored({
+  control,
+  defaultValue,
+  option,
+}: Omit<PasswordOptionItemProps, "onFieldValueChange">) {
+  const tooltipContainerId = `option-is-secret-${option.name}`;
+  return (
+    <>
+      <label htmlFor={option.name}>
+        {option.friendlyName ?? option.name}{" "}
+        <div id={tooltipContainerId} className="d-inline">
+          <KeyFill className={cx("bi", "ms-1")} />
+          <ExclamationTriangleFill
+            className={cx("bi", "ms-1", "text-warning")}
+          />
+        </div>
+        <UncontrolledTooltip placement="top" target={tooltipContainerId}>
+          <span>
+            The value for this field is stored as a secret. Use the credentials
+            dialog to change or clear the value.
+          </span>
+        </UncontrolledTooltip>
+      </label>
+
+      <Controller
+        name={option.name}
+        control={control}
+        defaultValue={defaultValue}
+        render={({ field }) => (
+          <input
+            {...field}
+            id={option.name}
+            readOnly={true}
+            type="text"
+            className={cx("form-control", "rounded-0", "rounded-start")}
+            placeholder={option.convertedDefault?.toString() ?? ""}
+            onChange={() => {}}
+          />
+        )}
+      />
     </>
   );
 }
@@ -854,6 +922,7 @@ function AddStorageType({
 
 // *** Add storage: page 2 of 3, with storage options *** //
 function AddStorageOptions({
+  isV2,
   schema,
   setState,
   setStorage,
@@ -914,6 +983,7 @@ function AddStorageOptions({
                   ? (storage.options[o.name] as string)
                   : ""
               }
+              isV2={isV2}
               onFieldValueChange={onFieldValueChange}
               option={o}
             />

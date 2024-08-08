@@ -18,7 +18,7 @@
 
 import fixtures from "../support/renkulab-fixtures";
 
-function openCredentialsModal() {
+function openDataSourceMenu() {
   cy.getDataCy("data-source-edit")
     .parent()
     .find("[data-cy=button-with-menu-dropdown]")
@@ -123,7 +123,7 @@ describe("Set up data sources with credentials", () => {
     cy.getDataCy("data-source-view-back-button").click();
 
     // set credentials
-    openCredentialsModal();
+    openDataSourceMenu();
     cy.getDataCy("data-source-credentials").click();
     fixtures
       .postCloudStorageSecrets({
@@ -166,13 +166,70 @@ describe("Set up data sources with credentials", () => {
     cy.getDataCy("data-source-view-back-button").click();
 
     // The saved credentials should be visible in the modal
-    openCredentialsModal();
+    openDataSourceMenu();
     cy.getDataCy("data-source-credentials").click();
     cy.getDataCy("cloud-storage-credentials-modal")
       .contains("Test and Save")
       .should("be.disabled");
 
     cy.getDataCy("cloud-storage-credentials-modal").contains("Cancel").click();
+  });
+
+  it("edit a data source with credentials", () => {
+    fixtures.testCloudStorage();
+    fixtures
+      .testCloudStorage()
+      .sessionServersEmpty()
+      .sessionImage()
+      .resourcePoolsTest()
+      .cloudStorage({
+        isV2: true,
+        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        name: "getCloudStorageV2",
+      })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets-partial.json",
+      })
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .postCloudStorage({
+        name: "postCloudStorageV2",
+        fixture: "cloudStorage/new-cloud-storage_v2.json",
+      });
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers.json",
+    });
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getSessionServers");
+    cy.wait("@sessionLaunchers");
+    // Credentials should be stored
+    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
+    cy.getDataCy("data-storage-name").click();
+    cy.wait("@getCloudStorageSecrets");
+    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
+    cy.getDataCy("secret_access_key-value").should(
+      "contain.text",
+      "<saved secret>"
+    );
+    cy.getDataCy("data-source-view-back-button").click();
+
+    // edit data source, without touching the credentials
+    openDataSourceMenu();
+    cy.getDataCy("data-source-edit").click();
+    cy.getDataCy("cloud-storage-edit-modal")
+      .find("#access_key_id")
+      .invoke("attr", "value")
+      .should("eq", "<saved secret>");
+    cy.getDataCy("cloud-storage-edit-modal")
+      .find("#secret_access_key")
+      .invoke("attr", "value")
+      .should("eq", "<saved secret>");
+    cy.getDataCy("cloud-storage-edit-modal").contains("Next").click();
+
+    fixtures.patchCloudStorage({ name: "patchCloudStorage", isV2: true });
+    cy.getDataCy("cloud-storage-edit-modal").contains("Update storage").click();
+    cy.wait("@patchCloudStorage");
   });
 
   it("clear credentials for a data source", () => {
@@ -209,7 +266,7 @@ describe("Set up data sources with credentials", () => {
     cy.getDataCy("data-source-view-back-button").click();
 
     // clear credentials
-    openCredentialsModal();
+    openDataSourceMenu();
     cy.getDataCy("data-source-credentials").click();
 
     cy.getDataCy("cloud-storage-credentials-modal")

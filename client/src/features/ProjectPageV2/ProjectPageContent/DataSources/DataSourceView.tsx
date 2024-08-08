@@ -20,6 +20,7 @@ import { useMemo } from "react";
 import { Offcanvas, OffcanvasBody } from "reactstrap";
 
 import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem";
+import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../../project/utils/projectCloudStorage.utils";
 import { useGetStoragesV2ByStorageIdSecretsQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
@@ -142,7 +143,7 @@ export function DataSourceView({
                         name == null
                           ? "unknown"
                           : savedCredentialFields[name]
-                          ? "<saved secret>"
+                          ? CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE
                           : storageDefinition.configuration[name]?.toString();
                       return (
                         <tr key={index}>
