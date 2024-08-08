@@ -2,6 +2,7 @@
 
 [data-bs-theme="navy"] {
   .navbar {
+    color: var(--bs-white);
     background-color: var(--bs-navy);
     --bs-navbar-color: var(--bs-gray-400);
     --bs-navbar-active-color: var(--bs-white);
