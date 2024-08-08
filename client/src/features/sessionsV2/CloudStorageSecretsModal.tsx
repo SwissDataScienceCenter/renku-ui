@@ -364,10 +364,7 @@ function CredentialsButtons({
           validationResult.isSuccess && "btn-rk-green",
           validationResult.isError && "btn-danger"
         )}
-        disabled={
-          validationResult.isLoading ||
-          (context === "storage" && hasSavedCredentials)
-        }
+        disabled={validationResult.isLoading}
         type="submit"
       >
         {validationResult.isLoading ? (
@@ -497,32 +494,19 @@ function SensitiveFieldWidget({
   context,
   control,
   field,
-  hasIncompleteSavedCredentials,
 }: SensitiveFieldWidgetProps) {
   const savedValue = credentialFieldDict[field.name];
   if (context === "storage") {
     if (savedValue != null) {
       return (
-        <div className="mt-2">
-          <Label htmlFor={field.name}>{field.friendlyName}</Label>
-          <Input
-            id={field.name}
-            value={CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE}
-            readOnly
-          />
-        </div>
-      );
-    }
-    if (hasIncompleteSavedCredentials) {
-      return (
-        <div className="mt-2">
-          <Label htmlFor={field.name}>{field.friendlyName}</Label>
-          <Input
-            id={field.name}
-            defaultValue="<clear credentials to edit>"
-            readOnly
-          />
-        </div>
+        <SensitiveFieldInput
+          key={field.name}
+          control={control}
+          defaultValue={CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE}
+          friendlyName={field.friendlyName}
+          option={field}
+          showPasswordInitially={true}
+        />
       );
     }
   }
@@ -544,6 +528,7 @@ interface SensitiveFieldInputProps {
   friendlyName: string;
   defaultValue: string | undefined;
   option: RCloneOption;
+  showPasswordInitially?: boolean;
 }
 
 function SensitiveFieldInput({
@@ -551,8 +536,9 @@ function SensitiveFieldInput({
   defaultValue,
   friendlyName,
   option,
+  showPasswordInitially = false,
 }: SensitiveFieldInputProps) {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(showPasswordInitially);
   const toggleShowPassword = useCallback(() => {
     setShowPassword((showPassword) => !showPassword);
   }, []);
@@ -560,9 +546,8 @@ function SensitiveFieldInput({
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
     <div>
-      {/* {option.friendlyName ?? option.name}{" "} */}
       <Label htmlFor={option.name}>
-        {friendlyName}
+        {friendlyName ?? option.name}
         <div id={tooltipContainerId} className="d-inline">
           <KeyFill className={cx("bi", "ms-1")} />
         </div>
@@ -607,9 +592,17 @@ function SensitiveFieldInput({
             </InputGroup>
           </>
         )}
-        rules={{ required: true }}
+        rules={{
+          required: true,
+          validate: {
+            nonEmpty: (v) => v.trim().length > 0,
+            provided: (v) => v !== CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
+          },
+        }}
       />
-      <div className="invalid-feedback">Please provide a {option.name}</div>
+      <div className="invalid-feedback">
+        Please provide a value for {option.name}
+      </div>
     </div>
   );
 }

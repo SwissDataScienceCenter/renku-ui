@@ -29,7 +29,7 @@ const injectedRtkApi = api.injectEndpoints({
     getStoragesV2: build.query<GetStoragesV2ApiResponse, GetStoragesV2ApiArg>({
       query: (queryArg) => ({
         url: `/storages_v2`,
-        params: { project_id: queryArg.projectId },
+        params: queryArg.storageV2Params,
       }),
     }),
     postStoragesV2: build.mutation<
@@ -107,7 +107,7 @@ const injectedRtkApi = api.injectEndpoints({
     getStorage: build.query<GetStorageApiResponse, GetStorageApiArg>({
       query: (queryArg) => ({
         url: `/storage`,
-        params: { project_id: queryArg.projectId },
+        params: { storage_params: queryArg.storageParams },
       }),
     }),
     postStorage: build.mutation<PostStorageApiResponse, PostStorageApiArg>({
@@ -158,7 +158,7 @@ const injectedRtkApi = api.injectEndpoints({
 });
 export { injectedRtkApi as projectStoragesApi };
 export type GetStoragesV2ByStorageIdApiResponse =
-  /** status 200 Found the cloud storage */ CloudStorageGetRead;
+  /** status 200 Found the cloud storage */ CloudStorageGetV2Read;
 export type GetStoragesV2ByStorageIdApiArg = {
   /** the id of the storage */
   storageId: UlidId;
@@ -177,9 +177,12 @@ export type DeleteStoragesV2ByStorageIdApiArg = {
   storageId: UlidId;
 };
 export type GetStoragesV2ApiResponse =
-  /** status 200 the storage configurations for the project */ CloudStorageGetRead[];
+  /** status 200 the storage configurations for the project */ CloudStorageGetV2Read[];
 export type GetStoragesV2ApiArg = {
-  projectId: UlidId;
+  /** query parameters */
+  storageV2Params?: {
+    project_id: UlidId;
+  };
 };
 export type PostStoragesV2ApiResponse =
   /** status 201 The cloud storage entry was created */ CloudStorageGetRead;
@@ -234,7 +237,10 @@ export type DeleteStorageByStorageIdApiArg = {
 export type GetStorageApiResponse =
   /** status 200 the storage configurations for the project */ CloudStorageGetRead[];
 export type GetStorageApiArg = {
-  projectId: GitlabProjectId;
+  /** query parameters */
+  storageParams?: {
+    project_id?: GitlabProjectId;
+  };
 };
 export type PostStorageApiResponse =
   /** status 201 The cloud storage entry was created */ CloudStorageGetRead;
@@ -344,6 +350,17 @@ export type CloudStorageGetRead = {
   storage: CloudStorageWithIdRead;
   sensitive_fields?: RCloneOption[];
 };
+export type CloudStorageSecretGet = {
+  /** Name of the field to store credential for */
+  name: string;
+  secret_id: UlidId;
+};
+export type CloudStorageGetV2 = CloudStorageGet & {
+  secrets?: CloudStorageSecretGet[];
+};
+export type CloudStorageGetV2Read = CloudStorageGetRead & {
+  secrets?: CloudStorageSecretGet[];
+};
 export type ErrorResponse = {
   error: {
     code: number;
@@ -381,10 +398,6 @@ export type CloudStorageUrl = ProjectId & {
   target_path: string;
   /** Whether this storage should be mounted readonly or not */
   readonly?: boolean;
-};
-export type CloudStorageSecretGet = {
-  /** Name of the field to store credential for */
-  name: string;
 };
 export type CloudStorageSecretGetList = CloudStorageSecretGet[];
 export type SecretValue = string;

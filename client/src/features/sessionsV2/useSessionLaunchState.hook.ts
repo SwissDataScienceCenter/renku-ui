@@ -53,7 +53,9 @@ export default function useSessionLauncherState({
     isFetching: isFetchingStorages,
     isLoading: isLoadingStorages,
   } = useGetStoragesV2Query({
-    projectId: project.id,
+    storageV2Params: {
+      project_id: project.id,
+    },
   });
   const { data: resourcePools } = useGetResourcePoolsQuery({});
   const { isPendingResourceClass, setResourceClass } = useSessionResourceClass({

@@ -106,7 +106,7 @@ describe("launch sessions with cloud storage", () => {
   it("launch session with data source requiring credentials", () => {
     fixtures.testCloudStorage().cloudStorage({
       isV2: true,
-      fixture: "cloudStorage/cloud-storage-with-secrets.json",
+      fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
       name: "getCloudStorageV2",
     });
 
@@ -189,7 +189,7 @@ describe("launch sessions with cloud storage", () => {
       .testCloudStorage()
       .cloudStorage({
         isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
         name: "getCloudStorageV2",
       })
       .cloudStorageSecrets({
@@ -279,7 +279,7 @@ describe("launch sessions with cloud storage", () => {
       .testCloudStorage()
       .cloudStorage({
         isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
         name: "getCloudStorageV2",
       })
       .cloudStorageSecrets({
@@ -357,7 +357,7 @@ describe("launch sessions with cloud storage", () => {
       .sessionServersEmpty()
       .cloudStorage({
         isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-full.json",
         name: "getCloudStorageV2",
       })
       .cloudStorageSecrets();
@@ -396,7 +396,7 @@ describe("launch sessions with cloud storage", () => {
       .testCloudStorage()
       .cloudStorage({
         isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-partial.json",
         name: "getCloudStorageV2",
       })
       .cloudStorageSecrets({

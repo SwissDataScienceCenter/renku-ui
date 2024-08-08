@@ -137,7 +137,7 @@ const injectedApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: "/storages",
-        params: { project_id: queryArg.projectId },
+        params: queryArg,
       }),
     }),
     getStorageSecretsByV2StorageId: builder.query<
@@ -189,7 +189,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       invalidatesTags: ["Storages"],
     },
     deleteStoragesV2ByStorageIdSecrets: {
-      invalidatesTags: ["StorageSecrets"],
+      invalidatesTags: ["Storages", "StorageSecrets"],
     },
     getGroups: {
       providesTags: ["Group"],
@@ -259,7 +259,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       invalidatesTags: ["Storages"],
     },
     postStoragesV2ByStorageIdSecrets: {
-      invalidatesTags: ["StorageSecrets"],
+      invalidatesTags: ["Storages", "StorageSecrets"],
     },
   },
 });

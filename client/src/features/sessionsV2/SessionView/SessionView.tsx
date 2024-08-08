@@ -294,7 +294,9 @@ export function SessionView({
   }, [environments, launcher]);
 
   const { data: dataSources } = useGetStoragesV2Query({
-    projectId: project.id,
+    storageV2Params: {
+      project_id: project.id,
+    },
   });
 
   const { data: resourcePools } = useGetResourcePoolsQuery({});

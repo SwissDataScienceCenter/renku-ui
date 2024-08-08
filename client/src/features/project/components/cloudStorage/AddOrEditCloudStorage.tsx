@@ -48,7 +48,6 @@ import {
 
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
   CLOUD_STORAGE_TOTAL_STEPS,
 } from "./projectCloudStorage.constants";
@@ -69,6 +68,7 @@ import {
 } from "../../utils/projectCloudStorage.utils";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { WarnAlert } from "../../../../components/Alert";
+import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
 
 import styles from "./CloudStorage.module.scss";
 
@@ -78,6 +78,7 @@ interface AddOrEditCloudStorageProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
+  storageSecrets: CloudStorageSecretGet[];
   isV2?: boolean;
 }
 
@@ -104,6 +105,7 @@ export default function AddOrEditCloudStorage({
           storage={storage}
           setState={setState}
           setStorage={setStorage}
+          storageSecrets={[]}
         />
       </>
     );
@@ -116,6 +118,7 @@ export function AddOrEditCloudStorageV2({
   setState,
   state,
   storage,
+  storageSecrets,
   isV2,
 }: AddOrEditCloudStorageProps) {
   const ContentByStep =
@@ -135,6 +138,7 @@ export function AddOrEditCloudStorageV2({
           storage={storage}
           setState={setState}
           setStorage={setStorage}
+          storageSecrets={storageSecrets}
           isV2={isV2}
         />
       </>
@@ -251,6 +255,7 @@ interface AddStorageStepProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
+  storageSecrets: CloudStorageSecretGet[];
   isV2?: boolean;
 }
 
@@ -484,6 +489,7 @@ interface PasswordOptionItemProps {
   isV2?: boolean;
   onFieldValueChange: (option: string, value: string) => void;
   option: CloudStorageSchemaOptions;
+  storageSecrets: CloudStorageSecretGet[];
 }
 function PasswordOptionItem({
   control,
@@ -491,13 +497,15 @@ function PasswordOptionItem({
   isV2,
   onFieldValueChange,
   option,
+  storageSecrets,
 }: PasswordOptionItemProps) {
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = useCallback(() => {
     setShowPassword((showPassword) => !showPassword);
   }, []);
 
-  if (isV2 && defaultValue == CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN) {
+  const optionName = option.name;
+  if (isV2 && storageSecrets.some((s) => s.name === optionName)) {
     return (
       <PasswordOptionItemStored
         defaultValue={CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE}
@@ -580,7 +588,7 @@ function PasswordOptionItemStored({
   control,
   defaultValue,
   option,
-}: Omit<PasswordOptionItemProps, "onFieldValueChange">) {
+}: Omit<PasswordOptionItemProps, "onFieldValueChange" | "storageSecrets">) {
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
     <>
@@ -928,6 +936,7 @@ function AddStorageOptions({
   setStorage,
   state,
   storage,
+  storageSecrets,
 }: AddStorageStepProps) {
   const options = getSchemaOptions(
     schema,
@@ -986,6 +995,7 @@ function AddStorageOptions({
               isV2={isV2}
               onFieldValueChange={onFieldValueChange}
               option={o}
+              storageSecrets={storageSecrets}
             />
           ) : (
             <InputOptionItem
@@ -1087,7 +1097,12 @@ interface AddStorageMountForm {
   readOnly: boolean;
 }
 type AddStorageMountFormFields = "name" | "mountPoint" | "readOnly";
-function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
+function AddStorageMount({
+  isV2,
+  schema,
+  setStorage,
+  storage,
+}: AddStorageStepProps) {
   const {
     control,
     formState: { errors, touchedFields },
@@ -1112,6 +1127,17 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
       setValue("mountPoint", `external_storage/${value}`);
     setStorage({ ...getValues() });
   };
+
+  const options = getSchemaOptions(
+    schema,
+    true,
+    storage.schema,
+    storage.provider
+  );
+  const hasPasswordField =
+    options == null
+      ? false
+      : Object.values(options).some((o) => o && o.convertedType === "secret");
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
@@ -1232,6 +1258,25 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
           this in any case to prevent accidental data modifications.
         </div>
       </div>
+
+      {storage.storageId == null && isV2 && hasPasswordField && (
+        <AddStorageMountSaveCredentialsInfo />
+      )}
     </form>
+  );
+}
+
+function AddStorageMountSaveCredentialsInfo() {
+  return (
+    <div className="mt-3">
+      <Label className="form-label">Save credentials</Label>
+      <div className={cx("form-text", "text-muted")}>
+        After you have added the data source, you can save access credentials as
+        secrets in RenkuLab. When saved, you will no longer need to provide the
+        credentials every time you start a session. The credentials are stored
+        securely and are only available to you. Other users will need to provide
+        their own credentials.
+      </div>
+    </div>
   );
 }

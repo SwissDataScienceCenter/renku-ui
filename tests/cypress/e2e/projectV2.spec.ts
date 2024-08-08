@@ -694,7 +694,7 @@ describe("launch sessions with cloud storage", () => {
       .resourcePoolsTest()
       .cloudStorage({
         isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
         name: "getCloudStorageV2",
       });
     fixtures.sessionLaunchers({
