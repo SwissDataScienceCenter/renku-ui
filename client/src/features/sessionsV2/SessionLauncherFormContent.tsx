@@ -517,13 +517,13 @@ export function ExistingEnvFormContent({
       />
 
       <div>
+        <Label for="resource-class-selector">Resource class</Label>
         <Controller
           control={control}
           name="resourceClass"
           defaultValue={defaultSessionClass}
           render={() => (
-            <div>
-              <Label for="resource-class-selector">Resource class</Label>
+            <>
               <SessionClassSelectorV2
                 defaultSessionClass={defaultSessionClass}
                 id="resource-class-selector"
@@ -531,11 +531,11 @@ export function ExistingEnvFormContent({
                 resourcePools={resourcePools ?? []}
               />
               {errors.resourceClass && (
-                <Label className={cx("text-danger", "fs-small")}>
-                  Select compute resource to continue{" "}
-                </Label>
+                <p className={cx("mb-0", "small", "text-danger")}>
+                  Please select a resource class.
+                </p>
               )}
-            </div>
+            </>
           )}
           rules={{ required: true }}
         />

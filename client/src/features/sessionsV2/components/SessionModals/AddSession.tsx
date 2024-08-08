@@ -225,7 +225,6 @@ function AddSessionExistingEnvModal({
       centered
       fullscreen="lg"
       isOpen={isOpen}
-      scrollable
       size="lg"
       toggle={toggle}
     >
