@@ -137,7 +137,7 @@ const injectedApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: "/storages",
-        params: { project_id: queryArg.projectId },
+        params: queryArg,
       }),
     }),
     getStorageSecretsByV2StorageId: builder.query<

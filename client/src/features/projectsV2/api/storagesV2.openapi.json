@@ -34,7 +34,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CloudStorageGet"
+                  "$ref": "#/components/schemas/CloudStorageGetV2"
                 }
               }
             }
@@ -93,10 +93,19 @@
         "parameters": [
           {
             "in": "query",
-            "name": "project_id",
-            "required": true,
+            "description": "query parameters",
+            "name": "storage_v2_params",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "$ref": "#/components/schemas/UlidId"
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "project_id": {
+                  "$ref": "#/components/schemas/UlidId"
+                }
+              },
+              "required": ["project_id"]
             }
           }
         ],
@@ -108,7 +117,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CloudStorageGet"
+                    "$ref": "#/components/schemas/CloudStorageGetV2"
                   }
                 }
               }
@@ -369,10 +378,18 @@
         "parameters": [
           {
             "in": "query",
-            "name": "project_id",
-            "required": true,
+            "description": "query parameters",
+            "name": "storage_params",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "$ref": "#/components/schemas/GitlabProjectId"
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "project_id": {
+                  "$ref": "#/components/schemas/GitlabProjectId"
+                }
+              }
             }
           }
         ],
@@ -741,6 +758,25 @@
         },
         "required": ["storage"]
       },
+      "CloudStorageGetV2": {
+        "description": "Get response for a V2 cloud storage. Contains field name and secret ID for saved secrets.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CloudStorageGet"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "secrets": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CloudStorageSecretGet"
+                }
+              }
+            }
+          }
+        ]
+      },
       "CloudStorageSecretPost": {
         "type": "object",
         "description": "Data for storing secret for a storage field",
@@ -780,9 +816,12 @@
             "description": "Name of the field to store credential for",
             "minLength": 1,
             "maxLength": 99
+          },
+          "secret_id": {
+            "$ref": "#/components/schemas/UlidId"
           }
         },
-        "required": ["name"]
+        "required": ["name", "secret_id"]
       },
       "SecretValue": {
         "description": "Secret value that can be any text",

@@ -39,7 +39,9 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
   const { userRole } = useProjectAccess({ projectId: project.id });
 
   const { data, isFetching, isLoading } = useGetStoragesV2Query({
-    projectId: project.id,
+    storageV2Params: {
+      project_id: project.id,
+    },
   });
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
