@@ -26,6 +26,7 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import {
   CloudStorageGetRead,
+  CloudStorageGetV2Read,
   CloudStoragePatch,
   PostStoragesV2ApiArg,
   RCloneConfig,
@@ -72,7 +73,11 @@ import {
 import styles from "./CloudStorage.module.scss";
 
 interface CloudStorageModalProps {
-  currentStorage?: CloudStorage | CloudStorageGetRead | null;
+  currentStorage?:
+    | CloudStorage
+    | CloudStorageGetRead
+    | CloudStorageGetV2Read
+    | null;
   isOpen: boolean;
   toggle: () => void;
   projectId: string;
@@ -413,9 +418,11 @@ export default function CloudStorageModal({
     : "Please go back and select a provider";
   const isResultLoading = isAddResultLoading || isModifyResultLoading;
 
-  const hasStoredCredentialsInConfig = Object.values(
-    storageDetails.options ?? {}
-  ).some((value) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN);
+  const storageSecrets =
+    currentStorage != null && "secrets" in currentStorage
+      ? currentStorage.secrets ?? []
+      : [];
+  const hasStoredCredentialsInConfig = storageSecrets.length > 0;
 
   return (
     <Modal
@@ -447,6 +454,7 @@ export default function CloudStorageModal({
           setStorageDetailsSafe={setStorageDetailsSafe}
           state={state}
           storageDetails={storageDetails}
+          storageSecrets={storageSecrets}
           storageId={storageId}
           success={success}
         />

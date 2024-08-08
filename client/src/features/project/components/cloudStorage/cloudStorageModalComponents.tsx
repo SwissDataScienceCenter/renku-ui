@@ -43,6 +43,7 @@ import {
   CloudStorageDetails,
   CloudStorageSchema,
 } from "./projectCloudStorage.types";
+import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
 
 import { SerializedError } from "@reduxjs/toolkit";
 
@@ -106,6 +107,7 @@ interface AddCloudStorageBodyContentProps
   ) => void;
   state: AddCloudStorageState;
   storageDetails: CloudStorageDetails;
+  storageSecrets: CloudStorageSecretGet[];
   success: boolean;
 }
 export function AddCloudStorageBodyContent({
@@ -120,6 +122,7 @@ export function AddCloudStorageBodyContent({
   state,
   storageDetails,
   storageId,
+  storageSecrets,
   success,
 }: AddCloudStorageBodyContentProps) {
   if (redraw) return <Loader />;
@@ -142,6 +145,7 @@ export function AddCloudStorageBodyContent({
         setStorage={setStorageDetailsSafe}
         state={state}
         storage={storageDetails}
+        storageSecrets={[]}
       />
     );
   }
@@ -159,6 +163,7 @@ export function AddCloudStorageBodyContent({
         setStorage={setStorageDetailsSafe}
         state={state}
         storage={storageDetails}
+        storageSecrets={storageSecrets}
         isV2={isV2}
       />
     </>
