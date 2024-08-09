@@ -159,8 +159,8 @@ export default function NavbarV2() {
   return (
     <>
       <header
-        className={cx("bg-navy", "navbar-expand-lg")}
-        data-bs-theme="dark"
+        className={cx("navbar-expand-lg", "text-body", "bg-body")}
+        data-bs-theme="navy"
       >
         <div className={cx("navbar", "px-2", "px-sm-3", "py-2")}>
           <div
