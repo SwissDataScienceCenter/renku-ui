@@ -1097,7 +1097,12 @@ interface AddStorageMountForm {
   readOnly: boolean;
 }
 type AddStorageMountFormFields = "name" | "mountPoint" | "readOnly";
-function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
+function AddStorageMount({
+  isV2,
+  schema,
+  setStorage,
+  storage,
+}: AddStorageStepProps) {
   const {
     control,
     formState: { errors, touchedFields },
@@ -1122,6 +1127,17 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
       setValue("mountPoint", `external_storage/${value}`);
     setStorage({ ...getValues() });
   };
+
+  const options = getSchemaOptions(
+    schema,
+    true,
+    storage.schema,
+    storage.provider
+  );
+  const hasPasswordField =
+    options == null
+      ? false
+      : Object.values(options).some((o) => o && o.convertedType === "secret");
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
@@ -1242,6 +1258,25 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
           this in any case to prevent accidental data modifications.
         </div>
       </div>
+
+      {storage.storageId == null && isV2 && hasPasswordField && (
+        <AddStorageMountSaveCredentialsInfo />
+      )}
     </form>
+  );
+}
+
+function AddStorageMountSaveCredentialsInfo() {
+  return (
+    <div className="mt-3">
+      <Label className="form-label">Save credentials</Label>
+      <div className={cx("form-text", "text-muted")}>
+        After you have added the data source, you can save access credentials as
+        secrets in RenkuLab. When saved, you will no longer need to provide the
+        credentials every time you start a session. The credentials are stored
+        securely and are only available to you. Other users will need to provide
+        their own credentials.
+      </div>
+    </div>
   );
 }
