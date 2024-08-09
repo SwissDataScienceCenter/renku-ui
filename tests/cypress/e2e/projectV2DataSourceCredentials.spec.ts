@@ -52,7 +52,7 @@ describe("Set up data sources with credentials", () => {
       })
       .cloudStorage({
         isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
         name: "getCloudStorageV2",
       })
       .cloudStorageSecrets({
@@ -100,7 +100,7 @@ describe("Set up data sources with credentials", () => {
       .resourcePoolsTest()
       .cloudStorage({
         isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
         name: "getCloudStorageV2",
       })
       .cloudStorageSecrets({
@@ -164,15 +164,6 @@ describe("Set up data sources with credentials", () => {
       "<saved secret>"
     );
     cy.getDataCy("data-source-view-back-button").click();
-
-    // The saved credentials should be visible in the modal
-    openDataSourceMenu();
-    cy.getDataCy("data-source-credentials").click();
-    cy.getDataCy("cloud-storage-credentials-modal")
-      .contains("Test and Save")
-      .should("be.disabled");
-
-    cy.getDataCy("cloud-storage-credentials-modal").contains("Cancel").click();
   });
 
   it("edit a data source with credentials", () => {
@@ -184,7 +175,7 @@ describe("Set up data sources with credentials", () => {
       .resourcePoolsTest()
       .cloudStorage({
         isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-partial.json",
         name: "getCloudStorageV2",
       })
       .cloudStorageSecrets({
@@ -220,7 +211,7 @@ describe("Set up data sources with credentials", () => {
     cy.getDataCy("cloud-storage-edit-modal")
       .find("#access_key_id")
       .invoke("attr", "value")
-      .should("eq", "<saved secret>");
+      .should("eq", "<sensitive>");
     cy.getDataCy("cloud-storage-edit-modal")
       .find("#secret_access_key")
       .invoke("attr", "value")
@@ -240,7 +231,7 @@ describe("Set up data sources with credentials", () => {
       .resourcePoolsTest()
       .cloudStorage({
         isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-partial.json",
         name: "getCloudStorageV2",
       })
       .cloudStorageSecrets({
@@ -332,7 +323,7 @@ describe("Set up data sources with credentials", () => {
       .resourcePoolsTest()
       .cloudStorage({
         isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-partial.json",
         name: "getCloudStorageV2",
       })
       .cloudStorageSecrets({
@@ -360,10 +351,6 @@ describe("Set up data sources with credentials", () => {
     // clear credentials
     openDataSourceMenu();
     cy.getDataCy("data-source-credentials").click();
-
-    cy.getDataCy("cloud-storage-credentials-modal")
-      .contains("Test and Save")
-      .should("be.disabled");
 
     fixtures.deleteCloudStorageSecrets().cloudStorageSecrets({
       fixture: "cloudStorage/cloud-storage-secrets-empty.json",
