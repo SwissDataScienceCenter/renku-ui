@@ -43,6 +43,7 @@ import {
   CloudStorageDetails,
   CloudStorageSchema,
 } from "./projectCloudStorage.types";
+import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
 
 import { SerializedError } from "@reduxjs/toolkit";
 
@@ -106,6 +107,7 @@ interface AddCloudStorageBodyContentProps
   ) => void;
   state: AddCloudStorageState;
   storageDetails: CloudStorageDetails;
+  storageSecrets: CloudStorageSecretGet[];
   success: boolean;
 }
 export function AddCloudStorageBodyContent({
@@ -120,6 +122,7 @@ export function AddCloudStorageBodyContent({
   state,
   storageDetails,
   storageId,
+  storageSecrets,
   success,
 }: AddCloudStorageBodyContentProps) {
   if (redraw) return <Loader />;
@@ -142,6 +145,7 @@ export function AddCloudStorageBodyContent({
         setStorage={setStorageDetailsSafe}
         state={state}
         storage={storageDetails}
+        storageSecrets={[]}
       />
     );
   }
@@ -159,6 +163,7 @@ export function AddCloudStorageBodyContent({
         setStorage={setStorageDetailsSafe}
         state={state}
         storage={storageDetails}
+        storageSecrets={storageSecrets}
         isV2={isV2}
       />
     </>
@@ -194,6 +199,7 @@ interface AddCloudStorageContinueButtonProps
   addOrEditStorage: () => void;
   disableAddButton: boolean;
   disableContinueButton: boolean;
+  hasStoredCredentialsInConfig: boolean;
   isResultLoading: boolean;
   storageDetails: CloudStorageDetails;
   storageId: string | null;
@@ -204,6 +210,7 @@ export function AddCloudStorageContinueButton({
   addOrEditStorage,
   disableAddButton,
   disableContinueButton,
+  hasStoredCredentialsInConfig,
   isResultLoading,
   state,
   setStateSafe,
@@ -241,7 +248,11 @@ export function AddCloudStorageContinueButton({
       </div>
     );
   }
-  if (state.step === 2 && state.completedSteps >= 1) {
+  if (
+    state.step === 2 &&
+    state.completedSteps >= 1 &&
+    !hasStoredCredentialsInConfig
+  ) {
     return (
       <div id={`${continueButtonId}-div`} className="d-inline-block">
         <TestConnectionAndContinueButtons
@@ -319,7 +330,7 @@ export function AddCloudStorageConnectionTestResult({
     <div className={cx("w-100", "my-0")}>
       {" "}
       <SuccessAlert timeout={0}>
-        <p className="mb-0">The connection to the storage works correctly.</p>
+        <p className="p-0">The connection to the storage works correctly.</p>
       </SuccessAlert>
     </div>
   );

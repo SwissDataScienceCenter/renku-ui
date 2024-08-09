@@ -26,12 +26,13 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import {
   CloudStorageGetRead,
+  CloudStorageGetV2Read,
   CloudStoragePatch,
   PostStoragesV2ApiArg,
   RCloneConfig,
   usePatchStoragesV2ByStorageIdMutation,
   usePostStoragesV2Mutation,
-} from "../../../projectsV2/api/storagesV2.api.ts";
+} from "../../../projectsV2/api/storagesV2.api";
 import {
   findSensitive,
   getCurrentStorageDetails,
@@ -72,7 +73,11 @@ import {
 import styles from "./CloudStorage.module.scss";
 
 interface CloudStorageModalProps {
-  currentStorage?: CloudStorage | CloudStorageGetRead | null;
+  currentStorage?:
+    | CloudStorage
+    | CloudStorageGetRead
+    | CloudStorageGetV2Read
+    | null;
   isOpen: boolean;
   toggle: () => void;
   projectId: string;
@@ -413,6 +418,12 @@ export default function CloudStorageModal({
     : "Please go back and select a provider";
   const isResultLoading = isAddResultLoading || isModifyResultLoading;
 
+  const storageSecrets =
+    currentStorage != null && "secrets" in currentStorage
+      ? currentStorage.secrets ?? []
+      : [];
+  const hasStoredCredentialsInConfig = storageSecrets.length > 0;
+
   return (
     <Modal
       backdrop="static"
@@ -443,6 +454,7 @@ export default function CloudStorageModal({
           setStorageDetailsSafe={setStorageDetailsSafe}
           state={state}
           storageDetails={storageDetails}
+          storageSecrets={storageSecrets}
           storageId={storageId}
           success={success}
         />
@@ -491,6 +503,7 @@ export default function CloudStorageModal({
             addOrEditStorage={addOrEditStorage}
             disableAddButton={disableAddButton}
             disableContinueButton={disableContinueButton}
+            hasStoredCredentialsInConfig={hasStoredCredentialsInConfig}
             isResultLoading={isResultLoading}
             setStateSafe={setStateSafe}
             state={state}

@@ -22,12 +22,19 @@ import { Card, CardBody } from "reactstrap";
 import { TimeCaption } from "../../components/TimeCaption";
 import SecretEdit from "./SecretEdit";
 import SecretDelete from "./SecretDelete";
-import { SecretDetails } from "./secrets.types";
+import { SecretDetails, SecretKind } from "./secrets.types";
+import { storageSecretNameToFieldName } from "./secrets.utils";
 
 interface SecretsListItemProps {
+  kind: SecretKind;
   secret: SecretDetails;
 }
-export default function SecretsListItem({ secret }: SecretsListItemProps) {
+export default function SecretsListItem({
+  kind,
+  secret,
+}: SecretsListItemProps) {
+  const secretDisplayName =
+    kind === "storage" ? storageSecretNameToFieldName(secret) : secret.name;
   return (
     <Card
       className="border"
@@ -44,7 +51,7 @@ export default function SecretsListItem({ secret }: SecretsListItemProps) {
             "w-100"
           )}
         >
-          <span className="fw-bold">{secret.name}</span>
+          <span className="fw-bold">{secretDisplayName}</span>
           <span className={cx("text-rk-text-light", "my-auto small")}>
             Edited{" "}
             <TimeCaption
