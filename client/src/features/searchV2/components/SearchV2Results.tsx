@@ -68,7 +68,7 @@ export default function SearchV2Results() {
   return (
     <Row data-cy="search-results">
       <Col className="d-sm-none" xs={12}>
-        <h3>Results</h3>
+        <h4>Results</h4>
       </Col>
       <Col xs={12}>
         <SearchV2ResultsContent />

@@ -79,16 +79,21 @@ export default function SearchV2Header() {
 
   return (
     <div
-      className={cx("align-items-center", "d-flex", "justify-content-between")}
+      className={cx(
+        "align-items-md-center",
+        "d-flex",
+        "gap-3",
+        "justify-content-between",
+        "flex-column",
+        "flex-md-row"
+      )}
       data-cy="search-header"
     >
-      <div className={cx("align-items-center", "d-flex", "gap-3")}>
-        {resultsText}
-      </div>
-      <div className={cx("align-items-center", "d-flex")}>
-        <label className={cx("mx-2", "sorting-label--desk")}>Sort by</label>
+      <div className={cx("d-flex", "gap-3")}>{resultsText}</div>
+      <div className={cx("align-items-center", "d-flex", "gap-2")}>
+        <label className={cx("text-nowrap")}>Sort by</label>
         <select
-          className="form-select"
+          className={cx("form-select", "w-auto")}
           data-cy="search-sorting-select"
           name="sorting"
           onChange={onChange}
