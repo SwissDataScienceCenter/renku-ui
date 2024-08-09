@@ -124,7 +124,7 @@ export function SearchV2FilterContainer({
   return visualization === "accordion" ? (
     <AccordionItem data-cy={`search-filter-${filterKey}`}>
       <AccordionHeader targetId={targetIndex}>
-        <h6 className="fw-semibold">{filterName}</h6>
+        <h6 className={cx("fw-semibold", "mb-0")}>{filterName}</h6>
       </AccordionHeader>
       <AccordionBody accordionId={targetIndex}>
         <Row className={cx("g-3", "g-sm-0")}>{children}</Row>
@@ -216,7 +216,7 @@ function SearchV2FilterOption({
 
   const id = `search-filter-${key}-${option}`;
 
-  const { label } = FILTER_VALUE_LABELS[option];
+  const { icon: Icon, label } = FILTER_VALUE_LABELS[option];
 
   return (
     <div
@@ -237,11 +237,12 @@ function SearchV2FilterOption({
       <label
         className={cx(
           visualization === "accordion"
-            ? ["btn", "btn-outline-primary", "w-100"]
+            ? ["btn", "btn-outline-primary", "text-nowrap", "w-100"]
             : "form-check-label"
         )}
         htmlFor={id}
       >
+        {Icon && <Icon className={cx("bi", "me-2")} />}
         {label}
       </label>
     </div>
