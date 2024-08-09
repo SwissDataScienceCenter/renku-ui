@@ -160,7 +160,7 @@ function FooterNavbarInner({ location, params }) {
     : Url.pages.help.release;
 
   const footer = (
-    <footer data-bs-theme="navy">
+    <footer className={cx("text-body", "bg-body")} data-bs-theme="navy">
       <div
         className={cx(
           "flex-nowrap",
@@ -168,7 +168,7 @@ function FooterNavbarInner({ location, params }) {
           "px-2",
           "px-sm-3",
           "py-2",
-          location.pathname.startsWith("/v2") ? "" : "bg-primary"
+          !location.pathname.startsWith("/v2") && "bg-primary"
         )}
       >
         <div className="navbar-nav">
