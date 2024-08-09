@@ -5,11 +5,12 @@
 @import "./fonts/fonts";
 $font-family-base: "Inter", sans-serif;
 
-// Variables: note we re-define colors and shadow variables before importing
+// Variables: note we re-define colors and shadow variables before importing from Bootstrap
 $primary: #006e58;
 $body-color: #16192c;
 $navy: #01192d;
-$info: #0f7396;
+$info: #17a2b8;
+$success: #65a30d;
 $enable-shadows: true;
 $shadow-renku: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
   rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
