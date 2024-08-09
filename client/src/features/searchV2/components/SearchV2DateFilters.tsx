@@ -19,10 +19,9 @@
 import cx from "classnames";
 import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
-import { Card, CardBody, CardHeader } from "reactstrap";
+import { Col } from "reactstrap";
 
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import {
   CREATION_DATE_FILTER_PREDEFINED_FILTERS,
   DATE_FILTER_AFTER_VALUE_LABELS,
@@ -31,57 +30,49 @@ import {
 } from "../searchV2.constants";
 import { selectCreationDateFilter } from "../searchV2.slice";
 import type { SearchDateFilter } from "../searchV2.types";
-import { dateFiltersAsArray } from "../searchV2.utils";
-
-export default function SearchV2DateFilters() {
-  const { dateFilters } = useAppSelector(({ searchV2 }) => searchV2);
-
-  const dateFiltersArray = useMemo(
-    () => dateFiltersAsArray(dateFilters),
-    [dateFilters]
-  );
-
-  return (
-    <>
-      {dateFiltersArray.map((dateFilter) => (
-        <SearchV2DateFilter key={dateFilter.key} dateFilter={dateFilter} />
-      ))}
-    </>
-  );
-}
+import { SearchV2Visualization } from "./SearchV2Filters.types";
+import { SearchV2FilterContainer } from "./SearchV2Filters";
 
 interface SearchV2DateFilterProps {
   dateFilter: SearchDateFilter;
+  index: number;
+  visualization: SearchV2Visualization;
 }
-
-function SearchV2DateFilter({ dateFilter }: SearchV2DateFilterProps) {
+export default function SearchV2DateFilter({
+  dateFilter,
+  index,
+  visualization,
+}: SearchV2DateFilterProps) {
   const { key } = dateFilter;
-
   const { label } = FILTER_KEY_LABELS[key];
 
   const predefinedOptions =
     key === "created" ? CREATION_DATE_FILTER_PREDEFINED_FILTERS : [];
 
   return (
-    <Card
-      className={cx("border", "rounded")}
-      data-cy={`search-date-filter-${key}`}
+    <SearchV2FilterContainer
+      filterKey={key}
+      filterName={label}
+      index={index}
+      visualization={visualization}
     >
-      <CardHeader>
-        <h6 className="mb-0">{label}</h6>
-      </CardHeader>
-      <CardBody>
-        {predefinedOptions.map((option) => (
+      {predefinedOptions.map((option) => (
+        <Col xs={6} sm={12} key={option.optionKey}>
           <SearchV2DateFilterOption
-            key={option.optionKey}
             dateFilter={dateFilter}
             option={option.filter}
             optionKey={option.optionKey}
+            visualization={visualization}
           />
-        ))}
-        <SearchV2DateFilterCustomOption dateFilter={dateFilter} />
-      </CardBody>
-    </Card>
+        </Col>
+      ))}
+      <Col xs={6} sm={12}>
+        <SearchV2DateFilterCustomOption
+          dateFilter={dateFilter}
+          visualization={visualization}
+        />
+      </Col>
+    </SearchV2FilterContainer>
   );
 }
 
@@ -89,12 +80,14 @@ interface SearchV2DateFilterOptionProps {
   dateFilter: SearchDateFilter;
   option: SearchDateFilter;
   optionKey: string;
+  visualization: SearchV2Visualization;
 }
 
 function SearchV2DateFilterOption({
   dateFilter,
   option,
   optionKey,
+  visualization,
 }: SearchV2DateFilterOptionProps) {
   const { value } = option;
   const { after, before } = value;
@@ -124,16 +117,29 @@ function SearchV2DateFilterOption({
   const id = `search-filter-${dateFilter.key}-${optionKey}`;
 
   return (
-    <div className={cx("d-flex", "gap-2")}>
+    <div
+      className={cx(
+        visualization === "accordion" ? "w-100" : ["d-flex", "gap-2"]
+      )}
+    >
       <input
         checked={isChecked}
-        className="form-check-input"
+        className={cx(
+          visualization === "accordion" ? "btn-check" : "form-check-input"
+        )}
         data-cy={id}
         id={id}
         onChange={onChange}
         type="radio"
       />
-      <label className="form-check-label" htmlFor={id}>
+      <label
+        className={cx(
+          visualization === "accordion"
+            ? ["btn", "btn-outline-primary", "w-100"]
+            : "form-check-label"
+        )}
+        htmlFor={id}
+      >
         {label}
       </label>
     </div>
@@ -142,10 +148,12 @@ function SearchV2DateFilterOption({
 
 interface SearchV2DateFilterCustomOptionProps {
   dateFilter: SearchDateFilter;
+  visualization: SearchV2Visualization;
 }
 
 function SearchV2DateFilterCustomOption({
   dateFilter,
+  visualization,
 }: SearchV2DateFilterCustomOptionProps) {
   const [today] = useState(DateTime.now().startOf("day"));
 
@@ -240,16 +248,29 @@ function SearchV2DateFilterCustomOption({
 
   return (
     <>
-      <div className={cx("d-flex", "gap-2")}>
+      <div
+        className={cx(
+          visualization === "accordion" ? "w-100" : ["d-flex", "gap-2"]
+        )}
+      >
         <input
           checked={isChecked}
-          className="form-check-input"
+          className={cx(
+            visualization === "accordion" ? "btn-check" : "form-check-input"
+          )}
           data-cy={id}
           id={id}
           onChange={onChange}
           type="radio"
         />
-        <label className="form-check-label" htmlFor={id}>
+        <label
+          className={cx(
+            visualization === "accordion"
+              ? ["btn", "btn-outline-primary", "w-100"]
+              : "form-check-label"
+          )}
+          htmlFor={id}
+        >
           Custom
         </label>
       </div>

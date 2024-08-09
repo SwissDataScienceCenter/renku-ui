@@ -18,7 +18,16 @@
 
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
-import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import {
+  AccordionBody,
+  AccordionHeader,
+  AccordionItem,
+  Col,
+  ListGroup,
+  ListGroupItem,
+  Row,
+  UncontrolledAccordion,
+} from "reactstrap";
 
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
@@ -40,36 +49,104 @@ import type {
   SearchEntityVisibility,
   SearchFilter,
 } from "../searchV2.types";
-import { filtersAsArray } from "../searchV2.utils";
-import SearchV2DateFilters from "./SearchV2DateFilters";
+import { dateFiltersAsArray, filtersAsArray } from "../searchV2.utils";
+import SearchV2DateFilter from "./SearchV2DateFilters";
+import { SearchV2Visualization } from "./SearchV2Filters.types";
 
 export default function SearchV2Filters() {
   const { filters } = useAppSelector(({ searchV2 }) => searchV2);
+  const { dateFilters } = useAppSelector(({ searchV2 }) => searchV2);
 
   const filtersArray = useMemo(() => filtersAsArray(filters), [filters]);
+  const dateFiltersArray = useMemo(
+    () => dateFiltersAsArray(dateFilters),
+    [dateFilters]
+  );
+
+  const content = useCallback(
+    (visualization: SearchV2Visualization) => {
+      return (
+        <>
+          {filtersArray.map((filter, index) => (
+            <SearchV2Filter
+              key={filter.key}
+              filter={filter}
+              index={index}
+              visualization={visualization}
+            />
+          ))}
+          {dateFiltersArray.map((dateFilter, index) => (
+            <SearchV2DateFilter
+              key={dateFilter.key}
+              dateFilter={dateFilter}
+              index={filtersArray.length + index}
+              visualization={visualization}
+            />
+          ))}
+        </>
+      );
+    },
+    [dateFiltersArray, filtersArray]
+  );
 
   return (
-    <>
-      <Row className="mb-3" data-cy="search-filters">
-        <Col className="d-sm-none" xs={12}>
-          <h3>Filters</h3>
-        </Col>
-        <Col className={cx("d-flex", "flex-column", "gap-3")}>
-          {filtersArray.map((filter) => (
-            <SearchV2Filter key={filter.key} filter={filter} />
-          ))}
-          <SearchV2DateFilters />
-        </Col>
-      </Row>
-    </>
+    <div className="mb-3">
+      <h4 className="d-sm-none">Filters</h4>
+      <UncontrolledAccordion
+        className={cx("d-block", "d-sm-none")}
+        defaultOpen={[]}
+        toggle={() => {}}
+      >
+        {content("accordion")}
+      </UncontrolledAccordion>
+      <ListGroup flush className={cx("d-none", "d-sm-block")}>
+        {content("list")}
+      </ListGroup>
+    </div>
+  );
+}
+
+interface SearchV2FilterContainerProps {
+  children: React.ReactNode;
+  filterKey: string;
+  filterName: string;
+  index: number;
+  visualization: SearchV2Visualization;
+}
+export function SearchV2FilterContainer({
+  children,
+  filterKey,
+  filterName,
+  index,
+  visualization,
+}: SearchV2FilterContainerProps) {
+  const targetIndex = index.toString();
+  return visualization === "accordion" ? (
+    <AccordionItem data-cy={`search-filter-${filterKey}`}>
+      <AccordionHeader targetId={targetIndex}>
+        <h6 className="fw-semibold">{filterName}</h6>
+      </AccordionHeader>
+      <AccordionBody accordionId={targetIndex}>
+        <Row className={cx("g-3", "g-sm-0")}>{children}</Row>
+      </AccordionBody>
+    </AccordionItem>
+  ) : (
+    <ListGroupItem
+      className={cx("mb-3", "px-0", "pt-0")}
+      data-cy={`search-filter-${filterKey}`}
+    >
+      <h6 className="fw-semibold">{filterName}</h6>
+      <div>{children}</div>
+    </ListGroupItem>
   );
 }
 
 interface SearchV2FilterProps {
   filter: SearchFilter;
+  index: number;
+  visualization: SearchV2Visualization;
 }
-
-function SearchV2Filter({ filter }: SearchV2FilterProps) {
+function SearchV2Filter({ filter, index, visualization }: SearchV2FilterProps) {
   const { key } = filter;
 
   const { label } = FILTER_KEY_LABELS[key];
@@ -84,25 +161,36 @@ function SearchV2Filter({ filter }: SearchV2FilterProps) {
       : [];
 
   return (
-    <Card className={cx("border", "rounded")} data-cy={`search-filter-${key}`}>
-      <CardHeader>
-        <h6 className="mb-0">{label}</h6>
-      </CardHeader>
-      <CardBody>
-        {options.map((option) => (
-          <SearchV2FilterOption key={option} filter={filter} option={option} />
-        ))}
-      </CardBody>
-    </Card>
+    <SearchV2FilterContainer
+      filterKey={key}
+      filterName={label}
+      index={index}
+      visualization={visualization}
+    >
+      {options.map((option) => (
+        <Col xs={6} sm={12} key={option}>
+          <SearchV2FilterOption
+            filter={filter}
+            option={option}
+            visualization={visualization}
+          />
+        </Col>
+      ))}
+    </SearchV2FilterContainer>
   );
 }
 
 interface SearchV2FilterOptionProps {
   filter: SearchFilter;
   option: SearchFilter["values"][number];
+  visualization: SearchV2Visualization;
 }
 
-function SearchV2FilterOption({ filter, option }: SearchV2FilterOptionProps) {
+function SearchV2FilterOption({
+  filter,
+  option,
+  visualization,
+}: SearchV2FilterOptionProps) {
   const { key, values } = filter;
 
   const isChecked = useMemo(
@@ -131,16 +219,29 @@ function SearchV2FilterOption({ filter, option }: SearchV2FilterOptionProps) {
   const { label } = FILTER_VALUE_LABELS[option];
 
   return (
-    <div className={cx("d-flex", "gap-2")}>
+    <div
+      className={cx(
+        visualization === "accordion" ? "w-100" : ["d-flex", "gap-2"]
+      )}
+    >
       <input
         checked={isChecked}
-        className="form-check-input"
+        className={cx(
+          visualization === "accordion" ? "btn-check" : "form-check-input"
+        )}
         data-cy={id}
         id={id}
         onChange={onToggle}
         type="checkbox"
       />
-      <label className="form-check-label" htmlFor={id}>
+      <label
+        className={cx(
+          visualization === "accordion"
+            ? ["btn", "btn-outline-primary", "w-100"]
+            : "form-check-label"
+        )}
+        htmlFor={id}
+      >
         {label}
       </label>
     </div>
