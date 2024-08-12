@@ -18,121 +18,130 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
+import type { Role } from "../projectsV2/api/projectV2.api";
 import {
-  DateFilter,
+  DEFAULT_CREATION_DATE_FILTER,
+  DEFAULT_ROLE_FILTER,
+  DEFAULT_SORT_BY,
+  DEFAULT_TYPE_FILTER,
+  DEFAULT_VISIBILITY_FILTER,
+} from "./searchV2.constants";
+import type {
+  CreationDateFilter,
+  SearchEntityType,
+  SearchEntityVisibility,
   SearchV2State,
-  SearchV2Totals,
-  SortingItem,
-  ToggleFilterPayload,
+  SetInitialQueryParams,
+  SortBy,
 } from "./searchV2.types";
-import { AVAILABLE_SORTING } from "./searchV2.utils";
-import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
+import { buildSearchQuery, valuesAsSet } from "./searchV2.utils";
 
 const initialState: SearchV2State = {
-  search: {
-    history: [],
-    lastSearch: null,
-    outdated: false,
-    page: 1,
-    perPage: 12,
-    query: "",
-    totalPages: 0,
-    totalResults: 0,
+  dateFilters: {
+    created: DEFAULT_CREATION_DATE_FILTER,
   },
   filters: {
-    role: [],
-    type: ["project"],
-    visibility: ["public", "private"],
-    created: {
-      option: DateFilterTypes.all,
-    },
-    createdBy: "",
+    role: DEFAULT_ROLE_FILTER,
+    type: DEFAULT_TYPE_FILTER,
+    visibility: DEFAULT_VISIBILITY_FILTER,
   },
-  sorting: AVAILABLE_SORTING.scoreDesc,
+  initialQuery: "",
+  page: 1,
+  perPage: 10,
+  query: "",
+  searchBarQuery: "",
+  sortBy: DEFAULT_SORT_BY,
 };
 
 export const searchV2Slice = createSlice({
   name: "searchV2",
   initialState,
   reducers: {
+    setInitialQuery: (state, action: PayloadAction<SetInitialQueryParams>) => {
+      const { dateFilters, filters, query, searchBarQuery, sortBy } =
+        action.payload;
+      state.initialQuery = query;
+      state.query = query;
+      state.searchBarQuery = searchBarQuery;
+      state.filters = filters;
+      state.dateFilters = dateFilters;
+      state.sortBy = sortBy;
+    },
     setPage: (state, action: PayloadAction<number>) => {
-      state.search.page = action.payload;
-      state.search.outdated = true;
+      state.page = action.payload;
     },
-    setCreatedBy: (state, action: PayloadAction<string>) => {
-      state.filters.createdBy = action.payload;
-      state.search.outdated = true;
+    setPerPage: (state, action: PayloadAction<number>) => {
+      state.perPage = action.payload;
     },
-    setQuery: (state, action: PayloadAction<string>) => {
-      state.search.query = action.payload;
-      // ? Mind we don't mark the query as outdated here to prevent unnecessary re-fetching while typing
+    setSortBy: (state, action: PayloadAction<SortBy>) => {
+      state.sortBy = action.payload;
+      state.query = buildSearchQuery(state);
     },
-    setSearch: (state, action: PayloadAction<string>) => {
-      state.search.outdated = false;
-      state.search.lastSearch = action.payload;
-      state.search.history = [
-        ...state.search.history,
-        {
-          search: action.payload,
-          query: state.search.query,
-        },
-      ];
+    setSearchBarQuery: (state, action: PayloadAction<string>) => {
+      state.searchBarQuery = action.payload;
+      state.query = buildSearchQuery(state);
     },
-    setSorting: (state, action: PayloadAction<SortingItem>) => {
-      state.sorting = action.payload;
-      state.search.outdated = true;
+    toggleRoleFilterValue: (state, action: PayloadAction<Role>) => {
+      const asSet = valuesAsSet(state.filters.role.values);
+      if (asSet.has(action.payload)) {
+        asSet.delete(action.payload);
+      } else {
+        asSet.add(action.payload);
+      }
+      state.filters.role.values = Array.from(asSet).sort(
+        (a, b) => toNumericRole(b) - toNumericRole(a)
+      );
+      state.query = buildSearchQuery(state);
     },
-    setTotals: (state, action: PayloadAction<SearchV2Totals>) => {
-      state.search.totalResults = action.payload.results;
-      state.search.totalPages = action.payload.pages;
+    toggleTypeFilterValue: (
+      state,
+      action: PayloadAction<{
+        value: SearchEntityType;
+      }>
+    ) => {
+      const asSet = valuesAsSet(state.filters.type.values);
+      if (asSet.has(action.payload.value)) {
+        asSet.delete(action.payload.value);
+      } else {
+        asSet.add(action.payload.value);
+      }
+      state.filters.type.values = Array.from(asSet).sort();
+      state.query = buildSearchQuery(state);
     },
-    setCreated: (state, action: PayloadAction<DateFilter>) => {
-      state.filters.created = action.payload;
-      state.search.outdated = true;
+    toggleVisibilityFilterValue: (
+      state,
+      action: PayloadAction<SearchEntityVisibility>
+    ) => {
+      const asSet = valuesAsSet(state.filters.visibility.values);
+      if (asSet.has(action.payload)) {
+        asSet.delete(action.payload);
+      } else {
+        asSet.add(action.payload);
+      }
+      state.filters.visibility.values = Array.from(asSet).sort();
+      state.query = buildSearchQuery(state);
     },
-    toggleFilter: (state, action: PayloadAction<ToggleFilterPayload>) => {
-      const arrayToUpdate =
-        action.payload.filter === "visibility"
-          ? state.filters.visibility
-          : action.payload.filter === "type"
-          ? state.filters.type
-          : state.filters.role;
-      const updatedArray = toggleArrayItem(
-        [...arrayToUpdate],
-        action.payload.value
-      ) as ("owner" | "member")[] &
-        ("project" | "user")[] &
-        ("private" | "public")[];
-
-      state.filters = {
-        ...state.filters,
-        [action.payload.filter]: updatedArray,
-      };
-      state.search.outdated = true;
+    selectCreationDateFilter: (
+      state,
+      action: PayloadAction<CreationDateFilter>
+    ) => {
+      state.dateFilters.created = action.payload;
+      state.query = buildSearchQuery(state);
     },
     reset: () => initialState,
   },
 });
 
-// helper function to toggle array items
-function toggleArrayItem(array: string[], item: string) {
-  const index = array.indexOf(item);
-  if (index !== -1) {
-    array.splice(index, 1);
-  } else {
-    array.push(item);
-  }
-  return array;
-}
-
 export const {
+  setInitialQuery,
   setPage,
-  setQuery,
-  setSearch,
-  setSorting,
-  setCreated,
-  setCreatedBy,
-  setTotals,
-  toggleFilter,
+  setPerPage,
+  setSortBy,
+  setSearchBarQuery,
+  toggleRoleFilterValue,
+  toggleTypeFilterValue,
+  toggleVisibilityFilterValue,
+  selectCreationDateFilter,
   reset,
 } = searchV2Slice.actions;

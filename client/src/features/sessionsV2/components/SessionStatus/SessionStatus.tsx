@@ -91,7 +91,7 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
           className={cx("me-1", "text-warning-emphasis")}
           inline
         />
-        <span className="text-warning-emphasis">Stopping Session</span>
+        <span className="text-warning-emphasis">Deleting Session</span>
       </SessionBadge>
     ) : state === "hibernated" ? (
       <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
@@ -172,7 +172,7 @@ export function SessionStatusV2Title({
       : state === "starting"
       ? "You are currently starting a session from this launcher"
       : state === "stopping"
-      ? "You are currently stopping a session from this launcher"
+      ? "You are currently deleting a session from this launcher"
       : state === "hibernated"
       ? "You have a paused session from this launcher"
       : state === "failed"
@@ -227,12 +227,12 @@ function SessionStatusV2Text({
       <span>Created {startTimeText}</span>
     </div>
   ) : status === "stopping" ? (
-    <>Stopping Session...</>
+    <>Deleting Session...</>
   ) : status === "hibernated" && hibernationCullTimestamp ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
       <span>
-        Session will be stopped in{" "}
+        Session will be deleted in{" "}
         <TimeCaption
           datetime={hibernationCullTimestamp}
           enableTooltip

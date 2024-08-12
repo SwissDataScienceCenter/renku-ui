@@ -21,13 +21,16 @@ import SearchV2Bar from "./components/SearchV2Bar";
 import SearchV2Filters from "./components/SearchV2Filters";
 import SearchV2Header from "./components/SearchV2Header";
 import SearchV2Results from "./components/SearchV2Results";
+import useSearch from "./hooks/useSearch.hook";
 
 export default function SearchV2() {
+  useSearch();
+
   return (
     <>
       <Row className="mb-3">
         <Col>
-          <h2>Search v2</h2>
+          <h2>Renku 2.0 Search</h2>
         </Col>
       </Row>
       <Row className="mb-3">

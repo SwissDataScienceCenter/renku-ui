@@ -16,65 +16,66 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { skipToken } from "@reduxjs/toolkit/query";
+import React, { useCallback } from "react";
 
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { AVAILABLE_SORTING } from "../searchV2.utils";
-import { setSorting } from "../searchV2.slice";
 import { searchV2Api } from "../api/searchV2Api.api";
+import { SORT_BY_ALLOWED_VALUES, SORT_BY_LABELS } from "../searchV2.constants";
+import { setSortBy } from "../searchV2.slice";
 
 export default function SearchV2Header() {
-  const { search, sorting } = useAppSelector((state) => state.searchV2);
-  const dispatch = useDispatch();
-  const searchResults = searchV2Api.endpoints.$get.useQueryState(
-    search.lastSearch != null
-      ? {
-          q: search.lastSearch,
-          page: search.page,
-          perPage: search.perPage,
-        }
-      : skipToken
+  const dispatch = useAppDispatch();
+  const { page, perPage, query, sortBy } = useAppSelector(
+    ({ searchV2 }) => searchV2
   );
 
-  const searchQuery = search.lastSearch;
-  const total =
-    searchResults.data?.items?.length != null
-      ? searchResults.data?.pagingInfo.totalResult
-      : 0;
-  const setNewSorting = useCallback(
-    (newSorting: keyof typeof AVAILABLE_SORTING) => {
-      for (const key of Object.keys(AVAILABLE_SORTING)) {
-        if (AVAILABLE_SORTING[key].sortingString === newSorting) {
-          dispatch(setSorting(AVAILABLE_SORTING[key]));
-          break;
-        }
+  const searchResults = searchV2Api.endpoints.getQuery.useQueryState({
+    page,
+    perPage,
+    q: query,
+  });
+
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const sortBy = SORT_BY_ALLOWED_VALUES.find(
+        (opt) => opt === event.target.value
+      );
+      if (sortBy) {
+        dispatch(setSortBy({ key: "sort", value: sortBy }));
       }
     },
     [dispatch]
   );
 
-  const handleOnChange = (newSorting: keyof typeof AVAILABLE_SORTING) => {
-    setNewSorting(newSorting);
-  };
+  const total =
+    searchResults.data?.items?.length != null
+      ? searchResults.data?.pagingInfo.totalResult
+      : 0;
 
-  const options = Object.values(AVAILABLE_SORTING).map((value) => (
-    <option key={value.sortingString} value={value.sortingString}>
-      {value.friendlyName}
-    </option>
-  ));
   const resultsText = (
     <div className="rk-search-result-title">
-      {total ? total : "No"} {total && total > 1 ? "results" : "result"}
-      {searchQuery != null && (
+      {searchResults.isFetching ? (
+        "Loading results"
+      ) : (
+        <>
+          {total ? total : "No"} {total && total > 1 ? "results" : "result"}
+        </>
+      )}
+      {query != null && (
         <span>
           {" "}
-          for <span className="fw-bold">{`"${searchQuery}"`}</span>
+          for <span className="fw-bold">{`"${query}"`}</span>
         </span>
       )}
     </div>
   );
+
+  const options = Object.entries(SORT_BY_LABELS).map(([key, { label }]) => (
+    <option key={key} value={key}>
+      {label}
+    </option>
+  ));
 
   return (
     <div
@@ -90,10 +91,8 @@ export default function SearchV2Header() {
           className="form-select"
           data-cy="search-sorting-select"
           name="sorting"
-          onChange={(e) => {
-            handleOnChange(e.target.value as keyof typeof AVAILABLE_SORTING);
-          }}
-          value={sorting.sortingString}
+          onChange={onChange}
+          value={sortBy.value}
         >
           {options}
         </select>
