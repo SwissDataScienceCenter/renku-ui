@@ -44,7 +44,7 @@ import {
 } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { usePostStoragesV2ByStorageIdSecretsMutation } from "../projectsV2/api/projectV2.enhanced-api";
+import { usePostStoragesV2SecretsForSessionLaunchMutation } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
 import type { CloudStorageConfiguration } from "./CloudStorageSecretsModal";
@@ -71,7 +71,7 @@ function SaveCloudStorage({
   const dispatch = useAppDispatch();
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
   const [saveCredentials, saveCredentialsResult] =
-    usePostStoragesV2ByStorageIdSecretsMutation();
+    usePostStoragesV2SecretsForSessionLaunchMutation();
 
   const credentialsToSave = useMemo(() => {
     return startSessionOptionsV2.cloudStorage

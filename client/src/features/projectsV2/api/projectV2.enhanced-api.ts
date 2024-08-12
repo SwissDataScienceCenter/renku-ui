@@ -22,7 +22,11 @@ import {
   GetStoragesV2ByStorageIdSecretsApiArg,
   GetStoragesV2ByStorageIdSecretsApiResponse,
 } from "./storagesV2.api";
-import type { CloudStorageSecretGetList } from "./storagesV2.api";
+import type {
+  CloudStorageSecretGetList,
+  PostStoragesV2ByStorageIdSecretsApiArg,
+  PostStoragesV2ByStorageIdSecretsApiResponse,
+} from "./storagesV2.api";
 
 interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;
@@ -159,6 +163,16 @@ const injectedApi = api.injectEndpoints({
         return { data: result };
       },
     }),
+    postStoragesV2SecretsForSessionLaunch: builder.mutation<
+      PostStoragesV2ByStorageIdSecretsApiResponse,
+      PostStoragesV2ByStorageIdSecretsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storages_v2/${queryArg.storageId}/secrets`,
+        method: "POST",
+        body: queryArg.cloudStorageSecretPostList,
+      }),
+    }),
   }),
 });
 
@@ -261,6 +275,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postStoragesV2ByStorageIdSecrets: {
       invalidatesTags: ["Storages", "StorageSecrets"],
     },
+    postStoragesV2SecretsForSessionLaunch: {
+      invalidatesTags: ["StorageSecrets"],
+    },
   },
 });
 
@@ -299,4 +316,5 @@ export const {
   useGetStoragesV2ByStorageIdSecretsQuery,
   usePostStoragesV2Mutation,
   usePostStoragesV2ByStorageIdSecretsMutation,
+  usePostStoragesV2SecretsForSessionLaunchMutation,
 } = enhancedApi;
