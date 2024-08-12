@@ -15,71 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import cx from "classnames";
-import React, { useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useCallback, useMemo } from "react";
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
-import { setCreated, setCreatedBy, toggleFilter } from "../searchV2.slice";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import type { Role } from "../../projectsV2/api/projectV2.api";
 import {
-  DateFilter,
-  SearchV2FilterOptions,
-  SearchV2State,
+  FILTER_KEY_LABELS,
+  FILTER_VALUE_LABELS,
+  ROLE_FILTER_ALLOWED_VALUES,
+  TYPE_FILTER_ALLOWED_VALUES,
+  VISIBILITY_FILTER_ALLOWED_VALUES,
+} from "../searchV2.constants";
+import {
+  toggleRoleFilterValue,
+  toggleTypeFilterValue,
+  toggleVisibilityFilterValue,
+} from "../searchV2.slice";
+import type {
+  SearchEntityType,
+  SearchEntityVisibility,
+  SearchFilter,
 } from "../searchV2.types";
-import {
-  ANONYMOUS_USERS_EXCLUDE_FILTERS,
-  AVAILABLE_FILTERS,
-} from "../searchV2.utils";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { User } from "../../../model/renkuModels.types";
-import { SearchV2DateFilter } from "./SearchV2DateFilter.tsx";
-import { SearchV2UserFilter } from "./SearchV2UserFilter.tsx";
+import { filtersAsArray } from "../searchV2.utils";
+import SearchV2DateFilters from "./SearchV2DateFilters";
 
 export default function SearchV2Filters() {
-  const dispatch = useDispatch();
-  const searchState = useAppSelector((state) => state.searchV2);
-  const { filters } = searchState;
-  const userLogged = useLegacySelector<User["logged"]>(
-    (state) => state.stateModel.user.logged
-  );
+  const { filters } = useAppSelector(({ searchV2 }) => searchV2);
 
-  const handleToggleFilter = useCallback(
-    (filter: keyof SearchV2State["filters"], value: string | DateFilter) => {
-      if (filter === "created") dispatch(setCreated(value as DateFilter));
-      else dispatch(toggleFilter({ filter, value: value as string }));
-    },
-    [dispatch]
-  );
-
-  const filtersList = Object.entries(AVAILABLE_FILTERS)
-    .filter(([filterName]) => {
-      if (!userLogged)
-        return !ANONYMOUS_USERS_EXCLUDE_FILTERS.includes(
-          filterName as keyof typeof AVAILABLE_FILTERS
-        );
-      return true;
-    })
-    .map(([filterName, options]) => (
-      <SearchV2Filter
-        key={filterName}
-        name={filterName}
-        options={Object.entries(options).map(([key, value]) => ({
-          checked: (
-            filters[filterName as keyof SearchV2State["filters"]] as string[]
-          ).includes(key),
-          key,
-          value,
-        }))}
-        title={filterName.charAt(0).toUpperCase() + filterName.slice(1)}
-        toggleOption={(value: string) => {
-          handleToggleFilter(
-            filterName as keyof SearchV2State["filters"],
-            value
-          );
-        }}
-      />
-    ));
+  const filtersArray = useMemo(() => filtersAsArray(filters), [filters]);
 
   return (
     <>
@@ -88,80 +55,94 @@ export default function SearchV2Filters() {
           <h3>Filters</h3>
         </Col>
         <Col className={cx("d-flex", "flex-column", "gap-3")}>
-          <SearchV2UserFilter
-            createdBy={filters["createdBy"]}
-            removeUserFilter={() => dispatch(setCreatedBy(""))}
-          />
-          {filtersList}
-          <SearchV2DateFilter
-            name="CreationDate"
-            title="Creation Date"
-            checked={filters["created"]}
-            toggleOption={(value: DateFilter) => {
-              handleToggleFilter("created", value);
-            }}
-          />
+          {filtersArray.map((filter) => (
+            <SearchV2Filter key={filter.key} filter={filter} />
+          ))}
+          <SearchV2DateFilters />
         </Col>
       </Row>
     </>
   );
 }
 
-interface SearchV2FilterContainerProps {
-  children: React.ReactNode;
-  name: string;
-  title: string;
+interface SearchV2FilterProps {
+  filter: SearchFilter;
 }
-export function SearchV2FilterContainer({
-  children,
-  name,
-  title,
-}: SearchV2FilterContainerProps) {
+
+function SearchV2Filter({ filter }: SearchV2FilterProps) {
+  const { key } = filter;
+
+  const { label } = FILTER_KEY_LABELS[key];
+
+  const options =
+    key === "role"
+      ? ROLE_FILTER_ALLOWED_VALUES
+      : key === "type"
+      ? TYPE_FILTER_ALLOWED_VALUES
+      : key === "visibility"
+      ? VISIBILITY_FILTER_ALLOWED_VALUES
+      : [];
+
   return (
-    <Card className={cx("border", "rounded")}>
-      <div data-cy={`search-filter-${name}`}>
-        <CardHeader>
-          <h6 className="mb-0">{title}</h6>
-        </CardHeader>
-        <CardBody>{children}</CardBody>
-      </div>
+    <Card className={cx("border", "rounded")} data-cy={`search-filter-${key}`}>
+      <CardHeader>
+        <h6 className="mb-0">{label}</h6>
+      </CardHeader>
+      <CardBody>
+        {options.map((option) => (
+          <SearchV2FilterOption key={option} filter={filter} option={option} />
+        ))}
+      </CardBody>
     </Card>
   );
 }
 
-interface SearchV2FilterProps {
-  name: string;
-  options: SearchV2FilterOptions[];
-  title: string;
-  toggleOption: (key: string) => void;
+interface SearchV2FilterOptionProps {
+  filter: SearchFilter;
+  option: SearchFilter["values"][number];
 }
-function SearchV2Filter({
-  name,
-  options,
-  title,
-  toggleOption,
-}: SearchV2FilterProps) {
-  return (
-    <SearchV2FilterContainer name={name} title={title}>
-      {options.map(({ checked, key, value }) => {
-        const id = `search-filter-${name}-${key}`;
 
-        return (
-          <div className={cx("d-flex", "gap-2")} key={id}>
-            <input
-              checked={checked}
-              className="form-check-input"
-              data-cy={id}
-              id={id}
-              onChange={() => toggleOption(key)}
-              type="checkbox"
-            />
-            <label className={cx("form-check-label")} htmlFor={id}>
-              {value}
-            </label>
-          </div>
-        );
-      })}
-    </SearchV2FilterContainer>
+function SearchV2FilterOption({ filter, option }: SearchV2FilterOptionProps) {
+  const { key, values } = filter;
+
+  const isChecked = useMemo(
+    () => !!values.find((value) => value === option),
+    [option, values]
+  );
+
+  const dispatch = useAppDispatch();
+
+  const onToggle = useCallback(() => {
+    if (key === "role") {
+      dispatch(toggleRoleFilterValue(option as Role));
+      return;
+    }
+    if (key === "type") {
+      dispatch(toggleTypeFilterValue({ value: option as SearchEntityType }));
+      return;
+    }
+    if (key === "visibility") {
+      dispatch(toggleVisibilityFilterValue(option as SearchEntityVisibility));
+    }
+  }, [dispatch, key, option]);
+
+  const id = `search-filter-${key}-${option}`;
+
+  const { label } = FILTER_VALUE_LABELS[option];
+
+  return (
+    <div className={cx("d-flex", "gap-2")}>
+      <input
+        checked={isChecked}
+        className="form-check-input"
+        data-cy={id}
+        id={id}
+        onChange={onToggle}
+        type="checkbox"
+      />
+      <label className="form-check-label" htmlFor={id}>
+        {label}
+      </label>
+    </div>
   );
 }
