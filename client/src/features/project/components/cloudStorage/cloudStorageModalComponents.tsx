@@ -109,6 +109,7 @@ interface AddCloudStorageBodyContentProps
   storageDetails: CloudStorageDetails;
   storageSecrets: CloudStorageSecretGet[];
   success: boolean;
+  validationSucceeded: boolean;
 }
 export function AddCloudStorageBodyContent({
   addResultStorageName,
@@ -124,6 +125,7 @@ export function AddCloudStorageBodyContent({
   storageId,
   storageSecrets,
   success,
+  validationSucceeded,
 }: AddCloudStorageBodyContentProps) {
   if (redraw) return <Loader />;
   if (success)
@@ -164,7 +166,7 @@ export function AddCloudStorageBodyContent({
         state={state}
         storage={storageDetails}
         storageSecrets={storageSecrets}
-        isV2={isV2}
+        validationSucceeded={validationSucceeded}
       />
     </>
   );
@@ -201,6 +203,7 @@ interface AddCloudStorageContinueButtonProps
   disableContinueButton: boolean;
   hasStoredCredentialsInConfig: boolean;
   isResultLoading: boolean;
+  setValidationSucceeded: (succeeded: boolean) => void;
   storageDetails: CloudStorageDetails;
   storageId: string | null;
   validateConnection: () => void;
@@ -212,8 +215,9 @@ export function AddCloudStorageContinueButton({
   disableContinueButton,
   hasStoredCredentialsInConfig,
   isResultLoading,
-  state,
   setStateSafe,
+  setValidationSucceeded,
+  state,
   storageDetails,
   storageId,
   validateConnection,
@@ -260,6 +264,7 @@ export function AddCloudStorageContinueButton({
           actionTest={validateConnection}
           continueId="add-cloud-storage-continue"
           resetTest={validationResult.reset}
+          setValidationSucceeded={setValidationSucceeded}
           step={state.step}
           testId="test-cloud-storage"
           testIsFailure={validationResult.isError}
@@ -341,6 +346,7 @@ interface TestConnectionAndContinueButtonsProps {
   actionTest: () => void;
   continueId: string;
   resetTest: () => void;
+  setValidationSucceeded: AddCloudStorageContinueButtonProps["setValidationSucceeded"];
   step: number;
   testId: string;
   testIsFailure: boolean;
@@ -352,6 +358,7 @@ function TestConnectionAndContinueButtons({
   actionTest,
   continueId,
   resetTest,
+  setValidationSucceeded,
   step,
   testId,
   testIsFailure,
@@ -419,6 +426,7 @@ function TestConnectionAndContinueButtons({
           className={cx(continueColorClass)}
           disabled={testIsOngoing}
           onClick={() => {
+            setValidationSucceeded(testIsSuccess);
             if (testIsFailure || testIsSuccess) {
               resetTest();
             }

@@ -138,6 +138,7 @@ export const EMPTY_CLOUD_STORAGE_STATE: AddCloudStorageState = {
   showAllSchema: false,
   showAllProviders: false,
   showAllOptions: false,
+  saveCredentials: true,
 };
 
 export const EMPTY_CLOUD_STORAGE_DETAILS: CloudStorageDetails = {

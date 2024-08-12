@@ -152,16 +152,16 @@ export function DataSourceActions({
         preventPropagation
         size="sm"
       >
-        <DropdownItem data-cy="data-source-delete" onClick={toggleDelete}>
-          <Trash className={cx("bi", "me-1")} />
-          Remove
-        </DropdownItem>
         <DropdownItem
           data-cy="data-source-credentials"
           onClick={toggleCredentials}
         >
           <Lock className={cx("bi", "ms-1")} />
           Credentials
+        </DropdownItem>
+        <DropdownItem data-cy="data-source-delete" onClick={toggleDelete}>
+          <Trash className={cx("bi", "me-1")} />
+          Remove
         </DropdownItem>
       </ButtonWithMenuV2>
       <DataSourceCredentialsModal

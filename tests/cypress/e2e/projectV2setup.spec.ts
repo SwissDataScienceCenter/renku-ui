@@ -59,6 +59,7 @@ describe("Set up project components", () => {
     cy.getDataCy("add-cloud-storage-continue-button").click();
     cy.getDataCy("cloud-storage-edit-mount").within(() => {
       cy.get("#name").type("giab");
+      cy.get("#saveCredentials").should("not.exist");
     });
     cy.getDataCy("cloud-storage-edit-update-button").click();
     cy.wait("@postCloudStorageV2");

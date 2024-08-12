@@ -139,6 +139,7 @@ export type AddCloudStorageState = {
   showAllSchema: boolean;
   showAllProviders: boolean;
   showAllOptions: boolean;
+  saveCredentials: boolean;
 };
 
 export type CloudStorageDetailsOptions = Record<

@@ -79,7 +79,6 @@ interface AddOrEditCloudStorageProps {
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
   storageSecrets: CloudStorageSecretGet[];
-  isV2?: boolean;
 }
 
 export default function AddOrEditCloudStorage({
@@ -106,10 +105,15 @@ export default function AddOrEditCloudStorage({
           setState={setState}
           setStorage={setStorage}
           storageSecrets={[]}
+          validationSucceeded={false}
         />
       </>
     );
   return <p>Error - not implemented yet</p>;
+}
+
+interface AddOrEditCloudStoragePropsV2 extends AddOrEditCloudStorageProps {
+  validationSucceeded: boolean;
 }
 
 export function AddOrEditCloudStorageV2({
@@ -119,8 +123,8 @@ export function AddOrEditCloudStorageV2({
   state,
   storage,
   storageSecrets,
-  isV2,
-}: AddOrEditCloudStorageProps) {
+  validationSucceeded,
+}: AddOrEditCloudStoragePropsV2) {
   const ContentByStep =
     state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
       ? mapStepToElement[state.step]
@@ -139,7 +143,8 @@ export function AddOrEditCloudStorageV2({
           setState={setState}
           setStorage={setStorage}
           storageSecrets={storageSecrets}
-          isV2={isV2}
+          isV2={true}
+          validationSucceeded={validationSucceeded}
         />
       </>
     );
@@ -257,6 +262,7 @@ interface AddStorageStepProps {
   storage: CloudStorageDetails;
   storageSecrets: CloudStorageSecretGet[];
   isV2?: boolean;
+  validationSucceeded: boolean;
 }
 
 const mapStepToElement: {
@@ -1095,13 +1101,21 @@ interface AddStorageMountForm {
   name: string;
   mountPoint: string;
   readOnly: boolean;
+  saveCredentials: boolean;
 }
-type AddStorageMountFormFields = "name" | "mountPoint" | "readOnly";
+type AddStorageMountFormFields =
+  | "name"
+  | "mountPoint"
+  | "readOnly"
+  | "saveCredentials";
 function AddStorageMount({
   isV2,
   schema,
   setStorage,
+  setState,
   storage,
+  state,
+  validationSucceeded,
 }: AddStorageStepProps) {
   const {
     control,
@@ -1116,17 +1130,32 @@ function AddStorageMount({
         storage.mountPoint ||
         `external_storage/${storage.schema?.toLowerCase()}`,
       readOnly: storage.readOnly ?? false,
+      saveCredentials: state.saveCredentials,
     },
   });
-  const onFieldValueChange = (
-    field: AddStorageMountFormFields,
-    value: string | boolean
-  ) => {
-    setValue(field, value);
-    if (field === "name" && !touchedFields.mountPoint && !storage.storageId)
-      setValue("mountPoint", `external_storage/${value}`);
-    setStorage({ ...getValues() });
-  };
+  const onFieldValueChange = useCallback(
+    (field: AddStorageMountFormFields, value: string | boolean) => {
+      setValue(field, value);
+      if (field === "name" && !touchedFields.mountPoint && !storage.storageId)
+        setValue("mountPoint", `external_storage/${value}`);
+      if (field === "saveCredentials") {
+        if (isV2) {
+          setState({ saveCredentials: !!value });
+          return;
+        }
+      }
+      setStorage({ ...getValues() });
+    },
+    [
+      getValues,
+      isV2,
+      setState,
+      setStorage,
+      storage.storageId,
+      setValue,
+      touchedFields.mountPoint,
+    ]
+  );
 
   const options = getSchemaOptions(
     schema,
@@ -1134,10 +1163,13 @@ function AddStorageMount({
     storage.schema,
     storage.provider
   );
-  const hasPasswordField =
+  const secretFields =
     options == null
-      ? false
-      : Object.values(options).some((o) => o && o.convertedType === "secret");
+      ? []
+      : Object.values(options).filter((o) => o && o.convertedType === "secret");
+  const hasPasswordFieldWithInput = secretFields.some(
+    (o) => storage.options && storage.options[o.name]
+  );
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
@@ -1259,23 +1291,70 @@ function AddStorageMount({
         </div>
       </div>
 
-      {storage.storageId == null && isV2 && hasPasswordField && (
-        <AddStorageMountSaveCredentialsInfo />
-      )}
+      {storage.storageId == null &&
+        isV2 &&
+        hasPasswordFieldWithInput &&
+        validationSucceeded && (
+          <AddStorageMountSaveCredentialsInfo
+            control={control}
+            onFieldValueChange={onFieldValueChange}
+            state={state}
+          />
+        )}
     </form>
   );
 }
 
-function AddStorageMountSaveCredentialsInfo() {
+type AddStorageMountSaveCredentialsInfoProps = {
+  control: Control<AddStorageMountForm>;
+  onFieldValueChange: (field: "saveCredentials", value: boolean) => void;
+  state: AddCloudStorageState;
+};
+
+function AddStorageMountSaveCredentialsInfo({
+  control,
+  onFieldValueChange,
+  state,
+}: AddStorageMountSaveCredentialsInfoProps) {
   return (
     <div className="mt-3">
-      <Label className="form-label">Save credentials</Label>
+      <Label className="form-label" for="saveCredentials">
+        Save credentials
+      </Label>
+
+      <Controller
+        name="saveCredentials"
+        control={control}
+        render={({ field }) => (
+          <input
+            id="saveCredentials"
+            type="checkbox"
+            {...field}
+            className={cx("form-check-input", "ms-1")}
+            onChange={(e) => {
+              field.onChange(e);
+              onFieldValueChange("saveCredentials", e.target.checked);
+            }}
+            value=""
+            checked={state.saveCredentials}
+          />
+        )}
+        rules={{ required: true }}
+      />
+      {state.saveCredentials && (
+        <div className="mt-1">
+          <WarnAlert dismissible={false}>
+            <p className="mb-0">
+              The credentials will be stored as secrets and only be for your
+              use. Other users will have to supply their credentials to use this
+              data source.
+            </p>
+          </WarnAlert>
+        </div>
+      )}
       <div className={cx("form-text", "text-muted")}>
-        After you have added the data source, you can save access credentials as
-        secrets in RenkuLab. When saved, you will no longer need to provide the
-        credentials every time you start a session. The credentials are stored
-        securely and are only available to you. Other users will need to provide
-        their own credentials.
+        Check this box to save credentials as secrets, so you will not have to
+        provide them again when starting a session.
       </div>
     </div>
   );

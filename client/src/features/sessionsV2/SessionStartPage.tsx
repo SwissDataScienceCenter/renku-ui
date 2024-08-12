@@ -311,20 +311,39 @@ function StartSessionWithCloudStorageModal({
     useState<boolean>(false);
   const dispatch = useAppDispatch();
 
+  const configsWithCredentials = useMemo(
+    () =>
+      cloudStorageConfigs.filter(
+        (config) => !doesCloudStorageNeedCredentials(config)
+      ),
+    [cloudStorageConfigs]
+  );
+
+  const configsNeedingCredentials = useMemo(
+    () =>
+      cloudStorageConfigs.filter((config) =>
+        doesCloudStorageNeedCredentials(config)
+      ),
+    [cloudStorageConfigs]
+  );
+
   useEffect(() => {
-    if (cloudStorageConfigs.some(doesCloudStorageNeedCredentials)) {
+    if (configsNeedingCredentials.length > 0)
       setShowCloudStorageSecretsModal(true);
-    }
-  }, [cloudStorageConfigs]);
+  }, [configsNeedingCredentials]);
 
   const onStart = useCallback(
-    (cloudStorageConfigs: CloudStorageConfiguration[]) => {
+    (changedCloudStorageConfigs: CloudStorageConfiguration[]) => {
       setShowCloudStorageSecretsModal(false);
+      const cloudStorageConfigs = [
+        ...configsWithCredentials,
+        ...changedCloudStorageConfigs,
+      ];
       dispatch(
         startSessionOptionsV2Slice.actions.setCloudStorage(cloudStorageConfigs)
       );
     },
-    [dispatch]
+    [dispatch, configsWithCredentials]
   );
 
   const steps = [
@@ -349,7 +368,7 @@ function StartSessionWithCloudStorageModal({
     navigate(url);
   }, [navigate, project.namespace, project.slug]);
 
-  if (cloudStorageConfigs.length === 0) {
+  if (configsNeedingCredentials.length === 0) {
     return (
       <SessionStarting
         containerImage={containerImage}
@@ -374,7 +393,7 @@ function StartSessionWithCloudStorageModal({
           isOpen={showCloudStorageSecretsModal}
           onCancel={onCancel}
           onStart={onStart}
-          cloudStorageConfigs={cloudStorageConfigs}
+          cloudStorageConfigs={configsNeedingCredentials}
         />
       </div>
     </div>
