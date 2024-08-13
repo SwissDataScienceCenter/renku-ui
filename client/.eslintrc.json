@@ -136,6 +136,7 @@
           "dockerignore",
           "enum",
           "etag",
+          "favicon",
           "fetchable",
           "formgenerator",
           "fortran",

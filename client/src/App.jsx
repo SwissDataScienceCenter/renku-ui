@@ -38,10 +38,12 @@ import LazyShowDataset from "./dataset/LazyShowDataset";
 import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProject";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import LazyDashboard from "./features/dashboard/LazyDashboard";
+import { Favicon } from "./features/favicon/Favicon";
 import LazyInactiveKGProjectsPage from "./features/inactiveKgProjects/LazyInactiveKGProjectsPage";
 import LazySearchPage from "./features/kgSearch/LazySearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
+import LazySecrets from "./features/secrets/LazySecrets";
 import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
 import { useGetUserQuery } from "./features/user/dataServicesUser.api";
 import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
@@ -55,7 +57,6 @@ import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
-import LazySecrets from "./features/secrets/LazySecrets";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
@@ -273,6 +274,7 @@ function App(props) {
 
   return (
     <Fragment>
+      <Favicon />
       <RenkuNavBar {...props} notifications={notifications} />
       <CentralContentContainer
         notifications={notifications}
