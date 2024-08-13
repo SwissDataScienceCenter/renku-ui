@@ -57,21 +57,21 @@ const SENTRY = {
   ),
 };
 
-// const AUTHENTICATION = {
-//   serverUrl: process.env.AUTH_SERVER_URL || SERVER.url + "/auth/realms/Renku",
-//   clientId: process.env.AUTH_CLIENT_ID || "renku-ui",
-//   clientSecret: process.env.AUTH_CLIENT_SECRET,
-//   tokenExpirationTolerance: convertType(process.env.AUTH_TOKEN_TOLERANCE) || 10,
-//   cookiesKey: "ui-server-session",
-//   cookiesAnonymousKey: "anon-id",
-//   anonPrefix: "anon-", // ? this MUST start with a letter to prevent k8s limitations
-//   authHeaderField: "Authorization",
-//   authHeaderPrefix: "bearer ",
-//   invalidHeaderField: "ui-server-auth",
-//   invalidHeaderExpired: "expired",
-//   retryConnectionAttempts: 10,
-//   storagePrefix: "AUTH_",
-// };
+const AUTHENTICATION = {
+  serverUrl: process.env.AUTH_SERVER_URL || SERVER.url + "/auth/realms/Renku",
+  //   clientId: process.env.AUTH_CLIENT_ID || "renku-ui",
+  //   clientSecret: process.env.AUTH_CLIENT_SECRET,
+  //   tokenExpirationTolerance: convertType(process.env.AUTH_TOKEN_TOLERANCE) || 10,
+  //   cookiesKey: "ui-server-session",
+  //   cookiesAnonymousKey: "anon-id",
+  //   anonPrefix: "anon-", // ? this MUST start with a letter to prevent k8s limitations
+  authHeaderField: "Authorization",
+  authHeaderPrefix: "bearer ",
+  //   invalidHeaderField: "ui-server-auth",
+  //   invalidHeaderExpired: "expired",
+  //   retryConnectionAttempts: 10,
+  //   storagePrefix: "AUTH_",
+};
 
 const REDIS = {
   host: process.env.REDIS_HOST || "localhost",
@@ -113,7 +113,7 @@ const PROMETHEUS = {
 };
 
 const config = {
-  // auth: AUTHENTICATION,
+  auth: AUTHENTICATION,
   data: DATA,
   deployment: DEPLOYMENT,
   prometheus: PROMETHEUS,

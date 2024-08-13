@@ -143,11 +143,7 @@ async function channelLongLoop(
   }
 
   // get the auth headers
-  const authHeaders = await getAuthHeaders(
-    // authenticator,
-    sessionId,
-    infoPrefix
-  );
+  const authHeaders = {}; // await getAuthHeaders(    // authenticator,    sessionId,    infoPrefix  );
   if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
     // ? here authHeaders is an error message
     channel.sockets.forEach((socket) => socket.send(authHeaders.toString()));
@@ -213,7 +209,7 @@ async function channelShortLoop(
   }
 
   // get the auth headers
-  const authHeaders = await getAuthHeaders(sessionId, infoPrefix);
+  const authHeaders = {}; // await getAuthHeaders(sessionId, infoPrefix);
   if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
     // ? here authHeaders is an error message
     channel.sockets.forEach((socket) => socket.send(authHeaders.toString()));
@@ -277,10 +273,7 @@ function configureWebsocket(
     }
 
     // get the user id
-    const sessionId = getCookieValueByName(
-      request.headers.cookie,
-      config.auth.cookiesKey
-    );
+    const sessionId = ""; // getCookieValueByName(request.headers.cookie, config.auth.cookiesKey);
     if (!sessionId) {
       logger.error("No ID for the user, session won't be saved.");
       const info =
@@ -316,10 +309,10 @@ function configureWebsocket(
       // add a buffer before starting the loop, so we can receive setup messages
 
       setTimeout(() => {
-        channelShortLoop(sessionId, authenticator, storage, apiClient);
+        channelShortLoop(sessionId, storage, apiClient);
         // add a tiny buffer, in case authentication fails and channel is cleaned up -- no need to overlap
         setTimeout(() => {
-          channelLongLoop(sessionId, authenticator, storage, apiClient);
+          channelLongLoop(sessionId, storage, apiClient);
         }, 1000);
       }, config.websocket.delayStartSec * 1000);
     }
@@ -406,9 +399,10 @@ function configureWebsocket(
     });
 
     // check auth
-    const head = await getAuthHeaders(authenticator, sessionId);
-    if (head instanceof WsMessage && head.data?.expired)
-      socket.send(head.toString());
+    // const head = await getAuthHeaders(authenticator, sessionId);
+    // if (head instanceof WsMessage && head.data?.expired) {
+    //   socket.send(head.toString());
+    // }
     socket.send(
       new WsMessage("Connection established.", "user", "init").toString()
     );
@@ -464,54 +458,54 @@ function getWsClientMessageHandler(
 }
 
 /**
- * Get auhtentication headers
- * @param authenticator - auth component
- * @param sessionId - user session ID
- * @param infoPrefix - this is for the logger
- * @returns error with WsMessage or headers
- */
-async function getAuthHeaders(
-  authenticator: Authenticator,
-  sessionId: string,
-  infoPrefix = ""
-): Promise<WsMessage | Record<string, string>> {
-  try {
-    const authHeaders = await wsRenkuAuth(authenticator, sessionId);
-    if (!authHeaders)
-      // user is anonymous
-      return null;
-    return authHeaders;
-  } catch (error) {
-    const data = { message: "authentication not valid" };
-    let expiredMessage: WsMessage;
-    if (error.message.toString().includes("expired")) {
-      // Try to refresh tokens automatically
-      try {
-        logger.debug(`${infoPrefix} try to refresh tokens.`);
-        await authenticator.refreshTokens(sessionId);
-        const authHeaders = await wsRenkuAuth(authenticator, sessionId);
-        if (!authHeaders)
-          throw new Error("Cannot find auth headers after refreshing");
-        logger.debug(`${infoPrefix} tokens refreshed.`);
-        return authHeaders;
-      } catch (internalError) {
-        logger.warn(`${infoPrefix} auth expired.`);
-        expiredMessage = new WsMessage(
-          { ...data, expired: true },
-          "user",
-          "authentication"
-        );
-      }
-    } else {
-      logger.warn(`${infoPrefix} auth invalid.`);
-      expiredMessage = new WsMessage(
-        { ...data, invalid: true },
-        "user",
-        "authentication"
-      );
-    }
-    return expiredMessage;
-  }
-}
+//  * Get auhtentication headers
+//  * @param authenticator - auth component
+//  * @param sessionId - user session ID
+//  * @param infoPrefix - this is for the logger
+//  * @returns error with WsMessage or headers
+//  */
+// async function getAuthHeaders(
+//   authenticator: Authenticator,
+//   sessionId: string,
+//   infoPrefix = ""
+// ): Promise<WsMessage | Record<string, string>> {
+//   try {
+//     const authHeaders = await wsRenkuAuth(authenticator, sessionId);
+//     if (!authHeaders)
+//       // user is anonymous
+//       return null;
+//     return authHeaders;
+//   } catch (error) {
+//     const data = { message: "authentication not valid" };
+//     let expiredMessage: WsMessage;
+//     if (error.message.toString().includes("expired")) {
+//       // Try to refresh tokens automatically
+//       try {
+//         logger.debug(`${infoPrefix} try to refresh tokens.`);
+//         await authenticator.refreshTokens(sessionId);
+//         const authHeaders = await wsRenkuAuth(authenticator, sessionId);
+//         if (!authHeaders)
+//           throw new Error("Cannot find auth headers after refreshing");
+//         logger.debug(`${infoPrefix} tokens refreshed.`);
+//         return authHeaders;
+//       } catch (internalError) {
+//         logger.warn(`${infoPrefix} auth expired.`);
+//         expiredMessage = new WsMessage(
+//           { ...data, expired: true },
+//           "user",
+//           "authentication"
+//         );
+//       }
+//     } else {
+//       logger.warn(`${infoPrefix} auth invalid.`);
+//       expiredMessage = new WsMessage(
+//         { ...data, invalid: true },
+//         "user",
+//         "authentication"
+//       );
+//     }
+//     return expiredMessage;
+//   }
+// }
 
 export { Channel, MessageData, configureWebsocket, getWsClientMessageHandler };

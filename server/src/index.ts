@@ -36,6 +36,7 @@ import {
   initializeSentry,
 } from "./utils/sentry/sentry";
 import { configureWebsocket } from "./websocket";
+import { Authenticator } from "./auth2/middleware";
 
 const app = express();
 const port = config.server.port;
@@ -69,6 +70,13 @@ initializePrometheus(app);
 // configure storage
 const storage = new RedisStorage();
 
+// configure authenticator
+const authenticator = new Authenticator();
+const authPromise = authenticator.init();
+authPromise.then(() => {
+  app.use(authenticator.middleware());
+});
+
 // // configure authenticator
 // const authenticator = new Authenticator(storage);
 // const authPromise = authenticator.init();
@@ -93,7 +101,7 @@ const server = app.listen(port, () => {
 });
 
 // configure API client
-const apiClient = new APIClient();
+// const apiClient = new APIClient();
 
 // start the WebSocket server
 const wsServer: ws.Server | null = null;
