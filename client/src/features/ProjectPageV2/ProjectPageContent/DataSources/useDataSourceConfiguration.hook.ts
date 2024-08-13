@@ -19,23 +19,21 @@
 import { useMemo } from "react";
 
 import { CLOUD_OPTIONS_OVERRIDE } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
-import { useGetStorageSecretsByV2StorageIdQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { RCloneOption } from "../../../projectsV2/api/storagesV2.api";
-import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
+import type {
+  CloudStorageGetV2Read,
+  CloudStorageSecretGet,
+} from "../../../projectsV2/api/storagesV2.api";
 
 import type { SessionStartCloudStorageConfiguration } from "../../../sessionsV2/startSessionOptionsV2.types";
 
 interface UseDataSourceConfigurationArgs {
-  storages: CloudStorageGetRead[] | undefined;
+  storages: CloudStorageGetV2Read[] | undefined;
 }
 
 export default function useDataSourceConfiguration({
   storages,
 }: UseDataSourceConfigurationArgs) {
-  const { data: storagesSecrets } = useGetStorageSecretsByV2StorageIdQuery({
-    storageIds: storages?.map((s) => s.storage.storage_id) ?? [],
-  });
-
   const cloudStorageConfigs = useMemo(
     () =>
       storages?.map((cloudStorage) => {
@@ -74,6 +72,13 @@ export default function useDataSourceConfiguration({
           if (name == null) return;
           sensitiveFieldValues[name] = "";
         });
+        const storagesSecrets = storages?.reduce(
+          (a: Record<string, CloudStorageSecretGet[]>, s) => {
+            a[s.storage.storage_id] = s.secrets ? s.secrets : [];
+            return a;
+          },
+          {}
+        );
         const savedCredentialFields = storagesSecrets
           ? storagesSecrets[storageDefinition.storage_id].map((s) => s.name)
           : [];
@@ -86,7 +91,7 @@ export default function useDataSourceConfiguration({
           savedCredentialFields,
         };
       }),
-    [storages, storagesSecrets]
+    [storages]
   );
 
   return {

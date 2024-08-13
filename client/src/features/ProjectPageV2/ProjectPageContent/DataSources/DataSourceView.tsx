@@ -22,13 +22,12 @@ import { Offcanvas, OffcanvasBody } from "reactstrap";
 import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem";
 import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../../project/utils/projectCloudStorage.utils";
-import { useGetStoragesV2ByStorageIdSecretsQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
-import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
+import type { CloudStorageGetV2Read } from "../../../projectsV2/api/storagesV2.api";
 import { storageSecretNameToFieldName } from "../../../secrets/secrets.utils";
 import { DataSourceActions } from "./DataSourceDisplay";
 
 interface DataSourceViewProps {
-  storage: CloudStorageGetRead;
+  storage: CloudStorageGetV2Read;
   toggleView: boolean;
   setToggleView: () => void;
   projectId: string;
@@ -46,9 +45,7 @@ export function DataSourceView({
   const anySensitiveField = Object.keys(storageDefinition.configuration).some(
     (key) => sensitiveFields.includes(key)
   );
-  const { data: storageSecrets } = useGetStoragesV2ByStorageIdSecretsQuery({
-    storageId: storage.storage.storage_id,
-  });
+  const storageSecrets = storage.secrets;
   const savedCredentialFields =
     storageSecrets?.reduce((acc: Record<string, string>, s) => {
       acc[storageSecretNameToFieldName(s)] = s.name;
