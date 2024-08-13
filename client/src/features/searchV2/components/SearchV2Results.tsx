@@ -18,7 +18,15 @@
 
 import cx from "classnames";
 import { ReactNode, useCallback, useEffect } from "react";
-import { Globe2, Lock } from "react-bootstrap-icons";
+import {
+  Folder2Open,
+  Globe2,
+  Icon,
+  Lock,
+  People,
+  Person,
+  Question,
+} from "react-bootstrap-icons";
 import {
   Link,
   generatePath,
@@ -80,7 +88,6 @@ export default function SearchV2Results() {
           totalItems={searchResults?.pagingInfo.totalResult ?? 0}
           onPageChange={onPageChange}
           showDescription={true}
-          className="rk-search-pagination"
         />
       </Col>
     </Row>
@@ -140,7 +147,7 @@ interface SearchV2ResultsCardProps {
 }
 function SearchV2ResultsContainer({ children }: SearchV2ResultsCardProps) {
   return (
-    <Col xs={12} lg={6} xxl={4} data-cy="search-card">
+    <Col xs={12} md={6} xl={4} data-cy="search-card">
       <Card className="h-100">{children}</Card>
     </Col>
   );
@@ -172,20 +179,53 @@ function SearchV2CardTitle({
       </div>
       {entityType && (
         <div className={cx("mb-auto", "ms-auto")}>
-          <Badge
-            pill
-            className={cx(
-              "border",
-              "border-dark-subtle",
-              "bg-light",
-              "text-dark-emphasis"
-            )}
-          >
-            {entityType}
-          </Badge>
+          <SearchV2CardEntityPill entityType={entityType} size="sm" />
         </div>
       )}
     </CardHeader>
+  );
+}
+
+interface SearchV2CardEntityPillProps {
+  entityType: SearchEntity["type"];
+  size?: "sm" | "md" | "lg" | "xl" | "auto";
+}
+function SearchV2CardEntityPill({
+  entityType,
+  size = "auto",
+}: SearchV2CardEntityPillProps) {
+  const IconComponent: Icon =
+    entityType === "Project"
+      ? Folder2Open
+      : entityType === "Group"
+      ? People
+      : entityType === "User"
+      ? Person
+      : Question;
+  const sizeClass =
+    size == "sm"
+      ? "fs-6"
+      : size === "md"
+      ? "fs-5"
+      : size === "lg"
+      ? "fs-4"
+      : size === "xl"
+      ? "fs-2"
+      : null;
+  return (
+    <Badge
+      pill
+      className={cx(
+        "bg-light",
+        "border-dark-subtle",
+        "border",
+        "p-2",
+        "text-dark-emphasis",
+        sizeClass
+      )}
+    >
+      <IconComponent />
+    </Badge>
   );
 }
 
