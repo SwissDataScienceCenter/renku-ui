@@ -72,10 +72,9 @@ const storage = new RedisStorage();
 
 // configure authenticator
 const authenticator = new Authenticator();
-const authPromise = authenticator.init();
-authPromise.then(() => {
-  app.use(authenticator.middleware());
-});
+// const authPromise = authenticator.init();
+authenticator.init();
+app.use(authenticator.middleware());
 
 // // configure authenticator
 // const authenticator = new Authenticator(storage);

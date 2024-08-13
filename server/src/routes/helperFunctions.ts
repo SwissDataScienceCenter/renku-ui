@@ -42,8 +42,9 @@ export async function getUserData(
     stop,
   };
 
-  if (userId)
+  if (userId) {
     data = (await storage.get(`${prefix}${userId}`, options)) as string[];
+  }
 
   return data;
 }

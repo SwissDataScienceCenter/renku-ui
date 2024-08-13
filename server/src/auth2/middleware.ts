@@ -35,6 +35,7 @@ export class Authenticator {
   async init(): Promise<boolean> {
     try {
       this.issuer = await Issuer.discover(this.authServerUrl);
+      logger.info("Authenticator initialized");
     } catch (error) {
       logger.error(
         "Cannot initialize the auth client. The authentication server may be down or some paramaters may be wrong. " +
