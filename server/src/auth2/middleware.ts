@@ -52,7 +52,10 @@ export class Authenticator {
     res: express.Response,
     next: express.NextFunction
   ) => Promise<void> {
-    const issuer = this.issuer;
+    const that = this;
+    function getIssuer() {
+      return that.issuer;
+    }
 
     async function authenticationMiddleware(
       req: RequestWithUser,
@@ -64,6 +67,7 @@ export class Authenticator {
         return next();
       }
 
+      const issuer = getIssuer();
       if (issuer == null) {
         logger.error("The authenticator is not ready.");
         return next();
