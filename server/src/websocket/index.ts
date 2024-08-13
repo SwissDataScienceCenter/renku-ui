@@ -20,7 +20,7 @@ import ws from "ws";
 import * as SentryLib from "@sentry/node";
 
 import APIClient from "../api-client";
-import { Authenticator } from "../authentication";
+import { IAuthenticator } from "../interfaces";
 import { wsRenkuAuth } from "../authentication/middleware";
 import config from "../config";
 import logger from "../logger";
@@ -116,7 +116,7 @@ const shortLoopFunctions: Array<Function> = [
  */
 async function channelLongLoop(
   sessionId: string,
-  authenticator: Authenticator,
+  authenticator: IAuthenticator,
   storage: Storage,
   apiClient: APIClient
 ) {
@@ -186,7 +186,7 @@ async function channelLongLoop(
  */
 async function channelShortLoop(
   sessionId: string,
-  authenticator: Authenticator,
+  authenticator: IAuthenticator,
   storage: Storage,
   apiClient: APIClient
 ) {
@@ -259,7 +259,7 @@ async function channelShortLoop(
  */
 function configureWebsocket(
   server: ws.Server,
-  authenticator: Authenticator,
+  authenticator: IAuthenticator,
   storage: Storage,
   apiClient: APIClient
 ): void {
@@ -475,7 +475,7 @@ function getWsClientMessageHandler(
  * @returns error with WsMessage or headers
  */
 async function getAuthHeaders(
-  authenticator: Authenticator,
+  authenticator: IAuthenticator,
   sessionId: string,
   infoPrefix = ""
 ): Promise<WsMessage | Record<string, string>> {
