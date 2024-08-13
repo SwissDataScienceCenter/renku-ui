@@ -87,7 +87,7 @@ export class Authenticator {
       try {
         const keystore = await issuer.keystore();
         const { payload } = JWT.verify(authToken, keystore, { complete: true });
-        logger.error(`Auth: ${payload}`);
+        logger.error(`Auth: ${payload} ${JSON.stringify(payload)}`);
         //   const userId = payload.sub
         return next();
       } catch (error) {
