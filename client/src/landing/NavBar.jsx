@@ -172,7 +172,9 @@ function FooterNavbarInner({ location, params }) {
         )}
       >
         <div className="navbar-nav">
-          <span>&copy; SDSC {new Date().getFullYear()}</span>
+          <span className="text-white">
+            &copy; SDSC {new Date().getFullYear()}
+          </span>
         </div>
         <div className="navbar-nav" data-cy="version-info">
           <Link
