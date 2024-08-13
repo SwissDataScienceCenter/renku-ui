@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { getUserIdFromToken } from "../authentication";
+// import { getUserIdFromToken } from "../authentication";
 import { Storage, StorageGetOptions, TypeData } from "../storage";
 
 /**
@@ -31,9 +31,9 @@ export async function getUserData(
   prefix: string,
   token: string,
   storage: Storage,
-  length = 0
+  length: number = 0
 ): Promise<string[]> {
-  const userId = getUserIdFromToken(token);
+  const userId = ""; //getUserIdFromToken(token);
   let data: string[] = [];
   const stop = length - 1; // -1 would bring all records
   const options: StorageGetOptions = {

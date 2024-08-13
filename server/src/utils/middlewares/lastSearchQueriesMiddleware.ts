@@ -19,7 +19,7 @@
 import * as Sentry from "@sentry/node";
 import express from "express";
 
-import { getUserIdFromToken } from "../../authentication";
+// import { getUserIdFromToken } from "../../authentication";
 import config from "../../config";
 import logger from "../../logger";
 import { Storage, TypeData } from "../../storage";
@@ -31,7 +31,7 @@ const lastSearchQueriesMiddleware =
     res: express.Response,
     next: express.NextFunction
   ): void => {
-    const token = req.headers[config.auth.authHeaderField] as string;
+    const token = ""; //req.headers[config.auth.authHeaderField] as string;
     const query = req.query["query"];
     const phrase = query ? (query as string).trim() : "";
 
@@ -41,7 +41,7 @@ const lastSearchQueriesMiddleware =
           next();
           return;
         }
-        const userId = getUserIdFromToken(token);
+        const userId = ""; //getUserIdFromToken(token);
         storage
           .save(`${config.data.searchStoragePrefix}${userId}`, phrase, {
             type: TypeData.Collections,

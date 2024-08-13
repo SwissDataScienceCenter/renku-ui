@@ -16,111 +16,113 @@
  * limitations under the License.
  */
 
-import express from "express";
-import { v4 as uuidv4 } from "uuid";
+export {};
 
-import config from "../config";
-import { Authenticator } from "./index";
+// import express from "express";
+// import { v4 as uuidv4 } from "uuid";
 
-/**
- * Get the session id. If not availabe, one is created and set on the response cookies
- *
- * @param req - express request
- * @param res - express response
- * @return session id
- */
-function getOrCreateSessionId(
-  req: express.Request,
-  res: express.Response,
-  serverPrefix: string = config.server.prefix
-): string {
-  const cookiesKey = config.auth.cookiesKey;
-  let sessionId: string;
-  if (req.cookies[cookiesKey] != null) {
-    sessionId = req.cookies[cookiesKey];
-  } else {
-    sessionId = uuidv4();
-    res.cookie(cookiesKey, sessionId, {
-      secure: true,
-      httpOnly: true,
-      path: serverPrefix,
-    });
-  }
-  return sessionId;
-}
+// import config from "../config";
+// import { Authenticator } from "./index";
 
-/**
- * Extract and return the search string (i.e. the query parameters in the form `?anyvalue`).
- *
- * @param req - express request containing the url
- * @returns search string
- */
-function getStringyParams(req: express.Request): string {
-  const fullUrl = req.url.toLowerCase().startsWith("http")
-    ? req.url
-    : config.server.url + req.url;
-  const urlObject = new URL(fullUrl);
-  return urlObject.search;
-}
+// /**
+//  * Get the session id. If not availabe, one is created and set on the response cookies
+//  *
+//  * @param req - express request
+//  * @param res - express response
+//  * @return session id
+//  */
+// function getOrCreateSessionId(
+//   req: express.Request,
+//   res: express.Response,
+//   serverPrefix: string = config.server.prefix
+// ): string {
+//   const cookiesKey = config.auth.cookiesKey;
+//   let sessionId: string;
+//   if (req.cookies[cookiesKey] != null) {
+//     sessionId = req.cookies[cookiesKey];
+//   } else {
+//     sessionId = uuidv4();
+//     res.cookie(cookiesKey, sessionId, {
+//       secure: true,
+//       httpOnly: true,
+//       path: serverPrefix,
+//     });
+//   }
+//   return sessionId;
+// }
 
-function registerAuthenticationRoutes(
-  app: express.Application,
-  authenticator: Authenticator
-): void {
-  const authPrefix = config.server.prefix + config.routes.auth;
+// /**
+//  * Extract and return the search string (i.e. the query parameters in the form `?anyvalue`).
+//  *
+//  * @param req - express request containing the url
+//  * @returns search string
+//  */
+// function getStringyParams(req: express.Request): string {
+//   const fullUrl = req.url.toLowerCase().startsWith("http")
+//     ? req.url
+//     : config.server.url + req.url;
+//   const urlObject = new URL(fullUrl);
+//   return urlObject.search;
+// }
 
-  app.get(authPrefix + "/login", async (req, res, next) => {
-    try {
-      // start the login using the code flow, preserving query params for later.
-      const sessionId = getOrCreateSessionId(req, res);
-      const inputParams = getStringyParams(req);
-      const loginCodeUrl = await authenticator.startAuthFlow(
-        sessionId,
-        inputParams
-      );
+// function registerAuthenticationRoutes(
+//   app: express.Application,
+//   authenticator: Authenticator
+// ): void {
+//   const authPrefix = config.server.prefix + config.routes.auth;
 
-      res.redirect(loginCodeUrl);
-    } catch (error) {
-      next(error);
-    }
-  });
+//   app.get(authPrefix + "/login", async (req, res, next) => {
+//     try {
+//       // start the login using the code flow, preserving query params for later.
+//       const sessionId = getOrCreateSessionId(req, res);
+//       const inputParams = getStringyParams(req);
+//       const loginCodeUrl = await authenticator.startAuthFlow(
+//         sessionId,
+//         inputParams
+//       );
 
-  app.get(authPrefix + "/callback", async (req, res, next) => {
-    try {
-      // finish the auth flow, exchanging the auth code with the token set.
-      const sessionId = getOrCreateSessionId(req, res);
-      const code = authenticator.getAuthCode(req);
-      const tokens = await authenticator.finishAuthFlow(sessionId, code);
-      await authenticator.storeTokens(sessionId, tokens);
+//       res.redirect(loginCodeUrl);
+//     } catch (error) {
+//       next(error);
+//     }
+//   });
 
-      // create the login url, adding the original query params.
-      const originalParameters =
-        await authenticator.getPostLoginParametersAndDelete(sessionId);
-      const backendLoginUrl =
-        config.deployment.gatewayLoginUrl + originalParameters;
+//   app.get(authPrefix + "/callback", async (req, res, next) => {
+//     try {
+//       // finish the auth flow, exchanging the auth code with the token set.
+//       const sessionId = getOrCreateSessionId(req, res);
+//       const code = authenticator.getAuthCode(req);
+//       const tokens = await authenticator.finishAuthFlow(sessionId, code);
+//       await authenticator.storeTokens(sessionId, tokens);
 
-      // ? Do I need to set the access token here? Will this be needed when removing the `session` cookie from gateway?
-      // ? res.set(config.auth.authHeaderField, config.auth.authHeaderPrefix + tokens["access_token"]);
-      res.redirect(backendLoginUrl);
-    } catch (error) {
-      next(error);
-    }
-  });
+//       // create the login url, adding the original query params.
+//       const originalParameters =
+//         await authenticator.getPostLoginParametersAndDelete(sessionId);
+//       const backendLoginUrl =
+//         config.deployment.gatewayLoginUrl + originalParameters;
 
-  app.get(authPrefix + "/logout", async (req, res, next) => {
-    try {
-      // delete token set
-      const sessionId = getOrCreateSessionId(req, res);
-      await authenticator.deleteTokens(sessionId);
+//       // ? Do I need to set the access token here? Will this be needed when removing the `session` cookie from gateway?
+//       // ? res.set(config.auth.authHeaderField, config.auth.authHeaderPrefix + tokens["access_token"]);
+//       res.redirect(backendLoginUrl);
+//     } catch (error) {
+//       next(error);
+//     }
+//   });
 
-      // create the logout url
-      const inputParams = getStringyParams(req);
-      const backendLoginUrl = config.deployment.gatewayLogoutUrl + inputParams;
-      res.redirect(backendLoginUrl);
-    } catch (error) {
-      next(error);
-    }
-  });
-}
+//   app.get(authPrefix + "/logout", async (req, res, next) => {
+//     try {
+//       // delete token set
+//       const sessionId = getOrCreateSessionId(req, res);
+//       await authenticator.deleteTokens(sessionId);
 
-export { registerAuthenticationRoutes, getOrCreateSessionId };
+//       // create the logout url
+//       const inputParams = getStringyParams(req);
+//       const backendLoginUrl = config.deployment.gatewayLogoutUrl + inputParams;
+//       res.redirect(backendLoginUrl);
+//     } catch (error) {
+//       next(error);
+//     }
+//   });
+// }
+
+// export { registerAuthenticationRoutes, getOrCreateSessionId };

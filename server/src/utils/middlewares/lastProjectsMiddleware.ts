@@ -19,7 +19,7 @@
 import * as Sentry from "@sentry/node";
 import express from "express";
 
-import { getUserIdFromToken } from "../../authentication";
+// import { getUserIdFromToken } from "../../authentication";
 import config from "../../config";
 import logger from "../../logger";
 import { Storage, TypeData } from "../../storage";
@@ -35,7 +35,7 @@ const lastProjectsMiddleware =
     res: express.Response,
     next: express.NextFunction
   ): void => {
-    const token = req.headers[config.auth.authHeaderField] as string;
+    const token = ""; //req.headers[config.auth.authHeaderField] as string;
     const projectName = req.params["projectName"];
     // Ignore projects that are ids -- these will be re-accessed as namespace/name anyway
     if (projectNameIsId(projectName)) {
@@ -50,7 +50,7 @@ const lastProjectsMiddleware =
           return;
         }
 
-        const userId = getUserIdFromToken(token);
+        const userId = ""; //getUserIdFromToken(token);
         const normalizedProjectName = projectName.toLowerCase();
         // Save as ordered collection
         storage
@@ -78,4 +78,4 @@ const lastProjectsMiddleware =
     next();
   };
 
-export { lastProjectsMiddleware, getUserIdFromToken };
+export { lastProjectsMiddleware };

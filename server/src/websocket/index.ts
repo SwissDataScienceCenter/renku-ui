@@ -20,8 +20,8 @@ import ws from "ws";
 import * as SentryLib from "@sentry/node";
 
 import APIClient from "../api-client";
-import { Authenticator } from "../authentication";
-import { wsRenkuAuth } from "../authentication/middleware";
+// import { Authenticator } from "../authentication";
+// import { wsRenkuAuth } from "../authentication/middleware";
 import config from "../config";
 import logger from "../logger";
 import { Storage } from "../storage";
@@ -116,7 +116,7 @@ const shortLoopFunctions: Array<Function> = [
  */
 async function channelLongLoop(
   sessionId: string,
-  authenticator: Authenticator,
+  // authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ) {
@@ -131,12 +131,12 @@ async function channelLongLoop(
 
   // checking authentication
   const timeoutLength = (config.websocket.longIntervalSec as number) * 1000;
-  if (!authenticator.ready) {
+  if (!storage.ready) {
     logger.info(
-      `${infoPrefix} Authenticator not ready yet, skipping to the next loop`
+      `${infoPrefix} Storage not ready yet, skipping to the next loop`
     );
     setTimeout(
-      () => channelLongLoop(sessionId, authenticator, storage, apiClient),
+      () => channelLongLoop(sessionId, storage, apiClient),
       timeoutLength
     );
     return false;
@@ -144,7 +144,7 @@ async function channelLongLoop(
 
   // get the auth headers
   const authHeaders = await getAuthHeaders(
-    authenticator,
+    // authenticator,
     sessionId,
     infoPrefix
   );
@@ -171,7 +171,7 @@ async function channelLongLoop(
   // Ping to keep the socket alive, then reschedule loop
   channel.sockets.forEach((socket) => socket.ping());
   setTimeout(
-    () => channelLongLoop(sessionId, authenticator, storage, apiClient),
+    () => channelLongLoop(sessionId, storage, apiClient),
     timeoutLength
   );
 }
@@ -186,7 +186,7 @@ async function channelLongLoop(
  */
 async function channelShortLoop(
   sessionId: string,
-  authenticator: Authenticator,
+  // authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ) {
@@ -201,23 +201,19 @@ async function channelShortLoop(
 
   // checking authentication
   const timeoutLength = (config.websocket.shortIntervalSec as number) * 1000;
-  if (!authenticator.ready) {
+  if (!storage.ready) {
     logger.info(
-      `${infoPrefix} Authenticator not ready yet, skipping to the next loop`
+      `${infoPrefix} Storage not ready yet, skipping to the next loop`
     );
     setTimeout(
-      () => channelShortLoop(sessionId, authenticator, storage, apiClient),
+      () => channelShortLoop(sessionId, storage, apiClient),
       timeoutLength
     );
     return;
   }
 
   // get the auth headers
-  const authHeaders = await getAuthHeaders(
-    authenticator,
-    sessionId,
-    infoPrefix
-  );
+  const authHeaders = await getAuthHeaders(sessionId, infoPrefix);
   if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
     // ? here authHeaders is an error message
     channel.sockets.forEach((socket) => socket.send(authHeaders.toString()));
@@ -241,7 +237,7 @@ async function channelShortLoop(
   // Ping to keep the socket alive, then reschedule loop
   channel.sockets.forEach((socket) => socket.ping());
   setTimeout(
-    () => channelShortLoop(sessionId, authenticator, storage, apiClient),
+    () => channelShortLoop(sessionId, storage, apiClient),
     timeoutLength
   );
 }
@@ -259,7 +255,7 @@ async function channelShortLoop(
  */
 function configureWebsocket(
   server: ws.Server,
-  authenticator: Authenticator,
+  // authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ): void {

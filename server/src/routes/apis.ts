@@ -22,8 +22,8 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 
 import config from "../config";
 import logger from "../logger";
-import { Authenticator } from "../authentication";
-import { renkuAuth } from "../authentication/middleware";
+// import { Authenticator } from "../authentication";
+// import { renkuAuth } from "../authentication/middleware";
 import { getCookieValueByName, serializeCookie } from "../utils";
 import { validateCSP } from "../utils/url";
 import { lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
@@ -65,54 +65,55 @@ const proxyMiddleware = createProxyMiddleware({
         }
       }
     }
-    // add anon-id to cookies when the proper header is set.
-    const anonId = clientReq.getHeader(config.auth.cookiesAnonymousKey);
-    if (anonId) {
-      // ? the anon-id MUST start with a letter to prevent k8s limitations
-      const fullAnonId = config.auth.anonPrefix + anonId;
-      newCookies.push(
-        serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
-      );
-    }
-    if (newCookies.length > 0)
+    // // add anon-id to cookies when the proper header is set.
+    // const anonId = clientReq.getHeader(config.auth.cookiesAnonymousKey);
+    // if (anonId) {
+    //   // ? the anon-id MUST start with a letter to prevent k8s limitations
+    //   const fullAnonId = config.auth.anonPrefix + anonId;
+    //   newCookies.push(
+    //     serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
+    //   );
+    // }
+    if (newCookies.length > 0) {
       clientReq.setHeader("cookie", newCookies.join("; "));
+    }
   },
   onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
     // Add CORS for sentry
     res.setHeader("Access-Control-Allow-Headers", "sentry-trace");
 
-    // handle auth expiration -- we change the response status to avoid browser caching
-    const expHeader = req.get(config.auth.invalidHeaderField);
-    if (expHeader != null) {
-      clientRes.headers[config.auth.invalidHeaderField] = expHeader;
-      if (expHeader === config.auth.invalidHeaderExpired) {
-        // We return a different response to prevent side effects from caching mechanism on 30x responses
-        logger.warn(
-          `Authentication expired when trying to reach ${req.originalUrl}. Attaching auth headers.`
-        );
-        res.status(500);
-        res.setHeader(config.auth.invalidHeaderField, expHeader);
-        res.json({ error: "Invalid authentication tokens" });
-      }
-    }
+    // // handle auth expiration -- we change the response status to avoid browser caching
+    // const expHeader = req.get(config.auth.invalidHeaderField);
+    // if (expHeader != null) {
+    //   clientRes.headers[config.auth.invalidHeaderField] = expHeader;
+    //   if (expHeader === config.auth.invalidHeaderExpired) {
+    //     // We return a different response to prevent side effects from caching mechanism on 30x responses
+    //     logger.warn(
+    //       `Authentication expired when trying to reach ${req.originalUrl}. Attaching auth headers.`
+    //     );
+    //     res.status(500);
+    //     res.setHeader(config.auth.invalidHeaderField, expHeader);
+    //     res.json({ error: "Invalid authentication tokens" });
+    //   }
+    // }
 
-    // Prevent gateway from setting anon-id cookies. That's not needed in the UI anymore
-    const setCookie = null ?? clientRes.headers["set-cookie"];
-    if (setCookie == null || !setCookie.length) return;
-    const allowedSetCookie = [];
-    for (const cookie of setCookie) {
-      if (!cookie.startsWith(config.auth.cookiesAnonymousKey))
-        allowedSetCookie.push(cookie);
-    }
-    if (!allowedSetCookie.length) clientRes.headers["set-cookie"] = null;
-    else clientRes.headers["set-cookie"] = allowedSetCookie;
+    // // Prevent gateway from setting anon-id cookies. That's not needed in the UI anymore
+    // const setCookie = null ?? clientRes.headers["set-cookie"];
+    // if (setCookie == null || !setCookie.length) return;
+    // const allowedSetCookie = [];
+    // for (const cookie of setCookie) {
+    //   if (!cookie.startsWith(config.auth.cookiesAnonymousKey))
+    //     allowedSetCookie.push(cookie);
+    // }
+    // if (!allowedSetCookie.length) clientRes.headers["set-cookie"] = null;
+    // else clientRes.headers["set-cookie"] = allowedSetCookie;
   },
 });
 
 function registerApiRoutes(
   app: express.Application,
   prefix: string,
-  authenticator: Authenticator,
+  // authenticator: Authenticator,
   storage: Storage
 ): void {
   // Locally defined APIs
@@ -156,9 +157,9 @@ function registerApiRoutes(
 
   app.get(
     prefix + "/last-projects/:length",
-    renkuAuth(authenticator),
+    // renkuAuth(authenticator),
     async (req, res) => {
-      const token = req.headers[config.auth.authHeaderField] as string;
+      const token = ""; //req.headers[config.auth.authHeaderField] as string;
       if (!token) {
         res.json({ error: "User not authenticated" });
         return;
@@ -176,9 +177,9 @@ function registerApiRoutes(
 
   app.get(
     prefix + "/last-searches/:length",
-    renkuAuth(authenticator),
+    // renkuAuth(authenticator),
     async (req, res) => {
-      const token = req.headers[config.auth.authHeaderField] as string;
+      const token = ""; // req.headers[config.auth.authHeaderField] as string;
       if (!token) {
         res.json({ error: "User not authenticated" });
         return;
@@ -212,26 +213,26 @@ function registerApiRoutes(
    */
   app.get(
     prefix + "/projects/:projectName",
-    [renkuAuth(authenticator), lastProjectsMiddleware(storage)],
+    [/*renkuAuth(authenticator),*/ lastProjectsMiddleware(storage)],
     proxyMiddleware
   );
   app.post(
     prefix + "/renku/cache.files_upload",
-    [renkuAuth(authenticator), uploadFileMiddleware],
+    [/*renkuAuth(authenticator),*/ uploadFileMiddleware],
     proxyMiddleware
   );
   app.get(
     prefix + "/kg/entities",
-    [renkuAuth(authenticator), lastSearchQueriesMiddleware(storage)],
+    [/*renkuAuth(authenticator),*/ lastSearchQueriesMiddleware(storage)],
     proxyMiddleware
   );
-  app.delete(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  app.get(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  app.head(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  app.options(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  app.patch(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  app.post(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  app.put(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  // app.delete(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  // app.get(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  // app.head(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  // app.options(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  // app.patch(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  // app.post(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  // app.put(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
 }
 
 export default registerApiRoutes;
