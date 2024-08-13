@@ -26,7 +26,21 @@ interface SessionConfig {
   targetServer: string;
 }
 
+interface FaviconSet {
+  ico: string;
+  png_32x: string;
+  png_16x: string;
+  svg: string;
+}
+
+export type FaviconStatus =
+  | "general"
+  | "running"
+  | "waiting"
+  | "error"
+  | "pause";
 interface Display {
+  favicon: FaviconStatus;
   modals: {
     ssh: {
       show: boolean;
@@ -41,4 +55,4 @@ interface Display {
   };
 }
 
-export type { Display, ProjectConfig, SessionConfig };
+export type { Display, FaviconSet, ProjectConfig, SessionConfig };
