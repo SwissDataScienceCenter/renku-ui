@@ -22,7 +22,7 @@ import { JWT } from "jose";
 
 import config from "../config";
 import logger from "../logger";
-import { RequestWithUser } from "./authentication.types";
+import { LoggedInUser, RequestWithUser } from "./authentication.types";
 
 export class Authenticator {
   authServerUrl: string;
@@ -87,8 +87,12 @@ export class Authenticator {
       try {
         const keystore = await issuer.keystore();
         const { payload } = JWT.verify(authToken, keystore, { complete: true });
-        logger.error(`Auth: ${payload} ${JSON.stringify(payload)}`);
-        //   const userId = payload.sub
+        const userId = (payload as { sub?: string })["sub"];
+        if (userId) {
+          const user: LoggedInUser = { id: userId, renkuAuthToken: authToken };
+          req.user = user;
+          logger.info(`Authentication: found user ${req.user.id}`);
+        }
         return next();
       } catch (error) {
         logger.error("Authentication failed:");

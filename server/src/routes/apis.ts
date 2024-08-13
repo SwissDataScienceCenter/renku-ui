@@ -32,6 +32,7 @@ import uploadFileMiddleware from "../utils/middlewares/uploadFileMiddleware";
 import { Storage } from "../storage";
 import { CheckURLResponse } from "./apis.interfaces";
 import { getUserData } from "./helperFunctions";
+import { RequestWithUser } from "src/auth2/authentication.types";
 
 const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
@@ -157,17 +158,17 @@ function registerApiRoutes(
 
   app.get(
     prefix + "/last-projects/:length",
-    // renkuAuth(authenticator),
-    async (req, res) => {
-      const token = ""; //req.headers[config.auth.authHeaderField] as string;
-      if (!token) {
+    async (req: RequestWithUser, res) => {
+      const user = req.user;
+      if (!user.id) {
         res.json({ error: "User not authenticated" });
         return;
       }
+
       const length = parseInt(req.params["length"]) || 0;
       const data = await getUserData(
         config.data.projectsStoragePrefix,
-        token,
+        user.id,
         storage,
         length
       );
