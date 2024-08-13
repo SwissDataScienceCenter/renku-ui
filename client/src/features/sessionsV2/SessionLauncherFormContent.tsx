@@ -487,35 +487,6 @@ export function ExistingEnvFormContent({
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <Controller
-        control={control}
-        name="environment_id"
-        render={({ field }) => (
-          <>
-            <ListGroup>
-              {environments.map((environment) => (
-                <SessionEnvironmentItem
-                  key={environment.id}
-                  environment={environment}
-                  field={field}
-                  touchedFields={touchedFields}
-                  errors={errors}
-                  control={control}
-                />
-              ))}
-            </ListGroup>
-            <Input
-              className={cx(errors.environment_id && "is-invalid")}
-              id="addSessionLauncherEnvironmentId"
-              type="hidden"
-              {...field}
-            />
-            <div className="invalid-feedback">Please choose an environment</div>
-          </>
-        )}
-        rules={{ required: true }}
-      />
-
       <div>
         <Label for="resource-class-selector">Resource class</Label>
         <Controller
@@ -535,6 +506,42 @@ export function ExistingEnvFormContent({
                   Please select a resource class.
                 </p>
               )}
+            </>
+          )}
+          rules={{ required: true }}
+        />
+      </div>
+
+      <div>
+        <Label className="form-label" for="addSessionLauncherEnvironmentId">
+          Environment
+        </Label>
+        <Controller
+          control={control}
+          name="environment_id"
+          render={({ field }) => (
+            <>
+              <ListGroup>
+                {environments.map((environment) => (
+                  <SessionEnvironmentItem
+                    key={environment.id}
+                    environment={environment}
+                    field={field}
+                    touchedFields={touchedFields}
+                    errors={errors}
+                    control={control}
+                  />
+                ))}
+              </ListGroup>
+              <Input
+                className={cx(errors.environment_id && "is-invalid")}
+                id="addSessionLauncherEnvironmentId"
+                type="hidden"
+                {...field}
+              />
+              <div className="invalid-feedback">
+                Please choose an environment
+              </div>
             </>
           )}
           rules={{ required: true }}
