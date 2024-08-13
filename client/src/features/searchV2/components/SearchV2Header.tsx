@@ -62,7 +62,7 @@ export default function SearchV2Header() {
           {total ? total : "No"} {total && total > 1 ? "results" : "result"}
         </>
       )}
-      {query != null && (
+      {query && (
         <span>
           {" "}
           for <span className="fw-bold">{`"${query}"`}</span>

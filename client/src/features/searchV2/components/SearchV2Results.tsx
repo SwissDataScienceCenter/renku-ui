@@ -111,9 +111,15 @@ function SearchV2ResultsContent() {
     return (
       <>
         <p>
-          No results for <span className="fw-bold">{`"${query}"`}</span>.
+          No results
+          {query && (
+            <>
+              {" "}
+              for <span className="fw-bold">{`"${query}"`}</span>
+            </>
+          )}
         </p>
-        <p>You can try another search, or change some filters.</p>
+        {query && <p>You can try another search, or change some filters.</p>}
       </>
     );
   }
