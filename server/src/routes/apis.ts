@@ -16,23 +16,23 @@
  * limitations under the License.
  */
 
-import express from "express";
 import fetch from "cross-fetch";
+import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
 import config from "../config";
 import logger from "../logger";
 // import { Authenticator } from "../authentication";
 // import { renkuAuth } from "../authentication/middleware";
+import type { RequestWithUser } from "../auth2/authentication.types";
+import { Storage } from "../storage";
 import { getCookieValueByName, serializeCookie } from "../utils";
-import { validateCSP } from "../utils/url";
 import { lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
 import { lastSearchQueriesMiddleware } from "../utils/middlewares/lastSearchQueriesMiddleware";
 import uploadFileMiddleware from "../utils/middlewares/uploadFileMiddleware";
-import { Storage } from "../storage";
+import { validateCSP } from "../utils/url";
 import { CheckURLResponse } from "./apis.interfaces";
 import { getUserData } from "./helperFunctions";
-import { RequestWithUser } from "src/auth2/authentication.types";
 
 const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
@@ -160,7 +160,7 @@ function registerApiRoutes(
     prefix + "/last-projects/:length",
     async (req: RequestWithUser, res) => {
       const user = req.user;
-      if (!user.id) {
+      if (!user?.id) {
         res.json({ error: "User not authenticated" });
         return;
       }

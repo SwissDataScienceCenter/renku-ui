@@ -96,6 +96,8 @@ authPromise.catch(() => {
 // register routes
 routes.register(app, prefix, storage);
 
+app.use(errorHandlerMiddleware);
+
 // start the Express server
 const server = app.listen(port, () => {
   logger.info(`Express server started at http://localhost:${port}`);
