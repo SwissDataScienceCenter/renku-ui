@@ -77,6 +77,20 @@ const proxyMiddleware = createProxyMiddleware({
     if (newCookies.length > 0) {
       clientReq.setHeader("cookie", newCookies.join("; "));
     }
+
+    // Swap headers for the knowledge graph API
+    const gitlabAccessToken = clientReq.getHeader("Gitlab-Access-Token");
+    if (gitlabAccessToken) {
+      clientReq.setHeader(
+        config.auth.authHeaderField,
+        `${config.auth.authHeaderPrefix}${gitlabAccessToken}`
+      );
+    }
+    logger.info(
+      `Got gitlab access token: ${clientReq.getHeader(
+        config.auth.authHeaderField
+      )}`
+    );
   },
   onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
     // Add CORS for sentry
