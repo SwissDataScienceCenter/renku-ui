@@ -42,6 +42,9 @@ const lastSearchQueriesMiddleware =
         config.auth.authHeaderField
       ] = `${config.auth.authHeaderPrefix}${gitlabAccessToken}`;
     }
+    logger.info(
+      `Got gitlab access token: ${req.header(config.auth.authHeaderField)}`
+    );
 
     if (req.query?.doNotTrack !== "true" && phrase) {
       res.on("finish", function () {
