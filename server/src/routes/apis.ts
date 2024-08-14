@@ -239,6 +239,13 @@ function registerApiRoutes(
     [lastSearchQueriesMiddleware(storage)],
     proxyMiddleware
   );
+  app.delete(prefix + "/*", proxyMiddleware);
+  app.get(prefix + "/*", proxyMiddleware);
+  app.head(prefix + "/*", proxyMiddleware);
+  app.options(prefix + "/*", proxyMiddleware);
+  app.patch(prefix + "/*", proxyMiddleware);
+  app.post(prefix + "/*", proxyMiddleware);
+  app.put(prefix + "/*", proxyMiddleware);
 }
 
 export default registerApiRoutes;
