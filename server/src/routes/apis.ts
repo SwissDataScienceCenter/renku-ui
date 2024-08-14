@@ -79,12 +79,17 @@ const proxyMiddleware = createProxyMiddleware({
     }
 
     // Swap headers for the knowledge graph API
+    const renkuAccessToken = clientReq.getHeader(config.auth.authHeaderField);
     const gitlabAccessToken = clientReq.getHeader("Gitlab-Access-Token");
+    logger.info(`Got renku access token: ${renkuAccessToken}`);
+    logger.info(`Got gitlab access token: ${gitlabAccessToken}`);
     if (gitlabAccessToken) {
       clientReq.setHeader(
         config.auth.authHeaderField,
         `${config.auth.authHeaderPrefix}${gitlabAccessToken}`
       );
+    } else {
+      clientReq.removeHeader(config.auth.authHeaderField);
     }
     logger.info(
       `Got gitlab access token: ${clientReq.getHeader(
