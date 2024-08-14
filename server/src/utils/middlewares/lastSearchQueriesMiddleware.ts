@@ -35,6 +35,14 @@ const lastSearchQueriesMiddleware =
     const query = req.query["query"];
     const phrase = query ? (query as string).trim() : "";
 
+    // Swap headers for the knowledge graph API
+    const gitlabAccessToken = req.header("Gitlab-Access-Token");
+    if (gitlabAccessToken) {
+      req.headers[
+        config.auth.authHeaderField
+      ] = `${config.auth.authHeaderPrefix}${gitlabAccessToken}`;
+    }
+
     if (req.query?.doNotTrack !== "true" && phrase) {
       res.on("finish", function () {
         if (res.statusCode >= 400 || !user?.id) {
