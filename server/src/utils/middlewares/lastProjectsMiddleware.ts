@@ -19,7 +19,7 @@
 import * as Sentry from "@sentry/node";
 import express from "express";
 
-// import { getUserIdFromToken } from "../../authentication";
+import type { RequestWithUser } from "../../auth2/authentication.types";
 import config from "../../config";
 import logger from "../../logger";
 import { Storage, TypeData } from "../../storage";
@@ -31,11 +31,11 @@ function projectNameIsId(projectName: string): boolean {
 const lastProjectsMiddleware =
   (storage: Storage) =>
   (
-    req: express.Request,
+    req: RequestWithUser,
     res: express.Response,
     next: express.NextFunction
   ): void => {
-    const token = ""; //req.headers[config.auth.authHeaderField] as string;
+    const user = req.user;
     const projectName = req.params["projectName"];
     // Ignore projects that are ids -- these will be re-accessed as namespace/name anyway
     if (projectNameIsId(projectName)) {
@@ -45,17 +45,16 @@ const lastProjectsMiddleware =
 
     if (req.query?.doNotTrack !== "true") {
       res.on("finish", function () {
-        if (res.statusCode >= 400 || !token) {
+        if (res.statusCode >= 400 || !user?.id) {
           next();
           return;
         }
 
-        const userId = ""; //getUserIdFromToken(token);
         const normalizedProjectName = projectName.toLowerCase();
         // Save as ordered collection
         storage
           .save(
-            `${config.data.projectsStoragePrefix}${userId}`,
+            `${config.data.projectsStoragePrefix}${user.id}`,
             normalizedProjectName,
             {
               type: TypeData.Collections,
@@ -65,7 +64,7 @@ const lastProjectsMiddleware =
           )
           .then((value) => {
             if (!value) {
-              const errorMessage = `Error saving project ${projectName} for user ${userId}`;
+              const errorMessage = `Error saving project ${projectName} for user ${user.id}`;
               logger.error(errorMessage);
               Sentry.captureMessage(errorMessage);
             }

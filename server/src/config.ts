@@ -92,7 +92,7 @@ const DATA = {
   searchStoragePrefix: StoragePrefix.LAST_SEARCHES,
   searchDefaultLength: 10,
   projectsDefaultLength: 20,
-  userSessionsPrefix: "SESSIONS_",
+  // userSessionsPrefix: "SESSIONS_",
 };
 
 const WEBSOCKET = {

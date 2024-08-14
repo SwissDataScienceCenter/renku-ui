@@ -19,7 +19,7 @@
 import * as Sentry from "@sentry/node";
 import express from "express";
 
-// import { getUserIdFromToken } from "../../authentication";
+import type { RequestWithUser } from "../../auth2/authentication.types";
 import config from "../../config";
 import logger from "../../logger";
 import { Storage, TypeData } from "../../storage";
@@ -27,30 +27,29 @@ import { Storage, TypeData } from "../../storage";
 const lastSearchQueriesMiddleware =
   (storage: Storage) =>
   (
-    req: express.Request,
+    req: RequestWithUser,
     res: express.Response,
     next: express.NextFunction
   ): void => {
-    const token = ""; //req.headers[config.auth.authHeaderField] as string;
+    const user = req.user;
     const query = req.query["query"];
     const phrase = query ? (query as string).trim() : "";
 
     if (req.query?.doNotTrack !== "true" && phrase) {
       res.on("finish", function () {
-        if (res.statusCode >= 400 || !token) {
+        if (res.statusCode >= 400 || !user?.id) {
           next();
           return;
         }
-        const userId = ""; //getUserIdFromToken(token);
         storage
-          .save(`${config.data.searchStoragePrefix}${userId}`, phrase, {
+          .save(`${config.data.searchStoragePrefix}${user.id}`, phrase, {
             type: TypeData.Collections,
             limit: config.data.searchDefaultLength,
             score: Date.now(),
           })
           .then((value) => {
             if (!value) {
-              const errorMessage = `Error saving search query for user ${userId}`;
+              const errorMessage = `Error saving search query for user ${user.id}`;
               logger.error(errorMessage);
               Sentry.captureMessage(errorMessage);
             }

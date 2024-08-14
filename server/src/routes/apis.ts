@@ -20,17 +20,16 @@ import fetch from "cross-fetch";
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
+import type { RequestWithUser } from "../auth2/authentication.types";
 import config from "../config";
 import logger from "../logger";
-// import { Authenticator } from "../authentication";
-// import { renkuAuth } from "../authentication/middleware";
-import type { RequestWithUser } from "../auth2/authentication.types";
 import { Storage } from "../storage";
 import { getCookieValueByName, serializeCookie } from "../utils";
 import { lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
 import { lastSearchQueriesMiddleware } from "../utils/middlewares/lastSearchQueriesMiddleware";
 import uploadFileMiddleware from "../utils/middlewares/uploadFileMiddleware";
 import { validateCSP } from "../utils/url";
+
 import { CheckURLResponse } from "./apis.interfaces";
 import { getUserData } from "./helperFunctions";
 
@@ -114,7 +113,6 @@ const proxyMiddleware = createProxyMiddleware({
 function registerApiRoutes(
   app: express.Application,
   prefix: string,
-  // authenticator: Authenticator,
   storage: Storage
 ): void {
   // Locally defined APIs
@@ -178,17 +176,17 @@ function registerApiRoutes(
 
   app.get(
     prefix + "/last-searches/:length",
-    // renkuAuth(authenticator),
-    async (req, res) => {
-      const token = ""; // req.headers[config.auth.authHeaderField] as string;
-      if (!token) {
+    async (req: RequestWithUser, res) => {
+      const user = req.user;
+      if (!user?.id) {
         res.json({ error: "User not authenticated" });
         return;
       }
+
       const length = parseInt(req.params["length"]) || 0;
       const data = await getUserData(
         config.data.searchStoragePrefix,
-        token,
+        user.id,
         storage,
         length
       );
@@ -214,26 +212,19 @@ function registerApiRoutes(
    */
   app.get(
     prefix + "/projects/:projectName",
-    [/*renkuAuth(authenticator),*/ lastProjectsMiddleware(storage)],
+    [lastProjectsMiddleware(storage)],
     proxyMiddleware
   );
   app.post(
     prefix + "/renku/cache.files_upload",
-    [/*renkuAuth(authenticator),*/ uploadFileMiddleware],
+    [uploadFileMiddleware],
     proxyMiddleware
   );
   app.get(
     prefix + "/kg/entities",
-    [/*renkuAuth(authenticator),*/ lastSearchQueriesMiddleware(storage)],
+    [lastSearchQueriesMiddleware(storage)],
     proxyMiddleware
   );
-  // app.delete(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  // app.get(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  // app.head(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  // app.options(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  // app.patch(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  // app.post(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
-  // app.put(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
 }
 
 export default registerApiRoutes;
