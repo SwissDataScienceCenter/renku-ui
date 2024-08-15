@@ -22,7 +22,13 @@ import { JWT } from "jose";
 
 import config from "../config";
 import logger from "../logger";
-import { LoggedInUser, RequestWithUser } from "./authentication.types";
+import {
+  LoggedInUser,
+  RequestWithUser,
+  User,
+  AnonymousUser,
+} from "./authentication.types";
+import { getCookieValueByName } from "src/utils";
 
 export class Authenticator {
   authServerUrl: string;
@@ -47,15 +53,56 @@ export class Authenticator {
     return true;
   }
 
+  async authenticate({
+    authHeader,
+    sessionId = "",
+  }: {
+    authHeader: string;
+    sessionId?: string;
+  }): Promise<User> {
+    const anonUser: AnonymousUser = {
+      id: "",
+      anonymousId: sessionId ?? "",
+    };
+
+    const authToken = authHeader
+      .toLowerCase()
+      .startsWith(config.auth.authHeaderPrefix)
+      ? authHeader.slice(config.auth.authHeaderPrefix.length).trim()
+      : authHeader.trim();
+
+    if (!authToken) {
+      return anonUser;
+    }
+
+    try {
+      const issuer = this.issuer;
+      if (issuer == null) {
+        logger.error("The authenticator is not ready.");
+        return anonUser;
+      }
+
+      const keystore = await issuer.keystore();
+      const { payload } = JWT.verify(authToken, keystore, { complete: true });
+      const userId = (payload as { sub?: string })["sub"];
+      if (userId) {
+        const user: LoggedInUser = { id: userId, renkuAuthToken: authToken };
+        logger.debug(`Authentication: authenticated user ${user.id}`);
+        return user;
+      }
+    } catch (error) {
+      logger.error("Authentication failed:");
+      logger.error(error);
+    }
+    return anonUser;
+  }
+
   middleware(): (
     req: RequestWithUser,
     res: express.Response,
     next: express.NextFunction
   ) => Promise<void> {
-    const that = this;
-    function getIssuer() {
-      return that.issuer;
-    }
+    const authenticate: typeof this.authenticate = this.authenticate.bind(this);
 
     async function authenticationMiddleware(
       req: RequestWithUser,
@@ -67,38 +114,12 @@ export class Authenticator {
         return next();
       }
 
-      const issuer = getIssuer();
-      if (issuer == null) {
-        logger.error("The authenticator is not ready.");
-        return next();
-      }
-
       const authHeader = req.header(config.auth.authHeaderField);
-      const authToken = authHeader
-        .toLowerCase()
-        .startsWith(config.auth.authHeaderPrefix)
-        ? authHeader.slice(config.auth.authHeaderPrefix.length).trim()
-        : authHeader.trim();
-
-      if (!authToken) {
-        return next();
-      }
-
-      try {
-        const keystore = await issuer.keystore();
-        const { payload } = JWT.verify(authToken, keystore, { complete: true });
-        const userId = (payload as { sub?: string })["sub"];
-        if (userId) {
-          const user: LoggedInUser = { id: userId, renkuAuthToken: authToken };
-          req.user = user;
-          logger.info(`Authentication: found user ${req.user.id}`);
-        }
-        return next();
-      } catch (error) {
-        logger.error("Authentication failed:");
-        logger.error(error);
-        return next();
-      }
+      const sessionId =
+        getCookieValueByName(req.header("cookie"), config.auth.cookiesKey) ??
+        "";
+      req.user = await authenticate({ authHeader, sessionId });
+      return next();
     }
     return authenticationMiddleware;
   }

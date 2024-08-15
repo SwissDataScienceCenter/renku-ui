@@ -46,14 +46,14 @@ function registerInternalRoutes(
 
     if (storageFailures >= 5) {
       logger.error(
-        `Authentication storage failed ${storageFailures} times in a row. Sending a kill signal to k8s.`
+        `Storage failed ${storageFailures} times in a row. Sending a kill signal to k8s.`
       );
-      res.status(503).send("Authentication storage failed.");
+      res.status(503).send("Storage failed.");
       return;
     }
     if (storageFailures >= 1)
       logger.warn(
-        `Authentication storage is failing. This is the attempt #${storageFailures}`
+        `Storage is failing. This is the attempt #${storageFailures}`
       );
 
     res.send("live");

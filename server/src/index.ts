@@ -33,7 +33,7 @@ import {
   initializeSentry,
 } from "./utils/sentry/sentry";
 import { configureWebsocket } from "./websocket";
-import { Authenticator } from "./auth2/middleware";
+import { Authenticator } from "./auth2/authenticator";
 
 const app = express();
 const port = config.server.port;
@@ -99,7 +99,7 @@ function createWsServer() {
   addWebSocketServerContext(wsServer);
   authPromise.then(() => {
     logger.info("Configuring WebSocket server");
-    configureWebsocket(wsServer, storage, apiClient);
+    configureWebsocket(wsServer, authenticator, storage, apiClient);
   });
   return wsServer;
 }

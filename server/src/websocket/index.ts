@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-import ws from "ws";
 import * as SentryLib from "@sentry/node";
+import ws from "ws";
 
 import APIClient from "../api-client";
-// import { Authenticator } from "../authentication";
-// import { wsRenkuAuth } from "../authentication/middleware";
+import { Authenticator } from "../auth2/authenticator";
 import config from "../config";
 import logger from "../logger";
 import { Storage } from "../storage";
 import { getCookieValueByName } from "../utils";
 import { errorHandler } from "../utils/errorHandler";
+
 import { WsClientMessage, WsMessage, checkWsClientMessage } from "./WsMessages";
 import {
   handlerRequestActivationKgStatus,
@@ -40,7 +40,6 @@ import {
   handlerRequestSessionStatus,
   heartbeatRequestSessionStatus,
 } from "./handlers/sessions";
-import type { RequestWithUser } from "../auth2/authentication.types";
 
 // *** Channels ***
 // No need to store data in Redis since it's used only locally. We can modify this if necessary.
@@ -131,7 +130,7 @@ async function channelLongLoop(
   }
 
   // checking authentication
-  const timeoutLength = (config.websocket.longIntervalSec as number) * 1000;
+  const timeoutLength = (config.websocket.longIntervalSec as number) * 1_000;
   if (!storage.ready) {
     logger.info(
       `${infoPrefix} Storage not ready yet, skipping to the next loop`
@@ -197,7 +196,7 @@ async function channelShortLoop(
   }
 
   // checking authentication
-  const timeoutLength = (config.websocket.shortIntervalSec as number) * 1000;
+  const timeoutLength = (config.websocket.shortIntervalSec as number) * 1_000;
   if (!storage.ready) {
     logger.info(
       `${infoPrefix} Storage not ready yet, skipping to the next loop`
@@ -252,6 +251,7 @@ async function channelShortLoop(
  */
 function configureWebsocket(
   server: ws.Server,
+  authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ): void {
@@ -316,8 +316,8 @@ function configureWebsocket(
         // add a tiny buffer, in case authentication fails and channel is cleaned up -- no need to overlap
         setTimeout(() => {
           channelLongLoop(sessionId, storage, apiClient);
-        }, 1000);
-      }, config.websocket.delayStartSec * 1000);
+        }, 1_000);
+      }, config.websocket.delayStartSec * 1_000);
     }
 
     // event: close the socket
@@ -404,9 +404,12 @@ function configureWebsocket(
     });
 
     // check auth
-    const user = (request as RequestWithUser).user;
+    const authHeader = request.headers.authorization ?? "";
+    const user = await authenticator.authenticate({ authHeader, sessionId });
     logger.info(`Got user: ${user}`);
-    logger.info(`Got auth header: ${request.headers.authorization}`);
+    // const user = (request as RequestWithUser).user;
+    // logger.info(`Got user: ${user}`);
+    // logger.info(`Got auth header: ${request.headers.authorization}`);
 
     // const head = await getAuthHeaders(authenticator, sessionId);
     // if (head instanceof WsMessage && head.data?.expired) {
