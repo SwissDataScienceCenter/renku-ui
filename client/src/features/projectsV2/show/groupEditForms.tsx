@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+import { capitalize } from "lodash-es";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, PlusLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
@@ -31,9 +32,10 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { capitalize } from "lodash-es";
 
+import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import { Loader } from "../../../components/Loader";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type {
   GroupMemberResponse,
   GroupPatchRequest,
@@ -49,8 +51,6 @@ import AddGroupMemberModal from "../fields/AddGroupMemberModal";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
-import { generatePath, useNavigate } from "react-router-dom-v5-compat";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 type GroupMetadata = Omit<GroupPatchRequest, "repositories">;
 
@@ -236,14 +236,14 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
   if (data == null)
     return (
       <>
-        <h4>Project Members</h4>
+        <h4>Group Members</h4>
         <div className="mb-3">Could not load members</div>
       </>
     );
   return (
     <>
       <div className={cx("d-flex", "gap-2", "mb-3")}>
-        <h4>Project Members</h4>
+        <h4>Group Members</h4>
         <div>
           <Button
             color="outline-primary"
@@ -268,8 +268,9 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
                 )}
               >
                 <p className={cx("d-flex", "mb-0", "gap-2")}>
-                  <span className="fw-bold">{d.email ?? d.id}</span>
-                  <span>{capitalize(d.role)}</span>
+                  <span>{`${d.first_name} ${d.last_name}`}</span>
+                  <span className="fst-italic">{`@${d.namespace}`}</span>
+                  <span className="fw-bold">{capitalize(d.role)}</span>
                 </p>
                 <div>
                   <Button

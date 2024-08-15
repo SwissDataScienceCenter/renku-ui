@@ -17,13 +17,13 @@
  */
 
 import cx from "classnames";
-import React, { useCallback, useState, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
-  People,
   PencilSquare,
-  Trash,
-  PlusLg,
+  People,
   PersonGear,
+  PlusLg,
+  Trash,
 } from "react-bootstrap-icons";
 import {
   Button,
@@ -52,7 +52,10 @@ import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMember
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 
 import MembershipGuard from "../../utils/MembershipGuard.tsx";
-import { toSortedMembers } from "../../utils/roleUtils.ts";
+import {
+  getMemberNameToDisplay,
+  toSortedMembers,
+} from "../../utils/roleUtils.ts";
 
 type MemberActionMenuProps = Omit<
   ProjectPageSettingsMembersListItemProps,
@@ -165,11 +168,15 @@ function ProjectPageSettingsMembersListItem({
   onRemove,
   onEdit,
 }: ProjectPageSettingsMembersListItemProps) {
+  const nameToDisplay = getMemberNameToDisplay(member);
   return (
     <ListGroupItem>
       <Row className="g-2">
         <Col className="align-content-around" xs={12} md="auto">
-          {member.email ?? member.id}{" "}
+          {nameToDisplay}{" "}
+          <span className="fst-italic">
+            {member.namespace ? `@${member.namespace}` : ""}
+          </span>{" "}
           <span className="fw-bold">({member.role})</span>
         </Col>
         <Col

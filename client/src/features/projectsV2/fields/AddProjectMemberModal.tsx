@@ -18,10 +18,10 @@
 
 import cx from "classnames";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-
+import { SingleValue } from "react-select";
 import {
   Button,
   Form,
@@ -32,18 +32,15 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-
-import type { UserWithId } from "../../user/dataServicesUser.api";
-
 import type {
   ProjectMemberPatchRequest,
   ProjectMemberResponse,
 } from "../api/projectV2.api";
 import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
 
-import AddEntityMemberEmailLookupForm from "./AddEntityMemberLookupForm";
+import { User } from "../../searchV2/api/searchV2Api.api";
+import { UserControl } from "./UserSelector";
 
 interface AddProjectMemberModalProps {
   isOpen: boolean;
@@ -52,27 +49,26 @@ interface AddProjectMemberModalProps {
   toggle: () => void;
 }
 
-interface ProjectMemberForAdd extends ProjectMemberResponse {
-  email: string;
-}
+interface ProjectMemberForAdd extends ProjectMemberResponse {}
 
 interface AddProjectMemberAccessFormProps
   extends Pick<AddProjectMemberModalProps, "members" | "projectId" | "toggle"> {
-  user: UserWithId;
+  user?: User;
 }
 function AddProjectMemberAccessForm({
   members,
   projectId,
   toggle,
-  user,
 }: AddProjectMemberAccessFormProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [patchProjectMembers, result] =
     usePatchProjectsByProjectIdMembersMutation();
-  const { control, handleSubmit } = useForm<ProjectMemberForAdd>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProjectMemberForAdd>({
     defaultValues: {
-      id: user.id,
-      email: user.email,
+      id: "",
       role: "viewer",
     },
   });
@@ -109,10 +105,36 @@ function AddProjectMemberAccessForm({
           onSubmit={handleSubmit(onSubmit)}
         >
           {result.error && <RtkErrorAlert error={result.error} />}
+          <div className="mb-3">
+            <Label className="form-label" for="addProjectMemberEmail">
+              User
+            </Label>
+            <Controller
+              control={control}
+              name="id"
+              render={({ field }) => {
+                const fields: Partial<typeof field> = { ...field };
+                delete fields?.ref;
+                return (
+                  <UserControl
+                    {...fields}
+                    className={cx(errors.id && "is-invalid")}
+                    data-cy="add-project-member"
+                    id="addProjectMember"
+                    onChange={(newValue: SingleValue<User>) =>
+                      field.onChange(newValue?.id)
+                    }
+                  />
+                );
+              }}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">Please select a user to add</div>
+          </div>
           <div
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
-            <Label>{user.email}</Label>
+            <Label>Role</Label>
             <Controller
               control={control}
               name="role"
@@ -155,12 +177,6 @@ export default function AddProjectMemberModal({
   projectId,
   toggle,
 }: AddProjectMemberModalProps) {
-  const [newMember, setNewMember] = useState<UserWithId | undefined>(undefined);
-  const toggleVisible = useCallback(() => {
-    setNewMember(undefined);
-    toggle();
-  }, [setNewMember, toggle]);
-
   return (
     <Modal
       backdrop="static"
@@ -171,20 +187,11 @@ export default function AddProjectMemberModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle}>Add a project member</ModalHeader>
-      {newMember == null && (
-        <AddEntityMemberEmailLookupForm
-          setNewMember={setNewMember}
-          toggle={toggleVisible}
-        />
-      )}
-      {newMember != null && (
-        <AddProjectMemberAccessForm
-          members={members}
-          projectId={projectId}
-          toggle={toggleVisible}
-          user={newMember}
-        />
-      )}
+      <AddProjectMemberAccessForm
+        members={members}
+        projectId={projectId}
+        toggle={toggle}
+      />
     </Modal>
   );
 }

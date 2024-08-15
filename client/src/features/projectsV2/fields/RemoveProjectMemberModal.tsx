@@ -31,6 +31,7 @@ import {
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { getMemberNameToDisplay } from "../../ProjectPageV2/utils/roleUtils";
 import type { ProjectMemberResponse } from "../api/projectV2.api";
 import { useDeleteProjectsByProjectIdMembersAndMemberIdMutation } from "../api/projectV2.enhanced-api";
 
@@ -61,7 +62,6 @@ function RemoveProjectMemberAccessForm({
   const { handleSubmit } = useForm<ProjectMemberForRemove>({
     defaultValues: {
       id: member.id,
-      email: member.email,
     },
   });
 
@@ -71,6 +71,8 @@ function RemoveProjectMemberAccessForm({
     }
     toggle();
   }, [result.isSuccess, toggle]);
+
+  const nameToDisplay = getMemberNameToDisplay(member);
 
   return (
     <>
@@ -85,7 +87,11 @@ function RemoveProjectMemberAccessForm({
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
             <Label>
-              Remove <b>{member.email ?? member.id}</b> from project?
+              Remove <b>{nameToDisplay}</b>{" "}
+              <span className="fst-italic">
+                {member.namespace ? `@${member.namespace}` : ""}
+              </span>{" "}
+              from project?
             </Label>
           </div>
         </Form>

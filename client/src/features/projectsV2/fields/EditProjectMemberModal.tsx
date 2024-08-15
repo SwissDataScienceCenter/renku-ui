@@ -35,6 +35,7 @@ import {
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
+import { getMemberNameToDisplay } from "../../ProjectPageV2/utils/roleUtils";
 import type {
   ProjectMemberPatchRequest,
   ProjectMemberResponse,
@@ -70,7 +71,6 @@ function EditProjectMemberAccessForm({
   const { control, handleSubmit } = useForm<ProjectMemberForEdit>({
     defaultValues: {
       id: member.id,
-      email: member.email,
       role: member.role,
     },
   });
@@ -101,6 +101,8 @@ function EditProjectMemberAccessForm({
     [patchProjectMembers, projectId, members, member]
   );
 
+  const userName = getMemberNameToDisplay(member);
+
   return (
     <>
       <ModalBody className="pb-0">
@@ -109,7 +111,12 @@ function EditProjectMemberAccessForm({
           <div
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
-            <Label>{member.email ?? member.id}</Label>
+            <Label>
+              {userName}{" "}
+              <span className="fst-italic">
+                {member.namespace ? `@${member.namespace}` : ""}
+              </span>
+            </Label>
             <Controller
               control={control}
               name="role"
