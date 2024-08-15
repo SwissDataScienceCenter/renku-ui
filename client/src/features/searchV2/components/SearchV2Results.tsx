@@ -185,21 +185,18 @@ function SearchV2CardTitle({
       </div>
       {entityType && (
         <div className={cx("mb-auto", "ms-auto")}>
-          <SearchV2CardEntityPill entityType={entityType} size="sm" />
+          <EntityPill entityType={entityType} size="sm" />
         </div>
       )}
     </CardHeader>
   );
 }
 
-interface SearchV2CardEntityPillProps {
+interface EntityPillProps {
   entityType: SearchEntity["type"];
   size?: "sm" | "md" | "lg" | "xl" | "auto";
 }
-function SearchV2CardEntityPill({
-  entityType,
-  size = "auto",
-}: SearchV2CardEntityPillProps) {
+export function EntityPill({ entityType, size = "auto" }: EntityPillProps) {
   const IconComponent: Icon =
     entityType === "Project"
       ? Folder2Open
