@@ -26,9 +26,9 @@ import { Component } from "react";
 import { Alert } from "reactstrap";
 
 import {
-  CheckCircleFill,
-  ExclamationTriangleFill,
-  InfoCircleFill,
+  CheckCircle,
+  ExclamationTriangle,
+  InfoCircle,
 } from "react-bootstrap-icons";
 
 /**
@@ -84,11 +84,12 @@ class RenkuAlert extends Component {
   }
 
   getIcon() {
+    const iconSize = 32;
     const icon = {
-      danger: <ExclamationTriangleFill className={cx("bi", "text-danger")} />,
-      info: <InfoCircleFill className={cx("bi", "text-info")} />,
-      warning: <ExclamationTriangleFill className={cx("bi", "text-warning")} />,
-      success: <CheckCircleFill className={cx("bi", "text-success")} />,
+      danger: <ExclamationTriangle size={iconSize} />,
+      info: <InfoCircle size={iconSize} />,
+      warning: <ExclamationTriangle size={iconSize} />,
+      success: <CheckCircle size={iconSize} />,
     }[this.props.color];
 
     return icon;
@@ -108,7 +109,7 @@ class RenkuAlert extends Component {
         data-cy={this.props.dataCy}
       >
         <div className={cx("d-flex", "gap-3")}>
-          <div className={cx("fs-1", "my-auto")}>{alertIcon}</div>
+          <div>{alertIcon}</div>
           <div className={cx("my-auto", "overflow-auto", "w-100")}>
             {this.props.children}
           </div>
