@@ -237,7 +237,7 @@ function SearchV2FilterOption({
       <label
         className={cx(
           visualization === "accordion"
-            ? ["btn", "btn-outline-primary", "text-nowrap", "w-100"]
+            ? ["btn", "btn-outline-primary", "w-100"]
             : "form-check-label"
         )}
         htmlFor={id}
