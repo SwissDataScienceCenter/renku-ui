@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 
-import logger from "../../logger";
-import { Channel } from "../index";
-import APIClient from "../../api-client";
 import * as util from "util";
-import { WsMessage } from "../WsMessages";
+
+import APIClient from "../../api-client";
+import logger from "../../logger";
 import { simpleHash, sortObjectProperties } from "../../utils";
+
+import { Channel } from "../index";
+import { WsMessage } from "../WsMessages";
 
 interface SessionsResult {
   servers: Record<string, Session>;
@@ -67,7 +69,6 @@ function heartbeatRequestSessionStatus(
     .then((response) => {
       const statusFetched = response as unknown as SessionsResult;
       const servers = statusFetched?.servers ?? {};
-      logger.debug(`Got servers: ${JSON.stringify(servers)}`);
 
       // Keep only relevant status information, without warning messages
       const cleanedServerEntries = Object.entries(servers).map(

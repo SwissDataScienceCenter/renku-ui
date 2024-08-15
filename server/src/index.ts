@@ -99,7 +99,7 @@ function createWsServer() {
   addWebSocketServerContext(wsServer);
   authPromise.then(() => {
     logger.info("Configuring WebSocket server");
-    configureWebsocket(wsServer, authenticator, storage, apiClient);
+    configureWebsocket(wsServer, storage, apiClient);
   });
   return wsServer;
 }

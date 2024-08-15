@@ -110,13 +110,11 @@ const shortLoopFunctions: Array<Function> = [
  * Long loop for each user -- executed every few minutes.
  * It automatically either reschedules when at least one channel is active, or close.
  * @param sessionId - user session ID
- * @param authenticator - auth component
  * @param storage - storage component
  * @param apiClient - api to fetch data
  */
 async function channelLongLoop(
   sessionId: string,
-  // authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ) {
@@ -143,14 +141,7 @@ async function channelLongLoop(
   }
 
   // get the auth headers
-  // const authHeaders = {}; // await getAuthHeaders(    // authenticator,    sessionId,    infoPrefix  );
   const authHeaders = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
-  if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
-    // ? here authHeaders is an error message
-    channel.sockets.forEach((socket) => socket.send(authHeaders.toString()));
-    channels.delete(sessionId);
-    return false;
-  }
 
   for (const longLoopFunction of longLoopFunctions) {
     // execute the loop function
@@ -177,13 +168,11 @@ async function channelLongLoop(
  * Short loop for each user -- executed every few seconds.
  * It automatically either reschedules when at least one channel is active, or close.
  * @param sessionId - user session ID
- * @param authenticator - auth component
  * @param storage - storage component
  * @param apiClient - api client
  */
 async function channelShortLoop(
   sessionId: string,
-  // authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ) {
@@ -210,14 +199,7 @@ async function channelShortLoop(
   }
 
   // get the auth headers
-  // const authHeaders = {}; // await getAuthHeaders(sessionId, infoPrefix);
   const authHeaders = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
-  if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
-    // ? here authHeaders is an error message
-    channel.sockets.forEach((socket) => socket.send(authHeaders.toString()));
-    channels.delete(sessionId);
-    return false;
-  }
 
   for (const shortLoopFunction of shortLoopFunctions) {
     // execute the loop function
@@ -247,13 +229,11 @@ async function channelShortLoop(
 /**
  * Configure WebSocket by setting up events and starting loops.
  * @param server - main wss server
- * @param authenticator - auth component
  * @param storage - storage component
  * @param apiClient - api client
  */
 function configureWebsocket(
   server: ws.Server,
-  authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ): void {
@@ -405,18 +385,6 @@ function configureWebsocket(
       }
     });
 
-    // check auth
-    const authHeader = request.headers.authorization ?? "";
-    const user = await authenticator.authenticate({ authHeader, sessionId });
-    logger.info(`Got user: ${JSON.stringify(user)}`);
-    // const user = (request as RequestWithUser).user;
-    // logger.info(`Got user: ${user}`);
-    // logger.info(`Got auth header: ${request.headers.authorization}`);
-
-    // const head = await getAuthHeaders(authenticator, sessionId);
-    // if (head instanceof WsMessage && head.data?.expired) {
-    //   socket.send(head.toString());
-    // }
     socket.send(
       new WsMessage("Connection established.", "user", "init").toString()
     );
@@ -470,56 +438,5 @@ function getWsClientMessageHandler(
   }
   return `Could not find a proper handler; data is wrong for a '${clientMessage.type}' instruction.`;
 }
-
-/**
-//  * Get auhtentication headers
-//  * @param authenticator - auth component
-//  * @param sessionId - user session ID
-//  * @param infoPrefix - this is for the logger
-//  * @returns error with WsMessage or headers
-//  */
-// async function getAuthHeaders(
-//   authenticator: Authenticator,
-//   sessionId: string,
-//   infoPrefix = ""
-// ): Promise<WsMessage | Record<string, string>> {
-//   try {
-//     const authHeaders = await wsRenkuAuth(authenticator, sessionId);
-//     if (!authHeaders)
-//       // user is anonymous
-//       return null;
-//     return authHeaders;
-//   } catch (error) {
-//     const data = { message: "authentication not valid" };
-//     let expiredMessage: WsMessage;
-//     if (error.message.toString().includes("expired")) {
-//       // Try to refresh tokens automatically
-//       try {
-//         logger.debug(`${infoPrefix} try to refresh tokens.`);
-//         await authenticator.refreshTokens(sessionId);
-//         const authHeaders = await wsRenkuAuth(authenticator, sessionId);
-//         if (!authHeaders)
-//           throw new Error("Cannot find auth headers after refreshing");
-//         logger.debug(`${infoPrefix} tokens refreshed.`);
-//         return authHeaders;
-//       } catch (internalError) {
-//         logger.warn(`${infoPrefix} auth expired.`);
-//         expiredMessage = new WsMessage(
-//           { ...data, expired: true },
-//           "user",
-//           "authentication"
-//         );
-//       }
-//     } else {
-//       logger.warn(`${infoPrefix} auth invalid.`);
-//       expiredMessage = new WsMessage(
-//         { ...data, invalid: true },
-//         "user",
-//         "authentication"
-//       );
-//     }
-//     return expiredMessage;
-//   }
-// }
 
 export { Channel, MessageData, configureWebsocket, getWsClientMessageHandler };

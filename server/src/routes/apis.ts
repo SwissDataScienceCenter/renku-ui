@@ -65,21 +65,11 @@ const proxyMiddleware = createProxyMiddleware({
         }
       }
     }
-    // // add anon-id to cookies when the proper header is set.
-    // const anonId = clientReq.getHeader(config.auth.cookiesAnonymousKey);
-    // if (anonId) {
-    //   // ? the anon-id MUST start with a letter to prevent k8s limitations
-    //   const fullAnonId = config.auth.anonPrefix + anonId;
-    //   newCookies.push(
-    //     serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
-    //   );
-    // }
     if (newCookies.length > 0) {
       clientReq.setHeader("cookie", newCookies.join("; "));
     }
 
     // Swap headers for the knowledge graph API
-    const renkuAccessToken = clientReq.getHeader(config.auth.authHeaderField);
     const gitlabAccessToken = clientReq.getHeader("Gitlab-Access-Token");
     if (gitlabAccessToken) {
       clientReq.setHeader(
@@ -93,32 +83,6 @@ const proxyMiddleware = createProxyMiddleware({
   onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
     // Add CORS for sentry
     res.setHeader("Access-Control-Allow-Headers", "sentry-trace");
-
-    // // handle auth expiration -- we change the response status to avoid browser caching
-    // const expHeader = req.get(config.auth.invalidHeaderField);
-    // if (expHeader != null) {
-    //   clientRes.headers[config.auth.invalidHeaderField] = expHeader;
-    //   if (expHeader === config.auth.invalidHeaderExpired) {
-    //     // We return a different response to prevent side effects from caching mechanism on 30x responses
-    //     logger.warn(
-    //       `Authentication expired when trying to reach ${req.originalUrl}. Attaching auth headers.`
-    //     );
-    //     res.status(500);
-    //     res.setHeader(config.auth.invalidHeaderField, expHeader);
-    //     res.json({ error: "Invalid authentication tokens" });
-    //   }
-    // }
-
-    // // Prevent gateway from setting anon-id cookies. That's not needed in the UI anymore
-    // const setCookie = null ?? clientRes.headers["set-cookie"];
-    // if (setCookie == null || !setCookie.length) return;
-    // const allowedSetCookie = [];
-    // for (const cookie of setCookie) {
-    //   if (!cookie.startsWith(config.auth.cookiesAnonymousKey))
-    //     allowedSetCookie.push(cookie);
-    // }
-    // if (!allowedSetCookie.length) clientRes.headers["set-cookie"] = null;
-    // else clientRes.headers["set-cookie"] = allowedSetCookie;
   },
 });
 
