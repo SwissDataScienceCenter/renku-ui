@@ -16,14 +16,11 @@
  * limitations under the License.
  */
 
-// import cookieParser from "cookie-parser";
 import express from "express";
 import morgan from "morgan";
 import ws from "ws";
 
 import APIClient from "./api-client";
-// import { Authenticator } from "./authentication";
-// import { registerAuthenticationRoutes } from "./authentication/routes";
 import config from "./config";
 import logger from "./logger";
 import routes from "./routes";
@@ -78,21 +75,6 @@ authPromise.catch(() => {
   shutdown();
 });
 
-// // configure authenticator
-// const authenticator = new Authenticator(storage);
-// const authPromise = authenticator.init();
-// authPromise.then(() => {
-//   logger.info("Authenticator started");
-
-//   registerAuthenticationRoutes(app, authenticator);
-//   // The error handler middleware is needed here because the registration of authentication
-//   // routes is asynchronous and the middleware has to be registered after them
-//   app.use(errorHandlerMiddleware);
-// });
-
-// register middlewares
-// app.use(cookieParser());
-
 // register routes
 routes.register(app, prefix, storage);
 
@@ -104,25 +86,24 @@ const server = app.listen(port, () => {
 });
 
 // configure API client
-// const apiClient = new APIClient();
+const apiClient = new APIClient();
 
 // start the WebSocket server
-const wsServer: ws.Server | null = null;
-// function createWsServer() {
-//   if (!config.websocket.enabled) {
-//     return null;
-//   }
+function createWsServer() {
+  if (!config.websocket.enabled) {
+    return null;
+  }
 
-//   const path = `${config.server.prefix}${config.server.wsSuffix}`;
-//   const wsServer = new ws.Server({ server, path });
-//   addWebSocketServerContext(wsServer);
-//   authPromise.then(() => {
-//     logger.info("Configuring WebSocket server");
-//     configureWebsocket(wsServer, authenticator, storage, apiClient);
-//   });
-//   return wsServer;
-// }
-// const wsServer = createWsServer();
+  const path = `${config.server.prefix}${config.server.wsSuffix}`;
+  const wsServer = new ws.Server({ server, path });
+  addWebSocketServerContext(wsServer);
+  authPromise.then(() => {
+    logger.info("Configuring WebSocket server");
+    configureWebsocket(wsServer, storage, apiClient);
+  });
+  return wsServer;
+}
+const wsServer = createWsServer();
 
 function shutdownServer() {
   logger.info("Shutting down server");

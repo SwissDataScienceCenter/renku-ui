@@ -40,6 +40,7 @@ import {
   handlerRequestSessionStatus,
   heartbeatRequestSessionStatus,
 } from "./handlers/sessions";
+import type { RequestWithUser } from "../auth2/authentication.types";
 
 // *** Channels ***
 // No need to store data in Redis since it's used only locally. We can modify this if necessary.
@@ -251,7 +252,6 @@ async function channelShortLoop(
  */
 function configureWebsocket(
   server: ws.Server,
-  // authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ): void {
@@ -272,10 +272,13 @@ function configureWebsocket(
       SentryLib.setContext("WebSocket Initial Request", requestData);
     }
 
-    // get the user id
-    const sessionId = ""; // getCookieValueByName(request.headers.cookie, config.auth.cookiesKey);
+    // get the session id
+    const sessionId = getCookieValueByName(
+      request.headers.cookie,
+      config.auth.cookiesKey
+    );
     if (!sessionId) {
-      logger.error("No ID for the user, session won't be saved.");
+      logger.error("No session ID, session won't be saved.");
       const info =
         "The request does not contain a valid session ID." +
         " Are you reaching the WebSocket from an external source?";
@@ -295,7 +298,7 @@ function configureWebsocket(
     const channel = channels.get(sessionId);
     if (channel) {
       logger.debug(
-        `Adding a new socket to the channel for user ${sessionId}. Total of ${
+        `Adding a new socket to the channel for the session ${sessionId}. Total of ${
           channel.sockets.length + 1
         }`
       );
@@ -304,7 +307,7 @@ function configureWebsocket(
         sockets: [...channel.sockets, socket],
       });
     } else {
-      logger.debug(`Creating new channel for user ${sessionId}`);
+      logger.debug(`Creating new channel for the session ${sessionId}`);
       channels.set(sessionId, { sockets: [socket], data: new Map() });
       // add a buffer before starting the loop, so we can receive setup messages
 
@@ -322,14 +325,16 @@ function configureWebsocket(
       // (code, reason) might be used here
       // Verify session
       if (!sessionId) {
-        logger.debug("Nothing to cleanup for a user without ID.");
+        logger.debug("Nothing to cleanup when there is no session ID.");
         return false;
       }
 
       // Identify channel
       const channel = channels.get(sessionId);
       if (!channel) {
-        logger.warn(`No channel for user ${sessionId}. That is unexpected...`);
+        logger.warn(
+          `No channel for the session ${sessionId}. That is unexpected...`
+        );
         return false;
       }
 
@@ -338,8 +343,8 @@ function configureWebsocket(
         const remainingSockets = channel.sockets.length - 1;
         const remainingText =
           remainingSockets === 0
-            ? `There are no channels left for the user `
-            : `THere are other ${remainingSockets} socket(s) for the user `;
+            ? `There are no channels left for the sesssion `
+            : `There are other ${remainingSockets} socket(s) for the session `;
         logger.debug(`Removing the channel. ${remainingText} ${sessionId}.`);
         const index = channel.sockets.indexOf(socket);
         if (index >= 0)
@@ -350,7 +355,7 @@ function configureWebsocket(
         else logger.error("Socket not found.");
       } else {
         logger.info(
-          `Last socket for user ${sessionId}. Deleting the channel...`
+          `Last socket for the session ${sessionId}. Deleting the channel...`
         );
         channels.delete(sessionId);
       }
@@ -399,6 +404,10 @@ function configureWebsocket(
     });
 
     // check auth
+    const user = (request as RequestWithUser).user;
+    logger.info(`Got user: ${user}`);
+    logger.info(`Got auth header: ${request.headers.authorization}`);
+
     // const head = await getAuthHeaders(authenticator, sessionId);
     // if (head instanceof WsMessage && head.data?.expired) {
     //   socket.send(head.toString());
