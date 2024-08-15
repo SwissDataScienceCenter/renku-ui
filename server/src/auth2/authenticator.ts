@@ -17,18 +17,19 @@
  */
 
 import express from "express";
-import { Client, Issuer } from "openid-client";
 import { JWT } from "jose";
+import { Client, Issuer } from "openid-client";
 
 import config from "../config";
 import logger from "../logger";
+import { getCookieValueByName } from "../utils";
+
 import {
+  AnonymousUser,
   LoggedInUser,
   RequestWithUser,
   User,
-  AnonymousUser,
 } from "./authentication.types";
-import { getCookieValueByName } from "src/utils";
 
 export class Authenticator {
   authServerUrl: string;
