@@ -117,15 +117,13 @@ function SearchV2DateFilterOption({
   const id = `search-filter-${dateFilter.key}-${optionKey}`;
 
   return (
-    <div
-      className={cx(
-        visualization === "accordion" ? "w-100" : ["d-flex", "gap-2"]
-      )}
-    >
+    <div className={cx(visualization === "accordion" ? "w-100" : "d-flex")}>
       <input
         checked={isChecked}
         className={cx(
-          visualization === "accordion" ? "btn-check" : "form-check-input"
+          visualization === "accordion"
+            ? "btn-check"
+            : ["cursor-pointer", "form-check-input"]
         )}
         data-cy={id}
         id={id}
@@ -136,7 +134,7 @@ function SearchV2DateFilterOption({
         className={cx(
           visualization === "accordion"
             ? ["btn", "btn-outline-primary", "w-100"]
-            : "form-check-label"
+            : ["cursor-pointer", "form-check-label", "ps-2"]
         )}
         htmlFor={id}
       >
@@ -248,15 +246,13 @@ function SearchV2DateFilterCustomOption({
 
   return (
     <>
-      <div
-        className={cx(
-          visualization === "accordion" ? "w-100" : ["d-flex", "gap-2"]
-        )}
-      >
+      <div className={cx(visualization === "accordion" ? "w-100" : "d-flex")}>
         <input
           checked={isChecked}
           className={cx(
-            visualization === "accordion" ? "btn-check" : "form-check-input"
+            visualization === "accordion"
+              ? "btn-check"
+              : ["cursor-pointer", "form-check-input"]
           )}
           data-cy={id}
           id={id}
@@ -267,7 +263,7 @@ function SearchV2DateFilterCustomOption({
           className={cx(
             visualization === "accordion"
               ? ["btn", "btn-outline-primary", "w-100"]
-              : "form-check-label"
+              : ["cursor-pointer", "form-check-label", "ps-2"]
           )}
           htmlFor={id}
         >
