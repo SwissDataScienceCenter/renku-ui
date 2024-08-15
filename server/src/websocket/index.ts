@@ -143,7 +143,8 @@ async function channelLongLoop(
   }
 
   // get the auth headers
-  const authHeaders = {}; // await getAuthHeaders(    // authenticator,    sessionId,    infoPrefix  );
+  // const authHeaders = {}; // await getAuthHeaders(    // authenticator,    sessionId,    infoPrefix  );
+  const authHeaders = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
   if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
     // ? here authHeaders is an error message
     channel.sockets.forEach((socket) => socket.send(authHeaders.toString()));
@@ -209,7 +210,8 @@ async function channelShortLoop(
   }
 
   // get the auth headers
-  const authHeaders = {}; // await getAuthHeaders(sessionId, infoPrefix);
+  // const authHeaders = {}; // await getAuthHeaders(sessionId, infoPrefix);
+  const authHeaders = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
   if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
     // ? here authHeaders is an error message
     channel.sockets.forEach((socket) => socket.send(authHeaders.toString()));
