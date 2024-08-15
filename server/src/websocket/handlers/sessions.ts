@@ -45,7 +45,7 @@ interface Session {
 }
 
 function handlerRequestSessionStatus(
-  data: Record<string, unknown>,
+  _data: Record<string, unknown>,
   channel: Channel
 ): void {
   channel.data.set("sessionStatus", null);
@@ -67,6 +67,7 @@ function heartbeatRequestSessionStatus(
     .then((response) => {
       const statusFetched = response as unknown as SessionsResult;
       const servers = statusFetched?.servers ?? {};
+      logger.debug(`Got servers: ${JSON.stringify(servers)}`);
 
       // Keep only relevant status information, without warning messages
       const cleanedServerEntries = Object.entries(servers).map(

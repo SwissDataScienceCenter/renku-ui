@@ -406,7 +406,7 @@ function configureWebsocket(
     // check auth
     const authHeader = request.headers.authorization ?? "";
     const user = await authenticator.authenticate({ authHeader, sessionId });
-    logger.info(`Got user: ${user}`);
+    logger.info(`Got user: ${JSON.stringify(user)}`);
     // const user = (request as RequestWithUser).user;
     // logger.info(`Got user: ${user}`);
     // logger.info(`Got auth header: ${request.headers.authorization}`);
