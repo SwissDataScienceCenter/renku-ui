@@ -112,7 +112,11 @@ export default function UserShow() {
             </div>
 
             <div className={cx("align-items-center", "d-flex", "gap-2")}>
-              <EntityPill entityType="User" size="sm" />
+              <EntityPill
+                entityType="User"
+                size="sm"
+                tooltipPlacement="bottom"
+              />
               <ItsYouBadge username={username} />
             </div>
           </div>

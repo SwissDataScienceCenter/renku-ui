@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect } from "react";
+import { ReactNode, useCallback, useEffect, useRef } from "react";
 import {
   Folder2Open,
   Globe2,
@@ -32,7 +32,15 @@ import {
   generatePath,
   useSearchParams,
 } from "react-router-dom-v5-compat";
-import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  UncontrolledTooltip,
+} from "reactstrap";
 
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { Loader } from "../../../components/Loader";
@@ -185,7 +193,11 @@ function SearchV2CardTitle({
       </div>
       {entityType && (
         <div className={cx("mb-auto", "ms-auto")}>
-          <EntityPill entityType={entityType} size="sm" />
+          <EntityPill
+            entityType={entityType}
+            size="sm"
+            tooltipPlacement="bottom"
+          />
         </div>
       )}
     </CardHeader>
@@ -195,8 +207,16 @@ function SearchV2CardTitle({
 interface EntityPillProps {
   entityType: SearchEntity["type"];
   size?: "sm" | "md" | "lg" | "xl" | "auto";
+  tooltip?: boolean;
+  tooltipPlacement?: "top" | "bottom" | "left" | "right";
 }
-export function EntityPill({ entityType, size = "auto" }: EntityPillProps) {
+export function EntityPill({
+  entityType,
+  size = "auto",
+  tooltip = true,
+  tooltipPlacement = "top",
+}: EntityPillProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const IconComponent: Icon =
     entityType === "Project"
       ? Folder2Open
@@ -215,21 +235,31 @@ export function EntityPill({ entityType, size = "auto" }: EntityPillProps) {
       : size === "xl"
       ? "fs-2"
       : null;
+
   return (
-    <Badge
-      pill
-      className={cx(
-        "bg-light",
-        "border-dark-subtle",
-        "border",
-        "d-flex",
-        "p-2",
-        "text-dark-emphasis",
-        sizeClass
+    <>
+      <div ref={ref}>
+        <Badge
+          className={cx(
+            "bg-light",
+            "border-dark-subtle",
+            "border",
+            "d-flex",
+            "p-2",
+            "text-dark-emphasis",
+            sizeClass
+          )}
+          pill
+        >
+          <IconComponent />
+        </Badge>
+      </div>
+      {tooltip && (
+        <UncontrolledTooltip placement={tooltipPlacement} target={ref}>
+          {entityType}
+        </UncontrolledTooltip>
       )}
-    >
-      <IconComponent />
-    </Badge>
+    </>
   );
 }
 
