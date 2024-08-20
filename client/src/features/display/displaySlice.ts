@@ -17,9 +17,15 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Display, ProjectConfig, SessionConfig } from "./display.types";
+import {
+  Display,
+  FaviconStatus,
+  ProjectConfig,
+  SessionConfig,
+} from "./display.types";
 
 const initialState: Display = {
+  favicon: "general",
   modals: {
     ssh: {
       show: false,
@@ -38,6 +44,12 @@ export const displaySlice = createSlice({
   name: "display",
   initialState,
   reducers: {
+    setFavicon: (state, action: PayloadAction<FaviconStatus>) => {
+      state.favicon = action.payload;
+    },
+    resetFavicon: (state) => {
+      state.favicon = initialState.favicon;
+    },
     showSshModal: (state, action: PayloadAction<ProjectConfig>) => {
       state.modals.ssh = {
         show: true,
@@ -79,4 +91,6 @@ export const {
   toggleSshModal,
   toggleSessionLogsModal,
   reset,
+  resetFavicon,
+  setFavicon,
 } = displaySlice.actions;

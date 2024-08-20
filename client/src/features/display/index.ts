@@ -1,11 +1,21 @@
+import { Display, ProjectConfig } from "./display.types";
 import {
   displaySlice,
-  showSshModal,
   hideSshModal,
-  toggleSshModal,
   reset,
+  resetFavicon,
+  setFavicon,
+  showSshModal,
+  toggleSshModal,
 } from "./displaySlice";
-import { Display, ProjectConfig } from "./display.types";
 
-export { displaySlice, showSshModal, hideSshModal, toggleSshModal, reset };
+export {
+  displaySlice,
+  hideSshModal,
+  reset,
+  resetFavicon,
+  setFavicon,
+  showSshModal,
+  toggleSshModal,
+};
 export type { Display, ProjectConfig };

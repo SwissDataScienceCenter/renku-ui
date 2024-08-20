@@ -37,6 +37,7 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
+import { resetFavicon, setFavicon } from "../display";
 import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
@@ -66,6 +67,7 @@ function SessionStarting({
 }: SessionStartingProps) {
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [
     startSession,
@@ -88,12 +90,14 @@ function SessionStarting({
       sessionClass: startSessionOptionsV2.sessionClass,
       storage: startSessionOptionsV2.storage,
     });
+    dispatch(setFavicon("waiting"));
   }, [
     containerImage,
     launcher.id,
     project.id,
     startSession,
     startSessionOptionsV2,
+    dispatch,
   ]);
 
   // Navigate to the session page when it is ready
@@ -258,6 +262,7 @@ function StartSessionFromLauncher({
   launcher,
   project,
 }: StartSessionFromLauncherProps) {
+  const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const hasCustomQuery = searchParams.has("custom");
   const startSessionOptionsV2 = useAppSelector(
@@ -282,6 +287,16 @@ function StartSessionFromLauncher({
     startSessionOptionsV2.dockerImageStatus === "available" &&
     startSessionOptionsV2.sessionClass !== 0 &&
     !isFetchingOrLoadingStorages;
+
+  useEffect(() => {
+    if (!allDataFetched || needsCredentials) {
+      dispatch(setFavicon("waiting"));
+    }
+    return () => {
+      // cleanup and set favicon to default
+      dispatch(resetFavicon());
+    };
+  }, [allDataFetched, needsCredentials, dispatch]);
 
   if (allDataFetched && !needsCredentials)
     return (
