@@ -24,6 +24,7 @@ import {
   Briefcase,
   Clock,
   Cloud,
+  ExclamationTriangle,
   FileEarmarkText,
   PauseCircle,
   Trash,
@@ -47,13 +48,13 @@ import { User } from "../../model/renkuModels.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import useWindowSize from "../../utils/helpers/UseWindowsSize";
+import { resetFavicon, setFavicon } from "../display";
 import SessionHibernated from "../session/components/SessionHibernated";
 import SessionJupyter from "../session/components/SessionJupyter";
 import SessionUnavailable from "../session/components/SessionUnavailable";
 import StartSessionProgressBar from "../session/components/StartSessionProgressBar";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
-import { resetFavicon, setFavicon } from "../display";
 import { getSessionFavicon } from "./session.utils";
 
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -232,7 +233,8 @@ export default function ShowSessionPage() {
               "d-flex",
               "flex-grow-0",
               "gap-3",
-              "px-3"
+              "px-3",
+              "text-truncate"
             )}
           >
             {backButton}
@@ -247,18 +249,17 @@ export default function ShowSessionPage() {
               "d-flex",
               "flex-grow-1",
               "justify-content-between",
-              "py-2",
               "text-truncate"
             )}
           >
-            <div className={cx("px-3", "text-truncate")}>
+            <div className={cx("d-flex", "px-3", "text-truncate", "h-100")}>
               <SessionDetails
                 session={thisSession}
                 namespace={namespace}
                 slug={slug}
               />
             </div>
-            <div className={cx("px-3", "text-white")}>
+            <div className={cx("pe-3", "text-white")}>
               <RenkuFrogIcon size={24} />
             </div>
           </div>
@@ -428,66 +429,81 @@ function SessionDetails({
       slug: project?.slug,
     });
 
-  if (isLoadingLaunchers || isLoadingProject) return <Loader />;
-  if (launchersError || !launcher) return <i>Session not accessible</i>;
+  if (isLoadingLaunchers || isLoadingProject) {
+    return (
+      <div className={cx("d-flex", "align-items-center")}>
+        <p className={cx("text-white", "mb-0")}>
+          <Loader inline size={16} /> Checking session details...
+        </p>
+      </div>
+    );
+  }
+  if (launchersError || !launcher)
+    return (
+      <div className={cx("d-flex", "align-items-center")}>
+        <p className={cx("text-white", "mb-0")}>
+          <ExclamationTriangle className="bi" /> Session not accessible
+        </p>
+      </div>
+    );
   const detailsModal = project && session && projectUrl && (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader toggle={toggle}>Session details {launcher.name}</ModalHeader>
       <ModalBody>
-        <div className="mb-2">
-          <p>
-            <Briefcase className={cx("bi", "me-2")} />
-            Project:{" "}
-            <Link to={projectUrl}>
-              <span className="fw-bold">{project.name}</span>
-            </Link>
-          </p>
-        </div>
-        <div className="mb-2">
-          <p>
-            <Clock className={cx("bi", "me-2")} />
-            <span className="fw-bold">
-              <TimeCaption
-                prefix="Launched"
-                datetime={session.started}
-                className={cx("fs-6")}
-              />
-            </span>
-          </p>
-        </div>
-        <div
-          className={cx(
-            "mb-2",
-            "d-block",
-            "d-lg-flex",
-            "pb-2",
-            "pb-lg-0",
-            "gap-2",
-            "align-items-center"
-          )}
-        >
+        <div className={cx("d-flex", "flex-column", "gap-3")}>
           <div>
-            <Cloud className={cx("bi", "me-2")} />
-            Session resources requested:
+            <p className="mb-0">
+              <Briefcase className={cx("bi", "me-2")} />
+              Project:{" "}
+              <Link to={projectUrl}>
+                <span className="fw-bold">{project.name}</span>
+              </Link>
+            </p>
           </div>
-          <SessionRowResourceRequests
-            resourceRequests={session.resources.requests}
-          />
-        </div>
-        <div
-          className={cx(
-            "mb-2",
-            "d-block",
-            "d-lg-flex",
-            "gap-2",
-            "align-items-center"
-          )}
-        >
           <div>
-            <Box className={cx("bi", "me-2")} />
-            Container image:{" "}
+            <p className="mb-0">
+              <Clock className={cx("bi", "me-2")} />
+              <span className="fw-bold">
+                <TimeCaption
+                  prefix="Launched"
+                  datetime={session.started}
+                  className={cx("fs-6")}
+                />
+              </span>
+            </p>
           </div>
-          <CommandCopy command={session.image} />
+          <div
+            className={cx(
+              "d-block",
+              "d-lg-flex",
+              "pb-2",
+              "pb-lg-0",
+              "gap-2",
+              "align-items-center"
+            )}
+          >
+            <div>
+              <Cloud className={cx("bi", "me-2")} />
+              Session resources requested:
+            </div>
+            <SessionRowResourceRequests
+              resourceRequests={session.resources.requests}
+            />
+          </div>
+          <div
+            className={cx(
+              "d-block",
+              "d-lg-flex",
+              "gap-2",
+              "align-items-center"
+            )}
+          >
+            <div>
+              <Box className={cx("bi", "me-2")} />
+              Container image:{" "}
+            </div>
+            <CommandCopy noMargin command={session.image} />
+          </div>
         </div>
       </ModalBody>
     </Modal>
