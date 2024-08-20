@@ -257,6 +257,10 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
       </div>
       <ListGroup>
         {data.map((d, i) => {
+          const name =
+            d.first_name && d.last_name
+              ? `${d.first_name} ${d.last_name}`
+              : d.first_name || d.last_name;
           return (
             <ListGroupItem key={d.id}>
               <div
@@ -268,7 +272,7 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
                 )}
               >
                 <p className={cx("d-flex", "mb-0", "gap-2")}>
-                  <span>{`${d.first_name} ${d.last_name}`}</span>
+                  <span>{name ?? "Unknown user"}</span>
                   <span className="fst-italic">{`@${d.namespace}`}</span>
                   <span className="fw-bold">{capitalize(d.role)}</span>
                 </p>
