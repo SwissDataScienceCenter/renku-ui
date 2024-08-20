@@ -30,7 +30,7 @@ import {
   InfoCircle,
 } from "react-bootstrap-icons";
 
-import { iconSize } from "./Alert.constants";
+import { ALERT_ICON_SIZE } from "./Alert.constants";
 
 /**
  * Display a alert that can be dismissed.
@@ -86,10 +86,10 @@ class RenkuAlert extends Component {
 
   getIcon() {
     const icon = {
-      danger: <ExclamationTriangle size={iconSize} />,
-      info: <InfoCircle size={iconSize} />,
-      warning: <ExclamationTriangle size={iconSize} />,
-      success: <CheckCircle size={iconSize} />,
+      danger: <ExclamationTriangle size={ALERT_ICON_SIZE} />,
+      info: <InfoCircle size={ALERT_ICON_SIZE} />,
+      warning: <ExclamationTriangle size={ALERT_ICON_SIZE} />,
+      success: <CheckCircle size={ALERT_ICON_SIZE} />,
     }[this.props.color];
 
     return icon;

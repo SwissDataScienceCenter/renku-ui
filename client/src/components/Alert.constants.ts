@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export const iconSize = 32;
+export const ALERT_ICON_SIZE = 32;
