@@ -21,6 +21,7 @@ import { capitalize } from "lodash-es";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, PlusLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
+import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
   Form,
@@ -32,8 +33,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
-import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type {

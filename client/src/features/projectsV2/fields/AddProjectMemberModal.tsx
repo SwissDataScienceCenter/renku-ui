@@ -17,7 +17,6 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
@@ -33,13 +32,12 @@ import {
   ModalHeader,
 } from "reactstrap";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { User } from "../../searchV2/api/searchV2Api.api";
 import type {
   ProjectMemberPatchRequest,
   ProjectMemberResponse,
 } from "../api/projectV2.api";
 import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
-
-import { User } from "../../searchV2/api/searchV2Api.api";
 import { UserControl } from "./UserSelector";
 
 interface AddProjectMemberModalProps {

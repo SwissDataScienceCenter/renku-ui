@@ -17,11 +17,10 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-
+import { SingleValue } from "react-select";
 import {
   Button,
   Form,
@@ -32,10 +31,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-
-import { SingleValue } from "react-select";
 import { User } from "../../searchV2/api/searchV2Api.api";
 import type {
   GroupMemberPatchRequest,
@@ -60,7 +56,6 @@ function AddGroupMemberAccessForm({
   groupSlug,
   toggle,
 }: AddGroupMemberAccessFormProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [patchGroupMembers, result] =
     usePatchGroupsByGroupSlugMembersMutation();
   const {

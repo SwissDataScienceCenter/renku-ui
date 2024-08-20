@@ -174,9 +174,11 @@ function ProjectPageSettingsMembersListItem({
       <Row className="g-2">
         <Col className="align-content-around" xs={12} md="auto">
           {nameToDisplay}{" "}
-          <span className="fst-italic">
-            {member.namespace ? `@${member.namespace}` : ""}
-          </span>{" "}
+          {member.namespace ? (
+            <span className="fst-italic">@{member.namespace} </span>
+          ) : (
+            ""
+          )}
           <span className="fw-bold">({member.role})</span>
         </Col>
         <Col

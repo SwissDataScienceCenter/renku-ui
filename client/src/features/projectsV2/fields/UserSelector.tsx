@@ -23,6 +23,7 @@ import Select, {
   ClassNamesConfig,
   components,
   GroupBase,
+  InputProps,
   NoticeProps,
   OptionProps,
   PlaceholderProps,
@@ -60,6 +61,9 @@ const selectComponents: SelectComponentsConfig<User, false, GroupBase<User>> = {
         <ChevronDown className="icon-text" />
       </components.DropdownIndicator>
     );
+  },
+  Input: (props: InputProps<User, false, GroupBase<User>>) => {
+    return <components.Input {...props} autoComplete="off"></components.Input>;
   },
   Option: (props: OptionProps<User, false, GroupBase<User>>) => {
     const { data: user } = props;

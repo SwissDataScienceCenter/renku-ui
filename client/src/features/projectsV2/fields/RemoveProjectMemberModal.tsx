@@ -29,7 +29,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { getMemberNameToDisplay } from "../../ProjectPageV2/utils/roleUtils";
 import type { ProjectMemberResponse } from "../api/projectV2.api";
@@ -88,9 +87,11 @@ function RemoveProjectMemberAccessForm({
           >
             <Label>
               Remove <b>{nameToDisplay}</b>{" "}
-              <span className="fst-italic">
-                {member.namespace ? `@${member.namespace}` : ""}
-              </span>{" "}
+              {member.namespace ? (
+                <span className="fst-italic">@{member.namespace}</span>
+              ) : (
+                ""
+              )}{" "}
               from project?
             </Label>
           </div>

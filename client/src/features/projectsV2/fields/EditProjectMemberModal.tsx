@@ -17,11 +17,9 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect } from "react";
 import { PencilSquare, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-
 import {
   Button,
   Form,
@@ -32,9 +30,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-
 import { getMemberNameToDisplay } from "../../ProjectPageV2/utils/roleUtils";
 import type {
   ProjectMemberPatchRequest,
@@ -113,9 +109,11 @@ function EditProjectMemberAccessForm({
           >
             <Label>
               {userName}{" "}
-              <span className="fst-italic">
-                {member.namespace ? `@${member.namespace}` : ""}
-              </span>
+              {member.namespace ? (
+                <span className="fst-italic">@{member.namespace}</span>
+              ) : (
+                ""
+              )}
             </Label>
             <Controller
               control={control}
