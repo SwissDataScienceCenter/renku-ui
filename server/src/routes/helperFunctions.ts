@@ -16,22 +16,21 @@
  * limitations under the License.
  */
 
-// import { getUserIdFromToken } from "../authentication";
 import { Storage, StorageGetOptions, TypeData } from "../storage";
 
 /**
- * Get data from the Storage by user token
+ * Get data from the Storage by user ID
  *
- * @param {string} prefix - the data prefix (StoragePrefix)
- * @param {string} userId - user ID in Renku
- * @param {Storage} storage - storage api
- * @param {number} length - number of records, if the value <= 0 it will return all the user's records
+ * @param prefix - the data prefix (StoragePrefix)
+ * @param userId - user ID in Renku
+ * @param storage - storage api
+ * @param length - number of records, if the value <= 0 it will return all the user's records
  */
 export async function getUserData(
   prefix: string,
   userId: string,
   storage: Storage,
-  length: number = 0
+  length = 0
 ): Promise<string[]> {
   let data: string[] = [];
   const stop = length - 1; // -1 would bring all records

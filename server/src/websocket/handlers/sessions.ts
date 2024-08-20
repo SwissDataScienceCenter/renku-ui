@@ -18,12 +18,11 @@
 
 import * as util from "util";
 
-import APIClient from "../../api-client";
 import logger from "../../logger";
 import { simpleHash, sortObjectProperties } from "../../utils";
 
-import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
+import type { Channel, WebSocketHandlerArgs } from "./handlers.types";
 
 interface SessionsResult {
   servers: Record<string, Session>;
@@ -58,14 +57,14 @@ function sendMessage(data: string, channel: Channel) {
   channel.sockets.forEach((socket) => socket.send(info.toString()));
 }
 
-function heartbeatRequestSessionStatus(
-  channel: Channel,
-  apiClient: APIClient,
-  authHeathers: Record<string, string>
-): void {
+function heartbeatRequestSessionStatus({
+  channel,
+  apiClient,
+  headers,
+}: WebSocketHandlerArgs): void {
   const previousStatuses = channel.data.get("sessionStatus") as string;
   apiClient
-    .getSessionStatus(authHeathers)
+    .getSessionStatus(headers)
     .then((response) => {
       const statusFetched = response as unknown as SessionsResult;
       const servers = statusFetched?.servers ?? {};

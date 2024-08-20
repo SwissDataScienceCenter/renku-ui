@@ -33,7 +33,7 @@ import {
   initializeSentry,
 } from "./utils/sentry/sentry";
 import { configureWebsocket } from "./websocket";
-import { Authenticator } from "./auth2/authenticator";
+import { Authenticator } from "./authentication/authenticator";
 
 const app = express();
 const port = config.server.port;

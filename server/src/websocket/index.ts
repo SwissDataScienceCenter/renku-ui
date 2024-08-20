@@ -20,7 +20,6 @@ import * as SentryLib from "@sentry/node";
 import ws from "ws";
 
 import APIClient from "../api-client";
-import { Authenticator } from "../auth2/authenticator";
 import config from "../config";
 import logger from "../logger";
 import { Storage } from "../storage";
@@ -40,14 +39,10 @@ import {
   handlerRequestSessionStatus,
   heartbeatRequestSessionStatus,
 } from "./handlers/sessions";
+import type { Channel, WebSocketHandler } from "./handlers/handlers.types";
 
 // *** Channels ***
 // No need to store data in Redis since it's used only locally. We can modify this if necessary.
-
-interface Channel {
-  sockets: Array<ws>;
-  data: Map<string, unknown>;
-}
 
 const channels = new Map<string, Channel>();
 
@@ -98,10 +93,10 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
 
 // *** Heartbeats functions ***
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const longLoopFunctions: Array<Function> = [heartbeatRequestServerVersion];
-// eslint-disable-next-line @typescript-eslint/ban-types
-const shortLoopFunctions: Array<Function> = [
+const longLoopFunctions: Array<WebSocketHandler> = [
+  heartbeatRequestServerVersion,
+];
+const shortLoopFunctions: Array<WebSocketHandler> = [
   heartbeatRequestSessionStatus,
   heartbeatRequestActivationKgStatus,
 ];
@@ -141,12 +136,12 @@ async function channelLongLoop(
   }
 
   // get the auth headers
-  const authHeaders = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
+  const headers = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
 
   for (const longLoopFunction of longLoopFunctions) {
     // execute the loop function
     try {
-      longLoopFunction(channel, apiClient, authHeaders);
+      longLoopFunction({ channel, apiClient, headers });
     } catch (error) {
       const info = `Unexpected error while executing the function '${longLoopFunction.name}'.`;
       logger.error(`${infoPrefix} ${info}`);
@@ -199,12 +194,12 @@ async function channelShortLoop(
   }
 
   // get the auth headers
-  const authHeaders = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
+  const headers = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
 
   for (const shortLoopFunction of shortLoopFunctions) {
     // execute the loop function
     try {
-      shortLoopFunction(channel, apiClient, authHeaders);
+      shortLoopFunction({ channel, apiClient, headers });
     } catch (error) {
       const info = `Unexpected error while executing the function '${shortLoopFunction.name}'.`;
       logger.error(`${infoPrefix} ${info}`);

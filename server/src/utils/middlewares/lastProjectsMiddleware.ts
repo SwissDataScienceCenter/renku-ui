@@ -19,7 +19,7 @@
 import * as Sentry from "@sentry/node";
 import express from "express";
 
-import type { RequestWithUser } from "../../auth2/authentication.types";
+import type { RequestWithUser } from "../../authentication/authentication.types";
 import config from "../../config";
 import logger from "../../logger";
 import { Storage, TypeData } from "../../storage";
