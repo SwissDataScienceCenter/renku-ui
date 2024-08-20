@@ -21,6 +21,7 @@ import ws from "ws";
 import config from "../../config";
 import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
+
 import type { WebSocketHandlerArgs } from "./handlers.types";
 
 function handlerRequestServerVersion(
