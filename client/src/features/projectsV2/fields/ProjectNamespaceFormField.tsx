@@ -32,9 +32,9 @@ import Select, {
   components,
 } from "react-select";
 import { Button, FormText, Label, UncontrolledTooltip } from "reactstrap";
-
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import type { PaginatedState } from "../../session/components/options/fetchMore.types";
 import type { GetNamespacesApiResponse } from "../api/projectV2.enhanced-api";
 import {
@@ -42,9 +42,6 @@ import {
   useGetNamespacesQuery,
   useLazyGetNamespacesQuery,
 } from "../api/projectV2.enhanced-api";
-
-import { useDispatch } from "react-redux";
-import { NamespaceResponseList } from "../api/namespace.api.ts";
 import type { GenericFormFieldProps } from "./formField.types";
 import styles from "./ProjectNamespaceFormField.module.scss";
 
@@ -207,7 +204,7 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
   name,
 }: GenericFormFieldProps<T>) {
   // Handle forced refresh
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const refetch = useCallback(() => {
     dispatch(projectV2Api.util.invalidateTags(["Namespace"]));
   }, [dispatch]);
@@ -293,33 +290,29 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     }));
   }, [namespacesFirstPage?.perPage, fetchNamespacesPage, fetchedPages]);
 
-  const setDefaultNamespace = useCallback(
-    (namespaces: NamespaceResponseList) => {
-      const userNamespace = namespaces.filter(
-        (namespace) => namespace.namespace_kind === "user"
-      );
-
-      if (userNamespace.length && !value) {
-        onChange(userNamespace[0]);
-      }
-    },
-    [onChange, value]
-  );
+  useEffect(() => {
+    if (namespacesFirstPage == null) {
+      return;
+    }
+    const userNamespace = namespacesFirstPage.namespaces.find(
+      (namespace) => namespace.namespace_kind === "user"
+    );
+    if (userNamespace != null && !value) {
+      onChange(userNamespace);
+    }
+  }, [onChange, namespacesFirstPage, value]);
 
   useEffect(() => {
     if (namespacesFirstPage == null) {
       return;
     }
-    const hasMore = namespacesFirstPage.totalPages > namespacesFirstPage.page;
     setState({
       data: namespacesFirstPage.namespaces,
       fetchedPages: namespacesFirstPage.page ?? 0,
       hasMore: namespacesFirstPage.totalPages > namespacesFirstPage.page,
       currentRequestId: "",
     });
-    if (!hasMore && namespacesFirstPage.namespaces.length)
-      setDefaultNamespace(namespacesFirstPage.namespaces);
-  }, [namespacesFirstPage, requestId, setDefaultNamespace]);
+  }, [namespacesFirstPage, requestId]);
 
   useEffect(() => {
     if (
@@ -342,15 +335,12 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
       hasMore,
       currentRequestId: "",
     });
-    if (!hasMore && namespacesAvailable.length)
-      setDefaultNamespace(namespacesAvailable);
   }, [
     allNamespaces,
     namespacesPageResult.currentData,
     namespacesPageResult.requestId,
     currentRequestId,
     onChange,
-    setDefaultNamespace,
   ]);
 
   if (isFetching) {
