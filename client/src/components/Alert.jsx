@@ -24,12 +24,13 @@
 import cx from "classnames";
 import { Component } from "react";
 import { Alert } from "reactstrap";
-
 import {
-  CheckCircleFill,
-  ExclamationTriangleFill,
-  InfoCircleFill,
+  CheckCircle,
+  ExclamationTriangle,
+  InfoCircle,
 } from "react-bootstrap-icons";
+
+import { ALERT_ICON_SIZE } from "./Alert.constants";
 
 /**
  * Display a alert that can be dismissed.
@@ -85,10 +86,10 @@ class RenkuAlert extends Component {
 
   getIcon() {
     const icon = {
-      danger: <ExclamationTriangleFill className={cx("bi", "text-danger")} />,
-      info: <InfoCircleFill className={cx("bi", "text-info")} />,
-      warning: <ExclamationTriangleFill className={cx("bi", "text-warning")} />,
-      success: <CheckCircleFill className={cx("bi", "text-success")} />,
+      danger: <ExclamationTriangle size={ALERT_ICON_SIZE} />,
+      info: <InfoCircle size={ALERT_ICON_SIZE} />,
+      warning: <ExclamationTriangle size={ALERT_ICON_SIZE} />,
+      success: <CheckCircle size={ALERT_ICON_SIZE} />,
     }[this.props.color];
 
     return icon;
@@ -108,7 +109,7 @@ class RenkuAlert extends Component {
         data-cy={this.props.dataCy}
       >
         <div className={cx("d-flex", "gap-3")}>
-          <div className={cx("fs-1", "my-auto")}>{alertIcon}</div>
+          <div>{alertIcon}</div>
           <div className={cx("my-auto", "overflow-auto", "w-100")}>
             {this.props.children}
           </div>
