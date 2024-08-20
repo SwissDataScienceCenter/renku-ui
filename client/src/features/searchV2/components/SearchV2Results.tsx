@@ -222,6 +222,7 @@ export function EntityPill({ entityType, size = "auto" }: EntityPillProps) {
         "bg-light",
         "border-dark-subtle",
         "border",
+        "d-flex",
         "p-2",
         "text-dark-emphasis",
         sizeClass
