@@ -226,6 +226,7 @@ function AddSessionExistingEnvModal({
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
+      scrollable
       toggle={toggle}
     >
       <ModalHeader toggle={toggle}>
