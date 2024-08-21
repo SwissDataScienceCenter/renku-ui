@@ -51,7 +51,7 @@ export default function DescriptionFormField<T extends FieldValues>({
         rules={{ maxLength: 500, required: false }}
       />
       <FormText id={`${entityName}DescriptionHelp`} className="input-hint">
-        A brief (at most 500 character) description of the project.
+        A brief (at most 500 character) description of the {entityName}.
       </FormText>
       <div className="invalid-feedback">Please provide a description</div>
     </div>
