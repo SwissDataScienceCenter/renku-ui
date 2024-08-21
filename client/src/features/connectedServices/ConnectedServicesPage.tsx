@@ -19,21 +19,25 @@
 import cx from "classnames";
 import { Card, CardBody, CardText, CardTitle } from "reactstrap";
 
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { BoxArrowUpRight } from "react-bootstrap-icons";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import {
+  type AppInstallation,
   connectedServicesApi,
   useGetOauth2ConnectionsByConnectionIdAccountQuery,
+  useGetOauth2ConnectionsByConnectionIdInstallationsQuery,
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
   type Connection,
   type ConnectionStatus,
   type Provider,
+  type ProviderKind,
 } from "./api/connectedServices.api";
+import { safeNewUrl } from "../../utils/helpers/safeNewUrl.utils";
 
 export default function ConnectedServicesPage() {
   const {
@@ -85,7 +89,7 @@ interface ConnectedServiceCardProps {
 }
 
 function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
-  const { id, display_name, url } = provider;
+  const { id, display_name, kind, url } = provider;
 
   const { data: connections } =
     connectedServicesApi.endpoints.getOauth2Connections.useQueryState();
@@ -108,7 +112,11 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
           <CardTitle>
             <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
               <span className="pe-2">{display_name}</span>
-              <ConnectButton id={id} connectionStatus={connection?.status} />
+              <ConnectButton
+                id={id}
+                connectionStatus={connection?.status}
+                kind={kind}
+              />
             </div>
           </CardTitle>
           <CardText className="mb-1">
@@ -121,7 +129,12 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
           {connection?.status === "connected" && (
             <ConnectedAccount connection={connection} />
           )}
-          {provider.kind == "github" && <>GITHUB</>}
+          {connection?.status === "connected" && provider.kind == "github" && (
+            <GitHubAppInstallations
+              connection={connection}
+              provider={provider}
+            />
+          )}
         </CardBody>
       </Card>
     </div>
@@ -130,11 +143,18 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
 
 interface ConnectButtonParams {
   id: string;
+  kind?: ProviderKind;
   connectionStatus?: ConnectionStatus;
 }
 
-function ConnectButton({ id, connectionStatus }: ConnectButtonParams) {
-  const hereUrl = window.location.href;
+function ConnectButton({ id, connectionStatus, kind }: ConnectButtonParams) {
+  const hereUrl = useMemo(() => {
+    const here = new URL(window.location.href);
+    if (kind === "github") {
+      here.searchParams.append("check_status", id);
+    }
+    return here.href;
+  }, [id, kind]);
 
   const authorizeUrl = `/ui-server/api/data/oauth2/providers/${id}/authorize`;
   const url = `${authorizeUrl}?next_url=${encodeURIComponent(hereUrl)}`;
@@ -163,7 +183,7 @@ function ConnectedAccount({ connection }: ConnectedAccountProps) {
 
   if (isLoading) {
     return (
-      <CardText>
+      <CardText className="mb-1">
         <Loader inline className="me-1" size={16} />
         Checking connected account...
       </CardText>
@@ -175,17 +195,146 @@ function ConnectedAccount({ connection }: ConnectedAccountProps) {
   }
 
   if (account == null) {
-    return <CardText>Error: could not find connected account.</CardText>;
+    return (
+      <CardText className="mb-1">
+        Error: could not find connected account.
+      </CardText>
+    );
   }
 
   const text = `@${account.username}`;
 
   return (
-    <CardText>
+    <CardText className="mb-1">
       Account:{" "}
       <ExternalLink role="text" url={account.web_url}>
         {text}
       </ExternalLink>
     </CardText>
+  );
+}
+
+interface GitHubAppInstallationsProps {
+  connection: Connection;
+  provider: Provider;
+}
+
+function GitHubAppInstallations({
+  connection,
+  provider,
+}: GitHubAppInstallationsProps) {
+  const {
+    data: account,
+    isLoading: isLoadingAccount,
+    error: accountError,
+  } = connectedServicesApi.endpoints.getOauth2ConnectionsByConnectionIdAccount.useQueryState(
+    {
+      connectionId: connection.id,
+    }
+  );
+
+  const {
+    data: installations,
+    isLoading: isLoadingInstallations,
+    error: installationsError,
+  } = useGetOauth2ConnectionsByConnectionIdInstallationsQuery({
+    connectionId: connection.id,
+    params: { per_page: 100 },
+  });
+
+  const isLoading = isLoadingAccount || isLoadingInstallations;
+  const error = accountError ?? installationsError;
+
+  if (isLoadingAccount) {
+    return null;
+  }
+
+  if (isLoading) {
+    return (
+      <CardText className="mb-1">
+        <Loader inline className="me-1" size={16} />
+        Checking GitHub app installations...
+      </CardText>
+    );
+  }
+
+  if (error) {
+    return <RtkOrNotebooksError error={error} dismissible={false} />;
+  }
+
+  if (installations == null) {
+    return (
+      <CardText className="mb-1">
+        Error: could not load app installations.
+      </CardText>
+    );
+  }
+
+  const app = provider.app_slug ? (
+    <>
+      The application <code>{provider.app_slug}</code>
+    </>
+  ) : (
+    "This application"
+  );
+
+  const settingsUrl = provider.app_slug
+    ? safeNewUrl(
+        `apps/${provider.app_slug}/installations/select_target`,
+        provider.url
+      )
+    : null;
+
+  return (
+    <>
+      <CardText className="mb-1">{app} is installed in:</CardText>
+      <ul>
+        {installations?.data.map((installation) => (
+          <GitHubAppInstallationItem
+            key={installation.id}
+            installation={installation}
+          />
+        ))}
+      </ul>
+      {settingsUrl && (
+        <ExternalLink
+          url={settingsUrl.href}
+          role="button"
+          color="outline-primary"
+        >
+          Update settings for {provider.display_name}
+        </ExternalLink>
+      )}
+    </>
+  );
+}
+
+interface GitHubAppInstallationItemProps {
+  installation: AppInstallation;
+}
+
+function GitHubAppInstallationItem({
+  installation,
+}: GitHubAppInstallationItemProps) {
+  const { account_login, account_web_url, repository_selection, suspended_at } =
+    installation;
+
+  const isSuspended = !!suspended_at;
+  const restrictedSelection = repository_selection === "selected";
+
+  return (
+    <li>
+      <ExternalLink url={account_web_url} role="text">
+        <BoxArrowUpRight className={cx("bi", "me-1")} />
+        <span className={cx(isSuspended && "text-decoration-line-through")}>
+          {account_login}
+        </span>
+      </ExternalLink>
+      {isSuspended
+        ? " (suspended)"
+        : restrictedSelection
+        ? " (only selected repositories)"
+        : null}
+    </li>
   );
 }

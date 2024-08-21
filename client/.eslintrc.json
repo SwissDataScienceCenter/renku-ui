@@ -81,10 +81,10 @@
           // Careful! This skips the entire JS node, better to avoid it.
         ],
         "skipWordIfMatch": [
-          // "Oauth2",
           "http(s)?://[^s]*", // url
           "0x[0-9a-fx]{2,16}", // hex
-          "[0-9a-f]{4,32}" // commit sha (7/8/32) and zenodo sub-identifiers (4-12)
+          "[0-9a-f]{4,32}", // commit sha (7/8/32) and zenodo sub-identifiers (4-12)
+          "Oauth2" // spellchecker seems to not ignore words with "oauth2"
         ],
         "skipWords": [
           "accessor",

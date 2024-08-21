@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,31 +16,18 @@
  * limitations under the License.
  */
 
-export interface AbstractKgPaginatedResponse {
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
-}
+import type {
+  Pagination as BasePagination,
+  PaginatedResponse,
+} from "../../../utils/types/pagination.types";
+import type { AppInstallation } from "./connectedServices.generated-api";
 
-export interface AbstractKgPaginatedQueryArgs {
-  page?: number;
-  perPage?: number;
-}
+export type Pagination = Required<
+  Pick<BasePagination, "currentPage" | "perPage" | "totalItems" | "totalPages">
+> &
+  BasePagination;
 
-export interface Pagination {
-  currentPage?: number;
-  firstPageLink?: string;
-  lastPageLink?: string;
-  nextPage?: number;
-  nextPageLink?: string;
-  perPage?: number;
-  previousPage?: number;
-  totalItems?: number;
-  totalPages?: number;
-}
-
-export interface PaginatedResponse<T, P extends Pagination = Pagination> {
-  data: T[];
-  pagination: P;
-}
+export type AppInstallationsPaginated = PaginatedResponse<
+  AppInstallation,
+  Pagination
+>;
