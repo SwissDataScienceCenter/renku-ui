@@ -289,12 +289,15 @@ function GitHubAppInstallations({
     <>
       <CardText className="mb-1">{app} is installed in:</CardText>
       <ul>
-        {installations?.data.map((installation) => (
+        {installations.data.map((installation) => (
           <GitHubAppInstallationItem
             key={installation.id}
             installation={installation}
           />
         ))}
+        {installations.pagination.totalPages > 1 && (
+          <li className="fst-italic">and more...</li>
+        )}
       </ul>
       {settingsUrl && (
         <ExternalLink
