@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // initialize an empty api service that we'll inject endpoints into later as needed
-export const searchV2EmptyApi = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data/oauth2" }),
+export const connectedServicesEmptyApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
   endpoints: () => ({}),
-  reducerPath: "searchV2Api",
+  reducerPath: "connectedServicesApi",
 });

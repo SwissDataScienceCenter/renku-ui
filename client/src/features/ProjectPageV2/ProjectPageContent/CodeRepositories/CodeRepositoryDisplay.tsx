@@ -56,9 +56,10 @@ import {
   WarnAlert,
 } from "../../../../components/Alert";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import connectedServicesApi, {
-  useGetProvidersQuery,
-} from "../../../connectedServices/connectedServices.api";
+import {
+  connectedServicesApi,
+  useGetOauth2ProvidersQuery,
+} from "../../../connectedServices/api/connectedServices.api";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
 import repositoriesApi, {
   useGetRepositoryMetadataQuery,
@@ -540,7 +541,7 @@ function RepositoryView({
     repositoryUrl,
   });
   const { isLoading: isLoadingProviders, error: providersError } =
-    useGetProvidersQuery();
+    useGetOauth2ProvidersQuery();
 
   const isNotFound = error != null && "status" in error && error.status == 404;
 
@@ -692,7 +693,7 @@ function RepositoryPermissionsAlert({
       repositoryUrl,
     });
   const { data: providers } =
-    connectedServicesApi.endpoints.getProviders.useQueryState();
+    connectedServicesApi.endpoints.getOauth2Providers.useQueryState();
 
   const isNotFound = error != null && "status" in error && error.status == 404;
 
@@ -871,7 +872,7 @@ function RepositoryProviderDetails({
     data: providers,
     isLoading: isLoadingProviders,
     error: providersError,
-  } = connectedServicesApi.endpoints.getProviders.useQueryState();
+  } = connectedServicesApi.endpoints.getOauth2Providers.useQueryState();
 
   const isLoading = isLoadingRepositoryProviderMatch || isLoadingProviders;
   const error = repositoryProviderMatchError ?? providersError;

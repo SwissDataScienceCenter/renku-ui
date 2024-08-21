@@ -1,0 +1,678 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Renku Data Services API",
+    "description": "This service is the main backend for Renku. It provides information about users, projects,\ncloud storage, access to compute resources and many other things.\n",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api/data"
+    },
+    {
+      "url": "/ui-server/api/data"
+    }
+  ],
+  "paths": {
+    "/oauth2/providers": {
+      "get": {
+        "summary": "Get all OAuth2 Clients",
+        "description": "Get the list of available OAuth2 Clients.",
+        "responses": {
+          "200": {
+            "description": "The list of providers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      },
+      "post": {
+        "summary": "Create a new OAuth2 Client",
+        "description": "Create a new OAuth2 Client by sending a configuration.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The OAuth2 Client was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Provider"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      }
+    },
+    "/oauth2/providers/{provider_id}": {
+      "get": {
+        "summary": "Get an OAuth2 Client",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The provider.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Provider"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      },
+      "patch": {
+        "summary": "Update specific fields of an OAuth2 Client",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated OAuth2 Client",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Provider"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The OAuth2 Client does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      },
+      "delete": {
+        "summary": "Remove an OAuth2 Client",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The OAuth2 Client was removed or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      }
+    },
+    "/oauth2/providers/{provider_id}/authorize": {
+      "get": {
+        "summary": "Authorize an OAuth2 Client",
+        "description": "Starts the OAuth2 authorization flow (authorization code grant).\nNote that this will create a new connection entity for the currently authenticated user.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "description": "query parameters",
+            "name": "authorize_params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "next_url": {
+                  "description": "The URL to redirect the user to once the authorization flow has been completed.",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "The authorization URL for this OAuth2 Client."
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      }
+    },
+    "/oauth2/connections": {
+      "get": {
+        "summary": "Get all OAuth2 connections",
+        "description": "Get the list of all connected services for the current user.",
+        "responses": {
+          "200": {
+            "description": "The list of connections.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      }
+    },
+    "/oauth2/connections/{connection_id}": {
+      "get": {
+        "summary": "Get an OAuth2 connection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The connection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Connection"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      }
+    },
+    "/oauth2/connections/{connection_id}/account": {
+      "get": {
+        "summary": "Get the account information for this OAuth2 connection for the currently authenticated user if their account is connected",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The retrieved account information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectedAccount"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      }
+    },
+    "/oauth2/connections/{connection_id}/installations": {
+      "get": {
+        "summary": "Get the installations for this OAuth2 connection for the currently authenticated user if their account is connected",
+        "description": "This endpoint is specific to GitHub applications.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "description": "Query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/PaginationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of available GitHub installations.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppInstallationList"
+                }
+              }
+            },
+            "headers": {
+              "page": {
+                "description": "The index of the current page (starting at 1).",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "per-page": {
+                "description": "The number of items per page.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total": {
+                "description": "The total number of items.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total-pages": {
+                "description": "The total number of pages.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProviderList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Provider"
+        }
+      },
+      "Provider": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/ProviderId"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ProviderKind"
+          },
+          "app_slug": {
+            "$ref": "#/components/schemas/ApplicationSlug"
+          },
+          "client_id": {
+            "$ref": "#/components/schemas/ClientId"
+          },
+          "client_secret": {
+            "$ref": "#/components/schemas/ClientSecret"
+          },
+          "display_name": {
+            "$ref": "#/components/schemas/DisplayName"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/ApiScope"
+          },
+          "url": {
+            "$ref": "#/components/schemas/ProviderUrl"
+          },
+          "use_pkce": {
+            "$ref": "#/components/schemas/UsePKCE"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "app_slug",
+          "client_id",
+          "display_name",
+          "scope",
+          "url",
+          "use_pkce"
+        ]
+      },
+      "ProviderPost": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/ProviderId"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ProviderKind"
+          },
+          "app_slug": {
+            "$ref": "#/components/schemas/ApplicationSlug"
+          },
+          "client_id": {
+            "$ref": "#/components/schemas/ClientId"
+          },
+          "client_secret": {
+            "$ref": "#/components/schemas/ClientSecret"
+          },
+          "display_name": {
+            "$ref": "#/components/schemas/DisplayName"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/ApiScope"
+          },
+          "url": {
+            "$ref": "#/components/schemas/ProviderUrl"
+          },
+          "use_pkce": {
+            "$ref": "#/components/schemas/UsePKCE"
+          }
+        },
+        "required": ["id", "kind", "client_id", "display_name", "scope", "url"]
+      },
+      "ProviderPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ProviderKind"
+          },
+          "app_slug": {
+            "$ref": "#/components/schemas/ApplicationSlug"
+          },
+          "client_id": {
+            "$ref": "#/components/schemas/ClientId"
+          },
+          "client_secret": {
+            "$ref": "#/components/schemas/ClientSecret"
+          },
+          "display_name": {
+            "$ref": "#/components/schemas/DisplayName"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/ApiScope"
+          },
+          "url": {
+            "$ref": "#/components/schemas/ProviderUrl"
+          },
+          "use_pkce": {
+            "$ref": "#/components/schemas/UsePKCE"
+          }
+        }
+      },
+      "ConnectionList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Connection"
+        }
+      },
+      "Connection": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "provider_id": {
+            "$ref": "#/components/schemas/ProviderId"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConnectionStatus"
+          }
+        },
+        "required": ["id", "provider_id", "status"]
+      },
+      "ConnectedAccount": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "username": {
+            "$ref": "#/components/schemas/ExternalUsername"
+          },
+          "web_url": {
+            "$ref": "#/components/schemas/WebUrl"
+          }
+        },
+        "required": ["username", "web_url"]
+      },
+      "AppInstallationList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/AppInstallation"
+        }
+      },
+      "AppInstallation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "account_login": {
+            "type": "string"
+          },
+          "account_web_url": {
+            "type": "string"
+          },
+          "repository_selection": {
+            "type": "string",
+            "enum": ["all", "selected"]
+          },
+          "suspended_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "account_login",
+          "account_web_url",
+          "repository_selection"
+        ]
+      },
+      "Ulid": {
+        "description": "ULID identifier",
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[A-Z0-9]{26}$"
+      },
+      "ProviderId": {
+        "description": "ID of a OAuth2 provider, e.g. \"gitlab.com\".",
+        "type": "string",
+        "example": "some-id"
+      },
+      "ProviderKind": {
+        "type": "string",
+        "enum": ["gitlab", "github"],
+        "example": "gitlab"
+      },
+      "ApplicationSlug": {
+        "description": "URL-friendly name of the application. This field only applies to\nGitHub Applications. The slug is provided by GitHub when\nsetting up a GitHub App.\n",
+        "type": "string",
+        "example": "my-application"
+      },
+      "ClientId": {
+        "description": "Client ID or Application ID value. This is provided by\nthe Resource Server when setting up a new OAuth2 Client.\n",
+        "type": "string",
+        "example": "some-client-id"
+      },
+      "ClientSecret": {
+        "description": "Client secret provided by the Resource Server when setting\nup a new OAuth2 Client.\n",
+        "type": "string",
+        "example": "some-client-secret"
+      },
+      "DisplayName": {
+        "type": "string",
+        "example": "my oauth2 application"
+      },
+      "ApiScope": {
+        "type": "string",
+        "example": "api"
+      },
+      "ProviderUrl": {
+        "description": "The base URL of the OAuth2 Resource Server, e.g. \"https://gitlab.com\".\n",
+        "type": "string",
+        "example": "https://example.org"
+      },
+      "UsePKCE": {
+        "description": "Whether or not to use PKCE during authorization flows.\n",
+        "type": "boolean",
+        "example": false,
+        "default": false
+      },
+      "ConnectionStatus": {
+        "type": "string",
+        "enum": ["connected", "pending"]
+      },
+      "ExternalUsername": {
+        "type": "string",
+        "example": "some-username"
+      },
+      "WebUrl": {
+        "description": "A URL which can be opened in a browser, i.e. a web page.",
+        "type": "string",
+        "example": "https://example.org"
+      },
+      "PaginationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "description": "Result's page number starting from 1",
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "per_page": {
+            "description": "The number of results per page",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "example": 1404
+              },
+              "detail": {
+                "type": "string",
+                "example": "A more detailed optional message showing what the problem was"
+              },
+              "message": {
+                "type": "string",
+                "example": "Something went wrong - please try again later"
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "The schema for all 4xx and 5xx responses",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}

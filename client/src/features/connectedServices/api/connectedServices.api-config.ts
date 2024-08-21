@@ -16,29 +16,17 @@
  * limitations under the License.
  */
 
-export interface Provider {
-  id: string;
-  display_name: string;
-  url: string;
-}
+// Run `npm run generate-api:connectedServices` to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
 
-export type ProviderList = Provider[];
+const config: ConfigFile = {
+  apiFile: "./connectedServices.empty-api.ts",
+  apiImport: "connectedServicesEmptyApi",
+  outputFile: "./connectedServices.generated-api.ts",
+  exportName: "connectedServicesGeneratedApi",
+  hooks: false,
+  schemaFile: path.join(__dirname, "connectedServices.openapi.json"),
+};
 
-export interface Connection {
-  id: string;
-  provider_id: string;
-  status: ConnectionStatus;
-}
-
-export type ConnectionList = Connection[];
-
-export type ConnectionStatus = "pending" | "connected";
-
-export interface ConnectedAccount {
-  username: string;
-  web_url: string;
-}
-
-export interface GetConnectedAccountParams {
-  connectionId: string;
-}
+export default config;

@@ -25,25 +25,24 @@ import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import connectedServicesApi, {
-  useGetConnectedAccountQuery,
-  useGetConnectionsQuery,
-  useGetProvidersQuery,
-} from "./connectedServices.api";
 import {
-  Connection,
-  ConnectionStatus,
-  Provider,
-} from "./connectedServices.types";
+  connectedServicesApi,
+  useGetOauth2ConnectionsByConnectionIdAccountQuery,
+  useGetOauth2ConnectionsQuery,
+  useGetOauth2ProvidersQuery,
+  type Connection,
+  type ConnectionStatus,
+  type Provider,
+} from "./api/connectedServices.api";
 
 export default function ConnectedServicesPage() {
   const {
     data: providers,
     isLoading: isLoadingProviders,
     error: providersError,
-  } = useGetProvidersQuery();
+  } = useGetOauth2ProvidersQuery();
   const { isLoading: isLoadingConnections, error: connectionsError } =
-    useGetConnectionsQuery();
+    useGetOauth2ConnectionsQuery();
 
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
@@ -89,7 +88,7 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
   const { id, display_name, url } = provider;
 
   const { data: connections } =
-    connectedServicesApi.endpoints.getConnections.useQueryState();
+    connectedServicesApi.endpoints.getOauth2Connections.useQueryState();
 
   const connection = useMemo(
     () => connections?.find(({ provider_id }) => provider_id === id),
@@ -122,6 +121,7 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
           {connection?.status === "connected" && (
             <ConnectedAccount connection={connection} />
           )}
+          {provider.kind == "github" && <>GITHUB</>}
         </CardBody>
       </Card>
     </div>
@@ -157,7 +157,9 @@ function ConnectedAccount({ connection }: ConnectedAccountProps) {
     data: account,
     isLoading,
     error,
-  } = useGetConnectedAccountQuery({ connectionId: connection.id });
+  } = useGetOauth2ConnectionsByConnectionIdAccountQuery({
+    connectionId: connection.id,
+  });
 
   if (isLoading) {
     return (
