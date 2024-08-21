@@ -116,18 +116,14 @@ function SearchV2ResultsContent() {
   }
 
   if (!searchResults.data?.items?.length) {
-    return (
+    return query == null ? (
+      <p>No results</p>
+    ) : (
       <>
         <p>
-          No results
-          {query && (
-            <>
-              {" "}
-              for <span className="fw-bold">{`"${query}"`}</span>
-            </>
-          )}
+          No results for <span className="fw-bold">{`"${query}"`}</span>
         </p>
-        {query && <p>You can try another search, or change some filters.</p>}
+        <p>You can try another search, or change some filters.</p>
       </>
     );
   }
