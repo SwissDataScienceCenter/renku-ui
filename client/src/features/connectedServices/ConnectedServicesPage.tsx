@@ -373,7 +373,7 @@ function GitHubStatusCheck({
   installations,
   provider,
 }: GitHubStatusCheckProps) {
-  const [search] = useSearchParams();
+  const [search, setSearch] = useSearchParams();
 
   const isEnabled = useMemo(
     () => search.get(CHECK_STATUS_QUERY_PARAM) === provider.id,
@@ -386,6 +386,26 @@ function GitHubStatusCheck({
     );
     return !!userInstallation && !userInstallation.suspended_at;
   }, [account.username, installations.data]);
+
+  useEffect(() => {
+    if (
+      isEnabled &&
+      (isInstalledForUser || installations.pagination.totalPages > 1)
+    ) {
+      setSearch(
+        (prevSearch) => {
+          prevSearch.delete(CHECK_STATUS_QUERY_PARAM);
+          return prevSearch;
+        },
+        { replace: true }
+      );
+    }
+  }, [
+    installations.pagination.totalPages,
+    isEnabled,
+    isInstalledForUser,
+    setSearch,
+  ]);
 
   //? NOTE: if the user has more than 100 installations, assume the app is installed for the user
   if (
