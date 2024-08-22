@@ -17,27 +17,42 @@
  */
 
 import cx from "classnames";
-import { Card, CardBody, CardText, CardTitle } from "reactstrap";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { BoxArrowUpRight, XLg } from "react-bootstrap-icons";
+import { useSearchParams } from "react-router-dom-v5-compat";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardText,
+  CardTitle,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
 
-import { Fragment, useMemo } from "react";
-import { BoxArrowUpRight } from "react-bootstrap-icons";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { safeNewUrl } from "../../utils/helpers/safeNewUrl.utils";
 import {
-  type AppInstallation,
   connectedServicesApi,
   useGetOauth2ConnectionsByConnectionIdAccountQuery,
   useGetOauth2ConnectionsByConnectionIdInstallationsQuery,
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
+  type ConnectedAccount as Account,
+  type AppInstallation,
   type Connection,
   type ConnectionStatus,
   type Provider,
   type ProviderKind,
 } from "./api/connectedServices.api";
-import { safeNewUrl } from "../../utils/helpers/safeNewUrl.utils";
+import { AppInstallationsPaginated } from "./api/connectedServices.types";
+
+const CHECK_STATUS_QUERY_PARAM = "check-status";
 
 export default function ConnectedServicesPage() {
   const {
@@ -151,7 +166,7 @@ function ConnectButton({ id, connectionStatus, kind }: ConnectButtonParams) {
   const hereUrl = useMemo(() => {
     const here = new URL(window.location.href);
     if (kind === "github") {
-      here.searchParams.append("check_status", id);
+      here.searchParams.append(CHECK_STATUS_QUERY_PARAM, id);
     }
     return here.href;
   }, [id, kind]);
@@ -262,7 +277,7 @@ function GitHubAppInstallations({
     return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
-  if (installations == null) {
+  if (account == null || installations == null) {
     return (
       <CardText className="mb-1">
         Error: could not load app installations.
@@ -308,6 +323,11 @@ function GitHubAppInstallations({
           Update settings for {provider.display_name}
         </ExternalLink>
       )}
+      <GitHubStatusCheck
+        account={account}
+        installations={installations}
+        provider={provider}
+      />
     </>
   );
 }
@@ -339,5 +359,116 @@ function GitHubAppInstallationItem({
         ? " (only selected repositories)"
         : null}
     </li>
+  );
+}
+
+interface GitHubStatusCheckProps {
+  account: Account;
+  installations: AppInstallationsPaginated;
+  provider: Provider;
+}
+
+function GitHubStatusCheck({
+  account,
+  installations,
+  provider,
+}: GitHubStatusCheckProps) {
+  const [search] = useSearchParams();
+
+  const isEnabled = useMemo(
+    () => search.get(CHECK_STATUS_QUERY_PARAM) === provider.id,
+    [provider.id, search]
+  );
+
+  const isInstalledForUser = useMemo(() => {
+    const userInstallation = installations.data.find(
+      ({ account_login }) => account_login === account.username
+    );
+    return !!userInstallation && !userInstallation.suspended_at;
+  }, [account.username, installations.data]);
+
+  //? NOTE: if the user has more than 100 installations, assume the app is installed for the user
+  if (
+    !isEnabled ||
+    isInstalledForUser ||
+    installations.pagination.totalPages > 1
+  ) {
+    return null;
+  }
+
+  return <GitHubStatusCheckModal provider={provider} />;
+}
+
+interface GitHubStatusCheckModalProps {
+  provider: Provider;
+}
+
+function GitHubStatusCheckModal({ provider }: GitHubStatusCheckModalProps) {
+  const [, setSearch] = useSearchParams();
+
+  const [isOpen, setIsOpen] = useState(true);
+  const toggle = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSearch(
+        (prevSearch) => {
+          prevSearch.delete(CHECK_STATUS_QUERY_PARAM);
+          return prevSearch;
+        },
+        { replace: true }
+      );
+    }
+  }, [isOpen, setSearch]);
+
+  const settingsUrl = provider.app_slug
+    ? safeNewUrl(
+        `apps/${provider.app_slug}/installations/select_target`,
+        provider.url
+      )
+    : null;
+
+  return (
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalHeader toggle={toggle}>GitHub app configuration</ModalHeader>
+      <ModalBody>
+        {settingsUrl ? (
+          <>
+            <p>
+              In order to finish setting up the connection to{" "}
+              {provider.display_name}, head over to {provider.url}.
+            </p>
+            <p>
+              <ExternalLink
+                url={settingsUrl.href}
+                role="button"
+                color="outline-primary"
+              >
+                Configure {provider.app_slug} on {provider.display_name}
+              </ExternalLink>
+            </p>
+            <p className="mb-1">
+              The {provider.app_slug} GitHub app needs to be installed for users
+              and organizations so that RenkuLab can use repositories in
+              projects and sessions.
+            </p>
+          </>
+        ) : (
+          <p className="mb-1">
+            In order to finish setting up the connection to{" "}
+            {provider.display_name}, you may need to configure where this app
+            integration is installed on {provider.url}.
+          </p>
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Button className="btn-outline-rk-green" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Close
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 }
