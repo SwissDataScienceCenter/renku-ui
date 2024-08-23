@@ -476,8 +476,6 @@ function SessionDetails({
             className={cx(
               "d-block",
               "d-lg-flex",
-              "pb-2",
-              "pb-lg-0",
               "gap-2",
               "align-items-center"
             )}
