@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+import { useMemo } from "react";
 import {
   Bookmarks,
   Clock,
@@ -27,13 +28,13 @@ import {
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
-
 import { TimeCaption } from "../../../../components/TimeCaption";
 import {
   EditButtonLink,
   UnderlineArrowLink,
 } from "../../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
+import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import type {
   ProjectMemberListResponse,
   ProjectMemberResponse,
@@ -45,9 +46,6 @@ import {
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import MembershipGuard from "../../utils/MembershipGuard";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
-
-import { useMemo } from "react";
-import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import styles from "./ProjectInformation.module.scss";
 
 const MAX_MEMBERS_DISPLAYED = 5;

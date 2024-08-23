@@ -64,9 +64,9 @@ export function getMemberNameToDisplay(
   includeNamespace?: boolean
 ): string {
   const namespace =
-    includeNamespace && member.namespace ? `@${member.namespace}` : "";
+    includeNamespace && member.namespace ? ` @${member.namespace}` : "";
   return member.first_name || member.last_name
-    ? `${member.first_name} ${member.last_name} ${namespace}`
+    ? `${member.first_name} ${member.last_name}${namespace}`
     : member.namespace
     ? `@${member.namespace}`
     : `${member.id}`;

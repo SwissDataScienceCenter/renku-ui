@@ -31,11 +31,11 @@ import Select, {
   SingleValue,
   SingleValueProps,
 } from "react-select";
-import { ErrorAlert } from "../../../components/Alert.jsx";
-import { useGetQueryQuery, User } from "../../searchV2/api/searchV2Api.api.ts";
+import { ErrorAlert } from "../../../components/Alert";
+import { useGetQueryQuery, User } from "../../searchV2/api/searchV2Api.api";
 import styles from "./ProjectNamespaceFormField.module.scss";
 
-const CANT_USER_RESULT = 100;
+const USER_REQUEST_LIMIT = 100;
 
 interface OptionOrSingleValueContentProps {
   user: User;
@@ -218,7 +218,7 @@ export function UserControl(props: UserControlProps) {
   } = useGetQueryQuery(
     {
       page: 1,
-      perPage: CANT_USER_RESULT,
+      perPage: USER_REQUEST_LIMIT,
       q: `type:user ${lookupQuery}`,
     },
     { skip: !lookupQuery || lookupQuery == null || lookupQuery.length < 2 }

@@ -87,10 +87,8 @@ function RemoveProjectMemberAccessForm({
           >
             <Label>
               Remove <b>{nameToDisplay}</b>{" "}
-              {member.namespace ? (
+              {member.namespace && (
                 <span className="fst-italic">@{member.namespace}</span>
-              ) : (
-                ""
               )}{" "}
               from project?
             </Label>
