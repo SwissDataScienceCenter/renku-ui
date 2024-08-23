@@ -340,7 +340,6 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     namespacesPageResult.currentData,
     namespacesPageResult.requestId,
     currentRequestId,
-    onChange,
   ]);
 
   if (isFetching) {
