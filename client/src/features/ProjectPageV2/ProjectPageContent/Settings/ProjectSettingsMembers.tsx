@@ -37,7 +37,6 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button.tsx";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -50,12 +49,9 @@ import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/p
 import AddProjectMemberModal from "../../../projectsV2/fields/AddProjectMemberModal";
 import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal.tsx";
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
-
+import { ProjectMemberDisplay } from "../../../projectsV2/shared/ProjectMemberDisplay";
 import MembershipGuard from "../../utils/MembershipGuard.tsx";
-import {
-  getMemberNameToDisplay,
-  toSortedMembers,
-} from "../../utils/roleUtils.ts";
+import { toSortedMembers } from "../../utils/roleUtils.ts";
 
 type MemberActionMenuProps = Omit<
   ProjectPageSettingsMembersListItemProps,
@@ -168,17 +164,11 @@ function ProjectPageSettingsMembersListItem({
   onRemove,
   onEdit,
 }: ProjectPageSettingsMembersListItemProps) {
-  const nameToDisplay = getMemberNameToDisplay(member);
   return (
     <ListGroupItem>
       <Row className="g-2">
         <Col className="align-content-around" xs={12} md="auto">
-          {nameToDisplay}{" "}
-          {member.namespace ? (
-            <span className="fst-italic">@{member.namespace} </span>
-          ) : (
-            ""
-          )}
+          <ProjectMemberDisplay member={member} />{" "}
           <span className="fw-bold">({member.role})</span>
         </Col>
         <Col

@@ -31,7 +31,6 @@ import Select, {
   SingleValue,
   SingleValueProps,
 } from "react-select";
-import { ErrorAlert } from "../../../components/Alert";
 import { useGetQueryQuery, User } from "../../searchV2/api/searchV2Api.api";
 import styles from "./ProjectNamespaceFormField.module.scss";
 
@@ -212,7 +211,6 @@ export function UserControl(props: UserControlProps) {
 
   const {
     data: users,
-    isError,
     isFetching,
     isLoading,
   } = useGetQueryQuery(
@@ -228,16 +226,6 @@ export function UserControl(props: UserControlProps) {
     () => users?.items?.filter((u) => u.type === "User"),
     [users]
   );
-
-  if (isError) {
-    return (
-      <div className={className} id={id}>
-        <ErrorAlert>
-          <p className="mb-0">Error: could not fetch users.</p>
-        </ErrorAlert>
-      </div>
-    );
-  }
 
   return (
     <div className={className} data-cy={dataCy} id={id}>

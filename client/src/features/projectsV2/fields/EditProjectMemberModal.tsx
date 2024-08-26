@@ -31,12 +31,12 @@ import {
   ModalHeader,
 } from "reactstrap";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import { getMemberNameToDisplay } from "../../ProjectPageV2/utils/roleUtils";
 import type {
   ProjectMemberPatchRequest,
   ProjectMemberResponse,
 } from "../api/projectV2.api";
 import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
+import { ProjectMemberDisplay } from "../shared/ProjectMemberDisplay";
 
 interface EditProjectMemberModalProps {
   isOpen: boolean;
@@ -97,8 +97,6 @@ function EditProjectMemberAccessForm({
     [patchProjectMembers, projectId, members, member]
   );
 
-  const userName = getMemberNameToDisplay(member);
-
   return (
     <>
       <ModalBody className="pb-0">
@@ -108,12 +106,7 @@ function EditProjectMemberAccessForm({
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
             <Label>
-              {userName}{" "}
-              {member.namespace ? (
-                <span className="fst-italic">@{member.namespace}</span>
-              ) : (
-                ""
-              )}
+              <ProjectMemberDisplay member={member} />
             </Label>
             <Controller
               control={control}

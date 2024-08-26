@@ -198,11 +198,11 @@ describe("Navigate to project", () => {
     cy.contains("User One").should("be.visible");
     cy.contains("User Two").should("be.visible");
     cy.contains("User Three").should("be.visible");
-    cy.contains("user4-uuid").should("be.visible");
+    cy.contains("User Four").should("be.visible");
     cy.contains("user5-uuid").should("not.exist");
-    cy.contains("user6-uuid").should("be.visible");
+    cy.contains("UserSix").should("be.visible");
     cy.contains("All members").should("be.visible").click();
-    cy.contains("user5-uuid").should("be.visible");
+    cy.contains("@user5").should("be.visible");
   });
 });
 

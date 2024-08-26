@@ -59,15 +59,10 @@ export function toSortedMembers(members: ProjectMemberListResponse) {
   });
 }
 
-export function getMemberNameToDisplay(
-  member: ProjectMemberResponse,
-  includeNamespace?: boolean
-): string {
-  const namespace =
-    includeNamespace && member.namespace ? ` @${member.namespace}` : "";
+export function getMemberNameToDisplay(member: ProjectMemberResponse): string {
   return member.first_name || member.last_name
-    ? `${member.first_name} ${member.last_name}${namespace}`
+    ? `${member.first_name ?? ""} ${member.last_name ?? ""}`
     : member.namespace
     ? `@${member.namespace}`
-    : `${member.id}`;
+    : "(unknown)";
 }

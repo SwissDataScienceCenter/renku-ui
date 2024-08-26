@@ -111,11 +111,9 @@ function AddProjectMemberAccessForm({
               control={control}
               name="id"
               render={({ field }) => {
-                const fields: Partial<typeof field> = { ...field };
-                delete fields?.ref;
                 return (
                   <UserControl
-                    {...fields}
+                    {...field}
                     className={cx(errors.id && "is-invalid")}
                     data-cy="add-project-member"
                     id="addProjectMember"

@@ -273,7 +273,7 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
                 <p className={cx("d-flex", "mb-0", "gap-2")}>
                   <span>{name ?? "Unknown user"}</span>
                   <span className="fst-italic">{`@${d.namespace}`}</span>
-                  <span className="fw-bold">{capitalize(d.role)}</span>
+                  <span className="fw-bold">({capitalize(d.role)})</span>
                 </p>
                 <div>
                   <Button
