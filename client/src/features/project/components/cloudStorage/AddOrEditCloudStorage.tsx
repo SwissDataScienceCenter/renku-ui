@@ -70,6 +70,8 @@ import { ExternalLink } from "../../../../components/ExternalLinks";
 import { WarnAlert } from "../../../../components/Alert";
 import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
 
+import AddStorageMountSaveCredentialsInfo from "./AddStorageMountSaveCredentialsInfo";
+
 import styles from "./CloudStorage.module.scss";
 
 interface AddOrEditCloudStorageProps {
@@ -1097,7 +1099,7 @@ function AddStorageOptions({
 
 // *** Add storage: page 3 of 3, with name and mount path *** //
 
-interface AddStorageMountForm {
+export interface AddStorageMountForm {
   name: string;
   mountPoint: string;
   readOnly: boolean;
@@ -1302,60 +1304,5 @@ function AddStorageMount({
           />
         )}
     </form>
-  );
-}
-
-type AddStorageMountSaveCredentialsInfoProps = {
-  control: Control<AddStorageMountForm>;
-  onFieldValueChange: (field: "saveCredentials", value: boolean) => void;
-  state: AddCloudStorageState;
-};
-
-function AddStorageMountSaveCredentialsInfo({
-  control,
-  onFieldValueChange,
-  state,
-}: AddStorageMountSaveCredentialsInfoProps) {
-  return (
-    <div className="mt-3">
-      <Label className="form-label" for="saveCredentials">
-        Save credentials
-      </Label>
-
-      <Controller
-        name="saveCredentials"
-        control={control}
-        render={({ field }) => (
-          <input
-            id="saveCredentials"
-            type="checkbox"
-            {...field}
-            className={cx("form-check-input", "ms-1")}
-            onChange={(e) => {
-              field.onChange(e);
-              onFieldValueChange("saveCredentials", e.target.checked);
-            }}
-            value=""
-            checked={state.saveCredentials}
-          />
-        )}
-        rules={{ required: true }}
-      />
-      {state.saveCredentials && (
-        <div className="mt-1">
-          <WarnAlert dismissible={false}>
-            <p className="mb-0">
-              The credentials will be stored as secrets and only be for your
-              use. Other users will have to supply their credentials to use this
-              data source.
-            </p>
-          </WarnAlert>
-        </div>
-      )}
-      <div className={cx("form-text", "text-muted")}>
-        Check this box to save credentials as secrets, so you will not have to
-        provide them again when starting a session.
-      </div>
-    </div>
   );
 }
