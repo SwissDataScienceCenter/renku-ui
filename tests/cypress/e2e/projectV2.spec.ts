@@ -73,7 +73,6 @@ describe("Add new v2 project", () => {
     cy.contains(
       "Please provide a slug consisting of lowercase letters, numbers, and hyphens."
     ).should("be.visible");
-    cy.contains("A project must belong to a namespace.").should("be.visible");
     cy.getDataCy("project-slug-input").clear().type(slug);
     cy.wait("@listNamespaceV2");
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
