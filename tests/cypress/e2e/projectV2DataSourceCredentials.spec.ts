@@ -55,6 +55,9 @@ describe("Set up data sources with credentials", () => {
         fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
         name: "getCloudStorageV2",
       })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets-empty.json",
+      })
       .testCloudStorage({ success: false })
       .postCloudStorageSecrets({
         content: [],
@@ -138,6 +141,10 @@ describe("Set up data sources with credentials", () => {
       cy.get("#saveCredentials").should("be.checked");
     });
     cy.getDataCy("cloud-storage-edit-update-button").click();
+    fixtures.cloudStorageSecrets({
+      fixture: "cloudStorage/cloud-storage-secrets.json",
+      name: "getCloudStorageSecrets2",
+    });
     cy.wait("@postCloudStorageV2");
     cy.wait("@postCloudStorageSecrets");
     cy.getDataCy("cloud-storage-edit-body").should(
@@ -146,7 +153,6 @@ describe("Set up data sources with credentials", () => {
     );
     cy.getDataCy("cloud-storage-edit-close-button").click();
     cy.wait("@getCloudStorageV2");
-
     cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
     cy.getDataCy("data-storage-name").click();
     cy.getDataCy("data-source-title").should("contain.text", "example-storage");
@@ -169,6 +175,9 @@ describe("Set up data sources with credentials", () => {
         name: "getCloudStorageV2",
       })
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets-empty.json",
+      })
       .sessionLaunchers({
         fixture: "projectV2/session-launchers.json",
       });
@@ -200,10 +209,17 @@ describe("Set up data sources with credentials", () => {
           },
         ],
       })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets.json",
+      })
       .cloudStorage({
         isV2: true,
         fixture: "cloudStorage/cloud-storage-with-secrets-values-full.json",
         name: "getCloudStorageV2",
+      })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets.json",
+        name: "getCloudStorageSecrets2",
       });
 
     cy.getDataCy("cloud-storage-credentials-modal")
@@ -234,7 +250,7 @@ describe("Set up data sources with credentials", () => {
     cy.getDataCy("cloud-storage-edit-modal")
       .find("#access_key_id")
       .invoke("attr", "value")
-      .should("eq", "<sensitive>");
+      .should("eq", "<saved secret>");
     cy.getDataCy("cloud-storage-edit-modal")
       .find("#secret_access_key")
       .invoke("attr", "value")
@@ -252,6 +268,9 @@ describe("Set up data sources with credentials", () => {
         isV2: true,
         fixture: "cloudStorage/cloud-storage-with-secrets-values-partial.json",
         name: "getCloudStorageV2",
+      })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets-partial.json",
       })
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .postCloudStorage({
@@ -304,6 +323,9 @@ describe("Set up data sources with credentials", () => {
         isV2: true,
         fixture: "cloudStorage/cloud-storage-with-secrets-values-partial.json",
         name: "getCloudStorageV2",
+      })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets-partial.json",
       })
       .sessionLaunchers({
         fixture: "projectV2/session-launchers.json",
@@ -358,6 +380,9 @@ describe("Set up data sources with credentials", () => {
         isV2: true,
         fixture: "cloudStorage/cloud-storage-with-secrets-values-full.json",
         name: "getCloudStorageV2",
+      })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets.json",
       });
 
     cy.getDataCy("cloud-storage-credentials-modal")
@@ -372,7 +397,6 @@ describe("Set up data sources with credentials", () => {
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@postCloudStorageSecrets");
-    cy.wait("@getCloudStorageV2");
 
     // Credentials should be stored
     cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
@@ -394,6 +418,9 @@ describe("Set up data sources with credentials", () => {
         isV2: true,
         fixture: "cloudStorage/cloud-storage-with-secrets-values-partial.json",
         name: "getCloudStorageV2",
+      })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets-partial.json",
       })
       .sessionLaunchers({
         fixture: "projectV2/session-launchers.json",
@@ -417,7 +444,9 @@ describe("Set up data sources with credentials", () => {
     openDataSourceMenu();
     cy.getDataCy("data-source-credentials").click();
 
-    fixtures.deleteCloudStorageSecrets();
+    fixtures.deleteCloudStorageSecrets().cloudStorageSecrets({
+      fixture: "cloudStorage/cloud-storage-secrets-empty.json",
+    });
 
     cy.getDataCy("cloud-storage-credentials-modal")
       .contains("The saved credentials for this data source are incomplete")

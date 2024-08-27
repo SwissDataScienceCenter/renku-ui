@@ -43,8 +43,11 @@ import {
   storageDefinitionFromConfig,
 } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { usePostStoragesV2SecretsForSessionLaunchMutation } from "../projectsV2/api/projectV2.enhanced-api";
+import {
+  projectV2Api,
+  useGetProjectsByNamespaceAndSlugQuery,
+  usePostStoragesV2SecretsForSessionLaunchMutation,
+} from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
 import type { CloudStorageConfiguration } from "./CloudStorageSecretsModal";
@@ -152,6 +155,8 @@ function SaveCloudStorage({
       dispatch(
         startSessionOptionsV2Slice.actions.setCloudStorage(cloudStorageConfigs)
       );
+      // After all the changes have been made, indicate that the storages need to be reloaded
+      dispatch(projectV2Api.util.invalidateTags(["Storages"]));
     }
   }, [
     dispatch,
