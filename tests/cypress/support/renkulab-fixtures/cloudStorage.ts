@@ -36,6 +36,7 @@ interface PostCloudStorageSecretsArgs extends CloudStorageSecretsArgs {
     name: string;
     value: string;
   }[];
+  shouldNotBeCalled?: boolean;
 }
 
 interface TestCloudStorageArgs extends SimpleFixture {
@@ -112,6 +113,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
         content,
         fixture = "cloudStorage/cloud-storage-secrets.json",
         name = "postCloudStorageSecrets",
+        shouldNotBeCalled = false,
         storageId = 2,
       } = args ?? {};
       cy.fixture(fixture).then((secrets) => {
@@ -120,6 +122,8 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
           "POST",
           `/ui-server/api/data/storages_v2/${storageId}/secrets`,
           (req) => {
+            if (shouldNotBeCalled)
+              throw new Error("No call to post secrets expected");
             const newSecrets = req.body;
             expect(newSecrets.length).equal(content.length);
             newSecrets.forEach((secret, index) => {

@@ -391,7 +391,8 @@ export default function CloudStorageModal({
     const shouldSaveCredentials = !!(
       isV2 &&
       storageDetails.options &&
-      state.saveCredentials
+      state.saveCredentials &&
+      validationSucceeded
     );
     if (!shouldSaveCredentials) {
       return;
@@ -423,6 +424,7 @@ export default function CloudStorageModal({
     schema,
     storageDetails.options,
     storageDetails.schema,
+    validationSucceeded,
   ]);
 
   // Visual elements

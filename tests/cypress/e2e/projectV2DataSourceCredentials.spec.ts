@@ -55,7 +55,12 @@ describe("Set up data sources with credentials", () => {
         fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
         name: "getCloudStorageV2",
       })
-      .testCloudStorage({ success: false });
+      .testCloudStorage({ success: false })
+      .postCloudStorageSecrets({
+        content: [],
+        // No call to postCloudStorageSecrets is expected
+        shouldNotBeCalled: true,
+      });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     // add data source
