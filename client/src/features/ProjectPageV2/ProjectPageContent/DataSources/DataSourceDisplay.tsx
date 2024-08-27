@@ -156,7 +156,7 @@ export function DataSourceActions({
           data-cy="data-source-credentials"
           onClick={toggleCredentials}
         >
-          <Lock className={cx("bi", "ms-1")} />
+          <Lock className={cx("bi", "me-1")} />
           Credentials
         </DropdownItem>
         <DropdownItem data-cy="data-source-delete" onClick={toggleDelete}>
