@@ -149,7 +149,7 @@ describe("Set up data sources with credentials", () => {
     cy.wait("@postCloudStorageSecrets");
     cy.getDataCy("cloud-storage-edit-body").should(
       "contain.text",
-      "The storage example-storage has been successfully added."
+      "The storage example-storage has been successfully added, along with its credentials."
     );
     cy.getDataCy("cloud-storage-edit-close-button").click();
     cy.wait("@getCloudStorageV2");
@@ -462,5 +462,138 @@ describe("Set up data sources with credentials", () => {
     cy.getDataCy("data-source-title").should("contain.text", "example-storage");
     cy.getDataCy("access_key_id-value").should("contain.text", "<sensitive>");
     cy.getDataCy("data-source-view-back-button").click();
+  });
+});
+
+describe("Set up multiple data sources", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .namespaces()
+      .dataServicesUser({
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          email: "user1@email.com",
+        },
+      })
+      .listProjectV2Members();
+    fixtures.projects().landingUserProjects().readProjectV2();
+  });
+
+  it("set up one data source that succeeds, another with failed credentials", () => {
+    fixtures
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .postCloudStorage({
+        name: "postCloudStorageV2",
+        fixture: "cloudStorage/new-cloud-storage_v2.json",
+      })
+      .cloudStorage({
+        isV2: true,
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-full.json",
+        name: "getCloudStorageV2",
+      })
+      .postCloudStorageSecrets({
+        content: [
+          {
+            name: "access_key_id",
+            value: "access key",
+          },
+          {
+            name: "secret_access_key",
+            value: "secret key",
+          },
+        ],
+      })
+      .testCloudStorage({ success: true });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    // add data source
+    cy.getDataCy("add-data-source").click();
+    cy.wait("@getStorageSchema");
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
+    cy.getDataCy("cloud-storage-edit-next-button").click();
+    cy.get("#sourcePath").type("bucket/my-source");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("test-cloud-storage-button").click();
+    cy.getDataCy("add-cloud-storage-continue-button")
+      .contains("Continue")
+      .click();
+    cy.getDataCy("cloud-storage-edit-mount").within(() => {
+      cy.get("#name").type("example-storage");
+      cy.get("#saveCredentials").should("be.checked");
+    });
+    cy.getDataCy("cloud-storage-edit-update-button").click();
+    fixtures.cloudStorageSecrets({
+      fixture: "cloudStorage/cloud-storage-secrets.json",
+      name: "getCloudStorageSecrets2",
+    });
+    cy.wait("@postCloudStorageV2");
+    cy.wait("@postCloudStorageSecrets");
+    cy.getDataCy("cloud-storage-edit-body").should(
+      "contain.text",
+      "The storage example-storage has been successfully added, along with its credentials."
+    );
+    cy.getDataCy("cloud-storage-edit-close-button").click();
+    cy.wait("@getCloudStorageV2");
+    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
+    cy.getDataCy("data-storage-name").click();
+    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
+    cy.getDataCy("access_key_id-value").should(
+      "contain.text",
+      "<saved secret>"
+    );
+    cy.getDataCy("data-source-view-back-button").click();
+
+    fixtures
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .postCloudStorage({
+        name: "postCloudStorageV2",
+        fixture: "cloudStorage/new-cloud-storage_v2.json",
+      })
+      .cloudStorage({
+        isV2: true,
+        fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
+        name: "getCloudStorageV2",
+      })
+      .cloudStorageSecrets({
+        fixture: "cloudStorage/cloud-storage-secrets-empty.json",
+      })
+      .testCloudStorage({ success: false })
+      .postCloudStorageSecrets({
+        content: [],
+        // No call to postCloudStorageSecrets is expected
+        shouldNotBeCalled: true,
+      });
+    // add data source
+    cy.getDataCy("add-data-source").click();
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
+    cy.getDataCy("cloud-storage-edit-next-button").click();
+    cy.get("#sourcePath").type("bucket/my-source");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("test-cloud-storage-button").click();
+    cy.getDataCy("add-cloud-storage-continue-button").contains("Skip").click();
+    cy.getDataCy("cloud-storage-edit-mount").within(() => {
+      cy.get("#name").type("example-storage-no-credentials");
+    });
+    cy.getDataCy("cloud-storage-edit-update-button").click();
+    cy.wait("@postCloudStorageV2");
+    cy.getDataCy("cloud-storage-edit-body").should(
+      "contain.text",
+      "The storage example-storage has been successfully added."
+    );
+    // cy.getDataCy("cloud-storage-edit-close-button").click();
+    // cy.wait("@getCloudStorageV2");
+
+    // cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
+    // cy.getDataCy("data-storage-name").click();
+    // cy.getDataCy("data-source-title").should("contain.text", "example-storage");
+    // cy.getDataCy("access_key_id-value").should("contain.text", "<sensitive>");
+    // cy.getDataCy("data-source-view-back-button").click();
   });
 });

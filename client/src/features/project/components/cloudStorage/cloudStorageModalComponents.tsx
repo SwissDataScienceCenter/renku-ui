@@ -42,6 +42,7 @@ import {
   AddCloudStorageState,
   CloudStorageDetails,
   CloudStorageSchema,
+  CredentialSaveStatus,
 } from "./projectCloudStorage.types";
 import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
 
@@ -97,6 +98,7 @@ export function AddCloudStorageBackButton({
 interface AddCloudStorageBodyContentProps
   extends AddCloudStorageHeaderContentProps {
   addResultStorageName: string | undefined;
+  credentialSaveStatus: CredentialSaveStatus;
   redraw: boolean;
   schema: CloudStorageSchema[] | undefined;
   schemaError: FetchBaseQueryError | SerializedError | undefined;
@@ -113,6 +115,7 @@ interface AddCloudStorageBodyContentProps
 }
 export function AddCloudStorageBodyContent({
   addResultStorageName,
+  credentialSaveStatus,
   isV2,
   redraw,
   schema,
@@ -128,15 +131,13 @@ export function AddCloudStorageBodyContent({
   validationSucceeded,
 }: AddCloudStorageBodyContentProps) {
   if (redraw) return <Loader />;
-  if (success)
+  if (success) {
     return (
-      <SuccessAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          The storage {addResultStorageName} has been successfully{" "}
-          {storageId ? "updated" : "added"}.
-        </p>
-      </SuccessAlert>
+      <AddCloudStorageSuccessAlert
+        {...{ addResultStorageName, storageId, credentialSaveStatus }}
+      />
     );
+  }
   if (schemaIsFetching || !schema) return <Loader />;
   if (schemaError) return <RtkOrNotebooksError error={schemaError} />;
   if (!isV2) {
@@ -338,6 +339,57 @@ export function AddCloudStorageConnectionTestResult({
         <p className="p-0">The connection to the storage works correctly.</p>
       </SuccessAlert>
     </div>
+  );
+}
+
+type AddCloudStorageSuccessAlertProps = Pick<
+  AddCloudStorageBodyContentProps,
+  "addResultStorageName" | "credentialSaveStatus" | "storageId"
+>;
+
+function AddCloudStorageSuccessAlert({
+  addResultStorageName,
+  credentialSaveStatus,
+  storageId,
+}: AddCloudStorageSuccessAlertProps) {
+  if (credentialSaveStatus == "trying")
+    return (
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          The storage {addResultStorageName} has been successfully{" "}
+          {storageId ? "updated" : "added"}; saving the credentials...
+        </p>
+      </SuccessAlert>
+    );
+
+  if (credentialSaveStatus == "success")
+    return (
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          The storage {addResultStorageName} has been successfully{" "}
+          {storageId ? "updated" : "added"}, along with its credentials.
+        </p>
+      </SuccessAlert>
+    );
+  if (credentialSaveStatus == "failure")
+    return (
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          The storage {addResultStorageName} has been successfully{" "}
+          {storageId ? "updated" : "added"},{" "}
+          <b>but the credentials were not saved</b>. You can re-enter them and
+          save by editing the storage.
+        </p>
+      </SuccessAlert>
+    );
+
+  return (
+    <SuccessAlert dismissible={false} timeout={0}>
+      <p className="mb-0">
+        The storage {addResultStorageName} has been successfully{" "}
+        {storageId ? "updated" : "added"}.
+      </p>
+    </SuccessAlert>
   );
 }
 
