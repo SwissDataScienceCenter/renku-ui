@@ -57,7 +57,7 @@ function DashboardWelcome() {
     <div>
       <Row>
         <Col>
-          <h2>Welcome to the Renku 2.0 beta preview!</h2>
+          <h2>Welcome to the Renku 2.0 beta preview!!</h2>
         </Col>
       </Row>
       <Row>
