@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -42,35 +43,31 @@ import {
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
-
-import RenkuFrogIcon from "../../components/icons/RenkuIcon";
-import { User } from "../../model/renkuModels.types";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import useWindowSize from "../../utils/helpers/UseWindowsSize";
-import { resetFavicon, setFavicon } from "../display";
-import SessionHibernated from "../session/components/SessionHibernated";
-import SessionJupyter from "../session/components/SessionJupyter";
-import SessionUnavailable from "../session/components/SessionUnavailable";
-import StartSessionProgressBar from "../session/components/StartSessionProgressBar";
-import { useGetSessionsQuery } from "../session/sessions.api";
-import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
-import { getSessionFavicon } from "./session.utils";
-
-import { skipToken } from "@reduxjs/toolkit/query";
-import { Loader } from "../../components/Loader";
-import { EnvironmentLogs } from "../../components/Logs";
-import { TimeCaption } from "../../components/TimeCaption";
-import { CommandCopy } from "../../components/commandCopy/CommandCopy";
-import { NotebooksHelper } from "../../notebooks";
-import { NotebookAnnotations } from "../../notebooks/components/session.types";
-import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import { displaySlice } from "../display";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { SessionRowResourceRequests } from "../session/components/SessionsList";
-import styles from "../session/components/ShowSession.module.scss";
-import { Session } from "../session/sessions.types";
-import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
+import { Loader } from "../../../components/Loader";
+import { EnvironmentLogsV2 } from "../../../components/LogsV2";
+import { TimeCaption } from "../../../components/TimeCaption";
+import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
+import RenkuFrogIcon from "../../../components/icons/RenkuIcon";
+import { User } from "../../../model/renkuModels.types";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import useWindowSize from "../../../utils/helpers/UseWindowsSize";
+import { displaySlice, resetFavicon, setFavicon } from "../../display";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import SessionHibernated from "../../session/components/SessionHibernated";
+import SessionUnavailable from "../../session/components/SessionUnavailable";
+import { SessionRowResourceRequests } from "../../session/components/SessionsList";
+import styles from "../../session/components/ShowSession.module.scss";
+import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
+import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
+import { getSessionFavicon } from "../session.utils";
+import {
+  useGetProjectSessionLaunchersQuery,
+  useGetSessionsQuery,
+} from "../sessionsV2.api";
+import { SessionV2 } from "../sessionsV2.types";
+import SessionIframe from "./SessionIframe";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
@@ -88,12 +85,15 @@ export default function ShowSessionPage() {
     slug: slug ?? "",
   });
 
-  const { data: sessions, isLoading } = useGetSessionsQuery();
+  const { data: sessions, isLoading } = useGetSessionsQuery(undefined, {
+    skip: false,
+  });
+
   const thisSession = useMemo(() => {
     if (sessions == null) {
       return undefined;
     }
-    return Object.values(sessions).find(({ name }) => name === sessionName);
+    return sessions.find(({ name }) => name === sessionName);
   }, [sessionName, sessions]);
 
   useEffect(() => {
@@ -171,38 +171,28 @@ export default function ShowSessionPage() {
       toggleModal={togglePauseOrDeleteSession}
     />
   );
-  const logs = thisSession && (
-    <EnvironmentLogs
-      name={sessionName}
-      annotations={thisSession?.annotations}
-    />
-  );
-
+  const logs = thisSession && <EnvironmentLogsV2 name={sessionName} />;
   const content =
     !isLoading && thisSession == null ? (
       <SessionUnavailable />
     ) : thisSession?.status.state === "hibernated" ? (
-      <SessionHibernated session={thisSession} />
+      <SessionHibernated sessionName={thisSession.name} />
     ) : thisSession != null ? (
       <>
         {!isTheSessionReady && (
-          <StartSessionProgressBar
-            includeStepInTitle={false}
+          <StartSessionProgressBarV2
             session={thisSession}
             toggleLogs={toggleModalLogs}
           />
         )}
-        <SessionJupyter
+        <SessionIframe
           height={`${iframeHeight}px`}
           isSessionReady={isTheSessionReady}
           session={thisSession}
         />
       </>
     ) : (
-      <StartSessionProgressBar
-        includeStepInTitle={false}
-        toggleLogs={toggleModalLogs}
-      />
+      <StartSessionProgressBarV2 toggleLogs={toggleModalLogs} />
     );
 
   const backButton = (
@@ -353,7 +343,7 @@ function DeleteSessionBtn({ openDeleteSession }: DeleteSessionBtnProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   const buttonId = "delete-session-button";
-  const tooltip = "Delete session";
+  const tooltip = "Shut down session";
 
   return (
     <div>
@@ -386,7 +376,7 @@ function SessionDetails({
   namespace,
   slug,
 }: {
-  session?: Session;
+  session?: SessionV2;
   namespace?: string;
   slug?: string;
 }) {
@@ -395,12 +385,9 @@ function SessionDetails({
     if (session == null) {
       return { projectId: undefined, launcherId: undefined };
     }
-    const annotations = NotebooksHelper.cleanAnnotations(
-      session.annotations
-    ) as NotebookAnnotations;
     return {
-      projectId: annotations.projectId,
-      launcherId: annotations.launcherId,
+      projectId: session.project_id,
+      launcherId: session.launcher_id,
     };
   }, [session]);
 
@@ -484,9 +471,7 @@ function SessionDetails({
               <Cloud className={cx("bi", "me-2")} />
               Session resources requested:
             </div>
-            <SessionRowResourceRequests
-              resourceRequests={session.resources.requests}
-            />
+            <SessionRowResourceRequests resourceRequests={session.resources} />
           </div>
           <div
             className={cx(

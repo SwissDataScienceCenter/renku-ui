@@ -191,26 +191,20 @@ function SessionStarting({
   const dispatch = useAppDispatch();
 
   const [
-    startSession,
-    { data: session, error, isLoading: isLoadingStartSession },
-  ] = useStartRenku2SessionMutation();
+    startSessionV2,
+    { data: session, error: error, isLoading: isLoadingStartSession },
+  ] = useLaunchSessionMutation();
 
   // Request session
   useEffect(() => {
     if (isLoadingStartSession || session != null) return;
-    startSession({
-      projectId: project.id,
-      launcherId: launcher.id,
-      repositories: startSessionOptionsV2.repositories,
+    startSessionV2({
+      launcher_id: launcher.id,
+      disk_storage: startSessionOptionsV2.storage,
+      resource_class_id: startSessionOptionsV2.sessionClass,
       cloudStorage: startSessionOptionsV2.cloudStorage.map((cs) =>
         storageDefinitionFromConfig(cs, project.id)
       ),
-      defaultUrl: startSessionOptionsV2.defaultUrl,
-      environmentVariables: {},
-      image: containerImage,
-      lfsAutoFetch: false,
-      sessionClass: startSessionOptionsV2.sessionClass,
-      storage: startSessionOptionsV2.storage,
     });
     dispatch(setFavicon("waiting"));
   }, [
@@ -218,8 +212,7 @@ function SessionStarting({
     isLoadingStartSession,
     launcher.id,
     project.id,
-    session,
-    startSession,
+    startSessionV2,
     startSessionOptionsV2,
     dispatch,
   ]);

@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { Duration } from "luxon";
+import { DateTime } from "luxon";
 import { useCallback, useContext, useEffect, useState } from "react";
 import {
   generatePath,
@@ -31,28 +31,25 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { InfoAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import { User } from "../../model/renkuModels.types";
-import { NotebooksHelper } from "../../notebooks";
-import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { toHumanDuration } from "../../utils/helpers/DurationUtils";
-import UnsavedWorkWarning from "../session/components/UnsavedWorkWarning";
+import { toHumanRelativeDuration } from "../../utils/helpers/DurationUtils";
+import { useWaitForSessionStatusV2 } from "../session/useWaitForSessionStatus.hook";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
-} from "../session/sessions.api";
-import { Session } from "../session/sessions.types";
-import useWaitForSessionStatus from "../session/useWaitForSessionStatus.hook";
+} from "../sessionsV2/sessionsV2.api";
 
 import styles from "../session/components/SessionModals.module.scss";
+import { SessionV2 } from "./sessionsV2.types";
 
 interface PauseOrDeleteSessionModalProps {
   action?: "pause" | "delete";
   isOpen: boolean;
-  session: Session | undefined;
+  session: SessionV2 | undefined;
   sessionName: string;
   toggleAction: () => void;
   toggleModal: () => void;
@@ -115,11 +112,11 @@ function AnonymousDeleteSessionModal({
   const [isStopping, setIsStopping] = useState(false);
 
   const onStopSession = useCallback(async () => {
-    stopSession({ serverName: sessionName });
+    stopSession({ session_id: sessionName });
     setIsStopping(true);
   }, [sessionName, stopSession]);
 
-  const { isWaiting } = useWaitForSessionStatus({
+  const { isWaiting } = useWaitForSessionStatusV2({
     desiredStatus: "stopping",
     sessionName,
     skip: !isStopping,
@@ -144,13 +141,20 @@ function AnonymousDeleteSessionModal({
 
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
+      <ModalHeader toggle={toggleModal}>Shut Down Session</ModalHeader>
       <ModalBody>
-        <p>Are you sure you want to delete this session?</p>
+        <p>Are you sure you want to shut down this session?</p>
       </ModalBody>
       <ModalFooter>
         <Button
-          color="outline-primary"
+          color="outline-danger"
+          disabled={isStopping}
+          onClick={toggleModal}
+        >
+          Back to Session
+        </Button>
+        <Button
+          color="danger"
           data-cy="delete-session-modal-button"
           disabled={isStopping}
           type="submit"
@@ -159,14 +163,11 @@ function AnonymousDeleteSessionModal({
           {isStopping ? (
             <>
               <Loader className="me-1" inline size={16} />
-              Deleting session
+              Shutting down session
             </>
           ) : (
-            <>Delete Session</>
+            <>Shut down session</>
           )}
-        </Button>
-        <Button color="primary" disabled={isStopping} onClick={toggleModal}>
-          Back to Session
         </Button>
       </ModalFooter>
     </Modal>
@@ -184,7 +185,7 @@ function LoggedPauseOrDeleteSessionModal({
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>
-        {action === "pause" ? "Pause Session" : "Delete Session"}
+        {action === "pause" ? "Pause Session" : "Shut Down Session"}
       </ModalHeader>
       {action === "pause" ? (
         <PauseSessionModalContent
@@ -230,11 +231,11 @@ function PauseSessionModalContent({
   const [isStopping, setIsStopping] = useState(false);
 
   const onHibernateSession = useCallback(async () => {
-    patchSession({ sessionName, state: "hibernated" });
+    patchSession({ session_id: sessionName, state: "hibernated" });
     setIsStopping(true);
   }, [patchSession, sessionName]);
 
-  const { isWaiting } = useWaitForSessionStatus({
+  const { isWaiting } = useWaitForSessionStatusV2({
     desiredStatus: "hibernated",
     sessionName,
     skip: !isStopping,
@@ -257,22 +258,13 @@ function PauseSessionModalContent({
     }
   }, [backUrl, isSuccess, isWaiting, navigate]);
 
-  const annotations = session
-    ? (NotebooksHelper.cleanAnnotations(
-        session.annotations
-      ) as NotebookAnnotations)
-    : null;
-  const hibernatedSecondsThreshold = parseInt(
-    annotations?.hibernatedSecondsThreshold ?? "",
-    10
-  );
-  const duration = isNaN(hibernatedSecondsThreshold)
-    ? Duration.fromISO("")
-    : Duration.fromObject({ seconds: hibernatedSecondsThreshold });
-  const hibernationThreshold = duration.isValid
-    ? toHumanDuration({ duration })
-    : "a period";
-
+  const now = DateTime.utc();
+  const hibernationThreshold = session?.status?.will_hibernate_at
+    ? toHumanRelativeDuration({
+        datetime: session?.status?.will_hibernate_at,
+        now,
+      })
+    : 0;
   return (
     <>
       <ModalBody>
@@ -281,12 +273,13 @@ function PauseSessionModalContent({
           session (new and edited files) will be preserved while the session is
           paused.
         </p>
-        {hibernatedSecondsThreshold > 0 && (
-          <InfoAlert dismissible={false} timeout={0}>
-            Please note that paused session are deleted after{" "}
-            {hibernationThreshold} of inactivity.
-          </InfoAlert>
-        )}
+        {session?.status?.will_hibernate_at &&
+          session?.status?.will_hibernate_at?.length > 0 && (
+            <InfoAlert dismissible={false} timeout={0}>
+              Please note that paused session are deleted after{" "}
+              {hibernationThreshold} of inactivity.
+            </InfoAlert>
+          )}
         <div className="my-2">
           <Button
             className={cx("float-right", "p-0")}
@@ -328,7 +321,6 @@ function PauseSessionModalContent({
 }
 
 function DeleteSessionModalContent({
-  session,
   sessionName,
   toggleAction,
   toggleModal,
@@ -347,11 +339,11 @@ function DeleteSessionModalContent({
   const [isStopping, setIsStopping] = useState(false);
 
   const onStopSession = useCallback(async () => {
-    stopSession({ serverName: sessionName });
+    stopSession({ session_id: sessionName });
     setIsStopping(true);
   }, [sessionName, stopSession]);
 
-  const { isWaiting } = useWaitForSessionStatus({
+  const { isWaiting } = useWaitForSessionStatusV2({
     desiredStatus: "stopping",
     sessionName,
     skip: !isStopping,
@@ -374,26 +366,13 @@ function DeleteSessionModalContent({
     }
   }, [backUrl, isSuccess, isWaiting, navigate]);
 
-  const annotations = session
-    ? (NotebooksHelper.cleanAnnotations(
-        session.annotations
-      ) as NotebookAnnotations)
-    : null;
-
   return (
     <>
       <ModalBody>
-        <p>Are you sure you want to delete this session?</p>
+        <p>Are you sure you want to shut down this session?</p>
         <p className="fw-bold">
-          Deleting a session will permanently remove any unsaved work.
+          Shutting down a session will permanently remove any unsaved work.
         </p>
-        {session != null && annotations != null && (
-          <UnsavedWorkWarning
-            annotations={annotations}
-            sessionName={sessionName}
-            status={session.status.state}
-          />
-        )}
         <div className="my-2">
           <Button
             className={cx("float-right", "p-0")}
@@ -407,7 +386,14 @@ function DeleteSessionModalContent({
       </ModalBody>
       <ModalFooter>
         <Button
-          color="outline-primary"
+          color="outline-danger"
+          disabled={isStopping}
+          onClick={toggleModal}
+        >
+          Back to Session
+        </Button>
+        <Button
+          color="danger"
           data-cy="delete-session-modal-button"
           disabled={isStopping}
           type="submit"
@@ -416,14 +402,11 @@ function DeleteSessionModalContent({
           {isStopping ? (
             <>
               <Loader className="me-1" inline size={16} />
-              Deleting session
+              Shutting down session
             </>
           ) : (
-            <>Delete Session</>
+            <>Shut down session</>
           )}
-        </Button>
-        <Button color="primary" disabled={isStopping} onClick={toggleModal}>
-          Back to Session
         </Button>
       </ModalFooter>
     </>

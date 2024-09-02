@@ -16,7 +16,6 @@
  * limitations under the License
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
@@ -25,12 +24,14 @@ import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../dataConnecto
 import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { useGetDockerImageQuery } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetDockerImageQuery } from "./sessionsV2.api";
+import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api";
 import { DEFAULT_URL } from "./session.constants";
 
 interface StartSessionFromLauncherProps {
@@ -81,7 +82,7 @@ export default function useSessionLauncherState({
     useGetDockerImageQuery(
       containerImage !== "unknown"
         ? {
-            image: containerImage,
+            image_url: containerImage,
           }
         : skipToken,
       {
@@ -134,6 +135,9 @@ export default function useSessionLauncherState({
         startSessionOptionsV2Slice.actions.setDockerImageStatus(newStatus)
       );
     }
+    dispatch(
+      startSessionOptionsV2Slice.actions.setDockerImageStatus("available")
+    );
   }, [
     dispatch,
     dockerImageStatus,

@@ -239,7 +239,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     !isLoading && thisSession == null ? (
       <SessionUnavailable />
     ) : thisSession?.status.state === "hibernated" ? (
-      <SessionHibernated session={thisSession} />
+      <SessionHibernated sessionName={thisSession.name} />
     ) : thisSession != null ? (
       <>
         {!isTheSessionReady && (

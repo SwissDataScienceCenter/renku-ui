@@ -42,9 +42,9 @@ import {
 } from "../utils/helpers/HelperFunctions";
 import { Loader } from "./Loader";
 
-import "./Logs.css";
-import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
 import cx from "classnames";
+import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
+import "./Logs.css";
 
 export interface ILogs {
   data: Record<string, string>;

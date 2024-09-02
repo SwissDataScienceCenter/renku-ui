@@ -20,11 +20,13 @@ import { FaviconStatus } from "../display/display.types";
 import { SessionStatusState } from "../session/sessions.types";
 import { DEFAULT_URL } from "./session.constants";
 import {
+  SessionCloudStorageV2,
   SessionEnvironmentList,
   SessionLauncher,
   SessionLauncherEnvironmentParams,
   SessionLauncherForm,
 } from "./sessionsV2.types";
+import { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
@@ -221,4 +223,59 @@ export function isValidJSONStringArray(
 
   if (parseString.parsed) return true;
   return parseString.error ?? "Is not a valid JSON array string";
+}
+
+export function storageDefinitionFromConfigV2(
+  config: SessionStartCloudStorageConfiguration
+): SessionCloudStorageV2 {
+  const { storage: storageDefinition } = config.cloudStorage;
+  const { sensitiveFieldValues } = config;
+
+  // Merge configuration with sensitive field values, excluding empty ones
+  const configuration = {
+    ...storageDefinition.configuration,
+    ...Object.fromEntries(
+      Object.entries(sensitiveFieldValues).filter(
+        ([, value]) => value != null && value !== ""
+      )
+    ),
+  };
+
+  return {
+    readonly: !!storageDefinition.readonly,
+    source_path: storageDefinition.source_path,
+    target_path: storageDefinition.target_path,
+    storage_id: storageDefinition.storage_id,
+    configuration,
+  };
+}
+
+/**
+ * Ensure a given URL uses the HTTPS protocol.
+ * If the URL already starts with "https://", it is returned unchanged.
+ * If the URL starts with "http://", it is replaced with "https://".
+ * If the URL has no protocol, "https://" is prepended.
+ *
+ * @param url - The URL to be ensured with HTTPS protocol.
+ * @returns A URL string guaranteed to start with "https://".
+ * @throws Error if the input is not a valid URL.
+ */
+export function ensureHTTPS(url: string): string {
+  try {
+    const parsedUrl = new URL(url);
+    if (parsedUrl.protocol === "https:") {
+      return url;
+    }
+
+    if (parsedUrl.protocol === "http:") {
+      return url.replace("http:", "https:");
+    }
+
+    throw new Error("Unsupported protocol");
+  } catch (error) {
+    if (url && !url.includes("://")) {
+      return `https://${url}`;
+    }
+    throw new Error(`Invalid URL: ${url}`);
+  }
 }

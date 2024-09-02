@@ -17,10 +17,8 @@
  */
 import { useMemo, useState } from "react";
 
-import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import sessionsApi from "../../session/sessions.api";
-import { filterSessionsWithCleanedAnnotations } from "../../session/sessions.utils";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2.api";
 import { SessionView } from "../SessionView/SessionView";
 import { SessionLauncher } from "../sessionsV2.types";
 import SessionItem from "./SessionItem";
@@ -35,34 +33,30 @@ export function SessionItemDisplay({
 }: SessionLauncherDisplayProps) {
   const { name } = launcher;
   const [toggleSessionView, setToggleSessionView] = useState(false);
-  const { data: sessions } = sessionsApi.endpoints.getSessions.useQueryState();
+  const { data: sessions } = useGetSessionsQueryV2();
+
   const filteredSessions = useMemo(
     () =>
       sessions != null
-        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
-            sessions,
-            ({ annotations }) =>
-              annotations["renkuVersion"] === "2.0" &&
-              annotations["projectId"] === project.id &&
-              annotations["launcherId"] === launcher.id
+        ? sessions.filter(
+            (session) =>
+              session.launcher_id === launcher.id &&
+              session.project_id === project.id
           )
-        : {},
+        : [],
     [launcher.id, project.id, sessions]
   );
-  const filteredSessionsLength = useMemo(
-    () => Object.keys(filteredSessions).length,
-    [filteredSessions]
-  );
+
   const toggleSessionDetails = () => {
     setToggleSessionView((open: boolean) => !open);
   };
 
   return (
     <>
-      {filteredSessionsLength > 0 ? (
-        Object.entries(filteredSessions).map(([key, session]) => (
+      {filteredSessions?.length > 0 ? (
+        filteredSessions.map((session) => (
           <SessionItem
-            key={`session-item-${key}`}
+            key={`session-item-${session.name}`}
             launcher={launcher}
             name={name}
             project={project}

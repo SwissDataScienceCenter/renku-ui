@@ -66,7 +66,7 @@ export function SessionListRowStatusExtraDetails({
     return (
       <>
         {" "}
-        <span id={uid} className="text-muted cursor-pointer">
+        <span id={uid} className={cx("text-muted", "cursor-pointer")}>
           (Click here for details.)
         </span>
         {popover}
