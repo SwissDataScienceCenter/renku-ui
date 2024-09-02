@@ -66,7 +66,7 @@ import {
   parseCloudStorageConfiguration,
 } from "../../utils/projectCloudStorage.utils";
 import { ExternalLink } from "../../../../components/ExternalLinks";
-import { WarnAlert } from "../../../../components/Alert";
+import { InfoAlert, WarnAlert } from "../../../../components/Alert";
 
 import styles from "./CloudStorage.module.scss";
 
@@ -1011,11 +1011,7 @@ function AddStorageOptions({
         Please fill in all the options required to connect to your storage. Mind
         that the specific fields required depend on your storage configuration.
       </p>
-      {(selectedSchema &&
-        "convenientMode" in selectedSchema &&
-        selectedSchema.convenientMode) || (
-        <AddStorageAdvancedToggle state={state} setState={setState} />
-      )}
+      <AddStorageAdvancedToggle state={state} setState={setState} />
       {sourcePath}
       {optionItems}
       {(selectedSchema &&
@@ -1171,21 +1167,31 @@ function AddStorageMount({
               }}
               value=""
               checked={storage.readOnly ?? false}
+              readOnly={(selectedSchema && selectedSchema.readOnly) ?? false}
             />
           )}
           rules={{ required: true }}
         />
-        {!storage.readOnly && (
+        {(selectedSchema && selectedSchema.readOnly && (
           <div className="mt-1">
-            <WarnAlert dismissible={false}>
+            <InfoAlert dismissible={false}>
               <p className="mb-0">
-                You are mounting this storage in read-write mode. If you have
-                read-only access, please check the box to prevent errors with
-                some storage types.
+                This cloud storage only supports read-only access.
               </p>
-            </WarnAlert>
+            </InfoAlert>
           </div>
-        )}
+        )) ||
+          (!storage.readOnly && (
+            <div className="mt-1">
+              <WarnAlert dismissible={false}>
+                <p className="mb-0">
+                  You are mounting this storage in read-write mode. If you have
+                  read-only access, please check the box to prevent errors with
+                  some storage types.
+                </p>
+              </WarnAlert>
+            </div>
+          ))}
         <div className={cx("form-text", "text-muted")}>
           Check this box to mount the storage in read-only mode. You should
           always check this if you do not have credentials to write. You can use
