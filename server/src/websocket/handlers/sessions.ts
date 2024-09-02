@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
-import logger from "../../logger";
-import { Channel } from "../index";
-import APIClient from "../../api-client";
 import * as util from "util";
-import { WsMessage } from "../WsMessages";
+
+import logger from "../../logger";
 import { simpleHash, sortObjectProperties } from "../../utils";
+
+import { WsMessage } from "../WsMessages";
+import type { Channel, WebSocketHandlerArgs } from "./handlers.types";
 
 interface SessionsResult {
   servers: Record<string, Session>;
@@ -45,7 +46,7 @@ interface Session {
 }
 
 function handlerRequestSessionStatus(
-  data: Record<string, unknown>,
+  _data: Record<string, unknown>,
   channel: Channel
 ): void {
   channel.data.set("sessionStatus", null);
@@ -56,14 +57,14 @@ function sendMessage(data: string, channel: Channel) {
   channel.sockets.forEach((socket) => socket.send(info.toString()));
 }
 
-function heartbeatRequestSessionStatus(
-  channel: Channel,
-  apiClient: APIClient,
-  authHeathers: Record<string, string>
-): void {
+function heartbeatRequestSessionStatus({
+  channel,
+  apiClient,
+  headers,
+}: WebSocketHandlerArgs): void {
   const previousStatuses = channel.data.get("sessionStatus") as string;
   apiClient
-    .getSessionStatus(authHeathers)
+    .getSessionStatus(headers)
     .then((response) => {
       const statusFetched = response as unknown as SessionsResult;
       const servers = statusFetched?.servers ?? {};
