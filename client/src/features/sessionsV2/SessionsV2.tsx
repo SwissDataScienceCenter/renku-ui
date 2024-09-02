@@ -44,7 +44,7 @@ import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
-import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
+import UpdateSessionLauncherModal from "./components/SessionModals/UpdateSessionLauncherModal";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import SessionItem from "./SessionList/SessionItem";
