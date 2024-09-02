@@ -208,6 +208,7 @@
           "onloadend",
           "onopen",
           "openapi",
+          "openbis",
           "papermill",
           "pathname",
           "pdfjs",
