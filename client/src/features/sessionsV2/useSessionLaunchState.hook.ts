@@ -18,10 +18,8 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
-
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-
 import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import { CLOUD_OPTIONS_OVERRIDE } from "../project/components/cloudStorage/projectCloudStorage.constants";
 import type { Project } from "../projectsV2/api/projectV2.api";
@@ -32,8 +30,7 @@ import {
 import { useGetDockerImageQuery } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
-
-import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
+import { DEFAULT_URL } from "./session.utils";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
@@ -50,7 +47,7 @@ export default function useSessionLauncherState({
   project,
   isCustomLaunch,
 }: StartSessionFromLauncherProps) {
-  const { environment_kind, default_url } = launcher;
+  const { default_url } = launcher.environment;
 
   const {
     data: storages,
@@ -66,23 +63,7 @@ export default function useSessionLauncherState({
     resourcePools,
   });
 
-  const { data: environments } = useGetSessionEnvironmentsQuery(
-    environment_kind === "global_environment" ? undefined : skipToken
-  );
-
-  const environment = useMemo(
-    () =>
-      launcher.environment_kind === "global_environment" &&
-      environments?.find((env) => env.id === launcher.environment_id),
-    [environments, launcher]
-  );
-
-  const containerImage =
-    environment_kind === "global_environment" && environment
-      ? environment.container_image
-      : environment_kind === "global_environment"
-      ? "unknown"
-      : launcher.container_image;
+  const containerImage = launcher.environment.container_image ?? "";
 
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
@@ -125,16 +106,11 @@ export default function useSessionLauncherState({
 
   // Set the default URL
   useEffect(() => {
-    const defaultUrl = default_url
-      ? default_url
-      : environment && environment.default_url
-      ? environment.default_url
-      : "/lab";
-
+    const defaultUrl = default_url ?? DEFAULT_URL;
     if (startSessionOptionsV2.defaultUrl !== defaultUrl) {
       dispatch(startSessionOptionsV2Slice.actions.setDefaultUrl(defaultUrl));
     }
-  }, [environment, default_url, dispatch, startSessionOptionsV2.defaultUrl]);
+  }, [default_url, dispatch, startSessionOptionsV2.defaultUrl]);
 
   // Set the image status
   useEffect(() => {

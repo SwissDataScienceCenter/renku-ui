@@ -253,4 +253,25 @@ describe("Navigate to project page", () => {
       cy.getDataCy("start-session-button").should("contain.text", "Launch");
     });
   });
+
+  it("create a launcher ON PROGRESS", () => {
+    // TODO: update e2e tests
+    cy.intercept("/ui-server/api/notebooks/servers*", {
+      body: { servers: {} },
+    }).as("getSessions");
+    fixtures
+      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .sessionLaunchers()
+      .newLauncher()
+      .editLauncher()
+      .resourcePoolsTest()
+      .getResourceClass()
+      .environments();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getSessions");
+    cy.wait("@sessionLaunchers");
+    // ADD SESSION CUSTOM IMAGE
+    cy.getDataCy("add-session-launcher").click();
+  });
 });

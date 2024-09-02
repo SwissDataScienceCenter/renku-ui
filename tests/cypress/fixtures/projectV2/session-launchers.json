@@ -6,6 +6,12 @@
     "creation_date": "2024-05-23T09:59:59Z",
     "environment_kind": "container_image",
     "container_image": "renku/renkulab-py:latest",
-    "resource_class_id": 2
+    "resource_class_id": 2,
+    "port": "8080",
+    "workingDirectory": "/",
+    "uid": "1000",
+    "gid": "1000",
+    "mountDirectory": "",
+    "default_url": "/jdbqksdgsahd/bsajhfdjhsdv/jasgdjhf/lab"
   }
 ]
