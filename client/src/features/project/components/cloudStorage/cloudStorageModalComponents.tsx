@@ -122,7 +122,6 @@ export function AddCloudStorageBodyContent({
   storageDetails,
   storageId,
   success,
-  disableContinueButton,
 }: AddCloudStorageBodyContentProps) {
   if (redraw) return <Loader />;
   if (success)
@@ -144,7 +143,6 @@ export function AddCloudStorageBodyContent({
         setStorage={setStorageDetailsSafe}
         state={state}
         storage={storageDetails}
-        disableContinueButton={disableContinueButton}
       />
     );
   }
