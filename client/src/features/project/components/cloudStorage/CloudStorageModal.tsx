@@ -346,7 +346,8 @@ export default function CloudStorageModal({
         storageDetails.sourcePath &&
         storageDetails.options &&
         Object.values(storageDetails.options).every((v) => v)
-      ));
+      )) ||
+    false;
 
   const isAddResultLoading = addResult.isLoading;
   const isModifyResultLoading = modifyResult.isLoading;
