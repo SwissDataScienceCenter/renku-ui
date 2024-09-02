@@ -28,14 +28,13 @@ import {
   SessionStatusV2Description,
   SessionStatusV2Label,
 } from "../components/SessionStatus/SessionStatus";
-import { SessionLauncher } from "../sessionsV2.types";
-import { Session } from "../../session/sessions.types";
+import { SessionLauncher, SessionV2 } from "../sessionsV2.types";
 
 interface SessionItemProps {
   launcher?: SessionLauncher;
   name?: string;
   project: Project;
-  session?: Session;
+  session?: SessionV2;
   toggleSessionDetails: () => void;
 }
 export default function SessionItem({

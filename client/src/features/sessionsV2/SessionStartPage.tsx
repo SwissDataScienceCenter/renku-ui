@@ -38,10 +38,7 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { resetFavicon, setFavicon } from "../display";
-import {
-  storageDefinitionAfterSavingCredentialsFromConfig,
-  storageDefinitionFromConfig,
-} from "../project/utils/projectCloudStorage.utils";
+import { storageDefinitionAfterSavingCredentialsFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import {
   projectV2Api,
@@ -49,11 +46,14 @@ import {
   usePostStoragesV2SecretsForSessionLaunchMutation,
 } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
-import { useStartRenku2SessionMutation } from "../session/sessions.api";
 import type { CloudStorageConfiguration } from "./CloudStorageSecretsModal";
 import CloudStorageSecretsModal from "./CloudStorageSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
-import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
+import { storageDefinitionFromConfigV2 } from "./session.utils";
+import {
+  useGetProjectSessionLaunchersQuery,
+  useLaunchSessionMutation,
+} from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
@@ -195,32 +195,26 @@ function SessionStarting({
   const dispatch = useAppDispatch();
 
   const [
-    startSession,
-    { data: session, error, isLoading: isLoadingStartSession },
-  ] = useStartRenku2SessionMutation();
+    startSessionV2,
+    { data: session, error: error, isLoading: isLoadingStartSession },
+  ] = useLaunchSessionMutation();
 
   // Request session
   useEffect(() => {
-    startSession({
-      projectId: project.id,
-      launcherId: launcher.id,
-      repositories: startSessionOptionsV2.repositories,
-      cloudStorage: startSessionOptionsV2.cloudStorage.map((cs) =>
-        storageDefinitionFromConfig(cs)
+    startSessionV2({
+      launcher_id: launcher.id,
+      disk_storage: startSessionOptionsV2.storage,
+      resource_class_id: startSessionOptionsV2.sessionClass,
+      cloudstorage: startSessionOptionsV2.cloudStorage.map((cs) =>
+        storageDefinitionFromConfigV2(cs)
       ),
-      defaultUrl: startSessionOptionsV2.defaultUrl,
-      environmentVariables: {},
-      image: containerImage,
-      lfsAutoFetch: false,
-      sessionClass: startSessionOptionsV2.sessionClass,
-      storage: startSessionOptionsV2.storage,
     });
     dispatch(setFavicon("waiting"));
   }, [
     containerImage,
     launcher.id,
     project.id,
-    startSession,
+    startSessionV2,
     startSessionOptionsV2,
     dispatch,
   ]);

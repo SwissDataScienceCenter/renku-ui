@@ -40,7 +40,6 @@ import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
 import { useGetSessionEnvironmentsQuery } from "./adminSessions.api";
-import { safeStringify } from "../sessionsV2/session.utils";
 
 export default function SessionEnvironmentsSection() {
   return (
