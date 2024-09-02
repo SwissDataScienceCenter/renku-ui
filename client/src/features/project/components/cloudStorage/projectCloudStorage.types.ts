@@ -63,7 +63,7 @@ export interface CloudStorageSchemaOption extends RCloneOption {
 export interface CloudStorageSchema extends RCloneEntry {
   hide?: boolean;
   position?: number;
-  convenientMode?: boolean; // ? Disables the Rclone full options list, forces read-only access where necessary, ...
+  convenientMode?: boolean; // ? Disables the Rclone full options list, ...
   readOnly?: boolean; // ? Forces read-only access e.g. for storage that do not support write access
   options: CloudStorageSchemaOption[];
 }
