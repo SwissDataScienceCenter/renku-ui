@@ -156,8 +156,8 @@ export function DataSourceView({
                 </table>
               </div>
             )}
-          <div>
-            <p className={cx("fw-bold", "m-0")}>Access mode</p>
+          <div className="mt-3">
+            <p className={cx("fw-bold", "mb-0")}>Access mode</p>
             <p>
               {storageDefinition.readonly
                 ? "Force Read-only"
