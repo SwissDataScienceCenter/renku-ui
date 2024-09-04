@@ -126,7 +126,7 @@ function CloudStorageConfigurationSecrets({
 
   return (
     <>
-      <div className={cx("d-flex", "align-items-baseline")}>
+      <div className={cx("d-flex", "align-items-baseline", "mt-1")}>
         <h4>{storage.name}</h4>
         <div className="ms-2">({storage.source_path})</div>
       </div>
