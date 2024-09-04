@@ -27,21 +27,50 @@ interface SecretArgs extends NameOnlyFixture {
   secretsKind?: "general" | "storage";
 }
 
-function generateFakeSecrets(
-  num: number,
-  kind: ListSecretsArgs["secretsKind"]
-) {
+function generateFakeSecretsGeneral(num: number) {
   const secrets = [];
   for (let i = 0; i < num; ++i) {
-    const secretName =
-      kind === "general" ? `secret_${i}` : `storage-secret_${i}`;
+    const secretName = `secret_${i}`;
     secrets.push({
       id: `id_${i}`,
       modification_date: new Date(),
       name: secretName,
+      kind: "general",
     });
   }
   return secrets;
+}
+
+function generateFakeSecretsStorage(num: number) {
+  const secrets = [];
+  // The first part of the id is the data-source id.
+  // Make two secrets per data-source.
+  const dataSourcesCount = Math.ceil(num / 2);
+  for (let i = 0; i < dataSourcesCount; ++i) {
+    const dataSourceId = `data_source_${i}`;
+    for (let j = 0; j < 2; ++j) {
+      const secretName = `${dataSourceId}-secret_${i}`;
+      secrets.push({
+        id: `id_${i}_${j}`,
+        modification_date: new Date(),
+        name: secretName,
+        kind: "storage",
+      });
+    }
+  }
+  return secrets;
+}
+
+function generateFakeSecrets(
+  num: number,
+  kind: ListSecretsArgs["secretsKind"]
+) {
+  if (kind === "general") {
+    return generateFakeSecretsGeneral(num);
+  } else if (kind === "storage") {
+    return generateFakeSecretsStorage(num);
+  }
+  return [];
 }
 
 export function Secrets<T extends FixturesConstructor>(Parent: T) {
