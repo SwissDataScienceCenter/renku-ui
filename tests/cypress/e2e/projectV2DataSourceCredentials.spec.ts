@@ -587,13 +587,13 @@ describe("Set up multiple data sources", () => {
       "contain.text",
       "The storage example-storage has been successfully added."
     );
-    // cy.getDataCy("cloud-storage-edit-close-button").click();
-    // cy.wait("@getCloudStorageV2");
+    cy.getDataCy("cloud-storage-edit-close-button").click();
+    cy.wait("@getCloudStorageV2");
 
-    // cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
-    // cy.getDataCy("data-storage-name").click();
-    // cy.getDataCy("data-source-title").should("contain.text", "example-storage");
-    // cy.getDataCy("access_key_id-value").should("contain.text", "<sensitive>");
-    // cy.getDataCy("data-source-view-back-button").click();
+    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
+    cy.getDataCy("data-storage-name").click();
+    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
+    cy.getDataCy("access_key_id-value").should("contain.text", "<sensitive>");
+    cy.getDataCy("data-source-view-back-button").click();
   });
 });
