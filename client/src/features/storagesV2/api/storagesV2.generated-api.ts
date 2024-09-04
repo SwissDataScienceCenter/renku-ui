@@ -171,7 +171,7 @@ export type PatchStoragesV2ByStorageIdApiArg = {
   cloudStoragePatch: CloudStoragePatch;
 };
 export type DeleteStoragesV2ByStorageIdApiResponse =
-  /** status 204 The rcloud storage was removed or did not exist in the first place */ void;
+  /** status 204 The cloud storage was removed or did not exist in the first place */ void;
 export type DeleteStoragesV2ByStorageIdApiArg = {
   /** the id of the storage */
   storageId: Ulid;
@@ -229,7 +229,7 @@ export type PatchStorageByStorageIdApiArg = {
   body: CloudStoragePatch;
 };
 export type DeleteStorageByStorageIdApiResponse =
-  /** status 204 The rcloud storage was removed or did not exist in the first place */ void;
+  /** status 204 The cloud storage was removed or did not exist in the first place */ void;
 export type DeleteStorageByStorageIdApiArg = {
   /** the id of the storage */
   storageId: Ulid;
@@ -317,7 +317,7 @@ export type RCloneOption = {
   /** The cloud provider the option is for (See 'provider' RCloneOption in the schema for potential values) */
   provider?: string;
   /** default value for the option */
-  default?: number | string | boolean | object | any;
+  default?: number | string | boolean | object | any; // eslint-disable-line @typescript-eslint/no-explicit-any
   /** string representation of the default value */
   default_str?: string;
   /** These list potential values for this option, like an enum. With `exclusive: true`, only a value from the list is allowed. */
