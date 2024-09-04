@@ -29,14 +29,12 @@ import { Card, CardBody, Col, Row } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import type { Project } from "../api/projectV2.api";
-import {
-  useGetNamespacesByNamespaceSlugQuery,
-  useGetProjectsQuery,
-} from "../api/projectV2.enhanced-api";
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
+import { useGetNamespacesByNamespaceSlugQuery } from "../../groupsV2/api/groupsV2.api";
+import type { Project } from "../api/projectsV2.api";
+import { useGetProjectsQuery } from "../api/projectsV2.api";
 
 const DEFAULT_PER_PAGE = 12;
 const DEFAULT_PAGE_PARAM = "page";
@@ -92,9 +90,11 @@ export default function ProjectListDisplay({
   }, [pageParam, searchParams]);
 
   const { data, error, isLoading } = useGetProjectsQuery({
-    namespace: ns,
-    page,
-    perPage,
+    params: {
+      namespace: ns,
+      page,
+      per_page: perPage,
+    },
   });
 
   useEffect(() => {

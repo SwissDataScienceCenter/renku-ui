@@ -17,9 +17,11 @@
  */
 
 import cx from "classnames";
+import { capitalize } from "lodash-es";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, PlusLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
+import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
   Form,
@@ -31,26 +33,24 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { capitalize } from "lodash-es";
 
 import { Loader } from "../../../components/Loader";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type {
   GroupMemberResponse,
   GroupPatchRequest,
   GroupResponse,
-} from "../api/namespace.api";
+} from "../../groupsV2/api/groupsV2.api";
 import {
   useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
   useDeleteGroupsByGroupSlugMutation,
   useGetGroupsByGroupSlugMembersQuery,
   usePatchGroupsByGroupSlugMutation,
-} from "../api/projectV2.enhanced-api";
+} from "../../groupsV2/api/groupsV2.api";
 import AddGroupMemberModal from "../fields/AddGroupMemberModal";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
-import { generatePath, useNavigate } from "react-router-dom-v5-compat";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 type GroupMetadata = Omit<GroupPatchRequest, "repositories">;
 

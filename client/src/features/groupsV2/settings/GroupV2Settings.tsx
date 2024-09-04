@@ -25,12 +25,12 @@ import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { useGetGroupsByGroupSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
 import {
   GroupMembersForm,
   GroupMetadataForm,
 } from "../../projectsV2/show/groupEditForms";
+import { useGetGroupsByGroupSlugQuery } from "../api/groupsV2.api";
 
 export default function GroupV2Settings() {
   const { slug } = useParams<{ slug: string }>();

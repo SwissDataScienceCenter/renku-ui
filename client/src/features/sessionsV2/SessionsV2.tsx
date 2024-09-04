@@ -31,24 +31,24 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
+import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AccessGuard from "../ProjectPageV2/utils/AccessGuard";
 import useProjectAccess from "../ProjectPageV2/utils/useProjectAccess.hook";
-import type { Project } from "../projectsV2/api/projectV2.api";
+import type { Project } from "../projectsV2/api/projectsV2.api";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
 import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
+import SessionItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
 import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
-import SessionItem from "./SessionList/SessionItem";
-import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";

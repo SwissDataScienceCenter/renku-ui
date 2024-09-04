@@ -24,14 +24,16 @@ import { ArrowCounterclockwise } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import {
+import type {
   CloudStorageGetRead,
   CloudStoragePatch,
   PostStoragesV2ApiArg,
   RCloneConfig,
+} from "../../../storagesV2/api/storagesV2.api";
+import {
   usePatchStoragesV2ByStorageIdMutation,
   usePostStoragesV2Mutation,
-} from "../../../projectsV2/api/storagesV2.api.ts";
+} from "../../../storagesV2/api/storagesV2.api";
 import {
   findSensitive,
   getCurrentStorageDetails,
@@ -62,12 +64,12 @@ import {
 } from "./projectCloudStorage.types";
 
 import {
-  AddCloudStorageContinueButton,
   AddCloudStorageBackButton,
   AddCloudStorageBodyContent,
   AddCloudStorageConnectionTestResult,
+  AddCloudStorageContinueButton,
   AddCloudStorageHeaderContent,
-} from "./cloudStorageModalComponents.tsx";
+} from "./cloudStorageModalComponents";
 
 import styles from "./CloudStorage.module.scss";
 

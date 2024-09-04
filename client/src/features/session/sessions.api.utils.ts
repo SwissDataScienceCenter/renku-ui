@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
+import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
+import { CloudStorageWithIdRead } from "../storagesV2/api/storagesV2.api";
 import { SessionCloudStorage } from "./startSessionOptions.types";
-import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types.ts";
-import { CloudStorageWithIdRead } from "../projectsV2/api/storagesV2.api.ts";
 
 export function convertCloudStorageForSessionApi(
   cloudStorage: SessionCloudStorage | CloudStorageWithIdRead

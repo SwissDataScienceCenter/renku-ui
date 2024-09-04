@@ -17,8 +17,7 @@
  */
 
 import cx from "classnames";
-import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Badge, Card, CardBody, CardHeader } from "reactstrap";
+import { useMemo } from "react";
 import {
   Bookmarks,
   Clock,
@@ -27,6 +26,8 @@ import {
   JournalAlbum,
   People,
 } from "react-bootstrap-icons";
+import { Link, generatePath } from "react-router-dom-v5-compat";
+import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
 import { TimeCaption } from "../../../../components/TimeCaption";
 import {
@@ -34,14 +35,12 @@ import {
   UnderlineArrowLink,
 } from "../../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
+import { useGetNamespacesByNamespaceSlugQuery } from "../../../groupsV2/api/groupsV2.api";
 import type {
   ProjectMemberListResponse,
   ProjectMemberResponse,
-} from "../../../projectsV2/api/projectV2.api";
-import {
-  useGetNamespacesByNamespaceSlugQuery,
-  useGetProjectsByProjectIdMembersQuery,
-} from "../../../projectsV2/api/projectV2.enhanced-api";
+} from "../../../projectsV2/api/projectsV2.api";
+import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectsV2.api";
 import { useGetUsersByUserIdQuery } from "../../../user/dataServicesUser.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import MembershipGuard from "../../utils/MembershipGuard";
@@ -49,7 +48,6 @@ import { toSortedMembers } from "../../utils/roleUtils";
 
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import styles from "./ProjectInformation.module.scss";
-import { useMemo } from "react";
 
 const MAX_MEMBERS_DISPLAYED = 5;
 

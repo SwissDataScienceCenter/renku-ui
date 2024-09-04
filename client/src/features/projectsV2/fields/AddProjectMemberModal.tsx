@@ -37,11 +37,11 @@ import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
 import type { UserWithId } from "../../user/dataServicesUser.api";
 
-import type {
-  ProjectMemberPatchRequest,
-  ProjectMemberResponse,
-} from "../api/projectV2.api";
-import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
+import {
+  usePatchProjectsByProjectIdMembersMutation,
+  type ProjectMemberPatchRequest,
+  type ProjectMemberResponse,
+} from "../api/projectsV2.api";
 
 import AddEntityMemberEmailLookupForm from "./AddEntityMemberLookupForm";
 

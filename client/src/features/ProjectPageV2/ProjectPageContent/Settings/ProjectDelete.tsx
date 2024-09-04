@@ -27,8 +27,8 @@ import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.con
 import { NotificationsManager } from "../../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import AppContext from "../../../../utils/context/appContext";
-import { Project } from "../../../projectsV2/api/projectV2.api";
-import { useDeleteProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+import type { Project } from "../../../projectsV2/api/projectsV2.api";
+import { useDeleteProjectsByProjectIdMutation } from "../../../projectsV2/api/projectsV2.api";
 
 export function notificationProjectDeleted(
   notifications: NotificationsManager,

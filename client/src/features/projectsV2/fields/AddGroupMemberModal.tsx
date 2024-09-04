@@ -37,13 +37,12 @@ import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
 import type { UserWithId } from "../../user/dataServicesUser.api";
 
-import type {
-  GroupMemberResponseList,
-  GroupMemberPatchRequest,
-} from "../api/namespace.api";
-import { usePatchGroupsByGroupSlugMembersMutation } from "../api/projectV2.enhanced-api";
-
 import AddEntityMemberEmailLookupForm from "./AddEntityMemberLookupForm";
+import {
+  usePatchGroupsByGroupSlugMembersMutation,
+  type GroupMemberPatchRequest,
+  type GroupMemberResponseList,
+} from "../../groupsV2/api/groupsV2.api";
 
 interface AddGroupMemberModalProps {
   isOpen: boolean;

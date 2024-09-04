@@ -32,9 +32,10 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+import { InfoAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+import { useGetProjectBySlugQuery } from "../../../projectsV2/api/projectsV2.api";
 import {
   CustomEnvFormContent,
   ExistingEnvFormContent,
@@ -42,7 +43,6 @@ import {
 } from "../../SessionLauncherFormContent";
 import { useAddSessionLauncherMutation } from "../../sessionsV2.api";
 import { SessionLauncherEnvironment } from "../../sessionsV2.types";
-import { InfoAlert } from "../../../../components/Alert";
 
 interface AddSessionLauncherModalProps {
   isOpen: boolean;
@@ -53,7 +53,7 @@ function AddSessionCustomImageModal({
   toggle,
 }: AddSessionLauncherModalProps) {
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
-  const { data: project } = useGetProjectsByNamespaceAndSlugQuery(
+  const { data: project } = useGetProjectBySlugQuery(
     namespace && slug ? { namespace, slug } : skipToken
   );
   const projectId = project?.id;
@@ -164,7 +164,7 @@ function AddSessionExistingEnvModal({
   toggle,
 }: AddSessionLauncherModalProps) {
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
-  const { data: project } = useGetProjectsByNamespaceAndSlugQuery(
+  const { data: project } = useGetProjectBySlugQuery(
     namespace && slug ? { namespace, slug } : skipToken
   );
   const projectId = project?.id;

@@ -50,7 +50,7 @@ import type {
   TestCloudStorageConnectionParams,
 } from "../project/components/cloudStorage/projectCloudStorage.types";
 import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
-import type { RCloneOption } from "../projectsV2/api/storagesV2.api";
+import { RCloneOption } from "../projectsV2/api_old/storagesV2.api";
 import type { SessionStartCloudStorageConfiguration } from "../sessionsV2/startSessionOptionsV2.types";
 
 export type SessionLaunchModalCloudStorageConfiguration =

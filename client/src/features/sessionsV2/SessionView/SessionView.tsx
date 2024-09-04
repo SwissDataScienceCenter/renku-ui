@@ -20,13 +20,13 @@ import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
   Boxes,
-  Clock,
   CircleFill,
+  Clock,
   Database,
   ExclamationTriangleFill,
+  FileCode,
   Globe2,
   Pencil,
-  FileCode,
 } from "react-bootstrap-icons";
 import {
   Badge,
@@ -47,13 +47,22 @@ import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
-import { Project } from "../../projectsV2/api/projectV2.api";
-import { useGetStoragesV2Query } from "../../projectsV2/api/storagesV2.api";
+import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
+import {
+  useGetResourceClassByIdQuery,
+  useGetResourcePoolsQuery,
+} from "../../dataServices/computeResources.api";
+import type { Project } from "../../projectsV2/api/projectsV2.api";
+import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectsV2.api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { Session, Sessions } from "../../session/sessions.types";
+import { useGetStoragesV2Query } from "../../storagesV2/api/storagesV2.api";
+
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
+import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
+import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import {
   SessionBadge,
   SessionStatusV2Description,
@@ -62,15 +71,6 @@ import {
 } from "../components/SessionStatus/SessionStatus";
 import sessionsV2Api from "../sessionsV2.api";
 import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
-
-import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
-import {
-  useGetResourceClassByIdQuery,
-  useGetResourcePoolsQuery,
-} from "../../dataServices/computeResources.api";
-import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
-import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 
 interface SessionCardContentProps {
   color: string;
@@ -294,7 +294,7 @@ export function SessionView({
   }, [environments, launcher]);
 
   const { data: dataSources } = useGetStoragesV2Query({
-    projectId: project.id,
+    storageV2Params: { project_id: project.id },
   });
 
   const { data: resourcePools } = useGetResourcePoolsQuery({});

@@ -19,7 +19,7 @@
 import type {
   ProjectMemberListResponse,
   Role,
-} from "../../projectsV2/api/projectV2.api";
+} from "../../projectsV2/api/projectsV2.api";
 
 export type RoleOrNone = Role | "none";
 const ROLE_MAP: Record<RoleOrNone, number> = {

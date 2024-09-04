@@ -22,7 +22,7 @@ import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook
 import type {
   ProjectMemberListResponse,
   ProjectMemberResponse,
-} from "../../projectsV2/api/projectV2.api.ts";
+} from "../../projectsV2/api/projectsV2.api.ts";
 import AccessGuard from "./AccessGuard.tsx";
 import { toNumericRole } from "./roleUtils.ts";
 

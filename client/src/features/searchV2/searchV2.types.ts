@@ -18,7 +18,7 @@
 
 import { DateTime } from "luxon";
 
-import type { Role } from "../projectsV2/api/projectV2.api";
+import type { Role } from "../projectsV2/api/projectsV2.api";
 import type { SearchEntity, Visibility } from "./api/searchV2Api.api";
 
 export interface SearchV2State {

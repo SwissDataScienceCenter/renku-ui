@@ -1,4 +1,4 @@
-import type { Role, Visibility } from "./api/projectV2.api";
+import type { Role, Visibility } from "./api/projectsV2.api";
 
 export type ProjectVisibility = Visibility;
 export type ProjectRole = Role;

@@ -18,13 +18,6 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
-import { Loader } from "../../../../components/Loader.tsx";
-import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api.ts";
-import AccessGuard from "../../utils/AccessGuard.tsx";
-import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
-import { DataSourceDisplay } from "./DataSourceDisplay.tsx";
 import {
   Badge,
   Button,
@@ -34,12 +27,22 @@ import {
   ListGroup,
 } from "reactstrap";
 
+import { Loader } from "../../../../components/Loader";
+import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal";
+import type { Project } from "../../../projectsV2/api/projectsV2.api";
+import { useGetStoragesV2Query } from "../../../storagesV2/api/storagesV2.api";
+import AccessGuard from "../../utils/AccessGuard";
+import useProjectAccess from "../../utils/useProjectAccess.hook";
+import { DataSourceDisplay } from "./DataSourceDisplay";
+
 export function DataSourcesDisplay({ project }: { project: Project }) {
   const [isOpen, setIsOpen] = useState(false);
   const { userRole } = useProjectAccess({ projectId: project.id });
 
   const { data, isFetching, isLoading } = useGetStoragesV2Query({
-    projectId: project.id,
+    storageV2Params: {
+      project_id: project.id,
+    },
   });
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);

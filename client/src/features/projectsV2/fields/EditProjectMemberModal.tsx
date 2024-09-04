@@ -35,11 +35,11 @@ import {
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
-import type {
-  ProjectMemberPatchRequest,
-  ProjectMemberResponse,
-} from "../api/projectV2.api";
-import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
+import {
+  usePatchProjectsByProjectIdMembersMutation,
+  type ProjectMemberPatchRequest,
+  type ProjectMemberResponse,
+} from "../api/projectsV2.api";
 
 interface EditProjectMemberModalProps {
   isOpen: boolean;

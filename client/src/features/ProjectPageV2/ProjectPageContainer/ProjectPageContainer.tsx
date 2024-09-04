@@ -25,8 +25,8 @@ import { Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
-import type { Project } from "../../projectsV2/api/projectV2.api";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
+import type { Project } from "../../projectsV2/api/projectsV2.api";
+import { useGetProjectBySlugQuery } from "../../projectsV2/api/projectsV2.api";
 import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
@@ -37,7 +37,7 @@ export default function ProjectPageContainer() {
     namespace: string | undefined;
     slug: string | undefined;
   }>();
-  const { data, isLoading, error } = useGetProjectsByNamespaceAndSlugQuery({
+  const { data, isLoading, error } = useGetProjectBySlugQuery({
     namespace: namespace ?? "",
     slug: slug ?? "",
   });

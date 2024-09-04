@@ -25,7 +25,7 @@ import {
 
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { useGetProjectsByProjectIdQuery } from "../api/projectV2.enhanced-api";
+import { useGetProjectsByProjectIdQuery } from "../api/projectsV2.api";
 import ProjectNotFound from "../notFound/ProjectNotFound";
 
 export default function ProjectV2ShowByProjectId() {

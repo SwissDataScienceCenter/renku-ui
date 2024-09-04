@@ -39,8 +39,10 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { resetFavicon, setFavicon } from "../display";
 import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
-import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import {
+  useGetProjectBySlugQuery,
+  type Project,
+} from "../projectsV2/api/projectsV2.api";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
 import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
 import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
@@ -365,7 +367,7 @@ export default function SessionStartPage() {
     data: project,
     isLoading: isLoadingProject,
     error: projectError,
-  } = useGetProjectsByNamespaceAndSlugQuery(
+  } = useGetProjectBySlugQuery(
     namespace && slug ? { namespace, slug } : skipToken
   );
   const projectId = project?.id ?? "";

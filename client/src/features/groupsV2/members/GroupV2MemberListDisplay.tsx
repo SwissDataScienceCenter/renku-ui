@@ -26,10 +26,10 @@ import { Loader } from "../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toSortedMembers } from "../../ProjectPageV2/utils/roleUtils";
-import type { ProjectMemberResponse } from "../../projectsV2/api/projectV2.api";
-import { useGetGroupsByGroupSlugMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import type { ProjectMemberResponse } from "../../projectsV2/api/projectsV2.api";
 import { useGetUsersByUserIdQuery } from "../../user/dataServicesUser.api";
 import UserAvatar from "../../usersV2/show/UserAvatar";
+import { useGetGroupsByGroupSlugMembersQuery } from "../api/groupsV2.api";
 
 interface GroupV2MemberListDisplayProps {
   group: string;

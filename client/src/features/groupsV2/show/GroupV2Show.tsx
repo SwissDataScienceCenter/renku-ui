@@ -33,15 +33,15 @@ import ContainerWrap from "../../../components/container/ContainerWrap";
 import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
-import type { GroupResponse } from "../../projectsV2/api/namespace.api";
-import {
-  useGetGroupsByGroupSlugMembersQuery,
-  useGetGroupsByGroupSlugQuery,
-  useGetNamespacesByNamespaceSlugQuery,
-} from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
 import UserAvatar from "../../usersV2/show/UserAvatar";
+import {
+  type GroupResponse,
+  useGetGroupsByGroupSlugMembersQuery,
+  useGetGroupsByGroupSlugQuery,
+  useGetNamespacesByNamespaceSlugQuery,
+} from "../api/groupsV2.api";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
 
 export default function GroupV2Show() {

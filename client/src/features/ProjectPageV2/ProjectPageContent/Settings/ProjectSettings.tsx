@@ -42,8 +42,8 @@ import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.con
 import { NotificationsManager } from "../../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import AppContext from "../../../../utils/context/appContext";
-import type { Project } from "../../../projectsV2/api/projectV2.api";
-import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+import type { Project } from "../../../projectsV2/api/projectsV2.api";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectsV2.api";
 import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";

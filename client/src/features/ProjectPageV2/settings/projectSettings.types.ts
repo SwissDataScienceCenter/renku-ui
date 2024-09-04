@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 
-import type { ProjectPatch } from "../../projectsV2/api/projectV2.api";
+import type { ProjectPatch } from "../../projectsV2/api/projectsV2.api";
 
 export type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;

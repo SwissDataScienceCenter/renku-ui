@@ -31,8 +31,8 @@ import {
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import type { ProjectMemberResponse } from "../api/projectV2.api";
-import { useDeleteProjectsByProjectIdMembersAndMemberIdMutation } from "../api/projectV2.enhanced-api";
+import type { ProjectMemberResponse } from "../api/projectsV2.api";
+import { useDeleteProjectsByProjectIdMembersAndMemberIdMutation } from "../api/projectsV2.api";
 
 interface RemoveProjectMemberModalProps {
   isOpen: boolean;

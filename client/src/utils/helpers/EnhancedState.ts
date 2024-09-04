@@ -35,16 +35,19 @@ import { dashboardMessageSlice } from "../../features/dashboard/message/dashboar
 import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
+import { groupsV2EmptyApi as groupsV2Api } from "../../features/groupsV2/api/groupsV2.empty-api";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
+import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
+import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
 import projectCloudStorageApi from "../../features/project/components/cloudStorage/projectCloudStorage.api";
 import { datasetFormSlice } from "../../features/project/dataset";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
-import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
+import { projectsV2EmptyApi as projectsV2Api } from "../../features/projectsV2/api/projectsV2.empty-api";
 import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import repositoriesApi from "../../features/repositories/repositories.api";
@@ -57,6 +60,7 @@ import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import sessionsV2Api from "../../features/sessionsV2/sessionsV2.api";
 import startSessionOptionsV2Slice from "../../features/sessionsV2/startSessionOptionsV2.slice";
+import { storagesV2EmptyApi as storagesV2Api } from "../../features/storagesV2/api/storagesV2.empty-api";
 import termsApi from "../../features/terms/terms.api";
 import { dataServicesUserApi } from "../../features/user/dataServicesUser.api";
 import keycloakUserApi from "../../features/user/keycloakUser.api";
@@ -65,8 +69,6 @@ import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "../feature-flags/featureFlags.slice";
-import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
-import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -94,6 +96,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataServicesUserApi.reducerPath]: dataServicesUserApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
+    [groupsV2Api.reducerPath]: groupsV2Api.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [keycloakUserApi.reducerPath]: keycloakUserApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
@@ -103,7 +106,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
-    [projectV2Api.reducerPath]: projectV2Api.reducer,
+    [projectsV2Api.reducerPath]: projectsV2Api.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [repositoriesApi.reducerPath]: repositoriesApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
@@ -112,6 +115,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
     [statuspageApi.reducerPath]: statuspageApi.reducer,
+    [storagesV2Api.reducerPath]: storagesV2Api.reducer,
     [termsApi.reducerPath]: termsApi.reducer,
     [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
@@ -133,6 +137,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         // this is causing some problems, and I do not know why
         .concat(dataServicesUserApi.middleware)
         .concat(datasetsCoreApi.middleware)
+        .concat(groupsV2Api.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(keycloakUserApi.middleware)
         .concat(kgSearchApi.middleware)
@@ -142,7 +147,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectGitLabApi.middleware)
         .concat(projectKgApi.middleware)
         .concat(projectsApi.middleware)
-        .concat(projectV2Api.middleware)
+        .concat(projectsV2Api.middleware)
         .concat(recentUserActivityApi.middleware)
         .concat(repositoriesApi.middleware)
         .concat(searchV2Api.middleware)
@@ -152,6 +157,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsV2Api.middleware)
         .concat(statuspageApi.middleware)
+        .concat(storagesV2Api.middleware)
         .concat(termsApi.middleware)
         .concat(userPreferencesApi.middleware)
         .concat(versionsApi.middleware)

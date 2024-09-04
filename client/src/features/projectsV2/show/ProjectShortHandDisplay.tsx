@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 
-import { Project } from "../api/projectV2.api";
+import { Project } from "../api/projectsV2.api";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";

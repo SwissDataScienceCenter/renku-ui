@@ -29,17 +29,15 @@ import {
 } from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
-import {
-  useGetGroupsQuery,
-  useGetProjectsQuery,
-} from "../projectsV2/api/projectV2.enhanced-api";
+import { useGetGroupsQuery } from "../groupsV2/api/groupsV2.api";
+import { useGetProjectsQuery } from "../projectsV2/api/projectsV2.api";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import DashboardV2Sessions from "./DashboardV2Sessions";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
+import DashboardV2Sessions from "./DashboardV2Sessions";
 
 export default function DashboardV2() {
   return (
@@ -137,8 +135,10 @@ function ProjectsDashboard() {
 
 function ProjectList() {
   const { data, error, isLoading } = useGetProjectsQuery({
-    page: 1,
-    perPage: 5,
+    params: {
+      page: 1,
+      per_page: 5,
+    },
   });
 
   const noProjects = isLoading ? (
@@ -207,8 +207,10 @@ function GroupsDashboard() {
 
 function GroupsList() {
   const { data, error, isLoading } = useGetGroupsQuery({
-    page: 1,
-    perPage: 5,
+    params: {
+      page: 1,
+      per_page: 5,
+    },
   });
 
   const noGroups = isLoading ? (

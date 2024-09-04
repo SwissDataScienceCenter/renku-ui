@@ -18,7 +18,7 @@
 import { useMemo, useState } from "react";
 
 import { NotebookAnnotations } from "../../../notebooks/components/session.types";
-import { Project } from "../../projectsV2/api/projectV2.api";
+import { Project } from "../../projectsV2/api/projectsV2.api";
 import sessionsApi from "../../session/sessions.api";
 import { filterSessionsWithCleanedAnnotations } from "../../session/sessions.utils";
 import { SessionView } from "../SessionView/SessionView";

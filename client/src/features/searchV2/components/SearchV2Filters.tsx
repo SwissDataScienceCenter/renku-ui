@@ -22,7 +22,7 @@ import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import type { Role } from "../../projectsV2/api/projectV2.api";
+import type { Role } from "../../projectsV2/api/projectsV2.api";
 import {
   FILTER_KEY_LABELS,
   FILTER_VALUE_LABELS,

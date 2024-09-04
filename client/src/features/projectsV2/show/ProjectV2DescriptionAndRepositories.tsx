@@ -18,7 +18,7 @@
 import cx from "classnames";
 import { Label } from "reactstrap";
 
-import type { Project } from "../api/projectV2.api";
+import type { Project } from "../api/projectsV2.api";
 
 function ProjectV2Description({ description }: Pick<Project, "description">) {
   const desc =

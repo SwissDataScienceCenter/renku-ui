@@ -19,7 +19,7 @@ import cx from "classnames";
 import { CircleFill } from "react-bootstrap-icons";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
-import { Project } from "../../projectsV2/api/projectV2.api";
+import { Project } from "../../projectsV2/api/projectsV2.api";
 import { getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
