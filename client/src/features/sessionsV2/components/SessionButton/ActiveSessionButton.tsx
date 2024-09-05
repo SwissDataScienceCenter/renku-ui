@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   BoxArrowUpRight,
   CheckLg,
@@ -46,11 +46,9 @@ import {
 
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
-import { EnvironmentLogs } from "../../../../components/Logs";
+import { EnvironmentLogsV2 } from "../../../../components/Logs";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { User } from "../../../../model/renkuModels.types";
-import { NotebooksHelper } from "../../../../notebooks";
-import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../../notifications/notifications.types";
 import AppContext from "../../../../utils/context/appContext";
@@ -61,22 +59,26 @@ import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
-import UnsavedWorkWarning from "../../../session/components/UnsavedWorkWarning";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
+import { SessionStatusState } from "../../../session/sessions.types";
+import { useWaitForSessionStatusV2 } from "../../../session/useWaitForSessionStatus.hook";
 import {
-  usePatchSessionMutation,
-  useStopSessionMutation,
-} from "../../../session/sessions.api";
-import { Session, SessionStatusState } from "../../../session/sessions.types";
-import useWaitForSessionStatus from "../../../session/useWaitForSessionStatus.hook";
+  SessionResources,
+  SessionStatus,
+  SessionV2,
+} from "../../sessionsV2.types.ts";
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
 } from "../SessionModals/ResourceClassWarning";
+import {
+  usePatchSessionMutation,
+  useStopSessionMutation,
+} from "../../sessionsV2.api";
 
 interface ActiveSessionButtonProps {
   className?: string;
-  session: Session;
+  session: SessionV2;
   showSessionUrl: string;
 }
 
@@ -98,14 +100,6 @@ export default function ActiveSessionButton({
     dispatch(toggleSessionLogsModal({ targetServer: session.name }));
   }, [dispatch, session.name]);
 
-  const annotations = NotebooksHelper.cleanAnnotations(
-    session.annotations
-  ) as NotebookAnnotations;
-  const cleanAnnotations = useMemo(
-    () => NotebooksHelper.cleanAnnotations(annotations) as NotebookAnnotations,
-    [annotations]
-  );
-
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
   );
@@ -117,10 +111,10 @@ export default function ActiveSessionButton({
     { isSuccess: isSuccessResumeSession, error: errorResumeSession },
   ] = usePatchSessionMutation();
   const onResumeSession = useCallback(() => {
-    resumeSession({ sessionName: session.name, state: "running" });
+    resumeSession({ session_id: session.name, state: "running" });
     setIsResuming(true);
   }, [resumeSession, session.name]);
-  const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatus({
+  const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatusV2({
     desiredStatus: ["starting", "running"],
     sessionName: session.name,
     skip: !isResuming,
@@ -153,14 +147,15 @@ export default function ActiveSessionButton({
     { isSuccess: isSuccessHibernateSession, error: errorHibernateSession },
   ] = usePatchSessionMutation();
   const onHibernateSession = useCallback(() => {
-    hibernateSession({ sessionName: session.name, state: "hibernated" });
+    hibernateSession({ session_id: session.name, state: "hibernated" });
     setIsHibernating(true);
   }, [hibernateSession, session.name]);
-  const { isWaiting: isWaitingForHibernatedSession } = useWaitForSessionStatus({
-    desiredStatus: ["hibernated"],
-    sessionName: session.name,
-    skip: !isHibernating,
-  });
+  const { isWaiting: isWaitingForHibernatedSession } =
+    useWaitForSessionStatusV2({
+      desiredStatus: ["hibernated"],
+      sessionName: session.name,
+      skip: !isHibernating,
+    });
   useEffect(() => {
     if (isSuccessHibernateSession && !isWaitingForHibernatedSession) {
       setIsHibernating(false);
@@ -182,7 +177,7 @@ export default function ActiveSessionButton({
   // Optimistically show a session as "stopping" when triggered from the UI
   const [isStopping, setIsStopping] = useState<boolean>(false);
   const onStopSession = useCallback(() => {
-    stopSession({ serverName: session.name });
+    stopSession({ session_id: session.name });
     setIsStopping(true);
   }, [session.name, stopSession]);
   useEffect(() => {
@@ -209,8 +204,8 @@ export default function ActiveSessionButton({
     (sessionClass: number, resumeSession: boolean) => {
       const status = session.status.state;
       const request = modifySession({
-        sessionName: session.name,
-        sessionClass,
+        session_id: session.name,
+        resource_class_id: sessionClass,
       });
       if (resumeSession && status === "hibernated") {
         request.then(() => {
@@ -395,7 +390,6 @@ export default function ActiveSessionButton({
       {logsAction}
 
       <ConfirmDeleteModal
-        annotations={annotations}
         isOpen={showModalStopSession}
         isStopping={isStopping}
         onStopSession={onStopSession}
@@ -404,23 +398,19 @@ export default function ActiveSessionButton({
         toggleModal={toggleStopSession}
       />
       <ModifySessionModal
-        annotations={annotations}
         isOpen={showModalModifySession}
         onModifySession={onModifySession}
         resources={session.resources}
-        status={status}
+        status={session.status}
         toggleModal={toggleModifySession}
+        resource_class_id={session.resource_class_id}
       />
-      <EnvironmentLogs
-        name={displayModal.targetServer}
-        annotations={cleanAnnotations}
-      />
+      <EnvironmentLogsV2 name={displayModal.targetServer} />
     </ButtonWithMenuV2>
   );
 }
 
 interface ConfirmDeleteModalProps {
-  annotations: NotebookAnnotations;
   isOpen: boolean;
   isStopping: boolean;
   onStopSession: () => void;
@@ -430,12 +420,9 @@ interface ConfirmDeleteModalProps {
 }
 
 function ConfirmDeleteModal({
-  annotations,
   isOpen,
   isStopping,
   onStopSession,
-  sessionName,
-  status,
   toggleModal,
 }: ConfirmDeleteModalProps) {
   const onClick = useCallback(() => {
@@ -457,11 +444,11 @@ function ConfirmDeleteModal({
             <p className="fw-bold">
               Deleting a session will permanently remove any unsaved work.
             </p>
-            <UnsavedWorkWarning
-              annotations={annotations}
-              sessionName={sessionName}
-              status={status}
-            />
+            {/*<UnsavedWorkWarning*/}
+            {/*  annotations={annotations}*/}
+            {/*  sessionName={sessionName}*/}
+            {/*  status={status}*/}
+            {/*/>*/}
           </Col>
         </Row>
       </ModalBody>
@@ -489,21 +476,21 @@ function ConfirmDeleteModal({
 }
 
 interface ModifySessionModalProps {
-  annotations: NotebookAnnotations;
   isOpen: boolean;
   onModifySession: (sessionClass: number, resumeSession: boolean) => void;
-  resources: Session["resources"];
-  status: SessionStatusState;
+  resources: SessionResources;
+  status: SessionStatus;
   toggleModal: () => void;
+  resource_class_id: string;
 }
 
 function ModifySessionModal({
-  annotations,
   isOpen,
   onModifySession,
   resources,
   status,
   toggleModal,
+  resource_class_id,
 }: ModifySessionModalProps) {
   return (
     <Modal
@@ -515,35 +502,32 @@ function ModifySessionModal({
     >
       <ModalHeader toggle={toggleModal}>Modify Session Resources</ModalHeader>
       <ModifySessionModalContent
-        annotations={annotations}
         onModifySession={onModifySession}
         resources={resources}
         status={status}
         toggleModal={toggleModal}
+        resource_class_id={resource_class_id}
       />
     </Modal>
   );
 }
 
 interface ModifySessionModalContentProps {
-  annotations: NotebookAnnotations;
   onModifySession: (sessionClass: number, resumeSession: boolean) => void;
-  resources: Session["resources"];
-  status: SessionStatusState;
+  resources: SessionResources;
+  status: SessionStatus;
   toggleModal: () => void;
+  resource_class_id: string;
 }
 
 function ModifySessionModalContent({
-  annotations,
   onModifySession,
   resources,
   status,
   toggleModal,
+  resource_class_id,
 }: ModifySessionModalContentProps) {
-  const currentSessionClassId = useMemo(() => {
-    const raw = parseInt(annotations?.resourceClassId ?? "", 10);
-    return isNaN(raw) ? undefined : raw;
-  }, [annotations?.resourceClassId]);
+  const { state } = status;
 
   const {
     data: resourcePools,
@@ -577,12 +561,12 @@ function ModifySessionModalContent({
   useEffect(() => {
     const currentSessionClass = resourcePools
       ?.flatMap((pool) => pool.classes)
-      .find((c) => c.id === currentSessionClassId);
+      .find((c) => `${c.id}` == resource_class_id);
     setCurrentSessionClass(currentSessionClass);
-  }, [currentSessionClassId, resourcePools]);
+  }, [resource_class_id, resourcePools]);
 
   const message =
-    status === "failed" ? (
+    state === "failed" ? (
       <>
         <WarnAlert dismissible={false}>
           This session cannot be started or resumed at the moment.
@@ -617,9 +601,7 @@ function ModifySessionModalContent({
             <p>
               <span className="fw-bold me-3">Current resources:</span>
               <span>
-                <SessionRowResourceRequests
-                  resourceRequests={resources.requests}
-                />
+                <SessionRowResourceRequests resourceRequests={resources} />
               </span>
             </p>
             <div className="field-group">{selector}</div>
@@ -627,7 +609,7 @@ function ModifySessionModalContent({
         </Row>
       </ModalBody>
       <ModalFooter>
-        {status === "hibernated" && (
+        {state === "hibernated" && (
           <Button
             disabled={
               isLoading ||
@@ -635,8 +617,8 @@ function ModifySessionModalContent({
               resourcePools.length == 0 ||
               isError ||
               currentSessionClass == null ||
-              (currentSessionClassId != null &&
-                currentSessionClassId === currentSessionClass?.id)
+              (resource_class_id != null &&
+                resource_class_id === `${currentSessionClass?.id}`)
             }
             onClick={onClick({ resumeSession: true })}
             type="submit"
@@ -646,15 +628,15 @@ function ModifySessionModalContent({
           </Button>
         )}
         <Button
-          className={cx(status === "hibernated" && "btn-outline-rk-green")}
+          className={cx(state === "hibernated" && "btn-outline-rk-green")}
           disabled={
             isLoading ||
             !resourcePools ||
             resourcePools.length == 0 ||
             isError ||
             currentSessionClass == null ||
-            (currentSessionClassId != null &&
-              currentSessionClassId === currentSessionClass?.id)
+            (resource_class_id != null &&
+              resource_class_id === `${currentSessionClass?.id}`)
           }
           onClick={onClick({ resumeSession: false })}
           type="submit"

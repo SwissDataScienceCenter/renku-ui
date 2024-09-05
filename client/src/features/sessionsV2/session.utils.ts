@@ -170,9 +170,19 @@ export function getFormattedEnvironmentValues(
         mount_directory,
         uid,
         gid,
-        command: command?.length > 0 ? [`${command}`] : undefined,
-        args: args?.length > 0 ? [`${args}`] : undefined,
+        //command: command?.length > 0 ? [`${command}`] : undefined,
+        command: command.length > 0 ? getJSONvalue(`${command}`) : undefined,
+        args: args.length > 0 ? getJSONvalue(`${args}`) : undefined,
+        // args: args?.length > 0 ? [`${args}`] : undefined,
       };
+}
+
+function getJSONvalue(toParse: string) {
+  try {
+    return JSON.parse(toParse);
+  } catch (error) {
+    return [toParse];
+  }
 }
 
 export function getLauncherDefaultValues(launcher: SessionLauncher) {

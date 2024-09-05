@@ -17,6 +17,7 @@
  */
 
 import { ResourceClass } from "../dataServices/dataServices.types";
+import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types.ts";
 
 export interface SessionEnvironment {
   container_image: string;
@@ -117,4 +118,71 @@ export interface SessionLauncherForm {
   mount_directory: string;
   command: string[];
   args: string[];
+}
+
+export interface SessionResources {
+  cpu: number;
+  gpu: number;
+  memory: number;
+  storage: number;
+}
+
+export interface SessionStatus {
+  message?: string;
+  state: "running" | "starting" | "stopping" | "failed" | "hibernated";
+  will_hibernate_at?: string;
+  will_delete_at?: string;
+  ready_containers: number;
+  total_containers: number;
+}
+
+export type SessionList = SessionV2[];
+export interface SessionV2 {
+  image: string;
+  name: string;
+  resources: SessionResources;
+  started: string;
+  status: SessionStatus;
+  url: string;
+  project_id: string;
+  launcher_id: string;
+  resource_class_id: string;
+}
+
+export interface SessionCloudStorageV2 {
+  configuration: CloudStorageDetailsOptions;
+  readonly: boolean;
+  source_path: string;
+  storage_id: string;
+  target_path: string;
+}
+
+export interface LaunchSessionParams {
+  launcher_id: string;
+  disk_storage?: number; //storage: number;
+  cloudstorage?: SessionCloudStorageV2[]; // TODO: fix typo in ds
+  resource_class_id?: number; // sessionClass: number;
+}
+
+export interface PatchSessionParams {
+  session_id: string;
+  state?: Extract<"running" | "hibernated", SessionStatus["state"]>;
+  resource_class_id?: number;
+}
+
+export interface GetLogsParams {
+  session_id: string;
+  max_lines: number;
+}
+
+export interface StopSessionParams {
+  session_id: string;
+}
+export interface SessionImageParams {
+  image_url: string;
+}
+
+export interface DockerImage {
+  image: string;
+  available: boolean;
 }

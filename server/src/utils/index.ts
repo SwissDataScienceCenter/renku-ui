@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { SessionV2 } from "src/websocket/handlers/sessionsV2";
 import urlJoin from "./url-join";
 
 /**
@@ -156,9 +157,59 @@ function sortObjectProperties(
     );
 }
 
+interface SessionFlattedV2 {
+  image: string;
+  name: string;
+  started: string;
+  url: string;
+  project_id: string;
+  launcher_id: string;
+  resource_class_id: string;
+  "resources.cpu": SessionV2["resources"]["cpu"];
+  "resources.gpu": SessionV2["resources"]["gpu"];
+  "resources.memory": SessionV2["resources"]["memory"];
+  "resources.storage": SessionV2["resources"]["storage"];
+
+  // Flatten the nested status object
+  "status.message": SessionV2["status"]["message"];
+  "status.state": SessionV2["status"]["state"];
+  "status.will_hibernate_at": SessionV2["status"]["will_hibernate_at"];
+  "status.will_delete_at": SessionV2["status"]["will_delete_at"];
+  "status.ready_containers": SessionV2["status"]["ready_containers"];
+  "status.total_containers": SessionV2["status"]["total_containers"];
+}
+
+function flattenSessionV2(session: SessionV2): SessionFlattedV2 {
+  return {
+    // Flatten the top-level properties
+    image: session.image,
+    name: session.name,
+    started: session.started,
+    url: session.url,
+    project_id: session.project_id,
+    launcher_id: session.launcher_id,
+    resource_class_id: session.resource_class_id,
+
+    // Flatten the nested resources object
+    "resources.cpu": session.resources.cpu,
+    "resources.gpu": session.resources.gpu,
+    "resources.memory": session.resources.memory,
+    "resources.storage": session.resources.storage,
+
+    // Flatten the nested status object
+    "status.message": session.status.message,
+    "status.state": session.status.state,
+    "status.will_hibernate_at": session.status.will_hibernate_at,
+    "status.will_delete_at": session.status.will_delete_at,
+    "status.ready_containers": session.status.ready_containers,
+    "status.total_containers": session.status.total_containers,
+  };
+}
+
 export {
   clamp,
   convertType,
+  flattenSessionV2,
   getCookieValueByName,
   getRelease,
   serializeCookie,
@@ -166,4 +217,5 @@ export {
   simpleHash,
   sleep,
   urlJoin,
+  SessionFlattedV2,
 };

@@ -1,20 +1,15 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useMemo } from "react";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Col, ListGroup, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import { EnvironmentLogs } from "../../components/Logs";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { NotebooksHelper } from "../../notebooks";
-import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { useGetSessionsQuery } from "../session/sessions.api";
-import { Session } from "../session/sessions.types";
-import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../../features/sessionsV2/sessionsV2.api.ts";
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
   SessionStatusV2Description,
@@ -23,20 +18,10 @@ import {
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
+import { SessionV2 } from "../sessionsV2/sessionsV2.types.ts";
 
 export default function DashboardV2Sessions() {
-  const { data: sessions, error, isLoading } = useGetSessionsQuery();
-
-  const v2Sessions = useMemo(
-    () =>
-      sessions != null
-        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
-            sessions,
-            ({ annotations }) => annotations["renkuVersion"] === "2.0"
-          )
-        : {},
-    [sessions]
-  );
+  const { data: sessions, error, isLoading } = useGetSessionsQueryV2();
 
   const noSessions = isLoading ? (
     <div className={cx("d-flex", "flex-column", "mx-auto")}>
@@ -48,9 +33,7 @@ export default function DashboardV2Sessions() {
       <p>Cannot show sessions.</p>
       <RtkErrorAlert error={error} />
     </div>
-  ) : !sessions ||
-    (Object.keys(sessions).length == 0 &&
-      Object.keys(v2Sessions).length == 0) ? (
+  ) : !sessions || sessions.length == 0 ? (
     <div>No running sessions.</div>
   ) : null;
 
@@ -58,27 +41,24 @@ export default function DashboardV2Sessions() {
 
   return (
     <ListGroup flush data-cy="dashboard-session-list">
-      {Object.entries(v2Sessions).map(([key, session]) => (
-        <DashboardSession key={key} session={session} />
-      ))}
+      {sessions &&
+        sessions?.map((session) => (
+          <DashboardSession key={session.name} session={session} />
+        ))}
     </ListGroup>
   );
 }
 
 interface DashboardSessionProps {
-  session: Session;
+  session: SessionV2;
 }
 function DashboardSession({ session }: DashboardSessionProps) {
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
   );
-  const { image } = session;
-  const annotations = NotebooksHelper.cleanAnnotations(
-    session.annotations
-  ) as NotebookAnnotations;
-  const projectId = annotations.projectId;
+  const { image, project_id: projectId } = session;
   const { data: project } = useGetProjectsByProjectIdQuery(
-    projectId ? { projectId: projectId } : skipToken
+    projectId ? { projectId } : skipToken
   );
 
   const projectUrl = project
@@ -147,10 +127,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
           </Row>
         </Col>
       </Row>
-      <EnvironmentLogs
-        name={displayModal.targetServer}
-        annotations={annotations}
-      />
+      <EnvironmentLogs name={displayModal.targetServer} />
     </Link>
   );
 }

@@ -38,6 +38,7 @@ import type { KgInactiveProjectsState } from "../features/inactiveKgProjects/";
 import { ActivationStatusProgressError } from "../features/inactiveKgProjects/";
 import { StateModel } from "../model";
 import APIClient from "../api-client";
+import { handleSessionsStatusV2 } from "./handlers/sessionStatusHandlerV2";
 
 const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
 const reconnectIntervalMs = 10 * 1000;
@@ -107,6 +108,13 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
         handler: handleSessionsStatus,
       },
     ],
+    sessionStatusV2: [
+      {
+        required: null,
+        optional: ["message"],
+        handler: handleSessionsStatusV2,
+      },
+    ],
   },
 };
 
@@ -148,6 +156,12 @@ function setupWebSocket(
   function startPullingSessionStatus(targetWebSocket: WebSocket) {
     targetWebSocket.send(
       JSON.stringify(new WsMessage({}, "pullSessionStatus"))
+    );
+  }
+
+  function startPullingSessionStatusV2(targetWebSocket: WebSocket) {
+    targetWebSocket.send(
+      JSON.stringify(new WsMessage({}, "pullSessionStatusV2"))
     );
   }
 
@@ -195,6 +209,8 @@ function setupWebSocket(
       model.setObject({ open: true, error: false, lastReceived: null });
       // request session status
       startPullingSessionStatus(webSocket);
+      // request session status V2
+      startPullingSessionStatusV2(webSocket);
       // resume running processes
       resumePendingProcesses(fullModel, webSocket);
     }

@@ -38,14 +38,15 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { resetFavicon, setFavicon } from "../display";
-import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { useStartRenku2SessionMutation } from "../session/sessions.api";
 import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
 import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
-import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
+import {
+  useGetProjectSessionLaunchersQuery,
+  useLaunchSessionMutation,
+} from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
@@ -70,32 +71,24 @@ function SessionStarting({
   const dispatch = useAppDispatch();
 
   const [
-    startSession,
-    { data: session, error, isLoading: isLoadingStartSession },
-  ] = useStartRenku2SessionMutation();
+    startSessionV2,
+    { data: session, error: error, isLoading: isLoadingStartSession },
+  ] = useLaunchSessionMutation();
 
   // Request session
   useEffect(() => {
-    startSession({
-      projectId: project.id,
-      launcherId: launcher.id,
-      repositories: startSessionOptionsV2.repositories,
-      cloudStorage: startSessionOptionsV2.cloudStorage
-        .filter((cs) => cs.active)
-        .map((cs) => storageDefinitionFromConfig(cs)),
-      defaultUrl: startSessionOptionsV2.defaultUrl,
-      environmentVariables: {},
-      image: containerImage,
-      lfsAutoFetch: false,
-      sessionClass: startSessionOptionsV2.sessionClass,
-      storage: startSessionOptionsV2.storage,
+    startSessionV2({
+      launcher_id: launcher.id,
+      disk_storage: startSessionOptionsV2.storage,
+      resource_class_id: startSessionOptionsV2.sessionClass,
+      cloudstorage: undefined, //TODO ANDREA pending to do in ds
     });
     dispatch(setFavicon("waiting"));
   }, [
     containerImage,
     launcher.id,
     project.id,
-    startSession,
+    startSessionV2,
     startSessionOptionsV2,
     dispatch,
   ]);

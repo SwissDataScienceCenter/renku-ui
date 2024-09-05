@@ -33,7 +33,9 @@ import { displaySlice } from "../features/display";
 import { NotebooksHelper } from "../notebooks";
 import { LOG_ERROR_KEY } from "../notebooks/Notebooks.state";
 import { NotebookAnnotations } from "../notebooks/components/session.types";
-import useGetSessionLogs from "../utils/customHooks/UseGetSessionLogs";
+import useGetSessionLogs, {
+  useGetSessionLogsV2,
+} from "../utils/customHooks/UseGetSessionLogs";
 import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../utils/customHooks/useAppSelector.hook";
 import {
@@ -317,7 +319,7 @@ function SessionLogs(props: LogBodyProps) {
  * @param {object} annotations - list of cleaned annotations
  */
 interface EnvironmentLogsProps {
-  annotations: Record<string, unknown>;
+  annotations?: Record<string, unknown>;
   name: string;
 }
 const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
@@ -346,6 +348,31 @@ const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
   );
 };
 
+export const EnvironmentLogsV2 = ({ name }: EnvironmentLogsProps) => {
+  const displayModal = useAppSelector(
+    ({ display }) => display.modals.sessionLogs
+  );
+  const { logs, fetchLogs } = useGetSessionLogsV2(
+    displayModal.targetServer,
+    displayModal.show
+  );
+  const dispatch = useAppDispatch();
+  const toggleLogs = function (target: string) {
+    dispatch(
+      displaySlice.actions.toggleSessionLogsModal({ targetServer: target })
+    );
+  };
+
+  return (
+    <EnvironmentLogsPresent
+      fetchLogs={fetchLogs}
+      toggleLogs={toggleLogs}
+      logs={logs}
+      name={name}
+    />
+  );
+};
+
 /**
  * Simple environment logs container
  *
@@ -356,7 +383,7 @@ const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
  * @param {object} annotations - list of annotations
  */
 interface EnvironmentLogsPresentProps {
-  annotations: Record<string, unknown>;
+  annotations?: Record<string, unknown>;
   fetchLogs: IFetchableLogs["fetchLogs"];
   logs?: ILogs;
   name: string;
@@ -371,11 +398,11 @@ const EnvironmentLogsPresent = ({
 }: EnvironmentLogsPresentProps) => {
   if (!logs?.show || logs?.show !== name || !logs) return null;
 
-  const cleanAnnotations = NotebooksHelper.cleanAnnotations(
-    annotations
-  ) as NotebookAnnotations;
+  const cleanAnnotations =
+    annotations &&
+    (NotebooksHelper.cleanAnnotations(annotations) as NotebookAnnotations);
 
-  const modalTitle = !cleanAnnotations.renkuVersion && (
+  const modalTitle = cleanAnnotations && !cleanAnnotations.renkuVersion && (
     <div className="fs-5 fw-normal">
       <small>
         {cleanAnnotations["namespace"]}/{cleanAnnotations["projectName"]} [

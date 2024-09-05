@@ -25,6 +25,8 @@ import ProgressStepsIndicator, {
 } from "../../../components/progress/ProgressSteps";
 import cx from "classnames";
 import { Button } from "reactstrap";
+import ProgressIndicator from "../../../components/progress/Progress";
+import { SessionV2 } from "../../sessionsV2/sessionsV2.types";
 
 interface StartSessionProgressBarProps {
   includeStepInTitle?: boolean;
@@ -55,6 +57,40 @@ export default function StartSessionProgressBar({
         status={statusData}
         moreOptions={logButton}
       />
+    </div>
+  );
+}
+
+interface StartSessionProgressBarV2Props {
+  includeStepInTitle?: boolean;
+  session?: SessionV2;
+  toggleLogs: () => void;
+}
+export function StartSessionProgressBarV2({
+  includeStepInTitle,
+  session,
+  toggleLogs,
+}: StartSessionProgressBarV2Props) {
+  const statusData = session?.status;
+  const title = "Starting Session";
+  const logButton = (
+    <Button className="mt-3" color="outline-primary" onClick={toggleLogs}>
+      Open Logs
+    </Button>
+  );
+
+  const readyNumContainers = statusData?.ready_containers || 0;
+  const totalNumContainers = statusData?.total_containers || 1;
+  return (
+    <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <ProgressIndicator
+        description="Starting the containers for your session"
+        type={ProgressType.Indeterminate}
+        style={ProgressStyle.Light}
+        title={includeStepInTitle ? `Step 2 of 2: ${title}` : title}
+        feedback={`${readyNumContainers} of ${totalNumContainers} containers ready`}
+      />
+      <div className={cx("progress-box", "pt-0")}>{logButton}</div>
     </div>
   );
 }

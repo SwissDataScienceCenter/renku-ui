@@ -27,14 +27,14 @@ import {
   RCloneOption,
   useGetStoragesV2Query,
 } from "../projectsV2/api/storagesV2.api";
-import { useGetDockerImageQuery } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
-import { DockerImageStatus } from "../session/startSessionOptions.types";
+// import { DockerImageStatus } from "../session/startSessionOptions.types";
 import { DEFAULT_URL } from "./session.utils";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
+import { useGetDockerImageQuery } from "./sessionsV2.api";
 
 interface StartSessionFromLauncherProps {
   launcher: SessionLauncher;
@@ -73,7 +73,7 @@ export default function useSessionLauncherState({
     useGetDockerImageQuery(
       containerImage !== "unknown"
         ? {
-            image: containerImage,
+            image_url: containerImage,
           }
         : skipToken,
       {
@@ -114,18 +114,22 @@ export default function useSessionLauncherState({
 
   // Set the image status
   useEffect(() => {
-    const newStatus: DockerImageStatus = isLoadingDockerImageStatus
-      ? "unknown"
-      : dockerImageStatus == null
-      ? "not-available"
-      : dockerImageStatus.available
-      ? "available"
-      : "not-available";
-    if (newStatus !== startSessionOptionsV2.dockerImageStatus) {
-      dispatch(
-        startSessionOptionsV2Slice.actions.setDockerImageStatus(newStatus)
-      );
-    }
+    // TODO ANDREA: wait until the endpoint getDockerImage is ready in ds
+    // const newStatus: DockerImageStatus = isLoadingDockerImageStatus
+    //   ? "unknown"
+    //   : dockerImageStatus == null
+    //   ? "not-available"
+    //   : dockerImageStatus.available
+    //   ? "available"
+    //   : "not-available";
+    // if (newStatus !== startSessionOptionsV2.dockerImageStatus) {
+    //   dispatch(
+    //     startSessionOptionsV2Slice.actions.setDockerImageStatus(newStatus)
+    //   );
+    // }
+    dispatch(
+      startSessionOptionsV2Slice.actions.setDockerImageStatus("available")
+    );
   }, [
     dispatch,
     dockerImageStatus,

@@ -46,7 +46,6 @@ import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepos
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetStoragesV2Query } from "../../projectsV2/api/storagesV2.api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
-import { Session, Sessions } from "../../session/sessions.types";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
@@ -57,7 +56,7 @@ import {
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.utils.ts";
-import { SessionLauncher } from "../sessionsV2.types";
+import { SessionLauncher, SessionV2 } from "../sessionsV2.types";
 import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
 import {
   useGetResourceClassByIdQuery,
@@ -108,7 +107,7 @@ function SessionCard({
   session,
   project,
 }: {
-  session: Session;
+  session: SessionV2;
   project: Project;
 }) {
   return (
@@ -123,9 +122,7 @@ function SessionCard({
         />
       }
       contentResources={
-        <SessionRowResourceRequests
-          resourceRequests={session.resources.requests}
-        />
+        <SessionRowResourceRequests resourceRequests={session.resources} />
       }
     />
   );
@@ -190,7 +187,7 @@ function getSessionColor(state: string) {
 
 interface SessionViewProps {
   launcher?: SessionLauncher;
-  sessions?: Sessions;
+  sessions?: SessionV2[];
   toggleSessionView: boolean;
   setToggleSessionView: () => void;
   project: Project;

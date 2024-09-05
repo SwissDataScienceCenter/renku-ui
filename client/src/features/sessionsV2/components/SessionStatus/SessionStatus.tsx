@@ -15,21 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Duration } from "luxon";
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
 import { CircleFill, Clock } from "react-bootstrap-icons";
-import { Badge } from "reactstrap";
+import {
+  Badge,
+  PopoverBody,
+  PopoverHeader,
+  UncontrolledPopover,
+} from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
-import { NotebooksHelper } from "../../../../notebooks";
-import { SessionListRowStatusExtraDetails } from "../../../../notebooks/components/SessionListStatus";
-import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
-import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";
+import { PrettySessionErrorMessage } from "../../../session/components/status/SessionStatusBadge.tsx";
 import { MissingHibernationInfo } from "../../../session/components/status/SessionStatusText";
-import { Session, SessionStatusState } from "../../../session/sessions.types";
-import { SessionLauncher } from "../../sessionsV2.types";
+import {
+  SessionLauncher,
+  SessionStatus,
+  SessionV2,
+} from "../../sessionsV2.types";
 
 export function SessionBadge({
   children,
@@ -45,27 +51,21 @@ export function SessionBadge({
   );
 }
 interface ActiveSessionV2Props {
-  session: Session;
+  session: SessionV2;
 }
 interface ActiveSessionDescV2Props extends ActiveSessionV2Props {
   showInfoDetails?: boolean;
 }
 interface ActiveSessionTitleV2Props {
-  session: Session;
+  session: SessionV2;
   launcher?: SessionLauncher;
 }
 export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
-  const { annotations, status } = session;
-
-  const cleanAnnotations = useMemo(
-    () => NotebooksHelper.cleanAnnotations(annotations) as NotebookAnnotations,
-    [annotations]
-  );
+  const { status, image } = session;
   const state = status.state;
-  const defaultImage = cleanAnnotations.default_image_used;
 
   const badge =
-    state === "running" && defaultImage ? (
+    state === "running" && !image ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
         <CircleFill className={cx("bi", "me-1", "text-warning-emphasis")} />
         <span className="text-warning-emphasis">Running Session</span>
@@ -123,15 +123,7 @@ export function SessionStatusV2Description({
   session,
   showInfoDetails = true,
 }: ActiveSessionDescV2Props) {
-  const { annotations, started, status } = session;
-
-  const cleanAnnotations = useMemo(
-    () => NotebooksHelper.cleanAnnotations(annotations) as NotebookAnnotations,
-    [annotations]
-  );
-
-  const details = { message: session.status.message };
-
+  const { started, status } = session;
   return (
     <div
       className={cx(
@@ -142,19 +134,52 @@ export function SessionStatusV2Description({
         "align-items-center"
       )}
     >
-      <SessionStatusV2Text
-        annotations={cleanAnnotations}
-        startTimestamp={started}
-        status={status.state}
-      />
+      <SessionStatusV2Text startTimestamp={started} status={status} />
       {showInfoDetails && (
-        <SessionListRowStatusExtraDetails
-          details={details}
-          status={status.state}
+        <SessionListRowStatusExtraDetailsV2
+          status={status}
           uid={session.name}
         />
       )}
     </div>
+  );
+}
+
+interface StatusExtraDetailsV2Props {
+  status: SessionStatus;
+  uid: string;
+}
+export function SessionListRowStatusExtraDetailsV2({
+  status,
+  uid,
+}: StatusExtraDetailsV2Props) {
+  if (!status.message) return null;
+
+  const popover = (
+    <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
+      <PopoverHeader>Kubernetes pod status</PopoverHeader>
+      <PopoverBody>
+        <PrettySessionErrorMessage message={status.message} />
+      </PopoverBody>
+    </UncontrolledPopover>
+  );
+
+  if (status.state == "failed")
+    return (
+      <>
+        {" "}
+        <span id={uid} className="text-muted cursor-pointer">
+          (Click here for details.)
+        </span>
+        {popover}
+      </>
+    );
+  return (
+    <>
+      {" "}
+      <FontAwesomeIcon id={uid} icon={faInfoCircle} />
+      {popover}
+    </>
   );
 }
 export function SessionStatusV2Title({
@@ -182,66 +207,65 @@ export function SessionStatusV2Title({
   return text ? <p className={cx("fst-italic", "mb-2")}>{text}</p> : null;
 }
 interface SessionStatusV2TextProps {
-  annotations: NotebookAnnotations;
   startTimestamp: string;
-  status: SessionStatusState;
+  status: SessionStatus;
 }
 function SessionStatusV2Text({
-  annotations,
   startTimestamp,
   status,
 }: SessionStatusV2TextProps) {
+  const { state, will_hibernate_at, will_delete_at } = status;
   const startTimeText = (
     <TimeCaption datetime={startTimestamp} enableTooltip noCaption />
   );
   const hibernationTimestamp =
-    status === "hibernated" ? annotations["hibernationDate"] ?? "" : null;
-  const hibernationDateTime = hibernationTimestamp
-    ? ensureDateTime(hibernationTimestamp)
-    : null;
+    state === "hibernated" ? will_hibernate_at ?? "" : null;
+  // const hibernationDateTime = hibernationTimestamp
+  //   ? ensureDateTime(hibernationTimestamp)
+  //   : null;
 
-  const hibernatedSecondsThreshold =
-    status === "hibernated"
-      ? parseInt(annotations?.hibernatedSecondsThreshold ?? "", 10)
-      : null;
-  const hibernationThresholdDuration =
-    !hibernatedSecondsThreshold || isNaN(hibernatedSecondsThreshold)
-      ? Duration.fromISO("")
-      : Duration.fromObject({ seconds: hibernatedSecondsThreshold });
-  const hibernationCullTimestamp =
-    hibernationDateTime &&
-    hibernationThresholdDuration &&
-    hibernationThresholdDuration.isValid &&
-    hibernationThresholdDuration.valueOf() > 0
-      ? hibernationDateTime.plus(hibernationThresholdDuration)
-      : null;
+  // const hibernatedSecondsThreshold =
+  //   state === "hibernated"
+  //     ? parseInt(will_hibernate_at ?? "", 10)
+  //     : null;
+  // const hibernationThresholdDuration =
+  //   !hibernatedSecondsThreshold || isNaN(hibernatedSecondsThreshold)
+  //     ? Duration.fromISO("")
+  //     : Duration.fromObject({ seconds: hibernatedSecondsThreshold });
+  // const hibernationCullTimestamp =
+  //   hibernationDateTime &&
+  //   hibernationThresholdDuration &&
+  //   hibernationThresholdDuration.isValid &&
+  //   hibernationThresholdDuration.valueOf() > 0
+  //     ? hibernationDateTime.plus(hibernationThresholdDuration)
+  //     : null;
 
-  return status === "running" ? (
+  return state === "running" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
       <span>Launched {startTimeText}</span>
     </div>
-  ) : status === "starting" ? (
+  ) : state === "starting" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
       <span>Created {startTimeText}</span>
     </div>
-  ) : status === "stopping" ? (
+  ) : state === "stopping" ? (
     <>Deleting Session...</>
-  ) : status === "hibernated" && hibernationCullTimestamp ? (
+  ) : state === "hibernated" && will_delete_at ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
       <span>
         Session will be deleted in{" "}
         <TimeCaption
-          datetime={hibernationCullTimestamp}
+          datetime={will_delete_at}
           enableTooltip
           noCaption
           suffix=" "
         />
       </span>
     </div>
-  ) : status === "hibernated" && hibernationTimestamp ? (
+  ) : state === "hibernated" && hibernationTimestamp ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
       <span>
@@ -249,7 +273,7 @@ function SessionStatusV2Text({
         <TimeCaption datetime={hibernationTimestamp} enableTooltip noCaption />
       </span>
     </div>
-  ) : status === "hibernated" ? (
+  ) : state === "hibernated" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
       <span>
@@ -257,7 +281,7 @@ function SessionStatusV2Text({
         <MissingHibernationInfo />
       </span>
     </div>
-  ) : status === "failed" ? (
+  ) : state === "failed" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
       <span>
