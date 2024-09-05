@@ -68,9 +68,9 @@ function StorageSecretSection() {
             <h3>Storage Secrets</h3>
           </div>
           <p>
-            Storage secrets are used to connect to cloud storage. When adding
-            cloud storage, credentials can be stored as secrets. The credential
-            secrets cannot be added here, but the values can be udated.
+            Credentials used to access data sources can be persisted as storage
+            secrets. Credentials should be initially entered in the context of a
+            project data sources, but the values can be updated here.
           </p>
         </Col>
       </Row>
