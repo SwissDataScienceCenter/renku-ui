@@ -147,7 +147,7 @@ function CloudStorageConfigurationSecrets({
       </div>
       {context === "session" && <SaveCredentialsInput control={control} />}
       {context === "storage" && hasIncompleteSavedCredentials && (
-        <div className={cx("text-danger", "mt-3")}>
+        <div className={cx("text-danger", "mb-3")}>
           The saved credentials for this data source are incomplete so they will
           be ignored at session launch.
         </div>
@@ -283,16 +283,14 @@ export default function CloudStorageSecretsModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader className={cx("fw-bold")}>
-        {CONTEXT_STRINGS[context].header}
-      </ModalHeader>
+      <ModalHeader>{CONTEXT_STRINGS[context].header}</ModalHeader>
       <Form
         noValidate
         className="form-rk-green"
         data-cy="cloud-storage-edit-options"
         onSubmit={handleSubmit(onContinue)}
       >
-        <ModalBody className="pt-0">
+        <ModalBody>
           <CloudStorageConfigurationSecrets
             cloudStorageConfig={cloudStorageConfigs[index]}
             context={context}
@@ -303,7 +301,7 @@ export default function CloudStorageSecretsModal({
             validationResult={validationResult}
           />
         </ModalBody>
-        <ModalFooter className={cx("d-flex", "align-items-baseline", "pt-0")}>
+        <ModalFooter className="gap-2">
           <div className="flex-grow-1">
             <ProgressBreadcrumbs
               cloudStorageConfigs={cloudStorageConfigs}
@@ -390,7 +388,7 @@ function CredentialsTestError({
   context,
   validationResult,
 }: Pick<CredentialsButtonsProps, "context" | "validationResult">) {
-  if (!validationResult.isError) return <div className="mt-3"></div>;
+  if (!validationResult.isError) return null;
   return (
     <div className="mt-3">
       <div className="text-danger">{CONTEXT_STRINGS[context].testError}</div>
@@ -451,7 +449,7 @@ function SaveCredentialsInput({
   control,
 }: Pick<SensitiveFieldWidgetProps, "control">) {
   return (
-    <div className="mt-2">
+    <div className="mb-3">
       <Controller
         name="saveCredentials"
         control={control}
@@ -545,7 +543,7 @@ function SensitiveFieldInput({
 
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
-    <div>
+    <div className="mb-3">
       <Label htmlFor={option.name}>
         {friendlyName ?? option.name}
         <div id={tooltipContainerId} className="d-inline">
