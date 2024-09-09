@@ -30,15 +30,15 @@ import {
   Row,
 } from "reactstrap";
 
-import { Loader } from "../../../../components/Loader.tsx";
-import AddCloudStorageModal from "../../../project/components/cloudStorage/CloudStorageModal.tsx";
+import { Loader } from "../../../../components/Loader";
+import DataConnectorModal from "../../../dataConnectorsV2/components/DataConnectorModal";
 import {
-  CloudStorageGetRead,
+  type CloudStorageGetRead,
   useDeleteStoragesV2ByStorageIdMutation,
 } from "../../../projectsV2/api/storagesV2.api";
-import DataSourceCredentialsModal from "./DataSourceCredentialsModal.tsx";
-import { DataSourceView } from "./DataSourceView.tsx";
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button.tsx";
+import DataSourceCredentialsModal from "./DataSourceCredentialsModal";
+import { DataSourceView } from "./DataSourceView";
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 
 interface DataSourceDeleteModalProps {
   storage: CloudStorageGetRead;
@@ -174,7 +174,7 @@ export function DataSourceActions({
         isOpen={isDeleteOpen}
         toggleModal={toggleDelete}
       />
-      <AddCloudStorageModal
+      <DataConnectorModal
         currentStorage={storage}
         isOpen={isEditOpen}
         toggle={toggleEdit}
