@@ -43,10 +43,8 @@ import {
 } from "../../project/utils/projectCloudStorage.utils";
 import { AddStorageBreadcrumbNavbar } from "../../project/components/cloudStorage/AddOrEditCloudStorage";
 import {
-  useAddCloudStorageForProjectMutation,
   useGetCloudStorageSchemaQuery,
   useTestCloudStorageConnectionMutation,
-  useUpdateCloudStorageMutation,
 } from "../../project/components/cloudStorage/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
@@ -62,7 +60,6 @@ import {
   CloudStorageDetailsOptions,
   CredentialSaveStatus,
   TestCloudStorageConnectionParams,
-  UpdateCloudStorageParams,
 } from "../../project/components/cloudStorage/projectCloudStorage.types";
 
 import {
@@ -75,7 +72,7 @@ import {
 
 import styles from "../../project/components/cloudStorage/CloudStorage.module.scss";
 
-interface CloudStorageModalProps {
+interface DataConnectorModalProps {
   currentStorage?:
     | CloudStorage
     | CloudStorageGetRead
@@ -84,15 +81,13 @@ interface CloudStorageModalProps {
   isOpen: boolean;
   toggle: () => void;
   projectId: string;
-  isV2: boolean;
 }
-export default function CloudStorageModal({
+export default function DataConnectorModal({
   currentStorage = null,
   isOpen,
   toggle: originalToggle,
   projectId,
-  isV2 = false,
-}: CloudStorageModalProps) {
+}: DataConnectorModalProps) {
   const storageId = currentStorage?.storage.storage_id ?? null;
   // Fetch available schema when users open the modal
   const {
@@ -177,12 +172,8 @@ export default function CloudStorageModal({
   }, [redraw]);
 
   // Mutations
-  const [addCloudStorageForProject, addResult] =
-    useAddCloudStorageForProjectMutation();
   const [addCloudStorageForProjectV2, addResultV2] =
     usePostStoragesV2Mutation();
-  const [modifyCloudStorageForProject, modifyResult] =
-    useUpdateCloudStorageMutation();
   const [modifyCloudStorageV2ForProject, modifyResultV2] =
     usePatchStoragesV2ByStorageIdMutation();
   const [saveCredentials, saveCredentialsResult] =
@@ -310,61 +301,37 @@ export default function CloudStorageModal({
       };
     }
 
-    // We manually set success only when we get an ID back. That's just to sho a success message
+    // We manually set success only when we get an ID back. That's just to show a success message
     if (storageId) {
-      // v1
-      if (isV2) {
-        const cloudStoragePatch: CloudStoragePatch = {
-          project_id: projectId,
-          name: storageParameters.name,
-          configuration: storageParameters.configuration as RCloneConfig,
-          source_path: storageParameters.source_path,
-          target_path: storageParameters.target_path,
-          readonly: storageParameters.readonly,
-        };
-        modifyCloudStorageV2ForProject({
-          storageId: storageId,
-          cloudStoragePatch,
-        }).then((result) => {
-          if ("data" in result && result.data.storage.storage_id) {
-            setSuccess(true);
-          }
-        });
-      } else {
-        const storageParametersWithId: UpdateCloudStorageParams = {
-          ...storageParameters,
-          storage_id: storageId as string,
-        };
-        modifyCloudStorageForProject(storageParametersWithId).then((result) => {
-          if ("data" in result && result.data.storage.storage_id) {
-            setSuccess(true);
-          }
-        });
-      }
+      const cloudStoragePatch: CloudStoragePatch = {
+        project_id: projectId,
+        name: storageParameters.name,
+        configuration: storageParameters.configuration as RCloneConfig,
+        source_path: storageParameters.source_path,
+        target_path: storageParameters.target_path,
+        readonly: storageParameters.readonly,
+      };
+      modifyCloudStorageV2ForProject({
+        storageId: storageId,
+        cloudStoragePatch,
+      }).then((result) => {
+        if ("data" in result && result.data.storage.storage_id) {
+          setSuccess(true);
+        }
+      });
     } else {
-      if (isV2) {
-        const parameterV2 = {
-          body: storageParameters,
-        } as PostStoragesV2ApiArg;
-        addCloudStorageForProjectV2(parameterV2).then((result) => {
-          if ("data" in result && result.data.storage.storage_id) {
-            setSuccess(true);
-          }
-        });
-      } else {
-        addCloudStorageForProject(storageParameters).then((result) => {
-          if ("data" in result && result.data.storage.storage_id) {
-            setSuccess(true);
-          }
-        });
-      }
+      const parameterV2 = {
+        body: storageParameters,
+      } as PostStoragesV2ApiArg;
+      addCloudStorageForProjectV2(parameterV2).then((result) => {
+        if ("data" in result && result.data.storage.storage_id) {
+          setSuccess(true);
+        }
+      });
     }
   }, [
-    addCloudStorageForProject,
     addCloudStorageForProjectV2,
     currentStorage,
-    isV2,
-    modifyCloudStorageForProject,
     modifyCloudStorageV2ForProject,
     projectId,
     schema,
@@ -402,8 +369,7 @@ export default function CloudStorageModal({
   useEffect(() => {
     const storageId = addResultV2.data?.storage?.storage_id;
     if (storageId == null) return;
-    const shouldSaveCredentials = shouldSaveCredentialsV2(
-      isV2,
+    const shouldSaveCredentials = shouldSaveDataConnectorCredentials(
       storageDetails.options,
       state.saveCredentials,
       validationSucceeded
@@ -432,7 +398,6 @@ export default function CloudStorageModal({
     });
   }, [
     addResultV2.data?.storage?.storage_id,
-    isV2,
     saveCredentials,
     state.saveCredentials,
     schema,
@@ -474,14 +439,11 @@ export default function CloudStorageModal({
     (!storageDetails.schema ||
       (schemaRequiresProvider && !storageDetails.provider));
 
-  const isAddResultLoading = addResult.isLoading || addResultV2.isLoading;
-  const isModifyResultLoading =
-    modifyResult.isLoading || modifyResultV2.isLoading;
-  const addResultError = isV2 ? addResultV2.error : addResult.error;
-  const modifyResultError = isV2 ? modifyResultV2.error : modifyResult.error;
-  const addResultStorageName = isV2
-    ? addResultV2?.data?.storage?.name
-    : addResult?.data?.storage?.name;
+  const isAddResultLoading = addResultV2.isLoading;
+  const isModifyResultLoading = modifyResultV2.isLoading;
+  const addResultError = addResultV2.error;
+  const modifyResultError = modifyResultV2.error;
+  const addResultStorageName = addResultV2?.data?.storage?.name;
 
   const disableAddButton =
     isAddResultLoading ||
@@ -492,7 +454,7 @@ export default function CloudStorageModal({
     (hasProviderShortlist(storageDetails.schema) && !storageDetails.provider);
   const addButtonDisableReason = isAddResultLoading
     ? "Please wait, the storage is being added"
-    : modifyResult.isLoading
+    : modifyResultV2.isLoading
     ? "Please wait, the storage is being modified"
     : !storageDetails.name
     ? "Please provide a name"
@@ -524,14 +486,14 @@ export default function CloudStorageModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle} data-cy="cloud-storage-edit-header">
-        <AddCloudStorageHeaderContent isV2={isV2} storageId={storageId} />
+        <AddCloudStorageHeaderContent isV2={true} storageId={storageId} />
       </ModalHeader>
 
       <ModalBody data-cy="cloud-storage-edit-body">
         <AddCloudStorageBodyContent
           addResultStorageName={addResultStorageName}
           credentialSaveStatus={credentialSaveStatus}
-          isV2={isV2}
+          isV2={true}
           redraw={redraw}
           schema={schema}
           schemaError={schemaError}
@@ -556,11 +518,9 @@ export default function CloudStorageModal({
             <RtkOrNotebooksError error={addResultError || modifyResultError} />
           </div>
         )}
-        {isV2 && (
-          <div className={cx("d-flex", "flex-grow-1")}>
-            <AddStorageBreadcrumbNavbar state={state} setState={setStateSafe} />
-          </div>
-        )}
+        <div className={cx("d-flex", "flex-grow-1")}>
+          <AddStorageBreadcrumbNavbar state={state} setState={setStateSafe} />
+        </div>
         {!isResultLoading && !success && (
           <Button
             color="outline-danger"
@@ -605,14 +565,12 @@ export default function CloudStorageModal({
   );
 }
 
-function shouldSaveCredentialsV2(
-  isV2: boolean,
+function shouldSaveDataConnectorCredentials(
   storageDetailsOptions: CloudStorageDetailsOptions | undefined,
   stateSaveCredentials: boolean,
   validationSucceeded: boolean
 ) {
   return !!(
-    isV2 &&
     storageDetailsOptions &&
     stateSaveCredentials &&
     validationSucceeded

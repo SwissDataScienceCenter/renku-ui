@@ -179,7 +179,6 @@ export function DataSourceActions({
         isOpen={isEditOpen}
         toggle={toggleEdit}
         projectId={projectId}
-        isV2
       />
     </>
   );
