@@ -20,10 +20,18 @@ export interface SecretDetails {
   id: string;
   modification_date: Date;
   name: string;
+  kind: SecretKind;
 }
 
 export interface AddSecretParams {
   name: string;
+  value: string;
+  kind: SecretKind;
+}
+
+export type AddSecretForm = AddSecretParams;
+
+export interface EditSecretForm {
   value: string;
 }
 
@@ -32,8 +40,8 @@ export interface EditSecretParams {
   value: string;
 }
 
-export type AddSecretForm = AddSecretParams;
-
-export interface EditSecretForm {
-  value: string;
+export interface GetSecretsParams {
+  kind: SecretKind;
 }
+
+export type SecretKind = "general" | "storage";
