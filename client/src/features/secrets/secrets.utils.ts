@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,27 +16,19 @@
  * limitations under the License.
  */
 
-import express from "express";
+import { Docs } from "../../utils/constants/Docs";
+import type { SecretDetails } from "./secrets.types";
 
-import config from "../config";
-import { Storage } from "../storage";
+export const SECRETS_DOCS_URL = Docs.rtdTopicGuide("secrets/secrets.html");
 
-import registerApiRoutes from "./apis";
-import registerInternalRoutes from "./internal";
+export const SECRETS_VALUE_LENGTH_LIMIT = 5_000;
 
-function register(
-  app: express.Application,
-  prefix: string,
-  storage: Storage
-): void {
-  registerInternalRoutes(app, storage);
+type Secret = Pick<SecretDetails, "name">;
 
-  // Testing ingress
-  app.get(prefix, (req, res) => {
-    res.send("UI server up and running");
-  });
-
-  registerApiRoutes(app, prefix + config.routes.api, storage);
+export function storageSecretNameToFieldName(secret: Secret) {
+  return secret.name.split("-").slice(1).join("-") || secret.name;
 }
 
-export default { register };
+export function storageSecretNameToStorageId(secret: Secret) {
+  return secret.name.split("-")[0];
+}

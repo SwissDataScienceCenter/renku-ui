@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "Renku Compute Resource Control (CRC) service",
-    "description": "Service that provide information about compute resources, resource pools\nand user access to them. All errors have the same format as the schema\ncalled ErrorResponse.\n",
+    "title": "Renku Data Services API",
+    "description": "This service is the main backend for Renku. It provides information about users, projects,\ncloud storage, access to compute resources and many other things.\n",
     "version": "v1"
   },
   "servers": [
@@ -34,7 +34,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CloudStorageGet"
+                  "$ref": "#/components/schemas/CloudStorageGetV2"
                 }
               }
             }
@@ -93,10 +93,19 @@
         "parameters": [
           {
             "in": "query",
-            "name": "project_id",
-            "required": true,
+            "description": "query parameters",
+            "name": "storage_v2_params",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "$ref": "#/components/schemas/UlidId"
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "project_id": {
+                  "$ref": "#/components/schemas/UlidId"
+                }
+              },
+              "required": ["project_id"]
             }
           }
         ],
@@ -108,7 +117,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CloudStorageGet"
+                    "$ref": "#/components/schemas/CloudStorageGetV2"
                   }
                 }
               }
@@ -166,37 +175,413 @@
         },
         "tags": ["storages_v2"]
       }
+    },
+    "/storages_v2/{storage_id}/secrets": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "storage_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/UlidId"
+          },
+          "description": "The id of the storage"
+        }
+      ],
+      "get": {
+        "summary": "Get all saved secrets for a cloud storage",
+        "responses": {
+          "200": {
+            "description": "The saved storage secrets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CloudStorageSecretGetList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Storage was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storages_v2"]
+      },
+      "post": {
+        "summary": "Save secrets for a cloud storage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloudStorageSecretPostList"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The secrets for cloud storage were saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CloudStorageSecretGetList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storages_v2"]
+      },
+      "delete": {
+        "summary": "Remove all saved secrets for a storage",
+        "responses": {
+          "204": {
+            "description": "The secrets were removed or did not exist in the first place or the storage doesn't exist"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storages_v2"]
+      }
+    },
+    "/storage/{storage_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "storage_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/UlidId"
+          },
+          "description": "the id of the storage"
+        }
+      ],
+      "get": {
+        "summary": "get cloud storage details",
+        "responses": {
+          "200": {
+            "description": "Found the cloud storage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CloudStorageGet"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage"]
+      },
+      "put": {
+        "summary": "update a cloud storage entry",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CloudStorage"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CloudStorageUrl"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The cloud storage entry was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CloudStorageGet"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage"]
+      },
+      "patch": {
+        "summary": "partially update a cloud storage entry",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CloudStoragePatch"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The cloud storage entry was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CloudStorageGet"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage"]
+      },
+      "delete": {
+        "summary": "remove a cloud storage definition",
+        "responses": {
+          "204": {
+            "description": "The rcloud storage was removed or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage"]
+      }
+    },
+    "/storage": {
+      "get": {
+        "summary": "get cloud storage for a project by id",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "query parameters",
+            "name": "storage_params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "project_id": {
+                  "$ref": "#/components/schemas/GitlabProjectId"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the storage configurations for the project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CloudStorageGet"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Storage was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage"]
+      },
+      "post": {
+        "summary": "create a new cloud storage for a project",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CloudStorage"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CloudStorageUrl"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The cloud storage entry was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CloudStorageGet"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage"]
+      }
+    },
+    "/storage_schema": {
+      "get": {
+        "summary": "Returns the rclone schema definition, which can be used to create interactive settings editors",
+        "responses": {
+          "200": {
+            "description": "The cloud storage schema definition",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RCloneSchema"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["storage"]
+      }
+    },
+    "/storage_schema/validate": {
+      "post": {
+        "summary": "Validate an RClone config using the schema",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RCloneConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The configuration is valid"
+          },
+          "501": {
+            "description": "The schema seems valid but testing the connection is not supported"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage"]
+      }
+    },
+    "/storage_schema/test_connection": {
+      "post": {
+        "summary": "Test that an rclone connection can be made",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "configuration": {
+                    "$ref": "#/components/schemas/RCloneConfig"
+                  },
+                  "source_path": {
+                    "$ref": "#/components/schemas/SourcePath"
+                  }
+                },
+                "required": ["configuration", "source_path"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The configuration is valid"
+          },
+          "501": {
+            "description": "The schema seems valid but testing the connection is not supported"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage"]
+      }
+    },
+    "/storage_schema/obscure": {
+      "post": {
+        "summary": "Obscure password fields for rclone",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "configuration": {
+                    "$ref": "#/components/schemas/RCloneConfig"
+                  }
+                },
+                "required": ["configuration"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The config with password values obscured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RCloneConfig"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage"]
+      }
     }
   },
   "components": {
     "schemas": {
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "integer",
-                "minimum": 0,
-                "exclusiveMinimum": true,
-                "example": 1404
-              },
-              "detail": {
-                "type": "string",
-                "example": "A more detailed optional message showing what the problem was"
-              },
-              "message": {
-                "type": "string",
-                "example": "Something went wrong - please try again later"
-              }
-            },
-            "required": ["code", "message"]
-          }
-        },
-        "required": ["error"]
-      },
-      "GitRequest": {
+      "ProjectId": {
         "type": "object",
         "properties": {
           "project_id": {
@@ -239,7 +624,7 @@
       "CloudStorageUrl": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/GitRequest"
+            "$ref": "#/components/schemas/ProjectId"
           },
           {
             "type": "object",
@@ -271,7 +656,7 @@
       "CloudStorage": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/GitRequest"
+            "$ref": "#/components/schemas/ProjectId"
           },
           {
             "type": "object",
@@ -372,6 +757,77 @@
           }
         },
         "required": ["storage"]
+      },
+      "CloudStorageGetV2": {
+        "description": "Get response for a V2 cloud storage. Contains field name and secret ID for saved secrets.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CloudStorageGet"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "secrets": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CloudStorageSecretGet"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CloudStorageSecretPost": {
+        "type": "object",
+        "description": "Data for storing secret for a storage field",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the field to store credential for",
+            "minLength": 1,
+            "maxLength": 99
+          },
+          "value": {
+            "$ref": "#/components/schemas/SecretValue"
+          }
+        },
+        "required": ["name", "value"]
+      },
+      "CloudStorageSecretPostList": {
+        "description": "List of storage secrets that are saved",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CloudStorageSecretPost"
+        }
+      },
+      "CloudStorageSecretGetList": {
+        "description": "List of storage secrets that are saved",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CloudStorageSecretGet"
+        }
+      },
+      "CloudStorageSecretGet": {
+        "type": "object",
+        "description": "Data for saved storage secrets",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the field to store credential for",
+            "minLength": 1,
+            "maxLength": 99
+          },
+          "secret_id": {
+            "$ref": "#/components/schemas/UlidId"
+          }
+        },
+        "required": ["name", "secret_id"]
+      },
+      "SecretValue": {
+        "description": "Secret value that can be any text",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 5000
       },
       "RCloneSchema": {
         "description": "List of RClone schemas for different storage types",
@@ -499,8 +955,7 @@
         "type": "string",
         "minLength": 26,
         "maxLength": 26,
-        "pattern": "^[A-Z0-9]+$",
-        "format": "ulid"
+        "pattern": "^[A-Z0-9]+$"
       },
       "GitlabProjectId": {
         "description": "Project id of a gitlab project (only int project id allowed, encoded as string for future-proofing)",
@@ -523,6 +978,32 @@
         "type": "string",
         "description": "same as rclone prefix/ rclone config type. Ignored in requests, but returned in responses for convenience.",
         "readOnly": true
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "example": 1404
+              },
+              "detail": {
+                "type": "string",
+                "example": "A more detailed optional message showing what the problem was"
+              },
+              "message": {
+                "type": "string",
+                "example": "Something went wrong - please try again later"
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
       }
     },
     "responses": {
@@ -536,6 +1017,17 @@
           }
         }
       }
+    },
+    "securitySchemes": {
+      "oidc": {
+        "type": "openIdConnect",
+        "openIdConnectUrl": "/auth/realms/Renku/.well-known/openid-configuration"
+      }
     }
-  }
+  },
+  "security": [
+    {
+      "oidc": ["openid"]
+    }
+  ]
 }
