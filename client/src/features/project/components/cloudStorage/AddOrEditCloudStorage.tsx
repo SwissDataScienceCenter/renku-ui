@@ -48,6 +48,7 @@ import {
 
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
+  CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
   CLOUD_STORAGE_TOTAL_STEPS,
 } from "./projectCloudStorage.constants";
 import {
@@ -67,6 +68,9 @@ import {
 } from "../../utils/projectCloudStorage.utils";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { WarnAlert } from "../../../../components/Alert";
+import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
+
+import AddStorageMountSaveCredentialsInfo from "./AddStorageMountSaveCredentialsInfo";
 
 import styles from "./CloudStorage.module.scss";
 
@@ -76,7 +80,7 @@ interface AddOrEditCloudStorageProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
-  isV2?: boolean;
+  storageSecrets: CloudStorageSecretGet[];
 }
 
 export default function AddOrEditCloudStorage({
@@ -102,10 +106,16 @@ export default function AddOrEditCloudStorage({
           storage={storage}
           setState={setState}
           setStorage={setStorage}
+          storageSecrets={[]}
+          validationSucceeded={false}
         />
       </>
     );
   return <p>Error - not implemented yet</p>;
+}
+
+interface AddOrEditCloudStoragePropsV2 extends AddOrEditCloudStorageProps {
+  validationSucceeded: boolean;
 }
 
 export function AddOrEditCloudStorageV2({
@@ -114,8 +124,9 @@ export function AddOrEditCloudStorageV2({
   setState,
   state,
   storage,
-  isV2,
-}: AddOrEditCloudStorageProps) {
+  storageSecrets,
+  validationSucceeded,
+}: AddOrEditCloudStoragePropsV2) {
   const ContentByStep =
     state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
       ? mapStepToElement[state.step]
@@ -133,7 +144,9 @@ export function AddOrEditCloudStorageV2({
           storage={storage}
           setState={setState}
           setStorage={setStorage}
-          isV2={isV2}
+          storageSecrets={storageSecrets}
+          isV2={true}
+          validationSucceeded={validationSucceeded}
         />
       </>
     );
@@ -249,7 +262,9 @@ interface AddStorageStepProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
+  storageSecrets: CloudStorageSecretGet[];
   isV2?: boolean;
+  validationSucceeded: boolean;
 }
 
 const mapStepToElement: {
@@ -479,19 +494,33 @@ function CheckboxOptionItem({
 interface PasswordOptionItemProps {
   control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   defaultValue: string | undefined;
+  isV2?: boolean;
   onFieldValueChange: (option: string, value: string) => void;
   option: CloudStorageSchemaOptions;
+  storageSecrets: CloudStorageSecretGet[];
 }
 function PasswordOptionItem({
   control,
   defaultValue,
+  isV2,
   onFieldValueChange,
   option,
+  storageSecrets,
 }: PasswordOptionItemProps) {
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = useCallback(() => {
     setShowPassword((showPassword) => !showPassword);
   }, []);
+
+  const optionName = option.name;
+  if (isV2 && storageSecrets.some((s) => s.name === optionName)) {
+    return (
+      <PasswordOptionItemStored
+        defaultValue={CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE}
+        {...{ control, option }}
+      />
+    );
+  }
 
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
@@ -505,9 +534,20 @@ function PasswordOptionItem({
           />
         </div>
         <UncontrolledTooltip placement="top" target={tooltipContainerId}>
-          This field contains sensitive data (E.G. password, access token, ...).
-          RenkuLab does not store passwords, so you will be asked this value
-          again when starting a session.
+          {isV2 ? (
+            <span>
+              This field contains sensitive data (E.G. password, access token,
+              ...), which is specific to the user. You can store this value as a
+              secret, in which case it will be used for any session you start,
+              but the value will not be available to other users.
+            </span>
+          ) : (
+            <span>
+              This field contains sensitive data (E.G. password, access token,
+              ...). RenkuLab does not store passwords, so you will be asked this
+              value again when starting a session.
+            </span>
+          )}
         </UncontrolledTooltip>
       </label>
 
@@ -544,10 +584,54 @@ function PasswordOptionItem({
             placement="top"
             target={`show-password-${option.name}`}
           >
-            Hide/show sensistive data
+            Hide/show sensitive data
           </UncontrolledTooltip>
         </Button>
       </InputGroup>
+    </>
+  );
+}
+
+function PasswordOptionItemStored({
+  control,
+  defaultValue,
+  option,
+}: Omit<PasswordOptionItemProps, "onFieldValueChange" | "storageSecrets">) {
+  const tooltipContainerId = `option-is-secret-${option.name}`;
+  return (
+    <>
+      <label htmlFor={option.name}>
+        {option.friendlyName ?? option.name}{" "}
+        <div id={tooltipContainerId} className="d-inline">
+          <KeyFill className={cx("bi", "ms-1")} />
+          <ExclamationTriangleFill
+            className={cx("bi", "ms-1", "text-warning")}
+          />
+        </div>
+        <UncontrolledTooltip placement="top" target={tooltipContainerId}>
+          <span>
+            The value for this field is stored as a secret. Use the credentials
+            dialog to change or clear the value.
+          </span>
+        </UncontrolledTooltip>
+      </label>
+
+      <Controller
+        name={option.name}
+        control={control}
+        defaultValue={defaultValue}
+        render={({ field }) => (
+          <input
+            {...field}
+            id={option.name}
+            readOnly={true}
+            type="text"
+            className={cx("form-control", "rounded-0", "rounded-start")}
+            placeholder={option.convertedDefault?.toString() ?? ""}
+            onChange={() => {}}
+          />
+        )}
+      />
     </>
   );
 }
@@ -854,11 +938,13 @@ function AddStorageType({
 
 // *** Add storage: page 2 of 3, with storage options *** //
 function AddStorageOptions({
+  isV2,
   schema,
   setState,
   setStorage,
   state,
   storage,
+  storageSecrets,
 }: AddStorageStepProps) {
   const options = getSchemaOptions(
     schema,
@@ -914,8 +1000,10 @@ function AddStorageOptions({
                   ? (storage.options[o.name] as string)
                   : ""
               }
+              isV2={isV2}
               onFieldValueChange={onFieldValueChange}
               option={o}
+              storageSecrets={storageSecrets}
             />
           ) : (
             <InputOptionItem
@@ -1011,13 +1099,26 @@ function AddStorageOptions({
 
 // *** Add storage: page 3 of 3, with name and mount path *** //
 
-interface AddStorageMountForm {
+export interface AddStorageMountForm {
   name: string;
   mountPoint: string;
   readOnly: boolean;
+  saveCredentials: boolean;
 }
-type AddStorageMountFormFields = "name" | "mountPoint" | "readOnly";
-function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
+type AddStorageMountFormFields =
+  | "name"
+  | "mountPoint"
+  | "readOnly"
+  | "saveCredentials";
+function AddStorageMount({
+  isV2,
+  schema,
+  setStorage,
+  setState,
+  storage,
+  state,
+  validationSucceeded,
+}: AddStorageStepProps) {
   const {
     control,
     formState: { errors, touchedFields },
@@ -1031,17 +1132,46 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         storage.mountPoint ||
         `external_storage/${storage.schema?.toLowerCase()}`,
       readOnly: storage.readOnly ?? false,
+      saveCredentials: state.saveCredentials,
     },
   });
-  const onFieldValueChange = (
-    field: AddStorageMountFormFields,
-    value: string | boolean
-  ) => {
-    setValue(field, value);
-    if (field === "name" && !touchedFields.mountPoint && !storage.storageId)
-      setValue("mountPoint", `external_storage/${value}`);
-    setStorage({ ...getValues() });
-  };
+  const onFieldValueChange = useCallback(
+    (field: AddStorageMountFormFields, value: string | boolean) => {
+      setValue(field, value);
+      if (field === "name" && !touchedFields.mountPoint && !storage.storageId)
+        setValue("mountPoint", `external_storage/${value}`);
+      if (field === "saveCredentials") {
+        if (isV2) {
+          setState({ saveCredentials: !!value });
+          return;
+        }
+      }
+      setStorage({ ...getValues() });
+    },
+    [
+      getValues,
+      isV2,
+      setState,
+      setStorage,
+      storage.storageId,
+      setValue,
+      touchedFields.mountPoint,
+    ]
+  );
+
+  const options = getSchemaOptions(
+    schema,
+    true,
+    storage.schema,
+    storage.provider
+  );
+  const secretFields =
+    options == null
+      ? []
+      : Object.values(options).filter((o) => o && o.convertedType === "secret");
+  const hasPasswordFieldWithInput = secretFields.some(
+    (o) => storage.options && storage.options[o.name]
+  );
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
@@ -1162,6 +1292,17 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
           this in any case to prevent accidental data modifications.
         </div>
       </div>
+
+      {storage.storageId == null &&
+        isV2 &&
+        hasPasswordFieldWithInput &&
+        validationSucceeded && (
+          <AddStorageMountSaveCredentialsInfo
+            control={control}
+            onFieldValueChange={onFieldValueChange}
+            state={state}
+          />
+        )}
     </form>
   );
 }
