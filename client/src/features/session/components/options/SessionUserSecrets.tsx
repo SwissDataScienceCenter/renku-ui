@@ -68,7 +68,7 @@ function SessionUserSecretsSection() {
   const toggleIsOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
   // Fetch the secrets
-  const secrets = useGetSecretsQuery();
+  const secrets = useGetSecretsQuery({ kind: "general" });
 
   // Get current values from the store
   const sessionOptions = useAppSelector((state) => state.startSessionOptions);

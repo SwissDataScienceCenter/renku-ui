@@ -21,36 +21,58 @@ import { Col, Container, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import { useGetSecretsQuery } from "./secrets.api";
-import type { SecretKind } from "./secrets.types";
+import type { SecretDetails } from "./secrets.types";
+import { storageSecretNameToStorageId } from "./secrets.utils";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import SecretsListItem from "./SecretsListItem";
 
-interface SecretsListParams {
-  kind: SecretKind;
+interface SecretGroupProps {
+  group: string;
+  secrets: SecretDetails[];
+}
+function SecretGroup({ group, secrets }: SecretGroupProps) {
+  return (
+    <>
+      <Row className="g-2">
+        <Col>
+          <h5>{group}</h5>
+        </Col>
+      </Row>
+      <Row className={cx("g-2", "row-cols-1", "row-cols-xl-2")}>
+        {secrets.map((secret) => (
+          <Col key={secret.id}>
+            <SecretsListItem kind="storage" secret={secret} />
+          </Col>
+        ))}
+      </Row>
+    </>
+  );
 }
 
-export default function SecretsList({ kind }: SecretsListParams) {
-  const secrets = useGetSecretsQuery({ kind });
+export default function StorageSecretsList() {
+  const secrets = useGetSecretsQuery({ kind: "storage" });
 
   if (secrets.isLoading) return <Loader />;
 
   if (secrets.isError)
     return <RtkOrNotebooksError dismissible={false} error={secrets.error} />;
 
-  if (secrets.data?.length === 0) return null;
+  if (secrets.data == null || secrets.data?.length === 0) return null;
+  const secretsGroups = secrets.data.reduce((acc, secret) => {
+    const group = storageSecretNameToStorageId(secret);
+    if (group in acc) {
+      acc[group].push(secret);
+    } else {
+      acc[group] = [secret];
+    }
+    return acc;
+  }, {} as Record<string, SecretDetails[]>);
 
-  const secretsList = secrets.data?.map((secret) => {
-    return (
-      <Col key={secret.id}>
-        <SecretsListItem kind={kind} secret={secret} />
-      </Col>
-    );
-  });
   return (
     <Container className={cx("p-0", "mt-2")} data-cy="secrets-list" fluid>
-      <Row className={cx("g-2", "row-cols-1", "row-cols-xl-2")}>
-        {secretsList}
-      </Row>
+      {Object.entries(secretsGroups).map(([group, secrets]) => (
+        <SecretGroup key={group} group={group} secrets={secrets} />
+      ))}
     </Container>
   );
 }
