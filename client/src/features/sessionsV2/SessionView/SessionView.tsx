@@ -337,7 +337,7 @@ export function SessionView({
           name: launcherResourceClass.name,
           cpu: launcherResourceClass.cpu,
           memory: `${launcherResourceClass.memory}G`,
-          storage: `${launcherResourceClass.max_storage}G`,
+          storage: `${launcherResourceClass.default_storage}G`,
           gpu: launcherResourceClass.gpu,
         }}
       />
