@@ -19,11 +19,11 @@
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 
-import { Project } from "../api/projectV2.api";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import { Project } from "../api/projectV2.api";
 
 interface ProjectShortHandDisplayProps {
   className?: string | string[];
@@ -56,12 +56,21 @@ export default function ProjectShortHandDisplay({
 
       <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
         <VisibilityIcon visibility={project.visibility} />
-        <TimeCaption
-          className={cx("ms-auto", "my-auto")}
-          datetime={project.creation_date}
-          enableTooltip
-          prefix="Created"
-        />
+        {project.updated_at ? (
+          <TimeCaption
+            className={cx("ms-auto", "my-auto")}
+            datetime={project.updated_at}
+            enableTooltip
+            prefix="Updated"
+          />
+        ) : (
+          <TimeCaption
+            className={cx("ms-auto", "my-auto")}
+            datetime={project.creation_date}
+            enableTooltip
+            prefix="Created"
+          />
+        )}
       </div>
     </div>
   );
