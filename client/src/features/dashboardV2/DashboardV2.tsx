@@ -18,17 +18,10 @@
 import cx from "classnames";
 import { Folder, People, PlayCircle, PlusLg } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Col,
-  ListGroup,
-  Row,
-} from "reactstrap";
+import { Card, CardBody, CardHeader, Col, ListGroup, Row } from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import {
@@ -36,10 +29,9 @@ import {
   useGetProjectsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import DashboardV2Sessions from "./DashboardV2Sessions";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
+import DashboardV2Sessions from "./DashboardV2Sessions";
 
 export default function DashboardV2() {
   return (
@@ -125,12 +117,6 @@ function ProjectsDashboard() {
       <CardBody>
         <ProjectList />
       </CardBody>
-
-      <CardFooter>
-        <Link to="/v2/projects" data-cy="view-my-projects-btn">
-          View all my projects
-        </Link>
-      </CardFooter>
     </Card>
   );
 }
@@ -151,22 +137,35 @@ function ProjectList() {
       <p>Cannot show projects.</p>
       <RtkOrNotebooksError error={error} />
     </div>
-  ) : data == null || data?.total === 0 ? (
+  ) : !data || data?.total === 0 ? (
     <div>No 2.0 projects.</div>
   ) : null;
 
-  if (noProjects) return <div>{noProjects}</div>;
+  const viewLink = (
+    <ViewAllLink noItems={!data || data?.total === 0} type="project" />
+  );
+
+  if (noProjects)
+    return (
+      <div className={cx("d-flex", "flex-column", "gap-3")}>
+        {noProjects}
+        {viewLink}
+      </div>
+    );
 
   return (
-    <ListGroup flush data-cy="dashboard-project-list">
-      {data?.projects?.map((project) => (
-        <ProjectShortHandDisplay
-          element="list-item"
-          key={project.id}
-          project={project}
-        />
-      ))}
-    </ListGroup>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <ListGroup flush data-cy="dashboard-project-list">
+        {data?.projects?.map((project) => (
+          <ProjectShortHandDisplay
+            element="list-item"
+            key={project.id}
+            project={project}
+          />
+        ))}
+      </ListGroup>
+      {viewLink}
+    </div>
   );
 }
 
@@ -195,12 +194,6 @@ function GroupsDashboard() {
       <CardBody>
         <GroupsList />
       </CardBody>
-
-      <CardFooter className={cx("bg-white", "py-3")}>
-        <Link to="/v2/groups" data-cy="view-my-groups-btn">
-          View all my groups
-        </Link>
-      </CardFooter>
     </Card>
   );
 }
@@ -221,22 +214,35 @@ function GroupsList() {
       <p>Cannot show groups.</p>
       <RtkOrNotebooksError error={error} />
     </div>
-  ) : data == null || data?.total === 0 ? (
+  ) : !data || data?.total === 0 ? (
     <div>No 2.0 groups.</div>
   ) : null;
 
-  if (noGroups) return <div>{noGroups}</div>;
+  const viewLink = (
+    <ViewAllLink noItems={!data || data?.total === 0} type="group" />
+  );
+
+  if (noGroups)
+    return (
+      <div className={cx("d-flex", "flex-column", "gap-3")}>
+        {noGroups}
+        {viewLink}
+      </div>
+    );
 
   return (
-    <ListGroup flush data-cy="dashboard-group-list">
-      {data?.groups?.map((group) => (
-        <GroupShortHandDisplay
-          element="list-item"
-          key={group.id}
-          group={group}
-        />
-      ))}
-    </ListGroup>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <ListGroup flush data-cy="dashboard-group-list">
+        {data?.groups?.map((group) => (
+          <GroupShortHandDisplay
+            element="list-item"
+            key={group.id}
+            group={group}
+          />
+        ))}
+      </ListGroup>
+      {viewLink}
+    </div>
   );
 }
 
@@ -254,5 +260,29 @@ function SessionsDashboard() {
         <DashboardV2Sessions />
       </CardBody>
     </Card>
+  );
+}
+
+function ViewAllLink({
+  type,
+  noItems,
+}: {
+  type: "project" | "group";
+  noItems: boolean;
+}) {
+  return noItems ? (
+    <Link
+      to={`/v2/search?page=1&perPage=12&q=role:owner,editor,viewer+type:${type}`}
+      data-cy="view-my-projects-btn"
+    >
+      View all my {type === "project" ? "projects" : "groups"}
+    </Link>
+  ) : (
+    <Link
+      to={`/v2/search?page=1&perPage=12&q=type:${type}`}
+      data-cy="view-other-projects-btn"
+    >
+      View other {type === "project" ? "projects" : "groups"}
+    </Link>
   );
 }
