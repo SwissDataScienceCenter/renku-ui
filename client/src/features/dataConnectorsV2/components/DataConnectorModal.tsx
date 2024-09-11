@@ -35,13 +35,7 @@ import {
   usePostStoragesV2Mutation,
 } from "../../projectsV2/api/storagesV2.api";
 
-import {
-  findSensitive,
-  getCurrentStorageDetails,
-  getSchemaProviders,
-  hasProviderShortlist,
-} from "../../project/utils/projectCloudStorage.utils";
-import { AddStorageBreadcrumbNavbar } from "../../project/components/cloudStorage/AddOrEditCloudStorage";
+import AddStorageBreadcrumbNavbar from "../../project/components/cloudStorage/AddStorageBreadcrumbNavbar";
 import {
   useGetCloudStorageSchemaQuery,
   useTestCloudStorageConnectionMutation,
@@ -69,6 +63,12 @@ import {
   AddCloudStorageConnectionTestResult,
   AddCloudStorageHeaderContent,
 } from "../../project/components/cloudStorage/cloudStorageModalComponents";
+import {
+  findSensitive,
+  getCurrentStorageDetails,
+  getSchemaProviders,
+  hasProviderShortlist,
+} from "../../project/utils/projectCloudStorage.utils";
 
 import styles from "../../project/components/cloudStorage/CloudStorage.module.scss";
 

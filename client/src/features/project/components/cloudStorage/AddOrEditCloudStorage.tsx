@@ -35,8 +35,6 @@ import {
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import {
   Badge,
-  Breadcrumb,
-  BreadcrumbItem,
   Button,
   Input,
   InputGroup,
@@ -70,6 +68,7 @@ import { ExternalLink } from "../../../../components/ExternalLinks";
 import { WarnAlert } from "../../../../components/Alert";
 import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
 
+import AddStorageBreadcrumbNavbar from "./AddStorageBreadcrumbNavbar";
 import AddStorageMountSaveCredentialsInfo from "./AddStorageMountSaveCredentialsInfo";
 
 import styles from "./CloudStorage.module.scss";
@@ -152,66 +151,11 @@ export function AddOrEditCloudStorageV2({
     );
   return <p>Error - not implemented yet</p>;
 }
-
-// *** Navigation: breadcrumbs and advanced mode selector *** //
-
-interface AddStorageBreadcrumbNavbarProps {
-  setState: (newState: Partial<AddCloudStorageState>) => void;
-  state: AddCloudStorageState;
-}
-
-export function AddStorageBreadcrumbNavbar({
-  setState,
-  state,
-}: AddStorageBreadcrumbNavbarProps) {
-  const { step, completedSteps } = state;
-  const items = useMemo(() => {
-    const steps = state.advancedMode
-      ? [0, CLOUD_STORAGE_TOTAL_STEPS]
-      : Array.from(
-          { length: CLOUD_STORAGE_TOTAL_STEPS },
-          (_, index) => index + 1
-        );
-    const items = steps.map((stepNumber) => {
-      const active = stepNumber === step;
-      const disabled = stepNumber > completedSteps + 1;
-      return (
-        <BreadcrumbItem active={active} key={stepNumber}>
-          {active ? (
-            <>{mapStepToName[stepNumber]}</>
-          ) : (
-            <>
-              <Button
-                className={cx(
-                  "p-0",
-                  (active || disabled) && "text-decoration-none"
-                )}
-                color="link"
-                disabled={disabled}
-                onClick={() => {
-                  setState({ step: stepNumber });
-                }}
-              >
-                {mapStepToName[stepNumber]}
-              </Button>
-            </>
-          )}
-        </BreadcrumbItem>
-      );
-    });
-    return items;
-  }, [completedSteps, setState, step, state.advancedMode]);
-
-  return (
-    <Breadcrumb data-cy="cloud-storage-edit-navigation">{items}</Breadcrumb>
-  );
-}
-
 interface AddStorageAdvancedToggleProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
 }
-function AddStorageAdvancedToggle({
+export function AddStorageAdvancedToggle({
   setState,
   state,
 }: AddStorageAdvancedToggleProps) {
@@ -275,18 +219,15 @@ const mapStepToElement: {
   2: AddStorageOptions,
   3: AddStorageMount,
 };
-const mapStepToName: { [key: number]: string } = {
-  0: "Advanced configuration",
-  1: "Storage",
-  2: "Options",
-  3: "Mount",
-};
 
 interface AddStorageAdvancedForm {
   sourcePath: string;
   configuration: string;
 }
-function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
+export function AddStorageAdvanced({
+  storage,
+  setStorage,
+}: AddStorageStepProps) {
   const {
     control,
     formState: { errors },
@@ -707,7 +648,7 @@ function InputOptionItem({
 
 // *** Add storage: page 1 of 3, with storage type and provider *** //
 
-function AddStorageType({
+export function AddStorageType({
   schema,
   state,
   storage,
@@ -937,7 +878,7 @@ function AddStorageType({
 }
 
 // *** Add storage: page 2 of 3, with storage options *** //
-function AddStorageOptions({
+export function AddStorageOptions({
   isV2,
   schema,
   setState,
@@ -1110,7 +1051,7 @@ type AddStorageMountFormFields =
   | "mountPoint"
   | "readOnly"
   | "saveCredentials";
-function AddStorageMount({
+export function AddStorageMount({
   isV2,
   schema,
   setStorage,
