@@ -113,44 +113,6 @@ export default function AddOrEditCloudStorage({
   return <p>Error - not implemented yet</p>;
 }
 
-interface AddOrEditCloudStoragePropsV2 extends AddOrEditCloudStorageProps {
-  validationSucceeded: boolean;
-}
-
-export function AddOrEditCloudStorageV2({
-  schema,
-  setStorage,
-  setState,
-  state,
-  storage,
-  storageSecrets,
-  validationSucceeded,
-}: AddOrEditCloudStoragePropsV2) {
-  const ContentByStep =
-    state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
-      ? mapStepToElement[state.step]
-      : null;
-
-  if (ContentByStep)
-    return (
-      <>
-        <div className={cx("d-flex", "justify-content-end")}>
-          <AddStorageAdvancedToggle state={state} setState={setState} />
-        </div>
-        <ContentByStep
-          schema={schema}
-          state={state}
-          storage={storage}
-          setState={setState}
-          setStorage={setStorage}
-          storageSecrets={storageSecrets}
-          isV2={true}
-          validationSucceeded={validationSucceeded}
-        />
-      </>
-    );
-  return <p>Error - not implemented yet</p>;
-}
 interface AddStorageAdvancedToggleProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;

@@ -59,7 +59,6 @@ import {
 import {
   AddCloudStorageContinueButton,
   AddCloudStorageBackButton,
-  AddCloudStorageBodyContent,
   AddCloudStorageConnectionTestResult,
   AddCloudStorageHeaderContent,
 } from "../../project/components/cloudStorage/cloudStorageModalComponents";
@@ -71,6 +70,8 @@ import {
 } from "../../project/utils/projectCloudStorage.utils";
 
 import styles from "../../project/components/cloudStorage/CloudStorage.module.scss";
+
+import DataConnectorModalBody from "./DataConnectorModalBody";
 
 interface DataConnectorModalProps {
   currentStorage?:
@@ -490,7 +491,7 @@ export default function DataConnectorModal({
       </ModalHeader>
 
       <ModalBody data-cy="cloud-storage-edit-body">
-        <AddCloudStorageBodyContent
+        <DataConnectorModalBody
           addResultStorageName={addResultStorageName}
           credentialSaveStatus={credentialSaveStatus}
           isV2={true}
