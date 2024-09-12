@@ -28,7 +28,6 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toSortedMembers } from "../../ProjectPageV2/utils/roleUtils";
 import type { ProjectMemberResponse } from "../../projectsV2/api/projectV2.api";
 import { useGetGroupsByGroupSlugMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import { useGetUsersByUserIdQuery } from "../../user/dataServicesUser.api";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 
 interface GroupV2MemberListDisplayProps {
@@ -80,18 +79,18 @@ interface GroupV2MemberProps {
   member: ProjectMemberResponse;
 }
 function GroupV2Member({ member }: GroupV2MemberProps) {
-  const { data: user } = useGetUsersByUserIdQuery({ userId: member.id });
+  const {
+    role,
+    first_name: firstName,
+    last_name: lastName,
+    namespace: username,
+  } = member;
 
-  if (!user) {
+  if (!username) {
     return null;
   }
-
-  const { role, first_name: firstName, last_name: lastName } = member;
-
   const name =
     firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName;
-
-  const username = user.username;
 
   return (
     <>

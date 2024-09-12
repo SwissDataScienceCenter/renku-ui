@@ -17,8 +17,7 @@
  */
 
 import cx from "classnames";
-import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Badge, Card, CardBody, CardHeader } from "reactstrap";
+import { useMemo } from "react";
 import {
   Bookmarks,
   Clock,
@@ -27,13 +26,15 @@ import {
   JournalAlbum,
   People,
 } from "react-bootstrap-icons";
-
+import { Link, generatePath } from "react-router-dom-v5-compat";
+import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import {
   EditButtonLink,
   UnderlineArrowLink,
 } from "../../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
+import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import type {
   ProjectMemberListResponse,
   ProjectMemberResponse,
@@ -42,14 +43,10 @@ import {
   useGetNamespacesByNamespaceSlugQuery,
   useGetProjectsByProjectIdMembersQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
-import { useGetUsersByUserIdQuery } from "../../../user/dataServicesUser.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import MembershipGuard from "../../utils/MembershipGuard";
-import { toSortedMembers } from "../../utils/roleUtils";
-
-import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
+import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 import styles from "./ProjectInformation.module.scss";
-import { useMemo } from "react";
 
 const MAX_MEMBERS_DISPLAYED = 5;
 
@@ -203,23 +200,14 @@ function ProjectInformationMember({
 }: {
   member: ProjectMemberResponse;
 }) {
-  const { data: memberData } = useGetUsersByUserIdQuery({ userId: member.id });
+  const displayName = getMemberNameToDisplay(member);
 
-  const displayName =
-    member.first_name && member.last_name
-      ? `${member.first_name} ${member.last_name}`
-      : member.last_name
-      ? member.last_name
-      : member.email
-      ? member.email
-      : member.id;
-
-  if (memberData?.username) {
+  if (member?.namespace) {
     return (
       <p className="mb-0">
         <Link
           to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-            username: memberData.username,
+            username: member.namespace,
           })}
         >
           {displayName}

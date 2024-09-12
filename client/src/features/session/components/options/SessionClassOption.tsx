@@ -741,7 +741,9 @@ const OptionOrSingleValueContent = ({
       <span className={detailLabelClassName}>
         <span className={styles.detailUnit}>GB</span> RAM
       </span>{" "}
-      <span className={detailValueClassName}>{sessionClass.max_storage}</span>
+      <span className={detailValueClassName}>
+        {sessionClass.default_storage}
+      </span>
       <span className={detailLabelClassName}>
         <span className={styles.detailUnit}>GB</span> Disk
       </span>{" "}
