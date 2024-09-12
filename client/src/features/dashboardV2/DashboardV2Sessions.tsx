@@ -90,14 +90,14 @@ function DashboardSession({ session }: DashboardSessionProps) {
     ? generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
         id: projectId,
       })
-    : ABSOLUTE_ROUTES.v2.projects.root;
+    : ABSOLUTE_ROUTES.v2.root;
   const showSessionUrl = project
     ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
         namespace: project.namespace,
         slug: project.slug,
         session: session.name,
       })
-    : ABSOLUTE_ROUTES.v2.projects.root;
+    : ABSOLUTE_ROUTES.v2.root;
 
   return (
     <Link

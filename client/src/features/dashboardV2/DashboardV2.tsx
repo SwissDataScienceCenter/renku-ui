@@ -272,17 +272,17 @@ function ViewAllLink({
 }) {
   return noItems ? (
     <Link
-      to={`/v2/search?page=1&perPage=12&q=role:owner,editor,viewer+type:${type}`}
-      data-cy="view-my-projects-btn"
-    >
-      View all my {type === "project" ? "projects" : "groups"}
-    </Link>
-  ) : (
-    <Link
       to={`/v2/search?page=1&perPage=12&q=type:${type}`}
       data-cy="view-other-projects-btn"
     >
       View other {type === "project" ? "projects" : "groups"}
+    </Link>
+  ) : (
+    <Link
+      to={`/v2/search?page=1&perPage=12&q=role:owner,editor,viewer+type:${type}`}
+      data-cy="view-my-projects-btn"
+    >
+      View all my {type === "project" ? "projects" : "groups"}
     </Link>
   );
 }
