@@ -1,6 +1,5 @@
-import { Meta, StoryObj } from "@storybook/react";
 import { Card, CardBody, CardFooter, CardHeader } from "reactstrap";
-import React from "react";
+import { Meta, StoryObj } from "@storybook/react";
 
 export default {
   args: {
@@ -26,7 +25,7 @@ export default {
       },
     },
   },
-  title: "Bootstrap/Card",
+  title: "Bootstrap/Card/Card",
 } as Meta;
 
 interface CardProps extends React.HtmlHTMLAttributes<HTMLElement> {
