@@ -30,7 +30,8 @@ export default {
     docs: {
       description: {
         component:
-          "Badge is used to display small bits of information, such as notifications, status indicators, or counts. In Renku, for example, it is commonly used to display session status. Depending on the status, we use warning, danger, or success colors.",
+          "Badge is used to display small bits of information, such as notifications, status indicators, or counts. In Renku we mainly use it for showing the number of a specific type of entity available in a specific context (E.G. 4 data sources in a specific project)." +
+          " Mind that we use the Info Badge variation of the simple Badge component whenever we need to show the status of a Renku entity. That includes semantic color, icons and spinners.",
       },
     },
   },
@@ -40,10 +41,25 @@ export default {
 type Story = StoryObj<React.HTMLAttributes<HTMLDivElement>>;
 
 export const OnlyText_: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "This is the simplest badge, including only text.",
+      },
+    },
+  },
   render: (_args) => <Badge {..._args}>{_args.children}</Badge>,
 };
 
 export const BadgeSizes_: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "The badge size adjust automatically to the text size. Mind that vertical alignment might need to be adjusted with the flex classes depending on where the badge is used.",
+      },
+    },
+  },
   render: (_args) => (
     <>
       <h1>

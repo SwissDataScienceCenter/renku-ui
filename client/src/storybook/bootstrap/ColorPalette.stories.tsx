@@ -29,7 +29,7 @@ const ColorPalette = ({ colors }: ColorPaletteProps) => (
 );
 
 export default {
-  title: "Bootstrap/Color Palette",
+  title: "Bootstrap/GENERIC - Color Palette",
   component: ColorPalette,
   parameters: {
     docs: {

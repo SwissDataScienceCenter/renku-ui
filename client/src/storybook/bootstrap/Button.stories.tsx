@@ -10,6 +10,7 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 import React from "react";
+import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 
 export default {
   args: {
@@ -52,6 +53,15 @@ export default {
       },
     },
   },
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "We generally use the primary color for the preferred action on a page and outline primary for the other buttons." +
+          " If you need to show many possible actions, please consider using the Button with Dropdown. That allows combining multiple actions in a single button, including links styled properly.",
+      },
+    },
+  },
   title: "Bootstrap/Button",
 } as Meta;
 
@@ -64,6 +74,8 @@ export const Button_: Story = {
   render: ({ text, ..._args }) => <Button {..._args}>{text}</Button>,
 };
 
+PencilSquare.displayName = "PencilSquare";
+
 export const ButtonWithIcon_: Story = {
   render: ({ text, ..._args }) => (
     <Button {..._args}>
@@ -73,7 +85,9 @@ export const ButtonWithIcon_: Story = {
   ),
 };
 
-export const ButtonIconOnly_: Story = {
+PlusLg.displayName = "PlusLg";
+
+export const IconOnly_: Story = {
   render: ({ ..._args }) => (
     <div className="d-flex gap-3">
       <Button {..._args} color="outline-primary">
@@ -89,101 +103,35 @@ export const ButtonIconOnly_: Story = {
 export const ButtonWithDropdown_: Story = {
   parameters: {
     docs: {
-      story: { height: "150px" },
       description: {
-        story: "Used to ...",
+        story:
+          "The badge size adjust automatically to the text size. Mind that vertical alignment might need to be adjusted with the flex classes depending on where the badge is used.",
       },
     },
   },
   render: () => (
     <>
-      <div className="d-flex gap-3 my-3">
-        <UncontrolledDropdown direction="down" group size="sm">
-          <Button color="outline-primary">
-            <PencilSquare className={cx("bi", "me-1")} /> Edit sm
-          </Button>
-          <DropdownToggle
-            caret
-            data-bs-toggle="dropdown"
+      <ButtonWithMenuV2
+        color="outline-primary"
+        default={
+          <Button
+            className="text-nowrap"
             color="outline-primary"
-          />
-          <DropdownMenu>
-            <DropdownItem>
-              <Trash className={cx("bi", "me-1")} /> Remove
-            </DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
-        <UncontrolledDropdown direction="down" group size="md">
-          <Button color="primary">Launch sm</Button>
-          <DropdownToggle caret data-bs-toggle="dropdown" color="primary" />
-          <DropdownMenu>
-            <DropdownItem>
-              <Pencil className={cx("bi", "me-1")} /> Customize launch
-            </DropdownItem>
-            <DropdownItem>
-              <Pencil className={cx("bi", "me-1")} /> Edit launch
-            </DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
-      </div>
-      <div className="d-flex gap-3 my-3">
-        <UncontrolledDropdown direction="down" group size="md">
-          <Button color="outline-primary">
-            <PencilSquare className={cx("bi", "me-1")} /> Edit md
+            onClick={() => {}}
+            size="sm"
+          >
+            <Pencil className={cx("bi", "me-1")} />
+            Edit
           </Button>
-          <DropdownToggle
-            caret
-            data-bs-toggle="dropdown"
-            color="outline-primary"
-          />
-          <DropdownMenu>
-            <DropdownItem>
-              <Trash className={cx("bi", "me-1")} /> Remove
-            </DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
-        <UncontrolledDropdown direction="down" group size="md">
-          <Button color="primary">Launch md</Button>
-          <DropdownToggle caret data-bs-toggle="dropdown" color="primary" />
-          <DropdownMenu>
-            <DropdownItem>
-              <Pencil className={cx("bi", "me-1")} /> Customize launch
-            </DropdownItem>
-            <DropdownItem>
-              <Pencil className={cx("bi", "me-1")} /> Edit launch
-            </DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
-      </div>
-      <div className="d-flex gap-3 my-3">
-        <UncontrolledDropdown direction="down" group size="lg">
-          <Button color="outline-primary">
-            <PencilSquare className={cx("bi", "me-1")} /> Edit lg
-          </Button>
-          <DropdownToggle
-            caret
-            data-bs-toggle="dropdown"
-            color="outline-primary"
-          />
-          <DropdownMenu>
-            <DropdownItem>
-              <Trash className={cx("bi", "me-1")} /> Remove
-            </DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
-        <UncontrolledDropdown direction="down" group size="lg">
-          <Button color="primary">Launch lg</Button>
-          <DropdownToggle caret data-bs-toggle="dropdown" color="primary" />
-          <DropdownMenu>
-            <DropdownItem>
-              <Pencil className={cx("bi", "me-1")} /> Customize launch
-            </DropdownItem>
-            <DropdownItem>
-              <Pencil className={cx("bi", "me-1")} /> Edit launch
-            </DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
-      </div>
+        }
+        preventPropagation
+        size="sm"
+      >
+        <DropdownItem onClick={() => {}}>
+          <Trash className={cx("bi", "me-1")} />
+          Remove
+        </DropdownItem>
+      </ButtonWithMenuV2>
     </>
   ),
 };
@@ -191,59 +139,20 @@ export const ButtonWithDropdown_: Story = {
 export const ButtonGroup_: Story = {
   parameters: {
     docs: {
-      story: { height: "150px" },
       description: {
         story:
-          "Group a series of buttons together on a single line or stack them in a vertical column.",
+          "Useful for multiple selections whenever is makes sense to show all the options at once." +
+          " You can play with Button Groups to add spacing and make them look better depending on the context. A good example is the search page filters as shown in the mobile version (make the browser smaller).",
       },
     },
   },
   render: () => (
     <>
-      <div className="d-flex gap-3 my-3">
-        <ButtonGroup>
-          <Button color="primary">Left</Button>
-          <Button color="primary">Middle</Button>
-          <Button color="primary">Right</Button>
-        </ButtonGroup>
-      </div>
-      <div className="my-3">
-        <ButtonGroup className="my-2" size="lg">
-          <Button outline color="primary">
-            Left
-          </Button>
-          <Button outline color="primary">
-            Middle
-          </Button>
-          <Button outline color="primary">
-            Right
-          </Button>
-        </ButtonGroup>
-        <br />
-        <ButtonGroup className="my-2">
-          <Button outline color="primary">
-            Left
-          </Button>
-          <Button outline color="primary">
-            Middle
-          </Button>
-          <Button outline color="primary">
-            Right
-          </Button>
-        </ButtonGroup>
-        <br />
-        <ButtonGroup className="my-2" size="sm">
-          <Button outline color="primary">
-            Left
-          </Button>
-          <Button outline color="primary">
-            Middle
-          </Button>
-          <Button outline color="primary">
-            Right
-          </Button>
-        </ButtonGroup>
-      </div>
+      <ButtonGroup>
+        <Button color="primary">Left</Button>
+        <Button color="primary">Middle</Button>
+        <Button color="primary">Right</Button>
+      </ButtonGroup>
     </>
   ),
 };
