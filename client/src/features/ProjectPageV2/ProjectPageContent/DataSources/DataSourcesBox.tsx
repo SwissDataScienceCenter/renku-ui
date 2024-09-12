@@ -19,12 +19,12 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
 import { Loader } from "../../../../components/Loader";
-import DataConnectorModal from "../../../dataConnectorsV2/components/DataConnectorModal";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { useGetStoragesV2Query } from "../../../projectsV2/api/storagesV2.api";
 import AccessGuard from "../../utils/AccessGuard";
 import useProjectAccess from "../../utils/useProjectAccess.hook";
 import { DataSourceDisplay } from "./DataSourceDisplay";
+import DataSourceModal from "./DataSourceModal";
 import {
   Badge,
   Button,
@@ -117,7 +117,7 @@ export function DataSourcesDisplay({ project }: { project: Project }) {
           </ListGroup>
         )}
       </CardBody>
-      <DataConnectorModal
+      <DataSourceModal
         currentStorage={null}
         isOpen={isOpen}
         toggle={toggle}

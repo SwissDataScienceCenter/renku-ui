@@ -24,11 +24,13 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
-import { Badge } from "reactstrap";
+import { Badge, Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+
+import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
@@ -37,6 +39,8 @@ import {
   useGetUsersByUserIdQuery,
 } from "../../user/dataServicesUser.api";
 import UserAvatar from "./UserAvatar";
+
+// TODO: Add data connectors
 
 export default function UserShow() {
   const { username } = useParams<{ username: string }>();
@@ -128,6 +132,17 @@ export default function UserShow() {
             <p>{name ?? username} has no visible personal projects.</p>
           }
         />
+      </section>
+      <section className="mt-3">
+        <Row>
+          <Col className="order-3" xs={12} xl={8}>
+            <DataConnectorsBox
+              namespace={username}
+              namespaceKind="user"
+              pageParam="data_connectors_page"
+            />
+          </Col>
+        </Row>
       </section>
     </ContainerWrap>
   );

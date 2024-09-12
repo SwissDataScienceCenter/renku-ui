@@ -21,49 +21,50 @@ import { useCallback, useEffect } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { XLg } from "react-bootstrap-icons";
 
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import {
-  useDeleteStoragesV2ByStorageIdSecretsMutation,
-  usePostStoragesV2ByStorageIdSecretsMutation,
-} from "../../../projectsV2/api/projectV2.enhanced-api";
-import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
-import type { SessionStartCloudStorageConfiguration } from "../../../sessionsV2/startSessionOptionsV2.types";
-import DataStorageSecretsModal from "../../../sessionsV2/DataStorageSecretsModal";
+  useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
+  usePostDataConnectorsByDataConnectorIdSecretsMutation,
+} from "../../projectsV2/api/projectV2.enhanced-api";
+import type { DataConnectorRead } from "../../projectsV2/api/data-connectors.api";
+import DataConnectorSecretsModal from "../../sessionsV2/DataConnectorSecretsModal";
 
-import useDataSourceConfiguration from "./useDataSourceConfiguration.hook";
-import { Loader } from "../../../../components/Loader";
+import useDataConnectorConfiguration, {
+  type DataConnectorConfiguration,
+} from "./useDataConnectorConfiguration.hook";
+import { Loader } from "../../../components/Loader";
 
 interface DataSourceCredentialsModalProps {
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
-  storage: CloudStorageGetRead;
+  dataConnector: DataConnectorRead;
 }
 export default function DataSourceCredentialsModal({
   isOpen,
-  storage: cloudStorage,
+  dataConnector,
   setOpen,
 }: DataSourceCredentialsModalProps) {
-  const { cloudStorageConfigs } = useDataSourceConfiguration({
-    storages: [cloudStorage],
+  const { dataConnectorConfigs } = useDataConnectorConfiguration({
+    dataConnectors: [dataConnector],
   });
 
   const [saveCredentials, saveCredentialsResult] =
-    usePostStoragesV2ByStorageIdSecretsMutation();
+    usePostDataConnectorsByDataConnectorIdSecretsMutation();
   const [deleteCredentials, deleteCredentialsResult] =
-    useDeleteStoragesV2ByStorageIdSecretsMutation();
+    useDeleteDataConnectorsByDataConnectorIdSecretsMutation();
 
   const onSave = useCallback(
-    (configs: SessionStartCloudStorageConfiguration[]) => {
+    (configs: DataConnectorConfiguration[]) => {
       const activeConfigs = configs.filter((c) => c.active);
       if (activeConfigs.length === 0) {
         if (!deleteCredentialsResult.isUninitialized) return;
-        deleteCredentials({ storageId: cloudStorage.storage.storage_id });
+        deleteCredentials({ dataConnectorId: dataConnector.id });
         return;
       }
       if (!saveCredentialsResult.isUninitialized) return;
       const config = configs[0];
       saveCredentials({
-        storageId: config.cloudStorage.storage.storage_id,
+        dataConnectorId: dataConnector.id,
         cloudStorageSecretPostList: Object.entries(
           config.sensitiveFieldValues
         ).map(([key, value]) => ({
@@ -75,7 +76,7 @@ export default function DataSourceCredentialsModal({
     [
       deleteCredentials,
       deleteCredentialsResult,
-      cloudStorage,
+      dataConnector,
       saveCredentials,
       saveCredentialsResult,
     ]
@@ -89,8 +90,8 @@ export default function DataSourceCredentialsModal({
   if (!isOpen) return null;
 
   if (
-    cloudStorage.sensitive_fields == null ||
-    cloudStorage.sensitive_fields.length === 0
+    dataConnector.storage.sensitive_fields == null ||
+    dataConnector.storage.sensitive_fields.length === 0
   ) {
     return (
       <Modal
@@ -188,8 +189,8 @@ export default function DataSourceCredentialsModal({
   }
 
   return (
-    <DataStorageSecretsModal
-      cloudStorageConfigs={cloudStorageConfigs}
+    <DataConnectorSecretsModal
+      dataConnectorConfigs={dataConnectorConfigs}
       context="storage"
       isOpen={isOpen}
       onCancel={() => setOpen(false)}

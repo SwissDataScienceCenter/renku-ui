@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -20,94 +20,88 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowCounterclockwise } from "react-bootstrap-icons";
+import { ArrowCounterclockwise, Database } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import { usePostStoragesV2ByStorageIdSecretsMutation } from "../../projectsV2/api/projectV2.enhanced-api";
-import {
-  CloudStorageGetV2Read,
-  CloudStoragePatch,
-  PostStoragesV2ApiArg,
-  RCloneConfig,
-  usePatchStoragesV2ByStorageIdMutation,
-  usePostStoragesV2Mutation,
-} from "../../projectsV2/api/storagesV2.api";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 
-import AddStorageBreadcrumbNavbar from "../../project/components/cloudStorage/AddStorageBreadcrumbNavbar";
+import AddStorageBreadcrumbNavbar from "../../../project/components/cloudStorage/AddStorageBreadcrumbNavbar";
 import {
   useGetCloudStorageSchemaQuery,
   useTestCloudStorageConnectionMutation,
-} from "../../project/components/cloudStorage/projectCloudStorage.api";
+} from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import {
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   CLOUD_STORAGE_TOTAL_STEPS,
-  EMPTY_CLOUD_STORAGE_DETAILS,
   EMPTY_CLOUD_STORAGE_STATE,
-} from "../../project/components/cloudStorage/projectCloudStorage.constants";
+} from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import {
-  AddCloudStorageForProjectParams,
   AddCloudStorageState,
-  CloudStorageDetails,
   CloudStorageDetailsOptions,
-  CredentialSaveStatus,
   TestCloudStorageConnectionParams,
-} from "../../project/components/cloudStorage/projectCloudStorage.types";
+} from "../../../project/components/cloudStorage/projectCloudStorage.types";
 
-import {
-  AddCloudStorageContinueButton,
-  AddCloudStorageBackButton,
-  AddCloudStorageConnectionTestResult,
-  AddCloudStorageHeaderContent,
-} from "../../project/components/cloudStorage/cloudStorageModalComponents";
 import {
   findSensitive,
-  getCurrentStorageDetails,
   getSchemaProviders,
   hasProviderShortlist,
-} from "../../project/utils/projectCloudStorage.utils";
+} from "../../../project/utils/projectCloudStorage.utils";
 
-import styles from "../../project/components/cloudStorage/CloudStorage.module.scss";
+import {
+  usePatchDataConnectorsByDataConnectorIdMutation,
+  usePostDataConnectorsMutation,
+  usePostStoragesV2ByStorageIdSecretsMutation,
+} from "../../../projectsV2/api/projectV2.enhanced-api";
+import type { DataConnectorRead } from "../../../projectsV2/api/data-connectors.api";
 
+import styles from "./DataConnectorModal.module.scss";
+
+import {
+  DataConnectorModalBackButton,
+  DataConnectorModalContinueButton,
+  DataConnectorConnectionTestResult,
+} from "./dataConnectorModalButtons";
 import DataConnectorModalBody from "./DataConnectorModalBody";
+import type { CredentialSaveStatus } from "./DataConnectorModalResult";
+import {
+  dataConnectorPostFromFlattened,
+  dataConnectorToFlattened,
+  EMPTY_DATA_CONNECTOR_FLAT,
+  type DataConnectorFlat,
+} from "../dataConnector.utils";
 
 interface DataConnectorModalProps {
-  currentStorage?: CloudStorageGetV2Read | null;
+  dataConnector?: DataConnectorRead | null;
   isOpen: boolean;
+  namespace: string;
   toggle: () => void;
-  projectId: string;
 }
 export default function DataConnectorModal({
-  currentStorage = null,
+  dataConnector = null,
   isOpen,
+  namespace,
   toggle: originalToggle,
-  projectId,
 }: DataConnectorModalProps) {
-  const storageId = currentStorage?.storage.storage_id ?? null;
+  const dataConnectorId = dataConnector?.id ?? null;
   // Fetch available schema when users open the modal
-  const {
-    data: schema,
-    error: schemaError,
-    isFetching: schemaIsFetching,
-  } = useGetCloudStorageSchemaQuery(isOpen ? undefined : skipToken);
+  const schemaQueryResult = useGetCloudStorageSchemaQuery(
+    isOpen ? undefined : skipToken
+  );
+  const { data: schema } = schemaQueryResult;
 
   // Reset state on props change
   useEffect(() => {
-    const cloudStorageDetails: CloudStorageDetails =
-      currentStorage != null
-        ? getCurrentStorageDetails(currentStorage)
-        : EMPTY_CLOUD_STORAGE_DETAILS;
+    const flattened = dataConnectorToFlattened(dataConnector);
     const cloudStorageState: AddCloudStorageState =
-      currentStorage != null
+      dataConnector != null
         ? {
             ...EMPTY_CLOUD_STORAGE_STATE,
             step: 2,
             completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
           }
         : EMPTY_CLOUD_STORAGE_STATE;
-    setStorageDetails(cloudStorageDetails);
+    setFlatDataConnector(flattened);
     setState(cloudStorageState);
-  }, [currentStorage]);
+  }, [dataConnector]);
 
   const [success, setSuccess] = useState(false);
   const [credentialSaveStatus, setCredentialSaveStatus] =
@@ -116,8 +110,10 @@ export default function DataConnectorModal({
   const [state, setState] = useState<AddCloudStorageState>(
     EMPTY_CLOUD_STORAGE_STATE
   );
-  const [storageDetails, setStorageDetails] = useState<CloudStorageDetails>(
-    EMPTY_CLOUD_STORAGE_DETAILS
+  const initialFlatDataConnector = EMPTY_DATA_CONNECTOR_FLAT;
+  initialFlatDataConnector.namespace = namespace;
+  const [flatDataConnector, setFlatDataConnector] = useState<DataConnectorFlat>(
+    initialFlatDataConnector
   );
 
   // Enhanced setters
@@ -141,13 +137,15 @@ export default function DataConnectorModal({
         } else {
           if (
             // schema and provider (where necessary) must also exist in the list
-            !storageDetails.schema ||
-            !schema?.find((s) => s.prefix === storageDetails.schema) ||
-            (hasProviderShortlist(storageDetails.schema) &&
-              (!storageDetails.provider ||
-                !getSchemaProviders(schema, false, storageDetails.schema)?.find(
-                  (p) => p.name === storageDetails.provider
-                )))
+            !flatDataConnector.schema ||
+            !schema?.find((s) => s.prefix === flatDataConnector.schema) ||
+            (hasProviderShortlist(flatDataConnector.schema) &&
+              (!flatDataConnector.provider ||
+                !getSchemaProviders(
+                  schema,
+                  false,
+                  flatDataConnector.schema
+                )?.find((p) => p.name === flatDataConnector.provider)))
           ) {
             fullNewState.step = 1;
           } else {
@@ -157,7 +155,7 @@ export default function DataConnectorModal({
       }
       setState(fullNewState);
     },
-    [state, storageDetails, schema]
+    [state, flatDataConnector, schema]
   );
 
   // Reset
@@ -167,19 +165,18 @@ export default function DataConnectorModal({
   }, [redraw]);
 
   // Mutations
-  const [addCloudStorageForProjectV2, addResultV2] =
-    usePostStoragesV2Mutation();
-  const [modifyCloudStorageV2ForProject, modifyResultV2] =
-    usePatchStoragesV2ByStorageIdMutation();
+  const [createDataConnector, createResult] = usePostDataConnectorsMutation();
+  const [updateDataConnector, updateResult] =
+    usePatchDataConnectorsByDataConnectorIdMutation();
   const [saveCredentials, saveCredentialsResult] =
     usePostStoragesV2ByStorageIdSecretsMutation();
   const [validateCloudStorageConnection, validationResult] =
     useTestCloudStorageConnectionMutation();
 
   const reset = useCallback(() => {
-    const resetStatus = getCurrentStorageDetails(currentStorage);
+    const resetStatus = dataConnectorToFlattened(dataConnector);
     setState((prevState) =>
-      currentStorage != null
+      dataConnector != null
         ? {
             ...EMPTY_CLOUD_STORAGE_STATE,
             step: prevState.step,
@@ -189,54 +186,54 @@ export default function DataConnectorModal({
             ...EMPTY_CLOUD_STORAGE_STATE,
           }
     );
-    addResultV2.reset();
+    createResult.reset();
     validationResult.reset();
-    setStorageDetails(resetStatus);
+    setFlatDataConnector(resetStatus);
     setSuccess(false);
     setCredentialSaveStatus("none");
     setValidationSucceeded(false);
     setRedraw(true); // This forces re-loading the useForm fields
-  }, [addResultV2, currentStorage, validationResult]);
+  }, [createResult, dataConnector, validationResult]);
 
-  const setStorageDetailsSafe = useCallback(
-    (newStorageDetails: Partial<CloudStorageDetails>) => {
+  const setFlatDataConnectorSafe = useCallback(
+    (newDataConnector: Partial<DataConnectorFlat>) => {
       const fullNewDetails = {
-        ...storageDetails,
-        ...newStorageDetails,
+        ...flatDataConnector,
+        ...newDataConnector,
       };
-      if (isEqual(fullNewDetails, storageDetails)) {
+      if (isEqual(fullNewDetails, flatDataConnector)) {
         return;
       }
       // reset follow-up properties: schema > provider > options
-      if (fullNewDetails.schema !== storageDetails.schema) {
+      if (fullNewDetails.schema !== flatDataConnector.schema) {
         fullNewDetails.provider = undefined;
         fullNewDetails.options = undefined;
         fullNewDetails.sourcePath = undefined;
-      } else if (fullNewDetails.provider !== storageDetails.provider) {
+      } else if (fullNewDetails.provider !== flatDataConnector.provider) {
         fullNewDetails.options = undefined;
         fullNewDetails.sourcePath = undefined;
       }
       if (!validationResult.isUninitialized) validationResult.reset();
-      setStorageDetails(fullNewDetails);
+      setFlatDataConnector(fullNewDetails);
     },
-    [storageDetails, validationResult]
+    [flatDataConnector, validationResult]
   );
 
   const validateConnection = useCallback(() => {
     const validateParameters: TestCloudStorageConnectionParams = {
       configuration: {
-        type: storageDetails.schema,
+        type: flatDataConnector.schema,
       },
-      source_path: storageDetails.sourcePath ?? "/",
+      source_path: flatDataConnector.sourcePath ?? "/",
     };
-    if (storageDetails.provider) {
-      validateParameters.configuration.provider = storageDetails.provider;
+    if (flatDataConnector.provider) {
+      validateParameters.configuration.provider = flatDataConnector.provider;
     }
     if (
-      storageDetails.options &&
-      Object.keys(storageDetails.options).length > 0
+      flatDataConnector.options &&
+      Object.keys(flatDataConnector.options).length > 0
     ) {
-      const options = storageDetails.options as CloudStorageDetailsOptions;
+      const options = flatDataConnector.options as CloudStorageDetailsOptions;
       Object.entries(options).forEach(([key, value]) => {
         if (value != undefined && value !== "") {
           validateParameters.configuration[key] = value;
@@ -245,92 +242,42 @@ export default function DataConnectorModal({
     }
 
     validateCloudStorageConnection(validateParameters);
-  }, [storageDetails, validateCloudStorageConnection]);
+  }, [flatDataConnector, validateCloudStorageConnection]);
 
   const addOrEditStorage = useCallback(() => {
-    const storageParameters:
-      | AddCloudStorageForProjectParams
-      | CloudStoragePatch = {
-      name: storageDetails.name as string,
-      readonly: storageDetails.readOnly ?? true,
-      project_id: `${projectId}`,
-      source_path: storageDetails.sourcePath ?? "/",
-      target_path: storageDetails.mountPoint as string,
-      configuration: { type: storageDetails.schema },
-      private: false,
-    };
-    // Add provider when required
-    if (storageDetails.provider) {
-      storageParameters.configuration = {
-        ...storageParameters.configuration,
-        provider: storageDetails.provider,
-      };
-    }
-    // Add options if any
-    if (
-      storageDetails.options &&
-      Object.keys(storageDetails.options).length > 0
-    ) {
-      const allOptions = storageDetails.options as CloudStorageDetailsOptions;
-      const sensitiveFields = schema
-        ? findSensitive(schema.find((s) => s.prefix === storageDetails.schema))
-        : currentStorage?.sensitive_fields
-        ? currentStorage.sensitive_fields.map((field) => field.name)
-        : [];
-      const validOptions = Object.keys(
-        storageDetails.options
-      ).reduce<CloudStorageDetailsOptions>((options, key) => {
-        const value = allOptions[key];
-        if (value != undefined && value !== "") {
-          options[key] = sensitiveFields.includes(key)
-            ? CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN
-            : value;
-        }
-        return options;
-      }, {});
-
-      storageParameters.configuration = {
-        ...storageParameters.configuration,
-        ...validOptions,
-      };
-    }
+    const dataConnectorPost = dataConnectorPostFromFlattened(
+      flatDataConnector,
+      schema ?? [],
+      dataConnector
+    );
 
     // We manually set success only when we get an ID back. That's just to show a success message
-    if (storageId) {
-      const cloudStoragePatch: CloudStoragePatch = {
-        project_id: projectId,
-        name: storageParameters.name,
-        configuration: storageParameters.configuration as RCloneConfig,
-        source_path: storageParameters.source_path,
-        target_path: storageParameters.target_path,
-        readonly: storageParameters.readonly,
-      };
-      modifyCloudStorageV2ForProject({
-        storageId: storageId,
-        cloudStoragePatch,
+    if (dataConnector && dataConnectorId) {
+      updateDataConnector({
+        dataConnectorId,
+        dataConnectorPatch: dataConnectorPost,
+        "If-Match": dataConnector.etag,
       }).then((result) => {
-        if ("data" in result && result.data.storage.storage_id) {
+        if ("data" in result && result.data.id) {
           setSuccess(true);
         }
       });
     } else {
-      const parameterV2 = {
-        body: storageParameters,
-      } as PostStoragesV2ApiArg;
-      addCloudStorageForProjectV2(parameterV2).then((result) => {
-        if ("data" in result && result.data.storage.storage_id) {
+      createDataConnector({
+        dataConnectorPost,
+      }).then((result) => {
+        if ("data" in result && result.data.id) {
           setSuccess(true);
         }
       });
     }
   }, [
-    addCloudStorageForProjectV2,
-    currentStorage,
-    modifyCloudStorageV2ForProject,
-    projectId,
+    createDataConnector,
+    dataConnector,
+    dataConnectorId,
+    updateDataConnector,
     schema,
-    storageDetails,
-    storageId,
+    flatDataConnector,
   ]);
 
   const toggle = useCallback(() => {
@@ -341,10 +288,10 @@ export default function DataConnectorModal({
       setSuccess(false);
       reset();
     } else {
-      addResultV2.reset();
+      createResult.reset();
       validationResult.reset();
     }
-  }, [addResultV2, originalToggle, reset, success, validationResult]);
+  }, [createResult, originalToggle, reset, success, validationResult]);
 
   // Handle unmount
   useEffect(() => {
@@ -356,25 +303,25 @@ export default function DataConnectorModal({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const schemaRequiresProvider = useMemo(
-    () => hasProviderShortlist(storageDetails.schema),
-    [storageDetails.schema]
+    () => hasProviderShortlist(flatDataConnector.schema),
+    [flatDataConnector.schema]
   );
 
   useEffect(() => {
-    const storageId = addResultV2.data?.storage?.storage_id;
-    if (storageId == null) return;
+    const dataConnectorId = createResult.data?.id;
+    if (dataConnectorId == null) return;
     const shouldSaveCredentials = shouldSaveDataConnectorCredentials(
-      storageDetails.options,
+      flatDataConnector.options,
       state.saveCredentials,
       validationSucceeded
     );
     if (!shouldSaveCredentials) {
       return;
     }
-    const options = storageDetails.options as CloudStorageDetailsOptions;
+    const options = flatDataConnector.options as CloudStorageDetailsOptions;
     if (!schema) return;
     const sensitiveFieldNames = findSensitive(
-      schema.find((s) => s.prefix === storageDetails.schema)
+      schema.find((s) => s.prefix === flatDataConnector.schema)
     );
     const cloudStorageSecretPostList = sensitiveFieldNames
       .map((name) => ({
@@ -387,81 +334,73 @@ export default function DataConnectorModal({
         value: "" + secret.value,
       }));
     saveCredentials({
-      storageId,
+      storageId: dataConnectorId,
       cloudStorageSecretPostList,
     });
   }, [
-    addResultV2.data?.storage?.storage_id,
+    createResult.data?.id,
     saveCredentials,
     state.saveCredentials,
     schema,
-    storageDetails.options,
-    storageDetails.schema,
+    flatDataConnector.options,
+    flatDataConnector.schema,
     validationSucceeded,
   ]);
 
   useEffect(() => {
-    if (!validationSucceeded) {
-      setCredentialSaveStatus("none");
-      return;
-    }
-    if (
-      addResultV2.data?.storage?.storage_id == null ||
-      saveCredentialsResult.isUninitialized
-    ) {
-      setCredentialSaveStatus("none");
-      return;
-    }
-    if (saveCredentialsResult.isLoading) {
-      setCredentialSaveStatus("trying");
-      return;
-    }
-    if (saveCredentialsResult.isSuccess) {
-      setCredentialSaveStatus("success");
-      return;
-    }
-    if (saveCredentialsResult.isError) {
-      setCredentialSaveStatus("failure");
-      return;
-    }
-    setCredentialSaveStatus("none");
-  }, [addResultV2, saveCredentialsResult, validationSucceeded]);
+    const status = !validationSucceeded
+      ? "none"
+      : createResult.data?.id == null || saveCredentialsResult.isUninitialized
+      ? "none"
+      : saveCredentialsResult.isLoading
+      ? "trying"
+      : saveCredentialsResult.isSuccess
+      ? "success"
+      : saveCredentialsResult.isError
+      ? "failure"
+      : "none";
+    setCredentialSaveStatus(status);
+  }, [createResult, saveCredentialsResult, validationSucceeded]);
 
   // Visual elements
   const disableContinueButton =
     state.step === 1 &&
-    (!storageDetails.schema ||
-      (schemaRequiresProvider && !storageDetails.provider));
+    (!flatDataConnector.schema ||
+      (schemaRequiresProvider && !flatDataConnector.provider));
 
-  const isAddResultLoading = addResultV2.isLoading;
-  const isModifyResultLoading = modifyResultV2.isLoading;
-  const addResultError = addResultV2.error;
-  const modifyResultError = modifyResultV2.error;
-  const addResultStorageName = addResultV2?.data?.storage?.name;
+  const isAddResultLoading = createResult.isLoading;
+  const isModifyResultLoading = updateResult.isLoading;
+  const actionError = createResult.error || updateResult.error;
+  const dataConnectorResultNamespace =
+    createResult?.data?.namespace || updateResult?.data?.namespace;
+  const dataConnectorResultSlug =
+    createResult?.data?.slug || updateResult?.data?.slug;
+  const dataConnectorResultName = `${dataConnectorResultNamespace}/${dataConnectorResultSlug}`;
 
   const disableAddButton =
     isAddResultLoading ||
     isModifyResultLoading ||
-    !storageDetails.name ||
-    !storageDetails.mountPoint ||
-    !storageDetails.schema ||
-    (hasProviderShortlist(storageDetails.schema) && !storageDetails.provider);
+    !flatDataConnector.name ||
+    !flatDataConnector.mountPoint ||
+    !flatDataConnector.schema ||
+    (hasProviderShortlist(flatDataConnector.schema) &&
+      !flatDataConnector.provider);
   const addButtonDisableReason = isAddResultLoading
     ? "Please wait, the storage is being added"
-    : modifyResultV2.isLoading
+    : updateResult.isLoading
     ? "Please wait, the storage is being modified"
-    : !storageDetails.name
+    : !flatDataConnector.name
     ? "Please provide a name"
-    : !storageDetails.mountPoint
+    : !flatDataConnector.mountPoint
     ? "Please provide a mount point"
-    : !storageDetails.schema
+    : !flatDataConnector.schema
     ? "Please go back and select a storage type"
     : "Please go back and select a provider";
   const isResultLoading = isAddResultLoading || isModifyResultLoading;
 
   const storageSecrets =
-    currentStorage != null && "secrets" in currentStorage
-      ? currentStorage.secrets ?? []
+    dataConnector != null && "secrets" in dataConnector
+      ? dataConnector.secrets ?? []
       : [];
   const hasStoredCredentialsInConfig = storageSecrets.length > 0;
 
@@ -472,7 +411,7 @@ export default function DataConnectorModal({
       className={styles.modal}
       data-cy="cloud-storage-edit-modal"
       fullscreen="lg"
-      id={currentStorage?.storage.storage_id ?? "new-cloud-storage"}
+      id={dataConnector?.id ?? "new-cloud-storage"}
       isOpen={isOpen}
       scrollable
       size="lg"
@@ -480,36 +419,32 @@ export default function DataConnectorModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle} data-cy="cloud-storage-edit-header">
-        <AddCloudStorageHeaderContent isV2={true} storageId={storageId} />
+        <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
       </ModalHeader>
 
       <ModalBody data-cy="cloud-storage-edit-body">
         <DataConnectorModalBody
-          addResultStorageName={addResultStorageName}
+          dataConnectorResultName={dataConnectorResultName}
+          flatDataConnector={flatDataConnector}
           credentialSaveStatus={credentialSaveStatus}
-          isV2={true}
           redraw={redraw}
-          schema={schema}
-          schemaError={schemaError}
-          schemaIsFetching={schemaIsFetching}
+          schemaQueryResult={schemaQueryResult}
           setStateSafe={setStateSafe}
-          setStorageDetailsSafe={setStorageDetailsSafe}
+          setFlatDataConnectorSafe={setFlatDataConnectorSafe}
           state={state}
-          storageDetails={storageDetails}
           storageSecrets={storageSecrets}
-          storageId={storageId}
           success={success}
           validationSucceeded={validationSucceeded}
         />
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="cloud-storage-edit-footer">
-        <AddCloudStorageConnectionTestResult
+        <DataConnectorConnectionTestResult
           validationResult={validationResult}
         />
-        {(addResultError || modifyResultError) && (
+        {actionError && (
           <div className="w-100">
-            <RtkOrNotebooksError error={addResultError || modifyResultError} />
+            <RtkOrNotebooksError error={actionError} />
           </div>
         )}
         <div className={cx("d-flex", "flex-grow-1")}>
@@ -529,7 +464,7 @@ export default function DataConnectorModal({
           </Button>
         )}
         {!isResultLoading && (
-          <AddCloudStorageBackButton
+          <DataConnectorModalBackButton
             setStateSafe={setStateSafe}
             state={state}
             success={success}
@@ -538,7 +473,7 @@ export default function DataConnectorModal({
           />
         )}
         {!success && (
-          <AddCloudStorageContinueButton
+          <DataConnectorModalContinueButton
             addButtonDisableReason={addButtonDisableReason}
             addOrEditStorage={addOrEditStorage}
             disableAddButton={disableAddButton}
@@ -548,8 +483,8 @@ export default function DataConnectorModal({
             setStateSafe={setStateSafe}
             setValidationSucceeded={setValidationSucceeded}
             state={state}
-            storageDetails={storageDetails}
-            storageId={storageId}
+            storageDetails={flatDataConnector}
+            storageId={dataConnectorId}
             validateConnection={validateConnection}
             validationResult={validationResult}
           />
@@ -559,13 +494,27 @@ export default function DataConnectorModal({
   );
 }
 
+interface DataConnectorModalHeaderProps {
+  dataConnectorId: string | null;
+}
+export function DataConnectorModalHeader({
+  dataConnectorId,
+}: DataConnectorModalHeaderProps) {
+  return (
+    <>
+      <Database className={cx("bi", "me-1")} />{" "}
+      {dataConnectorId ? "Edit" : "Add"} data connector
+    </>
+  );
+}
+
 function shouldSaveDataConnectorCredentials(
-  storageDetailsOptions: CloudStorageDetailsOptions | undefined,
+  flatDataConnectorOptions: CloudStorageDetailsOptions | undefined,
   stateSaveCredentials: boolean,
   validationSucceeded: boolean
 ) {
   return !!(
-    storageDetailsOptions &&
+    flatDataConnectorOptions &&
     stateSaveCredentials &&
     validationSucceeded
   );

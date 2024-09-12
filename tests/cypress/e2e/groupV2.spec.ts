@@ -93,6 +93,20 @@ describe("Edit v2 group", () => {
     cy.visit("/v2/groups");
   });
 
+  it("shows a group", () => {
+    fixtures
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .listGroupV2Members()
+      .listProjectV2ByNamespace()
+      .listDataConnectors({ namespace: "test-2-group-v2" });
+    cy.contains("List Groups").should("be.visible");
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("test 2 group-v2").should("be.visible");
+    cy.contains("public-storage").should("be.visible");
+  });
+
   it("allows editing group metadata", () => {
     fixtures
       .readGroupV2()
@@ -197,5 +211,149 @@ describe("Edit v2 group", () => {
     });
     cy.contains("Group with slug test-2-group-v2 does not exist");
     cy.contains("Return to the groups list").click();
+  });
+});
+
+describe("List v2 groups", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userTest().namespaces();
+    fixtures.projects().landingUserProjects().listManyGroupV2();
+    cy.visit("/v2/groups");
+  });
+
+  it("list groups", () => {
+    cy.contains("List Groups").should("be.visible");
+    cy.contains("test 15 group-v2").should("not.exist");
+    cy.get(".page-item").find("a").contains("2").click();
+    cy.contains("test 15 group-v2").should("be.visible");
+  });
+
+  it("shows groups", () => {
+    fixtures.readGroupV2().readGroupV2Namespace();
+    cy.contains("List Groups").should("be.visible");
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("test 2 group-v2").should("be.visible");
+  });
+});
+
+describe("Work with group data connectors", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: { id: "0945f006-e117-49b7-8966-4c0842146313" },
+      })
+      .namespaces();
+    fixtures.projects().landingUserProjects().listGroupV2();
+    cy.visit("/v2/groups");
+  });
+
+  it("shows group data connectors", () => {
+    fixtures
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .listGroupV2Members()
+      .listProjectV2ByNamespace()
+      .listDataConnectors({ namespace: "test-2-group-v2" });
+    cy.contains("List Groups").should("be.visible");
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("test 2 group-v2").should("be.visible");
+    cy.contains("public-storage").should("be.visible");
+  });
+
+  it("add a group data connector", () => {
+    fixtures
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .listGroupV2Members()
+      .listProjectV2ByNamespace()
+      .listDataConnectors({ namespace: "test-2-group-v2" })
+      .testCloudStorage({ success: false })
+      .postDataConnector({ namespace: "test-2-group-v2" });
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("public-storage").should("be.visible");
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    // Pick a provider
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
+    cy.getDataCy("data-connector-edit-next-button").click();
+
+    // Fill out the details
+    cy.get("#sourcePath").type("bucket/my-source");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("test-data-connector-button").click();
+    cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
+    cy.getDataCy("cloud-storage-edit-mount").within(() => {
+      cy.get("#name").type("example storage without credentials");
+    });
+    cy.getDataCy("data-connector-edit-update-button").click();
+    cy.wait("@postDataConnector");
+    cy.getDataCy("cloud-storage-edit-body").should(
+      "contain.text",
+      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
+    );
+    cy.getDataCy("data-connector-edit-close-button").click();
+    cy.wait("@getDataConnectors");
+  });
+
+  it("edit a group data connector", () => {
+    fixtures
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .listGroupV2Members()
+      .listProjectV2ByNamespace()
+      .listDataConnectors({ namespace: "test-2-group-v2" })
+      .testCloudStorage({ success: true })
+      .patchDataConnector({ namespace: "test-2-group-v2" });
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("public-storage").should("be.visible").click();
+    cy.getDataCy("data-connector-edit").should("be.visible").click();
+    // Fill out the details
+    cy.getDataCy("test-data-connector-button").click();
+    cy.getDataCy("add-data-connector-continue-button")
+      .contains("Continue")
+      .click();
+    cy.getDataCy("data-connector-edit-update-button").click();
+    cy.wait("@patchDataConnector");
+    cy.getDataCy("cloud-storage-edit-body").should(
+      "contain.text",
+      "The data connector test-2-group-v2/public-storage has been successfully updated."
+    );
+    cy.getDataCy("data-connector-edit-close-button").click();
+    cy.wait("@getDataConnectors");
+  });
+
+  it("delete a group data connector", () => {
+    fixtures
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .listGroupV2Members()
+      .listProjectV2ByNamespace()
+      .listDataConnectors({ namespace: "test-2-group-v2" })
+      .testCloudStorage({ success: true })
+      .deleteDataConnector();
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("public-storage").should("be.visible").click();
+    cy.getDataCy("button-with-menu-dropdown").should("be.visible").click();
+    cy.getDataCy("data-connector-delete").should("be.visible").click();
+    cy.contains("Are you sure you want to delete this data connector").should(
+      "be.visible"
+    );
+    cy.getDataCy("delete-data-connector-modal-button")
+      .should("be.visible")
+      .click();
+    cy.wait("@deleteDataConnector");
+    cy.wait("@getDataConnectors");
   });
 });

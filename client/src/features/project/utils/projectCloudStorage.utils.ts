@@ -49,7 +49,16 @@ export interface CloudStorageOptions extends RCloneOption {
   requiredCredential: boolean;
 }
 
-type StorageDefinition = CloudStorage | CloudStorageGetRead;
+type SensitiveFields =
+  | CloudStorage["sensitive_fields"]
+  | CloudStorageGetRead["sensitive_fields"];
+type StorageConfiguration =
+  | CloudStorage["storage"]["configuration"]
+  | CloudStorageGetRead["storage"]["configuration"];
+type StorageAndSensitiveFieldsDefinition = {
+  storage: { configuration: StorageConfiguration };
+  sensitive_fields?: SensitiveFields;
+};
 
 export function parseCloudStorageConfiguration(
   formattedConfiguration: string
@@ -92,7 +101,9 @@ export function convertFromAdvancedConfig(
   return values.length ? values.join("\n") + "\n" : "";
 }
 
-export function getCredentialFieldDefinitions<T extends StorageDefinition>(
+export function getCredentialFieldDefinitions<
+  T extends StorageAndSensitiveFieldsDefinition
+>(
   storageDefinition: T
 ):
   | (T extends CloudStorageGetRead
