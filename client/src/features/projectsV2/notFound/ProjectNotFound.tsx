@@ -82,11 +82,11 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
 
           <div>
             <Link
-              to={ABSOLUTE_ROUTES.v2.projects.root}
+              to={ABSOLUTE_ROUTES.v2.root}
               className={cx("btn", "btn-outline-primary")}
             >
               <ArrowLeft className={cx("bi", "me-1")} />
-              Return to the projects list
+              Return to the dashboard
             </Link>
           </div>
 
