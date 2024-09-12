@@ -50,8 +50,8 @@ import {
 } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
-import type { CloudStorageConfiguration } from "./CloudStorageSecretsModal";
-import CloudStorageSecretsModal from "./CloudStorageSecretsModal";
+import type { CloudStorageConfiguration } from "./DataConnectorSecretsModal";
+import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
@@ -312,7 +312,7 @@ function StartSessionWithCloudStorageModal({
   startSessionOptionsV2,
   cloudStorageConfigs,
 }: StartSessionWithCloudStorageModalProps) {
-  const [showCloudStorageSecretsModal, setShowCloudStorageSecretsModal] =
+  const [showDataConnectorSecretsModal, setShowDataConnectorSecretsModal] =
     useState<boolean>(false);
   const dispatch = useAppDispatch();
 
@@ -334,12 +334,12 @@ function StartSessionWithCloudStorageModal({
 
   useEffect(() => {
     if (configsNeedingCredentials.length > 0)
-      setShowCloudStorageSecretsModal(true);
+      setShowDataConnectorSecretsModal(true);
   }, [configsNeedingCredentials]);
 
   const onStart = useCallback(
     (changedCloudStorageConfigs: CloudStorageConfiguration[]) => {
-      setShowCloudStorageSecretsModal(false);
+      setShowDataConnectorSecretsModal(false);
       const cloudStorageConfigs = [
         ...configsWithCredentials,
         ...changedCloudStorageConfigs,
@@ -394,8 +394,8 @@ function StartSessionWithCloudStorageModal({
           title={`Starting session ${launcher.name}`}
           status={steps}
         />
-        <CloudStorageSecretsModal
-          isOpen={showCloudStorageSecretsModal}
+        <DataConnectorSecretsModal
+          isOpen={showDataConnectorSecretsModal}
           onCancel={onCancel}
           onStart={onStart}
           cloudStorageConfigs={configsNeedingCredentials}
