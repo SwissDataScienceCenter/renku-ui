@@ -53,6 +53,10 @@ interface AddOrEditCloudStoragePropsV2 extends AddOrEditCloudStorageProps {
   validationSucceeded: boolean;
 }
 
+interface DataConnectorModalBodyProps extends AddCloudStorageBodyContentProps {
+  storageSecrets: CloudStorageSecretGet[];
+}
+
 export default function DataConnectorModalBody({
   addResultStorageName,
   credentialSaveStatus,
@@ -68,7 +72,7 @@ export default function DataConnectorModalBody({
   storageSecrets,
   success,
   validationSucceeded,
-}: AddCloudStorageBodyContentProps) {
+}: DataConnectorModalBodyProps) {
   if (redraw) return <Loader />;
   if (success) {
     return (

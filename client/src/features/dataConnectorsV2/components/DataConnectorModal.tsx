@@ -26,7 +26,6 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { usePostStoragesV2ByStorageIdSecretsMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import {
-  CloudStorageGetRead,
   CloudStorageGetV2Read,
   CloudStoragePatch,
   PostStoragesV2ApiArg,
@@ -49,7 +48,6 @@ import {
 import {
   AddCloudStorageForProjectParams,
   AddCloudStorageState,
-  CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
   CredentialSaveStatus,
@@ -74,11 +72,7 @@ import styles from "../../project/components/cloudStorage/CloudStorage.module.sc
 import DataConnectorModalBody from "./DataConnectorModalBody";
 
 interface DataConnectorModalProps {
-  currentStorage?:
-    | CloudStorage
-    | CloudStorageGetRead
-    | CloudStorageGetV2Read
-    | null;
+  currentStorage?: CloudStorageGetV2Read | null;
   isOpen: boolean;
   toggle: () => void;
   projectId: string;
@@ -256,7 +250,6 @@ export default function DataConnectorModal({
   const addOrEditStorage = useCallback(() => {
     const storageParameters:
       | AddCloudStorageForProjectParams
-      | CloudStorage
       | CloudStoragePatch = {
       name: storageDetails.name as string,
       readonly: storageDetails.readOnly ?? true,

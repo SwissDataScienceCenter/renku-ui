@@ -42,7 +42,6 @@ import {
   CloudStorageSchema,
   CredentialSaveStatus,
 } from "./projectCloudStorage.types";
-import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
 
 import { SerializedError } from "@reduxjs/toolkit";
 
@@ -107,7 +106,6 @@ export interface AddCloudStorageBodyContentProps
   ) => void;
   state: AddCloudStorageState;
   storageDetails: CloudStorageDetails;
-  storageSecrets: CloudStorageSecretGet[];
   success: boolean;
   validationSucceeded: boolean;
 }

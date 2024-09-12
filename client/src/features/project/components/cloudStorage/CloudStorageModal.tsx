@@ -24,11 +24,6 @@ import { ArrowCounterclockwise } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import {
-  CloudStorageGetRead,
-  CloudStorageGetV2Read,
-  CloudStoragePatch,
-} from "../../../projectsV2/api/storagesV2.api";
 
 import {
   findSensitive,
@@ -70,11 +65,7 @@ import {
 import styles from "./CloudStorage.module.scss";
 
 interface CloudStorageModalProps {
-  currentStorage?:
-    | CloudStorage
-    | CloudStorageGetRead
-    | CloudStorageGetV2Read
-    | null;
+  currentStorage?: CloudStorage | null;
   isOpen: boolean;
   toggle: () => void;
   projectId: string;
@@ -247,10 +238,7 @@ export default function CloudStorageModal({
   }, [storageDetails, validateCloudStorageConnection]);
 
   const addOrEditStorage = useCallback(() => {
-    const storageParameters:
-      | AddCloudStorageForProjectParams
-      | CloudStorage
-      | CloudStoragePatch = {
+    const storageParameters: AddCloudStorageForProjectParams | CloudStorage = {
       name: storageDetails.name as string,
       readonly: storageDetails.readOnly ?? true,
       project_id: `${projectId}`,
@@ -382,12 +370,6 @@ export default function CloudStorageModal({
     : "Please go back and select a provider";
   const isResultLoading = isAddResultLoading || isModifyResultLoading;
 
-  const storageSecrets =
-    currentStorage != null && "secrets" in currentStorage
-      ? currentStorage.secrets ?? []
-      : [];
-  const hasStoredCredentialsInConfig = storageSecrets.length > 0;
-
   return (
     <Modal
       backdrop="static"
@@ -419,7 +401,6 @@ export default function CloudStorageModal({
           setStorageDetailsSafe={setStorageDetailsSafe}
           state={state}
           storageDetails={storageDetails}
-          storageSecrets={storageSecrets}
           storageId={storageId}
           success={success}
           validationSucceeded={validationSucceeded}
@@ -463,7 +444,7 @@ export default function CloudStorageModal({
             addOrEditStorage={addOrEditStorage}
             disableAddButton={disableAddButton}
             disableContinueButton={disableContinueButton}
-            hasStoredCredentialsInConfig={hasStoredCredentialsInConfig}
+            hasStoredCredentialsInConfig={false}
             isResultLoading={isResultLoading}
             setStateSafe={setStateSafe}
             setValidationSucceeded={setValidationSucceeded}
