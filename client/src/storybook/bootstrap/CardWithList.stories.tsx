@@ -33,7 +33,7 @@ export default {
       },
     },
   },
-  title: "Bootstrap/Card/CardWithList",
+  title: "Bootstrap/Card/Card With List",
 } as Meta;
 
 interface CardProps extends React.HtmlHTMLAttributes<HTMLElement> {
