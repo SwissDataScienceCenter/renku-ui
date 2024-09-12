@@ -183,12 +183,15 @@ function ProjectList() {
       <p>Cannot show projects.</p>
       <RtkOrNotebooksError error={error} />
     </div>
-  ) : !data || data?.total === 0 ? (
+  ) : !data || data?.projects?.length === 0 ? (
     <div>No 2.0 projects.</div>
   ) : null;
 
   const viewLink = (
-    <ViewAllLink noItems={!data || data?.total === 0} type="project" />
+    <ViewAllLink
+      noItems={!data || data?.projects?.length === 0}
+      type="project"
+    />
   );
 
   if (noProjects)
@@ -260,12 +263,12 @@ function GroupsList() {
       <p>Cannot show groups.</p>
       <RtkOrNotebooksError error={error} />
     </div>
-  ) : !data || data?.total === 0 ? (
+  ) : !data || data == null || data?.groups?.length === 0 ? (
     <div>No 2.0 groups.</div>
   ) : null;
 
   const viewLink = (
-    <ViewAllLink noItems={!data || data?.total === 0} type="group" />
+    <ViewAllLink noItems={!data || data?.groups?.length === 0} type="group" />
   );
 
   if (noGroups)
