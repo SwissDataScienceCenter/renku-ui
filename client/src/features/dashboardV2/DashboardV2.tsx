@@ -32,14 +32,60 @@ import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import DashboardV2Sessions from "./DashboardV2Sessions";
+import styles from "./Dashboard.module.scss";
 
 export default function DashboardV2() {
   return (
     <div className={cx("d-flex", "flex-column", "gap-4")}>
       <DashboardWelcome />
-      <SessionsDashboard />
-      <ProjectsDashboard />
-      <GroupsDashboard />
+      <Row>
+        <Col xs={12} md={9} lg={10}>
+          <div
+            data-bs-spy="scroll"
+            data-bs-target="#navbar-dashboard"
+            data-bs-smooth-scroll="true"
+            className={cx("d-flex", "flex-column", "gap-4")}
+            tabIndex={0}
+          >
+            <div id="session-items">
+              <SessionsDashboard />
+            </div>
+            <div id="project-items">
+              <ProjectsDashboard />
+            </div>
+            <div id="group-items">
+              <GroupsDashboard />
+            </div>
+          </div>
+        </Col>
+        <Col xs={12} md={3} lg={2} className={cx("d-none", "d-md-block")}>
+          <nav
+            id="navbar-dashboard"
+            className={cx("h-100", "flex-column", "align-items-stretch")}
+          >
+            <nav
+              className={cx(
+                "nav",
+                "nav-pills",
+                "flex-column",
+                styles.DashboardMenu
+              )}
+            >
+              <strong className="ms-3">On this page</strong>
+              <hr className="d-none d-md-block my-2 ms-3"></hr>
+              <a className="nav-link" href="#session-items">
+                Sessions
+              </a>
+              <a className="nav-link" href="#project-items">
+                Projects
+              </a>
+              <a className="nav-link" href="#group-items">
+                Groups
+              </a>
+            </nav>
+          </nav>
+        </Col>
+      </Row>
     </div>
   );
 }
