@@ -1,6 +1,12 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { Badge } from "reactstrap";
 
+const componentDescription = `
+Badge is used to display small bits of information, such as notifications, status indicators, or counts. In Renku we mainly use it for showing the number of a specific type of entity available in a specific context (E.G. 4 data sources in a specific project).
+
+Mind that we use the Info Badge variation of the simple Badge component whenever we need to show the status of a Renku entity. That includes semantic color, icons and spinners.
+`;
+
 export default {
   args: {
     color: "primary",
@@ -29,13 +35,11 @@ export default {
   parameters: {
     docs: {
       description: {
-        component:
-          "Badge is used to display small bits of information, such as notifications, status indicators, or counts. In Renku we mainly use it for showing the number of a specific type of entity available in a specific context (E.G. 4 data sources in a specific project)." +
-          " Mind that we use the Info Badge variation of the simple Badge component whenever we need to show the status of a Renku entity. That includes semantic color, icons and spinners.",
+        component: componentDescription,
       },
     },
   },
-  title: "Bootstrap/Badge",
+  title: "Bootstrap/Badge/Badge",
 } as Meta;
 
 type Story = StoryObj<React.HTMLAttributes<HTMLDivElement>>;

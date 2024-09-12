@@ -56,7 +56,7 @@ export default {
       },
     },
   },
-  title: "Bootstrap/Info Badge",
+  title: "Bootstrap/Badge/Info Badge",
 } as Meta;
 
 interface BadgeInfoProps extends React.HTMLAttributes<HTMLDivElement> {
