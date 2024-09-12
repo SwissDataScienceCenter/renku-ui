@@ -26,6 +26,23 @@ const config: StorybookConfig = {
   docs: {
     autodocs: true,
   },
+  // This adjusts Vite build options to preserve class and function names when building for production.
+  viteFinal: async (config, { configType }) => {
+    if (configType === "PRODUCTION") {
+      config.build = {
+        ...config.build,
+        minify: "esbuild",
+        terserOptions: {
+          keep_classnames: true,
+          keep_fnames: true,
+        },
+      };
+      config.esbuild = {
+        keepNames: true,
+      };
+    }
+    return config;
+  },
 };
 
 export default config;
