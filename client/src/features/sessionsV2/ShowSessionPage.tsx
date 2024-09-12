@@ -408,7 +408,7 @@ function SessionDetails({
     data: launchers,
     isLoading: isLoadingLaunchers,
     error: launchersError,
-  } = useGetProjectSessionLaunchersQuery({ projectId: projectId ?? "" });
+  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
   const { data: project, isLoading: isLoadingProject } =
     useGetProjectsByNamespaceAndSlugQuery(
       namespace && slug ? { namespace, slug } : skipToken
