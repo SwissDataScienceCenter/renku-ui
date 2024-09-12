@@ -148,5 +148,5 @@ export const EMPTY_CLOUD_STORAGE_DETAILS: CloudStorageDetails = {
   name: undefined,
   sourcePath: undefined,
   mountPoint: undefined,
-  readOnly: undefined,
+  readOnly: true,
 };
