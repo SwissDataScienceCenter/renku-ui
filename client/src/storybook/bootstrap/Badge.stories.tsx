@@ -9,7 +9,7 @@ export default {
   },
   argTypes: {
     color: {
-      description: "Color scheme to apply to the button.",
+      description: "Color scheme to apply to the badge.",
       type: {
         name: "enum",
         value: ["primary", "secondary", "success", "info", "warning", "danger"],
@@ -23,7 +23,7 @@ export default {
       },
     },
     children: {
-      description: "",
+      description: "Content to display inside the badge.",
     },
   },
   parameters: {
@@ -44,28 +44,28 @@ export const OnlyText_: Story = {
 };
 
 export const BadgeSizes_: Story = {
-  render: () => (
+  render: (_args) => (
     <>
       <h1>
-        Example Heading h1 <Badge>New</Badge>
+        Example Heading h1 <Badge {..._args}>{_args.children}</Badge>
       </h1>
       <h2>
-        Example Heading h2 <Badge>New</Badge>
+        Example Heading h2 <Badge {..._args}>{_args.children}</Badge>
       </h2>
       <h3>
-        Example Heading h3 <Badge>New</Badge>
+        Example Heading h3 <Badge {..._args}>{_args.children}</Badge>
       </h3>
       <h4>
-        Example Heading h4 <Badge>New</Badge>
+        Example Heading h4 <Badge {..._args}>{_args.children}</Badge>
       </h4>
       <h5>
-        Example Heading h5 <Badge>New</Badge>
+        Example Heading h5 <Badge {..._args}>{_args.children}</Badge>
       </h5>
       <h6>
-        Example Heading h6 <Badge>New</Badge>
+        Example Heading h6 <Badge {..._args}>{_args.children}</Badge>
       </h6>
       <p>
-        Example Paragraph <Badge>New</Badge>
+        Example Paragraph <Badge {..._args}>{_args.children}</Badge>
       </p>
     </>
   ),
