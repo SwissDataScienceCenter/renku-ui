@@ -173,8 +173,10 @@ const sessionsV2Api = createApi({
           params: { max_lines },
         };
       },
-      transformResponse: (result: any) => {
-        return result ? JSON.parse(result) : undefined; //TODO ANDREA temporal fix
+      transformResponse: (result: unknown) => {
+        return result && typeof result == "string"
+          ? JSON.parse(result)
+          : result; //TODO ANDREA temporal fix
       },
       keepUnusedDataFor: 0,
     }),

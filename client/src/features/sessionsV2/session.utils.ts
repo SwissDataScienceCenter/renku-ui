@@ -171,13 +171,13 @@ export function getFormattedEnvironmentValues(
         uid,
         gid,
         //command: command?.length > 0 ? [`${command}`] : undefined,
-        command: command.length > 0 ? getJSONvalue(`${command}`) : undefined,
-        args: args.length > 0 ? getJSONvalue(`${args}`) : undefined,
+        command: command.length > 0 ? getJsonValue(`${command}`) : undefined,
+        args: args.length > 0 ? getJsonValue(`${args}`) : undefined,
         // args: args?.length > 0 ? [`${args}`] : undefined,
       };
 }
 
-function getJSONvalue(toParse: string) {
+function getJsonValue(toParse: string) {
   try {
     return JSON.parse(toParse);
   } catch (error) {
