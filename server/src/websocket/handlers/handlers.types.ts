@@ -13,11 +13,24 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
 
-import { Docs } from "../../utils/constants/Docs";
+import type { WebSocket } from "ws";
 
-export const SECRETS_DOCS_URL = Docs.rtdTopicGuide("secrets/secrets.html");
+import APIClient from "../../api-client";
 
-export const SECRETS_VALUE_LENGTH_LIMIT = 5_000;
+export type WebSocketHandler = (
+  args: WebSocketHandlerArgs
+) => void | Promise<void>;
+
+export interface WebSocketHandlerArgs {
+  channel: Channel;
+  apiClient: APIClient;
+  headers: HeadersInit;
+}
+
+export interface Channel {
+  sockets: Array<WebSocket>;
+  data: Map<string, unknown>;
+}

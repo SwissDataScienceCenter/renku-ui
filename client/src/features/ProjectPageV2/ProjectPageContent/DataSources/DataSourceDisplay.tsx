@@ -17,7 +17,7 @@
  */
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Pencil, Trash, XLg } from "react-bootstrap-icons";
+import { Lock, Pencil, Trash, XLg } from "react-bootstrap-icons";
 import {
   Button,
   Col,
@@ -35,7 +35,8 @@ import AddCloudStorageModal from "../../../project/components/cloudStorage/Cloud
 import {
   CloudStorageGetRead,
   useDeleteStoragesV2ByStorageIdMutation,
-} from "../../../projectsV2/api/storagesV2.api.ts";
+} from "../../../projectsV2/api/storagesV2.api";
+import DataSourceCredentialsModal from "./DataSourceCredentialsModal.tsx";
 import { DataSourceView } from "./DataSourceView.tsx";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button.tsx";
 
@@ -117,8 +118,12 @@ export function DataSourceActions({
   storage: CloudStorageGetRead;
   projectId: string;
 }) {
+  const [isCredentialsOpen, setCredentialsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const toggleCredentials = useCallback(() => {
+    setCredentialsOpen((open) => !open);
+  }, []);
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
   }, []);
@@ -147,11 +152,23 @@ export function DataSourceActions({
         preventPropagation
         size="sm"
       >
+        <DropdownItem
+          data-cy="data-source-credentials"
+          onClick={toggleCredentials}
+        >
+          <Lock className={cx("bi", "me-1")} />
+          Credentials
+        </DropdownItem>
         <DropdownItem data-cy="data-source-delete" onClick={toggleDelete}>
           <Trash className={cx("bi", "me-1")} />
           Remove
         </DropdownItem>
       </ButtonWithMenuV2>
+      <DataSourceCredentialsModal
+        storage={storage}
+        setOpen={setCredentialsOpen}
+        isOpen={isCredentialsOpen}
+      />
       <DataSourceDeleteModal
         storage={storage}
         isOpen={isDeleteOpen}

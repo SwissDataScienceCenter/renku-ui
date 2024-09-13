@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-import { Channel } from "../index";
-import { WsMessage } from "../WsMessages";
 import APIClient from "../../api-client";
-import { AsyncSemaphore } from "../../utils/asyncSemaphore";
 import logger from "../../logger";
+import { AsyncSemaphore } from "../../utils/asyncSemaphore";
+import { WsMessage } from "../WsMessages";
+
+import type { Channel, WebSocketHandlerArgs } from "./handlers.types";
 
 type ActivationMetadata = Record<number, Date>;
 
@@ -47,7 +48,7 @@ function getActivationStatus(
   id: number,
   channel: Channel,
   apiClient: APIClient,
-  authHeaders: Headers
+  authHeaders: HeadersInit
 ) {
   return apiClient
     .kgActivationStatus(id, authHeaders)
@@ -116,7 +117,7 @@ async function getAllActivationStatus(
   projectIds: ActivationMetadata,
   channel: Channel,
   apiClient: APIClient,
-  authHeaders: Headers
+  authHeaders: HeadersInit
 ): Promise<void> {
   const semaphore = new AsyncSemaphore(5);
   const ids = Object.keys(projectIds);
@@ -146,11 +147,11 @@ async function handlerRequestActivationKgStatus(
   }
 }
 
-async function heartbeatRequestActivationKgStatus(
-  channel: Channel,
-  apiClient: APIClient,
-  authHeaders: Headers
-): Promise<void> {
+async function heartbeatRequestActivationKgStatus({
+  channel,
+  apiClient,
+  headers,
+}: WebSocketHandlerArgs): Promise<void> {
   const projectsIds = channel.data.get("projectsIds") as ActivationMetadata;
   if (projectsIds) {
     const previousStatuses = channel.data.get(
@@ -161,7 +162,7 @@ async function heartbeatRequestActivationKgStatus(
       projectsIds,
       channel
     );
-    getAllActivationStatus(ids, channel, apiClient, authHeaders);
+    getAllActivationStatus(ids, channel, apiClient, headers);
   }
 }
 

@@ -36,9 +36,7 @@ class APIClient {
    * Fetch session status
    *
    */
-  async getSessionStatus(
-    authHeathers: Record<string, string>
-  ): Promise<Response> {
+  async getSessionStatus(authHeathers: HeadersInit): Promise<Response> {
     const sessionsUrl = `${this.gatewayUrl}/notebooks/servers`;
     logger.debug(`Fetching session status.`);
     const options = {
@@ -55,7 +53,7 @@ class APIClient {
    */
   async kgActivationStatus(
     projectId: number,
-    authHeaders: Headers
+    authHeaders: HeadersInit
   ): Promise<Response> {
     const headers = new Headers(authHeaders);
     const activationStatusURL = `${this.gatewayUrl}/projects/${projectId}/graph/status`;

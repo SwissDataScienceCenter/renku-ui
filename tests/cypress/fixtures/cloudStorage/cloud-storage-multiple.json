@@ -11,7 +11,7 @@
       "project_id": 1,
       "readonly": true,
       "source_path": "bucket/source",
-      "storage_id": 1,
+      "storage_id": "1",
       "storage_type": "s3",
       "target_path": "external_storage/public"
     }
@@ -28,7 +28,7 @@
       "project_id": 1,
       "readonly": true,
       "source_path": "bucket/my-source-1",
-      "storage_id": 2,
+      "storage_id": "2",
       "storage_type": "s3",
       "target_path": "external_storage/private-1"
     },
@@ -60,34 +60,23 @@
   {
     "storage": {
       "configuration": {
-        "type": "s3",
-        "provider": "AWS",
-        "access_key_id": "<sensitive>",
-        "secret_access_key": "<sensitive>"
+        "url": "https://s3-thing.com/",
+        "pass": "<sensitive>",
+        "type": "webdav",
+        "user": "cramakri"
       },
-      "name": "private-storage-2",
+      "name": "webdav",
       "project_id": 1,
       "readonly": true,
-      "source_path": "bucket/my-source-2",
-      "storage_id": 2,
-      "storage_type": "s3",
-      "target_path": "external_storage/private-2"
+      "source_path": "/",
+      "storage_id": "3",
+      "storage_type": "webdav",
+      "target_path": "external_storage/webdav"
     },
     "sensitive_fields": [
       {
-        "name": "access_key_id",
-        "help": "AWS Access Key ID.\n\nLeave blank for anonymous access or runtime credentials.",
-        "provider": "",
-        "default": "",
-        "default_str": "",
-        "required": false,
-        "sensitive": true,
-        "advanced": false,
-        "exclusive": false
-      },
-      {
-        "name": "secret_access_key",
-        "help": "AWS Secret Access Key (password).\n\nLeave blank for anonymous access or runtime credentials.",
+        "name": "pass",
+        "help": "Password.",
         "provider": "",
         "default": "",
         "default_str": "",

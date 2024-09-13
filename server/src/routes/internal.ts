@@ -17,15 +17,15 @@
  */
 
 import express from "express";
-import logger from "../logger";
 
-import { Authenticator } from "../authentication";
+import logger from "../logger";
+import { Storage } from "../storage";
 
 let storageFailures = 0;
 
 function registerInternalRoutes(
   app: express.Application,
-  authenticator: Authenticator
+  storage: Storage
 ): void {
   // define a route handler for the default home page
   app.get("/", (req, res) => {
@@ -40,20 +40,20 @@ function registerInternalRoutes(
   // define a route handler for the liveness probe
   app.get("/liveness", async (req, res) => {
     // Check storage status
-    const storageStatus = authenticator.storage.getStatus();
+    const storageStatus = storage.getStatus();
     if (storageStatus !== "ready") storageFailures++;
     else if (storageFailures !== 0) storageFailures = 0;
 
     if (storageFailures >= 5) {
       logger.error(
-        `Authentication storage failed ${storageFailures} times in a row. Sending a kill signal to k8s.`
+        `Storage failed ${storageFailures} times in a row. Sending a kill signal to k8s.`
       );
-      res.status(503).send("Authentication storage failed.");
+      res.status(503).send("Storage failed.");
       return;
     }
     if (storageFailures >= 1)
       logger.warn(
-        `Authentication storage is failing. This is the attempt #${storageFailures}`
+        `Storage is failing. This is the attempt #${storageFailures}`
       );
 
     res.send("live");
@@ -62,13 +62,13 @@ function registerInternalRoutes(
   // define a route handler for the startup probe
   app.get("/startup", (req, res) => {
     // check if storage is ready
-    if (!authenticator.storage.ready)
+    if (!storage.ready) {
       res.status(503).send("Storage (i.e. Redis) not ready");
-    // check if authenticator is ready
-    else if (!authenticator.ready)
-      res.status(503).send("Authenticator not ready");
+    }
     // if nothing bad happened so far... all must be working fine!
-    else res.send("live");
+    else {
+      res.send("live");
+    }
   });
 }
 

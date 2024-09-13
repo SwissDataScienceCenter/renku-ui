@@ -17,13 +17,13 @@
  */
 
 import cx from "classnames";
-import React, { useCallback, useState, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
-  People,
   PencilSquare,
-  Trash,
-  PlusLg,
+  People,
   PersonGear,
+  PlusLg,
+  Trash,
 } from "react-bootstrap-icons";
 import {
   Button,
@@ -37,7 +37,6 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button.tsx";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -50,7 +49,7 @@ import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/p
 import AddProjectMemberModal from "../../../projectsV2/fields/AddProjectMemberModal";
 import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal.tsx";
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
-
+import { ProjectMemberDisplay } from "../../../projectsV2/shared/ProjectMemberDisplay";
 import MembershipGuard from "../../utils/MembershipGuard.tsx";
 import { toSortedMembers } from "../../utils/roleUtils.ts";
 
@@ -169,7 +168,7 @@ function ProjectPageSettingsMembersListItem({
     <ListGroupItem>
       <Row className="g-2">
         <Col className="align-content-around" xs={12} md="auto">
-          {member.email ?? member.id}{" "}
+          <ProjectMemberDisplay member={member} />{" "}
           <span className="fw-bold">({member.role})</span>
         </Col>
         <Col

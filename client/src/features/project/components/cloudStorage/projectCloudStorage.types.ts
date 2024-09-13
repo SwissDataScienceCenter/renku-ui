@@ -139,6 +139,7 @@ export type AddCloudStorageState = {
   showAllSchema: boolean;
   showAllProviders: boolean;
   showAllOptions: boolean;
+  saveCredentials: boolean;
 };
 
 export type CloudStorageDetailsOptions = Record<
@@ -156,6 +157,8 @@ export type CloudStorageDetails = {
   mountPoint?: string;
   readOnly?: boolean;
 };
+
+export type CredentialSaveStatus = "failure" | "none" | "success" | "trying";
 
 export interface TestCloudStorageConnectionParams {
   configuration: CloudStorageDetailsOptions;

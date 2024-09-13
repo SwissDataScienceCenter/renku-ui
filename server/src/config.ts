@@ -34,14 +34,6 @@ const gatewayUrl = process.env.GATEWAY_URL || urlJoin(SERVER.url ?? "", "/api");
 
 const DEPLOYMENT = {
   gatewayUrl,
-  gatewayLoginUrl: urlJoin(
-    gatewayUrl,
-    process.env.GATEWAY_LOGIN_PATH || "/auth/login"
-  ),
-  gatewayLogoutUrl: urlJoin(
-    gatewayUrl,
-    process.env.GATEWAY_LOGOUT_PATH || "/auth/logout"
-  ),
 };
 
 const SENTRY = {
@@ -59,18 +51,9 @@ const SENTRY = {
 
 const AUTHENTICATION = {
   serverUrl: process.env.AUTH_SERVER_URL || SERVER.url + "/auth/realms/Renku",
-  clientId: process.env.AUTH_CLIENT_ID || "renku-ui",
-  clientSecret: process.env.AUTH_CLIENT_SECRET,
-  tokenExpirationTolerance: convertType(process.env.AUTH_TOKEN_TOLERANCE) || 10,
-  cookiesKey: "ui-server-session",
-  cookiesAnonymousKey: "anon-id",
-  anonPrefix: "anon-", // ? this MUST start with a letter to prevent k8s limitations
+  cookiesKey: "_renku_session",
   authHeaderField: "Authorization",
   authHeaderPrefix: "bearer ",
-  invalidHeaderField: "ui-server-auth",
-  invalidHeaderExpired: "expired",
-  retryConnectionAttempts: 10,
-  storagePrefix: "AUTH_",
 };
 
 const REDIS = {
@@ -92,7 +75,6 @@ const DATA = {
   searchStoragePrefix: StoragePrefix.LAST_SEARCHES,
   searchDefaultLength: 10,
   projectsDefaultLength: 20,
-  userSessionsPrefix: "SESSIONS_",
 };
 
 const WEBSOCKET = {

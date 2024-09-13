@@ -52,6 +52,11 @@ export default function useSessionResourceClass({
         dispatch(
           startSessionOptionsV2Slice.actions.setSessionClass(envClass.id)
         );
+        dispatch(
+          startSessionOptionsV2Slice.actions.setStorage(
+            envClass.default_storage
+          )
+        );
         setIsPendingResourceClass(false);
       }
     },

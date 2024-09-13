@@ -19,25 +19,24 @@
 import express from "express";
 
 import config from "../config";
-import registerInternalRoutes from "./internal";
-import registerApiRoutes from "./apis";
-import { Authenticator } from "../authentication";
 import { Storage } from "../storage";
+
+import registerApiRoutes from "./apis";
+import registerInternalRoutes from "./internal";
 
 function register(
   app: express.Application,
   prefix: string,
-  authenticator: Authenticator,
   storage: Storage
 ): void {
-  registerInternalRoutes(app, authenticator);
+  registerInternalRoutes(app, storage);
 
   // Testing ingress
   app.get(prefix, (req, res) => {
     res.send("UI server up and running");
   });
 
-  registerApiRoutes(app, prefix + config.routes.api, authenticator, storage);
+  registerApiRoutes(app, prefix + config.routes.api, storage);
 }
 
 export default { register };

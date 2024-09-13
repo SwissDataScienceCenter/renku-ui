@@ -21,11 +21,16 @@ import { Col, Container, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import { useGetSecretsQuery } from "./secrets.api";
+import type { SecretKind } from "./secrets.types";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import SecretsListItem from "./SecretsListItem";
 
-export default function SecretsList() {
-  const secrets = useGetSecretsQuery();
+interface SecretsListParams {
+  kind: SecretKind;
+}
+
+export default function SecretsList({ kind }: SecretsListParams) {
+  const secrets = useGetSecretsQuery({ kind });
 
   if (secrets.isLoading) return <Loader />;
 
@@ -37,7 +42,7 @@ export default function SecretsList() {
   const secretsList = secrets.data?.map((secret) => {
     return (
       <Col key={secret.id}>
-        <SecretsListItem secret={secret} />
+        <SecretsListItem kind={kind} secret={secret} />
       </Col>
     );
   });

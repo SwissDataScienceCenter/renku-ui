@@ -29,10 +29,10 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import type { ProjectMemberResponse } from "../api/projectV2.api";
 import { useDeleteProjectsByProjectIdMembersAndMemberIdMutation } from "../api/projectV2.enhanced-api";
+import { ProjectMemberDisplay } from "../shared/ProjectMemberDisplay";
 
 interface RemoveProjectMemberModalProps {
   isOpen: boolean;
@@ -61,7 +61,6 @@ function RemoveProjectMemberAccessForm({
   const { handleSubmit } = useForm<ProjectMemberForRemove>({
     defaultValues: {
       id: member.id,
-      email: member.email,
     },
   });
 
@@ -85,7 +84,8 @@ function RemoveProjectMemberAccessForm({
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
             <Label>
-              Remove <b>{member.email ?? member.id}</b> from project?
+              Remove <ProjectMemberDisplay member={member} nameInBold={true} />{" "}
+              from project?
             </Label>
           </div>
         </Form>

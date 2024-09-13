@@ -42,7 +42,9 @@ import {
   AddCloudStorageState,
   CloudStorageDetails,
   CloudStorageSchema,
+  CredentialSaveStatus,
 } from "./projectCloudStorage.types";
+import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
 
 import { SerializedError } from "@reduxjs/toolkit";
 
@@ -96,6 +98,7 @@ export function AddCloudStorageBackButton({
 interface AddCloudStorageBodyContentProps
   extends AddCloudStorageHeaderContentProps {
   addResultStorageName: string | undefined;
+  credentialSaveStatus: CredentialSaveStatus;
   redraw: boolean;
   schema: CloudStorageSchema[] | undefined;
   schemaError: FetchBaseQueryError | SerializedError | undefined;
@@ -106,10 +109,13 @@ interface AddCloudStorageBodyContentProps
   ) => void;
   state: AddCloudStorageState;
   storageDetails: CloudStorageDetails;
+  storageSecrets: CloudStorageSecretGet[];
   success: boolean;
+  validationSucceeded: boolean;
 }
 export function AddCloudStorageBodyContent({
   addResultStorageName,
+  credentialSaveStatus,
   isV2,
   redraw,
   schema,
@@ -120,18 +126,18 @@ export function AddCloudStorageBodyContent({
   state,
   storageDetails,
   storageId,
+  storageSecrets,
   success,
+  validationSucceeded,
 }: AddCloudStorageBodyContentProps) {
   if (redraw) return <Loader />;
-  if (success)
+  if (success) {
     return (
-      <SuccessAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          The storage {addResultStorageName} has been successfully{" "}
-          {storageId ? "updated" : "added"}.
-        </p>
-      </SuccessAlert>
+      <AddCloudStorageSuccessAlert
+        {...{ addResultStorageName, storageId, credentialSaveStatus }}
+      />
     );
+  }
   if (schemaIsFetching || !schema) return <Loader />;
   if (schemaError) return <RtkOrNotebooksError error={schemaError} />;
   if (!isV2) {
@@ -142,6 +148,7 @@ export function AddCloudStorageBodyContent({
         setStorage={setStorageDetailsSafe}
         state={state}
         storage={storageDetails}
+        storageSecrets={[]}
       />
     );
   }
@@ -159,7 +166,8 @@ export function AddCloudStorageBodyContent({
         setStorage={setStorageDetailsSafe}
         state={state}
         storage={storageDetails}
-        isV2={isV2}
+        storageSecrets={storageSecrets}
+        validationSucceeded={validationSucceeded}
       />
     </>
   );
@@ -194,7 +202,9 @@ interface AddCloudStorageContinueButtonProps
   addOrEditStorage: () => void;
   disableAddButton: boolean;
   disableContinueButton: boolean;
+  hasStoredCredentialsInConfig: boolean;
   isResultLoading: boolean;
+  setValidationSucceeded: (succeeded: boolean) => void;
   storageDetails: CloudStorageDetails;
   storageId: string | null;
   validateConnection: () => void;
@@ -204,9 +214,11 @@ export function AddCloudStorageContinueButton({
   addOrEditStorage,
   disableAddButton,
   disableContinueButton,
+  hasStoredCredentialsInConfig,
   isResultLoading,
-  state,
   setStateSafe,
+  setValidationSucceeded,
+  state,
   storageDetails,
   storageId,
   validateConnection,
@@ -241,7 +253,11 @@ export function AddCloudStorageContinueButton({
       </div>
     );
   }
-  if (state.step === 2 && state.completedSteps >= 1) {
+  if (
+    state.step === 2 &&
+    state.completedSteps >= 1 &&
+    !hasStoredCredentialsInConfig
+  ) {
     return (
       <div id={`${continueButtonId}-div`} className="d-inline-block">
         <TestConnectionAndContinueButtons
@@ -249,6 +265,7 @@ export function AddCloudStorageContinueButton({
           actionTest={validateConnection}
           continueId="add-cloud-storage-continue"
           resetTest={validationResult.reset}
+          setValidationSucceeded={setValidationSucceeded}
           step={state.step}
           testId="test-cloud-storage"
           testIsFailure={validationResult.isError}
@@ -319,9 +336,60 @@ export function AddCloudStorageConnectionTestResult({
     <div className={cx("w-100", "my-0")}>
       {" "}
       <SuccessAlert timeout={0}>
-        <p className="mb-0">The connection to the storage works correctly.</p>
+        <p className="p-0">The connection to the storage works correctly.</p>
       </SuccessAlert>
     </div>
+  );
+}
+
+type AddCloudStorageSuccessAlertProps = Pick<
+  AddCloudStorageBodyContentProps,
+  "addResultStorageName" | "credentialSaveStatus" | "storageId"
+>;
+
+function AddCloudStorageSuccessAlert({
+  addResultStorageName,
+  credentialSaveStatus,
+  storageId,
+}: AddCloudStorageSuccessAlertProps) {
+  if (credentialSaveStatus == "trying")
+    return (
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          The storage {addResultStorageName} has been successfully{" "}
+          {storageId ? "updated" : "added"}; saving the credentials...
+        </p>
+      </SuccessAlert>
+    );
+
+  if (credentialSaveStatus == "success")
+    return (
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          The storage {addResultStorageName} has been successfully{" "}
+          {storageId ? "updated" : "added"}, along with its credentials.
+        </p>
+      </SuccessAlert>
+    );
+  if (credentialSaveStatus == "failure")
+    return (
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          The storage {addResultStorageName} has been successfully{" "}
+          {storageId ? "updated" : "added"},{" "}
+          <b>but the credentials were not saved</b>. You can re-enter them and
+          save by editing the storage.
+        </p>
+      </SuccessAlert>
+    );
+
+  return (
+    <SuccessAlert dismissible={false} timeout={0}>
+      <p className="mb-0">
+        The storage {addResultStorageName} has been successfully{" "}
+        {storageId ? "updated" : "added"}.
+      </p>
+    </SuccessAlert>
   );
 }
 
@@ -330,6 +398,7 @@ interface TestConnectionAndContinueButtonsProps {
   actionTest: () => void;
   continueId: string;
   resetTest: () => void;
+  setValidationSucceeded: AddCloudStorageContinueButtonProps["setValidationSucceeded"];
   step: number;
   testId: string;
   testIsFailure: boolean;
@@ -341,6 +410,7 @@ function TestConnectionAndContinueButtons({
   actionTest,
   continueId,
   resetTest,
+  setValidationSucceeded,
   step,
   testId,
   testIsFailure,
@@ -408,6 +478,7 @@ function TestConnectionAndContinueButtons({
           className={cx(continueColorClass)}
           disabled={testIsOngoing}
           onClick={() => {
+            setValidationSucceeded(testIsSuccess);
             if (testIsFailure || testIsSuccess) {
               resetTest();
             }

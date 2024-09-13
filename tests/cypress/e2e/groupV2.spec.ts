@@ -129,23 +129,7 @@ describe("Edit v2 group", () => {
     const groupMemberToRemove = "user3-uuid";
     fixtures
       .deleteGroupV2Member({ userId: groupMemberToRemove })
-      .exactUser({
-        name: "getExactUserSuccess",
-        exactEmailQueryString: "foo%40bar.com",
-        response: [
-          {
-            id: "user-id",
-            email: "foo@bar.com",
-            first_name: "Foo",
-            last_name: "Bar",
-          },
-        ],
-      })
-      .exactUser({
-        name: "getExactUserFail",
-        exactEmailQueryString: "noone%40bar.com",
-        response: [],
-      })
+      .searchV2ListProjects({ numberOfProjects: 0, numberOfUsers: 5 })
       .listGroupV2Members()
       .readGroupV2()
       .readGroupV2Namespace();
@@ -155,7 +139,7 @@ describe("Edit v2 group", () => {
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
     cy.contains("Edit settings").should("be.visible").click();
-    cy.contains("user1@email.com").should("be.visible");
+    cy.contains("@user1").should("be.visible");
     cy.contains("user3-uuid").should("be.visible");
     fixtures
       .deleteGroupV2Member({ userId: groupMemberToRemove })
@@ -163,26 +147,24 @@ describe("Edit v2 group", () => {
     cy.getDataCy("delete-member-2").should("be.visible").click();
     cy.contains("user3-uuid").should("not.exist");
     cy.get("[data-cy=group-add-member]").should("be.visible").click();
-    cy.getDataCy("add-project-member-email").clear().type("foo@bar.com");
-    cy.contains("Lookup").should("be.visible").click();
-    cy.wait("@getExactUserSuccess");
+    cy.getDataCy("add-project-member").type("foo");
+    cy.contains("Foo_1002").should("be.visible").click();
     fixtures.patchGroupV2Member().listGroupV2Members({
       addMember: {
-        id: "foo-id",
-        email: "foo@bar.com",
+        id: "id_1002",
         role: "member",
+        first_name: "Foo_1002",
+        last_name: "Bar_1002",
+        namespace: "FooBar_1002",
       },
       removeUserId: groupMemberToRemove,
     });
     cy.get("button").contains("Add Member").should("be.visible").click();
-    cy.contains("foo@bar.com").should("be.visible");
+    cy.contains("Foo_1002 Bar_1002").should("be.visible");
 
     cy.get("[data-cy=group-add-member]").should("be.visible").click();
-    cy.getDataCy("add-project-member-email").clear().type("noone@bar.com");
-    cy.contains("Lookup").should("be.visible").click();
-    cy.wait("@getExactUserFail");
-    cy.contains("No user found for noone@bar.com").should("be.visible");
-    cy.getDataCy("user-lookup-close-button").should("be.visible").click();
+    cy.getDataCy("add-project-member").type("noone");
+    cy.contains("0 users found.").should("be.visible");
   });
 
   it("deletes group", () => {

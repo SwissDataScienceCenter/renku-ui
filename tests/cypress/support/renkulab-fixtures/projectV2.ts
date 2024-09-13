@@ -29,7 +29,13 @@ interface ListManyProjectArgs extends NameOnlyFixture {
 
 interface ListProjectV2MembersFixture extends ProjectV2IdArgs {
   removeMemberId?: string;
-  addMember?: { id: string; email?: string; role: string };
+  addMember?: {
+    id: string;
+    role: string;
+    first_name: string;
+    last_name: string;
+    namespace: string;
+  };
 }
 
 interface ProjectV2IdArgs extends SimpleFixture {

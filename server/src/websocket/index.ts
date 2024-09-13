@@ -16,17 +16,16 @@
  * limitations under the License.
  */
 
-import ws from "ws";
 import * as SentryLib from "@sentry/node";
+import ws from "ws";
 
 import APIClient from "../api-client";
-import { Authenticator } from "../authentication";
-import { wsRenkuAuth } from "../authentication/middleware";
 import config from "../config";
 import logger from "../logger";
 import { Storage } from "../storage";
 import { getCookieValueByName } from "../utils";
 import { errorHandler } from "../utils/errorHandler";
+
 import { WsClientMessage, WsMessage, checkWsClientMessage } from "./WsMessages";
 import {
   handlerRequestActivationKgStatus,
@@ -40,14 +39,10 @@ import {
   handlerRequestSessionStatus,
   heartbeatRequestSessionStatus,
 } from "./handlers/sessions";
+import type { Channel, WebSocketHandler } from "./handlers/handlers.types";
 
 // *** Channels ***
 // No need to store data in Redis since it's used only locally. We can modify this if necessary.
-
-interface Channel {
-  sockets: Array<ws>;
-  data: Map<string, unknown>;
-}
 
 const channels = new Map<string, Channel>();
 
@@ -98,10 +93,10 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
 
 // *** Heartbeats functions ***
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const longLoopFunctions: Array<Function> = [heartbeatRequestServerVersion];
-// eslint-disable-next-line @typescript-eslint/ban-types
-const shortLoopFunctions: Array<Function> = [
+const longLoopFunctions: Array<WebSocketHandler> = [
+  heartbeatRequestServerVersion,
+];
+const shortLoopFunctions: Array<WebSocketHandler> = [
   heartbeatRequestSessionStatus,
   heartbeatRequestActivationKgStatus,
 ];
@@ -110,13 +105,11 @@ const shortLoopFunctions: Array<Function> = [
  * Long loop for each user -- executed every few minutes.
  * It automatically either reschedules when at least one channel is active, or close.
  * @param sessionId - user session ID
- * @param authenticator - auth component
  * @param storage - storage component
  * @param apiClient - api to fetch data
  */
 async function channelLongLoop(
   sessionId: string,
-  authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ) {
@@ -130,35 +123,25 @@ async function channelLongLoop(
   }
 
   // checking authentication
-  const timeoutLength = (config.websocket.longIntervalSec as number) * 1000;
-  if (!authenticator.ready) {
+  const timeoutLength = (config.websocket.longIntervalSec as number) * 1_000;
+  if (!storage.ready) {
     logger.info(
-      `${infoPrefix} Authenticator not ready yet, skipping to the next loop`
+      `${infoPrefix} Storage not ready yet, skipping to the next loop`
     );
     setTimeout(
-      () => channelLongLoop(sessionId, authenticator, storage, apiClient),
+      () => channelLongLoop(sessionId, storage, apiClient),
       timeoutLength
     );
     return false;
   }
 
   // get the auth headers
-  const authHeaders = await getAuthHeaders(
-    authenticator,
-    sessionId,
-    infoPrefix
-  );
-  if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
-    // ? here authHeaders is an error message
-    channel.sockets.forEach((socket) => socket.send(authHeaders.toString()));
-    channels.delete(sessionId);
-    return false;
-  }
+  const headers = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
 
   for (const longLoopFunction of longLoopFunctions) {
     // execute the loop function
     try {
-      longLoopFunction(channel, apiClient, authHeaders);
+      longLoopFunction({ channel, apiClient, headers });
     } catch (error) {
       const info = `Unexpected error while executing the function '${longLoopFunction.name}'.`;
       logger.error(`${infoPrefix} ${info}`);
@@ -171,7 +154,7 @@ async function channelLongLoop(
   // Ping to keep the socket alive, then reschedule loop
   channel.sockets.forEach((socket) => socket.ping());
   setTimeout(
-    () => channelLongLoop(sessionId, authenticator, storage, apiClient),
+    () => channelLongLoop(sessionId, storage, apiClient),
     timeoutLength
   );
 }
@@ -180,13 +163,11 @@ async function channelLongLoop(
  * Short loop for each user -- executed every few seconds.
  * It automatically either reschedules when at least one channel is active, or close.
  * @param sessionId - user session ID
- * @param authenticator - auth component
  * @param storage - storage component
  * @param apiClient - api client
  */
 async function channelShortLoop(
   sessionId: string,
-  authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ) {
@@ -200,35 +181,25 @@ async function channelShortLoop(
   }
 
   // checking authentication
-  const timeoutLength = (config.websocket.shortIntervalSec as number) * 1000;
-  if (!authenticator.ready) {
+  const timeoutLength = (config.websocket.shortIntervalSec as number) * 1_000;
+  if (!storage.ready) {
     logger.info(
-      `${infoPrefix} Authenticator not ready yet, skipping to the next loop`
+      `${infoPrefix} Storage not ready yet, skipping to the next loop`
     );
     setTimeout(
-      () => channelShortLoop(sessionId, authenticator, storage, apiClient),
+      () => channelShortLoop(sessionId, storage, apiClient),
       timeoutLength
     );
     return;
   }
 
   // get the auth headers
-  const authHeaders = await getAuthHeaders(
-    authenticator,
-    sessionId,
-    infoPrefix
-  );
-  if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
-    // ? here authHeaders is an error message
-    channel.sockets.forEach((socket) => socket.send(authHeaders.toString()));
-    channels.delete(sessionId);
-    return false;
-  }
+  const headers = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
 
   for (const shortLoopFunction of shortLoopFunctions) {
     // execute the loop function
     try {
-      shortLoopFunction(channel, apiClient, authHeaders);
+      shortLoopFunction({ channel, apiClient, headers });
     } catch (error) {
       const info = `Unexpected error while executing the function '${shortLoopFunction.name}'.`;
       logger.error(`${infoPrefix} ${info}`);
@@ -241,7 +212,7 @@ async function channelShortLoop(
   // Ping to keep the socket alive, then reschedule loop
   channel.sockets.forEach((socket) => socket.ping());
   setTimeout(
-    () => channelShortLoop(sessionId, authenticator, storage, apiClient),
+    () => channelShortLoop(sessionId, storage, apiClient),
     timeoutLength
   );
 }
@@ -253,13 +224,11 @@ async function channelShortLoop(
 /**
  * Configure WebSocket by setting up events and starting loops.
  * @param server - main wss server
- * @param authenticator - auth component
  * @param storage - storage component
  * @param apiClient - api client
  */
 function configureWebsocket(
   server: ws.Server,
-  authenticator: Authenticator,
   storage: Storage,
   apiClient: APIClient
 ): void {
@@ -280,13 +249,13 @@ function configureWebsocket(
       SentryLib.setContext("WebSocket Initial Request", requestData);
     }
 
-    // get the user id
+    // get the session id
     const sessionId = getCookieValueByName(
       request.headers.cookie,
       config.auth.cookiesKey
     );
     if (!sessionId) {
-      logger.error("No ID for the user, session won't be saved.");
+      logger.error("No session ID, session won't be saved.");
       const info =
         "The request does not contain a valid session ID." +
         " Are you reaching the WebSocket from an external source?";
@@ -306,7 +275,7 @@ function configureWebsocket(
     const channel = channels.get(sessionId);
     if (channel) {
       logger.debug(
-        `Adding a new socket to the channel for user ${sessionId}. Total of ${
+        `Adding a new socket to the channel for the session ${sessionId}. Total of ${
           channel.sockets.length + 1
         }`
       );
@@ -315,17 +284,17 @@ function configureWebsocket(
         sockets: [...channel.sockets, socket],
       });
     } else {
-      logger.debug(`Creating new channel for user ${sessionId}`);
+      logger.debug(`Creating new channel for the session ${sessionId}`);
       channels.set(sessionId, { sockets: [socket], data: new Map() });
       // add a buffer before starting the loop, so we can receive setup messages
 
       setTimeout(() => {
-        channelShortLoop(sessionId, authenticator, storage, apiClient);
+        channelShortLoop(sessionId, storage, apiClient);
         // add a tiny buffer, in case authentication fails and channel is cleaned up -- no need to overlap
         setTimeout(() => {
-          channelLongLoop(sessionId, authenticator, storage, apiClient);
-        }, 1000);
-      }, config.websocket.delayStartSec * 1000);
+          channelLongLoop(sessionId, storage, apiClient);
+        }, 1_000);
+      }, config.websocket.delayStartSec * 1_000);
     }
 
     // event: close the socket
@@ -333,14 +302,16 @@ function configureWebsocket(
       // (code, reason) might be used here
       // Verify session
       if (!sessionId) {
-        logger.debug("Nothing to cleanup for a user without ID.");
+        logger.debug("Nothing to cleanup when there is no session ID.");
         return false;
       }
 
       // Identify channel
       const channel = channels.get(sessionId);
       if (!channel) {
-        logger.warn(`No channel for user ${sessionId}. That is unexpected...`);
+        logger.warn(
+          `No channel for the session ${sessionId}. That is unexpected...`
+        );
         return false;
       }
 
@@ -349,8 +320,8 @@ function configureWebsocket(
         const remainingSockets = channel.sockets.length - 1;
         const remainingText =
           remainingSockets === 0
-            ? `There are no channels left for the user `
-            : `THere are other ${remainingSockets} socket(s) for the user `;
+            ? `There are no channels left for the sesssion `
+            : `There are other ${remainingSockets} socket(s) for the session `;
         logger.debug(`Removing the channel. ${remainingText} ${sessionId}.`);
         const index = channel.sockets.indexOf(socket);
         if (index >= 0)
@@ -361,7 +332,7 @@ function configureWebsocket(
         else logger.error("Socket not found.");
       } else {
         logger.info(
-          `Last socket for user ${sessionId}. Deleting the channel...`
+          `Last socket for the session ${sessionId}. Deleting the channel...`
         );
         channels.delete(sessionId);
       }
@@ -409,10 +380,6 @@ function configureWebsocket(
       }
     });
 
-    // check auth
-    const head = await getAuthHeaders(authenticator, sessionId);
-    if (head instanceof WsMessage && head.data?.expired)
-      socket.send(head.toString());
     socket.send(
       new WsMessage("Connection established.", "user", "init").toString()
     );
@@ -465,57 +432,6 @@ function getWsClientMessageHandler(
     if (valid) return instruction.handler;
   }
   return `Could not find a proper handler; data is wrong for a '${clientMessage.type}' instruction.`;
-}
-
-/**
- * Get auhtentication headers
- * @param authenticator - auth component
- * @param sessionId - user session ID
- * @param infoPrefix - this is for the logger
- * @returns error with WsMessage or headers
- */
-async function getAuthHeaders(
-  authenticator: Authenticator,
-  sessionId: string,
-  infoPrefix = ""
-): Promise<WsMessage | Record<string, string>> {
-  try {
-    const authHeaders = await wsRenkuAuth(authenticator, sessionId);
-    if (!authHeaders)
-      // user is anonymous
-      return null;
-    return authHeaders;
-  } catch (error) {
-    const data = { message: "authentication not valid" };
-    let expiredMessage: WsMessage;
-    if (error.message.toString().includes("expired")) {
-      // Try to refresh tokens automatically
-      try {
-        logger.debug(`${infoPrefix} try to refresh tokens.`);
-        await authenticator.refreshTokens(sessionId);
-        const authHeaders = await wsRenkuAuth(authenticator, sessionId);
-        if (!authHeaders)
-          throw new Error("Cannot find auth headers after refreshing");
-        logger.debug(`${infoPrefix} tokens refreshed.`);
-        return authHeaders;
-      } catch (internalError) {
-        logger.warn(`${infoPrefix} auth expired.`);
-        expiredMessage = new WsMessage(
-          { ...data, expired: true },
-          "user",
-          "authentication"
-        );
-      }
-    } else {
-      logger.warn(`${infoPrefix} auth invalid.`);
-      expiredMessage = new WsMessage(
-        { ...data, invalid: true },
-        "user",
-        "authentication"
-      );
-    }
-    return expiredMessage;
-  }
 }
 
 export { Channel, MessageData, configureWebsocket, getWsClientMessageHandler };

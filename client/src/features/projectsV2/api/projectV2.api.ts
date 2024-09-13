@@ -193,7 +193,7 @@ export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
   id: UserId;
-  email?: UserEmail;
+  namespace?: Slug;
   first_name?: UserFirstLastName;
   last_name?: UserFirstLastName;
   role: Role;
