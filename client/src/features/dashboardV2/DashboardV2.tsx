@@ -31,12 +31,9 @@ import {
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
-// import { useGetSessionsQuery } from "../session/sessions.api";
 import DashboardV2Sessions from "./DashboardV2Sessions";
 
 export default function DashboardV2() {
-  // const { data: sessions } = useGetSessionsQuery();
-  // const totalSession = sessions ? Object.keys(sessions).length : 0;
   return (
     <div className={cx("d-flex", "flex-column", "gap-4")}>
       <DashboardWelcome />
@@ -48,22 +45,12 @@ export default function DashboardV2() {
           <div id="project-items">
             <ProjectsDashboard />
           </div>
-          {/* {totalSession < 3 && (
-            <div id="project-items">
-              <ProjectsDashboard />
-            </div>
-          )} */}
         </Col>
         <Col
           xs={12}
           lg={4}
           className={cx("d-flex", "flex-column", "mt-4", "mt-lg-0")}
         >
-          {/* {totalSession >= 3 && (
-            <div id="project-items">
-              <ProjectsDashboard />
-            </div>
-          )} */}
           <div id="group-items">
             <GroupsDashboard />
           </div>
@@ -246,7 +233,7 @@ function GroupsList() {
       <p>Cannot show groups.</p>
       <RtkOrNotebooksError error={error} />
     </div>
-  ) : !data || data == null || data?.groups?.length === 0 ? (
+  ) : !data || data?.groups?.length === 0 ? (
     <div>No 2.0 groups.</div>
   ) : null;
 
