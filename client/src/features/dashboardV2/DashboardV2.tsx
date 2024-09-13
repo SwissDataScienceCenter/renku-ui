@@ -95,12 +95,14 @@ function DashboardWelcome() {
     <div>
       <Row>
         <Col>
-          <h2>Welcome to the Renku 2.0 beta preview!!</h2>
+          <h2 className="text-center">
+            Welcome to the Renku 2.0 beta preview!!
+          </h2>
         </Col>
       </Row>
       <Row>
         <Col>
-          <p>
+          <p className="text-center">
             <b>Learn more about Renku 2.0</b> on our{" "}
             <ExternalLink
               url="https://blog.renkulab.io/renku-2/"
@@ -123,14 +125,12 @@ function DashboardWelcome() {
       <Row>
         <Col>
           <WarnAlert className="mb-0" timeout={0} dismissible={false}>
-            <h4>Do not do any important work in the Renku 2.0 beta preview!</h4>
+            <h6>Do not do any important work in the Renku 2.0 beta preview!</h6>
             <p className="mb-2">
               The beta is for testing only. We do not guarantee saving and
-              persisting work in the beta.
+              persisting work in the beta. You can go{" "}
+              <BackToV1Button color="warning" /> at any time.
             </p>
-            <div>
-              You can go <BackToV1Button color="warning" /> at any time.
-            </div>
           </WarnAlert>
         </Col>
       </Row>
