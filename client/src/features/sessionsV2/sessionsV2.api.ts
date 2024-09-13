@@ -173,6 +173,9 @@ const sessionsV2Api = createApi({
           params: { max_lines },
         };
       },
+      transformResponse: (result: any) => {
+        return result ? JSON.parse(result) : undefined; //TODO ANDREA temporal fix
+      },
       keepUnusedDataFor: 0,
     }),
     stopSession: builder.mutation<boolean, StopSessionParams>({
