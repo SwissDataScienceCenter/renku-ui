@@ -41,13 +41,17 @@ export default function ProjectShortHandDisplay({
       )}
       data-cy="project-item"
     >
-      <h6 className="m-0 fw-bold">{project.name}</h6>
-      <p className={cx("fst-italic", "mb-2")}>
-        @{project.namespace}/{project.slug}
-      </p>
+      <div className={cx("d-flex", "justify-content-between")}>
+        <h6 className={cx("m-0", "fw-bold", "text-truncate", "me-2")}>
+          {project.name}
+        </h6>
+        <VisibilityIcon visibility={project.visibility} />
+      </div>
 
       <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
-        <VisibilityIcon visibility={project.visibility} />
+        <span className={cx("fst-italic", "mb-2", "text-truncate")}>
+          @{project.namespace}
+        </span>
         {project.updated_at ? (
           <TimeCaption
             className={cx("ms-auto", "my-auto")}

@@ -31,22 +31,39 @@ import {
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
+// import { useGetSessionsQuery } from "../session/sessions.api";
 import DashboardV2Sessions from "./DashboardV2Sessions";
 
 export default function DashboardV2() {
+  // const { data: sessions } = useGetSessionsQuery();
+  // const totalSession = sessions ? Object.keys(sessions).length : 0;
   return (
     <div className={cx("d-flex", "flex-column", "gap-4")}>
       <DashboardWelcome />
       <Row>
-        <Col xs={12} md={6} lg={8}>
+        <Col xs={12} lg={8} className={cx("d-flex", "flex-column", "gap-4")}>
           <div id="session-items">
             <SessionsDashboard />
           </div>
-        </Col>
-        <Col xs={12} md={6} lg={4}>
           <div id="project-items">
             <ProjectsDashboard />
           </div>
+          {/* {totalSession < 3 && (
+            <div id="project-items">
+              <ProjectsDashboard />
+            </div>
+          )} */}
+        </Col>
+        <Col
+          xs={12}
+          lg={4}
+          className={cx("d-flex", "flex-column", "mt-4", "mt-lg-0")}
+        >
+          {/* {totalSession >= 3 && (
+            <div id="project-items">
+              <ProjectsDashboard />
+            </div>
+          )} */}
           <div id="group-items">
             <GroupsDashboard />
           </div>
@@ -58,7 +75,7 @@ export default function DashboardV2() {
 
 function DashboardWelcome() {
   return (
-    <div>
+    <div className="mt-2">
       <Row>
         <Col>
           <h2 className="text-center">
@@ -92,7 +109,7 @@ function DashboardWelcome() {
         <Col>
           <WarnAlert className="mb-0" timeout={0} dismissible={false}>
             <h6>Do not do any important work in the Renku 2.0 beta preview!</h6>
-            <p className="mb-2">
+            <p className={cx("mb-0", "pb-0")}>
               The beta is for testing only. We do not guarantee saving and
               persisting work in the beta. You can go{" "}
               <BackToV1Button color="warning" /> at any time.
