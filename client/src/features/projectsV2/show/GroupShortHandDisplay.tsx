@@ -18,11 +18,8 @@
 
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { GroupResponse } from "../api/namespace.api";
 
 interface GroupShortHandDisplayProps {
@@ -42,17 +39,10 @@ export default function GroupShortHandDisplay({
       )}
       data-cy="group-item"
     >
-      <h6 className="m-0 fw-bold">{group.name}</h6>
-      <p className={cx("fst-italic", "mb-2")}>{group.slug}</p>
-      {group.description && (
-        <ClampedParagraph className="mb-2">
-          {group.description}
-        </ClampedParagraph>
-      )}
-      <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
-        <VisibilityIcon visibility="public" />
+      <div className={cx("d-flex", "justify-content-between", "gap-2")}>
+        <h6 className={cx("m-0", "fw-bold", "text-truncate")}>{group.name}</h6>
         <TimeCaption
-          className={cx("ms-auto", "my-auto")}
+          className={cx("ms-auto", "my-auto", "text-truncate")}
           datetime={group.creation_date}
           enableTooltip
           prefix="Created"
