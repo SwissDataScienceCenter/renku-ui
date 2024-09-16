@@ -115,7 +115,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
       to={projectUrl}
     >
       <Row className="g-2">
-        <Col className="order-1" xs={12} md={9} lg={10}>
+        <Col className="order-1" xs={12} md={9} lg={9}>
           <div data-cy="list-session-link">
             <h6 className="fw-bold">
               {project
@@ -127,7 +127,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
             </p>
           </div>
         </Col>
-        <Col className={cx("order-3", "order-md-2")} xs={12} md={3} lg={2}>
+        <Col className={cx("order-3", "order-md-2")} xs={12} md={3} lg={3}>
           <div className={cx("text-start", "text-md-end")}>
             <ActiveSessionButton
               className="my-auto"

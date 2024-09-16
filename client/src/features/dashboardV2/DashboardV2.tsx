@@ -32,31 +32,194 @@ import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import DashboardV2Sessions from "./DashboardV2Sessions";
+import { useGetSessionsQuery } from "../session/sessions.api";
+import { useState } from "react";
 
 export default function DashboardV2() {
+  const [option, setOption] = useState("3");
+  const dashboard = (
+    <Row>
+      <Col xs={12} lg={8} className={cx("d-flex", "flex-column", "gap-4")}>
+        <div id="session-items">
+          <SessionsDashboard />
+        </div>
+        <div id="project-items">
+          <ProjectsDashboard />
+        </div>
+      </Col>
+      <Col
+        xs={12}
+        lg={4}
+        className={cx("d-flex", "flex-column", "mt-4", "mt-lg-0")}
+      >
+        <div id="group-items">
+          <GroupsDashboard />
+        </div>
+      </Col>
+    </Row>
+  );
   return (
     <div className={cx("d-flex", "flex-column", "gap-4")}>
       <DashboardWelcome />
+      {option === "1" ? (
+        dashboard
+      ) : option === "2" ? (
+        <DashboardV22 />
+      ) : option === "3" ? (
+        <DashboardV23 />
+      ) : option === "4" ? (
+        <DashboardV24 />
+      ) : option === "5" ? (
+        <DashboardV25 />
+      ) : (
+        dashboard
+      )}
       <Row>
-        <Col xs={12} lg={8} className={cx("d-flex", "flex-column", "gap-4")}>
-          <div id="session-items">
-            <SessionsDashboard />
-          </div>
+        <select onChange={(e) => setOption(e.target.value)}>
+          <option value={"1"} selected={option === "1"}>
+            2 cols: (Session, projects) | groups
+          </option>
+          <option value={"2"} selected={option === "2"}>
+            2 Cols: Session | (projects, groups)
+          </option>
+          <option value={"3"} selected={option === "3"}>
+            2 Cols: (Session, groups) | projects
+          </option>
+          <option value={"4"} selected={option === "4"}>
+            {
+              "2 Cols: less than 2 sessions running => (Session, project) | groups. Otherwise => (Session, group) | projects"
+            }
+          </option>
+          <option value={"5"} selected={option === "5"}>
+            3 Cols: Session | projects | groups
+          </option>
+        </select>
+      </Row>
+    </div>
+  );
+}
+
+export function DashboardV22() {
+  return (
+    <Row>
+      <Col xs={12} lg={8} className={cx("d-flex", "flex-column", "gap-4")}>
+        <div id="session-items">
+          <SessionsDashboard />
+        </div>
+      </Col>
+      <Col
+        xs={12}
+        lg={4}
+        className={cx("d-flex", "flex-column", "mt-4", "mt-lg-0", "gap-4")}
+      >
+        <div id="project-items">
+          <ProjectsDashboard />
+        </div>
+        <div id="group-items">
+          <GroupsDashboard />
+        </div>
+      </Col>
+    </Row>
+  );
+}
+
+export function DashboardV23() {
+  return (
+    <Row>
+      <Col xs={12} lg={8} className={cx("d-flex", "flex-column", "gap-4")}>
+        <div id="session-items">
+          <SessionsDashboard />
+        </div>
+        <div id="group-items">
+          <GroupsDashboard />
+        </div>
+      </Col>
+      <Col
+        xs={12}
+        lg={4}
+        className={cx("d-flex", "flex-column", "mt-4", "mt-lg-0")}
+      >
+        <div id="project-items">
+          <ProjectsDashboard />
+        </div>
+      </Col>
+    </Row>
+  );
+}
+
+export function DashboardV24() {
+  const { data: sessions } = useGetSessionsQuery();
+  const totalSessions = sessions ? Object.keys(sessions).length : 0;
+
+  return (
+    <Row>
+      <Col xs={12} lg={8} className={cx("d-flex", "flex-column", "gap-4")}>
+        <div id="session-items">
+          <SessionsDashboard />
+        </div>
+        {totalSessions <= 1 ? (
           <div id="project-items">
             <ProjectsDashboard />
           </div>
-        </Col>
-        <Col
-          xs={12}
-          lg={4}
-          className={cx("d-flex", "flex-column", "mt-4", "mt-lg-0")}
-        >
+        ) : (
           <div id="group-items">
             <GroupsDashboard />
           </div>
-        </Col>
-      </Row>
-    </div>
+        )}
+      </Col>
+      <Col
+        xs={12}
+        lg={4}
+        className={cx("d-flex", "flex-column", "mt-4", "mt-lg-0")}
+      >
+        {totalSessions <= 1 ? (
+          <div id="group-items">
+            <GroupsDashboard />
+          </div>
+        ) : (
+          <div id="project-items">
+            <ProjectsDashboard />
+          </div>
+        )}
+      </Col>
+    </Row>
+  );
+}
+
+export function DashboardV25() {
+  return (
+    <Row>
+      <Col
+        xs={12}
+        lg={8}
+        xl={6}
+        className={cx("d-flex", "flex-column", "gap-4")}
+      >
+        <div id="session-items" className="h-100">
+          <SessionsDashboard className="h-100" />
+        </div>
+      </Col>
+      <Col
+        xs={12}
+        lg={4}
+        xl={3}
+        className={cx("d-flex", "flex-column", "gap-4", "mt-4", "m-lg-0")}
+      >
+        <div id="project-items" className="h-100">
+          <ProjectsDashboard className="h-100" />
+        </div>
+      </Col>
+      <Col
+        xs={12}
+        lg={12}
+        xl={3}
+        className={cx("d-flex", "flex-column", "gap-4", "mt-4", "mt-xl-0")}
+      >
+        <div id="group-items" className="h-100">
+          <GroupsDashboard className="h-100" />
+        </div>
+      </Col>
+    </Row>
   );
 }
 
@@ -108,9 +271,9 @@ function DashboardWelcome() {
   );
 }
 
-function ProjectsDashboard() {
+function ProjectsDashboard({ className }: { className?: string }) {
   return (
-    <Card data-cy="projects-container">
+    <Card data-cy="projects-container" className={className}>
       <CardHeader className={cx("d-flex", "gap-2")}>
         <h4 className="m-0">
           <Folder className={cx("bi", "me-1")} />
@@ -166,14 +329,30 @@ function ProjectList() {
 
   if (noProjects)
     return (
-      <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <div
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "h-100",
+          "gap-3",
+          "justify-content-between"
+        )}
+      >
         {noProjects}
         {viewLink}
       </div>
     );
 
   return (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
+    <div
+      className={cx(
+        "d-flex",
+        "flex-column",
+        "h-100",
+        "gap-3",
+        "justify-content-between"
+      )}
+    >
       <ListGroup flush data-cy="dashboard-project-list">
         {data?.projects?.map((project) => (
           <ProjectShortHandDisplay
@@ -188,9 +367,9 @@ function ProjectList() {
   );
 }
 
-function GroupsDashboard() {
+function GroupsDashboard({ className }: { className?: string }) {
   return (
-    <Card data-cy="groups-container">
+    <Card data-cy="groups-container" className={className}>
       <CardHeader className={cx("d-flex", "gap-2")}>
         <h4 className="m-0">
           <People className={cx("bi", "me-1")} />
@@ -243,14 +422,30 @@ function GroupsList() {
 
   if (noGroups)
     return (
-      <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <div
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "h-100",
+          "gap-3",
+          "justify-content-between"
+        )}
+      >
         {noGroups}
         {viewLink}
       </div>
     );
 
   return (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
+    <div
+      className={cx(
+        "d-flex",
+        "flex-column",
+        "h-100",
+        "gap-3",
+        "justify-content-between"
+      )}
+    >
       <ListGroup flush data-cy="dashboard-group-list">
         {data?.groups?.map((group) => (
           <GroupShortHandDisplay
@@ -265,9 +460,9 @@ function GroupsList() {
   );
 }
 
-function SessionsDashboard() {
+function SessionsDashboard({ className }: { className?: string }) {
   return (
-    <Card data-cy="sessions-container">
+    <Card data-cy="sessions-container" className={className}>
       <CardHeader className={cx("d-flex", "gap-2")}>
         <h4 className="m-0">
           <PlayCircle className={cx("bi", "me-1")} />
