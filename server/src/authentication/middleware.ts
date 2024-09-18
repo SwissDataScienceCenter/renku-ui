@@ -106,10 +106,15 @@ async function wsRenkuAuth(
 
   if (tokens) {
     const value = config.auth.authHeaderPrefix + tokens.access_token; // needed by both notebooks and data service
-    // the data service requires the refresh token to consider a user fully logged in
+    const newCookies: Array<string> = [
+      // NOTE: we inject the gateway session cookie in the request, otherwise the gateway will keep making new sessions for every request
+      serializeCookie(config.auth.gwSessionCookiesKey, gwSessionId),
+    ];
     return {
       [config.auth.authHeaderField]: value,
+      // the data service requires the refresh token to consider a user fully logged in
       [config.auth.refreshTokenHeaderField]: tokens.refresh_token,
+      cookie: newCookies.join("; "),
     };
   }
 
@@ -119,8 +124,10 @@ async function wsRenkuAuth(
     serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId), // needed for the notebooks service
     serializeCookie(
       config.auth.dataServiceAnonymousSessionCookieKey,
-      gwSessionId
+      config.auth.anonPrefix + gwSessionId
     ), // needed for the data service
+    // NOTE: we inject the gateway session cookie in the request, otherwise the gateway will keep making new sessions for every request
+    serializeCookie(config.auth.gwSessionCookiesKey, gwSessionId),
   ];
   return { cookie: newCookies.join("; ") };
 }
