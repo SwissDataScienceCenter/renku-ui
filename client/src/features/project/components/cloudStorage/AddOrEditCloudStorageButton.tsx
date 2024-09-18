@@ -72,7 +72,6 @@ export default function AddOrEditCloudStorageButton({
           isOpen={isOpen}
           toggle={toggle}
           projectId={projectId}
-          isV2={false}
         />
       </div>
     </>
