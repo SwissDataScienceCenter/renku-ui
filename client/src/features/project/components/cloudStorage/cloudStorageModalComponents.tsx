@@ -33,9 +33,7 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import AddOrEditCloudStorage, {
-  AddOrEditCloudStorageV2,
-} from "./AddOrEditCloudStorage";
+import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
 import { useTestCloudStorageConnectionMutation } from "./projectCloudStorage.api";
 import { CLOUD_STORAGE_TOTAL_STEPS } from "./projectCloudStorage.constants";
 import {
@@ -44,7 +42,6 @@ import {
   CloudStorageSchema,
   CredentialSaveStatus,
 } from "./projectCloudStorage.types";
-import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
 
 import { SerializedError } from "@reduxjs/toolkit";
 
@@ -95,7 +92,7 @@ export function AddCloudStorageBackButton({
   );
 }
 
-interface AddCloudStorageBodyContentProps
+export interface AddCloudStorageBodyContentProps
   extends AddCloudStorageHeaderContentProps {
   addResultStorageName: string | undefined;
   credentialSaveStatus: CredentialSaveStatus;
@@ -109,14 +106,12 @@ interface AddCloudStorageBodyContentProps
   ) => void;
   state: AddCloudStorageState;
   storageDetails: CloudStorageDetails;
-  storageSecrets: CloudStorageSecretGet[];
   success: boolean;
   validationSucceeded: boolean;
 }
 export function AddCloudStorageBodyContent({
   addResultStorageName,
   credentialSaveStatus,
-  isV2,
   redraw,
   schema,
   schemaError,
@@ -126,9 +121,7 @@ export function AddCloudStorageBodyContent({
   state,
   storageDetails,
   storageId,
-  storageSecrets,
   success,
-  validationSucceeded,
 }: AddCloudStorageBodyContentProps) {
   if (redraw) return <Loader />;
   if (success) {
@@ -140,36 +133,15 @@ export function AddCloudStorageBodyContent({
   }
   if (schemaIsFetching || !schema) return <Loader />;
   if (schemaError) return <RtkOrNotebooksError error={schemaError} />;
-  if (!isV2) {
-    return (
-      <AddOrEditCloudStorage
-        schema={schema}
-        setState={setStateSafe}
-        setStorage={setStorageDetailsSafe}
-        state={state}
-        storage={storageDetails}
-        storageSecrets={[]}
-      />
-    );
-  }
   return (
-    <>
-      {!storageId && (
-        <p>
-          Add published datasets from data repositories for use in your project.
-          Or, connect to cloud storage to read and write custom data.
-        </p>
-      )}
-      <AddOrEditCloudStorageV2
-        schema={schema}
-        setState={setStateSafe}
-        setStorage={setStorageDetailsSafe}
-        state={state}
-        storage={storageDetails}
-        storageSecrets={storageSecrets}
-        validationSucceeded={validationSucceeded}
-      />
-    </>
+    <AddOrEditCloudStorage
+      schema={schema}
+      setState={setStateSafe}
+      setStorage={setStorageDetailsSafe}
+      state={state}
+      storage={storageDetails}
+      storageSecrets={[]}
+    />
   );
 }
 
@@ -347,7 +319,7 @@ type AddCloudStorageSuccessAlertProps = Pick<
   "addResultStorageName" | "credentialSaveStatus" | "storageId"
 >;
 
-function AddCloudStorageSuccessAlert({
+export function AddCloudStorageSuccessAlert({
   addResultStorageName,
   credentialSaveStatus,
   storageId,
