@@ -125,12 +125,14 @@ const shortLoopFunctions: Array<Function> = [
  * @param authenticator - auth component
  * @param storage - storage component
  * @param apiClient - api to fetch data
+ * @param gwSessionId - the session ID of the gateway
  */
 async function channelLongLoop(
   sessionId: string,
   authenticator: Authenticator,
   storage: Storage,
-  apiClient: APIClient
+  apiClient: APIClient,
+  gwSessionId: string
 ) {
   const infoPrefix = `${sessionId} - long loop:`;
 
@@ -148,7 +150,14 @@ async function channelLongLoop(
       `${infoPrefix} Authenticator not ready yet, skipping to the next loop`
     );
     setTimeout(
-      () => channelLongLoop(sessionId, authenticator, storage, apiClient),
+      () =>
+        channelLongLoop(
+          sessionId,
+          authenticator,
+          storage,
+          apiClient,
+          gwSessionId
+        ),
       timeoutLength
     );
     return false;
@@ -158,6 +167,7 @@ async function channelLongLoop(
   const authHeaders = await getAuthHeaders(
     authenticator,
     sessionId,
+    gwSessionId,
     infoPrefix
   );
   if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
@@ -183,7 +193,14 @@ async function channelLongLoop(
   // Ping to keep the socket alive, then reschedule loop
   channel.sockets.forEach((socket) => socket.ping());
   setTimeout(
-    () => channelLongLoop(sessionId, authenticator, storage, apiClient),
+    () =>
+      channelLongLoop(
+        sessionId,
+        authenticator,
+        storage,
+        apiClient,
+        gwSessionId
+      ),
     timeoutLength
   );
 }
@@ -195,12 +212,14 @@ async function channelLongLoop(
  * @param authenticator - auth component
  * @param storage - storage component
  * @param apiClient - api client
+ * @param gwSessionId - the session ID of the gateway
  */
 async function channelShortLoop(
   sessionId: string,
   authenticator: Authenticator,
   storage: Storage,
-  apiClient: APIClient
+  apiClient: APIClient,
+  gwSessionId: string
 ) {
   const infoPrefix = `${sessionId} - short loop:`;
 
@@ -218,7 +237,14 @@ async function channelShortLoop(
       `${infoPrefix} Authenticator not ready yet, skipping to the next loop`
     );
     setTimeout(
-      () => channelShortLoop(sessionId, authenticator, storage, apiClient),
+      () =>
+        channelShortLoop(
+          sessionId,
+          authenticator,
+          storage,
+          apiClient,
+          gwSessionId
+        ),
       timeoutLength
     );
     return;
@@ -228,6 +254,7 @@ async function channelShortLoop(
   const authHeaders = await getAuthHeaders(
     authenticator,
     sessionId,
+    gwSessionId,
     infoPrefix
   );
   if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
@@ -253,7 +280,14 @@ async function channelShortLoop(
   // Ping to keep the socket alive, then reschedule loop
   channel.sockets.forEach((socket) => socket.ping());
   setTimeout(
-    () => channelShortLoop(sessionId, authenticator, storage, apiClient),
+    () =>
+      channelShortLoop(
+        sessionId,
+        authenticator,
+        storage,
+        apiClient,
+        gwSessionId
+      ),
     timeoutLength
   );
 }
@@ -297,6 +331,13 @@ function configureWebsocket(
       request.headers.cookie,
       config.auth.cookiesKey
     );
+
+    // get the session ID if any is present or set by the gateway
+    const gwSessionId = getCookieValueByName(
+      request.headers.cookie,
+      config.auth.gwSessionCookiesKey
+    );
+
     if (!sessionId) {
       logger.error("No ID for the user, session won't be saved.");
       const info =
@@ -332,10 +373,22 @@ function configureWebsocket(
       // add a buffer before starting the loop, so we can receive setup messages
 
       setTimeout(() => {
-        channelShortLoop(sessionId, authenticator, storage, apiClient);
+        channelShortLoop(
+          sessionId,
+          authenticator,
+          storage,
+          apiClient,
+          gwSessionId
+        );
         // add a tiny buffer, in case authentication fails and channel is cleaned up -- no need to overlap
         setTimeout(() => {
-          channelLongLoop(sessionId, authenticator, storage, apiClient);
+          channelLongLoop(
+            sessionId,
+            authenticator,
+            storage,
+            apiClient,
+            gwSessionId
+          );
         }, 1000);
       }, config.websocket.delayStartSec * 1000);
     }
@@ -422,7 +475,7 @@ function configureWebsocket(
     });
 
     // check auth
-    const head = await getAuthHeaders(authenticator, sessionId);
+    const head = await getAuthHeaders(authenticator, sessionId, gwSessionId);
     if (head instanceof WsMessage && head.data?.expired)
       socket.send(head.toString());
     socket.send(
@@ -483,16 +536,22 @@ function getWsClientMessageHandler(
  * Get auhtentication headers
  * @param authenticator - auth component
  * @param sessionId - user session ID
+ * @param gwSessionId - the session ID set by the gateway
  * @param infoPrefix - this is for the logger
  * @returns error with WsMessage or headers
  */
 async function getAuthHeaders(
   authenticator: Authenticator,
   sessionId: string,
+  gwSessionId: string,
   infoPrefix = ""
 ): Promise<WsMessage | Record<string, string>> {
   try {
-    const authHeaders = await wsRenkuAuth(authenticator, sessionId);
+    const authHeaders = await wsRenkuAuth(
+      authenticator,
+      sessionId,
+      gwSessionId
+    );
     if (!authHeaders)
       // user is anonymous
       return null;
@@ -505,7 +564,11 @@ async function getAuthHeaders(
       try {
         logger.debug(`${infoPrefix} try to refresh tokens.`);
         await authenticator.refreshTokens(sessionId);
-        const authHeaders = await wsRenkuAuth(authenticator, sessionId);
+        const authHeaders = await wsRenkuAuth(
+          authenticator,
+          sessionId,
+          gwSessionId
+        );
         if (!authHeaders)
           throw new Error("Cannot find auth headers after refreshing");
         logger.debug(`${infoPrefix} tokens refreshed.`);

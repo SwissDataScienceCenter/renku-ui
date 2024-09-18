@@ -89,7 +89,8 @@ function renkuAuth(authenticator: Authenticator) {
 
 async function wsRenkuAuth(
   authenticator: Authenticator,
-  sessionId: string
+  sessionId: string,
+  gwSessionId: string
 ): Promise<WsMessage | Record<string, string>> {
   let tokens: TokenSet;
   try {
@@ -104,14 +105,22 @@ async function wsRenkuAuth(
   }
 
   if (tokens) {
-    const value = config.auth.authHeaderPrefix + tokens.access_token;
-    return { [config.auth.authHeaderField]: value };
+    const value = config.auth.authHeaderPrefix + tokens.access_token; // needed by both notebooks and data service
+    // the data service requires the refresh token to consider a user fully logged in
+    return {
+      [config.auth.authHeaderField]: value,
+      [config.auth.refreshTokenHeaderField]: tokens.refresh_token,
+    };
   }
 
   // Anonymous users
   const fullAnonId = config.auth.anonPrefix + sessionId;
   const newCookies: Array<string> = [
-    serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId),
+    serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId), // needed for the notebooks service
+    serializeCookie(
+      config.auth.dataServiceAnonymousSessionCookieKey,
+      gwSessionId
+    ), // needed for the data service
   ];
   return { cookie: newCookies.join("; ") };
 }

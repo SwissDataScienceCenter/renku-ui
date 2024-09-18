@@ -63,14 +63,17 @@ const AUTHENTICATION = {
   clientSecret: process.env.AUTH_CLIENT_SECRET,
   tokenExpirationTolerance: convertType(process.env.AUTH_TOKEN_TOLERANCE) || 10,
   cookiesKey: "ui-server-session",
+  gwSessionCookiesKey: "_renku_session", // must match the cookie name set in the gateway repo
   cookiesAnonymousKey: "anon-id",
   anonPrefix: "anon-", // ? this MUST start with a letter to prevent k8s limitations
   authHeaderField: "Authorization",
   authHeaderPrefix: "bearer ",
+  refreshTokenHeaderField: "Renku-Auth-Refresh-Token",
   invalidHeaderField: "ui-server-auth",
   invalidHeaderExpired: "expired",
   retryConnectionAttempts: 10,
   storagePrefix: "AUTH_",
+  dataServiceAnonymousSessionCookieKey: "Renku-Auth-Anon-Id",
 };
 
 const REDIS = {
