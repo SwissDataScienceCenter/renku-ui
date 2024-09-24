@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "3.35.0",
+  "version": "3.35.1",
   "private": true,
   "scripts": {
     "start": "vite --port 3000",
@@ -48,7 +48,7 @@
     "cookieconsent": "^3.1.1",
     "d3": "^7.9.0",
     "dagre-d3-es": "^7.0.10",
-    "dompurify": "^2.4.7",
+    "dompurify": "^2.5.6",
     "dropzone": "^6.0.0-beta.2",
     "file-saver": "^2.0.5",
     "filesize": "^6.4.0",
@@ -154,7 +154,7 @@
     "storybook": "^7.6.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.2",
-    "vite": "^5.0.13",
+    "vite": "^5.4.6",
     "vite-bundle-visualizer": "^0.11.0",
     "vitest": "^0.34.6",
     "wait-on": "^7.2.0"
