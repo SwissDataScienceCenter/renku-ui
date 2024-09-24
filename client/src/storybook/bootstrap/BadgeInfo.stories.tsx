@@ -2,6 +2,7 @@ import cx from "classnames";
 import { Meta, StoryObj } from "@storybook/react";
 import { Badge } from "reactstrap";
 import { CircleFill } from "react-bootstrap-icons";
+
 import { Loader } from "../../components/Loader";
 
 export default {

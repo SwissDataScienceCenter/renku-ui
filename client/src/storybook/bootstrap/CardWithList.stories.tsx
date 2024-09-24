@@ -33,7 +33,7 @@ export default {
       },
     },
   },
-  title: "Bootstrap/Card/Card With List",
+  title: "Bootstrap/Card/Card containing a List",
 } as Meta;
 
 interface CardProps extends React.HtmlHTMLAttributes<HTMLElement> {
@@ -52,6 +52,7 @@ export const CardWithList_: Story = {
         </h4>
       </CardHeader>
       <CardBody>
+        <p>This card contains the following list of sessions.</p>
         <ListGroup flush>
           {[...Array(sessions)].map((_, index) => (
             <ListGroupItem
