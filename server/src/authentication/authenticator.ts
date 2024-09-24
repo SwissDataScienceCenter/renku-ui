@@ -115,7 +115,7 @@ export class Authenticator {
         return next();
       }
 
-      const authHeader = req.header(config.auth.authHeaderField);
+      const authHeader = req.header(config.auth.authHeaderField) ?? "";
       const sessionId =
         getCookieValueByName(req.header("cookie"), config.auth.cookiesKey) ??
         "";
