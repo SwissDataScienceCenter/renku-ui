@@ -438,11 +438,11 @@ function SessionDetails({
       </div>
     );
   }
-  if (launchersError || !launcher)
+  if (launchersError || !launcher || !project)
     return (
       <div className={cx("d-flex", "align-items-center")}>
         <p className={cx("text-white", "mb-0")}>
-          <ExclamationTriangle className="bi" /> Session not accessible
+          <ExclamationTriangle className="bi" /> Session details unavailable
         </p>
       </div>
     );
