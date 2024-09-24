@@ -121,7 +121,7 @@ export default function GroupList() {
               All visible groups
               <WipBadge className="ms-2" />
             </p>
-            <div className="mt-3">
+            <div className="mb-3">
               <Link className={cx("btn", "btn-primary")} to={newGroupUrl}>
                 Create New Group
               </Link>
