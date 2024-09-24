@@ -56,6 +56,33 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/namespaces/${queryArg["namespace"]}/data_connectors/${queryArg.slug}`,
       }),
     }),
+    getDataConnectorsByDataConnectorIdProjectLinks: build.query<
+      GetDataConnectorsByDataConnectorIdProjectLinksApiResponse,
+      GetDataConnectorsByDataConnectorIdProjectLinksApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/${queryArg.dataConnectorId}/project_links`,
+      }),
+    }),
+    postDataConnectorsByDataConnectorIdProjectLinks: build.mutation<
+      PostDataConnectorsByDataConnectorIdProjectLinksApiResponse,
+      PostDataConnectorsByDataConnectorIdProjectLinksApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/${queryArg.dataConnectorId}/project_links`,
+        method: "POST",
+        body: queryArg.dataConnectorToProjectLinkPost,
+      }),
+    }),
+    deleteDataConnectorsByDataConnectorIdProjectLinksAndLinkId: build.mutation<
+      DeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdApiResponse,
+      DeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/${queryArg.dataConnectorId}/project_links/${queryArg.linkId}`,
+        method: "DELETE",
+      }),
+    }),
     getDataConnectorsByDataConnectorIdSecrets: build.query<
       GetDataConnectorsByDataConnectorIdSecretsApiResponse,
       GetDataConnectorsByDataConnectorIdSecretsApiArg
@@ -64,14 +91,14 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/data_connectors/${queryArg.dataConnectorId}/secrets`,
       }),
     }),
-    postDataConnectorsByDataConnectorIdSecrets: build.mutation<
-      PostDataConnectorsByDataConnectorIdSecretsApiResponse,
-      PostDataConnectorsByDataConnectorIdSecretsApiArg
+    patchDataConnectorsByDataConnectorIdSecrets: build.mutation<
+      PatchDataConnectorsByDataConnectorIdSecretsApiResponse,
+      PatchDataConnectorsByDataConnectorIdSecretsApiArg
     >({
       query: (queryArg) => ({
         url: `/data_connectors/${queryArg.dataConnectorId}/secrets`,
-        method: "POST",
-        body: queryArg.cloudStorageSecretPostList,
+        method: "PATCH",
+        body: queryArg.dataConnectorSecretPatchList,
       }),
     }),
     deleteDataConnectorsByDataConnectorIdSecrets: build.mutation<
@@ -120,23 +147,44 @@ export type DeleteDataConnectorsByDataConnectorIdApiArg = {
   dataConnectorId: Ulid;
 };
 export type GetNamespacesByNamespaceDataConnectorsAndSlugApiResponse =
-  /** status 200 The data connectors */ DataConnectorRead;
+  /** status 200 The data connector */ DataConnectorRead;
 export type GetNamespacesByNamespaceDataConnectorsAndSlugApiArg = {
   namespace: string;
   slug: string;
 };
+export type GetDataConnectorsByDataConnectorIdProjectLinksApiResponse =
+  /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
+export type GetDataConnectorsByDataConnectorIdProjectLinksApiArg = {
+  /** the ID of the data connector */
+  dataConnectorId: Ulid;
+};
+export type PostDataConnectorsByDataConnectorIdProjectLinksApiResponse =
+  /** status 201 The data connector was connected to a project */ DataConnectorToProjectLink;
+export type PostDataConnectorsByDataConnectorIdProjectLinksApiArg = {
+  /** the ID of the data connector */
+  dataConnectorId: Ulid;
+  dataConnectorToProjectLinkPost: DataConnectorToProjectLinkPost;
+};
+export type DeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdApiResponse =
+  /** status 204 The data connector was removed or did not exist in the first place */ void;
+export type DeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdApiArg = {
+  /** the ID of the data connector */
+  dataConnectorId: Ulid;
+  /** the ID of the link between a data connector and a project */
+  linkId: Ulid;
+};
 export type GetDataConnectorsByDataConnectorIdSecretsApiResponse =
-  /** status 200 The saved storage secrets */ CloudStorageSecretGetList;
+  /** status 200 The saved storage secrets */ DataConnectorSecretsList;
 export type GetDataConnectorsByDataConnectorIdSecretsApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
 };
-export type PostDataConnectorsByDataConnectorIdSecretsApiResponse =
-  /** status 201 The secrets for cloud storage were saved */ CloudStorageSecretGetList;
-export type PostDataConnectorsByDataConnectorIdSecretsApiArg = {
+export type PatchDataConnectorsByDataConnectorIdSecretsApiResponse =
+  /** status 201 The secrets for cloud storage were saved */ DataConnectorSecretsList;
+export type PatchDataConnectorsByDataConnectorIdSecretsApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
-  cloudStorageSecretPostList: CloudStorageSecretPostList;
+  dataConnectorSecretPatchList: DataConnectorSecretPatchList;
 };
 export type DeleteDataConnectorsByDataConnectorIdSecretsApiResponse =
   /** status 204 The secrets were removed or did not exist in the first place or the storage doesn't exist */ void;
@@ -205,9 +253,8 @@ export type CloudStorageCoreRead = {
   readonly: StorageReadOnly;
   sensitive_fields: RCloneOption[];
 };
-export type CloudStorageSecretGet = {
-  /** Name of the field to store credential for */
-  name: string;
+export type DataConnectorSecret = {
+  name: DataConnectorName;
   secret_id: Ulid;
 };
 export type CreationDate = string;
@@ -223,7 +270,7 @@ export type DataConnector = {
   namespace: Slug;
   slug: Slug;
   storage: CloudStorageCore;
-  secrets?: CloudStorageSecretGet[];
+  secrets?: DataConnectorSecret[];
   creation_date: CreationDate;
   created_by: UserId;
   visibility: Visibility;
@@ -237,7 +284,7 @@ export type DataConnectorRead = {
   namespace: Slug;
   slug: Slug;
   storage: CloudStorageCoreRead;
-  secrets?: CloudStorageSecretGet[];
+  secrets?: DataConnectorSecret[];
   creation_date: CreationDate;
   created_by: UserId;
   visibility: Visibility;
@@ -333,14 +380,24 @@ export type DataConnectorPatchRead = {
   description?: Description;
   keywords?: KeywordsList;
 };
-export type CloudStorageSecretGetList = CloudStorageSecretGet[];
-export type SecretValue = string;
-export type CloudStorageSecretPost = {
-  /** Name of the field to store credential for */
-  name: string;
-  value: SecretValue;
+export type DataConnectorToProjectLink = {
+  id: Ulid;
+  data_connector_id: Ulid;
+  project_id: Ulid;
+  creation_date: CreationDate;
+  created_by: UserId;
 };
-export type CloudStorageSecretPostList = CloudStorageSecretPost[];
+export type DataConnectorToProjectLinksList = DataConnectorToProjectLink[];
+export type DataConnectorToProjectLinkPost = {
+  project_id: Ulid;
+};
+export type DataConnectorSecretsList = DataConnectorSecret[];
+export type SecretValueNullable = string | null;
+export type DataConnectorSecretPatch = {
+  name: DataConnectorName;
+  value: SecretValueNullable;
+};
+export type DataConnectorSecretPatchList = DataConnectorSecretPatch[];
 export const {
   useGetDataConnectorsQuery,
   usePostDataConnectorsMutation,
@@ -348,7 +405,10 @@ export const {
   usePatchDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdMutation,
   useGetNamespacesByNamespaceDataConnectorsAndSlugQuery,
+  useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
+  usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
+  useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
-  usePostDataConnectorsByDataConnectorIdSecretsMutation,
+  usePatchDataConnectorsByDataConnectorIdSecretsMutation,
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
 } = injectedRtkApi;

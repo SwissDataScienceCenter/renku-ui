@@ -26,7 +26,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
-import { Badge, Col, Row } from "reactstrap";
+import { Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";

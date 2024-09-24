@@ -24,7 +24,7 @@ import { XLg } from "react-bootstrap-icons";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import {
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
-  usePostDataConnectorsByDataConnectorIdSecretsMutation,
+  usePatchDataConnectorsByDataConnectorIdSecretsMutation,
 } from "../../projectsV2/api/data-connectors.enhanced-api";
 import type { DataConnectorRead } from "../../projectsV2/api/data-connectors.api";
 import DataConnectorSecretsModal from "../../sessionsV2/DataConnectorSecretsModal";
@@ -49,7 +49,7 @@ export default function DataSourceCredentialsModal({
   });
 
   const [saveCredentials, saveCredentialsResult] =
-    usePostDataConnectorsByDataConnectorIdSecretsMutation();
+    usePatchDataConnectorsByDataConnectorIdSecretsMutation();
   const [deleteCredentials, deleteCredentialsResult] =
     useDeleteDataConnectorsByDataConnectorIdSecretsMutation();
 
@@ -65,7 +65,7 @@ export default function DataSourceCredentialsModal({
       const config = configs[0];
       saveCredentials({
         dataConnectorId: dataConnector.id,
-        cloudStorageSecretPostList: Object.entries(
+        dataConnectorSecretPatchList: Object.entries(
           config.sensitiveFieldValues
         ).map(([key, value]) => ({
           name: key,
@@ -88,7 +88,6 @@ export default function DataSourceCredentialsModal({
     }
   }, [deleteCredentialsResult, saveCredentialsResult.isSuccess, setOpen]);
   if (!isOpen) return null;
-
   if (
     dataConnector.storage.sensitive_fields == null ||
     dataConnector.storage.sensitive_fields.length === 0
@@ -96,7 +95,7 @@ export default function DataSourceCredentialsModal({
     return (
       <Modal
         centered
-        data-cy="cloud-storage-credentials-not-needed-modal"
+        data-cy="data-connector-credentials-not-needed-modal"
         isOpen={isOpen}
         size="lg"
       >
@@ -129,12 +128,12 @@ export default function DataSourceCredentialsModal({
     return (
       <Modal
         centered
-        data-cy="cloud-storage-credentials-error-modal"
+        data-cy="data-connector-credentials-error-modal"
         isOpen={isOpen}
         size="lg"
       >
         <ModalHeader className={cx("fw-bold")}>
-          Cloud Storage Credentials Update Error
+          Data Connector Credentials Update Error
         </ModalHeader>
         <ModalBody>
           <RtkErrorAlert error={error} />
@@ -156,12 +155,12 @@ export default function DataSourceCredentialsModal({
     return (
       <Modal
         centered
-        data-cy="cloud-storage-credentials-modal"
+        data-cy="data-connector-credentials-modal"
         isOpen={isOpen}
         size="lg"
       >
         <ModalHeader className={cx("fw-bold")}>
-          Saving Cloud Storage Credentials
+          Saving Data Connector Credentials
         </ModalHeader>
         <ModalBody>
           <Loader />
@@ -174,12 +173,12 @@ export default function DataSourceCredentialsModal({
     return (
       <Modal
         centered
-        data-cy="cloud-storage-credentials-modal"
+        data-cy="data-connector-credentials-modal"
         isOpen={isOpen}
         size="lg"
       >
         <ModalHeader className={cx("fw-bold")}>
-          Clearing Cloud Storage Credentials
+          Clearing Data Connector Credentials
         </ModalHeader>
         <ModalBody>
           <Loader />

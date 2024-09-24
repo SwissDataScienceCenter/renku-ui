@@ -227,7 +227,7 @@
         "summary": "Get a data connector by namespace and project slug",
         "responses": {
           "200": {
-            "description": "The data connectors",
+            "description": "The data connector",
             "content": {
               "application/json": {
                 "schema": {
@@ -245,6 +245,101 @@
                 }
               }
             }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data connectors"]
+      }
+    },
+    "/data_connectors/{data_connector_id}/project_links": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "data_connector_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the data connector"
+        }
+      ],
+      "get": {
+        "summary": "Get all links from a given data connector to projects",
+        "responses": {
+          "200": {
+            "description": "List of data connector to project links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnectorToProjectLinksList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data connectors"]
+      },
+      "post": {
+        "summary": "Create a new link from a data connector to a project",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataConnectorToProjectLinkPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The data connector was connected to a project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnectorToProjectLink"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data connectors"]
+      }
+    },
+    "/data_connectors/{data_connector_id}/project_links/{link_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "data_connector_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the data connector"
+        },
+        {
+          "in": "path",
+          "name": "link_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the link between a data connector and a project"
+        }
+      ],
+      "delete": {
+        "summary": "Remove a link from a data connector to a project",
+        "responses": {
+          "204": {
+            "description": "The data connector was removed or did not exist in the first place"
           },
           "default": {
             "$ref": "#/components/responses/Error"
@@ -273,7 +368,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CloudStorageSecretGetList"
+                  "$ref": "#/components/schemas/DataConnectorSecretsList"
                 }
               }
             }
@@ -294,14 +389,15 @@
         },
         "tags": ["data connectors"]
       },
-      "post": {
+      "patch": {
         "summary": "Save secrets for a data connector",
+        "description": "New secrets will be added and existing secrets will have their value updated. Using `null` as a value will remove the corresponding secret.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CloudStorageSecretPostList"
+                "$ref": "#/components/schemas/DataConnectorSecretPatchList"
               }
             }
           }
@@ -312,7 +408,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CloudStorageSecretGetList"
+                  "$ref": "#/components/schemas/DataConnectorSecretsList"
                 }
               }
             }
@@ -369,7 +465,7 @@
           "secrets": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CloudStorageSecretGet"
+              "$ref": "#/components/schemas/DataConnectorSecret"
             }
           },
           "creation_date": {
@@ -588,45 +684,66 @@
           "storage_url": "s3://giab"
         }
       },
-      "CloudStorageSecretPost": {
+      "DataConnectorToProjectLinksList": {
+        "description": "A list of links from a data connector to a project",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/DataConnectorToProjectLink"
+        }
+      },
+      "DataConnectorToProjectLink": {
+        "description": "A link from a data connector to a project in Renku 2.0",
         "type": "object",
-        "description": "Data for storing secret for a storage field",
+        "additionalProperties": false,
         "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the field to store credential for",
-            "minLength": 1,
-            "maxLength": 99
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
           },
-          "value": {
-            "$ref": "#/components/schemas/SecretValue"
+          "data_connector_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/UserId"
           }
         },
-        "required": ["name", "value"]
+        "required": [
+          "id",
+          "data_connector_id",
+          "project_id",
+          "creation_date",
+          "created_by"
+        ]
       },
-      "CloudStorageSecretPostList": {
-        "description": "List of storage secrets that are saved",
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/CloudStorageSecretPost"
-        }
-      },
-      "CloudStorageSecretGetList": {
-        "description": "List of storage secrets that are saved",
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/CloudStorageSecretGet"
-        }
-      },
-      "CloudStorageSecretGet": {
+      "DataConnectorToProjectLinkPost": {
+        "description": "A link to be created from a data connector to a project in Renku 2.0",
         "type": "object",
-        "description": "Data for saved storage secrets",
+        "additionalProperties": false,
+        "properties": {
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        },
+        "required": ["project_id"]
+      },
+      "DataConnectorSecretsList": {
+        "description": "A list of data connectors",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/DataConnectorSecret"
+        }
+      },
+      "DataConnectorSecret": {
+        "description": "Information about a credential saved for a data connector",
+        "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "description": "Name of the field to store credential for",
-            "minLength": 1,
-            "maxLength": 99
+            "$ref": "#/components/schemas/DataConnectorName"
           },
           "secret_id": {
             "$ref": "#/components/schemas/Ulid"
@@ -634,36 +751,31 @@
         },
         "required": ["name", "secret_id"]
       },
-      "SecretValue": {
+      "DataConnectorSecretPatchList": {
+        "description": "List of secrets to be saved for a data connector",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/DataConnectorSecretPatch"
+        }
+      },
+      "DataConnectorSecretPatch": {
+        "description": "Information about a credential to save for a data connector",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/DataConnectorName"
+          },
+          "value": {
+            "$ref": "#/components/schemas/SecretValueNullable"
+          }
+        },
+        "required": ["name", "value"]
+      },
+      "SecretValueNullable": {
         "description": "Secret value that can be any text",
         "type": "string",
         "minLength": 1,
-        "maxLength": 5000
-      },
-      "RCloneEntry": {
-        "type": "object",
-        "description": "Schema for a storage type in rclone, like S3 or Azure Blob Storage. Contains fields for that storage type.",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Human readable name of the provider"
-          },
-          "description": {
-            "type": "string",
-            "description": "description of the provider"
-          },
-          "prefix": {
-            "type": "string",
-            "description": "Machine readable name of the provider"
-          },
-          "options": {
-            "description": "Fields/properties used for this storage.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RCloneOption"
-            }
-          }
-        }
+        "maxLength": 5000,
+        "nullable": true
       },
       "RCloneOption": {
         "type": "object",

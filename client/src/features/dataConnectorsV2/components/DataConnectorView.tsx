@@ -23,6 +23,7 @@ import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudS
 import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../project/utils/projectCloudStorage.utils";
 import type { DataConnectorRead } from "../../projectsV2/api/data-connectors.api";
+import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../../projectsV2/api/data-connectors.enhanced-api";
 import { storageSecretNameToFieldName } from "../../secrets/secrets.utils";
 import DataConnectorActions from "./DataConnectorActions";
 
@@ -36,6 +37,10 @@ export default function DataConnectorView({
   showView,
   toggleView,
 }: DataConnectorViewProps) {
+  const { data: connectorSecrets } =
+    useGetDataConnectorsByDataConnectorIdSecretsQuery({
+      dataConnectorId: dataConnector.id,
+    });
   const storageDefinition = dataConnector.storage;
   const sensitiveFields = storageDefinition.sensitive_fields
     ? storageDefinition.sensitive_fields?.map((f) => f.name)
@@ -43,14 +48,17 @@ export default function DataConnectorView({
   const anySensitiveField = Object.keys(storageDefinition.configuration).some(
     (key) => sensitiveFields.includes(key)
   );
-  const storageSecrets = dataConnector.secrets;
   const savedCredentialFields =
-    storageSecrets?.reduce((acc: Record<string, string>, s) => {
+    connectorSecrets?.reduce((acc: Record<string, string>, s) => {
       acc[storageSecretNameToFieldName(s)] = s.name;
       return acc;
     }, {}) ?? {};
   const credentialFieldDefinitions = useMemo(
-    () => getCredentialFieldDefinitions(dataConnector),
+    () =>
+      getCredentialFieldDefinitions({
+        storage: dataConnector.storage,
+        sensitive_fields: dataConnector.storage.sensitive_fields,
+      }),
     [dataConnector]
   );
   const requiredCredentials = useMemo(
@@ -75,7 +83,7 @@ export default function DataConnectorView({
           <button
             aria-label="Close"
             className="btn-close"
-            data-cy="data-source-view-back-button"
+            data-cy="data-connector-view-back-button"
             data-bs-dismiss="offcanvas"
             onClick={toggleView}
           ></button>
@@ -83,7 +91,7 @@ export default function DataConnectorView({
 
         <div className="mb-4">
           <div className={cx("d-flex", "justify-content-between")}>
-            <h2 className="m-0" data-cy="data-source-title">
+            <h2 className="m-0" data-cy="data-connector-title">
               {dataConnector.name}
             </h2>
             <div className="my-auto">

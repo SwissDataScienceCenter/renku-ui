@@ -158,15 +158,15 @@ export function dataConnectorToFlattened(
 export function validationParametersFromDataConnectorConfiguration(
   config: DataConnectorConfiguration
 ) {
-  const newStorageDetails = dataConnectorToFlattened(
-    _dataConnectorFromConfig(config)
-  );
-  return _validationConfigurationFromDataConnectorFlat(newStorageDetails);
+  const dataConnector = _dataConnectorFromConfig(config);
+  const validateParameters: TestCloudStorageConnectionParams = {
+    configuration: dataConnector.configuration,
+    source_path: dataConnector.source_path,
+  };
+  return validateParameters;
 }
 
-function _dataConnectorFromConfig(
-  config: DataConnectorConfiguration
-): DataConnectorRead {
+function _dataConnectorFromConfig(config: DataConnectorConfiguration) {
   const dataConnector = config.dataConnector;
   const storageDefinition = config.dataConnector.storage;
   const mergedDataConnector = { ...dataConnector, ...storageDefinition };
@@ -180,28 +180,4 @@ function _dataConnectorFromConfig(
     }
   });
   return mergedDataConnector;
-}
-
-function _validationConfigurationFromDataConnectorFlat(
-  dataConnector: DataConnectorFlat
-) {
-  const validateParameters: TestCloudStorageConnectionParams = {
-    configuration: {
-      type: dataConnector.schema,
-    },
-    source_path: dataConnector.sourcePath ?? "/",
-  };
-  if (dataConnector.provider) {
-    validateParameters.configuration.provider = dataConnector.provider;
-  }
-  if (dataConnector.options && Object.keys(dataConnector.options).length > 0) {
-    const options = dataConnector.options as CloudStorageDetailsOptions;
-    Object.entries(options).forEach(([key, value]) => {
-      if (value != undefined && value !== "") {
-        validateParameters.configuration[key] = value;
-      }
-    });
-  }
-
-  return validateParameters;
 }
