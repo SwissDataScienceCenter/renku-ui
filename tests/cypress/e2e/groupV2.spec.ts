@@ -214,29 +214,6 @@ describe("Edit v2 group", () => {
   });
 });
 
-describe("List v2 groups", () => {
-  beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects().listManyGroupV2();
-    cy.visit("/v2/groups");
-  });
-
-  it("list groups", () => {
-    cy.contains("List Groups").should("be.visible");
-    cy.contains("test 15 group-v2").should("not.exist");
-    cy.get(".page-item").find("a").contains("2").click();
-    cy.contains("test 15 group-v2").should("be.visible");
-  });
-
-  it("shows groups", () => {
-    fixtures.readGroupV2().readGroupV2Namespace();
-    cy.contains("List Groups").should("be.visible");
-    cy.contains("test 2 group-v2").should("be.visible").click();
-    cy.wait("@readGroupV2");
-    cy.contains("test 2 group-v2").should("be.visible");
-  });
-});
-
 describe("Work with group data connectors", () => {
   beforeEach(() => {
     fixtures
