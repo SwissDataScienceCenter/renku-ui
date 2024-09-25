@@ -103,7 +103,7 @@ export default function GroupV2Show() {
               <EntityPill entityType="Group" size="sm" />
             </div>
           </div>
-          <p className={cx("fst-italic","mb-0")}>{`@${slug}`}</p>
+          <p className={cx("fst-italic", "mb-0")}>{`@${slug}`}</p>
         </div>
         <div className={cx("mb-0", "ms-sm-auto")}>
           <GroupSettingsButton group={group} />
