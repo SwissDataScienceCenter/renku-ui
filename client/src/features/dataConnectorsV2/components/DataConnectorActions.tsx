@@ -22,6 +22,7 @@ import {
   Button,
   Col,
   DropdownItem,
+  Input,
   Modal,
   ModalBody,
   ModalFooter,
@@ -51,6 +52,14 @@ function DataConnectorDeleteModal({
   const [deleteDataConnector, { isLoading, isSuccess }] =
     useDeleteDataConnectorsByDataConnectorIdMutation();
 
+  const [typedName, setTypedName] = useState("");
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTypedName(e.target.value.trim());
+    },
+    [setTypedName]
+  );
+
   useEffect(() => {
     if (isSuccess) {
       onDelete();
@@ -72,11 +81,15 @@ function DataConnectorDeleteModal({
           <Col>
             <p>
               Are you sure you want to delete this data connector? It will
-              affect all projects that use it.
+              affect all projects that use it. Please type{" "}
+              <strong>{dataConnector.slug}</strong>, the slug of the data
+              connector, to confirm.
             </p>
-            <p className="mb-0">
-              Data connector: <code>{dataConnector.name}</code>
-            </p>
+            <Input
+              data-cy="delete-confirmation-input"
+              value={typedName}
+              onChange={onChange}
+            />
           </Col>
         </Row>
       </ModalBody>
@@ -89,6 +102,7 @@ function DataConnectorDeleteModal({
           <Button
             color="danger"
             className={cx("float-right", "ms-2")}
+            disabled={typedName !== dataConnector.slug.trim()}
             data-cy="delete-data-connector-modal-button"
             type="submit"
             onClick={onDeleteDataCollector}

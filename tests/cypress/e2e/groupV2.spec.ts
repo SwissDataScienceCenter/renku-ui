@@ -350,6 +350,7 @@ describe("Work with group data connectors", () => {
     cy.contains("Are you sure you want to delete this data connector").should(
       "be.visible"
     );
+    cy.getDataCy("delete-confirmation-input").clear().type("public-storage");
     cy.getDataCy("delete-data-connector-modal-button")
       .should("be.visible")
       .click();
