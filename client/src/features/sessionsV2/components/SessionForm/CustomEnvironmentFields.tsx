@@ -23,6 +23,7 @@ import { Label, Input, Collapse } from "reactstrap";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
 import { AdvanceSettingsFields } from "./AdvanceSettingsFields";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 
 export function CustomEnvironmentFields({
   watch,
@@ -76,7 +77,10 @@ export function CustomEnvironmentFields({
         </span>
       </div>
       <Collapse isOpen={isAdvanceSettingOpen}>
-        <AdvanceSettingsFields control={control} errors={errors} />
+        <AdvanceSettingsFields<SessionLauncherForm>
+          control={control}
+          errors={errors}
+        />
       </Collapse>
     </div>
   );

@@ -39,6 +39,7 @@ import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
 import { useGetSessionEnvironmentsQuery } from "./adminSessions.api";
+import { safeStringify } from "../sessionsV2/session.utils";
 
 export default function SessionEnvironmentsSection() {
   return (
@@ -107,8 +108,20 @@ interface SessionEnvironmentDisplayProps {
 function SessionEnvironmentDisplay({
   environment,
 }: SessionEnvironmentDisplayProps) {
-  const { container_image, creation_date, name, default_url, description } =
-    environment;
+  const {
+    container_image,
+    creation_date,
+    name,
+    default_url,
+    description,
+    port,
+    gid,
+    uid,
+    working_directory,
+    mount_directory,
+    command,
+    args,
+  } = environment;
 
   return (
     <Col className={cx("col-12", "col-sm-6")}>
@@ -134,6 +147,27 @@ function SessionEnvironmentDisplay({
                 {")"}
               </i>
             )}
+          </CardText>
+          <CardText className="mb-0">
+            Mount directory: <code>{mount_directory}</code>
+          </CardText>
+          <CardText className="mb-0">
+            Work directory: <code>{working_directory}</code>
+          </CardText>
+          <CardText className="mb-0">
+            Port: <code>{port}</code>
+          </CardText>
+          <CardText className="mb-0">
+            GID: <code>{gid}</code>
+          </CardText>
+          <CardText className="mb-0">
+            UID: <code>{uid}</code>
+          </CardText>
+          <CardText className="mb-0">
+            Command: <code>{command ? safeStringify(command) : "-"}</code>
+          </CardText>
+          <CardText className="mb-0">
+            Args: <code>{args ? safeStringify(args) : "-"}</code>
           </CardText>
           <CardText>
             <TimeCaption

@@ -21,25 +21,22 @@ import {
   Control,
   Controller,
   FieldErrors,
+  FieldValues,
+  Path,
   RegisterOptions,
 } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
 import { InputType } from "reactstrap/types/lib/Input";
 import { MoreInfo } from "../../../../components/MoreInfo";
-import { DEFAULT_URL, getFormCustomValuesDesc } from "../../session.utils";
+import {
+  DEFAULT_URL,
+  getFormCustomValuesDesc,
+  isValidJSONArrayString,
+} from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
 
-type SessionLauncherFieldNames =
-  | "container_image"
-  | "description"
-  | "default_url"
-  | "port"
-  | "working_directory"
-  | "uid"
-  | "gid"
-  | "mount_directory";
-
-function FormField({
+function FormField<T extends FieldValues>({
   control,
   name,
   label,
@@ -49,15 +46,15 @@ function FormField({
   type = "text",
   rules,
 }: {
-  control: Control<SessionLauncherForm>;
-  name: SessionLauncherFieldNames;
+  control: Control<T>;
+  name: Path<T>;
   label: string;
   placeholder?: string;
-  errors?: FieldErrors<SessionLauncherForm>;
+  errors?: FieldErrors<T>;
   info: string;
   type: InputType;
   rules?: Omit<
-    RegisterOptions<SessionLauncherForm, SessionLauncherFieldNames>,
+    RegisterOptions<T, Path<T>>,
     "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled"
   >;
 }) {
@@ -90,21 +87,23 @@ function FormField({
   );
 }
 
-function JsonField({
+interface JsonFieldProps<T extends FieldValues> {
+  control: Control<T>;
+  name: Path<T>;
+  label: string;
+  info: string;
+  errors?: FieldErrors<T>;
+  helpText: string;
+}
+
+function JsonField<T extends FieldValues>({
   control,
   name,
   label,
   info,
   errors,
   helpText,
-}: {
-  control: Control<SessionLauncherForm>;
-  name: "args" | "command";
-  label: string;
-  info: string;
-  errors?: FieldErrors<SessionLauncherForm>;
-  helpText: string;
-}) {
+}: JsonFieldProps<T>) {
   return (
     <>
       <Label for={`addSessionLauncher${name}`} className="form-label me-2 mb-0">
@@ -137,22 +136,22 @@ function JsonField({
   );
 }
 
-interface AdvanceSettingsProp {
-  control: Control<SessionLauncherForm, unknown>;
-  errors?: FieldErrors<SessionLauncherForm>;
+interface AdvanceSettingsProp<T extends FieldValues> {
+  control: Control<T, unknown>;
+  errors?: FieldErrors<T>;
 }
-export function AdvanceSettingsFields({
-  control,
-  errors,
-}: AdvanceSettingsProp) {
+
+export function AdvanceSettingsFields<
+  T extends SessionLauncherForm | SessionEnvironmentForm
+>({ control, errors }: AdvanceSettingsProp<T>) {
   const desc = getFormCustomValuesDesc();
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <div className="row">
         <div className={cx("col-12", "col-md-9")}>
-          <FormField
+          <FormField<T>
             control={control}
-            name="default_url"
+            name={"default_url" as Path<T>}
             label="Default URL"
             placeholder={DEFAULT_URL}
             errors={errors}
@@ -161,9 +160,9 @@ export function AdvanceSettingsFields({
           />
         </div>
         <div className={cx("col-12", "col-md-3")}>
-          <FormField
+          <FormField<T>
             control={control}
-            name="port"
+            name={"port" as Path<T>}
             label="Port (Optional)"
             placeholder="e.g. 8080"
             errors={errors}
@@ -174,9 +173,9 @@ export function AdvanceSettingsFields({
       </div>
       <div className="row">
         <div className={cx("col-12")}>
-          <FormField
+          <FormField<T>
             control={control}
-            name="mount_directory"
+            name={"mount_directory" as Path<T>}
             label="Mount Directory (Optional)"
             errors={errors}
             info={desc.mountDirectory}
@@ -193,9 +192,9 @@ export function AdvanceSettingsFields({
       </div>
       <div className="row">
         <div className={cx("col-12")}>
-          <FormField
+          <FormField<T>
             control={control}
-            name="working_directory"
+            name={"working_directory" as Path<T>}
             label="Working Directory (Optional)"
             errors={errors}
             info={desc.workingDirectory}
@@ -205,9 +204,9 @@ export function AdvanceSettingsFields({
       </div>
       <div className="row">
         <div className={cx("col-12", "col-md-6")}>
-          <FormField
+          <FormField<T>
             control={control}
-            name="gid"
+            name={"gid" as Path<T>}
             label="GID (Optional)"
             placeholder="e.g. 1000"
             type="number"
@@ -217,9 +216,9 @@ export function AdvanceSettingsFields({
           />
         </div>
         <div className={cx("col-12", "col-md-6")}>
-          <FormField
+          <FormField<T>
             control={control}
-            name="uid"
+            name={"uid" as Path<T>}
             label="UID (Optional)"
             placeholder="e.g. 1000"
             type="number"
@@ -231,9 +230,9 @@ export function AdvanceSettingsFields({
       </div>
       <div className="row">
         <div className={cx("col-12")}>
-          <JsonField
+          <JsonField<T>
             control={control}
-            name="command"
+            name={"command" as Path<T>}
             label="Command ENTRYPOINT (Optional)"
             info={desc.command}
             errors={errors}
@@ -243,9 +242,9 @@ export function AdvanceSettingsFields({
       </div>
       <div className="row">
         <div className={cx("col-12")}>
-          <JsonField
+          <JsonField<T>
             control={control}
-            name="args"
+            name={"args" as Path<T>}
             label="Command Arguments CMD (Optional)"
             info={desc.args}
             errors={errors}
@@ -255,17 +254,4 @@ export function AdvanceSettingsFields({
       </div>
     </div>
   );
-}
-
-function isValidJSONArrayString(value: string): true | string | undefined {
-  if (!value?.trim()) return undefined;
-
-  try {
-    const parsedValue = JSON.parse(value);
-    return Array.isArray(parsedValue)
-      ? true
-      : "Input must be a valid JSON array";
-  } catch {
-    return "Input must be a valid JSON format";
-  }
 }
