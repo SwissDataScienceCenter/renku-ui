@@ -109,7 +109,7 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
           <CardTitle>
             <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
               <span className="pe-2">{display_name}</span>
-              <ConnectButton id={id} connectionStatus={connection?.status} />
+              <ConnectButton connectionStatus={connection?.status} id={id} />
             </div>
           </CardTitle>
           <CardText className="mb-1">
@@ -129,20 +129,22 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
 }
 
 interface ConnectButtonParams {
-  id: string;
   connectionStatus?: ConnectionStatus;
+  id: string;
 }
 
-function ConnectButton({ id, connectionStatus }: ConnectButtonParams) {
+function ConnectButton({ connectionStatus, id }: ConnectButtonParams) {
   const hereUrl = window.location.href;
 
   const authorizeUrl = `/ui-server/api/data/oauth2/providers/${id}/authorize`;
   const url = `${authorizeUrl}?next_url=${encodeURIComponent(hereUrl)}`;
 
   const text = connectionStatus === "connected" ? "Reconnect" : "Connect";
+  const color =
+    connectionStatus === "connected" ? "btn-outline-primary" : "btn-primary";
 
   return (
-    <a className={cx("ms-auto", "btn", "btn-secondary")} href={url}>
+    <a className={cx(color, "btn", "btn-secondary", "ms-auto")} href={url}>
       {text}
     </a>
   );
