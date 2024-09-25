@@ -90,17 +90,11 @@ export default function GroupV2Show() {
 
   return (
     <ContainerWrap>
-      <div className={cx("d-flex", "flex-column", "flex-sm-row")}>
+      <div
+        className={cx("d-flex", "flex-column", "flex-sm-row", "gap-3", "mb-3")}
+      >
         <div>
-          <div
-            className={cx(
-              "d-flex",
-              "flex-row",
-              "flex-wrap",
-              "flex-sm-nowrap",
-              "gap-2"
-            )}
-          >
+          <div className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
             <div className={cx("align-items-center", "d-flex", "gap-2")}>
               <UserAvatar username={group.name || slug} large />
               <h2 className="mb-0">{group.name ?? "Unknown group"}</h2>
@@ -109,9 +103,9 @@ export default function GroupV2Show() {
               <EntityPill entityType="Group" size="sm" />
             </div>
           </div>
-          <p className="fst-italic">{`@${slug}`}</p>
+          <p className={cx("fst-italic","mb-0")}>{`@${slug}`}</p>
         </div>
-        <div className={cx("mb-3", "mb-sm-0", "ms-0", "ms-sm-auto")}>
+        <div className={cx("mb-0", "ms-sm-auto")}>
           <GroupSettingsButton group={group} />
         </div>
       </div>
