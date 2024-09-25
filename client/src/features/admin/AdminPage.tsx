@@ -62,6 +62,7 @@ import { ResourcePoolUser } from "./adminComputeResources.types";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
+import ConnectedServicesSection from "./ConnectedServicesSection";
 
 export default function AdminPage() {
   return (
@@ -70,6 +71,7 @@ export default function AdminPage() {
       <IncidentsAndMaintenanceSection />
       <ComputeResourcesSection />
       <SessionEnvironmentsSection />
+      <ConnectedServicesSection />
     </>
   );
 }

@@ -18,8 +18,13 @@
 
 export interface Provider {
   id: string;
+  kind: string;
+  client_id: string;
+  client_secret: string;
   display_name: string;
+  scope: string;
   url: string;
+  use_pkce: boolean;
 }
 
 export type ProviderList = Provider[];
@@ -42,3 +47,5 @@ export interface ConnectedAccount {
 export interface GetConnectedAccountParams {
   connectionId: string;
 }
+
+export type ConnectedServiceForm = Provider;
