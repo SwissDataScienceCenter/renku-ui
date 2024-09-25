@@ -73,9 +73,9 @@ export const BadgeInfo_: Story = {
     return (
       <Badge color="info" className={cx("border", _args.status)}>
         {_args.loader ? (
-          <Loader size={12} className={cx("me-1")} inline />
+          <Loader size={12} className="me-1" inline />
         ) : (
-          <CircleFill className={cx("me-1")} />
+          <CircleFill className={cx("me-1", "bi")} />
         )}
         {_args.children}
       </Badge>
