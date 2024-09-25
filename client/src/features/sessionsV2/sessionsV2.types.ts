@@ -25,6 +25,14 @@ export interface SessionEnvironment {
   name: string;
   default_url?: string;
   description?: string;
+  uid?: number;
+  gid?: number;
+  working_directory?: string;
+  mount_directory?: string;
+  port?: number;
+  environment_kind: EnvironmentKind;
+  command?: string[];
+  args?: string[];
 }
 
 export type SessionEnvironmentList = SessionEnvironment[];

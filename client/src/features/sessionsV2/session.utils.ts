@@ -209,10 +209,25 @@ export function safeStringify(value: unknown) {
 }
 
 export function safeParse(value: string) {
-  if (!value?.trim()) return undefined;
+  if (!value?.trim()) return null;
   try {
     return JSON.parse(value);
   } catch (error) {
     return "Error: Input must be a valid JSON format";
+  }
+}
+
+export function isValidJSONArrayString(
+  value: string
+): true | string | undefined {
+  if (!value?.trim()) return undefined;
+
+  try {
+    const parsedValue = JSON.parse(value);
+    return Array.isArray(parsedValue)
+      ? true
+      : "Input must be a valid JSON array";
+  } catch {
+    return "Input must be a valid JSON format";
   }
 }

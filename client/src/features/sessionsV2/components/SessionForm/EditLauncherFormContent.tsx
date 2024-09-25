@@ -157,7 +157,10 @@ export default function EditLauncherFormContent({
         </span>
       </div>
       <Collapse isOpen={isAdvanceSettingOpen}>
-        <AdvanceSettingsFields control={control} errors={errors} />
+        <AdvanceSettingsFields<SessionLauncherForm>
+          control={control}
+          errors={errors}
+        />
       </Collapse>
     </>
   );

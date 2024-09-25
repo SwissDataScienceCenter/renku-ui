@@ -32,6 +32,7 @@ import {
 import { Loader } from "../../components/Loader";
 import ButtonStyles from "../../components/buttons/Buttons.module.scss";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { safeParse, safeStringify } from "../sessionsV2/session.utils";
 import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
@@ -98,6 +99,17 @@ function UpdateSessionEnvironmentModal({
       default_url: environment.default_url,
       description: environment.description,
       name: environment.name,
+      port: environment.port ?? undefined,
+      working_directory: environment.working_directory?.trim()
+        ? environment.working_directory
+        : undefined,
+      mount_directory: environment.mount_directory?.trim()
+        ? environment.working_directory
+        : undefined,
+      uid: environment.uid ?? undefined,
+      gid: environment.gid ?? undefined,
+      command: safeStringify(environment.command),
+      args: safeStringify(environment.args),
     },
   });
   const onSubmit = useCallback(
@@ -108,6 +120,17 @@ function UpdateSessionEnvironmentModal({
         name: data.name,
         default_url: data.default_url.trim() ? data.default_url : "",
         description: data.description.trim() ? data.description : "",
+        port: data.port ?? undefined,
+        working_directory: data.working_directory.trim()
+          ? data.working_directory
+          : undefined,
+        mount_directory: data.mount_directory.trim()
+          ? data.working_directory
+          : undefined,
+        uid: data.uid ?? undefined,
+        gid: data.gid ?? undefined,
+        command: safeParse(data.command),
+        args: safeParse(data.args),
       });
     },
     [environment.id, updateSessionEnvironment]
@@ -132,6 +155,17 @@ function UpdateSessionEnvironmentModal({
       default_url: environment.default_url ?? "",
       description: environment.description ?? "",
       name: environment.name,
+      port: environment.port ?? undefined,
+      working_directory: environment.working_directory?.trim()
+        ? environment.working_directory
+        : undefined,
+      mount_directory: environment.mount_directory?.trim()
+        ? environment.working_directory
+        : undefined,
+      uid: environment.uid ?? undefined,
+      gid: environment.gid ?? undefined,
+      command: safeStringify(environment.command),
+      args: safeStringify(environment.args),
     });
   }, [environment, reset]);
 
@@ -152,7 +186,6 @@ function UpdateSessionEnvironmentModal({
         <ModalHeader toggle={toggle}>Update session environment</ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
-
           <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
