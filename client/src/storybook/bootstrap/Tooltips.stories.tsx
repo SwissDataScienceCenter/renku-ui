@@ -67,7 +67,7 @@ export const TooltipDisabled_: Story = {
     return (
       <>
         <div className="p-5">
-          <div className="d-inline-block" ref={ref}>
+          <div className="d-inline-block" ref={ref} tabIndex={0}>
             <Button color="primary" disabled={true}>
               Create project
             </Button>
