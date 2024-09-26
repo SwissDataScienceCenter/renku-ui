@@ -1,6 +1,8 @@
-@import "../styles/renku_bootstrap_customization.scss";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
 
-@mixin spin-animation() {
+@mixin custom-animation() {
   $name: inline-#{unique-id()};
 
   @keyframes #{$name} {
@@ -13,7 +15,7 @@
 .spinner {
   --spinner-animation-speed: 1.5s;
 
-  @include spin-animation() {
+  @include custom-animation() {
     to {
       transform: rotate(360deg);
     }
@@ -26,31 +28,38 @@
 .bouncer {
   text-align: center;
   margin: 50px auto 25px auto;
-}
-.bouncer span {
-  display: inline-block;
-  vertical-align: middle;
-  width: 25px;
-  height: 25px;
-  margin: 5px;
-  background: $navy;
-  border-radius: 50px;
-  animation: bouncer 0.9s infinite alternate;
-}
-.bouncer span:nth-of-type(2) {
-  animation-delay: 0.25s;
-}
-.bouncer span:nth-of-type(3) {
-  animation-delay: 0.5s;
-}
-@keyframes bouncer {
-  0%,
-  50% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0.6;
-    transform: translateY(-21px);
+
+  & span {
+    --bouncer-animation-speed: 0.9s;
+
+    display: inline-block;
+    vertical-align: middle;
+    width: 25px;
+    height: 25px;
+    margin: 5px;
+    background-color: var(--#{$prefix}navy, var(--#{$prefix}rk-blue));
+    border-radius: 50px;
+
+    @include custom-animation() {
+      0%,
+      50% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0.6;
+        transform: translateY(-21px);
+      }
+    }
+    animation-duration: var(--bouncer-animation-speed);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+
+    &:nth-of-type(2) {
+      animation-delay: 0.25s;
+    }
+    &:nth-of-type(3) {
+      animation-delay: 0.5s;
+    }
   }
 }
