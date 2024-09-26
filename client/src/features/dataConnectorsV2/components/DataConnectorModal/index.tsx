@@ -300,7 +300,7 @@ export default function DataConnectorModal({
     };
 
     return cleanup;
-  }, [reset]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const schemaRequiresProvider = useMemo(
     () => hasProviderShortlist(flatDataConnector.schema),
