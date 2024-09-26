@@ -40,7 +40,6 @@ import {
 } from "../../user/dataServicesUser.api";
 import UserAvatar from "./UserAvatar";
 
-
 export default function UserShow() {
   const { username } = useParams<{ username: string }>();
 
