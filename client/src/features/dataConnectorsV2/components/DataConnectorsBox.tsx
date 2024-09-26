@@ -40,11 +40,11 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
 import type { NamespaceKind } from "../../projectsV2/api/namespace.api";
 import type { DataConnector } from "../../projectsV2/api/data-connectors.api";
+import { useGetGroupsByGroupSlugMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import {
   useGetDataConnectorsQuery,
-  useGetGroupsByGroupSlugMembersQuery,
   type GetDataConnectorsApiResponse,
-} from "../../projectsV2/api/projectV2.enhanced-api";
+} from "../../projectsV2/api/data-connectors.enhanced-api";
 import { useGetUserQuery } from "../../user/dataServicesUser.api";
 
 import DataConnectorModal from "./DataConnectorModal";

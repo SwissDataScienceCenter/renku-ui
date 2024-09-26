@@ -46,11 +46,11 @@ import {
   hasProviderShortlist,
 } from "../../../project/utils/projectCloudStorage.utils";
 
+import { usePostStoragesV2ByStorageIdSecretsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
   usePatchDataConnectorsByDataConnectorIdMutation,
   usePostDataConnectorsMutation,
-  usePostStoragesV2ByStorageIdSecretsMutation,
-} from "../../../projectsV2/api/projectV2.enhanced-api";
+} from "../../../projectsV2/api/data-connectors.enhanced-api";
 import type { DataConnectorRead } from "../../../projectsV2/api/data-connectors.api";
 
 import styles from "./DataConnectorModal.module.scss";

@@ -44,6 +44,7 @@ import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
+import { dataConnectorsApi } from "../../features/projectsV2/api/data-connectors.enhanced-api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
@@ -92,6 +93,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
     [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
+    [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
     [dataServicesUserApi.reducerPath]: dataServicesUserApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
@@ -130,6 +132,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(adminKeycloakApi.middleware)
         .concat(adminSessionsApi.middleware)
         .concat(connectedServicesApi.middleware)
+        .concat(dataConnectorsApi.middleware)
         // this is causing some problems, and I do not know why
         .concat(dataServicesUserApi.middleware)
         .concat(datasetsCoreApi.middleware)

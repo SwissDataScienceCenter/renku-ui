@@ -33,7 +33,7 @@ import {
 import { Loader } from "../../../components/Loader";
 import DataConnectorModal from "./DataConnectorModal";
 import type { DataConnectorRead } from "../../projectsV2/api/data-connectors.api";
-import { useDeleteDataConnectorsByDataConnectorIdMutation } from "../../projectsV2/api/projectV2.enhanced-api";
+import { useDeleteDataConnectorsByDataConnectorIdMutation } from "../../projectsV2/api/data-connectors.enhanced-api";
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 

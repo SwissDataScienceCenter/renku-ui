@@ -25,7 +25,7 @@ import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import {
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
   usePostDataConnectorsByDataConnectorIdSecretsMutation,
-} from "../../projectsV2/api/projectV2.enhanced-api";
+} from "../../projectsV2/api/data-connectors.enhanced-api";
 import type { DataConnectorRead } from "../../projectsV2/api/data-connectors.api";
 import DataConnectorSecretsModal from "../../sessionsV2/DataConnectorSecretsModal";
 

@@ -1,12 +1,8 @@
 import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
 
-import { dataConnectorsApi as api } from "./data-connectors.api";
+import { projectStoragesApi as api } from "./storagesV2.api";
 
-import type {
-  GetDataConnectorsApiArg,
-  GetDataConnectorsApiResponse as GetDataConnectorsApiResponseOrig,
-} from "./data-connectors.api";
 import type {
   GetProjectsApiArg,
   GetProjectsApiResponse as GetProjectsApiResponseOrig,
@@ -32,11 +28,6 @@ import type {
   PostStoragesV2ByStorageIdSecretsApiArg,
   PostStoragesV2ByStorageIdSecretsApiResponse,
 } from "./storagesV2.api";
-
-export interface GetDataConnectorsApiResponse
-  extends AbstractKgPaginatedResponse {
-  dataConnectors: GetDataConnectorsApiResponseOrig;
-}
 
 interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;
@@ -65,38 +56,6 @@ interface GetStoragesV2StorageIdSecretsApiArg {
 
 const injectedApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getDataConnectorsPaged: builder.query<
-      GetDataConnectorsApiResponse,
-      GetDataConnectorsApiArg
-    >({
-      query: (queryArg) => ({
-        url: "/data_connectors",
-        params: {
-          namespace: queryArg.params?.namespace,
-          page: queryArg.params?.page,
-          per_page: queryArg.params?.per_page,
-        },
-      }),
-      transformResponse: (response, meta, queryArg) => {
-        const dataConnectors = response as GetDataConnectorsApiResponseOrig;
-        const headers = meta?.response?.headers;
-        const headerResponse = processPaginationHeaders(
-          headers,
-          queryArg.params == null
-            ? {}
-            : { page: queryArg.params.page, perPage: queryArg.params.per_page },
-          dataConnectors
-        );
-
-        return {
-          dataConnectors,
-          page: headerResponse.page,
-          perPage: headerResponse.perPage,
-          total: headerResponse.total,
-          totalPages: headerResponse.totalPages,
-        };
-      },
-    }),
     getGroupsPaged: builder.query<GetGroupsApiResponse, GetGroupsApiArg>({
       query: (queryArg) => ({
         url: "/groups",
@@ -220,8 +179,6 @@ const injectedApi = api.injectEndpoints({
 
 const enhancedApi = injectedApi.enhanceEndpoints({
   addTagTypes: [
-    "DataConnectors",
-    "DataConnectorSecrets",
     "Group",
     "GroupMembers",
     "Namespace",
@@ -231,12 +188,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "StorageSecrets",
   ],
   endpoints: {
-    deleteDataConnectorsByDataConnectorId: {
-      invalidatesTags: ["DataConnectors"],
-    },
-    deleteDataConnectorsByDataConnectorIdSecrets: {
-      invalidatesTags: ["DataConnectorSecrets"],
-    },
     deleteGroupsByGroupSlug: {
       invalidatesTags: ["Group", "Namespace"],
     },
@@ -254,9 +205,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     deleteStoragesV2ByStorageIdSecrets: {
       invalidatesTags: ["Storages", "StorageSecrets"],
-    },
-    getDataConnectorsPaged: {
-      providesTags: ["DataConnectors"],
     },
     getGroups: {
       providesTags: ["Group"],
@@ -301,9 +249,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getStoragesV2ByStorageIdSecrets: {
       providesTags: ["StorageSecrets"],
     },
-    patchDataConnectorsByDataConnectorId: {
-      invalidatesTags: ["DataConnectors"],
-    },
     patchGroupsByGroupSlug: {
       invalidatesTags: ["Group", "Namespace"],
     },
@@ -318,12 +263,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     patchStoragesV2ByStorageId: {
       invalidatesTags: ["Storages"],
-    },
-    postDataConnectors: {
-      invalidatesTags: ["DataConnectors"],
-    },
-    postDataConnectorsByDataConnectorIdSecrets: {
-      invalidatesTags: ["DataConnectorSecrets"],
     },
     postGroups: {
       invalidatesTags: ["Group", "Namespace"],
@@ -379,12 +318,4 @@ export const {
   usePostStoragesV2Mutation,
   usePostStoragesV2ByStorageIdSecretsMutation,
   usePostStoragesV2SecretsForSessionLaunchMutation,
-
-  // data connectors hooks
-  useDeleteDataConnectorsByDataConnectorIdMutation,
-  useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
-  useGetDataConnectorsPagedQuery: useGetDataConnectorsQuery,
-  usePatchDataConnectorsByDataConnectorIdMutation,
-  usePostDataConnectorsMutation,
-  usePostDataConnectorsByDataConnectorIdSecretsMutation,
 } = enhancedApi;
