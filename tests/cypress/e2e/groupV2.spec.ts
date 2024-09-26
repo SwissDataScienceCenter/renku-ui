@@ -223,7 +223,8 @@ describe("Work with group data connectors", () => {
       .dataServicesUser({
         response: { id: "0945f006-e117-49b7-8966-4c0842146313" },
       })
-      .namespaces();
+      .namespaces()
+      .listNamespaceV2();
     fixtures.projects().landingUserProjects().listGroupV2();
     cy.visit("/v2/groups");
   });

@@ -25,6 +25,7 @@ import { ButtonGroup, Input, Label } from "reactstrap";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { WarnAlert } from "../../../../components/Alert";
+import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
 
 import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import { useGetCloudStorageSchemaQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
@@ -41,7 +42,8 @@ import {
   AddStorageType,
   type AddStorageStepProps,
 } from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
-import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
+import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
+import SlugFormField from "../../../projectsV2/fields/SlugFormField";
 import type { CloudStorageSecretGet } from "../../../projectsV2/api/storagesV2.api";
 
 import { type DataConnectorFlat } from "../dataConnector.utils";
@@ -328,18 +330,28 @@ export function DataConnectorMount({
         <Controller
           name="namespace"
           control={control}
-          render={({ field }) => (
-            <input
-              id="namespace"
-              type="string"
-              {...field}
-              className={cx("form-control", errors.namespace && "is-invalid")}
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("namespace", e.target.value);
-              }}
-            />
-          )}
+          render={({ field }) => {
+            const fields: Partial<typeof field> = { ...field };
+            delete fields?.ref;
+            return (
+              <ProjectNamespaceControl
+                {...fields}
+                className={cx(errors.namespace && "is-invalid")}
+                data-cy={"data-controller-namespace-input"}
+                id="namespace"
+                onChange={(e) => {
+                  field.onChange(e);
+                  onFieldValueChange("namespace", e?.slug ?? "");
+                }}
+              />
+            );
+          }}
+          rules={{
+            required: true,
+            maxLength: 99,
+            pattern:
+              /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-zA-Z0-9][a-zA-Z0-9\-_.]*$/,
+          }}
         />
         <div className="invalid-feedback">
           {errors.name?.message?.toString()}
@@ -356,42 +368,12 @@ export function DataConnectorMount({
         )}
       </div>
 
-      <div className="mb-3">
-        <Label className="form-label" for="slug">
-          Slug
-        </Label>
-
-        <Controller
-          name="slug"
-          control={control}
-          render={({ field }) => (
-            <input
-              id="slug"
-              type="string"
-              {...field}
-              className={cx("form-control", errors.slug && "is-invalid")}
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("slug", e.target.value);
-              }}
-            />
-          )}
-          rules={{
-            validate: (value) =>
-              !value
-                ? "Please provide a slug"
-                : /^[a-zA-Z0-9_-]+$/.test(value) ||
-                  "Slug can only contain letters, numbers, underscores (_), and dashes (-)",
-          }}
-        />
-        <div className="invalid-feedback">
-          {errors.slug?.message?.toString()}
-        </div>
-        <div className={cx("form-text", "text-muted")}>
-          This slug is a unique identifier for the connector. It can only
-          contain letters, numbers, _, -.
-        </div>
-      </div>
+      <SlugFormField
+        control={control}
+        entityName="data-connector"
+        errors={errors}
+        name="slug"
+      />
 
       <div className="mb-3">
         <Label className="form-label" for="visibility">
