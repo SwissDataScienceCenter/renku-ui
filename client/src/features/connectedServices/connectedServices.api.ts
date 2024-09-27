@@ -24,6 +24,7 @@ import {
   ConnectedAccount,
   GetConnectedAccountParams,
   Provider,
+  ConnectedServiceParams,
 } from "./connectedServices.types";
 
 const connectedServicesApi = createApi({
@@ -33,7 +34,7 @@ const connectedServicesApi = createApi({
   }),
   tagTypes: ["Provider", "Connection", "ConnectedAccount"],
   endpoints: (builder) => ({
-    createProvider: builder.mutation<Provider, Provider>({
+    createProvider: builder.mutation<ConnectedServiceParams, Provider>({
       query: ({
         id,
         kind,
@@ -42,6 +43,7 @@ const connectedServicesApi = createApi({
         display_name,
         scope,
         url,
+        use_pkce,
       }) => {
         return {
           url: "providers",
@@ -50,12 +52,21 @@ const connectedServicesApi = createApi({
             id,
             kind,
             client_id,
-            client_secret,
+            ...(client_secret && { client_secret }),
             display_name,
-            scope,
+            scope: scope || "",
             url,
-            use_pkce: false,
+            use_pkce,
           },
+        };
+      },
+      invalidatesTags: ["Provider"],
+    }),
+    deleteProvider: builder.mutation<void, string>({
+      query: (providerId) => {
+        return {
+          url: `providers/${providerId}`,
+          method: "DELETE",
         };
       },
       invalidatesTags: ["Provider"],
@@ -113,6 +124,7 @@ const connectedServicesApi = createApi({
 export default connectedServicesApi;
 export const {
   useCreateProviderMutation,
+  useDeleteProviderMutation,
   useGetConnectedAccountQuery,
   useGetConnectionsQuery,
   useGetProvidersQuery,

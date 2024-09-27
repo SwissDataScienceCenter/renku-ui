@@ -20,9 +20,11 @@ import cx from "classnames";
 import {
   Card,
   CardBody,
+  CardFooter,
+  CardHeader,
   CardText,
-  CardTitle,
   Col,
+  Collapse,
   Container,
   Row,
 } from "reactstrap";
@@ -34,6 +36,9 @@ import {
   ProviderList,
 } from "../connectedServices/connectedServices.types";
 import AddConnectedServiceButton from "./AddConnectedServiceButton";
+import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
+import { useCallback, useState } from "react";
+import DeleteConnectedServiceButton from "./DeleteConnectedServiceButton";
 
 export default function ConnectedServicesSection() {
   return (
@@ -89,43 +94,80 @@ interface ConnectedServiceProps {
   provider: Provider;
 }
 function ConnectedService({ provider }: ConnectedServiceProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((isOpen) => !isOpen);
+  }, []);
+
   return (
-    <Col className={cx("col-12", "col-sm-6")}>
+    <Col xs={12} md={6}>
       <Card>
-        <CardBody>
-          <CardTitle className={cx("mb-2", "fs-5")} tag="h5">
+        <CardHeader
+          className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
+          tag="h5"
+        >
+          <button
+            className={cx(
+              "align-items-center",
+              "bg-transparent",
+              "border-0",
+              "d-flex",
+              "fw-bold",
+              "gap-3",
+              "p-3",
+              "w-100"
+            )}
+            onClick={toggle}
+            type="button"
+          >
             {provider.display_name}
-          </CardTitle>
+            <div className="ms-auto">
+              <ChevronFlippedIcon flipped={isOpen} />
+            </div>
+          </button>
+        </CardHeader>
+        <Collapse isOpen={isOpen}>
+          <CardBody className="pt-0">
+            <CardText className="mb-2">
+              ID: <i>{provider.id}</i>
+            </CardText>
+            <CardText className="mb-2">
+              Kind: <i>{provider.kind}</i>
+            </CardText>
+            <CardText className="mb-2">
+              URL: <i>{provider.url}</i>
+            </CardText>
 
-          <CardText className="mb-2">
-            ID: <i>{provider.id}</i>
-          </CardText>
-          <CardText className="mb-2">
-            Kind: <i>{provider.kind}</i>
-          </CardText>
-          <CardText className="mb-2">
-            URL: <i>{provider.url}</i>
-          </CardText>
+            <CardText className="mb-2">
+              Client ID: <i>{provider.client_id}</i>
+            </CardText>
+            <CardText className="mb-2">
+              Client secret: <i>{provider.client_secret}</i>
+            </CardText>
 
-          <CardText className="mb-2">
-            Client ID: <i>{provider.client_id}</i>
-          </CardText>
-          <CardText className="mb-2">
-            Client secret: <i>{provider.client_secret}</i>
-          </CardText>
-
-          <CardText className="mb-2">
-            Scope: <i>{provider.scope}</i>
-          </CardText>
-          <CardText className="mb-2">
-            Use PKCE: <i>{provider.use_pkce.toString()}</i>
-          </CardText>
-
-          {/* <div className={cx("d-flex", "justify-content-end", "gap-2")}>
-            <UpdateConnectedServiceButton provider={provider} />
+            <CardText className="mb-2">
+              Scope: <i>{provider.scope}</i>
+            </CardText>
+            <CardText>
+              Use PKCE: <i>{provider.use_pkce.toString()}</i>
+            </CardText>
+          </CardBody>
+          <CardFooter
+            className={cx(
+              "bg-white",
+              "border-0",
+              "d-flex",
+              "justify-content-end",
+              "gap-2",
+              "rounded",
+              "pb-3",
+              "pt-0"
+            )}
+          >
             <DeleteConnectedServiceButton provider={provider} />
-          </div> */}
-        </CardBody>
+            {/* <EditConnectedServiceButton provider={provider} /> */}
+          </CardFooter>
+        </Collapse>
       </Card>
     </Col>
   );

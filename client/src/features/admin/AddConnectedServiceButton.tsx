@@ -77,8 +77,9 @@ function AddConnectedServiceModal({
       client_id: "",
       client_secret: "",
       display_name: "",
-      scope: "api",
+      scope: "",
       url: "",
+      use_pkce: false,
     },
   });
   const onSubmit = useCallback(
@@ -188,62 +189,24 @@ function ConnectedServiceFormContent({
           control={control}
           name="kind"
           render={({ field }) => (
-            <Input
-              className={cx("form-control", errors.kind && "is-invalid")}
-              id="addConnectedServiceKind"
-              placeholder="Provider kind (gitlab or github)"
-              type="text"
-              {...field}
-            />
+            <>
+              <Input
+                className={cx("form-control", errors.kind && "is-invalid")}
+                id="addConnectedServiceKind"
+                list="addConnectedServiceKindList"
+                placeholder="Provider (gitlab or github)"
+                type="text"
+                {...field}
+              />
+              <datalist id="addConnectedServiceKindList">
+                <option value="gitlab" />
+                <option value="github" />
+              </datalist>
+            </>
           )}
           rules={{ required: true }}
         />
         <div className="invalid-feedback">Please provide a kind</div>
-      </div>
-
-      <div className="mb-3">
-        <Label className="form-label" for="addConnectedServiceClientId">
-          Client ID
-        </Label>
-        <Controller
-          control={control}
-          name="id"
-          render={({ field }) => (
-            <Input
-              className={cx("form-control", errors.id && "is-invalid")}
-              id="addConnectedServiceClientId"
-              placeholder="Client ID"
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide an id</div>
-      </div>
-
-      <div className="mb-3">
-        <Label className="form-label" for="addConnectedServiceClientSecret">
-          Client Secret
-        </Label>
-        <Controller
-          control={control}
-          name="client_secret"
-          render={({ field }) => (
-            <Input
-              className={cx(
-                "form-control",
-                errors.client_secret && "is-invalid"
-              )}
-              id="addConnectedServiceClientSecret"
-              placeholder="Client Secret"
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a client secret</div>
       </div>
 
       <div className="mb-3">
@@ -271,27 +234,6 @@ function ConnectedServiceFormContent({
       </div>
 
       <div className="mb-3">
-        <Label className="form-label" for="addConnectedServiceScope">
-          Scope
-        </Label>
-        <Controller
-          control={control}
-          name="scope"
-          render={({ field }) => (
-            <Input
-              className={cx("form-control", errors.scope && "is-invalid")}
-              id="addConnectedServiceScope"
-              placeholder="Scope"
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a scope</div>
-      </div>
-
-      <div className="mb-3">
         <Label className="form-label" for="addConnectedServiceUrl">
           URL
         </Label>
@@ -310,6 +252,101 @@ function ConnectedServiceFormContent({
           rules={{ required: true }}
         />
         <div className="invalid-feedback">Please provide a URL</div>
+      </div>
+
+      <div className="mb-3">
+        <Controller
+          control={control}
+          name="use_pkce"
+          render={({ field }) => (
+            <Input
+              className={cx(
+                "form-check-input",
+                errors.use_pkce && "is-invalid"
+              )}
+              id="addConnectedServiceUsePkce"
+              type="checkbox"
+              checked={field.value}
+              innerRef={field.ref}
+              onBlur={field.onBlur}
+              onChange={field.onChange}
+            />
+          )}
+        />
+        <Label
+          className={cx("form-check-label", "ms-2")}
+          for="addConnectedServiceUsePkce"
+        >
+          Use PKCE
+        </Label>
+      </div>
+
+      <div className="mb-3">
+        <Label className="form-label" for="addConnectedServiceClientId">
+          Client ID
+        </Label>
+        <Controller
+          control={control}
+          name="id"
+          render={({ field }) => (
+            <Input
+              className={cx("form-control", errors.id && "is-invalid")}
+              id="addConnectedServiceClientId"
+              placeholder="Client ID"
+              type="text"
+              {...field}
+            />
+          )}
+          rules={{ required: true }}
+        />
+        <div className="invalid-feedback">Please provide an id</div>
+      </div>
+
+      <div className="mb-3">
+        <Label className="form-label" for="addConnectedServiceClientSecret">
+          Client Secret (optional)
+        </Label>
+        <Controller
+          control={control}
+          name="client_secret"
+          render={({ field }) => (
+            <Input
+              className={cx(
+                "form-control",
+                errors.client_secret && "is-invalid"
+              )}
+              id="addConnectedServiceClientSecret"
+              placeholder="Client Secret"
+              type="text"
+              {...field}
+            />
+          )}
+        />
+        <div className="invalid-feedback">
+          Please provide a valid client secret or leave it empty
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <Label className="form-label" for="addConnectedServiceScope">
+          Scope (optional)
+        </Label>
+        <Controller
+          control={control}
+          name="scope"
+          render={({ field }) => (
+            <Input
+              className={cx("form-control", errors.scope && "is-invalid")}
+              id="addConnectedServiceScope"
+              placeholder="Scope"
+              type="text"
+              {...field}
+            />
+          )}
+        />
+        <div className="invalid-feedback">
+          Please provide a valid scope or leave it empty
+        </div>
       </div>
     </>
   );

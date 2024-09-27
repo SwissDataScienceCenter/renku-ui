@@ -48,4 +48,15 @@ export interface GetConnectedAccountParams {
   connectionId: string;
 }
 
+export interface ConnectedServiceParams {
+  id: string;
+  kind: string;
+  client_id: string;
+  client_secret?: string;
+  display_name: string;
+  scope?: string;
+  url: string;
+  use_pkce: boolean;
+}
+
 export type ConnectedServiceForm = Provider;
