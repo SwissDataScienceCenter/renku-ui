@@ -42,8 +42,8 @@ import DeleteConnectedServiceButton from "./DeleteConnectedServiceButton";
 
 export default function ConnectedServicesSection() {
   return (
-    <section className="mt-5">
-      <h2 className="fs-5">Connected Services - Renku 2.0</h2>
+    <section className="mt-4">
+      <h2 className="fs-4">Connected Services - Renku 2.0</h2>
       <ConnectedServices />
     </section>
   );

@@ -78,8 +78,8 @@ export default function AdminPage() {
 
 function ComputeResourcesSection() {
   return (
-    <section>
-      <h2 className="fs-5">Compute Resources</h2>
+    <section className="mt-4">
+      <h2 className="fs-4">Compute Resources</h2>
       <AdminComputeResourcesOverview />
     </section>
   );
