@@ -159,8 +159,8 @@ export default function NavbarV2() {
   return (
     <>
       <header
-        className={cx("bg-navy", "navbar-expand-lg")}
-        data-bs-theme="dark"
+        className={cx("navbar-expand-lg", "text-body", "bg-body")}
+        data-bs-theme="navy"
       >
         <div className={cx("navbar", "px-2", "px-sm-3", "py-2")}>
           <div
@@ -182,9 +182,11 @@ export default function NavbarV2() {
             <WipBadge>2.0 Beta</WipBadge>
             <BackToV1Button outline={true} />
           </div>
-          <NavbarToggler onClick={onToggle} className="border-0">
-            <List className={cx("bi", "text-rk-white")} />
-          </NavbarToggler>
+          <div className="ms-auto">
+            <NavbarToggler onClick={onToggle} className={cx("border-0", "p-2")}>
+              <List className="bi" />
+            </NavbarToggler>
+          </div>
           <Collapse isOpen={isOpen} navbar>
             <Nav
               className={cx(
@@ -193,7 +195,9 @@ export default function NavbarV2() {
                 "gap-3",
                 "gap-lg-0",
                 "justify-content-end",
-                "ms-lg-auto"
+                "ms-lg-auto",
+                "pe-2",
+                "pe-lg-0"
               )}
               navbar
             >

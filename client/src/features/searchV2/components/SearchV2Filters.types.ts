@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -13,32 +13,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
 
-import { Meta, StoryObj } from "@storybook/react";
-import { VisibilityFilter } from "./VisibilityFilter";
-
-const meta: Meta<typeof VisibilityFilter> = {
-  title: "components/Search/VisibilityFilter",
-  component: VisibilityFilter,
-  argTypes: {
-    handler: {
-      table: {
-        disable: true,
-      },
-    },
-  },
-};
-export default meta;
-type Story = StoryObj<typeof VisibilityFilter>;
-
-export const Default: Story = {
-  args: {
-    value: {
-      public: true,
-      internal: false,
-      private: false,
-    },
-  },
-};
+export type SearchV2Visualization = "accordion" | "list";
