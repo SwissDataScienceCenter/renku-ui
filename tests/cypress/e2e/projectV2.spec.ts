@@ -554,7 +554,7 @@ describe("Viewer cannot edit project", () => {
   });
 });
 
-describe.only("launch sessions with cloud storage", () => {
+describe("launch sessions with cloud storage", () => {
   beforeEach(() => {
     fixtures
       .config()

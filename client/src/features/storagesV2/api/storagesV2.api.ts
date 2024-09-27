@@ -16,32 +16,36 @@
  * limitations under the License.
  */
 
-import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import type {
+  GetStorageApiArg,
+  GetStorageApiResponse,
   GetStoragesV2ApiArg,
-  GetStoragesV2ApiResponse as GetStoragesV2ApiResponseOrig,
+  GetStoragesV2ApiResponse,
 } from "./storagesV2.generated-api";
 import { storagesV2GeneratedApi } from "./storagesV2.generated-api";
 
-interface GetStoragesV2ApiResponse extends AbstractKgPaginatedResponse {
-  storages: GetStoragesV2ApiResponseOrig;
-}
-
-const withPaged = storagesV2GeneratedApi.injectEndpoints({
+// Fixes the generated code with query param object.
+const withFixedEndpoints = storagesV2GeneratedApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
-    getStoragesPaged: builder.query<
-      GetStoragesV2ApiResponse,
-      GetStoragesV2ApiArg
-    >({
-      query: ({ storageV2Params }) => ({
-        url: "/storages",
-        params: storageV2Params,
+    getStorage: builder.query<GetStorageApiResponse, GetStorageApiArg>({
+      query: ({ storageParams }) => ({
+        url: `/storage`,
+        params: storageParams,
       }),
     }),
+    getStoragesV2: builder.query<GetStoragesV2ApiResponse, GetStoragesV2ApiArg>(
+      {
+        query: ({ storageV2Params }) => ({
+          url: `/storages_v2`,
+          params: storageV2Params,
+        }),
+      }
+    ),
   }),
 });
 
-export const storagesV2Api = withPaged.enhanceEndpoints({
+export const storagesV2Api = withFixedEndpoints.enhanceEndpoints({
   addTagTypes: ["Storages"],
   endpoints: {
     deleteStoragesV2ByStorageId: {
