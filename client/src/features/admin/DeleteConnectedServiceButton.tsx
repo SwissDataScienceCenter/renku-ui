@@ -114,7 +114,7 @@ function DeleteConnectedServiceModal({
           role="button"
         >
           <TrashFill className={cx("bi", "me-2")} />
-          Delete session environment
+          Delete service
         </Button>
       </ModalFooter>
     </Modal>
