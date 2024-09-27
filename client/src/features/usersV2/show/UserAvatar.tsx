@@ -44,13 +44,14 @@ export default function UserAvatar({
   return (
     <div
       className={cx(
-        "border",
-        "border-info-subtle",
-        "rounded-circle",
-        "bg-info-subtle",
-        "text-center",
         "align-content-center",
+        "bg-info-subtle",
+        "border-info-subtle",
+        "border",
+        "flex-shrink-0",
         "fw-bold",
+        "rounded-circle",
+        "text-center",
         styles.avatar,
         large && styles.large
       )}

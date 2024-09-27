@@ -27,7 +27,8 @@ export default {
     docs: {
       description: {
         component:
-          "Alerts are used to communicate a state of a system or to notify the user of something.",
+          "Alerts are used to communicate a state of a system or to notify the user of something." +
+          " Mind that we don't use the standard Boostrap Alert component but a custom variation that includes icons.",
       },
     },
   },

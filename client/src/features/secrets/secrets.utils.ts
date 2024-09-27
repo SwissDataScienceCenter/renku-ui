@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,27 +16,19 @@
  * limitations under the License.
  */
 
-import { Meta, StoryObj } from "@storybook/react";
-import { TypeEntityFilter } from "./TypeEntityFilter";
+import { Docs } from "../../utils/constants/Docs";
+import type { SecretDetails } from "./secrets.types";
 
-const meta: Meta<typeof TypeEntityFilter> = {
-  title: "components/Search/TypeEntityFilter",
-  component: TypeEntityFilter,
-  argTypes: {
-    handler: {
-      table: {
-        disable: true,
-      },
-    },
-  },
-};
-export default meta;
-type Story = StoryObj<typeof TypeEntityFilter>;
-export const Default: Story = {
-  args: {
-    value: {
-      project: true,
-      dataset: true,
-    },
-  },
-};
+export const SECRETS_DOCS_URL = Docs.rtdTopicGuide("secrets/secrets.html");
+
+export const SECRETS_VALUE_LENGTH_LIMIT = 5_000;
+
+type Secret = Pick<SecretDetails, "name">;
+
+export function storageSecretNameToFieldName(secret: Secret) {
+  return secret.name.split("-").slice(1).join("-") || secret.name;
+}
+
+export function storageSecretNameToStorageId(secret: Secret) {
+  return secret.name.split("-")[0];
+}

@@ -27,7 +27,6 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toSortedMembers } from "../../ProjectPageV2/utils/roleUtils";
 import type { ProjectMemberResponse } from "../../projectsV2/api/projectsV2.api";
-import { useGetUsersByUserIdQuery } from "../../user/dataServicesUser.api";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import { useGetGroupsByGroupSlugMembersQuery } from "../api/groupsV2.api";
 
@@ -80,18 +79,18 @@ interface GroupV2MemberProps {
   member: ProjectMemberResponse;
 }
 function GroupV2Member({ member }: GroupV2MemberProps) {
-  const { data: user } = useGetUsersByUserIdQuery({ userId: member.id });
+  const {
+    role,
+    first_name: firstName,
+    last_name: lastName,
+    namespace: username,
+  } = member;
 
-  if (!user) {
+  if (!username) {
     return null;
   }
-
-  const { role, first_name: firstName, last_name: lastName } = member;
-
   const name =
     firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName;
-
-  const username = user.username;
 
   return (
     <>
@@ -103,18 +102,23 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
           className={cx(
             "align-items-center",
             "d-flex",
+            "flex-wrap",
             "gap-2",
             "justify-content-between"
           )}
         >
-          <div className={cx("align-items-center", "d-flex", "gap-2")}>
-            <UserAvatar
-              firstName={firstName}
-              lastName={lastName}
-              username={username}
-            />
-            <span className={cx("fw-bold")}>{name ?? "Unknown user"}</span>{" "}
-            <span>{`@${username}`}</span>
+          <div
+            className={cx("align-items-center", "d-flex", "flex-wrap", "gap-2")}
+          >
+            <div className={cx("align-items-center", "d-flex", "gap-2")}>
+              <UserAvatar
+                firstName={firstName}
+                lastName={lastName}
+                username={username}
+              />
+              <span className={cx("fw-bold")}>{name ?? "Unknown user"}</span>{" "}
+            </div>
+            <p className="m-0">{`@${username}`}</p>
           </div>
           <p className="m-0">{capitalize(role)}</p>
         </div>

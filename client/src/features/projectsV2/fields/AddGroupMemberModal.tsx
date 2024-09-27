@@ -17,11 +17,10 @@
  */
 
 import cx from "classnames";
-
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-
+import { SingleValue } from "react-select";
 import {
   Button,
   Form,
@@ -32,17 +31,15 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
-import type { UserWithId } from "../../user/dataServicesUser.api";
-
-import AddEntityMemberEmailLookupForm from "./AddEntityMemberLookupForm";
 import {
   usePatchGroupsByGroupSlugMembersMutation,
   type GroupMemberPatchRequest,
   type GroupMemberResponseList,
 } from "../../groupsV2/api/groupsV2.api";
+import { User } from "../../searchV2/api/searchV2Api.api";
+import { UserControl } from "./UserSelector";
 
 interface AddGroupMemberModalProps {
   isOpen: boolean;
@@ -51,27 +48,24 @@ interface AddGroupMemberModalProps {
   toggle: () => void;
 }
 
-interface GroupMemberForAdd extends GroupMemberPatchRequest {
-  email: string;
-}
+interface GroupMemberForAdd extends GroupMemberPatchRequest {}
 
 interface AddGroupMemberAccessFormProps
-  extends Pick<AddGroupMemberModalProps, "members" | "groupSlug" | "toggle"> {
-  user: UserWithId;
-}
+  extends Pick<AddGroupMemberModalProps, "members" | "groupSlug" | "toggle"> {}
 function AddGroupMemberAccessForm({
   members,
   groupSlug,
   toggle,
-  user,
 }: AddGroupMemberAccessFormProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [patchGroupMembers, result] =
     usePatchGroupsByGroupSlugMembersMutation();
-  const { control, handleSubmit } = useForm<GroupMemberForAdd>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<GroupMemberForAdd>({
     defaultValues: {
-      id: user.id,
-      email: user.email,
+      id: "",
       role: "viewer",
     },
   });
@@ -108,10 +102,34 @@ function AddGroupMemberAccessForm({
           onSubmit={handleSubmit(onSubmit)}
         >
           {result.error && <RtkErrorAlert error={result.error} />}
+          <div className="mb-3">
+            <Label className="form-label" for="addProjectMemberEmail">
+              User
+            </Label>
+            <Controller
+              control={control}
+              name="id"
+              render={({ field }) => {
+                return (
+                  <UserControl
+                    {...field}
+                    className={cx(errors.id && "is-invalid")}
+                    data-cy="add-project-member"
+                    id="addProjectMember"
+                    onChange={(newValue: SingleValue<User>) =>
+                      field.onChange(newValue?.id)
+                    }
+                  />
+                );
+              }}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">Please select a user to add</div>
+          </div>
           <div
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
-            <Label>{user.email}</Label>
+            <Label>Role</Label>
             <Controller
               control={control}
               name="role"
@@ -154,12 +172,6 @@ export default function AddProjectMemberModal({
   groupSlug,
   toggle,
 }: AddGroupMemberModalProps) {
-  const [newMember, setNewMember] = useState<UserWithId | undefined>(undefined);
-  const toggleVisible = useCallback(() => {
-    setNewMember(undefined);
-    toggle();
-  }, [setNewMember, toggle]);
-
   return (
     <Modal
       backdrop="static"
@@ -170,20 +182,11 @@ export default function AddProjectMemberModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle}>Add a group member</ModalHeader>
-      {newMember == null && (
-        <AddEntityMemberEmailLookupForm
-          setNewMember={setNewMember}
-          toggle={toggleVisible}
-        />
-      )}
-      {newMember != null && (
-        <AddGroupMemberAccessForm
-          members={members}
-          groupSlug={groupSlug}
-          toggle={toggleVisible}
-          user={newMember}
-        />
-      )}
+      <AddGroupMemberAccessForm
+        members={members}
+        groupSlug={groupSlug}
+        toggle={toggle}
+      />
     </Modal>
   );
 }

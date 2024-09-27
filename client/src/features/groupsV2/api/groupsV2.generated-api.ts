@@ -180,7 +180,7 @@ export type UserFirstLastName = string;
 export type GroupRole = "owner" | "editor" | "viewer";
 export type GroupMemberResponse = {
   id: UserId;
-  email?: UserEmail;
+  namespace?: Slug;
   first_name?: UserFirstLastName;
   last_name?: UserFirstLastName;
   role: GroupRole;

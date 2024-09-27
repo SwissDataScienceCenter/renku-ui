@@ -29,7 +29,7 @@ export default function ProjectOverviewPage() {
 
   return (
     <Row className="g-4">
-      <Col xs={12} lg={9}>
+      <Col xs={12} md={8} xl={9}>
         <Row className="g-4">
           <Col xs={12}>
             <SessionsV2 project={project} />
@@ -42,7 +42,7 @@ export default function ProjectOverviewPage() {
           </Col>
         </Row>
       </Col>
-      <Col xs={12} lg={3}>
+      <Col xs={12} md={4} xl={3}>
         <ProjectInformation output="card" />
       </Col>
     </Row>

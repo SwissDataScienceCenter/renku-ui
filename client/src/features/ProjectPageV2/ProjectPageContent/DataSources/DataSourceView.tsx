@@ -20,12 +20,14 @@ import { useMemo } from "react";
 import { Offcanvas, OffcanvasBody } from "reactstrap";
 
 import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem";
+import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../../project/utils/projectCloudStorage.utils";
-import type { CloudStorageGetRead } from "../../../storagesV2/api/storagesV2.api";
+import { storageSecretNameToFieldName } from "../../../secrets/secrets.utils";
+import type { CloudStorageGetV2Read } from "../../../storagesV2/api/storagesV2.api";
 import { DataSourceActions } from "./DataSourceDisplay";
 
 interface DataSourceViewProps {
-  storage: CloudStorageGetRead;
+  storage: CloudStorageGetV2Read;
   toggleView: boolean;
   setToggleView: () => void;
   projectId: string;
@@ -43,7 +45,12 @@ export function DataSourceView({
   const anySensitiveField = Object.keys(storageDefinition.configuration).some(
     (key) => sensitiveFields.includes(key)
   );
-
+  const storageSecrets = storage.secrets;
+  const savedCredentialFields =
+    storageSecrets?.reduce((acc: Record<string, string>, s) => {
+      acc[storageSecretNameToFieldName(s)] = s.name;
+      return acc;
+    }, {}) ?? {};
   const credentialFieldDefinitions = useMemo(
     () => getCredentialFieldDefinitions(storage),
     [storage]
@@ -53,6 +60,9 @@ export function DataSourceView({
       credentialFieldDefinitions?.filter((field) => field.requiredCredential),
     [credentialFieldDefinitions]
   );
+  const nonRequiredCredentialConfigurationKeys = Object.keys(
+    storageDefinition.configuration
+  ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
 
   return (
     <Offcanvas
@@ -93,15 +103,20 @@ export function DataSourceView({
             </p>
             <p>{storageDefinition.target_path}</p>
           </div>
-          {Object.keys(storageDefinition.configuration).map((key) => (
-            <div key={key}>
-              <p className={cx("fw-bold", "m-0")}>{key}</p>
-              <p>{storageDefinition.configuration[key]?.toString()}</p>
+          {nonRequiredCredentialConfigurationKeys.map((key) => {
+            const value = storageDefinition.configuration[key]?.toString();
+            return (
+              <div key={key}>
+                <p className={cx("fw-bold", "m-0")}>{key}</p>
+                <p>{value}</p>
+              </div>
+            );
+          })}
+          <div className="mt-3">
+            <div>
+              <small className="fw-bold">Source path</small>
             </div>
-          ))}
-          <div>
-            <p className={cx("fw-bold", "m-0")}>Source path</p>
-            <p>{storageDefinition.source_path}</p>
+            <div>{storageDefinition.source_path}</div>
           </div>
           <div data-cy="requires-credentials-section">
             <p className={cx("fw-bold", "m-0")}>Requires credentials</p>
@@ -112,18 +127,37 @@ export function DataSourceView({
             requiredCredentials.length > 0 && (
               <div>
                 <p className={cx("fw-bold", "m-0")}>Required credentials</p>
-                <ul className="mb-3">
-                  {requiredCredentials.map(({ name, help }, index) => (
-                    <li key={index}>
-                      {name}
-                      {help && <CredentialMoreInfo help={help} />}
-                    </li>
-                  ))}
-                </ul>
+                <table className={cx("ps-4", "mb-0", "table", "table-sm")}>
+                  <thead>
+                    <tr>
+                      <th>Field</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {requiredCredentials.map(({ name, help }, index) => {
+                      const value =
+                        name == null
+                          ? "unknown"
+                          : savedCredentialFields[name]
+                          ? CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE
+                          : storageDefinition.configuration[name]?.toString();
+                      return (
+                        <tr key={index}>
+                          <td>
+                            {name}
+                            {help && <CredentialMoreInfo help={help} />}
+                          </td>
+                          <td data-cy={`${name}-value`}>{value}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
-          <div>
-            <p className={cx("fw-bold", "m-0")}>Access mode</p>
+          <div className="mt-3">
+            <p className={cx("fw-bold", "mb-0")}>Access mode</p>
             <p>
               {storageDefinition.readonly
                 ? "Force Read-only"

@@ -9,7 +9,7 @@
     "project_id": 1,
     "readonly": false,
     "source_path": "bucket/my-source",
-    "storage_id": 2,
+    "storage_id": "2",
     "storage_type": "s3",
     "target_path": "external_storage/aws"
   },

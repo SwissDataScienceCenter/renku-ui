@@ -38,14 +38,20 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { resetFavicon, setFavicon } from "../display";
-import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import {
+  storageDefinitionAfterSavingCredentialsFromConfig,
+  storageDefinitionFromConfig,
+} from "../project/utils/projectCloudStorage.utils";
+import {
+  projectsV2Api,
   useGetProjectBySlugQuery,
   type Project,
 } from "../projectsV2/api/projectsV2.api";
+// import {usePostStoragesV2ByStorageIdSecretsMutation} from '../storagesV2/api/storagesV2.api'
+import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
-import type { SessionLaunchModalCloudStorageConfiguration } from "./SessionStartCloudStorageSecretsModal";
-import SessionStartCloudStorageSecretsModal from "./SessionStartCloudStorageSecretsModal";
+import type { CloudStorageConfiguration } from "./CloudStorageSecretsModal";
+import CloudStorageSecretsModal from "./CloudStorageSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
@@ -55,6 +61,123 @@ import {
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLauncherState from "./useSessionLaunchState.hook";
+
+interface SaveCloudStorageProps
+  extends Omit<StartSessionFromLauncherProps, "containerImage" | "project"> {
+  startSessionOptionsV2: StartSessionOptionsV2;
+}
+
+function SaveCloudStorage({
+  launcher,
+  startSessionOptionsV2,
+}: SaveCloudStorageProps) {
+  const dispatch = useAppDispatch();
+  const [steps, setSteps] = useState<StepsProgressBar[]>([]);
+  const [saveCredentials, saveCredentialsResult] =
+    usePostStoragesV2SecretsForSessionLaunchMutation();
+
+  const credentialsToSave = useMemo(() => {
+    return startSessionOptionsV2.cloudStorage
+      .filter(shouldCloudStorageSaveCredentials)
+      .map((cs) => ({
+        storageName: cs.cloudStorage.storage.name,
+        storageId: cs.cloudStorage.storage.storage_id,
+        secrets: cs.sensitiveFieldValues,
+      }));
+  }, [startSessionOptionsV2.cloudStorage]);
+
+  const [results, setResults] = useState<StatusStepProgressBar[]>(
+    credentialsToSave.map(() => StatusStepProgressBar.WAITING)
+  );
+
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const theSteps = credentialsToSave.map((cs, i) => ({
+      id: i,
+      status: results[i],
+      step: `Saving credentials for ${cs.storageName}`,
+    }));
+    setSteps(theSteps);
+  }, [credentialsToSave, results]);
+
+  // Save all the credentials that need to be saved
+  useEffect(() => {
+    if (credentialsToSave.length < 1 || index >= credentialsToSave.length)
+      return;
+    setResults((prev) => {
+      const newResults = [...prev];
+      newResults[index] = StatusStepProgressBar.EXECUTING;
+      return newResults;
+    });
+    const storage = credentialsToSave[index];
+    saveCredentials({
+      storageId: storage.storageId,
+      cloudStorageSecretPostList: Object.entries(storage.secrets).map(
+        ([key, value]) => ({
+          name: key,
+          value,
+        })
+      ),
+    });
+  }, [credentialsToSave, index, saveCredentials]);
+
+  useEffect(() => {
+    if (
+      saveCredentialsResult.isUninitialized ||
+      saveCredentialsResult.isLoading
+    )
+      return;
+    if (saveCredentialsResult.data != null) {
+      setResults((prev) => {
+        const newResults = [...prev];
+        newResults[index] = StatusStepProgressBar.READY;
+        return newResults;
+      });
+    }
+    if (saveCredentialsResult.error != null) {
+      setResults((prev) => {
+        const newResults = [...prev];
+        newResults[index] = StatusStepProgressBar.FAILED;
+        return newResults;
+      });
+    }
+    saveCredentialsResult.reset();
+    setIndex((prev) => prev + 1);
+  }, [index, saveCredentialsResult]);
+
+  useEffect(() => {
+    if (saveCredentialsResult.isLoading) return;
+    if (index >= credentialsToSave.length) {
+      const cloudStorageConfigs = startSessionOptionsV2.cloudStorage.map((cs) =>
+        storageDefinitionAfterSavingCredentialsFromConfig(cs)
+      );
+      dispatch(
+        startSessionOptionsV2Slice.actions.setCloudStorage(cloudStorageConfigs)
+      );
+      // After all the changes have been made, indicate that the storages need to be reloaded
+      dispatch(projectsV2Api.util.invalidateTags(["Storages"]));
+    }
+  }, [
+    dispatch,
+    credentialsToSave,
+    index,
+    saveCredentialsResult,
+    startSessionOptionsV2.cloudStorage,
+  ]);
+
+  return (
+    <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <ProgressStepsIndicator
+        description="Saving credentials..."
+        type={ProgressType.Determinate}
+        style={ProgressStyle.Light}
+        title={`Starting session ${launcher.name}`}
+        status={steps}
+      />
+    </div>
+  );
+}
 
 interface SessionStartingProps extends StartSessionFromLauncherProps {
   containerImage: string;
@@ -82,9 +205,9 @@ function SessionStarting({
       projectId: project.id,
       launcherId: launcher.id,
       repositories: startSessionOptionsV2.repositories,
-      cloudStorage: startSessionOptionsV2.cloudStorage
-        .filter((cs) => cs.active)
-        .map((cs) => storageDefinitionFromConfig(cs)),
+      cloudStorage: startSessionOptionsV2.cloudStorage.map((cs) =>
+        storageDefinitionFromConfig(cs)
+      ),
       defaultUrl: startSessionOptionsV2.defaultUrl,
       environmentVariables: {},
       image: containerImage,
@@ -157,17 +280,29 @@ function doesCloudStorageNeedCredentials(
   config: SessionStartCloudStorageConfiguration
 ) {
   if (config.active === false) return false;
+  const sensitiveFields = Object.keys(config.sensitiveFieldValues);
+  const credentialFieldDict = Object.fromEntries(
+    config.savedCredentialFields.map((field) => [
+      storageSecretNameToFieldName({ name: field }),
+      true,
+    ])
+  );
+  if (sensitiveFields.every((key) => credentialFieldDict[key] != null))
+    return false;
   return Object.values(config.sensitiveFieldValues).some(
     (value) => value === ""
   );
 }
 
+function shouldCloudStorageSaveCredentials(
+  config: SessionStartCloudStorageConfiguration
+) {
+  return config.saveCredentials;
+}
+
 interface StartSessionWithCloudStorageModalProps
   extends Omit<SessionStartingProps, "cloudStorages"> {
-  cloudStorageConfigs: Omit<
-    SessionLaunchModalCloudStorageConfiguration,
-    "sensitiveFields"
-  >[];
+  cloudStorageConfigs: Omit<CloudStorageConfiguration, "sensitiveFields">[];
 }
 
 function StartSessionWithCloudStorageModal({
@@ -175,29 +310,45 @@ function StartSessionWithCloudStorageModal({
   launcher,
   project,
   startSessionOptionsV2,
-  cloudStorageConfigs: initialCloudStorageConfigs,
+  cloudStorageConfigs,
 }: StartSessionWithCloudStorageModalProps) {
   const [showCloudStorageSecretsModal, setShowCloudStorageSecretsModal] =
     useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const cloudStorageConfigs = initialCloudStorageConfigs.filter(
-    ({ active }) => active
+
+  const configsWithCredentials = useMemo(
+    () =>
+      cloudStorageConfigs.filter(
+        (config) => !doesCloudStorageNeedCredentials(config)
+      ),
+    [cloudStorageConfigs]
+  );
+
+  const configsNeedingCredentials = useMemo(
+    () =>
+      cloudStorageConfigs.filter((config) =>
+        doesCloudStorageNeedCredentials(config)
+      ),
+    [cloudStorageConfigs]
   );
 
   useEffect(() => {
-    if (cloudStorageConfigs.some(doesCloudStorageNeedCredentials)) {
+    if (configsNeedingCredentials.length > 0)
       setShowCloudStorageSecretsModal(true);
-    }
-  }, [cloudStorageConfigs]);
+  }, [configsNeedingCredentials]);
 
   const onStart = useCallback(
-    (cloudStorageConfigs: SessionLaunchModalCloudStorageConfiguration[]) => {
+    (changedCloudStorageConfigs: CloudStorageConfiguration[]) => {
       setShowCloudStorageSecretsModal(false);
+      const cloudStorageConfigs = [
+        ...configsWithCredentials,
+        ...changedCloudStorageConfigs,
+      ];
       dispatch(
         startSessionOptionsV2Slice.actions.setCloudStorage(cloudStorageConfigs)
       );
     },
-    [dispatch]
+    [dispatch, configsWithCredentials]
   );
 
   const steps = [
@@ -222,8 +373,7 @@ function StartSessionWithCloudStorageModal({
     navigate(url);
   }, [navigate, project.namespace, project.slug]);
 
-  // TODO If the credentials are all stored as secrets, we can also launch
-  if (cloudStorageConfigs.length === 0) {
+  if (configsNeedingCredentials.length === 0) {
     return (
       <SessionStarting
         containerImage={containerImage}
@@ -244,11 +394,11 @@ function StartSessionWithCloudStorageModal({
           title={`Starting session ${launcher.name}`}
           status={steps}
         />
-        <SessionStartCloudStorageSecretsModal
+        <CloudStorageSecretsModal
           isOpen={showCloudStorageSecretsModal}
           onCancel={onCancel}
           onStart={onStart}
-          cloudStorageConfigs={cloudStorageConfigs}
+          cloudStorageConfigs={configsNeedingCredentials}
         />
       </div>
     </div>
@@ -285,6 +435,10 @@ function StartSessionFromLauncher({
     doesCloudStorageNeedCredentials
   );
 
+  const shouldSaveCredentials = startSessionOptionsV2.cloudStorage.some(
+    shouldCloudStorageSaveCredentials
+  );
+
   const allDataFetched =
     startSessionOptionsV2.dockerImageStatus === "available" &&
     startSessionOptionsV2.sessionClass !== 0 &&
@@ -301,7 +455,12 @@ function StartSessionFromLauncher({
   }, [allDataFetched, needsCredentials, dispatch]);
 
   if (allDataFetched && !needsCredentials)
-    return (
+    return shouldSaveCredentials ? (
+      <SaveCloudStorage
+        launcher={launcher}
+        startSessionOptionsV2={startSessionOptionsV2}
+      />
+    ) : (
       <SessionStarting
         containerImage={containerImage}
         launcher={launcher}

@@ -29,7 +29,13 @@ interface ListManyGroupArgs extends NameOnlyFixture {
 
 interface ListGroupV2MembersFixture extends GroupV2Args {
   removeUserId?: string;
-  addMember?: { id: string; email: string; role: string };
+  addMember?: {
+    id: string;
+    role: string;
+    first_name?: string;
+    last_name?: string;
+    namespace: string;
+  };
 }
 
 interface GroupV2Args extends SimpleFixture {

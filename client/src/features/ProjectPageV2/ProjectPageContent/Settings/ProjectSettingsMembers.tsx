@@ -50,6 +50,7 @@ import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/p
 import AddProjectMemberModal from "../../../projectsV2/fields/AddProjectMemberModal";
 import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal";
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
+import { ProjectMemberDisplay } from "../../../projectsV2/shared/ProjectMemberDisplay";
 
 import MembershipGuard from "../../utils/MembershipGuard";
 import { toSortedMembers } from "../../utils/roleUtils";
@@ -169,7 +170,7 @@ function ProjectPageSettingsMembersListItem({
     <ListGroupItem>
       <Row className="g-2">
         <Col className="align-content-around" xs={12} md="auto">
-          {member.email ?? member.id}{" "}
+          <ProjectMemberDisplay member={member} />{" "}
           <span className="fw-bold">({member.role})</span>
         </Col>
         <Col

@@ -21,8 +21,12 @@ import { useCallback, useEffect, useState } from "react";
 import { TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-import { useDeleteSecretMutation } from "./secrets.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+
+import { projectsV2Api } from "../projectsV2/api/projectsV2.api";
+
+import { useDeleteSecretMutation } from "./secrets.api";
 import { SecretDetails } from "./secrets.types";
 
 interface SecretsDeleteProps {
@@ -34,12 +38,14 @@ export default function SecretDelete({ secret }: SecretsDeleteProps) {
   const toggleModal = useCallback(() => {
     setShowModal((showModal) => !showModal);
   }, []);
+  const dispatch = useAppDispatch();
 
   // Handle posting data
   const [deleteSecretMutation, result] = useDeleteSecretMutation();
   const deleteSecret = useCallback(() => {
     deleteSecretMutation(secret.id);
-  }, [deleteSecretMutation, secret.id]);
+    dispatch(projectsV2Api.util.invalidateTags(["Storages"]));
+  }, [deleteSecretMutation, dispatch, secret.id]);
 
   // Automatically close the modal when the secret is modified
   useEffect(() => {

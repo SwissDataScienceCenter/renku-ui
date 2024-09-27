@@ -236,14 +236,14 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
   if (data == null)
     return (
       <>
-        <h4>Project Members</h4>
+        <h4>Group Members</h4>
         <div className="mb-3">Could not load members</div>
       </>
     );
   return (
     <>
       <div className={cx("d-flex", "gap-2", "mb-3")}>
-        <h4>Project Members</h4>
+        <h4>Group Members</h4>
         <div>
           <Button
             color="outline-primary"
@@ -257,6 +257,10 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
       </div>
       <ListGroup>
         {data.map((d, i) => {
+          const name =
+            d.first_name && d.last_name
+              ? `${d.first_name} ${d.last_name}`
+              : d.first_name || d.last_name;
           return (
             <ListGroupItem key={d.id}>
               <div
@@ -268,8 +272,9 @@ export function GroupMembersForm({ group }: GroupMetadataFormProps) {
                 )}
               >
                 <p className={cx("d-flex", "mb-0", "gap-2")}>
-                  <span className="fw-bold">{d.email ?? d.id}</span>
-                  <span>{capitalize(d.role)}</span>
+                  <span>{name ?? "Unknown user"}</span>
+                  <span className="fst-italic">{`@${d.namespace}`}</span>
+                  <span className="fw-bold">({capitalize(d.role)})</span>
                 </p>
                 <div>
                   <Button

@@ -37,6 +37,7 @@ import {
   useGetUsersByUserIdQuery,
 } from "../../user/dataServicesUser.api";
 import UserAvatar from "./UserAvatar";
+import { EntityPill } from "../../searchV2/components/SearchV2Results";
 
 export default function UserShow() {
   const { username } = useParams<{ username: string }>();
@@ -111,7 +112,11 @@ export default function UserShow() {
             </div>
 
             <div className={cx("align-items-center", "d-flex", "gap-2")}>
-              <UserBadge />
+              <EntityPill
+                entityType="User"
+                size="sm"
+                tooltipPlacement="bottom"
+              />
               <ItsYouBadge username={username} />
             </div>
           </div>
@@ -130,22 +135,6 @@ export default function UserShow() {
         />
       </section>
     </ContainerWrap>
-  );
-}
-
-function UserBadge() {
-  return (
-    <Badge
-      className={cx(
-        "border",
-        "border-success",
-        "bg-success-subtle",
-        "text-success-emphasis"
-      )}
-      pill
-    >
-      User
-    </Badge>
   );
 }
 

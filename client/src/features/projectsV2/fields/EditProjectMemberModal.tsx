@@ -17,11 +17,9 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect } from "react";
 import { PencilSquare, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-
 import {
   Button,
   Form,
@@ -32,7 +30,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
 import {
@@ -40,6 +37,7 @@ import {
   type ProjectMemberPatchRequest,
   type ProjectMemberResponse,
 } from "../api/projectsV2.api";
+import { ProjectMemberDisplay } from "../shared/ProjectMemberDisplay";
 
 interface EditProjectMemberModalProps {
   isOpen: boolean;
@@ -70,7 +68,6 @@ function EditProjectMemberAccessForm({
   const { control, handleSubmit } = useForm<ProjectMemberForEdit>({
     defaultValues: {
       id: member.id,
-      email: member.email,
       role: member.role,
     },
   });
@@ -109,7 +106,9 @@ function EditProjectMemberAccessForm({
           <div
             className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
           >
-            <Label>{member.email ?? member.id}</Label>
+            <Label>
+              <ProjectMemberDisplay member={member} />
+            </Label>
             <Controller
               control={control}
               name="role"

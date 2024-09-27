@@ -19,6 +19,7 @@
 import { SessionStartCloudStorageConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 import type {
   CloudStorageGetRead,
+  CloudStorageWithIdRead,
   RCloneConfig,
   RCloneOption,
 } from "../../storagesV2/api/storagesV2.generated-api";
@@ -415,9 +416,26 @@ export function findSensitive(
     : [];
 }
 
+export function storageDefinitionAfterSavingCredentialsFromConfig(
+  cs: SessionStartCloudStorageConfiguration
+) {
+  const newCs = { ...cs, saveCredentials: false };
+  const newStorage = { ...newCs.cloudStorage.storage };
+  // The following two lines remove the sensitive fields from the storage configuration,
+  // which should be ok, but isn't; so keep in the sensitive fields.
+  // newCs.sensitiveFieldValues = {};
+  // newStorage.configuration = {};
+  const newCloudStorage = {
+    ...newCs.cloudStorage,
+    storage: newStorage,
+  };
+  newCs.cloudStorage = newCloudStorage;
+  return newCs;
+}
+
 export function storageDefinitionFromConfig(
   config: SessionStartCloudStorageConfiguration
-) {
+): CloudStorageWithIdRead {
   const storageDefinition = config.cloudStorage.storage;
   const newStorageDefinition = { ...storageDefinition };
   newStorageDefinition.configuration = { ...storageDefinition.configuration };
@@ -425,6 +443,8 @@ export function storageDefinitionFromConfig(
   Object.entries(sensitiveFieldValues).forEach(([name, value]) => {
     if (value != null && value !== "") {
       newStorageDefinition.configuration[name] = value;
+    } else {
+      delete newStorageDefinition.configuration[name];
     }
   });
   return newStorageDefinition;

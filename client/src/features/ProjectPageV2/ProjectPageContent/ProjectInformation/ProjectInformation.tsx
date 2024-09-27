@@ -28,7 +28,6 @@ import {
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
-
 import { TimeCaption } from "../../../../components/TimeCaption";
 import {
   EditButtonLink,
@@ -41,10 +40,9 @@ import type {
   ProjectMemberResponse,
 } from "../../../projectsV2/api/projectsV2.api";
 import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectsV2.api";
-import { useGetUsersByUserIdQuery } from "../../../user/dataServicesUser.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import MembershipGuard from "../../utils/MembershipGuard";
-import { toSortedMembers } from "../../utils/roleUtils";
+import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import styles from "./ProjectInformation.module.scss";
@@ -201,23 +199,14 @@ function ProjectInformationMember({
 }: {
   member: ProjectMemberResponse;
 }) {
-  const { data: memberData } = useGetUsersByUserIdQuery({ userId: member.id });
+  const displayName = getMemberNameToDisplay(member);
 
-  const displayName =
-    member.first_name && member.last_name
-      ? `${member.first_name} ${member.last_name}`
-      : member.last_name
-      ? member.last_name
-      : member.email
-      ? member.email
-      : member.id;
-
-  if (memberData?.username) {
+  if (member?.namespace) {
     return (
       <p className="mb-0">
         <Link
           to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-            username: memberData.username,
+            username: member.namespace,
           })}
         >
           {displayName}

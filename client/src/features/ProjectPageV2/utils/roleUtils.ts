@@ -18,6 +18,7 @@
 
 import type {
   ProjectMemberListResponse,
+  ProjectMemberResponse,
   Role,
 } from "../../projectsV2/api/projectsV2.api";
 
@@ -51,9 +52,17 @@ export function toSortedMembers(members: ProjectMemberListResponse) {
     if (a.role !== b.role) {
       return toNumericRole(b.role) - toNumericRole(a.role);
     }
-    if (a.email && b.email) {
-      return a.email.localeCompare(b.email);
+    if (a.first_name && b.first_name) {
+      return a.first_name.localeCompare(b.first_name);
     }
     return a.id < b.id ? -1 : 1;
   });
+}
+
+export function getMemberNameToDisplay(member: ProjectMemberResponse): string {
+  return member.first_name || member.last_name
+    ? `${member.first_name ?? ""} ${member.last_name ?? ""}`
+    : member.namespace
+    ? `@${member.namespace}`
+    : "(unknown)";
 }

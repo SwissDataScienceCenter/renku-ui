@@ -128,7 +128,7 @@ function LoaderSpinner({ className, inline, size }: LoaderSpinnerProps) {
 
 function LoaderBouncer({ className }: LoaderProps) {
   return (
-    <div className={cx("bouncer", className)}>
+    <div className={cx(styles.bouncer, className)}>
       <span></span>
       <span></span>
       <span></span>
