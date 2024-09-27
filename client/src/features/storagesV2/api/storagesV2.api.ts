@@ -60,6 +60,9 @@ export const storagesV2Api = withFixedEndpoints.enhanceEndpoints({
     postStoragesV2: {
       invalidatesTags: ["Storages"],
     },
+    postStoragesV2ByStorageIdSecrets: {
+      invalidatesTags: ["Storages"],
+    },
   },
 });
 
