@@ -64,5 +64,7 @@ export const {
   usePostStoragesV2Mutation,
   usePatchStoragesV2ByStorageIdMutation,
   useDeleteStoragesV2ByStorageIdMutation,
+  usePostStoragesV2ByStorageIdSecretsMutation,
+  useDeleteStoragesV2ByStorageIdSecretsMutation,
 } = storagesV2Api;
 export type * from "./storagesV2.generated-api";

@@ -24,7 +24,7 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 
-import { projectsV2Api } from "../projectsV2/api/projectsV2.api";
+import { storagesV2Api } from "../storagesV2/api/storagesV2.api";
 
 import { useDeleteSecretMutation } from "./secrets.api";
 import { SecretDetails } from "./secrets.types";
@@ -44,7 +44,7 @@ export default function SecretDelete({ secret }: SecretsDeleteProps) {
   const [deleteSecretMutation, result] = useDeleteSecretMutation();
   const deleteSecret = useCallback(() => {
     deleteSecretMutation(secret.id);
-    dispatch(projectsV2Api.util.invalidateTags(["Storages"]));
+    dispatch(storagesV2Api.util.invalidateTags(["Storages"]));
   }, [deleteSecretMutation, dispatch, secret.id]);
 
   // Automatically close the modal when the secret is modified

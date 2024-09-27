@@ -17,7 +17,7 @@
  */
 
 import { getMemberNameToDisplay } from "../../ProjectPageV2/utils/roleUtils";
-import { ProjectMemberResponse } from "../api/projectV2.api";
+import type { ProjectMemberResponse } from "../api/projectsV2.api";
 
 interface ProjectMemberDisplayProps {
   member: ProjectMemberResponse;

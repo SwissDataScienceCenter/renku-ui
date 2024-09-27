@@ -33,6 +33,7 @@ import type {
 } from "../../../storagesV2/api/storagesV2.api";
 import {
   usePatchStoragesV2ByStorageIdMutation,
+  usePostStoragesV2ByStorageIdSecretsMutation,
   usePostStoragesV2Mutation,
 } from "../../../storagesV2/api/storagesV2.api";
 import {

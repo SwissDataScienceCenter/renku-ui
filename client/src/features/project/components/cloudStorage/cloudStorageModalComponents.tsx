@@ -33,6 +33,7 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import type { CloudStorageSecretGet } from "../../../../features/storagesV2/api/storagesV2.api";
 import AddOrEditCloudStorage, {
   AddOrEditCloudStorageV2,
 } from "./AddOrEditCloudStorage";
@@ -44,7 +45,6 @@ import {
   CloudStorageSchema,
   CredentialSaveStatus,
 } from "./projectCloudStorage.types";
-import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
 
 import { SerializedError } from "@reduxjs/toolkit";
 
