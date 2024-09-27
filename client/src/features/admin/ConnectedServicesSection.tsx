@@ -39,6 +39,7 @@ import AddConnectedServiceButton from "./AddConnectedServiceButton";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { useCallback, useState } from "react";
 import DeleteConnectedServiceButton from "./DeleteConnectedServiceButton";
+import UpdateConnectedServiceButton from "./UpdateConnectedServiceButton";
 
 export default function ConnectedServicesSection() {
   return (
@@ -126,6 +127,7 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
             </div>
           </button>
         </CardHeader>
+
         <Collapse isOpen={isOpen}>
           <CardBody className="pt-0">
             <CardText className="mb-2">
@@ -137,14 +139,12 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
             <CardText className="mb-2">
               URL: <i>{provider.url}</i>
             </CardText>
-
             <CardText className="mb-2">
               Client ID: <i>{provider.client_id}</i>
             </CardText>
             <CardText className="mb-2">
               Client secret: <i>{provider.client_secret}</i>
             </CardText>
-
             <CardText className="mb-2">
               Scope: <i>{provider.scope}</i>
             </CardText>
@@ -152,6 +152,7 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
               Use PKCE: <i>{provider.use_pkce.toString()}</i>
             </CardText>
           </CardBody>
+
           <CardFooter
             className={cx(
               "bg-white",
@@ -164,8 +165,8 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
               "pt-0"
             )}
           >
+            <UpdateConnectedServiceButton provider={provider} />
             <DeleteConnectedServiceButton provider={provider} />
-            {/* <EditConnectedServiceButton provider={provider} /> */}
           </CardFooter>
         </Collapse>
       </Card>

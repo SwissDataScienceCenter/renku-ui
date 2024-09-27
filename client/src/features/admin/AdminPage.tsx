@@ -70,8 +70,8 @@ export default function AdminPage() {
       <h1 className={cx("fs-2", "mb-3")}>Admin Panel</h1>
       <IncidentsAndMaintenanceSection />
       <ComputeResourcesSection />
-      <SessionEnvironmentsSection />
       <ConnectedServicesSection />
+      <SessionEnvironmentsSection />
     </>
   );
 }

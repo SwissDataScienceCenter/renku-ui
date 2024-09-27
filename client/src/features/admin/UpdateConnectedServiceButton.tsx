@@ -18,28 +18,33 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { PlusLg, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { CheckLg, PencilSquare, XLg } from "react-bootstrap-icons";
+import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Input,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
+import { Loader } from "../../components/Loader";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { useUpdateProviderMutation } from "../connectedServices/connectedServices.api";
 import {
   ConnectedServiceForm,
-  CreateProviderParams,
+  Provider,
+  UpdateProviderParams,
 } from "../connectedServices/connectedServices.types";
-import { useCreateProviderMutation } from "../connectedServices/connectedServices.api";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { Loader } from "../../components/Loader";
 import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 
-export default function AddConnectedServiceButton() {
+interface UpdateConnectedServiceButtonProps {
+  provider: Provider;
+}
+export default function UpdateConnectedServiceButton({
+  provider,
+}: UpdateConnectedServiceButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -47,34 +52,40 @@ export default function AddConnectedServiceButton() {
 
   return (
     <>
-      <Button className="btn-outline-rk-green" onClick={toggle}>
-        <PlusLg className={cx("bi", "me-1")} />
-        Add Session Environment
+      <Button color="outline-rk-green" onClick={toggle}>
+        <PencilSquare className={cx("bi", "me-1")} />
+        Edit
       </Button>
-      <AddConnectedServiceModal isOpen={isOpen} toggle={toggle} />
+      <UpdateConnectedServiceModal
+        provider={provider}
+        isOpen={isOpen}
+        toggle={toggle}
+      />
     </>
   );
 }
 
-interface AddConnectedServiceModalProps {
+interface UpdateConnectedServiceModalProps {
+  provider: Provider;
   isOpen: boolean;
   toggle: () => void;
 }
-function AddConnectedServiceModal({
+
+function UpdateConnectedServiceModal({
+  provider,
   isOpen,
   toggle,
-}: AddConnectedServiceModalProps) {
-  const [createProvider, result] = useCreateProviderMutation();
+}: UpdateConnectedServiceModalProps) {
+  const [updateProvider, result] = useUpdateProviderMutation();
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
     reset,
   } = useForm<ConnectedServiceForm>({
     defaultValues: {
-      id: "",
-      kind: "gitlab",
+      kind: "",
       client_id: "",
       client_secret: "",
       display_name: "",
@@ -84,9 +95,9 @@ function AddConnectedServiceModal({
     },
   });
   const onSubmit = useCallback(
-    (data: CreateProviderParams) => {
-      createProvider({
-        id: data.id,
+    (data: UpdateProviderParams) => {
+      updateProvider({
+        id: provider.id,
         kind: data.kind,
         client_id: data.client_id,
         client_secret: data.client_secret,
@@ -96,7 +107,7 @@ function AddConnectedServiceModal({
         use_pkce: data.use_pkce,
       });
     },
-    [createProvider]
+    [provider.id, updateProvider]
   );
 
   useEffect(() => {
@@ -108,10 +119,21 @@ function AddConnectedServiceModal({
 
   useEffect(() => {
     if (!isOpen) {
-      reset();
       result.reset();
     }
-  }, [isOpen, reset, result]);
+  }, [isOpen, result]);
+
+  useEffect(() => {
+    reset({
+      kind: provider.kind,
+      client_id: provider.client_id,
+      client_secret: provider.client_secret,
+      display_name: provider.display_name,
+      scope: provider.scope,
+      url: provider.url,
+      use_pkce: provider.use_pkce,
+    });
+  }, [provider, reset]);
 
   return (
     <Modal
@@ -127,29 +149,9 @@ function AddConnectedServiceModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Add provider</ModalHeader>
+        <ModalHeader toggle={toggle}>Update provider</ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
-
-          <div className="mb-3">
-            <Label className="form-label" for="addConnectedServiceId">
-              Id
-            </Label>
-            <Controller
-              control={control}
-              name="id"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", errors.id && "is-invalid")}
-                  id="addConnectedServiceId"
-                  placeholder="Provider id"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-          </div>
 
           <ConnectedServiceFormContent control={control} errors={errors} />
         </ModalBody>
@@ -158,13 +160,13 @@ function AddConnectedServiceModal({
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading} type="submit">
+          <Button disabled={result.isLoading || !isDirty} type="submit">
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
-              <PlusLg className={cx("bi", "me-1")} />
+              <CheckLg className={cx("bi", "me-1")} />
             )}
-            Add provider
+            Update provider
           </Button>
         </ModalFooter>
       </Form>
