@@ -324,8 +324,8 @@ export function Step1AddSessionModal({
             sessions are only accessible by the person who launched it.
           </p>
           <p>
-            All project code repositories and data sources will be automatically
-            mounted in your session.
+            All project code repositories and data connectors will be
+            automatically mounted in your session.
           </p>
           <Row className="gap-3">
             <Col className="d-grid" xs={12}>

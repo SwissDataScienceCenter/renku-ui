@@ -1,0 +1,105 @@
+[
+  {
+    "id": "ULID-2",
+    "name": "public-storage",
+    "namespace": "user1-uuid",
+    "slug": "public-storage",
+    "storage": {
+      "storage_type": "s3",
+      "configuration": {
+        "type": "s3",
+        "provider": "Other",
+        "endpoint": "https://s3.example.com"
+      },
+      "source_path": "bucket/source",
+      "target_path": "external_storage/public",
+      "readonly": true,
+      "sensitive_fields": []
+    },
+    "creation_date": "2023-11-15T09:55:59Z",
+    "created_by": { "id": "user1-uuid" },
+    "visibility": "public",
+    "description": "Data connector 2 description"
+  },
+  {
+    "id": "ULID-3",
+    "name": "private-storage-1",
+    "namespace": "user1-uuid",
+    "slug": "private-storage-1",
+    "storage": {
+      "storage_type": "s3",
+      "configuration": {
+        "type": "s3",
+        "provider": "AWS",
+        "access_key_id": "<sensitive>",
+        "secret_access_key": "<sensitive>"
+      },
+      "source_path": "bucket/my-source-1",
+      "target_path": "external_storage/private-1",
+      "readonly": true,
+      "sensitive_fields": [
+        {
+          "name": "access_key_id",
+          "help": "AWS Access Key ID.\n\nLeave blank for anonymous access or runtime credentials.",
+          "provider": "",
+          "default": "",
+          "default_str": "",
+          "required": false,
+          "sensitive": true,
+          "advanced": false,
+          "exclusive": false
+        },
+        {
+          "name": "secret_access_key",
+          "help": "AWS Secret Access Key (password).\n\nLeave blank for anonymous access or runtime credentials.",
+          "provider": "",
+          "default": "",
+          "default_str": "",
+          "required": false,
+          "sensitive": true,
+          "advanced": false,
+          "exclusive": false
+        }
+      ]
+    },
+    "creation_date": "2023-11-15T09:55:59Z",
+    "created_by": { "id": "user1-uuid" },
+    "visibility": "private",
+    "description": "Data connector 3 description"
+  },
+  {
+    "id": "ULID-4",
+    "name": "webdav",
+    "namespace": "user1-uuid",
+    "slug": "webdav",
+    "storage": {
+      "storage_type": "webdav",
+      "configuration": {
+        "url": "https://s3-thing.com/",
+        "pass": "<sensitive>",
+        "type": "webdav",
+        "user": "cramakri"
+      },
+      "source_path": "/",
+      "target_path": "external_storage/webdav",
+      "readonly": true,
+      "sensitive_fields": [
+        {
+          "name": "pass",
+          "help": "Password.",
+          "provider": "",
+          "default": "",
+          "default_str": "",
+          "required": false,
+          "sensitive": true,
+          "advanced": false,
+          "exclusive": false
+        }
+      ]
+    },
+    "creation_date": "2023-11-15T09:55:59Z",
+    "created_by": { "id": "user1-uuid" },
+    "visibility": "private",
+    "description": "Data connector 3 description"
+  }
+]

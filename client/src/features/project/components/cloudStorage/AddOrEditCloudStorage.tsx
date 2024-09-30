@@ -162,7 +162,7 @@ export function AddStorageAdvancedToggle({
 }
 
 // *** Add storage: helpers *** //
-interface AddStorageStepProps {
+export interface AddStorageStepProps {
   schema: CloudStorageSchema[];
   setStorage: (newDetails: Partial<CloudStorageDetails>) => void;
   setState: (newState: Partial<AddCloudStorageState>) => void;
