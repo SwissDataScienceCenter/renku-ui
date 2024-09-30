@@ -25,7 +25,7 @@ import type {
 } from "../session/startSessionOptions.types";
 import {
   SessionRepository,
-  SessionStartCloudStorageConfiguration,
+  SessionStartDataConnectorConfiguration,
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 
@@ -46,7 +46,7 @@ const startSessionOptionsV2Slice = createSlice({
   reducers: {
     addCloudStorageItem: (
       state,
-      action: PayloadAction<SessionStartCloudStorageConfiguration>
+      action: PayloadAction<SessionStartDataConnectorConfiguration>
     ) => {
       state.cloudStorage.push(action.payload);
     },
@@ -67,7 +67,7 @@ const startSessionOptionsV2Slice = createSlice({
     },
     setCloudStorage: (
       state,
-      action: PayloadAction<SessionStartCloudStorageConfiguration[]>
+      action: PayloadAction<SessionStartDataConnectorConfiguration[]>
     ) => {
       state.cloudStorage = action.payload;
     },
@@ -93,7 +93,7 @@ const startSessionOptionsV2Slice = createSlice({
       state,
       action: PayloadAction<{
         index: number;
-        storage: SessionStartCloudStorageConfiguration;
+        storage: SessionStartDataConnectorConfiguration;
       }>
     ) => {
       state.cloudStorage[action.payload.index] = action.payload.storage;
