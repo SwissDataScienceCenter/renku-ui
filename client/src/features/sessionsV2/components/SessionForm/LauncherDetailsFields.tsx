@@ -19,13 +19,15 @@ import cx from "classnames";
 import { useMemo } from "react";
 import {
   Control,
+  Controller,
   FieldErrors,
   UseFormSetValue,
-  Controller,
 } from "react-hook-form";
 import { SingleValue } from "react-select";
-import { Label, Input } from "reactstrap";
+import { Input, Label } from "reactstrap";
 import { WarnAlert } from "../../../../components/Alert";
+import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
@@ -41,8 +43,11 @@ export function LauncherDetailsFields({
   control,
   errors,
 }: LauncherDetailsFieldsProps) {
-  const { data: resourcePools, isLoading: isLoadingResourcesPools } =
-    useGetResourcePoolsQuery({});
+  const {
+    data: resourcePools,
+    isLoading: isLoadingResourcesPools,
+    error: resourcePoolsError,
+  } = useGetResourcePoolsQuery({});
 
   const onChangeResourceClass = (resourceClass: SingleValue<ResourceClass>) => {
     if (resourceClass) setValue("resourceClass", resourceClass);
@@ -90,6 +95,15 @@ export function LauncherDetailsFields({
         <Label className="form-label" for="addSessionResourceClass">
           Session launcher compute resources
         </Label>
+        {resourcePoolsError && (
+          <RtkErrorAlert dismissible={false} error={resourcePoolsError} />
+        )}
+        {isLoadingResourcesPools && (
+          <p>
+            <Loader className="me-1" inline size={16} />
+            Loading resource pools...
+          </p>
+        )}
         {!isLoadingResourcesPools &&
         resourcePools &&
         resourcePools?.length > 0 ? (
