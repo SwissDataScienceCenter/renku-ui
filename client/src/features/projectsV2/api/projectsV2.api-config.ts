@@ -16,18 +16,17 @@
  * limitations under the License.
  */
 
-// Run `npx @rtk-query/codegen-openapi storages.api-config.ts` in this folder to generate the API
+// Run `npm run generate-api:projectsV2` to generate the API
 import type { ConfigFile } from "@rtk-query/codegen-openapi";
 import path from "path";
 
 const config: ConfigFile = {
-  // Configure to inject endpoints into the namespaceApi that already includes projectV2Api
-  apiFile: "./namespace.api.ts",
-  apiImport: "projectAndNamespaceApi",
-  outputFile: "./storagesV2.api.ts",
-  exportName: "projectStoragesApi",
+  apiFile: "./projectsV2.empty-api.ts",
+  apiImport: "projectsV2EmptyApi",
+  outputFile: "./projectsV2.generated-api.ts",
+  exportName: "projectsV2GeneratedApi",
   hooks: true,
-  schemaFile: path.join(__dirname, "storagesV2.openapi.json"),
+  schemaFile: path.join(__dirname, "projectsV2.openapi.json"),
 };
 
 export default config;

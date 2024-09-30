@@ -16,18 +16,17 @@
  * limitations under the License.
  */
 
-// Run `npm run generate-api:namespaceV2` to generate the API
+// Run `npm run generate-api:groupsV2` to generate the API
 import type { ConfigFile } from "@rtk-query/codegen-openapi";
 import path from "path";
 
 const config: ConfigFile = {
-  // Configure to inject endpoints into the projectV2Api
-  apiFile: "./projectV2.api.ts",
-  apiImport: "projectV2Api",
-  outputFile: "./namespace.api.ts",
-  exportName: "projectAndNamespaceApi",
+  apiFile: "./groupsV2.empty-api.ts",
+  apiImport: "groupsV2EmptyApi",
+  outputFile: "./groupsV2.generated-api.ts",
+  exportName: "groupsV2GeneratedApi",
   hooks: true,
-  schemaFile: path.join(__dirname, "namespace.openapi.json"),
+  schemaFile: path.join(__dirname, "groupsV2.openapi.json"),
 };
 
 export default config;

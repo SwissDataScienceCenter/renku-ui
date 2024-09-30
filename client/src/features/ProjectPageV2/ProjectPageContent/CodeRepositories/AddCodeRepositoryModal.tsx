@@ -37,8 +37,8 @@ import {
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import BootstrapGitLabIcon from "../../../../components/icons/BootstrapGitLabIcon";
-import { Project } from "../../../projectsV2/api/projectV2.api";
-import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+import type { Project } from "../../../projectsV2/api/projectsV2.api";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectsV2.api";
 
 interface AddCodeRepositoryModalProps {
   project: Project;

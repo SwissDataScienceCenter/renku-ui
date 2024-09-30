@@ -42,14 +42,16 @@ import {
   storageDefinitionAfterSavingCredentialsFromConfig,
   storageDefinitionFromConfig,
 } from "../project/utils/projectCloudStorage.utils";
-import type { Project } from "../projectsV2/api/projectV2.api";
 import {
-  projectV2Api,
-  useGetProjectsByNamespaceAndSlugQuery,
-  usePostStoragesV2SecretsForSessionLaunchMutation,
-} from "../projectsV2/api/projectV2.enhanced-api";
+  useGetProjectBySlugQuery,
+  type Project,
+} from "../projectsV2/api/projectsV2.api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
+import {
+  storagesV2Api,
+  usePostStoragesV2ByStorageIdSecretsMutation,
+} from "../storagesV2/api/storagesV2.api";
 import type { CloudStorageConfiguration } from "./CloudStorageSecretsModal";
 import CloudStorageSecretsModal from "./CloudStorageSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
@@ -74,7 +76,7 @@ function SaveCloudStorage({
   const dispatch = useAppDispatch();
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
   const [saveCredentials, saveCredentialsResult] =
-    usePostStoragesV2SecretsForSessionLaunchMutation();
+    usePostStoragesV2ByStorageIdSecretsMutation();
 
   const credentialsToSave = useMemo(() => {
     return startSessionOptionsV2.cloudStorage
@@ -156,7 +158,7 @@ function SaveCloudStorage({
         startSessionOptionsV2Slice.actions.setCloudStorage(cloudStorageConfigs)
       );
       // After all the changes have been made, indicate that the storages need to be reloaded
-      dispatch(projectV2Api.util.invalidateTags(["Storages"]));
+      dispatch(storagesV2Api.util.invalidateTags(["Storages"]));
     }
   }, [
     dispatch,
@@ -526,7 +528,7 @@ export default function SessionStartPage() {
     data: project,
     isLoading: isLoadingProject,
     error: projectError,
-  } = useGetProjectsByNamespaceAndSlugQuery(
+  } = useGetProjectBySlugQuery(
     namespace && slug ? { namespace, slug } : skipToken
   );
   const projectId = project?.id ?? "";

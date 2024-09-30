@@ -215,11 +215,11 @@ describe("Set up data sources with credentials", () => {
       .cloudStorage({
         isV2: true,
         fixture: "cloudStorage/cloud-storage-with-secrets-values-full.json",
-        name: "getCloudStorageV2",
+        name: "getCloudStorageV2WithSecrets",
       })
       .cloudStorageSecrets({
         fixture: "cloudStorage/cloud-storage-secrets.json",
-        name: "getCloudStorageSecrets2",
+        name: "getCloudStorageSecretsFull",
       });
 
     cy.getDataCy("cloud-storage-credentials-modal")
@@ -233,7 +233,7 @@ describe("Set up data sources with credentials", () => {
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@postCloudStorageSecrets");
-    cy.wait("@getCloudStorageV2");
+    cy.wait("@getCloudStorageV2WithSecrets");
 
     // Credentials should be stored
     cy.getDataCy("data-storage-name").should("contain.text", "example-storage");

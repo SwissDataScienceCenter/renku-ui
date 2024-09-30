@@ -21,7 +21,7 @@ import { Col, Row } from "reactstrap";
 
 import { UnderlineArrowLink } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { Project } from "../../projectsV2/api/projectV2.api";
+import { Project } from "../../projectsV2/api/projectsV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
 
 interface ProjectPageHeaderProps {

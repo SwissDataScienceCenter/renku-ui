@@ -34,8 +34,8 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
 
 import { notificationProjectDeleted } from "../../ProjectPageV2/ProjectPageContent/Settings/ProjectDelete";
-import type { Project } from "../../projectsV2/api/projectV2.api";
-import { useDeleteProjectsByProjectIdMutation } from "../../projectsV2/api/projectV2.enhanced-api";
+import type { Project } from "../../projectsV2/api/projectsV2.api";
+import { useDeleteProjectsByProjectIdMutation } from "../../projectsV2/api/projectsV2.api";
 
 interface ProjectDeleteConfirmationProps {
   isOpen: boolean;

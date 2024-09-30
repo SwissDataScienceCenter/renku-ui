@@ -208,7 +208,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/projects/${namespace}/${projectSlug}`,
+        `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}`,
         response
       ).as(name);
       return this;
@@ -224,7 +224,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/projects/${namespace}/${projectSlug}`,
+        `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}`,
         response
       ).as(name);
       return this;

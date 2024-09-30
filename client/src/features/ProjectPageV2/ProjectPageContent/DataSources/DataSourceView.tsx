@@ -22,8 +22,8 @@ import { Offcanvas, OffcanvasBody } from "reactstrap";
 import { CredentialMoreInfo } from "../../../project/components/cloudStorage/CloudStorageItem";
 import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../../project/utils/projectCloudStorage.utils";
-import type { CloudStorageGetV2Read } from "../../../projectsV2/api/storagesV2.api";
 import { storageSecretNameToFieldName } from "../../../secrets/secrets.utils";
+import type { CloudStorageGetV2Read } from "../../../storagesV2/api/storagesV2.api";
 import { DataSourceActions } from "./DataSourceDisplay";
 
 interface DataSourceViewProps {

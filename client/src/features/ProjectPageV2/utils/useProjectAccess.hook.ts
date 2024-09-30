@@ -17,10 +17,13 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useGetUserQuery } from "../../user/dataServicesUser.api/index.ts";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook.ts";
-import type { Role } from "../../projectsV2/api/projectV2.api.ts";
-import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api.ts";
+
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import {
+  useGetProjectsByProjectIdMembersQuery,
+  type Role,
+} from "../../projectsV2/api/projectsV2.api";
+import { useGetUserQuery } from "../../user/dataServicesUser.api/index";
 
 interface UseProjectAccessArgs {
   projectId: string;

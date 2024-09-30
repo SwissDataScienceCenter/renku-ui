@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,17 +16,11 @@
  * limitations under the License.
  */
 
-// Run `npx @rtk-query/codegen-openapi projectV2.api-config.ts` in this folder to generate the API
-import type { ConfigFile } from "@rtk-query/codegen-openapi";
-import path from "path";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const config: ConfigFile = {
-  apiFile: "./projectV2-empty.api.ts",
-  apiImport: "projectV2EmptyApi",
-  outputFile: "./projectV2.api.ts",
-  exportName: "projectV2Api",
-  hooks: true,
-  schemaFile: path.join(__dirname, "projectV2.openapi.json"),
-};
-
-export default config;
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const storagesV2EmptyApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
+  endpoints: () => ({}),
+  reducerPath: "storagesV2Api",
+});

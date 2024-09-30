@@ -1,4 +1,4 @@
-import { projectAndNamespaceApi as api } from "./namespace.api";
+import { storagesV2EmptyApi as api } from "./storagesV2.empty-api";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getStoragesV2ByStorageId: build.query<
@@ -29,7 +29,7 @@ const injectedRtkApi = api.injectEndpoints({
     getStoragesV2: build.query<GetStoragesV2ApiResponse, GetStoragesV2ApiArg>({
       query: (queryArg) => ({
         url: `/storages_v2`,
-        params: queryArg.storageV2Params,
+        params: { storage_v2_params: queryArg.storageV2Params },
       }),
     }),
     postStoragesV2: build.mutation<
@@ -130,7 +130,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/storage_schema/validate`,
         method: "POST",
-        body: queryArg.rCloneConfig,
+        body: queryArg.rCloneConfigValidate,
       }),
     }),
     postStorageSchemaTestConnection: build.mutation<
@@ -156,32 +156,32 @@ const injectedRtkApi = api.injectEndpoints({
   }),
   overrideExisting: false,
 });
-export { injectedRtkApi as projectStoragesApi };
+export { injectedRtkApi as storagesV2GeneratedApi };
 export type GetStoragesV2ByStorageIdApiResponse =
   /** status 200 Found the cloud storage */ CloudStorageGetV2Read;
 export type GetStoragesV2ByStorageIdApiArg = {
   /** the id of the storage */
-  storageId: UlidId;
+  storageId: Ulid;
 };
 export type PatchStoragesV2ByStorageIdApiResponse =
   /** status 201 The cloud storage entry was updated */ CloudStorageGetRead;
 export type PatchStoragesV2ByStorageIdApiArg = {
   /** the id of the storage */
-  storageId: UlidId;
+  storageId: Ulid;
   cloudStoragePatch: CloudStoragePatch;
 };
 export type DeleteStoragesV2ByStorageIdApiResponse =
-  /** status 204 The rcloud storage was removed or did not exist in the first place */ void;
+  /** status 204 The cloud storage was removed or did not exist in the first place */ void;
 export type DeleteStoragesV2ByStorageIdApiArg = {
   /** the id of the storage */
-  storageId: UlidId;
+  storageId: Ulid;
 };
 export type GetStoragesV2ApiResponse =
   /** status 200 the storage configurations for the project */ CloudStorageGetV2Read[];
 export type GetStoragesV2ApiArg = {
   /** query parameters */
   storageV2Params?: {
-    project_id: UlidId;
+    project_id: Ulid;
   };
 };
 export type PostStoragesV2ApiResponse =
@@ -193,46 +193,46 @@ export type GetStoragesV2ByStorageIdSecretsApiResponse =
   /** status 200 The saved storage secrets */ CloudStorageSecretGetList;
 export type GetStoragesV2ByStorageIdSecretsApiArg = {
   /** The id of the storage */
-  storageId: UlidId;
+  storageId: Ulid;
 };
 export type PostStoragesV2ByStorageIdSecretsApiResponse =
   /** status 201 The secrets for cloud storage were saved */ CloudStorageSecretGetList;
 export type PostStoragesV2ByStorageIdSecretsApiArg = {
   /** The id of the storage */
-  storageId: UlidId;
+  storageId: Ulid;
   cloudStorageSecretPostList: CloudStorageSecretPostList;
 };
 export type DeleteStoragesV2ByStorageIdSecretsApiResponse =
   /** status 204 The secrets were removed or did not exist in the first place or the storage doesn't exist */ void;
 export type DeleteStoragesV2ByStorageIdSecretsApiArg = {
   /** The id of the storage */
-  storageId: UlidId;
+  storageId: Ulid;
 };
 export type GetStorageByStorageIdApiResponse =
   /** status 200 Found the cloud storage */ CloudStorageGetRead;
 export type GetStorageByStorageIdApiArg = {
   /** the id of the storage */
-  storageId: UlidId;
+  storageId: Ulid;
 };
 export type PutStorageByStorageIdApiResponse =
   /** status 201 The cloud storage entry was created */ CloudStorageGetRead;
 export type PutStorageByStorageIdApiArg = {
   /** the id of the storage */
-  storageId: UlidId;
+  storageId: Ulid;
   body: CloudStorage | CloudStorageUrl;
 };
 export type PatchStorageByStorageIdApiResponse =
   /** status 201 The cloud storage entry was created */ CloudStorageGetRead;
 export type PatchStorageByStorageIdApiArg = {
   /** the id of the storage */
-  storageId: UlidId;
+  storageId: Ulid;
   body: CloudStoragePatch;
 };
 export type DeleteStorageByStorageIdApiResponse =
-  /** status 204 The rcloud storage was removed or did not exist in the first place */ void;
+  /** status 204 The cloud storage was removed or did not exist in the first place */ void;
 export type DeleteStorageByStorageIdApiArg = {
   /** the id of the storage */
-  storageId: UlidId;
+  storageId: Ulid;
 };
 export type GetStorageApiResponse =
   /** status 200 the storage configurations for the project */ CloudStorageGetRead[];
@@ -253,7 +253,7 @@ export type GetStorageSchemaApiArg = void;
 export type PostStorageSchemaValidateApiResponse =
   /** status 204 The configuration is valid */ void;
 export type PostStorageSchemaValidateApiArg = {
-  rCloneConfig: RCloneConfig;
+  rCloneConfigValidate: RCloneConfigValidate;
 };
 export type PostStorageSchemaTestConnectionApiResponse =
   /** status 204 The configuration is valid */ void;
@@ -271,9 +271,9 @@ export type PostStorageSchemaObscureApiArg = {
   };
 };
 export type GitlabProjectId = string;
-export type UlidId = string;
+export type Ulid = string;
 export type ProjectId = {
-  project_id: GitlabProjectId | UlidId;
+  project_id: GitlabProjectId | Ulid;
 };
 export type StorageType = string;
 export type StorageTypeRead = string;
@@ -304,10 +304,10 @@ export type CloudStorageRead = ProjectId & {
   readonly?: boolean;
 };
 export type CloudStorageWithId = CloudStorage & {
-  storage_id: UlidId;
+  storage_id: Ulid;
 };
 export type CloudStorageWithIdRead = CloudStorageRead & {
-  storage_id: UlidId;
+  storage_id: Ulid;
 };
 export type RCloneOption = {
   /** name of the option */
@@ -317,7 +317,7 @@ export type RCloneOption = {
   /** The cloud provider the option is for (See 'provider' RCloneOption in the schema for potential values) */
   provider?: string;
   /** default value for the option */
-  default?: number | string | boolean | object | any;
+  default?: number | string | boolean | object | any; // eslint-disable-line @typescript-eslint/no-explicit-any
   /** string representation of the default value */
   default_str?: string;
   /** These list potential values for this option, like an enum. With `exclusive: true`, only a value from the list is allowed. */
@@ -353,7 +353,7 @@ export type CloudStorageGetRead = {
 export type CloudStorageSecretGet = {
   /** Name of the field to store credential for */
   name: string;
-  secret_id: UlidId;
+  secret_id: Ulid;
 };
 export type CloudStorageGetV2 = CloudStorageGet & {
   secrets?: CloudStorageSecretGet[];
@@ -370,7 +370,7 @@ export type ErrorResponse = {
 };
 export type SourcePath = string;
 export type CloudStoragePatch = {
-  project_id?: GitlabProjectId | UlidId;
+  project_id?: GitlabProjectId | Ulid;
   storage_type?: StorageType;
   name?: StorageName;
   configuration?: RCloneConfig;
@@ -381,7 +381,7 @@ export type CloudStoragePatch = {
   readonly?: boolean;
 };
 export type CloudStoragePatchRead = {
-  project_id?: GitlabProjectId | UlidId;
+  project_id?: GitlabProjectId | Ulid;
   storage_type?: StorageTypeRead;
   name?: StorageName;
   configuration?: RCloneConfig;
@@ -418,6 +418,9 @@ export type RCloneEntry = {
   options?: RCloneOption[];
 };
 export type RCloneSchema = RCloneEntry[];
+export type RCloneConfigValidate = {
+  [key: string]: number | (string | null) | boolean | object;
+};
 export const {
   useGetStoragesV2ByStorageIdQuery,
   usePatchStoragesV2ByStorageIdMutation,

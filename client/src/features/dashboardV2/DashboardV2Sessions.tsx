@@ -11,7 +11,7 @@ import { NotebooksHelper } from "../../notebooks";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectsV2.api";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
 import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";

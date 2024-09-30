@@ -68,7 +68,7 @@ import {
 } from "../../utils/projectCloudStorage.utils";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { WarnAlert } from "../../../../components/Alert";
-import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
+import type { CloudStorageSecretGet } from "../../../../features/storagesV2/api/storagesV2.api";
 
 import AddStorageMountSaveCredentialsInfo from "./AddStorageMountSaveCredentialsInfo";
 

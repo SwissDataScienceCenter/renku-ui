@@ -32,12 +32,13 @@ import {
   ModalHeader,
 } from "reactstrap";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+
+import {
+  usePatchGroupsByGroupSlugMembersMutation,
+  type GroupMemberPatchRequest,
+  type GroupMemberResponseList,
+} from "../../groupsV2/api/groupsV2.api";
 import { User } from "../../searchV2/api/searchV2Api.api";
-import type {
-  GroupMemberPatchRequest,
-  GroupMemberResponseList,
-} from "../api/namespace.api";
-import { usePatchGroupsByGroupSlugMembersMutation } from "../api/projectV2.enhanced-api";
 import { UserControl } from "./UserSelector";
 
 interface AddGroupMemberModalProps {

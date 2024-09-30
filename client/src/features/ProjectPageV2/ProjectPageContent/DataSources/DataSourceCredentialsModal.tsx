@@ -18,20 +18,20 @@
 
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { XLg } from "react-bootstrap-icons";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import CloudStorageSecretsModal from "../../../sessionsV2/CloudStorageSecretsModal";
+import type { SessionStartCloudStorageConfiguration } from "../../../sessionsV2/startSessionOptionsV2.types";
 import {
   useDeleteStoragesV2ByStorageIdSecretsMutation,
   usePostStoragesV2ByStorageIdSecretsMutation,
-} from "../../../projectsV2/api/projectV2.enhanced-api";
-import type { CloudStorageGetRead } from "../../../projectsV2/api/storagesV2.api";
-import type { SessionStartCloudStorageConfiguration } from "../../../sessionsV2/startSessionOptionsV2.types";
-import CloudStorageSecretsModal from "../../../sessionsV2/CloudStorageSecretsModal";
+  type CloudStorageGetRead,
+} from "../../../storagesV2/api/storagesV2.api";
 
-import useDataSourceConfiguration from "./useDataSourceConfiguration.hook";
 import { Loader } from "../../../../components/Loader";
+import useDataSourceConfiguration from "./useDataSourceConfiguration.hook";
 
 interface DataSourceCredentialsModalProps {
   isOpen: boolean;

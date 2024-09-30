@@ -34,18 +34,17 @@ import {
   UnderlineArrowLink,
 } from "../../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
+import { useGetNamespacesByNamespaceSlugQuery } from "../../../groupsV2/api/groupsV2.api";
 import type {
   ProjectMemberListResponse,
   ProjectMemberResponse,
-} from "../../../projectsV2/api/projectV2.api";
-import {
-  useGetNamespacesByNamespaceSlugQuery,
-  useGetProjectsByProjectIdMembersQuery,
-} from "../../../projectsV2/api/projectV2.enhanced-api";
+} from "../../../projectsV2/api/projectsV2.api";
+import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectsV2.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import MembershipGuard from "../../utils/MembershipGuard";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
+
+import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import styles from "./ProjectInformation.module.scss";
 
 const MAX_MEMBERS_DISPLAYED = 5;

@@ -20,34 +20,12 @@
         "parameters": [
           {
             "in": "query",
-            "description": "A namespace, used as a filter.",
-            "name": "namespace",
-            "required": false,
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "description": "Result's page number starting from 1",
-            "name": "page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1
-            }
-          },
-          {
-            "in": "query",
-            "description": "The number of results per page",
-            "name": "per_page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20
+              "$ref": "#/components/schemas/ProjectGetQuery"
             }
           }
         ],
@@ -243,7 +221,7 @@
         "tags": ["projects"]
       }
     },
-    "/projects/{namespace}/{slug}": {
+    "/namespaces/{namespace}/projects/{slug}": {
       "get": {
         "summary": "Get a project by namespace and project slug",
         "parameters": [
@@ -556,7 +534,7 @@
         "type": "string",
         "minLength": 26,
         "maxLength": 26,
-        "pattern": "^[A-Z0-9]{26}$"
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
       "ProjectName": {
         "description": "Renku project name",
@@ -709,7 +687,6 @@
       },
       "UserEmail": {
         "type": "string",
-        "format": "email",
         "description": "User email",
         "example": "some-user@gmail.com"
       },
@@ -717,6 +694,42 @@
         "type": "string",
         "description": "Entity Tag",
         "example": "9EE498F9D565D0C41E511377425F32F3"
+      },
+      "ProjectGetQuery": {
+        "description": "Query params for project get request",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationRequest"
+          },
+          {
+            "properties": {
+              "namespace": {
+                "description": "A namespace, used as a filter.",
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        ]
+      },
+      "PaginationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "description": "Result's page number starting from 1",
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "per_page": {
+            "description": "The number of results per page",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
       },
       "ErrorResponse": {
         "type": "object",

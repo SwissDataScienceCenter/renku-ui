@@ -17,20 +17,22 @@
  */
 import cx from "classnames";
 import { useState } from "react";
-import { Card, CardBody, Col, Row } from "reactstrap";
 import { generatePath, Link } from "react-router-dom-v5-compat";
+import { Card, CardBody, Col, Row } from "reactstrap";
 
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import ContainerWrap from "../../../components/container/ContainerWrap";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import FormSchema from "../../../components/formschema/FormSchema";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import type { GroupResponse } from "../api/namespace.api";
-import { useGetGroupsQuery } from "../api/projectV2.enhanced-api";
+import {
+  GroupResponse,
+  useGetGroupsQuery,
+} from "../../groupsV2/api/groupsV2.api";
 import WipBadge from "../shared/WipBadge";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 
 interface GroupListGroupProps {
   group: GroupResponse;
@@ -64,8 +66,10 @@ function GroupListDisplay() {
   const perPage = 12;
   const [page, setPage] = useState(1);
   const { data, error, isLoading } = useGetGroupsQuery({
-    page,
-    perPage,
+    params: {
+      page,
+      per_page: perPage,
+    },
   });
 
   if (isLoading)

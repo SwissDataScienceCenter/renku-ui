@@ -21,7 +21,7 @@
           "name": "storage_id",
           "required": true,
           "schema": {
-            "$ref": "#/components/schemas/UlidId"
+            "$ref": "#/components/schemas/Ulid"
           },
           "description": "the id of the storage"
         }
@@ -102,7 +102,7 @@
               "additionalProperties": false,
               "properties": {
                 "project_id": {
-                  "$ref": "#/components/schemas/UlidId"
+                  "$ref": "#/components/schemas/Ulid"
                 }
               },
               "required": ["project_id"]
@@ -183,7 +183,7 @@
           "name": "storage_id",
           "required": true,
           "schema": {
-            "$ref": "#/components/schemas/UlidId"
+            "$ref": "#/components/schemas/Ulid"
           },
           "description": "The id of the storage"
         }
@@ -266,7 +266,7 @@
           "name": "storage_id",
           "required": true,
           "schema": {
-            "$ref": "#/components/schemas/UlidId"
+            "$ref": "#/components/schemas/Ulid"
           },
           "description": "the id of the storage"
         }
@@ -486,7 +486,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RCloneConfig"
+                "$ref": "#/components/schemas/RCloneConfigValidate"
               }
             }
           }
@@ -590,7 +590,7 @@
                 "$ref": "#/components/schemas/GitlabProjectId"
               },
               {
-                "$ref": "#/components/schemas/UlidId"
+                "$ref": "#/components/schemas/Ulid"
               }
             ]
           }
@@ -601,6 +601,27 @@
         }
       },
       "RCloneConfig": {
+        "type": "object",
+        "description": "Dictionary of rclone key:value pairs (based on schema from '/storage_schema')",
+        "additionalProperties": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string",
+              "nullable": true
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "RCloneConfigValidate": {
         "type": "object",
         "description": "Dictionary of rclone key:value pairs (based on schema from '/storage_schema')",
         "additionalProperties": {
@@ -699,7 +720,7 @@
                 "$ref": "#/components/schemas/GitlabProjectId"
               },
               {
-                "$ref": "#/components/schemas/UlidId"
+                "$ref": "#/components/schemas/Ulid"
               }
             ]
           },
@@ -736,7 +757,7 @@
             "required": ["storage_id"],
             "properties": {
               "storage_id": {
-                "$ref": "#/components/schemas/UlidId"
+                "$ref": "#/components/schemas/Ulid"
               }
             }
           }
@@ -818,7 +839,7 @@
             "maxLength": 99
           },
           "secret_id": {
-            "$ref": "#/components/schemas/UlidId"
+            "$ref": "#/components/schemas/Ulid"
           }
         },
         "required": ["name", "secret_id"]
@@ -950,12 +971,12 @@
           }
         }
       },
-      "UlidId": {
-        "description": "ULID identifier of an object",
+      "Ulid": {
+        "description": "ULID identifier",
         "type": "string",
         "minLength": 26,
         "maxLength": 26,
-        "pattern": "^[A-Z0-9]+$"
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
       "GitlabProjectId": {
         "description": "Project id of a gitlab project (only int project id allowed, encoded as string for future-proofing)",

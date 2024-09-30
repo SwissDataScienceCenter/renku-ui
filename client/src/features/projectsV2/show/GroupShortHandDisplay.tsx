@@ -19,11 +19,11 @@
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
-import { GroupResponse } from "../api/namespace.api";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import type { GroupResponse } from "../../groupsV2/api/groupsV2.api";
 
 interface GroupShortHandDisplayProps {
   className?: string;

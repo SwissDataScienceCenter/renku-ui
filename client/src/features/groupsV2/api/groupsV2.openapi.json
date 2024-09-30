@@ -20,25 +20,12 @@
         "parameters": [
           {
             "in": "query",
-            "description": "Result's page number starting from 1",
-            "name": "page",
-            "required": false,
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1
-            }
-          },
-          {
-            "in": "query",
-            "description": "The number of results per page",
-            "name": "per_page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20
+              "$ref": "#/components/schemas/PaginationRequest"
             }
           }
         ],
@@ -370,34 +357,12 @@
         "parameters": [
           {
             "in": "query",
-            "description": "Result's page number starting from 1",
-            "name": "page",
-            "required": false,
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1
-            }
-          },
-          {
-            "in": "query",
-            "description": "The number of results per page",
-            "name": "per_page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20
-            }
-          },
-          {
-            "in": "query",
-            "name": "minimum_role",
-            "description": "A minimum role to filter results by.",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/GroupRole"
+              "$ref": "#/components/schemas/NamespaceGetQuery"
             }
           }
         ],
@@ -570,7 +535,7 @@
         "type": "string",
         "minLength": 26,
         "maxLength": 26,
-        "pattern": "^[A-Z0-9]{26}$"
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
       "NamespaceName": {
         "description": "Renku group or namespace name",
@@ -754,9 +719,43 @@
       },
       "UserEmail": {
         "type": "string",
-        "format": "email",
         "description": "User email",
         "example": "some-user@gmail.com"
+      },
+      "NamespaceGetQuery": {
+        "description": "Query params for namespace get request",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationRequest"
+          },
+          {
+            "properties": {
+              "minimum_role": {
+                "description": "A minimum role to filter results by.",
+                "$ref": "#/components/schemas/GroupRole"
+              }
+            }
+          }
+        ]
+      },
+      "PaginationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "description": "Result's page number starting from 1",
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "per_page": {
+            "description": "The number of results per page",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
       },
       "ErrorResponse": {
         "type": "object",

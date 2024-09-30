@@ -24,11 +24,11 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import useDataSourceConfiguration from "../ProjectPageV2/ProjectPageContent/DataSources/useDataSourceConfiguration.hook";
-import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api";
+import type { Project } from "../projectsV2/api/projectsV2.api";
 import { useGetDockerImageQuery } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
+import { useGetStoragesV2Query } from "../storagesV2/api/storagesV2.api";
 
 import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
@@ -53,9 +53,7 @@ export default function useSessionLauncherState({
     isFetching: isFetchingStorages,
     isLoading: isLoadingStorages,
   } = useGetStoragesV2Query({
-    storageV2Params: {
-      project_id: project.id,
-    },
+    storageV2Params: { project_id: project.id },
   });
   const { data: resourcePools } = useGetResourcePoolsQuery({});
   const { isPendingResourceClass, setResourceClass } = useSessionResourceClass({

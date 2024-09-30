@@ -16,29 +16,17 @@
  * limitations under the License.
  */
 
-import { getMemberNameToDisplay } from "../../ProjectPageV2/utils/roleUtils";
-import type { ProjectMemberResponse } from "../api/projectsV2.api";
+// Run `npm run generate-api:storagesV2` to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
 
-interface ProjectMemberDisplayProps {
-  member: ProjectMemberResponse;
-  nameInBold?: boolean;
-}
-export function ProjectMemberDisplay({
-  member,
-  nameInBold = false,
-}: ProjectMemberDisplayProps) {
-  const displayMemberName = getMemberNameToDisplay(member);
-  const memberName = nameInBold ? (
-    <b>{displayMemberName}</b>
-  ) : (
-    displayMemberName
-  );
-  return (
-    <>
-      {memberName}{" "}
-      {(member.first_name || member.last_name) && member.namespace && (
-        <span className="fst-italic">@{member.namespace}</span>
-      )}
-    </>
-  );
-}
+const config: ConfigFile = {
+  apiFile: "./storagesV2.empty-api.ts",
+  apiImport: "storagesV2EmptyApi",
+  outputFile: "./storagesV2.generated-api.ts",
+  exportName: "storagesV2GeneratedApi",
+  hooks: true,
+  schemaFile: path.join(__dirname, "storagesV2.openapi.json"),
+};
+
+export default config;

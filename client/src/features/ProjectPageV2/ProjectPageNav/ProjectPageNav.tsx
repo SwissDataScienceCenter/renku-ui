@@ -22,7 +22,7 @@ import { Nav, NavItem } from "reactstrap";
 
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import type { Project } from "../../projectsV2/api/projectV2.api";
+import type { Project } from "../../projectsV2/api/projectsV2.api";
 
 export default function ProjectPageNav({ project }: { project: Project }) {
   const { namespace = "", slug = "" } = project;

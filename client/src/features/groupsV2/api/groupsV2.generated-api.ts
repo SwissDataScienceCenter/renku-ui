@@ -1,10 +1,10 @@
-import { projectV2Api as api } from "./projectV2.api";
+import { groupsV2EmptyApi as api } from "./groupsV2.empty-api";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getGroups: build.query<GetGroupsApiResponse, GetGroupsApiArg>({
       query: (queryArg) => ({
         url: `/groups`,
-        params: { page: queryArg.page, per_page: queryArg.perPage },
+        params: { params: queryArg.params },
       }),
     }),
     postGroups: build.mutation<PostGroupsApiResponse, PostGroupsApiArg>({
@@ -67,11 +67,7 @@ const injectedRtkApi = api.injectEndpoints({
     getNamespaces: build.query<GetNamespacesApiResponse, GetNamespacesApiArg>({
       query: (queryArg) => ({
         url: `/namespaces`,
-        params: {
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-          minimum_role: queryArg.minimumRole,
-        },
+        params: { params: queryArg.params },
       }),
     }),
     getNamespacesByNamespaceSlug: build.query<
@@ -83,14 +79,12 @@ const injectedRtkApi = api.injectEndpoints({
   }),
   overrideExisting: false,
 });
-export { injectedRtkApi as projectAndNamespaceApi };
+export { injectedRtkApi as groupsV2GeneratedApi };
 export type GetGroupsApiResponse =
   /** status 200 List of groups */ GroupResponseList;
 export type GetGroupsApiArg = {
-  /** Result's page number starting from 1 */
-  page?: number;
-  /** The number of results per page */
-  perPage?: number;
+  /** query parameters */
+  params?: PaginationRequest;
 };
 export type PostGroupsApiResponse =
   /** status 201 The group was created */ GroupResponse;
@@ -134,12 +128,8 @@ export type DeleteGroupsByGroupSlugMembersAndUserIdApiArg = {
 export type GetNamespacesApiResponse =
   /** status 200 List of namespaces */ NamespaceResponseList;
 export type GetNamespacesApiArg = {
-  /** Result's page number starting from 1 */
-  page?: number;
-  /** The number of results per page */
-  perPage?: number;
-  /** A minimum role to filter results by. */
-  minimumRole?: GroupRole;
+  /** query parameters */
+  params?: NamespaceGetQuery;
 };
 export type GetNamespacesByNamespaceSlugApiResponse =
   /** status 200 The namespace */ NamespaceResponse;
@@ -167,6 +157,12 @@ export type ErrorResponse = {
     detail?: string;
     message: string;
   };
+};
+export type PaginationRequest = {
+  /** Result's page number starting from 1 */
+  page?: number;
+  /** The number of results per page */
+  per_page?: number;
 };
 export type GroupPostRequest = {
   name: NamespaceName;
@@ -205,6 +201,10 @@ export type NamespaceResponse = {
   namespace_kind: NamespaceKind;
 };
 export type NamespaceResponseList = NamespaceResponse[];
+export type NamespaceGetQuery = PaginationRequest & {
+  /** A minimum role to filter results by. */
+  minimum_role?: GroupRole;
+};
 export const {
   useGetGroupsQuery,
   usePostGroupsMutation,

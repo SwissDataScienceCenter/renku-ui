@@ -48,8 +48,8 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
-import { Project } from "../../../projectsV2/api/projectV2.api";
-import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+import type { Project } from "../../../projectsV2/api/projectsV2.api";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectsV2.api";
 import {
   ErrorAlert,
   RenkuAlert,

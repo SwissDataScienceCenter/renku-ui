@@ -27,8 +27,8 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 
-import type { ProjectPost } from "../api/projectV2.api";
-import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
+import type { ProjectPost } from "../api/projectsV2.api";
+import { usePostProjectsMutation } from "../api/projectsV2.api";
 
 import WipBadge from "../shared/WipBadge";
 import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2DescriptionAndRepositories";

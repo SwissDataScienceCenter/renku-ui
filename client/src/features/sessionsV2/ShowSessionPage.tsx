@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -43,33 +44,31 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import RenkuFrogIcon from "../../components/icons/RenkuIcon";
-import { User } from "../../model/renkuModels.types";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import useWindowSize from "../../utils/helpers/UseWindowsSize";
-import { resetFavicon, setFavicon } from "../display";
-import SessionHibernated from "../session/components/SessionHibernated";
-import SessionJupyter from "../session/components/SessionJupyter";
-import SessionUnavailable from "../session/components/SessionUnavailable";
-import StartSessionProgressBar from "../session/components/StartSessionProgressBar";
-import { useGetSessionsQuery } from "../session/sessions.api";
-import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
-import { getSessionFavicon } from "./session.utils";
-
-import { skipToken } from "@reduxjs/toolkit/query";
 import { Loader } from "../../components/Loader";
 import { EnvironmentLogs } from "../../components/Logs";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
+import RenkuFrogIcon from "../../components/icons/RenkuIcon";
+import { User } from "../../model/renkuModels.types";
 import { NotebooksHelper } from "../../notebooks";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import { displaySlice } from "../display";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import useWindowSize from "../../utils/helpers/UseWindowsSize";
+import { displaySlice, resetFavicon, setFavicon } from "../display";
+import { useGetProjectBySlugQuery } from "../projectsV2/api/projectsV2.api";
+import SessionHibernated from "../session/components/SessionHibernated";
+import SessionJupyter from "../session/components/SessionJupyter";
+import SessionUnavailable from "../session/components/SessionUnavailable";
 import { SessionRowResourceRequests } from "../session/components/SessionsList";
 import styles from "../session/components/ShowSession.module.scss";
+import StartSessionProgressBar from "../session/components/StartSessionProgressBar";
+import { useGetSessionsQuery } from "../session/sessions.api";
 import { Session } from "../session/sessions.types";
+
+import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
+import { getSessionFavicon } from "./session.utils";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 
 export default function ShowSessionPage() {
@@ -410,7 +409,7 @@ function SessionDetails({
     error: launchersError,
   } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
   const { data: project, isLoading: isLoadingProject } =
-    useGetProjectsByNamespaceAndSlugQuery(
+    useGetProjectBySlugQuery(
       namespace && slug ? { namespace, slug } : skipToken
     );
 

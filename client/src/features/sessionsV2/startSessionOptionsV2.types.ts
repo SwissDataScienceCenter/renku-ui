@@ -20,7 +20,7 @@ import type {
   DockerImageStatus,
   SessionEnvironmentVariable,
 } from "../session/startSessionOptions.types";
-import type { CloudStorageGetRead } from "../projectsV2/api/storagesV2.api";
+import type { CloudStorageGetRead } from "../storagesV2/api/storagesV2.api";
 
 export interface SessionStartCloudStorageConfiguration {
   active: boolean;

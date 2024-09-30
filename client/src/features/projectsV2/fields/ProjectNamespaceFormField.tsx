@@ -32,17 +32,19 @@ import Select, {
   components,
 } from "react-select";
 import { Button, FormText, Label, UncontrolledTooltip } from "reactstrap";
+
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import type { PaginatedState } from "../../session/components/options/fetchMore.types";
-import type { GetNamespacesApiResponse } from "../api/projectV2.enhanced-api";
+import type { GetNamespacesApiResponse } from "../../groupsV2/api/groupsV2.api";
 import {
-  projectV2Api,
+  groupsV2Api,
   useGetNamespacesQuery,
   useLazyGetNamespacesQuery,
-} from "../api/projectV2.enhanced-api";
+} from "../../groupsV2/api/groupsV2.api";
+import type { PaginatedState } from "../../session/components/options/fetchMore.types";
 import type { GenericFormFieldProps } from "./formField.types";
+
 import styles from "./ProjectNamespaceFormField.module.scss";
 
 type ResponseNamespaces = GetNamespacesApiResponse["namespaces"];
@@ -206,7 +208,7 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
   // Handle forced refresh
   const dispatch = useAppDispatch();
   const refetch = useCallback(() => {
-    dispatch(projectV2Api.util.invalidateTags(["Namespace"]));
+    dispatch(groupsV2Api.util.invalidateTags(["Namespace"]));
   }, [dispatch]);
   return (
     <div className="mb-3">
@@ -264,7 +266,11 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     isError,
     isFetching,
     requestId,
-  } = useGetNamespacesQuery({ minimumRole: "editor" });
+  } = useGetNamespacesQuery({
+    params: {
+      minimum_role: "editor",
+    },
+  });
 
   const [
     { data: allNamespaces, fetchedPages, hasMore, currentRequestId },
@@ -280,9 +286,11 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     useLazyGetNamespacesQuery();
   const onFetchMore = useCallback(() => {
     const request = fetchNamespacesPage({
-      page: fetchedPages + 1,
-      perPage: namespacesFirstPage?.perPage,
-      minimumRole: "editor",
+      params: {
+        minimum_role: "editor",
+        page: fetchedPages + 1,
+        per_page: namespacesFirstPage?.perPage,
+      },
     });
     setState((prevState: PaginatedState<ResponseNamespace>) => ({
       ...prevState,

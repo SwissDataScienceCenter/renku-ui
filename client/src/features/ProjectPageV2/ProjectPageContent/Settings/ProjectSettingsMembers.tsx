@@ -37,21 +37,23 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button.tsx";
+
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 
 import type {
   Project,
   ProjectMemberResponse,
-} from "../../../projectsV2/api/projectV2.api";
-import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+} from "../../../projectsV2/api/projectsV2.api";
+import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectsV2.api";
 import AddProjectMemberModal from "../../../projectsV2/fields/AddProjectMemberModal";
-import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal.tsx";
+import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal";
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 import { ProjectMemberDisplay } from "../../../projectsV2/shared/ProjectMemberDisplay";
-import MembershipGuard from "../../utils/MembershipGuard.tsx";
-import { toSortedMembers } from "../../utils/roleUtils.ts";
+
+import MembershipGuard from "../../utils/MembershipGuard";
+import { toSortedMembers } from "../../utils/roleUtils";
 
 type MemberActionMenuProps = Omit<
   ProjectPageSettingsMembersListItemProps,

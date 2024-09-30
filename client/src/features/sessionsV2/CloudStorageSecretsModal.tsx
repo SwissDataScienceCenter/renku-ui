@@ -52,9 +52,9 @@ import type {
   TestCloudStorageConnectionParams,
 } from "../project/components/cloudStorage/projectCloudStorage.types";
 import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
-import type { RCloneOption } from "../projectsV2/api/storagesV2.api";
-import type { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
+import type { RCloneOption } from "../storagesV2/api/storagesV2.api";
+import type { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
 
 const CONTEXT_STRINGS = {
   session: {

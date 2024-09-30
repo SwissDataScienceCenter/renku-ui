@@ -18,12 +18,6 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { FileCode, PlusLg } from "react-bootstrap-icons";
-
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal.tsx";
-import AccessGuard from "../../utils/AccessGuard.tsx";
-import useProjectAccess from "../../utils/useProjectAccess.hook";
-import { RepositoryItem } from "./CodeRepositoryDisplay.tsx";
 import {
   Badge,
   Button,
@@ -32,6 +26,12 @@ import {
   CardHeader,
   ListGroup,
 } from "reactstrap";
+
+import { Project } from "../../../projectsV2/api/projectsV2.api";
+import AccessGuard from "../../utils/AccessGuard";
+import useProjectAccess from "../../utils/useProjectAccess.hook";
+import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal";
+import { RepositoryItem } from "./CodeRepositoryDisplay";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
   const { userRole } = useProjectAccess({ projectId: project.id });

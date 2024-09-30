@@ -16,29 +16,11 @@
  * limitations under the License.
  */
 
-import { getMemberNameToDisplay } from "../../ProjectPageV2/utils/roleUtils";
-import type { ProjectMemberResponse } from "../api/projectsV2.api";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-interface ProjectMemberDisplayProps {
-  member: ProjectMemberResponse;
-  nameInBold?: boolean;
-}
-export function ProjectMemberDisplay({
-  member,
-  nameInBold = false,
-}: ProjectMemberDisplayProps) {
-  const displayMemberName = getMemberNameToDisplay(member);
-  const memberName = nameInBold ? (
-    <b>{displayMemberName}</b>
-  ) : (
-    displayMemberName
-  );
-  return (
-    <>
-      {memberName}{" "}
-      {(member.first_name || member.last_name) && member.namespace && (
-        <span className="fst-italic">@{member.namespace}</span>
-      )}
-    </>
-  );
-}
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const groupsV2EmptyApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
+  endpoints: () => ({}),
+  reducerPath: "groupsV2Api",
+});

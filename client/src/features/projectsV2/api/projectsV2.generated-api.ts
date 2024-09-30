@@ -1,14 +1,10 @@
-import { projectV2EmptyApi as api } from "./projectV2-empty.api";
+import { projectsV2EmptyApi as api } from "./projectsV2.empty-api";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getProjects: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: `/projects`,
-        params: {
-          namespace: queryArg["namespace"],
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-        },
+        params: { params: queryArg.params },
       }),
     }),
     postProjects: build.mutation<PostProjectsApiResponse, PostProjectsApiArg>({
@@ -44,12 +40,12 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
-    getProjectsByNamespaceAndSlug: build.query<
-      GetProjectsByNamespaceAndSlugApiResponse,
-      GetProjectsByNamespaceAndSlugApiArg
+    getNamespacesByNamespaceProjectsAndSlug: build.query<
+      GetNamespacesByNamespaceProjectsAndSlugApiResponse,
+      GetNamespacesByNamespaceProjectsAndSlugApiArg
     >({
       query: (queryArg) => ({
-        url: `/projects/${queryArg["namespace"]}/${queryArg.slug}`,
+        url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.slug}`,
       }),
     }),
     getProjectsByProjectIdMembers: build.query<
@@ -80,16 +76,12 @@ const injectedRtkApi = api.injectEndpoints({
   }),
   overrideExisting: false,
 });
-export { injectedRtkApi as projectV2Api };
+export { injectedRtkApi as projectsV2GeneratedApi };
 export type GetProjectsApiResponse =
   /** status 200 List of projects */ ProjectsList;
 export type GetProjectsApiArg = {
-  /** A namespace, used as a filter. */
-  namespace?: string;
-  /** Result's page number starting from 1 */
-  page?: number;
-  /** The number of results per page */
-  perPage?: number;
+  /** query parameters */
+  params?: ProjectGetQuery;
 };
 export type PostProjectsApiResponse =
   /** status 201 The project was created */ Project;
@@ -114,9 +106,9 @@ export type DeleteProjectsByProjectIdApiResponse =
 export type DeleteProjectsByProjectIdApiArg = {
   projectId: Ulid;
 };
-export type GetProjectsByNamespaceAndSlugApiResponse =
+export type GetNamespacesByNamespaceProjectsAndSlugApiResponse =
   /** status 200 The project */ Project;
-export type GetProjectsByNamespaceAndSlugApiArg = {
+export type GetNamespacesByNamespaceProjectsAndSlugApiArg = {
   namespace: string;
   slug: string;
 };
@@ -171,6 +163,16 @@ export type ErrorResponse = {
     message: string;
   };
 };
+export type PaginationRequest = {
+  /** Result's page number starting from 1 */
+  page?: number;
+  /** The number of results per page */
+  per_page?: number;
+};
+export type ProjectGetQuery = PaginationRequest & {
+  /** A namespace, used as a filter. */
+  namespace?: string;
+};
 export type ProjectPost = {
   name: ProjectName;
   namespace: Slug;
@@ -210,7 +212,7 @@ export const {
   useGetProjectsByProjectIdQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
-  useGetProjectsByNamespaceAndSlugQuery,
+  useGetNamespacesByNamespaceProjectsAndSlugQuery,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,

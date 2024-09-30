@@ -33,19 +33,20 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type {
   GroupMemberResponse,
   GroupPatchRequest,
   GroupResponse,
-} from "../api/namespace.api";
+} from "../../groupsV2/api/groupsV2.api";
 import {
   useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
   useDeleteGroupsByGroupSlugMutation,
   useGetGroupsByGroupSlugMembersQuery,
   usePatchGroupsByGroupSlugMutation,
-} from "../api/projectV2.enhanced-api";
+} from "../../groupsV2/api/groupsV2.api";
 import AddGroupMemberModal from "../fields/AddGroupMemberModal";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";

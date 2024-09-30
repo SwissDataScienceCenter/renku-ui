@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
-import {
+import { SessionStartCloudStorageConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
+import type {
   CloudStorageGetRead,
   CloudStorageWithIdRead,
   RCloneConfig,
   RCloneOption,
-} from "../../projectsV2/api/storagesV2.api";
+} from "../../storagesV2/api/storagesV2.generated-api";
 import {
   CLOUD_OPTIONS_OVERRIDE,
   CLOUD_STORAGE_MOUNT_PATH_HELP,
@@ -40,8 +41,6 @@ import {
   CloudStorageSchema,
   CloudStorageSchemaOptions,
 } from "../components/cloudStorage/projectCloudStorage.types";
-
-import { SessionStartCloudStorageConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 
 const LAST_POSITION = 1000;
 

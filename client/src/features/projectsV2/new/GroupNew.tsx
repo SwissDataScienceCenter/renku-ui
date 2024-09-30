@@ -30,8 +30,8 @@ import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import type { GroupPostRequest } from "../api/namespace.api";
-import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
+import type { GroupPostRequest } from "../../groupsV2/api/groupsV2.api";
+import { usePostGroupsMutation } from "../../groupsV2/api/groupsV2.api";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";

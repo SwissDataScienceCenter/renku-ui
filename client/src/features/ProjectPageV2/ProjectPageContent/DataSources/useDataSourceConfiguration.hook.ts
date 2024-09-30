@@ -19,13 +19,12 @@
 import { useMemo } from "react";
 
 import { CLOUD_OPTIONS_OVERRIDE } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
-import { RCloneOption } from "../../../projectsV2/api/storagesV2.api";
+import type { SessionStartCloudStorageConfiguration } from "../../../sessionsV2/startSessionOptionsV2.types";
 import type {
   CloudStorageGetV2Read,
   CloudStorageSecretGet,
-} from "../../../projectsV2/api/storagesV2.api";
-
-import type { SessionStartCloudStorageConfiguration } from "../../../sessionsV2/startSessionOptionsV2.types";
+  RCloneOption,
+} from "../../../storagesV2/api/storagesV2.generated-api";
 
 interface UseDataSourceConfigurationArgs {
   storages: CloudStorageGetV2Read[] | undefined;

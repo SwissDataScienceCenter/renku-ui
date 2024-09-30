@@ -29,7 +29,7 @@ import { Badge } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import { useGetNamespacesByNamespaceSlugQuery } from "../../groupsV2/api/groupsV2.api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import {
