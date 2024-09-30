@@ -26,11 +26,14 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
+import { Badge, Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+
+import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
 import type { GroupResponse } from "../../projectsV2/api/namespace.api";
 import {
@@ -127,6 +130,18 @@ export default function GroupV2Show() {
           pageParam="projects_page"
           emptyListElement={<p>No visible projects.</p>}
         />
+      </section>
+
+      <section className="mt-3">
+        <Row>
+          <Col className="order-3" xs={12} xl={8}>
+            <DataConnectorsBox
+              namespace={slug}
+              namespaceKind="group"
+              pageParam="data_connectors_page"
+            />
+          </Col>
+        </Row>
       </section>
     </ContainerWrap>
   );

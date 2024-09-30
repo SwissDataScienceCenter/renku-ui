@@ -22,7 +22,7 @@ import {
   Button,
   Col,
   DropdownItem,
-  ListGroupItem,
+  Input,
   Modal,
   ModalBody,
   ModalFooter,
@@ -30,54 +30,66 @@ import {
   Row,
 } from "reactstrap";
 
-import { Loader } from "../../../../components/Loader";
-import DataSourceModal from "./DataSourceModal";
-import {
-  type CloudStorageGetRead,
-  useDeleteStoragesV2ByStorageIdMutation,
-} from "../../../projectsV2/api/storagesV2.api";
-import DataSourceCredentialsModal from "./DataSourceCredentialsModal";
-import { DataSourceView } from "./DataSourceView";
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
+import { Loader } from "../../../components/Loader";
+import DataConnectorModal from "./DataConnectorModal";
+import type { DataConnectorRead } from "../../projectsV2/api/data-connectors.api";
+import { useDeleteDataConnectorsByDataConnectorIdMutation } from "../../projectsV2/api/data-connectors.enhanced-api";
+import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
+import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 
-interface DataSourceDeleteModalProps {
-  storage: CloudStorageGetRead;
+interface DataConnectorDeleteModalProps {
+  dataConnector: DataConnectorRead;
   isOpen: boolean;
+  onDelete: () => void;
   toggleModal: () => void;
 }
-function DataSourceDeleteModal({
-  storage,
+function DataConnectorDeleteModal({
+  dataConnector,
+  onDelete,
   toggleModal,
   isOpen,
-}: DataSourceDeleteModalProps) {
-  const [updateDataSources, { isLoading, isSuccess }] =
-    useDeleteStoragesV2ByStorageIdMutation();
+}: DataConnectorDeleteModalProps) {
+  const [deleteDataConnector, { isLoading, isSuccess }] =
+    useDeleteDataConnectorsByDataConnectorIdMutation();
+
+  const [typedName, setTypedName] = useState("");
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTypedName(e.target.value.trim());
+    },
+    [setTypedName]
+  );
 
   useEffect(() => {
     if (isSuccess) {
-      toggleModal();
+      onDelete();
     }
-  }, [isSuccess, toggleModal]);
-  const onDeleteDataSources = () => {
-    updateDataSources({
-      storageId: storage.storage.storage_id,
+  }, [isSuccess, onDelete]);
+  const onDeleteDataCollector = () => {
+    deleteDataConnector({
+      dataConnectorId: dataConnector.id,
     });
   };
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <ModalHeader className="text-danger" toggle={toggleModal}>
-        Remove data source
+        Delete data connector
       </ModalHeader>
       <ModalBody>
         <Row>
           <Col>
             <p>
-              Are you sure about removing this data source from the project?
+              Are you sure you want to delete this data connector? It will
+              affect all projects that use it. Please type{" "}
+              <strong>{dataConnector.slug}</strong>, the slug of the data
+              connector, to confirm.
             </p>
-            <p className="mb-0">
-              Data source: <code>{storage.storage.name}</code>
-            </p>
+            <Input
+              data-cy="delete-confirmation-input"
+              value={typedName}
+              onChange={onChange}
+            />
           </Col>
         </Row>
       </ModalBody>
@@ -90,19 +102,20 @@ function DataSourceDeleteModal({
           <Button
             color="danger"
             className={cx("float-right", "ms-2")}
-            data-cy="delete-data-source-modal-button"
+            disabled={typedName !== dataConnector.slug.trim()}
+            data-cy="delete-data-connector-modal-button"
             type="submit"
-            onClick={onDeleteDataSources}
+            onClick={onDeleteDataCollector}
           >
             {isLoading ? (
               <>
                 <Loader className="me-1" inline size={16} />
-                Deleting data source
+                Deleting data connector
               </>
             ) : (
               <>
                 <Trash className={cx("bi", "me-1")} />
-                Remove data source
+                Remove data connector
               </>
             )}
           </Button>
@@ -111,16 +124,20 @@ function DataSourceDeleteModal({
     </Modal>
   );
 }
-export function DataSourceActions({
-  storage,
-  projectId,
+export default function DataConnectorActions({
+  dataConnector,
+  toggleView,
 }: {
-  storage: CloudStorageGetRead;
-  projectId: string;
+  dataConnector: DataConnectorRead;
+  toggleView: () => void;
 }) {
   const [isCredentialsOpen, setCredentialsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const onDelete = useCallback(() => {
+    setIsDeleteOpen(false);
+    toggleView();
+  }, [toggleView]);
   const toggleCredentials = useCallback(() => {
     setCredentialsOpen((open) => !open);
   }, []);
@@ -135,7 +152,7 @@ export function DataSourceActions({
     <Button
       className="text-nowrap"
       color="outline-primary"
-      data-cy="data-source-edit"
+      data-cy="data-connector-edit"
       onClick={toggleEdit}
       size="sm"
     >
@@ -153,90 +170,33 @@ export function DataSourceActions({
         size="sm"
       >
         <DropdownItem
-          data-cy="data-source-credentials"
+          data-cy="data-connector-credentials"
           onClick={toggleCredentials}
         >
           <Lock className={cx("bi", "me-1")} />
           Credentials
         </DropdownItem>
-        <DropdownItem data-cy="data-source-delete" onClick={toggleDelete}>
+        <DropdownItem data-cy="data-connector-delete" onClick={toggleDelete}>
           <Trash className={cx("bi", "me-1")} />
           Remove
         </DropdownItem>
       </ButtonWithMenuV2>
-      <DataSourceCredentialsModal
-        storage={storage}
+      <DataConnectorCredentialsModal
+        dataConnector={dataConnector}
         setOpen={setCredentialsOpen}
         isOpen={isCredentialsOpen}
       />
-      <DataSourceDeleteModal
-        storage={storage}
+      <DataConnectorDeleteModal
+        dataConnector={dataConnector}
         isOpen={isDeleteOpen}
+        onDelete={onDelete}
         toggleModal={toggleDelete}
       />
-      <DataSourceModal
-        currentStorage={storage}
+      <DataConnectorModal
+        dataConnector={dataConnector}
         isOpen={isEditOpen}
+        namespace={dataConnector.namespace}
         toggle={toggleEdit}
-        projectId={projectId}
-      />
-    </>
-  );
-}
-interface DataSourceDisplayProps {
-  storage: CloudStorageGetRead;
-  projectId: string;
-}
-
-export function DataSourceDisplay({
-  storage,
-  projectId,
-}: DataSourceDisplayProps) {
-  const storageSensitive = storage.storage;
-  const [toggleView, setToggleView] = useState(false);
-  const toggleDetails = useCallback(() => {
-    setToggleView((open: boolean) => !open);
-  }, []);
-
-  const storageType = storageSensitive?.storage_type ? (
-    <>
-      {" "}
-      <span className="fst-italic" data-cy="data-storage-type">
-        (type: {storageSensitive.storage_type})
-      </span>
-    </>
-  ) : null;
-
-  const storageName = (
-    <span className="fw-bold" data-cy="data-storage-name">
-      {storageSensitive.name}
-    </span>
-  );
-
-  return (
-    <>
-      <ListGroupItem
-        action
-        className={cx("cursor-pointer", "link-primary", "text-body")}
-        onClick={toggleDetails}
-      >
-        <Row className={cx("align-items-center", "g-2")}>
-          <Col>
-            <span>
-              {storageName}
-              {storageType}
-            </span>
-          </Col>
-          <Col xs={12} sm="auto" className="ms-auto">
-            <DataSourceActions storage={storage} projectId={projectId} />
-          </Col>
-        </Row>
-      </ListGroupItem>
-      <DataSourceView
-        storage={storage}
-        setToggleView={toggleDetails}
-        toggleView={toggleView}
-        projectId={projectId}
       />
     </>
   );
