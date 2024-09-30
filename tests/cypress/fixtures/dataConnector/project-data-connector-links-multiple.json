@@ -1,0 +1,16 @@
+[
+  {
+    "id": "LINK-ULID-1",
+    "data_connector_id": "ULID-1",
+    "project_id": "PROJECT-ULID-1",
+    "creation_date": "2023-11-15T09:55:59Z",
+    "created_by": { "id": "user1-uuid" }
+  },
+  {
+    "id": "LINK-ULID-2",
+    "data_connector_id": "ULID-1",
+    "project_id": "PROJECT-ULID-2",
+    "creation_date": "2023-11-15T09:55:59Z",
+    "created_by": { "id": "user1-uuid" }
+  }
+]

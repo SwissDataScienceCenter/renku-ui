@@ -24,6 +24,7 @@ import { ArrowCounterclockwise, Database } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 
 import AddStorageBreadcrumbNavbar from "../../../project/components/cloudStorage/AddStorageBreadcrumbNavbar";
 import {
@@ -50,9 +51,12 @@ import {
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
+  usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsMutation,
-} from "../../../projectsV2/api/data-connectors.enhanced-api";
-import type { DataConnectorRead } from "../../../projectsV2/api/data-connectors.api";
+} from "../../api/data-connectors.enhanced-api";
+import type { DataConnectorRead } from "../../api/data-connectors.api";
+
+import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
 
 import styles from "./DataConnectorModal.module.scss";
 
@@ -62,7 +66,7 @@ import {
   DataConnectorConnectionTestResult,
 } from "./dataConnectorModalButtons";
 import DataConnectorModalBody from "./DataConnectorModalBody";
-import type { CredentialSaveStatus } from "./DataConnectorModalResult";
+import type { AuxiliaryCommandStatus } from "./DataConnectorModalResult";
 import {
   dataConnectorPostFromFlattened,
   dataConnectorToFlattened,
@@ -70,16 +74,11 @@ import {
   type DataConnectorFlat,
 } from "../dataConnector.utils";
 
-interface DataConnectorModalProps {
-  dataConnector?: DataConnectorRead | null;
-  isOpen: boolean;
-  namespace: string;
-  toggle: () => void;
-}
-export default function DataConnectorModal({
+export function DataConnectorModalBodyAndFooter({
   dataConnector = null,
   isOpen,
   namespace,
+  projectId,
   toggle: originalToggle,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
@@ -110,7 +109,9 @@ export default function DataConnectorModal({
 
   const [success, setSuccess] = useState(false);
   const [credentialSaveStatus, setCredentialSaveStatus] =
-    useState<CredentialSaveStatus>("none");
+    useState<AuxiliaryCommandStatus>("none");
+  const [projectLinkStatus, setProjectLinkStatus] =
+    useState<AuxiliaryCommandStatus>("none");
   const [validationSucceeded, setValidationSucceeded] = useState(false);
   const [state, setState] = useState<AddCloudStorageState>(
     EMPTY_CLOUD_STORAGE_STATE
@@ -175,6 +176,8 @@ export default function DataConnectorModal({
     usePatchDataConnectorsByDataConnectorIdMutation();
   const [saveCredentials, saveCredentialsResult] =
     usePatchDataConnectorsByDataConnectorIdSecretsMutation();
+  const [createProjectLink, createProjectLinkResult] =
+    usePostDataConnectorsByDataConnectorIdProjectLinksMutation();
   const [validateCloudStorageConnection, validationResult] =
     useTestCloudStorageConnectionMutation();
 
@@ -319,9 +322,8 @@ export default function DataConnectorModal({
       state.saveCredentials,
       validationSucceeded
     );
-    if (!shouldSaveCredentials) {
-      return;
-    }
+    if (!shouldSaveCredentials) return;
+
     const options = flatDataConnector.options as CloudStorageDetailsOptions;
     if (!schema) return;
     const sensitiveFieldNames = findSensitive(
@@ -366,6 +368,41 @@ export default function DataConnectorModal({
     setCredentialSaveStatus(status);
   }, [createResult, saveCredentialsResult, validationSucceeded]);
 
+  useEffect(() => {
+    const dataConnectorId = createResult.data?.id;
+    if (dataConnectorId == null) return;
+    const shouldLinkToProject = projectId != null && dataConnector == null;
+    if (!shouldLinkToProject) return;
+
+    createProjectLink({
+      dataConnectorId,
+      dataConnectorToProjectLinkPost: {
+        project_id: projectId,
+      },
+    });
+  }, [createResult.data?.id, createProjectLink, dataConnector, projectId]);
+
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (createProjectLinkResult.isSuccess) {
+      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
+    }
+    const status =
+      projectId == null
+        ? "none"
+        : createResult.data?.id == null ||
+          createProjectLinkResult.isUninitialized
+        ? "none"
+        : createProjectLinkResult.isLoading
+        ? "trying"
+        : createProjectLinkResult.isSuccess
+        ? "success"
+        : createProjectLinkResult.isError
+        ? "failure"
+        : "none";
+    setProjectLinkStatus(status);
+  }, [createResult, createProjectLinkResult, dispatch, projectId]);
+
   // Visual elements
   const disableContinueButton =
     state.step === 1 &&
@@ -406,28 +443,13 @@ export default function DataConnectorModal({
     connectorSecrets != null && connectorSecrets.length > 0;
 
   return (
-    <Modal
-      backdrop="static"
-      centered
-      className={styles.modal}
-      data-cy="data-connector-edit-modal"
-      fullscreen="lg"
-      id={dataConnector?.id ?? "new-data-connector"}
-      isOpen={isOpen}
-      scrollable
-      size="lg"
-      unmountOnClose={false}
-      toggle={toggle}
-    >
-      <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
-        <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
-      </ModalHeader>
-
+    <>
       <ModalBody data-cy="data-connector-edit-body">
         <DataConnectorModalBody
           dataConnectorResultName={dataConnectorResultName}
           flatDataConnector={flatDataConnector}
           credentialSaveStatus={credentialSaveStatus}
+          projectLinkStatus={projectLinkStatus}
           redraw={redraw}
           schemaQueryResult={schemaQueryResult}
           setStateSafe={setStateSafe}
@@ -491,6 +513,51 @@ export default function DataConnectorModal({
           />
         )}
       </ModalFooter>
+    </>
+  );
+}
+
+interface DataConnectorModalProps {
+  dataConnector?: DataConnectorRead | null;
+  isOpen: boolean;
+  namespace: string;
+  projectId?: string;
+  toggle: () => void;
+}
+export default function DataConnectorModal({
+  dataConnector = null,
+  isOpen,
+  namespace,
+  projectId,
+  toggle,
+}: DataConnectorModalProps) {
+  const dataConnectorId = dataConnector?.id ?? null;
+  return (
+    <Modal
+      backdrop="static"
+      centered
+      className={styles.modal}
+      data-cy="data-connector-edit-modal"
+      fullscreen="lg"
+      id={dataConnector?.id ?? "new-data-connector"}
+      isOpen={isOpen}
+      scrollable
+      size="lg"
+      unmountOnClose={false}
+      toggle={toggle}
+    >
+      <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
+        <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
+      </ModalHeader>
+      <DataConnectorModalBodyAndFooter
+        {...{
+          dataConnector,
+          isOpen,
+          namespace,
+          projectId,
+          toggle,
+        }}
+      />
     </Modal>
   );
 }

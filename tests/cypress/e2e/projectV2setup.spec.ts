@@ -18,13 +18,21 @@
 
 import fixtures from "../support/renkulab-fixtures";
 
+function openDataConnectorMenu() {
+  cy.getDataCy("data-connector-edit")
+    .parent()
+    .find("[data-cy=button-with-menu-dropdown]")
+    .first()
+    .click();
+}
+
 describe("Set up project components", () => {
   beforeEach(() => {
     fixtures
       .config()
       .versions()
       .userTest()
-      .namespaces()
+      .listNamespaceV2()
       .dataServicesUser({
         response: {
           id: "0945f006-e117-49b7-8966-4c0842146313",
@@ -35,101 +43,99 @@ describe("Set up project components", () => {
     fixtures.projects().landingUserProjects().readProjectV2();
   });
 
-  it("set up simple data source", () => {
+  it("create a simple data connector", () => {
     fixtures
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .listProjectDataConnectors()
+      .getDataConnector()
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
-      .postCloudStorage({
-        name: "postCloudStorageV2",
-        fixture: "cloudStorage/new-cloud-storage_v2.json",
-      })
-      .cloudStorage({ name: "getCloudStorageV2", isV2: true })
-      .deleteCloudStorage({ name: "deleteCloudStorageV2", isV2: true });
-    fixtures.testCloudStorage();
+      .testCloudStorage({ success: false })
+      .postDataConnector({ namespace: "user1-uuid" })
+      .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    // add data source
-    cy.getDataCy("add-data-source").click();
-    cy.wait("@getStorageSchema");
+    cy.wait("@listProjectDataConnectors");
+
+    // add data connector
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.getDataCy("project-data-controller-mode-create").click();
+    // Pick a provider
     cy.getDataCy("data-storage-s3").click();
     cy.getDataCy("data-provider-AWS").click();
-    cy.getDataCy("cloud-storage-edit-next-button").click();
-    cy.get("#sourcePath").type("giab");
-    cy.getDataCy("test-cloud-storage-button").click();
-    cy.getDataCy("add-cloud-storage-continue-button").click();
-    cy.getDataCy("cloud-storage-edit-mount").within(() => {
-      cy.get("#name").type("giab");
-      cy.get("#saveCredentials").should("not.exist");
+    cy.getDataCy("data-connector-edit-next-button").click();
+
+    // Fill out the details
+    cy.get("#sourcePath").type("bucket/my-source");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("test-data-connector-button").click();
+    cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
+    cy.getDataCy("data-connector-edit-mount").within(() => {
+      cy.get("#name").type("example storage without credentials");
     });
-    cy.getDataCy("cloud-storage-edit-update-button").click();
-    cy.wait("@postCloudStorageV2");
-    cy.getDataCy("cloud-storage-edit-body").should(
+
+    cy.getDataCy("data-connector-edit-update-button").click();
+    cy.wait("@postDataConnector");
+    cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The storage example-storage has been successfully added."
+      "The data connector user1-uuid/example-storage-without-credentials has been successfully added"
     );
-    cy.getDataCy("cloud-storage-edit-close-button").click();
-    cy.wait("@getCloudStorageV2");
-    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
-    cy.getDataCy("data-storage-name").click();
-    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
-    cy.getDataCy("data-source-view-back-button").click();
+    cy.getDataCy("data-connector-edit-body").should(
+      "contain.text",
+      "project was linked"
+    );
+    cy.getDataCy("data-connector-edit-close-button").click();
+    cy.wait("@listProjectDataConnectors");
+  });
 
-    // Should see a message that credentials are not editable
-    cy.getDataCy("button-with-menu-dropdown").first().click();
-    cy.getDataCy("data-source-credentials").click();
-    cy.getDataCy("cloud-storage-credentials-not-needed-modal")
-      .should("be.visible")
-      .should(
-        "contain.text",
-        "This data source does not require any credentials."
-      );
-    cy.getDataCy("cloud-storage-credentials-not-needed-modal")
-      .contains("Close")
-      .click();
+  it("link a data connector", () => {
+    fixtures
+      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .listProjectDataConnectors()
+      .getDataConnectorByNamespaceAndSlug()
+      .postDataConnectorProjectLink({ dataConnectorId: "ULID-1" });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@listProjectDataConnectors");
 
-    cy.getDataCy("button-with-menu-dropdown").first().click();
+    // add data connector
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.getDataCy("project-data-controller-mode-link").click();
+    cy.get("#data-connector-identifier").type("user1-uuid/example-storage");
+    cy.getDataCy("link-data-connector-button").click();
+    cy.wait("@postDataConnectorProjectLink");
+    cy.wait("@listProjectDataConnectors");
+  });
 
-    // Should see a message that credentials are not editable
-    cy.getDataCy("data-source-credentials").click();
-    cy.getDataCy("cloud-storage-credentials-not-needed-modal")
-      .should("be.visible")
-      .should(
-        "contain.text",
-        "This data source does not require any credentials."
-      );
-    cy.getDataCy("cloud-storage-credentials-not-needed-modal")
-      .contains("Close")
-      .click();
+  it("delete a data connector", () => {
+    fixtures
+      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .listProjectDataConnectors()
+      .getDataConnector()
+      .deleteDataConnectorProjectLink();
 
-    cy.getDataCy("button-with-menu-dropdown").first().click();
-    // edit data source
-    fixtures.patchCloudStorage({ name: "patchCloudStorage2", isV2: true });
-    cy.getDataCy("data-source-edit").first().click();
-    cy.get("#sourcePath").type("2");
-    cy.getDataCy("test-cloud-storage-button")
-      .filter(":enabled")
-      .first()
-      .click();
-    cy.getDataCy("add-cloud-storage-continue-button")
-      .filter(":enabled")
-      .first()
-      .click();
-    cy.getDataCy("cloud-storage-edit-update-button")
-      .filter(":enabled")
-      .first()
-      .click();
-    cy.wait("@patchCloudStorage2");
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@listProjectDataConnectors");
 
-    // delete data source
-    cy.getDataCy("button-with-menu-dropdown").first().click();
-    cy.getDataCy("data-source-delete").click();
-    cy.getDataCy("delete-data-source-modal-button").click();
-    cy.wait("@deleteCloudStorageV2");
+    cy.contains("example storage").should("be.visible").click();
+    openDataConnectorMenu();
+    cy.getDataCy("data-connector-delete").should("be.visible").click();
+    cy.contains("Are you sure you want to unlink the data connector").should(
+      "be.visible"
+    );
+    cy.getDataCy("delete-data-connector-modal-button")
+      .should("be.enabled")
+      .click();
+    cy.wait("@deleteDataConnectorProjectLink");
+    cy.wait("@listProjectDataConnectors");
   });
 
   it("set up repositories", () => {
     fixtures
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .listProjectDataConnectors()
+      .getDataConnector()
       .updateProjectV2({
         fixture: "projectV2/update-projectV2-one-repository.json",
       });
@@ -170,6 +176,8 @@ describe("Set up project components", () => {
     }).as("getSessions");
     fixtures
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .listProjectDataConnectors()
+      .getDataConnector()
       .sessionLaunchers()
       .newLauncher()
       .editLauncher()

@@ -17,7 +17,8 @@
  */
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Lock, Pencil, Trash, XLg } from "react-bootstrap-icons";
+import { Lock, NodeMinus, Pencil, Trash, XLg } from "react-bootstrap-icons";
+import { matchPath, useLocation } from "react-router-dom-v5-compat";
 import {
   Button,
   Col,
@@ -31,24 +32,84 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
-import DataConnectorModal from "./DataConnectorModal";
-import type { DataConnectorRead } from "../../projectsV2/api/data-connectors.api";
-import { useDeleteDataConnectorsByDataConnectorIdMutation } from "../../projectsV2/api/data-connectors.enhanced-api";
-import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 
-interface DataConnectorDeleteModalProps {
+import type {
+  DataConnectorRead,
+  DataConnectorToProjectLink,
+} from "../api/data-connectors.api";
+import {
+  useDeleteDataConnectorsByDataConnectorIdMutation,
+  useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
+} from "../api/data-connectors.enhanced-api";
+import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
+
+import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
+import DataConnectorModal from "./DataConnectorModal";
+
+interface DataConnectorRemoveModalProps {
   dataConnector: DataConnectorRead;
+  dataConnectorLink?: DataConnectorToProjectLink;
   isOpen: boolean;
   onDelete: () => void;
   toggleModal: () => void;
 }
-function DataConnectorDeleteModal({
+function DataConnectorRemoveModal({
+  dataConnector,
+  dataConnectorLink,
+  onDelete,
+  toggleModal,
+  isOpen,
+}: DataConnectorRemoveModalProps) {
+  const location = useLocation();
+  const pathMatch = matchPath(
+    ABSOLUTE_ROUTES.v2.projects.show.root,
+    location.pathname
+  );
+  if (pathMatch === null) {
+    return (
+      <DataConnectorRemoveDeleteModal
+        {...{ dataConnector, onDelete, toggleModal, isOpen }}
+      />
+    );
+  }
+  const namespace = pathMatch?.params?.namespace;
+  const slug = pathMatch?.params?.slug;
+  if (
+    namespace === undefined ||
+    slug === undefined ||
+    dataConnectorLink == null
+  ) {
+    return (
+      <DataConnectorRemoveDeleteModal
+        {...{ dataConnector, onDelete, toggleModal, isOpen }}
+      />
+    );
+  }
+  const projectId = `${namespace}/${slug}`;
+  return (
+    <DataConnectorRemoveUnlinkModal
+      {...{
+        dataConnector,
+        dataConnectorLink,
+        projectId,
+        onDelete,
+        toggleModal,
+        isOpen,
+      }}
+    />
+  );
+}
+
+function DataConnectorRemoveDeleteModal({
   dataConnector,
   onDelete,
   toggleModal,
   isOpen,
-}: DataConnectorDeleteModalProps) {
+}: DataConnectorRemoveModalProps) {
+  const dispatch = useAppDispatch();
   const [deleteDataConnector, { isLoading, isSuccess }] =
     useDeleteDataConnectorsByDataConnectorIdMutation();
 
@@ -62,9 +123,10 @@ function DataConnectorDeleteModal({
 
   useEffect(() => {
     if (isSuccess) {
+      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       onDelete();
     }
-  }, [isSuccess, onDelete]);
+  }, [dispatch, isSuccess, onDelete]);
   const onDeleteDataCollector = () => {
     deleteDataConnector({
       dataConnectorId: dataConnector.id,
@@ -124,13 +186,105 @@ function DataConnectorDeleteModal({
     </Modal>
   );
 }
+
+interface DataConnectorRemoveUnlinkModalProps
+  extends Omit<DataConnectorRemoveModalProps, "dataConnectorLink"> {
+  dataConnectorLink: DataConnectorToProjectLink;
+  projectId: string;
+}
+
+function DataConnectorRemoveUnlinkModal({
+  dataConnector,
+  dataConnectorLink,
+  projectId,
+  onDelete,
+  toggleModal,
+  isOpen,
+}: DataConnectorRemoveUnlinkModalProps) {
+  const dispatch = useAppDispatch();
+  const [unlinkDataConnector, { isLoading: isLoadingUnlink, isSuccess }] =
+    useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation();
+
+  const linkId = dataConnectorLink.id;
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
+      onDelete();
+    }
+  }, [dispatch, isSuccess, onDelete]);
+
+  const onDeleteDataCollector = useCallback(() => {
+    if (!linkId) return;
+
+    unlinkDataConnector({
+      dataConnectorId: dataConnector.id,
+      linkId,
+    });
+  }, [unlinkDataConnector, dataConnector.id, linkId]);
+
+  return (
+    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
+      <ModalHeader className="text-danger" toggle={toggleModal}>
+        Unlink data connector
+      </ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>
+            <p>
+              Are you sure you want to unlink the data connector{" "}
+              <strong>{dataConnector.slug}</strong> from the project{" "}
+              <strong>{projectId}</strong>?
+            </p>
+          </Col>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <div className="d-flex justify-content-end">
+          <Button color="outline-danger" onClick={toggleModal}>
+            <XLg className={cx("bi", "me-1")} />
+            Cancel
+          </Button>
+          <Button
+            color="danger"
+            className={cx("float-right", "ms-2")}
+            data-cy="delete-data-connector-modal-button"
+            type="submit"
+            onClick={onDeleteDataCollector}
+          >
+            {isLoadingUnlink ? (
+              <>
+                <Loader className="me-1" inline size={16} />
+                Unlinking data connector
+              </>
+            ) : (
+              <>
+                <Trash className={cx("bi", "me-1")} />
+                Unlink data connector
+              </>
+            )}
+          </Button>
+        </div>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
 export default function DataConnectorActions({
   dataConnector,
+  dataConnectorLink,
   toggleView,
 }: {
   dataConnector: DataConnectorRead;
+  dataConnectorLink?: DataConnectorToProjectLink;
   toggleView: () => void;
 }) {
+  const location = useLocation();
+  const pathMatch = matchPath(
+    ABSOLUTE_ROUTES.v2.projects.show.root,
+    location.pathname
+  );
+  const removeMode = pathMatch === null ? "delete" : "unlink";
   const [isCredentialsOpen, setCredentialsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -177,8 +331,17 @@ export default function DataConnectorActions({
           Credentials
         </DropdownItem>
         <DropdownItem data-cy="data-connector-delete" onClick={toggleDelete}>
-          <Trash className={cx("bi", "me-1")} />
-          Remove
+          {removeMode === "delete" ? (
+            <span>
+              <Trash className={cx("bi", "me-1")} />
+              Remove
+            </span>
+          ) : (
+            <span>
+              <NodeMinus className={cx("bi", "me-1")} />
+              Unlink
+            </span>
+          )}
         </DropdownItem>
       </ButtonWithMenuV2>
       <DataConnectorCredentialsModal
@@ -186,8 +349,9 @@ export default function DataConnectorActions({
         setOpen={setCredentialsOpen}
         isOpen={isCredentialsOpen}
       />
-      <DataConnectorDeleteModal
+      <DataConnectorRemoveModal
         dataConnector={dataConnector}
+        dataConnectorLink={dataConnectorLink}
         isOpen={isDeleteOpen}
         onDelete={onDelete}
         toggleModal={toggleDelete}

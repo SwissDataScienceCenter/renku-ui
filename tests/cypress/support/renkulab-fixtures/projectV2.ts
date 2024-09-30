@@ -257,12 +257,16 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         name = "readProjectV2ById",
         projectId = "THEPROJECTULID26CHARACTERS",
       } = args ?? {};
-      const response = { fixture };
-      cy.intercept(
-        "GET",
-        `/ui-server/api/data/projects/${projectId}`,
-        response
-      ).as(name);
+      cy.fixture(fixture).then((project) => {
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/projects/${projectId}`,
+          (req) => {
+            const response = { ...project, id: projectId };
+            req.reply({ body: response, delay: 1000 });
+          }
+        ).as(name);
+      });
       return this;
     }
 

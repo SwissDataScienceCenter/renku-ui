@@ -49,7 +49,7 @@ import {
   CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
-  CredentialSaveStatus,
+  AuxiliaryCommandStatus,
   TestCloudStorageConnectionParams,
   UpdateCloudStorageParams,
 } from "./projectCloudStorage.types";
@@ -104,7 +104,7 @@ export default function CloudStorageModal({
 
   const [success, setSuccess] = useState(false);
   const [credentialSaveStatus, setCredentialSaveStatus] =
-    useState<CredentialSaveStatus>("none");
+    useState<AuxiliaryCommandStatus>("none");
   const [validationSucceeded, setValidationSucceeded] = useState(false);
   const [state, setState] = useState<AddCloudStorageState>(
     EMPTY_CLOUD_STORAGE_STATE

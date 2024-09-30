@@ -19,9 +19,9 @@
 import { useMemo } from "react";
 
 import { CLOUD_OPTIONS_OVERRIDE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
-import { RCloneOption } from "../../projectsV2/api/data-connectors.api";
-import type { DataConnectorRead } from "../../projectsV2/api/data-connectors.api";
-import { useGetDataConnectorsListSecretsQuery } from "../../projectsV2/api/data-connectors.enhanced-api";
+import { RCloneOption } from "../api/data-connectors.api";
+import type { DataConnectorRead } from "../api/data-connectors.api";
+import { useGetDataConnectorsListSecretsQuery } from "../api/data-connectors.enhanced-api";
 
 import type { SessionStartCloudStorageConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 

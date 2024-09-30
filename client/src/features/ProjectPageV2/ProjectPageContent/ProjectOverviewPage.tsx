@@ -21,7 +21,7 @@ import { Col, Row } from "reactstrap";
 import SessionsV2 from "../../sessionsV2/SessionsV2";
 import { useProject } from "../ProjectPageContainer/ProjectPageContainer";
 import { CodeRepositoriesDisplay } from "./CodeRepositories/RepositoriesBox";
-import { DataSourcesDisplay } from "./DataSources/DataSourcesBox";
+import ProjectDataConnectorsBox from "./DataConnectors/ProjectDataConnectorsBox";
 import ProjectInformation from "./ProjectInformation/ProjectInformation";
 
 export default function ProjectOverviewPage() {
@@ -35,7 +35,7 @@ export default function ProjectOverviewPage() {
             <SessionsV2 project={project} />
           </Col>
           <Col className="order-3" xs={12} xl={6}>
-            <DataSourcesDisplay project={project} />
+            <ProjectDataConnectorsBox project={project} />
           </Col>
           <Col className="order-4" xs={12} xl={6}>
             <CodeRepositoriesDisplay project={project} />
