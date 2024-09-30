@@ -19,9 +19,11 @@
 import {
   CloudStorageGetRead,
   CloudStorageWithIdRead,
+} from "../../projectsV2/api/storagesV2.api";
+import {
   RCloneConfig,
   RCloneOption,
-} from "../../projectsV2/api/storagesV2.api";
+} from "../../dataConnectorsV2/api/data-connectors.api";
 import {
   CLOUD_OPTIONS_OVERRIDE,
   CLOUD_STORAGE_MOUNT_PATH_HELP,
@@ -41,7 +43,7 @@ import {
   CloudStorageSchemaOptions,
 } from "../components/cloudStorage/projectCloudStorage.types";
 
-import { SessionStartCloudStorageConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
+import { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 
 const LAST_POSITION = 1000;
 
@@ -49,7 +51,16 @@ export interface CloudStorageOptions extends RCloneOption {
   requiredCredential: boolean;
 }
 
-type StorageDefinition = CloudStorage | CloudStorageGetRead;
+type SensitiveFields =
+  | CloudStorage["sensitive_fields"]
+  | CloudStorageGetRead["sensitive_fields"];
+type StorageConfiguration =
+  | CloudStorage["storage"]["configuration"]
+  | CloudStorageGetRead["storage"]["configuration"];
+type StorageAndSensitiveFieldsDefinition = {
+  storage: { configuration: StorageConfiguration };
+  sensitive_fields?: SensitiveFields;
+};
 
 export function parseCloudStorageConfiguration(
   formattedConfiguration: string
@@ -92,7 +103,9 @@ export function convertFromAdvancedConfig(
   return values.length ? values.join("\n") + "\n" : "";
 }
 
-export function getCredentialFieldDefinitions<T extends StorageDefinition>(
+export function getCredentialFieldDefinitions<
+  T extends StorageAndSensitiveFieldsDefinition
+>(
   storageDefinition: T
 ):
   | (T extends CloudStorageGetRead
@@ -418,27 +431,35 @@ export function findSensitive(
 }
 
 export function storageDefinitionAfterSavingCredentialsFromConfig(
-  cs: SessionStartCloudStorageConfiguration
+  cs: SessionStartDataConnectorConfiguration
 ) {
   const newCs = { ...cs, saveCredentials: false };
-  const newStorage = { ...newCs.cloudStorage.storage };
+  const newStorage = { ...newCs.dataConnector.storage };
   // The following two lines remove the sensitive fields from the storage configuration,
   // which should be ok, but isn't; so keep in the sensitive fields.
   // newCs.sensitiveFieldValues = {};
   // newStorage.configuration = {};
-  const newCloudStorage = {
-    ...newCs.cloudStorage,
+  const newDataConnector = {
+    ...newCs.dataConnector,
     storage: newStorage,
   };
-  newCs.cloudStorage = newCloudStorage;
+  newCs.dataConnector = newDataConnector;
   return newCs;
 }
 
 export function storageDefinitionFromConfig(
-  config: SessionStartCloudStorageConfiguration
+  config: SessionStartDataConnectorConfiguration,
+  projectId: string
 ): CloudStorageWithIdRead {
-  const storageDefinition = config.cloudStorage.storage;
-  const newStorageDefinition = { ...storageDefinition };
+  const storageDefinition = config.dataConnector.storage;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { sensitive_fields, ...s } = config.dataConnector.storage;
+  const newStorageDefinition = {
+    ...s,
+    name: config.dataConnector.slug,
+    project_id: projectId,
+    storage_id: config.dataConnector.id,
+  };
   newStorageDefinition.configuration = { ...storageDefinition.configuration };
   const sensitiveFieldValues = config.sensitiveFieldValues;
   Object.entries(sensitiveFieldValues).forEach(([name, value]) => {

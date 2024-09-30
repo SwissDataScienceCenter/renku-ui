@@ -49,7 +49,7 @@ import {
   CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
-  CredentialSaveStatus,
+  AuxiliaryCommandStatus,
   TestCloudStorageConnectionParams,
   UpdateCloudStorageParams,
 } from "./projectCloudStorage.types";
@@ -104,7 +104,7 @@ export default function CloudStorageModal({
 
   const [success, setSuccess] = useState(false);
   const [credentialSaveStatus, setCredentialSaveStatus] =
-    useState<CredentialSaveStatus>("none");
+    useState<AuxiliaryCommandStatus>("none");
   const [validationSucceeded, setValidationSucceeded] = useState(false);
   const [state, setState] = useState<AddCloudStorageState>(
     EMPTY_CLOUD_STORAGE_STATE
@@ -385,14 +385,13 @@ export default function CloudStorageModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle} data-cy="cloud-storage-edit-header">
-        <AddCloudStorageHeaderContent isV2={false} storageId={storageId} />
+        <AddCloudStorageHeaderContent storageId={storageId} />
       </ModalHeader>
 
       <ModalBody data-cy="cloud-storage-edit-body">
         <AddCloudStorageBodyContent
           addResultStorageName={addResultStorageName}
           credentialSaveStatus={credentialSaveStatus}
-          isV2={false}
           redraw={redraw}
           schema={schema}
           schemaError={schemaError}

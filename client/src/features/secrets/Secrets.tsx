@@ -68,9 +68,8 @@ function StorageSecretSection() {
             <h3>Storage Secrets</h3>
           </div>
           <p>
-            Credentials used to access data sources can be persisted as storage
-            secrets. Credentials should be initially entered in the context of a
-            project data sources, but the values can be updated here.
+            Credentials used to access data connectors can be persisted as
+            storage secrets.
           </p>
         </Col>
       </Row>

@@ -94,7 +94,7 @@ export default function ProjectListDisplay({
   const { data, error, isLoading } = useGetProjectsQuery({
     namespace: ns,
     page,
-    perPage,
+    perPage: perPage,
   });
 
   useEffect(() => {
