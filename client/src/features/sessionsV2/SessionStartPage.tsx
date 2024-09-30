@@ -50,8 +50,8 @@ import {
 } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
-import type { CloudStorageConfiguration } from "./DataConnectorSecretsModal";
-import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
+import type { CloudStorageConfiguration } from "./DataStorageSecretsModal";
+import DataStorageSecretsModal from "./DataStorageSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
@@ -312,7 +312,7 @@ function StartSessionWithCloudStorageModal({
   startSessionOptionsV2,
   cloudStorageConfigs,
 }: StartSessionWithCloudStorageModalProps) {
-  const [showDataConnectorSecretsModal, setShowDataConnectorSecretsModal] =
+  const [showDataStorageSecretsModal, setShowDataConnectorSecretsModal] =
     useState<boolean>(false);
   const dispatch = useAppDispatch();
 
@@ -394,8 +394,8 @@ function StartSessionWithCloudStorageModal({
           title={`Starting session ${launcher.name}`}
           status={steps}
         />
-        <DataConnectorSecretsModal
-          isOpen={showDataConnectorSecretsModal}
+        <DataStorageSecretsModal
+          isOpen={showDataStorageSecretsModal}
           onCancel={onCancel}
           onStart={onStart}
           cloudStorageConfigs={configsNeedingCredentials}

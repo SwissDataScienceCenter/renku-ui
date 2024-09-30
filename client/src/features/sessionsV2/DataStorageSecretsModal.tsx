@@ -47,11 +47,14 @@ import { Loader } from "../../components/Loader";
 
 import { useTestCloudStorageConnectionMutation } from "../project/components/cloudStorage/projectCloudStorage.api";
 import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../project/components/cloudStorage/projectCloudStorage.constants";
-import type { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
+import type {
+  CloudStorageDetailsOptions,
+  TestCloudStorageConnectionParams,
+} from "../project/components/cloudStorage/projectCloudStorage.types";
+import { storageDefinitionFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { RCloneOption } from "../projectsV2/api/storagesV2.api";
+import type { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
-import { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
-import { validationParametersFromDataConnectorConfiguration } from "../dataConnectorsV2/components/dataConnector.utils";
 
 const CONTEXT_STRINGS = {
   session: {
@@ -69,6 +72,8 @@ const CONTEXT_STRINGS = {
       "The data source could not be mounted. Please try different credentials or rely on providing credentials at session launch time.",
   },
 };
+
+export type CloudStorageConfiguration = SessionStartCloudStorageConfiguration;
 
 function ClearCredentialsButton({
   onSkip,
@@ -93,22 +98,21 @@ function ClearCredentialsButton({
   );
 }
 
-interface DataConnectorConfigurationSecretsProps {
-  dataConnectorConfig: DataConnectorConfiguration;
+interface CloudStorageConfigurationSecretsProps {
+  cloudStorageConfig: CloudStorageConfiguration;
   context: Required<DataConnectorSecretsModalProps["context"]>;
   control: SensitiveFieldInputProps["control"];
 }
 
-function DataConnectorSecrets({
-  dataConnectorConfig,
+function CloudStorageConfigurationSecrets({
+  cloudStorageConfig,
   context,
   control,
-}: DataConnectorConfigurationSecretsProps) {
-  const dataConnector = dataConnectorConfig.dataConnector;
-  const storage = dataConnector.storage;
+}: CloudStorageConfigurationSecretsProps) {
+  const storage = cloudStorageConfig.cloudStorage.storage;
 
   const credentialFieldDict = Object.fromEntries(
-    dataConnectorConfig.savedCredentialFields.map((secret) => [
+    cloudStorageConfig.savedCredentialFields.map((secret) => [
       storageSecretNameToFieldName({ name: secret }),
       secret,
     ])
@@ -118,20 +122,20 @@ function DataConnectorSecrets({
   const hasIncompleteSavedCredentials =
     savedCredentialsLength > 0 &&
     savedCredentialsLength !=
-      dataConnectorConfig.sensitiveFieldDefinitions.length;
+      cloudStorageConfig.sensitiveFieldDefinitions.length;
 
   return (
     <>
       <div className={cx("d-flex", "align-items-baseline", "mt-1")}>
-        <h4>{dataConnector.name}</h4>
+        <h4>{storage.name}</h4>
         <div className="ms-2">({storage.source_path})</div>
       </div>
       <div>
-        {dataConnectorConfig.sensitiveFieldDefinitions.map((field) => {
+        {cloudStorageConfig.sensitiveFieldDefinitions.map((field) => {
           return (
             <SensitiveFieldWidget
               key={field.name}
-              dataConnectorConfig={dataConnectorConfig}
+              cloudStorageConfig={cloudStorageConfig}
               context={context}
               credentialFieldDict={credentialFieldDict}
               control={control}
@@ -156,15 +160,15 @@ interface DataConnectorSecretsModalProps {
   context?: "session" | "storage";
   isOpen: boolean;
   onCancel: () => void;
-  onStart: (dataConnectorConfigs: DataConnectorConfiguration[]) => void;
-  dataConnectorConfigs: DataConnectorConfiguration[] | undefined;
+  onStart: (dataConnectorConfigs: CloudStorageConfiguration[]) => void;
+  cloudStorageConfigs: CloudStorageConfiguration[] | undefined;
 }
 export default function DataConnectorSecretsModal({
   context = "session",
   isOpen,
   onCancel,
   onStart,
-  dataConnectorConfigs: initialCloudStorageConfigs,
+  cloudStorageConfigs: initialCloudStorageConfigs,
 }: DataConnectorSecretsModalProps) {
   const noCredentialsConfigs = useMemo(
     () =>
@@ -189,7 +193,7 @@ export default function DataConnectorSecretsModal({
     useTestCloudStorageConnectionMutation();
 
   const onNext = useCallback(
-    (csConfigs: DataConnectorConfiguration[]) => {
+    (csConfigs: CloudStorageConfiguration[]) => {
       if (index < csConfigs.length - 1) {
         if (!validationResult.isUninitialized) validationResult.reset();
         resetForm();
@@ -237,9 +241,13 @@ export default function DataConnectorSecretsModal({
         });
         config.sensitiveFieldValues = sensitiveFieldValues;
       }
+      const newStorageDetails = storageDefinitionFromConfig(config);
 
-      const validateParameters =
-        validationParametersFromDataConnectorConfiguration(config);
+      const validateParameters: TestCloudStorageConnectionParams = {
+        configuration: newStorageDetails.configuration,
+        source_path: newStorageDetails.source_path,
+      };
+
       validateCloudStorageConnection(validateParameters);
 
       const newCloudStorageConfigs = [...dataConnectorConfigs];
@@ -284,8 +292,8 @@ export default function DataConnectorSecretsModal({
         onSubmit={handleSubmit(onContinue)}
       >
         <ModalBody>
-          <DataConnectorSecrets
-            dataConnectorConfig={dataConnectorConfigs[index]}
+          <CloudStorageConfigurationSecrets
+            cloudStorageConfig={dataConnectorConfigs[index]}
             context={context}
             control={control}
           />
@@ -390,9 +398,9 @@ function CredentialsTestError({
 }
 
 interface ProgressBreadcrumbsProps {
-  dataConnectorConfigs: DataConnectorConfiguration[];
+  dataConnectorConfigs: CloudStorageConfiguration[];
   index: number;
-  setDataConnectorConfigs: (configs: DataConnectorConfiguration[]) => void;
+  setDataConnectorConfigs: (configs: CloudStorageConfiguration[]) => void;
   setIndex: (index: number) => void;
 }
 function ProgressBreadcrumbs({
@@ -405,10 +413,10 @@ function ProgressBreadcrumbs({
   return (
     <nav aria-label="breadcrumb">
       <ol className="breadcrumb">
-        {dataConnectorConfigs.map((dataConnectorConfig, idx) => (
+        {dataConnectorConfigs.map((cloudStorageConfig, idx) => (
           <li
             className={cx("breadcrumb-item", idx === index && "active")}
-            key={dataConnectorConfig.dataConnector.id}
+            key={cloudStorageConfig.cloudStorage.storage.storage_id}
           >
             <button
               className={cx(
@@ -429,7 +437,7 @@ function ProgressBreadcrumbs({
                 setIndex(idx);
               }}
             >
-              {dataConnectorConfig.dataConnector.name}
+              {cloudStorageConfig.cloudStorage.storage.name}
             </button>
           </li>
         ))}
@@ -470,7 +478,7 @@ function SaveCredentialsInput({
 }
 
 interface SensitiveFieldWidgetProps
-  extends DataConnectorConfigurationSecretsProps {
+  extends CloudStorageConfigurationSecretsProps {
   credentialFieldDict: Record<string, string>;
   field: {
     name: string;
@@ -480,7 +488,7 @@ interface SensitiveFieldWidgetProps
 }
 
 function SensitiveFieldWidget({
-  dataConnectorConfig,
+  cloudStorageConfig,
   credentialFieldDict,
   context,
   control,
@@ -502,7 +510,7 @@ function SensitiveFieldWidget({
     }
   }
   const defaultValue =
-    dataConnectorConfig.sensitiveFieldValues[field.name] ?? "";
+    cloudStorageConfig.sensitiveFieldValues[field.name] ?? "";
   return (
     <SensitiveFieldInput
       key={field.name}

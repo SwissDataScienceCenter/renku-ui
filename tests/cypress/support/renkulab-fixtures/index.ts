@@ -22,6 +22,7 @@
 import { Admin } from "./admin";
 import { CloudStorage } from "./cloudStorage";
 import { Dashboard } from "./dashboard";
+import { DataConnector } from "./dataConnectors";
 import { DataServices } from "./dataServices";
 import { Datasets } from "./datasets";
 import BaseFixtures from "./fixtures";
@@ -45,17 +46,19 @@ const V1Fixtures = NewProject(
     Dashboard(
       Sessions(
         Admin(
-          DataServices(
-            CloudStorage(
-              Datasets(
-                Projects(
-                  ProjectV2(
-                    SearchV2(
-                      Secrets(
-                        Terms(
-                          User(
-                            UserPreferences(
-                              Workflows(KgSearch(Global(BaseFixtures)))
+          DataConnector(
+            DataServices(
+              CloudStorage(
+                Datasets(
+                  Projects(
+                    ProjectV2(
+                      SearchV2(
+                        Secrets(
+                          Terms(
+                            User(
+                              UserPreferences(
+                                Workflows(KgSearch(Global(BaseFixtures)))
+                              )
                             )
                           )
                         )

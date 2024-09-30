@@ -18,27 +18,27 @@
 
 import cx from "classnames";
 
-import { Loader } from "../../../components/Loader";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 
-import { CLOUD_STORAGE_TOTAL_STEPS } from "../../project/components/cloudStorage/projectCloudStorage.constants";
+import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import type {
   AddCloudStorageState,
   CloudStorageDetails,
   CloudStorageSchema,
-} from "../../project/components/cloudStorage/projectCloudStorage.types";
+} from "../../../project/components/cloudStorage/projectCloudStorage.types";
 import {
   AddCloudStorageSuccessAlert,
   type AddCloudStorageBodyContentProps,
-} from "../../project/components/cloudStorage/cloudStorageModalComponents";
+} from "../../../project/components/cloudStorage/cloudStorageModalComponents";
 import {
   AddStorageAdvanced,
   AddStorageAdvancedToggle,
   AddStorageMount,
   AddStorageOptions,
   AddStorageType,
-} from "../../project/components/cloudStorage/AddOrEditCloudStorage";
-import type { CloudStorageSecretGet } from "../../projectsV2/api/storagesV2.api";
+} from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
+import type { CloudStorageSecretGet } from "../../../projectsV2/api/storagesV2.api";
 
 interface AddOrEditCloudStorageProps {
   schema: CloudStorageSchema[];
