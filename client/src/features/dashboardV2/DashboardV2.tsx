@@ -135,6 +135,7 @@ function ProjectList() {
   const { data, error, isLoading } = useGetProjectsQuery({
     page: 1,
     perPage: 5,
+    direct_member: true,
   });
 
   const noProjects = isLoading ? (
@@ -215,6 +216,7 @@ function GroupsList() {
   const { data, error, isLoading } = useGetGroupsQuery({
     page: 1,
     perPage: 5,
+    direct_member: true,
   });
 
   const noGroups = isLoading ? (

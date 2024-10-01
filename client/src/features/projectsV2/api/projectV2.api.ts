@@ -90,6 +90,8 @@ export type GetProjectsApiArg = {
   page?: number;
   /** The number of results per page */
   perPage?: number;
+  /** A flag to filter projects where the user is a direct member */
+  direct_member?: boolean;
 };
 export type PostProjectsApiResponse =
   /** status 201 The project was created */ Project;

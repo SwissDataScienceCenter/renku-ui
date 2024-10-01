@@ -58,7 +58,11 @@ const injectedApi = api.injectEndpoints({
     getGroupsPaged: builder.query<GetGroupsApiResponse, GetGroupsApiArg>({
       query: (queryArg) => ({
         url: "/groups",
-        params: { page: queryArg.page, per_page: queryArg.perPage },
+        params: {
+          page: queryArg.page,
+          per_page: queryArg.perPage,
+          direct_member: queryArg["direct_member"],
+        },
       }),
       transformResponse: (response, meta, queryArg) => {
         const groups = response as GroupResponseList;
@@ -113,6 +117,7 @@ const injectedApi = api.injectEndpoints({
         url: "/projects",
         params: {
           namespace: queryArg["namespace"],
+          direct_member: queryArg["direct_member"],
           page: queryArg.page,
           per_page: queryArg.perPage,
         },
