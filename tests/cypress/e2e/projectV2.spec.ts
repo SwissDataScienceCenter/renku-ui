@@ -30,7 +30,7 @@ describe("Add new v2 project", () => {
   });
 
   it("create a new project", () => {
-    cy.contains("New Project (V2)").should("be.visible");
+    cy.contains("New Project").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").should("have.value", slug);
     cy.wait("@listNamespaceV2");
@@ -51,7 +51,7 @@ describe("Add new v2 project", () => {
   });
 
   it("keeps namespace set after going back", () => {
-    cy.contains("New Project (V2)").should("be.visible");
+    cy.contains("New Project").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").should("have.value", slug);
     cy.wait("@listNamespaceV2");

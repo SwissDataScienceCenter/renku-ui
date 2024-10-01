@@ -102,18 +102,23 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
           className={cx(
             "align-items-center",
             "d-flex",
+            "flex-wrap",
             "gap-2",
             "justify-content-between"
           )}
         >
-          <div className={cx("align-items-center", "d-flex", "gap-2")}>
-            <UserAvatar
-              firstName={firstName}
-              lastName={lastName}
-              username={username}
-            />
-            <span className={cx("fw-bold")}>{name ?? "Unknown user"}</span>{" "}
-            <span>{`@${username}`}</span>
+          <div
+            className={cx("align-items-center", "d-flex", "flex-wrap", "gap-2")}
+          >
+            <div className={cx("align-items-center", "d-flex", "gap-2")}>
+              <UserAvatar
+                firstName={firstName}
+                lastName={lastName}
+                username={username}
+              />
+              <span className={cx("fw-bold")}>{name ?? "Unknown user"}</span>{" "}
+            </div>
+            <p className="m-0">{`@${username}`}</p>
           </div>
           <p className="m-0">{capitalize(role)}</p>
         </div>

@@ -1,6 +1,13 @@
-import { Meta, StoryObj } from "@storybook/react";
 import { Card, CardBody, CardFooter, CardHeader } from "reactstrap";
-import React from "react";
+import { Meta, StoryObj } from "@storybook/react";
+
+const componentDescription = `
+This is a very generic example of card, rarely used in its vanilla version in Renku.
+
+Mind that we customized the card component removing most of borders. Please check the "Card containing a List" story for a more common use case.
+
+Feel free to implement your own card component if needed; mind that you might need to manually add borders/spacing to replicate the look and feel of the other Renku elements.
+`;
 
 export default {
   args: {
@@ -26,7 +33,14 @@ export default {
       },
     },
   },
-  title: "Bootstrap/Card",
+  parameters: {
+    docs: {
+      description: {
+        component: componentDescription,
+      },
+    },
+  },
+  title: "Bootstrap/Card/Card",
 } as Meta;
 
 interface CardProps extends React.HtmlHTMLAttributes<HTMLElement> {

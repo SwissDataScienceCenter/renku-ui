@@ -18,42 +18,6 @@
   max-width: 100%;
 }
 
-.bouncer {
-  text-align: center;
-  margin: 50px auto 25px auto;
-}
-
-.bouncer span {
-  display: inline-block;
-  vertical-align: middle;
-  width: 25px;
-  height: 25px;
-  margin: 5px;
-  background: #01192d;
-  border-radius: 50px;
-  animation: bouncer 0.9s infinite alternate;
-}
-
-.bouncer span:nth-of-type(2) {
-  animation-delay: 0.25s;
-}
-
-.bouncer span:nth-of-type(3) {
-  animation-delay: 0.5s;
-}
-
-@keyframes bouncer {
-  0%,
-  50% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0.6;
-    transform: translateY(-21px);
-  }
-}
-
 .renku-markdown code {
   padding: 0.2em 0.4em;
   font-size: 85%;

@@ -1,6 +1,8 @@
 import { Meta } from "@storybook/react";
-import styles from "./ColorPalette.module.scss";
+
 import { CommandCopy } from "../../components/commandCopy/CommandCopy.tsx";
+
+import styles from "./ColorPalette.module.scss";
 
 interface Color {
   name: string;
@@ -29,7 +31,7 @@ const ColorPalette = ({ colors }: ColorPaletteProps) => (
 );
 
 export default {
-  title: "Bootstrap/Color Palette",
+  title: "Bootstrap/GENERIC - Color Palette",
   component: ColorPalette,
   parameters: {
     docs: {

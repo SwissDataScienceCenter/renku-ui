@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,27 +16,4 @@
  * limitations under the License.
  */
 
-import { Meta, StoryObj } from "@storybook/react";
-import { TypeEntityFilter } from "./TypeEntityFilter";
-
-const meta: Meta<typeof TypeEntityFilter> = {
-  title: "components/Search/TypeEntityFilter",
-  component: TypeEntityFilter,
-  argTypes: {
-    handler: {
-      table: {
-        disable: true,
-      },
-    },
-  },
-};
-export default meta;
-type Story = StoryObj<typeof TypeEntityFilter>;
-export const Default: Story = {
-  args: {
-    value: {
-      project: true,
-      dataset: true,
-    },
-  },
-};
+export const ALERT_ICON_SIZE = 32;

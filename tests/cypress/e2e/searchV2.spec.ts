@@ -37,15 +37,17 @@ describe("Search V2", () => {
     cy.visit("/v2/search");
     cy.getDataCy("search-input").type("type:project test{enter}");
 
-    cy.getDataCy("search-filter-type-project").should("be.checked");
+    cy.getDataCy("search-filter-type-project")
+      .filter(":visible")
+      .should("be.checked");
     cy.getDataCy("search-filter-type-user").should("not.be.checked");
     cy.getDataCy("search-card").should("have.length", 5);
 
-    cy.getDataCy("search-filter-type-user").click();
+    cy.getDataCy("search-filter-type-user").filter(":visible").click();
     cy.getDataCy("search-filter-type-user").should("be.checked");
     cy.getDataCy("search-card").should("have.length", 7);
 
-    cy.getDataCy("search-filter-type-project").click();
+    cy.getDataCy("search-filter-type-project").filter(":visible").click();
     cy.getDataCy("search-filter-type-project").should("not.be.checked");
     cy.getDataCy("search-card").should("have.length", 2);
   });

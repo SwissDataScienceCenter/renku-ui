@@ -173,7 +173,7 @@ export default function ProjectV2New() {
   return (
     <FormSchema
       showHeader={true}
-      title="New Project (V2)"
+      title="New Project"
       description={<ProjectV2NewHeader currentStep={currentStep} />}
     >
       {currentStep < 3 && <ProjectV2NewForm currentStep={currentStep} />}

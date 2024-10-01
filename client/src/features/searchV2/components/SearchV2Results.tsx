@@ -17,14 +17,30 @@
  */
 
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect } from "react";
-import { Globe2, Lock } from "react-bootstrap-icons";
+import { ReactNode, useCallback, useEffect, useRef } from "react";
+import {
+  Folder2Open,
+  Globe2,
+  Icon,
+  Lock,
+  People,
+  Person,
+  Question,
+} from "react-bootstrap-icons";
 import {
   Link,
   generatePath,
   useSearchParams,
 } from "react-router-dom-v5-compat";
-import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  UncontrolledTooltip,
+} from "reactstrap";
 
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { Loader } from "../../../components/Loader";
@@ -68,7 +84,7 @@ export default function SearchV2Results() {
   return (
     <Row data-cy="search-results">
       <Col className="d-sm-none" xs={12}>
-        <h3>Results</h3>
+        <h4>Results</h4>
       </Col>
       <Col xs={12}>
         <SearchV2ResultsContent />
@@ -80,7 +96,6 @@ export default function SearchV2Results() {
           totalItems={searchResults?.pagingInfo.totalResult ?? 0}
           onPageChange={onPageChange}
           showDescription={true}
-          className="rk-search-pagination"
         />
       </Col>
     </Row>
@@ -101,10 +116,12 @@ function SearchV2ResultsContent() {
   }
 
   if (!searchResults.data?.items?.length) {
-    return (
+    return query == null ? (
+      <p>No results</p>
+    ) : (
       <>
         <p>
-          No results for <span className="fw-bold">{`"${query}"`}</span>.
+          No results for <span className="fw-bold">{`"${query}"`}</span>
         </p>
         <p>You can try another search, or change some filters.</p>
       </>
@@ -140,7 +157,7 @@ interface SearchV2ResultsCardProps {
 }
 function SearchV2ResultsContainer({ children }: SearchV2ResultsCardProps) {
   return (
-    <Col xs={12} lg={6} xxl={4} data-cy="search-card">
+    <Col xs={12} md={6} xl={4} data-cy="search-card">
       <Card className="h-100">{children}</Card>
     </Col>
   );
@@ -172,20 +189,73 @@ function SearchV2CardTitle({
       </div>
       {entityType && (
         <div className={cx("mb-auto", "ms-auto")}>
-          <Badge
-            pill
-            className={cx(
-              "border",
-              "border-dark-subtle",
-              "bg-light",
-              "text-dark-emphasis"
-            )}
-          >
-            {entityType}
-          </Badge>
+          <EntityPill
+            entityType={entityType}
+            size="sm"
+            tooltipPlacement="bottom"
+          />
         </div>
       )}
     </CardHeader>
+  );
+}
+
+interface EntityPillProps {
+  entityType: SearchEntity["type"];
+  size?: "sm" | "md" | "lg" | "xl" | "auto";
+  tooltip?: boolean;
+  tooltipPlacement?: "top" | "bottom" | "left" | "right";
+}
+export function EntityPill({
+  entityType,
+  size = "auto",
+  tooltip = true,
+  tooltipPlacement = "top",
+}: EntityPillProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const IconComponent: Icon =
+    entityType === "Project"
+      ? Folder2Open
+      : entityType === "Group"
+      ? People
+      : entityType === "User"
+      ? Person
+      : Question;
+  const sizeClass =
+    size == "sm"
+      ? "fs-6"
+      : size === "md"
+      ? "fs-5"
+      : size === "lg"
+      ? "fs-4"
+      : size === "xl"
+      ? "fs-2"
+      : null;
+
+  return (
+    <>
+      <div ref={ref}>
+        <Badge
+          className={cx(
+            "bg-light",
+            "border-dark-subtle",
+            "border",
+            "d-flex",
+            "p-2",
+            "text-dark-emphasis",
+            sizeClass
+          )}
+          pill
+        >
+          <IconComponent />
+        </Badge>
+      </div>
+      {tooltip && (
+        <UncontrolledTooltip placement={tooltipPlacement} target={ref}>
+          {entityType}
+        </UncontrolledTooltip>
+      )}
+    </>
   );
 }
 

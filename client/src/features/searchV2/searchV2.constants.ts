@@ -16,6 +16,14 @@
  * limitations under the License
  */
 
+import {
+  Folder2Open,
+  Globe2,
+  Icon,
+  Lock,
+  People,
+  Person,
+} from "react-bootstrap-icons";
 import type { Role } from "../projectsV2/api/projectV2.api";
 import type {
   AfterDateValue,
@@ -141,18 +149,18 @@ export const FILTER_KEY_LABELS: {
 };
 
 export const FILTER_VALUE_LABELS: {
-  [key in SearchFilter["values"][number]]: { label: string };
+  [key in SearchFilter["values"][number]]: { icon?: Icon; label: string };
 } = {
   owner: { label: "Owner" },
   editor: { label: "Editor" },
   viewer: { label: "Viewer" },
 
-  group: { label: "Group" },
-  project: { label: "Project" },
-  user: { label: "User" },
+  group: { icon: People, label: "Group" },
+  project: { icon: Folder2Open, label: "Project" },
+  user: { icon: Person, label: "User" },
 
-  private: { label: "Private" },
-  public: { label: "Public" },
+  private: { icon: Lock, label: "Private" },
+  public: { icon: Globe2, label: "Public" },
 };
 
 export const DATE_FILTER_AFTER_VALUE_LABELS: {

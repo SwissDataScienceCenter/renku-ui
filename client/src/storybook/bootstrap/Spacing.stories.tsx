@@ -1,9 +1,8 @@
 import cx from "classnames";
-import { StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 
 export default {
-  title: "Bootstrap/_Spacing",
-  component: "div" as React.ElementType,
+  args: {},
   parameters: {
     docs: {
       description: {
@@ -16,55 +15,52 @@ export default {
       },
     },
   },
-};
+  title: "Bootstrap/GENERIC - Spacing",
+} as Meta;
 
 type Story = StoryObj<React.HTMLAttributes<HTMLDivElement>>;
 
 export const DefaultSpacing: Story = {
-  args: {
-    children: (
-      <div className={cx("d-flex", "flex-column", "gap-3")}>
-        <div className="card">
-          <div className="card-body">Card body</div>
-        </div>
-        <div className="card">
-          <div className="card-body">Card body</div>
-        </div>
-        <div className="card">
-          <div className="card-body">
-            <p>My first paragraph.</p>
-            <p className="m-0">My second paragraph.</p>
-          </div>
+  render: (_args) => (
+    <div {..._args} className={cx("d-flex", "flex-column", "gap-3")}>
+      <div className="card">
+        <div className="card-body">Card body</div>
+      </div>
+      <div className="card">
+        <div className="card-body">Card body</div>
+      </div>
+      <div className="card">
+        <div className="card-body">
+          <p>My first paragraph.</p>
+          <p className="m-0">My second paragraph.</p>
         </div>
       </div>
-    ),
-  },
+    </div>
+  ),
 };
 
 export const ReducedSpacing: Story = {
-  args: {
-    children: (
-      <div className={cx("d-flex", "flex-column", "gap-3")}>
-        <div className="card">
-          <div className="card-body">Card body</div>
-        </div>
-        <div className="card">
-          <div className="card-body">Card body</div>
-        </div>
-        <div className="card">
-          <div className="card-body">
-            <h4>A list of items</h4>
-            <div className={cx("d-flex", "flex-column", "gap-2")}>
-              <div className="card">
-                <div className="card-body">Sub-card 1</div>
-              </div>
-              <div className="card">
-                <div className="card-body">Sub-card 2</div>
-              </div>
+  render: (_args) => (
+    <div {..._args} className={cx("d-flex", "flex-column", "gap-3")}>
+      <div className="card">
+        <div className="card-body">Card body</div>
+      </div>
+      <div className="card">
+        <div className="card-body">Card body</div>
+      </div>
+      <div className="card">
+        <div className="card-body">
+          <h4>A list of items</h4>
+          <div className={cx("d-flex", "flex-column", "gap-2")}>
+            <div className="card">
+              <div className="card-body">Sub-card 1</div>
+            </div>
+            <div className="card">
+              <div className="card-body">Sub-card 2</div>
             </div>
           </div>
         </div>
       </div>
-    ),
-  },
+    </div>
+  ),
 };

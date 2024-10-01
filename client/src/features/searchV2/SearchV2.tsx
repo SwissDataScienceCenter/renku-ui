@@ -44,10 +44,10 @@ export default function SearchV2() {
         </Col>
       </Row>
       <Row className="mb-3">
-        <Col xs={12} sm={4} lg={3} xxl={2}>
+        <Col xs={12} sm={3} lg={2}>
           <SearchV2Filters />
         </Col>
-        <Col xs={12} sm={8} lg={9} xxl={10}>
+        <Col xs={12} sm={9} lg={10}>
           <SearchV2Results />
         </Col>
       </Row>
