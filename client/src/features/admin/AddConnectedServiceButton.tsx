@@ -49,7 +49,7 @@ export default function AddConnectedServiceButton() {
     <>
       <Button className="btn-outline-rk-green" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
-        Add Session Environment
+        Add Service Provider
       </Button>
       <AddConnectedServiceModal isOpen={isOpen} toggle={toggle} />
     </>

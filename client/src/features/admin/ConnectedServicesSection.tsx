@@ -130,27 +130,17 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
 
         <Collapse isOpen={isOpen}>
           <CardBody className="pt-0">
+            <CardText className="mb-2">ID: {provider.id}</CardText>
+            <CardText className="mb-2">Kind: {provider.kind}</CardText>
+            <CardText className="mb-2">URL: {provider.url}</CardText>
             <CardText className="mb-2">
-              ID: <i>{provider.id}</i>
-            </CardText>
-            <CardText className="mb-2">
-              Kind: <i>{provider.kind}</i>
-            </CardText>
-            <CardText className="mb-2">
-              URL: <i>{provider.url}</i>
+              Client ID: {provider.client_id}
             </CardText>
             <CardText className="mb-2">
-              Client ID: <i>{provider.client_id}</i>
+              Client secret: {provider.client_secret}
             </CardText>
-            <CardText className="mb-2">
-              Client secret: <i>{provider.client_secret}</i>
-            </CardText>
-            <CardText className="mb-2">
-              Scope: <i>{provider.scope}</i>
-            </CardText>
-            <CardText>
-              Use PKCE: <i>{provider.use_pkce.toString()}</i>
-            </CardText>
+            <CardText className="mb-2">Scope: {provider.scope}</CardText>
+            <CardText>Use PKCE: {provider.use_pkce.toString()}</CardText>
           </CardBody>
 
           <CardFooter

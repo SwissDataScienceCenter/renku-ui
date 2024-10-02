@@ -144,7 +144,7 @@ function ConnectButton({ connectionStatus, id }: ConnectButtonParams) {
     connectionStatus === "connected" ? "btn-outline-primary" : "btn-primary";
 
   return (
-    <a className={cx(color, "btn", "btn-secondary", "ms-auto")} href={url}>
+    <a className={cx(color, "btn", "ms-auto")} href={url}>
       {text}
     </a>
   );
