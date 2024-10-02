@@ -127,11 +127,14 @@ function UpdateConnectedServiceModal({
     reset({
       kind: provider.kind,
       client_id: provider.client_id,
-      client_secret: provider.client_secret,
       display_name: provider.display_name,
       scope: provider.scope,
       url: provider.url,
       use_pkce: provider.use_pkce,
+      ...(provider.client_secret &&
+        provider.client_secret !== "redacted" && {
+          client_secret: provider.client_secret,
+        }),
     });
   }, [provider, reset]);
 
