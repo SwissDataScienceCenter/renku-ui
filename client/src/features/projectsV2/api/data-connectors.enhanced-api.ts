@@ -65,13 +65,14 @@ const injectedApi = api.injectEndpoints({
       async queryFn(queryArg, _api, _options, fetchWithBQ) {
         const { dataConnectorIds } = queryArg;
         const result: GetDataConnectorListSecretsApiResponse = {};
-        for (const dataConnectorId of dataConnectorIds) {
-          const response = await fetchWithBQ(
-            `/data_connectors/${dataConnectorId}/secrets`
-          );
-          if (response.error) {
-            return response;
-          }
+        const promises = dataConnectorIds.map((dataConnectorId) =>
+          fetchWithBQ(`/data_connectors/${dataConnectorId}/secrets`)
+        );
+        const responses = await Promise.all(promises);
+        for (let i = 0; i < dataConnectorIds.length; i++) {
+          const dataConnectorId = dataConnectorIds[i];
+          const response = responses[i];
+          if (response.error) return response;
           result[dataConnectorId] =
             response.data as GetDataConnectorsByDataConnectorIdSecretsApiResponse;
         }
