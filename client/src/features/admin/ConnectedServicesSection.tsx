@@ -143,21 +143,18 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
             <CardText>Use PKCE: {provider.use_pkce.toString()}</CardText>
           </CardBody>
 
-          <CardFooter
+          <CardBody
             className={cx(
-              "bg-white",
-              "border-0",
               "d-flex",
-              "justify-content-end",
+              "flex-row",
               "gap-2",
-              "rounded",
-              "pb-3",
+              "justify-content-end",
               "pt-0"
             )}
           >
             <UpdateConnectedServiceButton provider={provider} />
             <DeleteConnectedServiceButton provider={provider} />
-          </CardFooter>
+          </CardBody>
         </Collapse>
       </Card>
     </Col>
