@@ -35,6 +35,7 @@ import {
 } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
+import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 
 function FormField<T extends FieldValues>({
   control,
@@ -63,7 +64,9 @@ function FormField<T extends FieldValues>({
       <Label for={`addSessionLauncher${name}`} className="form-label me-2">
         {label}
       </Label>
-      <MoreInfo help={info} />
+      <MoreInfo>
+        <LazyRenkuMarkdown markdownText={info} />
+      </MoreInfo>
       <Controller
         control={control}
         name={name}
@@ -109,7 +112,9 @@ function JsonField<T extends FieldValues>({
       <Label for={`addSessionLauncher${name}`} className="form-label me-2 mb-0">
         {label}
       </Label>
-      <MoreInfo help={info} />
+      <MoreInfo>
+        <LazyRenkuMarkdown markdownText={info} />
+      </MoreInfo>
       <FormText tag="div">{helpText}</FormText>
       <Controller
         control={control}
