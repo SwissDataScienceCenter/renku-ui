@@ -20,7 +20,6 @@ import cx from "classnames";
 import {
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   CardText,
   Col,
