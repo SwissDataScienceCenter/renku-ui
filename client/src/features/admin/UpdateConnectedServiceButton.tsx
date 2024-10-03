@@ -115,7 +115,8 @@ function UpdateConnectedServiceModal({
       return;
     }
     toggle();
-  }, [result.isSuccess, toggle]);
+    reset();
+  }, [result.isSuccess, reset, toggle]);
 
   useEffect(() => {
     if (!isOpen) {
