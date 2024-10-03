@@ -138,7 +138,7 @@ function FeatureFlagHandler() {
   return null;
 }
 
-function StyleHandler() {
+export function StyleHandler() {
   return (
     <Switch>
       <CompatRoute path="/v2">

@@ -20,15 +20,17 @@ import * as Sentry from "@sentry/react";
 import cx from "classnames";
 import { ReactNode, useCallback } from "react";
 
-import styles from "./ErrorBoundary.module.scss";
-import v2Styles from "../styles/renku_bootstrap.scss?inline";
-import { Helmet } from "react-helmet";
+import { ArrowLeft } from "react-bootstrap-icons";
+import OopsImage from "../not-found/OopsImage.tsx";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook.ts";
+import { StyleHandler } from "../index.jsx";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
 }
 
 export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
+  const logged = useLegacySelector((state) => state.stateModel.user.logged);
   // Handle chunk load errors by reloading the page
   const onError = useCallback((error: Error) => {
     if (error.name === "ChunkLoadError") {
@@ -43,44 +45,63 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
     }
   }, []);
 
+  const fallbackErrorPage = <ErrorPage logged={logged} />;
+
   return (
-    <Sentry.ErrorBoundary onError={onError} fallback={ErrorPage}>
+    <Sentry.ErrorBoundary onError={onError} fallback={fallbackErrorPage}>
       {children}
     </Sentry.ErrorBoundary>
   );
 }
 
-function ErrorPage() {
+const ErrorPage = ({ logged }: { logged: boolean }) => {
+  const isV2 = location.pathname.startsWith("/v2");
   return (
     <>
-      <Helmet>
-        <style type="text/css">{v2Styles}</style>
-      </Helmet>
-      <div className={styles.error}>
-        <div className={cx("container-xxl", "p-5")}>
-          <div className={cx("p-4", "bg-white", "bg-opacity-75")}>
-            <h1>Application Error</h1>
-            <h3 className="mb-4">
-              Ooops! It looks like we are having some issues!
-            </h3>
+      <StyleHandler />
+      <div
+        className={cx("d-flex", "flex-column", "align-items-center", "mt-5")}
+      >
+        <div className={cx("p-4")}>
+          <OopsImage className={cx(isV2 ? "text-primary" : "text-rk-green")} />
+          <h3
+            className={cx(
+              isV2 ? "text-primary" : "text-rk-green",
+              "fw-bold",
+              "mt-3"
+            )}
+          >
+            It looks like we are having some issues.
+          </h3>
 
-            <p className="mb-0">
-              You can try to{" "}
-              <a
-                className={cx("btn", "btn-primary", "mx-1")}
-                href={window.location.href}
-                onClick={() => window.location.reload()}
-              >
-                reload the page
-              </a>{" "}
-              or go to the{" "}
-              <a className={cx("btn", "btn-primary", "mx-1")} href="/">
-                Renku home page
-              </a>
-            </p>
-          </div>
+          <p className="mb-0">
+            You can try to{" "}
+            <a
+              className={cx(
+                "btn",
+                isV2 ? "btn-outline-primary" : "btn-outline-rk-green",
+                "m-2"
+              )}
+              href={window.location.href}
+              onClick={() => window.location.reload()}
+            >
+              Reload the page
+            </a>{" "}
+            or{" "}
+            <a
+              className={cx(
+                "btn",
+                isV2 ? "btn-primary" : "btn-rk-green",
+                "m-2"
+              )}
+              href="/"
+            >
+              <ArrowLeft className={cx("me-2", "text-icon")} />
+              {logged ? "Return to the dashboard" : "Return to home page"}
+            </a>
+          </p>
         </div>
       </div>
     </>
   );
-}
+};
