@@ -20,7 +20,7 @@ import cx from "classnames";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 
-import { ConnectedServiceForm } from "../connectedServices/connectedServices.types";
+import { ConnectedServiceForm } from "../connectedServices/api/connectedServices.types";
 
 export interface ConnectedServiceFormContentProps {
   control: Control<ConnectedServiceForm, unknown>;

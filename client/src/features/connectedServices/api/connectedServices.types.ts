@@ -22,6 +22,16 @@ import type {
 } from "../../../utils/types/pagination.types";
 import type { AppInstallation } from "./connectedServices.generated-api";
 
+export type Pagination = Required<
+  Pick<BasePagination, "currentPage" | "perPage" | "totalItems" | "totalPages">
+> &
+  BasePagination;
+
+export type AppInstallationsPaginated = PaginatedResponse<
+  AppInstallation,
+  Pagination
+>;
+
 export interface Provider {
   id: string;
   kind: string;
@@ -33,15 +43,7 @@ export interface Provider {
   use_pkce: boolean;
 }
 
-export type Pagination = Required<
-  Pick<BasePagination, "currentPage" | "perPage" | "totalItems" | "totalPages">
-> &
-  BasePagination;
-
-export type AppInstallationsPaginated = PaginatedResponse<
-  AppInstallation,
-  Pagination
->;
+export type ProviderList = Provider[];
 
 export interface Connection {
   id: string;

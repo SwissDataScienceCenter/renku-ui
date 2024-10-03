@@ -22,7 +22,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { TrashFill, XLg } from "react-bootstrap-icons";
 
-import { Provider } from "../connectedServices/connectedServices.types";
+import { Provider } from "../connectedServices/api/connectedServices.types";
 import { useDeleteProviderMutation } from "../connectedServices/connectedServices.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 

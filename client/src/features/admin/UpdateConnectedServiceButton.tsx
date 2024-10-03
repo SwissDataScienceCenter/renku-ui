@@ -38,7 +38,7 @@ import {
   ConnectedServiceForm,
   Provider,
   UpdateProviderParams,
-} from "../connectedServices/connectedServices.types";
+} from "../connectedServices/api/connectedServices.types";
 import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 
 interface UpdateConnectedServiceButtonProps {

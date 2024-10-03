@@ -33,7 +33,7 @@ import { useGetProvidersQuery } from "../connectedServices/connectedServices.api
 import {
   Provider,
   ProviderList,
-} from "../connectedServices/connectedServices.types";
+} from "../connectedServices/api/connectedServices.types";
 import AddConnectedServiceButton from "./AddConnectedServiceButton";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { useCallback, useState } from "react";

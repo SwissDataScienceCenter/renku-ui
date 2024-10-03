@@ -26,7 +26,7 @@ import {
   Provider,
   ProviderList,
   UpdateProviderParams,
-} from "./connectedServices.types";
+} from "./api/connectedServices.types";
 
 const connectedServicesApi = createApi({
   reducerPath: "connectedServicesApi",

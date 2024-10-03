@@ -33,7 +33,7 @@ import {
 import {
   ConnectedServiceForm,
   CreateProviderParams,
-} from "../connectedServices/connectedServices.types";
+} from "../connectedServices/api/connectedServices.types";
 import { useCreateProviderMutation } from "../connectedServices/connectedServices.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
