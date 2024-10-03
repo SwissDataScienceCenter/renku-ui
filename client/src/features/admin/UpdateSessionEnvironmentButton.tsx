@@ -32,12 +32,13 @@ import {
 import { Loader } from "../../components/Loader";
 import ButtonStyles from "../../components/buttons/Buttons.module.scss";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { safeParse, safeStringify } from "../sessionsV2/session.utils";
+import { safeParseJSONArray, safeStringify } from "../sessionsV2/session.utils";
 import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
 import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
+import { ErrorAlert } from "../../components/Alert";
 
 interface UpdateSessionEnvironmentButtonProps {
   environment: SessionEnvironment;
@@ -87,6 +88,7 @@ function UpdateSessionEnvironmentModal({
 }: UpdateSessionEnvironmentModalProps) {
   const [updateSessionEnvironment, result] =
     useUpdateSessionEnvironmentMutation();
+  const [submitError, setSubmitError] = useState(false);
 
   const {
     control,
@@ -114,24 +116,28 @@ function UpdateSessionEnvironmentModal({
   });
   const onSubmit = useCallback(
     (data: SessionEnvironmentForm) => {
-      updateSessionEnvironment({
-        environmentId: environment.id,
-        container_image: data.container_image,
-        name: data.name,
-        default_url: data.default_url.trim() ? data.default_url : "",
-        description: data.description.trim() ? data.description : "",
-        port: data.port ?? undefined,
-        working_directory: data.working_directory.trim()
-          ? data.working_directory
-          : undefined,
-        mount_directory: data.mount_directory.trim()
-          ? data.working_directory
-          : undefined,
-        uid: data.uid ?? undefined,
-        gid: data.gid ?? undefined,
-        command: safeParse(data.command),
-        args: safeParse(data.args),
-      });
+      const commandParsed = safeParseJSONArray(data.command);
+      const argsParsed = safeParseJSONArray(data.args);
+      if (commandParsed === false || argsParsed === false) setSubmitError(true);
+      else
+        updateSessionEnvironment({
+          environmentId: environment.id,
+          container_image: data.container_image,
+          name: data.name,
+          default_url: data.default_url.trim() ? data.default_url : "",
+          description: data.description.trim() ? data.description : "",
+          port: data.port ?? undefined,
+          working_directory: data.working_directory.trim()
+            ? data.working_directory
+            : undefined,
+          mount_directory: data.mount_directory.trim()
+            ? data.working_directory
+            : undefined,
+          uid: data.uid ?? undefined,
+          gid: data.gid ?? undefined,
+          command: commandParsed,
+          args: argsParsed,
+        });
     },
     [environment.id, updateSessionEnvironment]
   );
@@ -186,6 +192,11 @@ function UpdateSessionEnvironmentModal({
         <ModalHeader toggle={toggle}>Update session environment</ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
+          {submitError && (
+            <ErrorAlert>
+              The command or arguments are not a valid JSON array
+            </ErrorAlert>
+          )}
           <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>

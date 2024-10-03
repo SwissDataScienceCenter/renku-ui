@@ -56,7 +56,6 @@ import {
   SessionStatusV2Label,
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
-import { DEFAULT_URL } from "../session.utils.ts";
 import { SessionLauncher } from "../sessionsV2.types";
 import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
 import {
@@ -67,6 +66,7 @@ import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/proj
 import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal.tsx";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import { EnvironmentCard } from "./EnvironmentCard";
+import { DEFAULT_URL } from "../session.constants";
 
 interface SessionCardContentProps {
   color: string;

@@ -30,15 +30,11 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { SuccessAlert } from "../../../../components/Alert";
+import { ErrorAlert, SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
-import {
-  DEFAULT_PORT,
-  DEFAULT_URL,
-  getFormattedEnvironmentValues,
-} from "../../session.utils";
+import { getFormattedEnvironmentValues } from "../../session.utils";
 import {
   useAddSessionLauncherMutation,
   useGetSessionEnvironmentsQuery,
@@ -50,6 +46,7 @@ import {
   LauncherType,
   SessionLauncherBreadcrumbNavbar,
 } from "../SessionForm/SessionLauncherBreadcrumbNavbar";
+import { DEFAULT_URL, DEFAULT_PORT } from "../../session.constants";
 
 interface NewSessionLauncherModalProps {
   isOpen: boolean;
@@ -60,6 +57,7 @@ export default function NewSessionLauncherModal({
   isOpen,
   toggle,
 }: NewSessionLauncherModalProps) {
+  const [submitError, setSubmitError] = useState(false);
   const [step, setStep] = useState<LauncherType>(LauncherType.Environment);
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
   const { data: environments } = useGetSessionEnvironmentsQuery();
@@ -117,12 +115,14 @@ export default function NewSessionLauncherModal({
     (data: SessionLauncherForm) => {
       const { name, resourceClass } = data;
       const environment = getFormattedEnvironmentValues(data);
-      addSessionLauncher({
-        project_id: projectId ?? "",
-        resource_class_id: resourceClass.id,
-        name,
-        environment,
-      });
+      if (environment === false) setSubmitError(true);
+      else
+        addSessionLauncher({
+          project_id: projectId ?? "",
+          resource_class_id: resourceClass.id,
+          name,
+          environment,
+        });
     },
     [projectId, addSessionLauncher]
   );
@@ -184,6 +184,11 @@ export default function NewSessionLauncherModal({
             )}
             <Form noValidate onSubmit={handleSubmit(onSubmit)}>
               {result.error && <RtkErrorAlert error={result.error} />}
+              {submitError && (
+                <ErrorAlert>
+                  The command or arguments are not a valid JSON array
+                </ErrorAlert>
+              )}
               {step === "environment" && (
                 <EnvironmentFields
                   errors={errors}

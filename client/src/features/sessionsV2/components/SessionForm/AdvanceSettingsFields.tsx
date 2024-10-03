@@ -28,8 +28,8 @@ import {
 import { FormText, Input, Label } from "reactstrap";
 import { InputType } from "reactstrap/types/lib/Input";
 import { MoreInfo } from "../../../../components/MoreInfo";
+import { DEFAULT_URL } from "../../session.constants";
 import {
-  DEFAULT_URL,
   getFormCustomValuesDesc,
   isValidJSONArrayString,
 } from "../../session.utils";

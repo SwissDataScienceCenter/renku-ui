@@ -26,8 +26,8 @@ export interface AddSessionEnvironmentParams {
   working_directory?: string;
   mount_directory?: string;
   port?: number;
-  command?: string[];
-  args?: string[];
+  command?: string[] | null;
+  args?: string[] | null;
 }
 
 export interface UpdateSessionEnvironmentParams {
@@ -41,8 +41,8 @@ export interface UpdateSessionEnvironmentParams {
   working_directory?: string;
   mount_directory?: string;
   port?: number;
-  command?: string[];
-  args?: string[];
+  command?: string[] | null;
+  args?: string[] | null;
 }
 
 export interface DeleteSessionEnvironmentParams {

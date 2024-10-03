@@ -27,10 +27,10 @@ import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api";
 import { useGetDockerImageQuery } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
-import { DEFAULT_URL } from "./session.utils";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
+import { DEFAULT_URL } from "./session.constants";
 
 interface StartSessionFromLauncherProps {
   launcher: SessionLauncher;
