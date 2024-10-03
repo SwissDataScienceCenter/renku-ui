@@ -62,6 +62,7 @@ import { ResourcePoolUser } from "./adminComputeResources.types";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
+import ConnectedServicesSection from "./ConnectedServicesSection";
 
 export default function AdminPage() {
   return (
@@ -69,6 +70,7 @@ export default function AdminPage() {
       <h1 className={cx("fs-2", "mb-3")}>Admin Panel</h1>
       <IncidentsAndMaintenanceSection />
       <ComputeResourcesSection />
+      <ConnectedServicesSection />
       <SessionEnvironmentsSection />
     </>
   );
@@ -76,8 +78,8 @@ export default function AdminPage() {
 
 function ComputeResourcesSection() {
   return (
-    <section>
-      <h2 className="fs-5">Compute Resources</h2>
+    <section className="mt-4">
+      <h2 className="fs-4">Compute Resources</h2>
       <AdminComputeResourcesOverview />
     </section>
   );

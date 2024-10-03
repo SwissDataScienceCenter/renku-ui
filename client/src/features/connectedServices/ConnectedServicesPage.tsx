@@ -157,9 +157,9 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
 }
 
 interface ConnectButtonParams {
+  connectionStatus?: ConnectionStatus;
   id: string;
   kind?: ProviderKind;
-  connectionStatus?: ConnectionStatus;
 }
 
 function ConnectButton({ id, connectionStatus, kind }: ConnectButtonParams) {
@@ -175,9 +175,11 @@ function ConnectButton({ id, connectionStatus, kind }: ConnectButtonParams) {
   const url = `${authorizeUrl}?next_url=${encodeURIComponent(hereUrl)}`;
 
   const text = connectionStatus === "connected" ? "Reconnect" : "Connect";
+  const color =
+    connectionStatus === "connected" ? "btn-outline-primary" : "btn-primary";
 
   return (
-    <a className={cx("ms-auto", "btn", "btn-secondary")} href={url}>
+    <a className={cx(color, "btn", "ms-auto")} href={url}>
       {text}
     </a>
   );
