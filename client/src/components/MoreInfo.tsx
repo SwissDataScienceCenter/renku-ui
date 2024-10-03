@@ -20,14 +20,11 @@ import cx from "classnames";
 import { ReactNode, useRef } from "react";
 import { InfoCircleFill } from "react-bootstrap-icons";
 import { PopoverBody, UncontrolledPopover } from "reactstrap";
-import LazyRenkuMarkdown from "./markdown/LazyRenkuMarkdown";
 
 export function MoreInfo({
-  help,
   trigger = "hover focus",
   children,
 }: {
-  help: string;
   trigger?: string;
   children?: ReactNode;
 }) {
@@ -42,10 +39,7 @@ export function MoreInfo({
         />
       </span>
       <UncontrolledPopover target={ref} placement="right" trigger={trigger}>
-        <PopoverBody>
-          <LazyRenkuMarkdown markdownText={help} />
-          {children}
-        </PopoverBody>
+        <PopoverBody>{children}</PopoverBody>
       </UncontrolledPopover>
     </>
   );
