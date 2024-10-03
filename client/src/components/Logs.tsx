@@ -375,6 +375,16 @@ const EnvironmentLogsPresent = ({
     annotations
   ) as NotebookAnnotations;
 
+  const modalTitle = !cleanAnnotations.renkuVersion && (
+    <div className="fs-5 fw-normal">
+      <small>
+        {cleanAnnotations["namespace"]}/{cleanAnnotations["projectName"]} [
+        {cleanAnnotations["branch"]}@
+        {cleanAnnotations["commit-sha"].substring(0, 8)}]
+      </small>
+    </div>
+  );
+
   return (
     <Modal
       isOpen={!!logs.show}
@@ -391,13 +401,7 @@ const EnvironmentLogsPresent = ({
         }}
       >
         <div>Logs</div>
-        <div className="fs-5 fw-normal">
-          <small>
-            {cleanAnnotations["namespace"]}/{cleanAnnotations["projectName"]} [
-            {cleanAnnotations["branch"]}@
-            {cleanAnnotations["commit-sha"].substring(0, 8)}]
-          </small>
-        </div>
+        {modalTitle}
       </ModalHeader>
       <ModalBody>
         <div className="mx-2">

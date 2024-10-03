@@ -16,14 +16,11 @@
  * limitations under the License.
  */
 
-import cookieParser from "cookie-parser";
 import express from "express";
 import morgan from "morgan";
 import ws from "ws";
 
 import APIClient from "./api-client";
-import { Authenticator } from "./authentication";
-import { registerAuthenticationRoutes } from "./authentication/routes";
 import config from "./config";
 import logger from "./logger";
 import routes from "./routes";
@@ -36,6 +33,7 @@ import {
   initializeSentry,
 } from "./utils/sentry/sentry";
 import { configureWebsocket } from "./websocket";
+import { Authenticator } from "./authentication/authenticator";
 
 const app = express();
 const port = config.server.port;
@@ -70,22 +68,17 @@ initializePrometheus(app);
 const storage = new RedisStorage();
 
 // configure authenticator
-const authenticator = new Authenticator(storage);
+const authenticator = new Authenticator();
 const authPromise = authenticator.init();
-authPromise.then(() => {
-  logger.info("Authenticator started");
-
-  registerAuthenticationRoutes(app, authenticator);
-  // The error handler middleware is needed here because the registration of authentication
-  // routes is asynchronous and the middleware has to be registered after them
-  app.use(errorHandlerMiddleware);
+app.use(authenticator.middleware());
+authPromise.catch(() => {
+  shutdown();
 });
 
-// register middlewares
-app.use(cookieParser());
-
 // register routes
-routes.register(app, prefix, authenticator, storage);
+routes.register(app, prefix, storage);
+
+app.use(errorHandlerMiddleware);
 
 // start the Express server
 const server = app.listen(port, () => {
@@ -106,7 +99,7 @@ function createWsServer() {
   addWebSocketServerContext(wsServer);
   authPromise.then(() => {
     logger.info("Configuring WebSocket server");
-    configureWebsocket(wsServer, authenticator, storage, apiClient);
+    configureWebsocket(wsServer, storage, apiClient);
   });
   return wsServer;
 }

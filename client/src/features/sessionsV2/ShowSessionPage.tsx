@@ -18,33 +18,59 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Journals, PauseCircle, Trash } from "react-bootstrap-icons";
+import {
+  ArrowLeft,
+  Box,
+  Briefcase,
+  Clock,
+  Cloud,
+  ExclamationTriangle,
+  FileEarmarkText,
+  PauseCircle,
+  Trash,
+} from "react-bootstrap-icons";
 import {
   Link,
   generatePath,
   useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
-import { Button, UncontrolledTooltip } from "reactstrap";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  UncontrolledTooltip,
+} from "reactstrap";
 
+import RenkuFrogIcon from "../../components/icons/RenkuIcon";
 import { User } from "../../model/renkuModels.types";
-import { SESSION_TABS } from "../../notebooks/Notebooks.present";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import useWindowSize from "../../utils/helpers/UseWindowsSize";
-import ResourcesSessionModal from "../session/components/ResourcesSessionModal";
+import { resetFavicon, setFavicon } from "../display";
 import SessionHibernated from "../session/components/SessionHibernated";
 import SessionJupyter from "../session/components/SessionJupyter";
 import SessionUnavailable from "../session/components/SessionUnavailable";
 import StartSessionProgressBar from "../session/components/StartSessionProgressBar";
 import { useGetSessionsQuery } from "../session/sessions.api";
 import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
-
-import RenkuFrogIcon from "../../components/icons/RenkuIcon";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import { resetFavicon, setFavicon } from "../display";
 import { getSessionFavicon } from "./session.utils";
+
+import { skipToken } from "@reduxjs/toolkit/query";
+import { Loader } from "../../components/Loader";
+import { EnvironmentLogs } from "../../components/Logs";
+import { TimeCaption } from "../../components/TimeCaption";
+import { CommandCopy } from "../../components/commandCopy/CommandCopy";
+import { NotebooksHelper } from "../../notebooks";
+import { NotebookAnnotations } from "../../notebooks/components/session.types";
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import { displaySlice } from "../display";
+import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import { SessionRowResourceRequests } from "../session/components/SessionsList";
 import styles from "../session/components/ShowSession.module.scss";
+import { Session } from "../session/sessions.types";
+import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
@@ -84,22 +110,11 @@ export default function ShowSessionPage() {
 
   const [isTheSessionReady, setIsTheSessionReady] = useState(false);
 
-  const [showModalResourcesData, setShowModalResourcesData] = useState(false);
-  const toggleModalResources = useCallback(
-    () => setShowModalResourcesData((show) => !show),
-    []
-  );
-  const [activeResourcesTab, setActiveResourcesTab] = useState<string>(
-    SESSION_TABS.commands
-  );
-  const toggleToResourcesLogs = useCallback(() => {
-    setActiveResourcesTab(SESSION_TABS.logs);
-    toggleModalResources();
-  }, [toggleModalResources]);
-  const toggleResources = useCallback(() => {
-    setActiveResourcesTab(SESSION_TABS.commands);
-    toggleModalResources();
-  }, [toggleModalResources]);
+  const toggleModalLogs = useCallback(() => {
+    dispatch(
+      displaySlice.actions.toggleSessionLogsModal({ targetServer: sessionName })
+    );
+  }, [dispatch, sessionName]);
 
   const [showModalPauseOrDeleteSession, setShowModalPauseOrDeleteSession] =
     useState(false);
@@ -146,15 +161,6 @@ export default function ShowSessionPage() {
   }, [backUrl, navigate, thisSession?.status.state]);
 
   // Modals
-  const resourcesModal = (
-    <ResourcesSessionModal
-      activeTab={activeResourcesTab}
-      isOpen={showModalResourcesData}
-      sessionName={sessionName}
-      setActiveTab={setActiveResourcesTab}
-      toggleModal={toggleResources}
-    />
-  );
   const pauseOrDeleteSessionModal = (
     <PauseOrDeleteSessionModal
       action={pauseOrDeleteAction}
@@ -163,6 +169,12 @@ export default function ShowSessionPage() {
       sessionName={sessionName}
       toggleAction={togglePauseOrDeleteAction}
       toggleModal={togglePauseOrDeleteSession}
+    />
+  );
+  const logs = thisSession && (
+    <EnvironmentLogs
+      name={sessionName}
+      annotations={thisSession?.annotations}
     />
   );
 
@@ -177,7 +189,7 @@ export default function ShowSessionPage() {
           <StartSessionProgressBar
             includeStepInTitle={false}
             session={thisSession}
-            toggleLogs={toggleToResourcesLogs}
+            toggleLogs={toggleModalLogs}
           />
         )}
         <SessionJupyter
@@ -189,7 +201,7 @@ export default function ShowSessionPage() {
     ) : (
       <StartSessionProgressBar
         includeStepInTitle={false}
-        toggleLogs={toggleToResourcesLogs}
+        toggleLogs={toggleModalLogs}
       />
     );
 
@@ -221,11 +233,12 @@ export default function ShowSessionPage() {
               "d-flex",
               "flex-grow-0",
               "gap-3",
-              "px-3"
+              "px-3",
+              "text-truncate"
             )}
           >
             {backButton}
-            <ResourcesBtn toggleModalResources={toggleModalResources} />
+            <LogsBtn toggle={toggleModalLogs} />
             <PauseSessionBtn openPauseSession={openPauseSession} />
             <DeleteSessionBtn openDeleteSession={openDeleteSession} />
           </div>
@@ -236,11 +249,17 @@ export default function ShowSessionPage() {
               "d-flex",
               "flex-grow-1",
               "justify-content-between",
-              "py-2"
+              "text-truncate"
             )}
           >
-            <div className={cx("px-3", "text-white")}>{sessionName}</div>
-            <div className={cx("px-3", "text-white")}>
+            <div className={cx("d-flex", "px-3", "text-truncate", "h-100")}>
+              <SessionDetails
+                session={thisSession}
+                namespace={namespace}
+                slug={slug}
+              />
+            </div>
+            <div className={cx("pe-3", "text-white")}>
               <RenkuFrogIcon size={24} />
             </div>
           </div>
@@ -248,16 +267,16 @@ export default function ShowSessionPage() {
         <div className={cx(styles.fullscreenContent, "w-100")}>{content}</div>
       </div>
       {/* modals */}
-      {resourcesModal}
+      {logs}
       {pauseOrDeleteSessionModal}
     </div>
   );
 }
 
-interface ResourcesProps {
-  toggleModalResources: () => void;
+interface LogsBtnProps {
+  toggle: () => void;
 }
-function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
+function LogsBtn({ toggle }: LogsBtnProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   return (
@@ -274,13 +293,12 @@ function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
         data-cy="resources-button"
         id="resources-button"
         innerRef={ref}
-        onClick={toggleModalResources}
+        onClick={toggle}
       >
-        <Journals className="bi" />
-        <span className="visually-hidden">Resources</span>
+        <FileEarmarkText className="bi" />
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
-        Resources
+        Get logs
       </UncontrolledTooltip>
     </div>
   );
@@ -360,5 +378,153 @@ function DeleteSessionBtn({ openDeleteSession }: DeleteSessionBtnProps) {
         {tooltip}
       </UncontrolledTooltip>
     </div>
+  );
+}
+
+function SessionDetails({
+  session,
+  namespace,
+  slug,
+}: {
+  session?: Session;
+  namespace?: string;
+  slug?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { projectId, launcherId } = useMemo(() => {
+    if (session == null) {
+      return { projectId: undefined, launcherId: undefined };
+    }
+    const annotations = NotebooksHelper.cleanAnnotations(
+      session.annotations
+    ) as NotebookAnnotations;
+    return {
+      projectId: annotations.projectId,
+      launcherId: annotations.launcherId,
+    };
+  }, [session]);
+
+  const {
+    data: launchers,
+    isLoading: isLoadingLaunchers,
+    error: launchersError,
+  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
+  const { data: project, isLoading: isLoadingProject } =
+    useGetProjectsByNamespaceAndSlugQuery(
+      namespace && slug ? { namespace, slug } : skipToken
+    );
+
+  const launcher = useMemo(
+    () => launchers?.find(({ id }) => id === launcherId),
+    [launcherId, launchers]
+  );
+  const toggle = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
+
+  const projectUrl =
+    project &&
+    generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+      namespace: project?.namespace,
+      slug: project?.slug,
+    });
+
+  if (isLoadingLaunchers || isLoadingProject) {
+    return (
+      <div className={cx("d-flex", "align-items-center")}>
+        <p className={cx("text-white", "mb-0")}>
+          <Loader inline size={16} /> Checking session details...
+        </p>
+      </div>
+    );
+  }
+  if (launchersError || !launcher || !project)
+    return (
+      <div className={cx("d-flex", "align-items-center")}>
+        <p className={cx("text-white", "mb-0")}>
+          <ExclamationTriangle className="bi" /> Session details unavailable
+        </p>
+      </div>
+    );
+  const detailsModal = project && session && projectUrl && (
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalHeader toggle={toggle}>Session details {launcher.name}</ModalHeader>
+      <ModalBody>
+        <div className={cx("d-flex", "flex-column", "gap-3")}>
+          <div>
+            <p className="mb-0">
+              <Briefcase className={cx("bi", "me-2")} />
+              Project:{" "}
+              <Link to={projectUrl}>
+                <span className="fw-bold">{project.name}</span>
+              </Link>
+            </p>
+          </div>
+          <div>
+            <p className="mb-0">
+              <Clock className={cx("bi", "me-2")} />
+              <span className="fw-bold">
+                <TimeCaption
+                  prefix="Launched"
+                  datetime={session.started}
+                  className={cx("fs-6")}
+                />
+              </span>
+            </p>
+          </div>
+          <div
+            className={cx(
+              "d-block",
+              "d-lg-flex",
+              "gap-2",
+              "align-items-center"
+            )}
+          >
+            <div>
+              <Cloud className={cx("bi", "me-2")} />
+              Session resources requested:
+            </div>
+            <SessionRowResourceRequests
+              resourceRequests={session.resources.requests}
+            />
+          </div>
+          <div
+            className={cx(
+              "d-block",
+              "d-lg-flex",
+              "gap-2",
+              "align-items-center"
+            )}
+          >
+            <div>
+              <Box className={cx("bi", "me-2")} />
+              Container image:{" "}
+            </div>
+            <CommandCopy noMargin command={session.image} />
+          </div>
+        </div>
+      </ModalBody>
+    </Modal>
+  );
+  return (
+    <>
+      <Button
+        className={cx(
+          "bg-transparent",
+          "border-0",
+          "no-focus",
+          "p-0",
+          "shadow-none",
+          "text-white",
+          "w-100",
+          "text-truncate"
+        )}
+        role="link"
+        onClick={toggle}
+      >
+        {project?.name} / {launcher.name}
+      </Button>
+      {detailsModal}
+    </>
   );
 }

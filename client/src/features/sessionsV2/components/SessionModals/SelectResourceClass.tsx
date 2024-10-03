@@ -92,7 +92,7 @@ export function SelectResourceClassModal({
         resourceRequests={{
           cpu: launcherClass.cpu,
           memory: `${launcherClass.memory}G`,
-          storage: `${launcherClass.max_storage}G`,
+          storage: `${launcherClass.default_storage}G`,
           gpu: launcherClass.gpu,
         }}
       />

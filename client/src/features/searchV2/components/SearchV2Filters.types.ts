@@ -13,11 +13,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
 
-import { Docs } from "../../utils/constants/Docs";
-
-export const SECRETS_DOCS_URL = Docs.rtdTopicGuide("secrets/secrets.html");
-
-export const SECRETS_VALUE_LENGTH_LIMIT = 5_000;
+export type SearchV2Visualization = "accordion" | "list";

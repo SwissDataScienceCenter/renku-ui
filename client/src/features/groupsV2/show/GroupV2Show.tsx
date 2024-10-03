@@ -26,7 +26,6 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
-import { Badge } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
@@ -43,6 +42,7 @@ import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
+import { EntityPill } from "../../searchV2/components/SearchV2Results";
 
 export default function GroupV2Show() {
   const { slug } = useParams<{ slug: string }>();
@@ -90,28 +90,22 @@ export default function GroupV2Show() {
 
   return (
     <ContainerWrap>
-      <div className={cx("d-flex", "flex-column", "flex-sm-row")}>
+      <div
+        className={cx("d-flex", "flex-column", "flex-sm-row", "gap-3", "mb-3")}
+      >
         <div>
-          <div
-            className={cx(
-              "d-flex",
-              "flex-row",
-              "flex-wrap",
-              "flex-sm-nowrap",
-              "gap-2"
-            )}
-          >
+          <div className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
             <div className={cx("align-items-center", "d-flex", "gap-2")}>
               <UserAvatar username={group.name || slug} large />
               <h2 className="mb-0">{group.name ?? "Unknown group"}</h2>
             </div>
             <div className={cx("align-items-center", "d-flex")}>
-              <GroupBadge />
+              <EntityPill entityType="Group" size="sm" />
             </div>
           </div>
-          <p className="fst-italic">{`@${slug}`}</p>
+          <p className={cx("fst-italic", "mb-0")}>{`@${slug}`}</p>
         </div>
-        <div className={cx("mb-3", "mb-sm-0", "ms-0", "ms-sm-auto")}>
+        <div className={cx("mb-0", "ms-sm-auto")}>
           <GroupSettingsButton group={group} />
         </div>
       </div>
@@ -135,22 +129,6 @@ export default function GroupV2Show() {
         />
       </section>
     </ContainerWrap>
-  );
-}
-
-function GroupBadge() {
-  return (
-    <Badge
-      className={cx(
-        "border",
-        "border-success",
-        "bg-success-subtle",
-        "text-success-emphasis"
-      )}
-      pill
-    >
-      Group
-    </Badge>
   );
 }
 

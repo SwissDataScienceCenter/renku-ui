@@ -430,7 +430,7 @@ describe("Cloud storage settings page", () => {
       const { name, readonly, target_path } = body;
 
       expect(name).to.equal("fake-storage");
-      expect(readonly).to.be.false;
+      expect(readonly).to.be.true;
       expect(target_path).to.equal("external_storage/fake-storage");
     });
 

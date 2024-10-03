@@ -60,7 +60,7 @@ export default function SlugFormField<T extends FieldValues>({
         hyphens.
       </div>
       <FormText id={`${entityName}SlugHelp`} className="input-hint">
-        A short, machine-readable identifier for the project, restricted to
+        A short, machine-readable identifier for the {entityName}, restricted to
         lowercase letters, numbers, and hyphens.{" "}
         {entityName === "project" && (
           <b>Cannot be changed after project creation.</b>

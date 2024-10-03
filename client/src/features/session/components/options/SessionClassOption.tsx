@@ -448,12 +448,12 @@ function AskForComputeResources() {
 }
 
 interface SessionClassSelectorProps {
-  id?: string;
-  resourcePools: ResourcePool[];
   currentSessionClass?: ResourceClass | undefined;
   defaultSessionClass?: ResourceClass | undefined;
-  onChange?: (newValue: SingleValue<ResourceClass>) => void;
   disabled?: boolean;
+  id?: string;
+  onChange?: (newValue: SingleValue<ResourceClass>) => void;
+  resourcePools: ResourcePool[];
 }
 export const SessionClassSelector = ({
   id,
@@ -596,12 +596,12 @@ const selectComponents: SelectComponentsConfig<
 };
 
 export const SessionClassSelectorV2 = ({
-  id,
-  resourcePools,
   currentSessionClass,
   defaultSessionClass,
-  onChange,
   disabled,
+  id,
+  onChange,
+  resourcePools,
 }: SessionClassSelectorProps) => {
   const { data: nbVersion } = useGetNotebooksVersionQuery();
   const options = useMemo(
@@ -689,6 +689,7 @@ const selectClassNamesV2: ClassNamesConfig<ResourceClass, false, OptionGroup> =
     control: ({ menuIsOpen }) =>
       cx(
         menuIsOpen ? "rounded-top" : "rounded",
+        "bg-white",
         "border",
         "cursor-pointer",
         styles.control2
@@ -740,7 +741,9 @@ const OptionOrSingleValueContent = ({
       <span className={detailLabelClassName}>
         <span className={styles.detailUnit}>GB</span> RAM
       </span>{" "}
-      <span className={detailValueClassName}>{sessionClass.max_storage}</span>
+      <span className={detailValueClassName}>
+        {sessionClass.default_storage}
+      </span>
       <span className={detailLabelClassName}>
         <span className={styles.detailUnit}>GB</span> Disk
       </span>{" "}
