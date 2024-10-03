@@ -165,7 +165,7 @@ export default function ConnectedServiceFormContent({
               )}
               id="addConnectedServiceClientSecret"
               placeholder="Client Secret"
-              type="text"
+              type="password"
               {...field}
             />
           )}
