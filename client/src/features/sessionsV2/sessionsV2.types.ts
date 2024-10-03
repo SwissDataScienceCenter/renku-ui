@@ -80,8 +80,8 @@ export type SessionLauncherEnvironmentParams =
       mount_directory?: string;
       port?: number;
       environment_kind: EnvironmentKind;
-      command?: string[];
-      args?: string[];
+      command?: string[] | null;
+      args?: string[] | null;
     };
 
 export type SessionLauncherList = SessionLauncher[];

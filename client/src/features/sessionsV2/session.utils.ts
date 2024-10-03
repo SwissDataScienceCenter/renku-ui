@@ -15,28 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import faviconICO from "../../styles/assets/favicon/Favicon.ico";
-import faviconSVG from "../../styles/assets/favicon/Favicon.svg";
-import favicon16px from "../../styles/assets/favicon/Favicon16px.png";
-import favicon32px from "../../styles/assets/favicon/Favicon32px.png";
-import faviconErrorICO from "../../styles/assets/favicon/FaviconError.ico";
-import faviconErrorSVG from "../../styles/assets/favicon/FaviconError.svg";
-import faviconError16px from "../../styles/assets/favicon/FaviconError16px.png";
-import faviconError32px from "../../styles/assets/favicon/FaviconError32px.png";
-import faviconPauseICO from "../../styles/assets/favicon/FaviconPause.ico";
-import faviconPauseSVG from "../../styles/assets/favicon/FaviconPause.svg";
-import faviconPause16px from "../../styles/assets/favicon/FaviconPause16px.png";
-import faviconPause32px from "../../styles/assets/favicon/FaviconPause32px.png";
-import faviconRunningICO from "../../styles/assets/favicon/FaviconRunning.ico";
-import faviconRunningSVG from "../../styles/assets/favicon/FaviconRunning.svg";
-import faviconRunning16px from "../../styles/assets/favicon/FaviconRunning16px.png";
-import faviconRunning32px from "../../styles/assets/favicon/FaviconRunning32px.png";
-import faviconWaitingICO from "../../styles/assets/favicon/FaviconWaiting.ico";
-import faviconWaitingSVG from "../../styles/assets/favicon/FaviconWaiting.svg";
-import faviconWaiting16px from "../../styles/assets/favicon/FaviconWaiting16px.png";
-import faviconWaiting32px from "../../styles/assets/favicon/FaviconWaiting32px.png";
+
 import { FaviconStatus } from "../display/display.types";
 import { SessionStatusState } from "../session/sessions.types";
+import { DEFAULT_URL } from "./session.constants";
 import {
   SessionEnvironmentList,
   SessionLauncher,
@@ -70,39 +52,6 @@ export function getSessionFavicon(
   }
 }
 
-export const FAVICON_BY_SESSION_STATUS = {
-  general: {
-    ico: faviconICO,
-    png_16x16: favicon16px,
-    png_32x32: favicon32px,
-    svg: faviconSVG,
-  },
-  running: {
-    ico: faviconRunningICO,
-    png_16x16: faviconRunning16px,
-    png_32x32: faviconRunning32px,
-    svg: faviconRunningSVG,
-  },
-  waiting: {
-    ico: faviconWaitingICO,
-    png_16x16: faviconWaiting16px,
-    png_32x32: faviconWaiting32px,
-    svg: faviconWaitingSVG,
-  },
-  error: {
-    ico: faviconErrorICO,
-    png_16x16: faviconError16px,
-    png_32x32: faviconError32px,
-    svg: faviconErrorSVG,
-  },
-  pause: {
-    ico: faviconPauseICO,
-    png_16x16: faviconPause16px,
-    png_32x32: faviconPause32px,
-    svg: faviconPauseSVG,
-  },
-};
-
 export function getFormCustomValuesDesc() {
   return {
     urlPath: `Specify a subpath for your Renku session. By default, the session opens at the path defined by the environment variable \`RENKU_SESION_PATH\`. If you set a subpath (e.g., "foo"), the session will open at \`<RENKU_SESION_PATH>/foo\`.`,
@@ -118,8 +67,6 @@ Default: \`1000\`.`,
     args: `The arguments that will follow the command, i.e. will overwrite the image Dockerfile \`CMD\`.`,
   };
 }
-export const DEFAULT_URL = "/";
-export const DEFAULT_PORT = 8888;
 
 export function prioritizeSelectedEnvironment(
   environments?: SessionEnvironmentList,
@@ -141,7 +88,7 @@ export function prioritizeSelectedEnvironment(
 
 export function getFormattedEnvironmentValues(
   data: SessionLauncherForm
-): SessionLauncherEnvironmentParams {
+): SessionLauncherEnvironmentParams | false {
   const {
     container_image,
     default_url,
@@ -161,6 +108,10 @@ export function getFormattedEnvironmentValues(
     return { id: environment_id };
   }
 
+  const commandFormatted = safeParseJSONArray(command);
+  const argsFormatted = safeParseJSONArray(args);
+  if (commandFormatted === false || argsFormatted === false) return false;
+
   return {
     environment_kind: "CUSTOM",
     container_image,
@@ -171,8 +122,8 @@ export function getFormattedEnvironmentValues(
     mount_directory,
     uid,
     gid,
-    command: safeParse(command),
-    args: safeParse(args),
+    command: commandFormatted,
+    args: argsFormatted,
   };
 }
 
@@ -200,6 +151,18 @@ export function getLauncherDefaultValues(launcher: SessionLauncher) {
   };
 }
 
+/**
+ * Safely converts any value to a JSON string.
+ * @param value - The value to stringify.
+ * @returns
+ * - The JSON string representation of the value if successful.
+ * - An error message ("Failed to stringify the value") if `JSON.stringify` throws an error.
+ *
+ * @example
+ * safeStringify({ key: "value" }); // '{"key":"value"}'
+ * safeStringify(undefined); // "undefined"
+ * safeStringify(() => {}); // "Failed to stringify the value"
+ */
 export function safeStringify(value: unknown) {
   try {
     return JSON.stringify(value);
@@ -208,15 +171,38 @@ export function safeStringify(value: unknown) {
   }
 }
 
-export function safeParse(value: string) {
+/**
+ * Safely parses a JSON string and checks if it is a valid JSON array.
+ *
+ * @param value - The JSON string to parse.
+ * @returns The parsed JSON array if valid, `null` if the string is empty or only contains whitespace,
+ *          and `false` if the string is not valid JSON or not a JSON array.
+ */
+export function safeParseJSONArray(value: string) {
   if (!value?.trim()) return null;
+
   try {
-    return JSON.parse(value);
+    const parsedValue = JSON.parse(value);
+    return Array.isArray(parsedValue) ? parsedValue : false;
   } catch (error) {
-    return "Error: Input must be a valid JSON format";
+    return false;
   }
 }
 
+/**
+ * Validates whether a given string is a valid JSON array, intended for use in form validation.
+ * @param value - The string to validate as a JSON array.
+ * @returns
+ * - `true` if the string is a valid JSON array.
+ * - An error message as a string if the input is not a valid JSON format or not a JSON array.
+ * - `undefined` if the input is an empty or whitespace-only string (i.e., no validation performed).
+ *
+ * @example
+ * isValidJSONArrayString('["item1", "item2"]'); // true
+ * isValidJSONArrayString('{"key": "value"}'); // "Input must be a valid JSON array"
+ * isValidJSONArrayString('invalid json'); // "Input must be a valid JSON format"
+ * isValidJSONArrayString(''); // undefined
+ */
 export function isValidJSONArrayString(
   value: string
 ): true | string | undefined {
