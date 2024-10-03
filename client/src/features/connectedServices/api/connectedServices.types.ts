@@ -16,29 +16,18 @@
  * limitations under the License.
  */
 
-export interface Provider {
-  id: string;
-  display_name: string;
-  url: string;
-}
+import type {
+  Pagination as BasePagination,
+  PaginatedResponse,
+} from "../../../utils/types/pagination.types";
+import type { AppInstallation } from "./connectedServices.generated-api";
 
-export type ProviderList = Provider[];
+export type Pagination = Required<
+  Pick<BasePagination, "currentPage" | "perPage" | "totalItems" | "totalPages">
+> &
+  BasePagination;
 
-export interface Connection {
-  id: string;
-  provider_id: string;
-  status: ConnectionStatus;
-}
-
-export type ConnectionList = Connection[];
-
-export type ConnectionStatus = "pending" | "connected";
-
-export interface ConnectedAccount {
-  username: string;
-  web_url: string;
-}
-
-export interface GetConnectedAccountParams {
-  connectionId: string;
-}
+export type AppInstallationsPaginated = PaginatedResponse<
+  AppInstallation,
+  Pagination
+>;

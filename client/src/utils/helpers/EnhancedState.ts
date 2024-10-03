@@ -30,7 +30,7 @@ import {
 
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import adminSessionsApi from "../../features/admin/adminSessions.api";
-import connectedServicesApi from "../../features/connectedServices/connectedServices.api";
+import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
@@ -38,6 +38,8 @@ import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
+import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
+import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
 import projectCloudStorageApi from "../../features/project/components/cloudStorage/projectCloudStorage.api";
 import { datasetFormSlice } from "../../features/project/dataset";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
@@ -65,8 +67,6 @@ import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "../feature-flags/featureFlags.slice";
-import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
-import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -88,9 +88,9 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectV2NewSlice.name]: projectV2NewSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
-    [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
     [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
+    [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataServicesUserApi.reducerPath]: dataServicesUserApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
