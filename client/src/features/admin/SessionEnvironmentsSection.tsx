@@ -42,8 +42,8 @@ import { useGetSessionEnvironmentsQuery } from "./adminSessions.api";
 
 export default function SessionEnvironmentsSection() {
   return (
-    <section className="mt-5">
-      <h2 className="fs-5">Session Environments - Renku 1.0</h2>
+    <section className="mt-4">
+      <h2 className="fs-4">Session Environments - Renku 2.0</h2>
       <SessionEnvironments />
     </section>
   );

@@ -19,10 +19,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import {
-  ProviderList,
-  ConnectionList,
   ConnectedAccount,
+  ConnectionList,
+  CreateProviderParams,
   GetConnectedAccountParams,
+  Provider,
+  ProviderList,
+  UpdateProviderParams,
 } from "./connectedServices.types";
 
 const connectedServicesApi = createApi({
@@ -32,6 +35,43 @@ const connectedServicesApi = createApi({
   }),
   tagTypes: ["Provider", "Connection", "ConnectedAccount"],
   endpoints: (builder) => ({
+    createProvider: builder.mutation<Provider, CreateProviderParams>({
+      query: ({
+        id,
+        kind,
+        client_id,
+        client_secret,
+        display_name,
+        scope,
+        url,
+        use_pkce,
+      }) => {
+        return {
+          url: "providers",
+          method: "POST",
+          body: {
+            id,
+            kind,
+            client_id,
+            ...(client_secret && { client_secret }),
+            display_name,
+            scope: scope || "",
+            url,
+            use_pkce,
+          },
+        };
+      },
+      invalidatesTags: ["Provider"],
+    }),
+    deleteProvider: builder.mutation<void, string>({
+      query: (providerId) => {
+        return {
+          url: `providers/${providerId}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["Provider"],
+    }),
     getProviders: builder.query<ProviderList, void>({
       query: () => {
         return {
@@ -79,12 +119,25 @@ const connectedServicesApi = createApi({
             ]
           : [],
     }),
+    updateProvider: builder.mutation<Provider, UpdateProviderParams>({
+      query: ({ id, ...params }) => {
+        return {
+          url: `providers/${id}`,
+          method: "PATCH",
+          body: params,
+        };
+      },
+      invalidatesTags: (_result, _error, { id }) => [{ id, type: "Provider" }],
+    }),
   }),
 });
 
 export default connectedServicesApi;
 export const {
+  useCreateProviderMutation,
+  useDeleteProviderMutation,
   useGetConnectedAccountQuery,
   useGetConnectionsQuery,
   useGetProvidersQuery,
+  useUpdateProviderMutation,
 } = connectedServicesApi;
