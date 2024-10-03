@@ -23,6 +23,8 @@ import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
+  Input,
+  Label,
   Modal,
   ModalBody,
   ModalFooter,
@@ -156,6 +158,20 @@ function UpdateConnectedServiceModal({
         <ModalHeader toggle={toggle}>Update provider</ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
+
+          <div className="mb-3">
+            <Label className="form-label" for="addConnectedServiceId">
+              Id
+            </Label>
+            <Input
+              className={cx("form-control")}
+              disabled={true}
+              id="addConnectedServiceId"
+              placeholder="Provider id"
+              type="text"
+              value={provider.id}
+            />
+          </div>
 
           <ConnectedServiceFormContent control={control} errors={errors} />
         </ModalBody>
