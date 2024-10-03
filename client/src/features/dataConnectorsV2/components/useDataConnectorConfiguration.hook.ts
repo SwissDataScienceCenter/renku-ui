@@ -20,10 +20,8 @@ import { useMemo } from "react";
 
 import { CLOUD_OPTIONS_OVERRIDE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import { RCloneOption } from "../../projectsV2/api/data-connectors.api";
-import type {
-  DataConnectorRead,
-  CloudStorageSecretGet,
-} from "../../projectsV2/api/data-connectors.api";
+import type { DataConnectorRead } from "../../projectsV2/api/data-connectors.api";
+import { useGetDataConnectorsListSecretsQuery } from "../../projectsV2/api/data-connectors.enhanced-api";
 
 import type { SessionStartCloudStorageConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 
@@ -39,6 +37,9 @@ interface UseDataSourceConfigurationArgs {
 export default function useDataConnectorConfiguration({
   dataConnectors,
 }: UseDataSourceConfigurationArgs) {
+  const { data: dataConnectorSecrets } = useGetDataConnectorsListSecretsQuery({
+    dataConnectorIds: dataConnectors?.map((dc) => dc.id) ?? [],
+  });
   const dataConnectorConfigs = useMemo(
     () =>
       dataConnectors?.map((dataConnector) => {
@@ -77,15 +78,8 @@ export default function useDataConnectorConfiguration({
           if (name == null) return;
           sensitiveFieldValues[name] = "";
         });
-        const storagesSecrets = dataConnectors?.reduce(
-          (a: Record<string, CloudStorageSecretGet[]>, s) => {
-            a[s.id] = s.secrets ? s.secrets : [];
-            return a;
-          },
-          {}
-        );
-        const savedCredentialFields = storagesSecrets
-          ? storagesSecrets[dataConnector.id].map((s) => s.name)
+        const savedCredentialFields = dataConnectorSecrets
+          ? dataConnectorSecrets[dataConnector.id].map((s) => s.name)
           : [];
         return {
           active: true,
@@ -96,7 +90,7 @@ export default function useDataConnectorConfiguration({
           savedCredentialFields,
         };
       }),
-    [dataConnectors]
+    [dataConnectors, dataConnectorSecrets]
   );
 
   return {

@@ -46,9 +46,10 @@ import {
   hasProviderShortlist,
 } from "../../../project/utils/projectCloudStorage.utils";
 
-import { usePostStoragesV2ByStorageIdSecretsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
+  useGetDataConnectorsByDataConnectorIdSecretsQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
+  usePatchDataConnectorsByDataConnectorIdSecretsMutation,
   usePostDataConnectorsMutation,
 } from "../../../projectsV2/api/data-connectors.enhanced-api";
 import type { DataConnectorRead } from "../../../projectsV2/api/data-connectors.api";
@@ -87,6 +88,10 @@ export default function DataConnectorModal({
     isOpen ? undefined : skipToken
   );
   const { data: schema } = schemaQueryResult;
+  const { data: connectorSecrets } =
+    useGetDataConnectorsByDataConnectorIdSecretsQuery(
+      dataConnectorId ? { dataConnectorId } : skipToken
+    );
 
   // Reset state on props change
   useEffect(() => {
@@ -169,7 +174,7 @@ export default function DataConnectorModal({
   const [updateDataConnector, updateResult] =
     usePatchDataConnectorsByDataConnectorIdMutation();
   const [saveCredentials, saveCredentialsResult] =
-    usePostStoragesV2ByStorageIdSecretsMutation();
+    usePatchDataConnectorsByDataConnectorIdSecretsMutation();
   const [validateCloudStorageConnection, validationResult] =
     useTestCloudStorageConnectionMutation();
 
@@ -240,7 +245,6 @@ export default function DataConnectorModal({
         }
       });
     }
-
     validateCloudStorageConnection(validateParameters);
   }, [flatDataConnector, validateCloudStorageConnection]);
 
@@ -323,7 +327,7 @@ export default function DataConnectorModal({
     const sensitiveFieldNames = findSensitive(
       schema.find((s) => s.prefix === flatDataConnector.schema)
     );
-    const cloudStorageSecretPostList = sensitiveFieldNames
+    const dataConnectorSecretPatchList = sensitiveFieldNames
       .map((name) => ({
         name,
         value: options[name],
@@ -334,8 +338,8 @@ export default function DataConnectorModal({
         value: "" + secret.value,
       }));
     saveCredentials({
-      storageId: dataConnectorId,
-      cloudStorageSecretPostList,
+      dataConnectorId,
+      dataConnectorSecretPatchList,
     });
   }, [
     createResult.data?.id,
@@ -398,31 +402,28 @@ export default function DataConnectorModal({
     : "Please go back and select a provider";
   const isResultLoading = isAddResultLoading || isModifyResultLoading;
 
-  const storageSecrets =
-    dataConnector != null && "secrets" in dataConnector
-      ? dataConnector.secrets ?? []
-      : [];
-  const hasStoredCredentialsInConfig = storageSecrets.length > 0;
+  const hasStoredCredentialsInConfig =
+    connectorSecrets != null && connectorSecrets.length > 0;
 
   return (
     <Modal
       backdrop="static"
       centered
       className={styles.modal}
-      data-cy="cloud-storage-edit-modal"
+      data-cy="data-connector-edit-modal"
       fullscreen="lg"
-      id={dataConnector?.id ?? "new-cloud-storage"}
+      id={dataConnector?.id ?? "new-data-connector"}
       isOpen={isOpen}
       scrollable
       size="lg"
       unmountOnClose={false}
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle} data-cy="cloud-storage-edit-header">
+      <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
         <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
       </ModalHeader>
 
-      <ModalBody data-cy="cloud-storage-edit-body">
+      <ModalBody data-cy="data-connector-edit-body">
         <DataConnectorModalBody
           dataConnectorResultName={dataConnectorResultName}
           flatDataConnector={flatDataConnector}
@@ -432,13 +433,13 @@ export default function DataConnectorModal({
           setStateSafe={setStateSafe}
           setFlatDataConnectorSafe={setFlatDataConnectorSafe}
           state={state}
-          storageSecrets={storageSecrets}
+          storageSecrets={connectorSecrets ?? []}
           success={success}
           validationSucceeded={validationSucceeded}
         />
       </ModalBody>
 
-      <ModalFooter className="border-top" data-cy="cloud-storage-edit-footer">
+      <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
         <DataConnectorConnectionTestResult
           validationResult={validationResult}
         />
@@ -453,7 +454,7 @@ export default function DataConnectorModal({
         {!isResultLoading && !success && (
           <Button
             color="outline-danger"
-            data-cy="cloud-storage-edit-rest-button"
+            data-cy="data-connector-edit-rest-button"
             disabled={validationResult.isLoading}
             onClick={() => {
               reset();

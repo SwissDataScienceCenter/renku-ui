@@ -28,6 +28,18 @@ interface DataConnectorArgs extends SimpleFixture {
   visibility?: string;
 }
 
+interface DataConnectorSecretsArgs extends SimpleFixture {
+  dataConnectorId?: string;
+}
+
+interface PatchDataConnectorSecretsArgs extends DataConnectorSecretsArgs {
+  content: {
+    name: string;
+    value: string;
+  }[];
+  shouldNotBeCalled?: boolean;
+}
+
 export function DataConnector<T extends FixturesConstructor>(Parent: T) {
   return class DataConnectorFixtures extends Parent {
     listDataConnectors(args?: DataConnectorArgs) {
@@ -119,6 +131,64 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         "/ui-server/api/data/data_connectors/*",
         response
       ).as(name);
+      return this;
+    }
+
+    dataConnectorSecrets(args?: DataConnectorSecretsArgs) {
+      const {
+        fixture = "tests/cypress/fixtures/dataConnector/data-connector-secrets.json",
+        name = "getDataConnectorSecrets",
+        dataConnectorId = "ULID-1",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/data_connectors/${dataConnectorId}/secrets`,
+        response
+      ).as(name);
+      return this;
+    }
+
+    deleteDataConnectorSecrets(args?: DataConnectorSecretsArgs) {
+      const {
+        name = "deleteDataConnectorSecrets",
+        dataConnectorId = "ULID-1",
+      } = args ?? {};
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept(
+        "DELETE",
+        `/ui-server/api/data/data_connectors/${dataConnectorId}/secrets`,
+        { body: null, delay: 1000 }
+      ).as(name);
+      return this;
+    }
+
+    patchDataConnectorSecrets(args?: PatchDataConnectorSecretsArgs) {
+      const {
+        content,
+        fixture = "dataConnector/data-connector-secrets-empty.json",
+        name = "patchDataConnectorSecrets",
+        shouldNotBeCalled = false,
+        dataConnectorId = "ULID-5",
+      } = args ?? {};
+      cy.fixture(fixture).then((secrets) => {
+        // eslint-disable-next-line max-nested-callbacks
+        cy.intercept(
+          "PATCH",
+          `/ui-server/api/data/data_connectors/${dataConnectorId}/secrets`,
+          (req) => {
+            if (shouldNotBeCalled)
+              throw new Error("No call to post secrets expected");
+            const newSecrets = req.body;
+            expect(newSecrets.length).equal(content.length);
+            newSecrets.forEach((secret, index) => {
+              expect(secret.name).equal(content[index].name);
+              expect(secret.value).equal(content[index].value);
+            });
+            req.reply({ body: secrets, delay: 1000 });
+          }
+        ).as(name);
+      });
       return this;
     }
   };

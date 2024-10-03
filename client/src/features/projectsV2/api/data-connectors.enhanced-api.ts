@@ -6,12 +6,23 @@ import { dataConnectorsApi as api } from "./data-connectors.api";
 import type {
   GetDataConnectorsApiArg,
   GetDataConnectorsApiResponse as GetDataConnectorsApiResponseOrig,
+  GetDataConnectorsByDataConnectorIdSecretsApiArg,
+  GetDataConnectorsByDataConnectorIdSecretsApiResponse,
 } from "./data-connectors.api";
 
 export interface GetDataConnectorsApiResponse
   extends AbstractKgPaginatedResponse {
   dataConnectors: GetDataConnectorsApiResponseOrig;
 }
+
+interface GetDataConnectorListSecretsApiArg {
+  dataConnectorIds: GetDataConnectorsByDataConnectorIdSecretsApiArg["dataConnectorId"][];
+}
+
+type GetDataConnectorListSecretsApiResponse = Record<
+  string,
+  GetDataConnectorsByDataConnectorIdSecretsApiResponse
+>;
 
 const injectedApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -47,6 +58,27 @@ const injectedApi = api.injectEndpoints({
         };
       },
     }),
+    getDataConnectorsListSecrets: builder.query<
+      GetDataConnectorListSecretsApiResponse,
+      GetDataConnectorListSecretsApiArg
+    >({
+      async queryFn(queryArg, _api, _options, fetchWithBQ) {
+        const { dataConnectorIds } = queryArg;
+        const result: GetDataConnectorListSecretsApiResponse = {};
+        const promises = dataConnectorIds.map((dataConnectorId) =>
+          fetchWithBQ(`/data_connectors/${dataConnectorId}/secrets`)
+        );
+        const responses = await Promise.all(promises);
+        for (let i = 0; i < dataConnectorIds.length; i++) {
+          const dataConnectorId = dataConnectorIds[i];
+          const response = responses[i];
+          if (response.error) return response;
+          result[dataConnectorId] =
+            response.data as GetDataConnectorsByDataConnectorIdSecretsApiResponse;
+        }
+        return { data: result };
+      },
+    }),
   }),
 });
 
@@ -62,14 +94,20 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getDataConnectorsPaged: {
       providesTags: ["DataConnectors"],
     },
+    getDataConnectorsListSecrets: {
+      providesTags: ["DataConnectorSecrets"],
+    },
+    getDataConnectorsByDataConnectorIdSecrets: {
+      providesTags: ["DataConnectorSecrets"],
+    },
     patchDataConnectorsByDataConnectorId: {
       invalidatesTags: ["DataConnectors"],
     },
+    patchDataConnectorsByDataConnectorIdSecrets: {
+      invalidatesTags: ["DataConnectorSecrets"],
+    },
     postDataConnectors: {
       invalidatesTags: ["DataConnectors"],
-    },
-    postDataConnectorsByDataConnectorIdSecrets: {
-      invalidatesTags: ["DataConnectorSecrets"],
     },
   },
 });
@@ -80,7 +118,9 @@ export const {
   useDeleteDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
   useGetDataConnectorsPagedQuery: useGetDataConnectorsQuery,
+  useGetDataConnectorsByDataConnectorIdSecretsQuery,
+  useGetDataConnectorsListSecretsQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
   usePostDataConnectorsMutation,
-  usePostDataConnectorsByDataConnectorIdSecretsMutation,
+  usePatchDataConnectorsByDataConnectorIdSecretsMutation,
 } = enhancedApi;

@@ -288,7 +288,7 @@ export function DataConnectorMount({
   );
 
   return (
-    <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
+    <form className="form-rk-green" data-cy="data-connector-edit-mount">
       <h5>Final details</h5>
       <p>We need a few more details to mount your data properly.</p>
 

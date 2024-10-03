@@ -56,17 +56,17 @@ import { validationParametersFromDataConnectorConfiguration } from "../dataConne
 const CONTEXT_STRINGS = {
   session: {
     continueButton: "Continue",
-    dataCy: "session-cloud-storage-credentials-modal",
+    dataCy: "session-data-connector-credentials-modal",
     header: "Session Storage Credentials",
     testError:
-      "The data source could not be mounted. Please retry with different credentials, or skip the test. If you skip, the data source will still try to mount, using the provided credentials, at session launch time.",
+      "The data connector could not be mounted. Please retry with different credentials, or skip the test. If you skip, the data source will still try to mount, using the provided credentials, at session launch time.",
   },
   storage: {
     continueButton: "Test and Save",
-    dataCy: "cloud-storage-credentials-modal",
-    header: "Cloud Storage Credentials",
+    dataCy: "data-connector-credentials-modal",
+    header: "Data Connector Credentials",
     testError:
-      "The data source could not be mounted. Please try different credentials or rely on providing credentials at session launch time.",
+      "The data connector could not be mounted. Please try different credentials or rely on providing credentials at session launch time.",
   },
 };
 
@@ -164,21 +164,21 @@ export default function DataConnectorSecretsModal({
   isOpen,
   onCancel,
   onStart,
-  dataConnectorConfigs: initialCloudStorageConfigs,
+  dataConnectorConfigs: initialDataConnectorConfigs,
 }: DataConnectorSecretsModalProps) {
   const noCredentialsConfigs = useMemo(
     () =>
-      initialCloudStorageConfigs == null
+      initialDataConnectorConfigs == null
         ? []
-        : initialCloudStorageConfigs.filter(
+        : initialDataConnectorConfigs.filter(
             (config) => config.sensitiveFieldDefinitions.length === 0
           ),
-    [initialCloudStorageConfigs]
+    [initialDataConnectorConfigs]
   );
   const [dataConnectorConfigs, setDataConnectorConfigs] = useState(
-    initialCloudStorageConfigs == null
+    initialDataConnectorConfigs == null
       ? []
-      : initialCloudStorageConfigs.filter(
+      : initialDataConnectorConfigs.filter(
           (config) => config.sensitiveFieldDefinitions.length > 0
         )
   );
@@ -280,7 +280,7 @@ export default function DataConnectorSecretsModal({
       <Form
         noValidate
         className="form-rk-green"
-        data-cy="cloud-storage-edit-options"
+        data-cy="data-connector-edit-options"
         onSubmit={handleSubmit(onContinue)}
       >
         <ModalBody>

@@ -268,12 +268,12 @@ describe("Work with group data connectors", () => {
     cy.get("#secret_access_key").type("secret key");
     cy.getDataCy("test-data-connector-button").click();
     cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
-    cy.getDataCy("cloud-storage-edit-mount").within(() => {
+    cy.getDataCy("data-connector-edit-mount").within(() => {
       cy.get("#name").type("example storage without credentials");
     });
     cy.getDataCy("data-connector-edit-update-button").click();
     cy.wait("@postDataConnector");
-    cy.getDataCy("cloud-storage-edit-body").should(
+    cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
       "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
     );
@@ -302,7 +302,7 @@ describe("Work with group data connectors", () => {
       .click();
     cy.getDataCy("data-connector-edit-update-button").click();
     cy.wait("@patchDataConnector");
-    cy.getDataCy("cloud-storage-edit-body").should(
+    cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
       "The data connector test-2-group-v2/public-storage has been successfully updated."
     );

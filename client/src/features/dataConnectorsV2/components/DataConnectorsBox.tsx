@@ -351,7 +351,9 @@ function DataConnectorDisplay({ dataConnector }: DataConnectorDisplayProps) {
       >
         <Row className={cx("align-items-center", "g-2")}>
           <Col>
-            <span className="fw-bold">{name}</span>
+            <span className="fw-bold" data-cy="data-connector-name">
+              {name}
+            </span>
             {description && <ClampedParagraph>{description}</ClampedParagraph>}
             <div
               className={cx(
