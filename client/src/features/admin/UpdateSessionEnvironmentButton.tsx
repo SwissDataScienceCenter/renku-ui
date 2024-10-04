@@ -28,17 +28,16 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { Loader } from "../../components/Loader";
 import ButtonStyles from "../../components/buttons/Buttons.module.scss";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { safeParseJSONArray, safeStringify } from "../sessionsV2/session.utils";
+import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
 import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
-import { ErrorAlert } from "../../components/Alert";
+import { getSessionEnvironmentValues } from "./adminSessions.utils";
 
 interface UpdateSessionEnvironmentButtonProps {
   environment: SessionEnvironment;
@@ -88,7 +87,6 @@ function UpdateSessionEnvironmentModal({
 }: UpdateSessionEnvironmentModalProps) {
   const [updateSessionEnvironment, result] =
     useUpdateSessionEnvironmentMutation();
-  const [submitError, setSubmitError] = useState(false);
 
   const {
     control,
@@ -96,30 +94,13 @@ function UpdateSessionEnvironmentModal({
     handleSubmit,
     reset,
   } = useForm<SessionEnvironmentForm>({
-    defaultValues: {
-      container_image: environment.container_image,
-      default_url: environment.default_url,
-      description: environment.description,
-      name: environment.name,
-      port: environment.port ?? undefined,
-      working_directory: environment.working_directory?.trim()
-        ? environment.working_directory
-        : undefined,
-      mount_directory: environment.mount_directory?.trim()
-        ? environment.working_directory
-        : undefined,
-      uid: environment.uid ?? undefined,
-      gid: environment.gid ?? undefined,
-      command: safeStringify(environment.command),
-      args: safeStringify(environment.args),
-    },
+    defaultValues: getSessionEnvironmentValues(environment),
   });
   const onSubmit = useCallback(
     (data: SessionEnvironmentForm) => {
-      const commandParsed = safeParseJSONArray(data.command);
-      const argsParsed = safeParseJSONArray(data.args);
-      if (commandParsed === false || argsParsed === false) setSubmitError(true);
-      else
+      const commandParsed = safeParseJSONStringArray(data.command);
+      const argsParsed = safeParseJSONStringArray(data.args);
+      if (commandParsed.parsed && argsParsed.parsed)
         updateSessionEnvironment({
           environmentId: environment.id,
           container_image: data.container_image,
@@ -131,12 +112,12 @@ function UpdateSessionEnvironmentModal({
             ? data.working_directory
             : undefined,
           mount_directory: data.mount_directory.trim()
-            ? data.working_directory
+            ? data.mount_directory
             : undefined,
           uid: data.uid ?? undefined,
           gid: data.gid ?? undefined,
-          command: commandParsed,
-          args: argsParsed,
+          command: commandParsed.data,
+          args: argsParsed.data,
         });
     },
     [environment.id, updateSessionEnvironment]
@@ -156,23 +137,7 @@ function UpdateSessionEnvironmentModal({
   }, [isOpen, result]);
 
   useEffect(() => {
-    reset({
-      container_image: environment.container_image,
-      default_url: environment.default_url ?? "",
-      description: environment.description ?? "",
-      name: environment.name,
-      port: environment.port ?? undefined,
-      working_directory: environment.working_directory?.trim()
-        ? environment.working_directory
-        : undefined,
-      mount_directory: environment.mount_directory?.trim()
-        ? environment.working_directory
-        : undefined,
-      uid: environment.uid ?? undefined,
-      gid: environment.gid ?? undefined,
-      command: safeStringify(environment.command),
-      args: safeStringify(environment.args),
-    });
+    reset(getSessionEnvironmentValues(environment));
   }, [environment, reset]);
 
   return (
@@ -192,11 +157,6 @@ function UpdateSessionEnvironmentModal({
         <ModalHeader toggle={toggle}>Update session environment</ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
-          {submitError && (
-            <ErrorAlert>
-              The command or arguments are not a valid JSON array
-            </ErrorAlert>
-          )}
           <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>

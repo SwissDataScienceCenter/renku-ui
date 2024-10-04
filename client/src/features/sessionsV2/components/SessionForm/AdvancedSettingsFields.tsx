@@ -17,25 +17,26 @@
  */
 
 import cx from "classnames";
+import { ReactNode } from "react";
 import {
   Control,
   Controller,
+  ControllerProps,
   FieldErrors,
   FieldValues,
   Path,
-  RegisterOptions,
 } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
 import { InputType } from "reactstrap/types/lib/Input";
-import { MoreInfo } from "../../../../components/MoreInfo";
-import { DEFAULT_URL } from "../../session.constants";
-import {
-  getFormCustomValuesDesc,
-  isValidJSONArrayString,
-} from "../../session.utils";
-import { SessionLauncherForm } from "../../sessionsV2.types";
-import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
+import { MoreInfo } from "../../../../components/MoreInfo";
+import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
+import {
+  DEFAULT_URL,
+  ENVIRONMENT_VALUES_DESCRIPTION,
+} from "../../session.constants";
+import { isValidJSONStringArray } from "../../session.utils";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 
 function FormField<T extends FieldValues>({
   control,
@@ -49,19 +50,19 @@ function FormField<T extends FieldValues>({
 }: {
   control: Control<T>;
   name: Path<T>;
-  label: string;
+  label: ReactNode;
   placeholder?: string;
   errors?: FieldErrors<T>;
   info: string;
   type: InputType;
-  rules?: Omit<
-    RegisterOptions<T, Path<T>>,
-    "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled"
-  >;
+  rules?: ControllerProps<T>["rules"];
 }) {
   return (
     <>
-      <Label for={`addSessionLauncher${name}`} className="form-label me-2">
+      <Label
+        for={`addSessionLauncher${name}`}
+        className={cx("form-label", "me-2")}
+      >
         {label}
       </Label>
       <MoreInfo>
@@ -83,7 +84,9 @@ function FormField<T extends FieldValues>({
       />
       {errors?.[name] && (
         <div className="invalid-feedback d-block">
-          {errors[name]?.message?.toString()}
+          {errors[name]?.message
+            ? errors[name]?.message?.toString()
+            : `Please provide a valid value for ${name}`}
         </div>
       )}
     </>
@@ -120,7 +123,7 @@ function JsonField<T extends FieldValues>({
         control={control}
         name={name}
         rules={{
-          validate: (value) => isValidJSONArrayString(value?.toString()),
+          validate: (value) => isValidJSONStringArray(value?.toString()),
         }}
         render={({ field }) => (
           <textarea
@@ -149,7 +152,6 @@ interface AdvancedSettingsProp<T extends FieldValues> {
 export function AdvancedSettingsFields<
   T extends SessionLauncherForm | SessionEnvironmentForm
 >({ control, errors }: AdvancedSettingsProp<T>) {
-  const desc = getFormCustomValuesDesc();
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <div className="row">
@@ -160,7 +162,7 @@ export function AdvancedSettingsFields<
             label="Default URL"
             placeholder={DEFAULT_URL}
             errors={errors}
-            info={desc.urlPath}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.urlPath}
             type="text"
           />
         </div>
@@ -171,8 +173,12 @@ export function AdvancedSettingsFields<
             label="Port (Optional)"
             placeholder="e.g. 8080"
             errors={errors}
-            info={desc.port}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.port}
             type="number"
+            rules={{
+              min: 1,
+              max: 65535,
+            }}
           />
         </div>
       </div>
@@ -183,7 +189,7 @@ export function AdvancedSettingsFields<
             name={"mount_directory" as Path<T>}
             label="Mount Directory (Optional)"
             errors={errors}
-            info={desc.mountDirectory}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.mountDirectory}
             type="text"
           />
         </div>
@@ -202,7 +208,7 @@ export function AdvancedSettingsFields<
             name={"working_directory" as Path<T>}
             label="Working Directory (Optional)"
             errors={errors}
-            info={desc.workingDirectory}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.workingDirectory}
             type="text"
           />
         </div>
@@ -211,25 +217,25 @@ export function AdvancedSettingsFields<
         <div className={cx("col-12", "col-md-6")}>
           <FormField<T>
             control={control}
-            name={"gid" as Path<T>}
-            label="GID (Optional)"
-            placeholder="e.g. 1000"
-            type="number"
-            errors={errors}
-            info={desc.gid}
-            rules={{ min: 1000 }}
-          />
-        </div>
-        <div className={cx("col-12", "col-md-6")}>
-          <FormField<T>
-            control={control}
             name={"uid" as Path<T>}
             label="UID (Optional)"
             placeholder="e.g. 1000"
             type="number"
             errors={errors}
-            info={desc.uid}
-            rules={{ min: 1000 }}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.uid}
+            rules={{ min: 1, max: 65535 }}
+          />
+        </div>
+        <div className={cx("col-12", "col-md-6")}>
+          <FormField<T>
+            control={control}
+            name={"gid" as Path<T>}
+            label="GID (Optional)"
+            placeholder="e.g. 1000"
+            type="number"
+            errors={errors}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.gid}
+            rules={{ min: 1, max: 65535 }}
           />
         </div>
       </div>
@@ -239,7 +245,7 @@ export function AdvancedSettingsFields<
             control={control}
             name={"command" as Path<T>}
             label="Command ENTRYPOINT (Optional)"
-            info={desc.command}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.command}
             errors={errors}
             helpText='Please enter a valid JSON array format e.g. ["python3","main.py"]'
           />
@@ -251,7 +257,7 @@ export function AdvancedSettingsFields<
             control={control}
             name={"args" as Path<T>}
             label="Command Arguments CMD (Optional)"
-            info={desc.args}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.args}
             errors={errors}
             helpText='Please enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
           />

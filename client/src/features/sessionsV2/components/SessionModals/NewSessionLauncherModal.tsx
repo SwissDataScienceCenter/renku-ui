@@ -30,10 +30,11 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { ErrorAlert, SuccessAlert } from "../../../../components/Alert";
+import { SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+import { DEFAULT_PORT, DEFAULT_URL } from "../../session.constants";
 import { getFormattedEnvironmentValues } from "../../session.utils";
 import {
   useAddSessionLauncherMutation,
@@ -46,7 +47,6 @@ import {
   LauncherType,
   SessionLauncherBreadcrumbNavbar,
 } from "../SessionForm/SessionLauncherBreadcrumbNavbar";
-import { DEFAULT_URL, DEFAULT_PORT } from "../../session.constants";
 
 interface NewSessionLauncherModalProps {
   isOpen: boolean;
@@ -57,7 +57,6 @@ export default function NewSessionLauncherModal({
   isOpen,
   toggle,
 }: NewSessionLauncherModalProps) {
-  const [submitError, setSubmitError] = useState(false);
   const [step, setStep] = useState<LauncherType>(LauncherType.Environment);
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
   const { data: environments } = useGetSessionEnvironmentsQuery();
@@ -115,13 +114,12 @@ export default function NewSessionLauncherModal({
     (data: SessionLauncherForm) => {
       const { name, resourceClass } = data;
       const environment = getFormattedEnvironmentValues(data);
-      if (environment === false) setSubmitError(true);
-      else
+      if (environment.success && environment.data)
         addSessionLauncher({
           project_id: projectId ?? "",
           resource_class_id: resourceClass.id,
           name,
-          environment,
+          environment: environment.data,
         });
     },
     [projectId, addSessionLauncher]
@@ -184,11 +182,6 @@ export default function NewSessionLauncherModal({
             )}
             <Form noValidate onSubmit={handleSubmit(onSubmit)}>
               {result.error && <RtkErrorAlert error={result.error} />}
-              {submitError && (
-                <ErrorAlert>
-                  The command or arguments are not a valid JSON array
-                </ErrorAlert>
-              )}
               {step === "environment" && (
                 <EnvironmentFields
                   errors={errors}

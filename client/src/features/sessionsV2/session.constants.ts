@@ -70,3 +70,17 @@ export const FAVICON_BY_SESSION_STATUS = {
     svg: faviconPauseSVG,
   },
 };
+
+export const ENVIRONMENT_VALUES_DESCRIPTION = {
+  urlPath: `Specify a subpath for your Renku session. By default, the session opens at the path defined by the environment variable \`RENKU_SESION_PATH\`. If you set a subpath (e.g., "foo"), the session will open at \`<RENKU_SESION_PATH>/foo\`.`,
+  port: `The network port that your application will use to listen for incoming connections.  
+Default: \`8080\`.`,
+  workingDirectory: `Set the directory where your session will open. If not specified, Renku uses the Docker image setting. Renku will also create the project inside this directory including any data sources and repositories.`,
+  uid: `The identifier assigned to the user that will run the application. This determines file permissions and ownership.  
+Default: \`1000\`.`,
+  gid: `The identifier assigned to the group that will run the application. This helps manage group-based permissions.  
+Default: \`1000\`.`,
+  mountDirectory: `Renku will provide persistent storage for your session even when you pause or resume it. Set the location where this storage should be mounted. It should be the same as or a parent of the working directory to avoid data loss. Defaults to the working directory if not specified.`,
+  command: `The command that will be run i.e. will overwrite the image Dockerfile \`ENTRYPOINT\`.`,
+  args: `The arguments that will follow the command, i.e. will overwrite the image Dockerfile \`CMD\`.`,
+};
