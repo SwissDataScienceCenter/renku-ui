@@ -106,7 +106,7 @@ export function CustomEnvironmentValues({
         value={environment?.container_image || ""}
       />
       <EnvironmentRowWithLabel
-        label="Default URL"
+        label="Default URL path"
         value={environment.default_url}
       />
       <EnvironmentRowWithLabel label="Port" value={environment.port} />

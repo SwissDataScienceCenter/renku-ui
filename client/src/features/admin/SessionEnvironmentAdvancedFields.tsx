@@ -21,37 +21,48 @@ import { useCallback, useState } from "react";
 import { Control, FieldErrors } from "react-hook-form";
 import { Collapse } from "reactstrap";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
-import { AdvanceSettingsFields } from "../sessionsV2/components/SessionForm/AdvanceSettingsFields";
 import { SessionEnvironmentForm } from "./SessionEnvironmentFormContent";
+import { AdvancedSettingsFields } from "../sessionsV2/components/SessionForm/AdvancedSettingsFields";
 
-interface SessionEnvironmentAdvanceFieldsProps {
+interface SessionEnvironmentAdvancedFieldsProps {
   control: Control<SessionEnvironmentForm, unknown>;
   errors: FieldErrors<SessionEnvironmentForm>;
 }
 
-export default function SessionEnvironmentAdvanceFields({
+export default function SessionEnvironmentAdvancedFields({
   control,
   errors,
-}: SessionEnvironmentAdvanceFieldsProps) {
-  const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
+}: SessionEnvironmentAdvancedFieldsProps) {
+  const [isAdvancedSettingOpen, setIsAdvancedSettingsOpen] = useState(false);
   const toggleIsOpen = useCallback(
     () =>
-      setIsAdvanceSettingsOpen((isAdvanceSettingOpen) => !isAdvanceSettingOpen),
+      setIsAdvancedSettingsOpen(
+        (isAdvancedSettingOpen) => !isAdvancedSettingOpen
+      ),
     []
   );
   return (
     <>
       <div>
-        <span
-          className={cx("fw-bold", "cursor-pointer")}
+        <button
+          className={cx(
+            "d-flex",
+            "align-items-center",
+            "w-100",
+            "bg-transparent",
+            "border-0",
+            "fw-bold"
+          )}
+          type="button"
           onClick={toggleIsOpen}
         >
-          Advance settings <ChevronFlippedIcon flipped={isAdvanceSettingOpen} />
-        </span>
+          Advanced settings{" "}
+          <ChevronFlippedIcon flipped={isAdvancedSettingOpen} />
+        </button>
       </div>
-      <Collapse isOpen={isAdvanceSettingOpen}>
+      <Collapse isOpen={isAdvancedSettingOpen}>
         <div className="mt-3">
-          <AdvanceSettingsFields<SessionEnvironmentForm>
+          <AdvancedSettingsFields<SessionEnvironmentForm>
             control={control}
             errors={errors}
           />

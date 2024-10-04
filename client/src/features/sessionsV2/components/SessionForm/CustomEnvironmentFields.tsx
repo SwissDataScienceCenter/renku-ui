@@ -22,7 +22,7 @@ import { Controller } from "react-hook-form";
 import { Label, Input, Collapse } from "reactstrap";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
-import { AdvanceSettingsFields } from "./AdvanceSettingsFields";
+import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 
 export function CustomEnvironmentFields({
@@ -40,8 +40,9 @@ export function CustomEnvironmentFields({
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <p className={cx("mb-0")}>
-        Use a custom image to create a session launcher. Provide an image URL,
-        such as one from https://hub.docker.com.
+        Use a custom container image to create a session launcher. Provide the
+        image name or reference, such as one from Docker Hub (e.g.,
+        repository/image:tag).
       </p>
       <div className={cx("d-flex", "flex-column")}>
         <Label
@@ -57,7 +58,7 @@ export function CustomEnvironmentFields({
             <Input
               className={cx(errors.container_image && "is-invalid")}
               id="addSessionLauncherContainerImage"
-              placeholder="Docker image"
+              placeholder="image:tag"
               type="text"
               autoFocus={true}
               data-cy="custom-image-input"
@@ -77,7 +78,7 @@ export function CustomEnvironmentFields({
         </span>
       </div>
       <Collapse isOpen={isAdvanceSettingOpen}>
-        <AdvanceSettingsFields<SessionLauncherForm>
+        <AdvancedSettingsFields<SessionLauncherForm>
           control={control}
           errors={errors}
         />

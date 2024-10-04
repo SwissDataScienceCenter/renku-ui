@@ -141,14 +141,14 @@ function JsonField<T extends FieldValues>({
   );
 }
 
-interface AdvanceSettingsProp<T extends FieldValues> {
+interface AdvancedSettingsProp<T extends FieldValues> {
   control: Control<T, unknown>;
   errors?: FieldErrors<T>;
 }
 
-export function AdvanceSettingsFields<
+export function AdvancedSettingsFields<
   T extends SessionLauncherForm | SessionEnvironmentForm
->({ control, errors }: AdvanceSettingsProp<T>) {
+>({ control, errors }: AdvancedSettingsProp<T>) {
   const desc = getFormCustomValuesDesc();
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
