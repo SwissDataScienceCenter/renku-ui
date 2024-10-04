@@ -26,11 +26,12 @@ import {
   Container,
   Row,
 } from "reactstrap";
-
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { ErrorLabel } from "../../components/formlabels/FormLabels.tsx";
+import { safeStringify } from "../sessionsV2/session.utils";
 import type {
   SessionEnvironment,
   SessionEnvironmentList,
@@ -39,7 +40,6 @@ import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
 import { useGetSessionEnvironmentsQuery } from "./adminSessions.api";
-import { safeStringify } from "../sessionsV2/session.utils";
 
 export default function SessionEnvironmentsSection() {
   return (
@@ -164,10 +164,11 @@ function SessionEnvironmentDisplay({
             UID: <code>{uid}</code>
           </CardText>
           <CardText className="mb-0">
-            Command: <code>{command ? safeStringify(command) : "-"}</code>
+            Command:{" "}
+            <EnvironmentCode value={command ? safeStringify(command) : "-"} />
           </CardText>
           <CardText className="mb-0">
-            Args: <code>{args ? safeStringify(args) : "-"}</code>
+            Args: <EnvironmentCode value={args ? safeStringify(args) : "-"} />
           </CardText>
           <CardText>
             <TimeCaption
@@ -185,4 +186,9 @@ function SessionEnvironmentDisplay({
       </Card>
     </Col>
   );
+}
+
+function EnvironmentCode({ value }: { value: string | null }) {
+  if (value === null) return <ErrorLabel text={"Invalid JSON array value"} />;
+  return <code>{value}</code>;
 }

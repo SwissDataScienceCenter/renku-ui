@@ -35,8 +35,7 @@ import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
 import { useAddSessionEnvironmentMutation } from "./adminSessions.api";
-import { safeParseJSONArray } from "../sessionsV2/session.utils";
-import { ErrorAlert } from "../../components/Alert";
+import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 
 export default function AddSessionEnvironmentButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -65,7 +64,6 @@ function AddSessionEnvironmentModal({
   toggle,
 }: AddSessionEnvironmentModalProps) {
   const [addSessionEnvironment, result] = useAddSessionEnvironmentMutation();
-  const [submitError, setSubmitError] = useState(false);
 
   const {
     control,
@@ -82,10 +80,9 @@ function AddSessionEnvironmentModal({
   });
   const onSubmit = useCallback(
     (data: SessionEnvironmentForm) => {
-      const commandParsed = safeParseJSONArray(data.command);
-      const argsParsed = safeParseJSONArray(data.args);
-      if (commandParsed === false || argsParsed === false) setSubmitError(true);
-      else
+      const commandParsed = safeParseJSONStringArray(data.command);
+      const argsParsed = safeParseJSONStringArray(data.args);
+      if (commandParsed.parsed && argsParsed.parsed)
         addSessionEnvironment({
           container_image: data.container_image,
           name: data.name,
@@ -96,12 +93,12 @@ function AddSessionEnvironmentModal({
             ? data.working_directory
             : undefined,
           mount_directory: data.mount_directory.trim()
-            ? data.working_directory
+            ? data.mount_directory
             : undefined,
           uid: data.uid ?? undefined,
           gid: data.gid ?? undefined,
-          command: commandParsed,
-          args: argsParsed,
+          command: commandParsed.data,
+          args: argsParsed.data,
         });
     },
     [addSessionEnvironment]
@@ -138,11 +135,6 @@ function AddSessionEnvironmentModal({
         <ModalHeader toggle={toggle}>Add session environment</ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
-          {submitError && (
-            <ErrorAlert>
-              The command or arguments are not a valid JSON array
-            </ErrorAlert>
-          )}
           <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>

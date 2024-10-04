@@ -20,6 +20,7 @@ import cx from "classnames";
 import { ReactNode } from "react";
 import { Clock, Globe2, Link45deg } from "react-bootstrap-icons";
 import { Card, CardBody, Col, Row } from "reactstrap";
+import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { safeStringify } from "../session.utils";
 import { SessionLauncher } from "../sessionsV2.types";
@@ -120,11 +121,11 @@ export function CustomEnvironmentValues({
       />
       <EnvironmentRowWithLabel label="UID" value={environment.uid} />
       <EnvironmentRowWithLabel label="GID" value={environment.gid} />
-      <EnvironmentRowWithLabel
+      <EnvironmentJSONArrayRowWithLabel
         label="Command"
         value={safeStringify(environment.command)}
       />
-      <EnvironmentRowWithLabel
+      <EnvironmentJSONArrayRowWithLabel
         label="Args"
         value={safeStringify(environment.args)}
       />
@@ -155,6 +156,27 @@ function EnvironmentRowWithLabel({
       <div className="d-block">
         <label className={cx("text-nowrap", "mb-0", "me-2")}>{label}:</label>
         <code>{value ?? "-"}</code>
+      </div>
+    </EnvironmentRow>
+  );
+}
+
+function EnvironmentJSONArrayRowWithLabel({
+  label,
+  value,
+}: {
+  label: string;
+  value?: string | number | null;
+}) {
+  return (
+    <EnvironmentRow>
+      <div className="d-block">
+        <label className={cx("text-nowrap", "mb-0", "me-2")}>{label}:</label>
+        {value === null ? (
+          <ErrorLabel text={"Invalid JSON array value"} />
+        ) : (
+          <code> {value} </code>
+        )}
       </div>
     </EnvironmentRow>
   );

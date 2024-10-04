@@ -52,22 +52,6 @@ export function getSessionFavicon(
   }
 }
 
-export function getFormCustomValuesDesc() {
-  return {
-    urlPath: `Specify a subpath for your Renku session. By default, the session opens at the path defined by the environment variable \`RENKU_SESION_PATH\`. If you set a subpath (e.g., "foo"), the session will open at \`<RENKU_SESION_PATH>/foo\`.`,
-    port: `The network port that your application will use to listen for incoming connections.  
-Default: \`8080\`.`,
-    workingDirectory: `Set the directory where your session will open. If not specified, Renku uses the Docker image setting. Renku will also create the project inside this directory including any data sources and repositories.`,
-    uid: `The identifier assigned to the user that will run the application. This determines file permissions and ownership.  
-Default: \`1000\`.`,
-    gid: `The identifier assigned to the group that will run the application. This helps manage group-based permissions.  
-Default: \`1000\`.`,
-    mountDirectory: `Renku will provide persistent storage for your session even when you pause or resume it. Set the location where this storage should be mounted. It should be the same as or a parent of the working directory to avoid data loss. Defaults to the working directory if not specified.`,
-    command: `The command that will be run i.e. will overwrite the image Dockerfile \`ENTRYPOINT\`.`,
-    args: `The arguments that will follow the command, i.e. will overwrite the image Dockerfile \`CMD\`.`,
-  };
-}
-
 export function prioritizeSelectedEnvironment(
   environments?: SessionEnvironmentList,
   selectedEnvironmentId?: string
@@ -86,9 +70,22 @@ export function prioritizeSelectedEnvironment(
   return [targetEnvironment, ...otherEnvironments];
 }
 
-export function getFormattedEnvironmentValues(
-  data: SessionLauncherForm
-): SessionLauncherEnvironmentParams | false {
+/**
+ * Formats and validates the environment values for launching a session.
+ *
+ * @param {SessionLauncherForm} data - The form data used to configure the environment for a session launch.
+ *
+ * @returns {{ success: boolean; data?: SessionLauncherEnvironmentParams; error?: string }} -
+ *  Returns an object with the following structure:
+ *   - `success`: A boolean indicating whether the function executed successfully.
+ *   - `data`: If `success` is true, contains the formatted `SessionLauncherEnvironmentParams` object.
+ *   - `error`: If `success` is false, contains a string describing the error (e.g., "Invalid command or args format").
+ */
+export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
+  success: boolean;
+  data?: SessionLauncherEnvironmentParams;
+  error?: string;
+} {
   const {
     container_image,
     default_url,
@@ -105,26 +102,35 @@ export function getFormattedEnvironmentValues(
   } = data;
 
   if (environment_kind === "GLOBAL") {
-    return { id: environment_id };
+    return { success: true, data: { id: environment_id } };
   }
 
-  const commandFormatted = safeParseJSONArray(command);
-  const argsFormatted = safeParseJSONArray(args);
-  if (commandFormatted === false || argsFormatted === false) return false;
+  const commandFormatted = safeParseJSONStringArray(command);
+  const argsFormatted = safeParseJSONStringArray(args);
+  if (!commandFormatted.parsed || !argsFormatted.parsed)
+    return { success: false, error: "Invalid command or args format" };
 
   return {
-    environment_kind: "CUSTOM",
-    container_image,
-    name,
-    default_url: default_url.trim() || DEFAULT_URL,
-    port,
-    working_directory,
-    mount_directory,
-    uid,
-    gid,
-    command: commandFormatted,
-    args: argsFormatted,
+    success: true,
+    data: {
+      environment_kind: "CUSTOM",
+      container_image,
+      name,
+      default_url: default_url.trim() || DEFAULT_URL,
+      port,
+      working_directory,
+      mount_directory,
+      uid,
+      gid,
+      command: commandFormatted.data,
+      args: argsFormatted.data,
+    },
   };
+}
+
+export function getJSONStringArray(value: string[] | undefined) {
+  const valueToString = safeStringify(value);
+  return valueToString === null ? undefined : valueToString;
 }
 
 export function getLauncherDefaultValues(launcher: SessionLauncher) {
@@ -146,8 +152,8 @@ export function getLauncherDefaultValues(launcher: SessionLauncher) {
     mount_directory: launcher.environment?.mount_directory,
     uid: launcher.environment?.uid,
     gid: launcher.environment?.gid,
-    command: safeStringify(launcher.environment?.command),
-    args: safeStringify(launcher.environment?.args),
+    command: getJSONStringArray(launcher.environment?.command),
+    args: getJSONStringArray(launcher.environment?.args),
   };
 }
 
@@ -156,36 +162,46 @@ export function getLauncherDefaultValues(launcher: SessionLauncher) {
  * @param value - The value to stringify.
  * @returns
  * - The JSON string representation of the value if successful.
- * - An error message ("Failed to stringify the value") if `JSON.stringify` throws an error.
+ * - An null if `JSON.stringify` throws an error.
  *
  * @example
  * safeStringify({ key: "value" }); // '{"key":"value"}'
  * safeStringify(undefined); // "undefined"
- * safeStringify(() => {}); // "Failed to stringify the value"
+ * safeStringify(() => {}); // null
  */
 export function safeStringify(value: unknown) {
   try {
     return JSON.stringify(value);
   } catch (error) {
-    return "Failed to stringify the value";
+    return null;
   }
 }
 
+interface ParseResult {
+  parsed: boolean;
+  data?: string[] | null;
+  error?: string;
+}
 /**
- * Safely parses a JSON string and checks if it is a valid JSON array.
- *
- * @param value - The JSON string to parse.
- * @returns The parsed JSON array if valid, `null` if the string is empty or only contains whitespace,
- *          and `false` if the string is not valid JSON or not a JSON array.
+ * Safely parses a JSON string and checks if it is a valid JSON array of strings.
  */
-export function safeParseJSONArray(value: string) {
-  if (!value?.trim()) return null;
+export function safeParseJSONStringArray(value: string): ParseResult {
+  if (!value?.trim()) return { parsed: true, data: null };
 
   try {
     const parsedValue = JSON.parse(value);
-    return Array.isArray(parsedValue) ? parsedValue : false;
+    if (!Array.isArray(parsedValue))
+      return { parsed: false, error: "Input must be a valid JSON array" };
+
+    if (!parsedValue.every((item) => typeof item === "string"))
+      return {
+        parsed: false,
+        error: "Array must contain only string elements",
+      };
+
+    return { parsed: true, data: parsedValue };
   } catch (error) {
-    return false;
+    return { parsed: false, error: "Input must be a valid JSON format" };
   }
 }
 
@@ -196,24 +212,13 @@ export function safeParseJSONArray(value: string) {
  * - `true` if the string is a valid JSON array.
  * - An error message as a string if the input is not a valid JSON format or not a JSON array.
  * - `undefined` if the input is an empty or whitespace-only string (i.e., no validation performed).
- *
- * @example
- * isValidJSONArrayString('["item1", "item2"]'); // true
- * isValidJSONArrayString('{"key": "value"}'); // "Input must be a valid JSON array"
- * isValidJSONArrayString('invalid json'); // "Input must be a valid JSON format"
- * isValidJSONArrayString(''); // undefined
  */
-export function isValidJSONArrayString(
+export function isValidJSONStringArray(
   value: string
 ): true | string | undefined {
-  if (!value?.trim()) return undefined;
+  const parseString = safeParseJSONStringArray(value);
+  if (parseString.parsed && parseString.data === null) return undefined;
 
-  try {
-    const parsedValue = JSON.parse(value);
-    return Array.isArray(parsedValue)
-      ? true
-      : "Input must be a valid JSON array";
-  } catch {
-    return "Input must be a valid JSON format";
-  }
+  if (parseString.parsed) return true;
+  return parseString.error ?? "Is not a valid JSON array string";
 }

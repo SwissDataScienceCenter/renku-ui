@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
@@ -28,7 +28,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { ErrorAlert, SuccessAlert } from "../../../../components/Alert";
+import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import {
@@ -53,7 +53,6 @@ export default function UpdateSessionLauncherModal({
   launcher,
   toggle,
 }: UpdateSessionLauncherModalProps) {
-  const [submitError, setSubmitError] = useState(false);
   const { data: environments } = useGetSessionEnvironmentsQuery();
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const defaultValues = useMemo(
@@ -75,13 +74,12 @@ export default function UpdateSessionLauncherModal({
     (data: SessionLauncherForm) => {
       const { description, name } = data;
       const environment = getFormattedEnvironmentValues(data);
-      if (environment === false) setSubmitError(true);
-      else
+      if (environment.success && environment.data)
         updateSessionLauncher({
           launcherId: launcher.id,
           name,
           description: description.trim() ? description : undefined,
-          environment,
+          environment: environment.data,
         });
     },
     [launcher.id, updateSessionLauncher]
@@ -126,11 +124,6 @@ export default function UpdateSessionLauncherModal({
         ) : (
           <Form noValidate onSubmit={handleSubmit(onSubmit)}>
             {result.error && <RtkErrorAlert error={result.error} />}
-            {submitError && (
-              <ErrorAlert>
-                The command or arguments are not a valid JSON array
-              </ErrorAlert>
-            )}
             <EditLauncherFormContent
               control={control}
               errors={errors}
