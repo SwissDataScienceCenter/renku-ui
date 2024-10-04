@@ -39,34 +39,33 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
+import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
+import {
+  useGetResourceClassByIdQuery,
+  useGetResourcePoolsQuery,
+} from "../../dataServices/computeResources.api";
 import { Project } from "../../projectsV2/api/projectV2.api";
+import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { useGetStoragesV2Query } from "../../projectsV2/api/storagesV2.api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { Session, Sessions } from "../../session/sessions.types";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
+import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
+import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import {
   SessionBadge,
   SessionStatusV2Description,
   SessionStatusV2Label,
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
-import { SessionLauncher } from "../sessionsV2.types";
-import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
-import {
-  useGetResourceClassByIdQuery,
-  useGetResourcePoolsQuery,
-} from "../../dataServices/computeResources.api";
-import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal.tsx";
-import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
-import { EnvironmentCard } from "./EnvironmentCard";
 import { DEFAULT_URL } from "../session.constants";
+import { SessionLauncher } from "../sessionsV2.types";
+import { EnvironmentCard } from "./EnvironmentCard";
 
 interface SessionCardContentProps {
   color: string;

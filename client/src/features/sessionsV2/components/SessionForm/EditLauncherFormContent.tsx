@@ -33,7 +33,7 @@ import { Loader } from "../../../../components/Loader";
 import { prioritizeSelectedEnvironment } from "../../session.utils";
 import { useGetSessionEnvironmentsQuery } from "../../sessionsV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
-import { AdvanceSettingsFields } from "./AdvanceSettingsFields";
+import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import { EnvironmentKindField } from "./EnvironmentKindField";
 import { SessionEnvironmentItem } from "./SessionEnvironmentItem";
 
@@ -157,7 +157,7 @@ export default function EditLauncherFormContent({
         </span>
       </div>
       <Collapse isOpen={isAdvanceSettingOpen}>
-        <AdvanceSettingsFields<SessionLauncherForm>
+        <AdvancedSettingsFields<SessionLauncherForm>
           control={control}
           errors={errors}
         />
