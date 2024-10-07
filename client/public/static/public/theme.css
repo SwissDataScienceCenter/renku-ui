@@ -149,7 +149,7 @@ body {
   background-repeat: no-repeat;
   overflow: auto;
   width: 100%;
-  animation: changeBackgroundXL 5s step-end;
+  animation: changeBackgroundXL 5s step-end infinite;
   top: 35%;
 }
 @media (max-width: 992px) {
