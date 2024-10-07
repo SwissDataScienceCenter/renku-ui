@@ -64,7 +64,7 @@ body {
 
 .content {
   height: calc(100vh - 75px - 70px);
-  color: #000;
+  color: black;
   overflow: auto;
   width: 100%;
   display: flex;
