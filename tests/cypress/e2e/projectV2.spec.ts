@@ -118,33 +118,6 @@ describe("Add new v2 project -- not logged in", () => {
   });
 });
 
-describe("List v2 project", () => {
-  beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects().listProjectV2();
-    cy.visit("/v2/projects");
-  });
-
-  it("list projects", () => {
-    cy.contains("List Projects (V2)").should("be.visible");
-  });
-
-  it("list projects with pagination", () => {
-    fixtures.listManyProjectV2();
-    cy.wait("@listProjectV2");
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.get("ul.rk-search-pagination").should("be.visible");
-  });
-
-  it("shows projects", () => {
-    fixtures.readProjectV2();
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
-    cy.wait("@readProjectV2");
-    cy.contains("test 2 v2-project").should("be.visible");
-  });
-});
-
 describe("Navigate to project", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
@@ -222,13 +195,13 @@ describe("Edit v2 project", () => {
       .projects()
       .landingUserProjects()
       .listProjectV2();
-    cy.visit("/v2/projects");
+    cy.visit("/v2");
   });
 
   it("changes project metadata", () => {
     fixtures.readProjectV2().updateProjectV2().listNamespaceV2();
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.getDataCy("project-card")
+    cy.contains("Projects").should("be.visible");
+    cy.getDataCy("dashboard-project-list")
       .contains("a", "test 2 v2-project")
       .should("be.visible")
       .click();
@@ -252,8 +225,7 @@ describe("Edit v2 project", () => {
 
   it("changes project namespace", () => {
     fixtures.readProjectV2().updateProjectV2().listManyNamespaceV2();
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.getDataCy("project-card")
+    cy.getDataCy("dashboard-project-list")
       .contains("a", "test 2 v2-project")
       .should("be.visible")
       .click();
@@ -286,8 +258,7 @@ describe("Edit v2 project", () => {
     fixtures.readProjectV2().updateProjectV2({
       fixture: "projectV2/update-projectV2-repositories.json",
     });
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.getDataCy("project-card")
+    cy.getDataCy("dashboard-project-list")
       .contains("a", "test 2 v2-project")
       .should("be.visible")
       .click();
@@ -460,7 +431,7 @@ describe("Edit v2 project", () => {
       fixture: "projectV2/list-projectV2-post-delete.json",
       name: "listProjectV2PostDelete",
     });
-    cy.contains("List Projects (V2)");
+    cy.contains("Projects");
     cy.contains("Project deleted").should("be.visible");
   });
 });

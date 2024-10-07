@@ -61,11 +61,11 @@ export default function GroupNotFound({ error }: GroupNotFoundProps) {
 
           <div>
             <Link
-              to={ABSOLUTE_ROUTES.v2.groups.root}
+              to={ABSOLUTE_ROUTES.v2.root}
               className={cx("btn", "btn-outline-primary")}
             >
               <ArrowLeft className={cx("bi", "me-1")} />
-              Return to the groups list
+              Return to the dashboard
             </Link>
           </div>
 

@@ -34,9 +34,7 @@ import LazyConnectedServicesPage from "../connectedServices/LazyConnectedService
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupV2Show from "../groupsV2/LazyGroupV2Show";
-import LazyGroupV2List from "../projectsV2/LazyGroupList";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
-import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
 import LazySearchV2 from "../searchV2/LazySearchV2";
@@ -140,7 +138,6 @@ export default function RootV2() {
 function GroupsV2Routes() {
   return (
     <Routes>
-      <Route index element={<LazyGroupV2List />} />
       <Route
         path={RELATIVE_ROUTES.v2.groups.new}
         element={<LazyGroupV2New />}
@@ -175,14 +172,6 @@ function HelpV2Routes() {
 function ProjectsV2Routes() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <ContainerWrap>
-            <LazyProjectV2List />
-          </ContainerWrap>
-        }
-      />
       <Route
         path={RELATIVE_ROUTES.v2.projects.new}
         element={

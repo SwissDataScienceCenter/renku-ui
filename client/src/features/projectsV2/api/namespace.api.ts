@@ -91,6 +91,8 @@ export type GetGroupsApiArg = {
   page?: number;
   /** The number of results per page */
   perPage?: number;
+  /** A flag to filter groups where the user is a direct member */
+  direct_member?: boolean;
 };
 export type PostGroupsApiResponse =
   /** status 201 The group was created */ GroupResponse;

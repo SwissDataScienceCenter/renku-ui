@@ -18,17 +18,10 @@
 import cx from "classnames";
 import { Folder, People, PlayCircle, PlusLg } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Col,
-  ListGroup,
-  Row,
-} from "reactstrap";
+import { Card, CardBody, CardHeader, Col, ListGroup, Row } from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import {
@@ -36,33 +29,44 @@ import {
   useGetProjectsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import DashboardV2Sessions from "./DashboardV2Sessions";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
+import DashboardV2Sessions from "./DashboardV2Sessions";
 
 export default function DashboardV2() {
   return (
     <div className={cx("d-flex", "flex-column", "gap-4")}>
       <DashboardWelcome />
-      <SessionsDashboard />
-      <ProjectsDashboard />
-      <GroupsDashboard />
+      <Row>
+        <Col xs={12} lg={8} className={cx("d-flex", "flex-column", "gap-4")}>
+          <SessionsDashboard />
+          <ProjectsDashboard />
+        </Col>
+        <Col
+          xs={12}
+          lg={4}
+          className={cx("d-flex", "flex-column", "mt-4", "mt-lg-0")}
+        >
+          <GroupsDashboard />
+        </Col>
+      </Row>
     </div>
   );
 }
 
 function DashboardWelcome() {
   return (
-    <div>
+    <div className="mt-2">
       <Row>
         <Col>
-          <h2>Welcome to the Renku 2.0 beta preview!</h2>
+          <h2 className="text-center">
+            Welcome to the Renku 2.0 beta preview!!
+          </h2>
         </Col>
       </Row>
       <Row>
         <Col>
-          <p>
+          <p className="text-center">
             <b>Learn more about Renku 2.0</b> on our{" "}
             <ExternalLink
               url="https://blog.renkulab.io/renku-2/"
@@ -85,14 +89,14 @@ function DashboardWelcome() {
       <Row>
         <Col>
           <WarnAlert className="mb-0" timeout={0} dismissible={false}>
-            <h4>Do not do any important work in the Renku 2.0 beta preview!</h4>
-            <p className="mb-2">
-              The beta is for testing only. We do not guarantee saving and
-              persisting work in the beta.
+            <p className="fw-bold">
+              Do not do any important work in the Renku 2.0 beta preview!
             </p>
-            <div>
-              You can go <BackToV1Button color="warning" /> at any time.
-            </div>
+            <p className={cx("mb-0", "pb-0")}>
+              The beta is for testing only. We do not guarantee saving and
+              persisting work in the beta. You can go{" "}
+              <BackToV1Button color="warning" /> at any time.
+            </p>
           </WarnAlert>
         </Col>
       </Row>
@@ -125,12 +129,6 @@ function ProjectsDashboard() {
       <CardBody>
         <ProjectList />
       </CardBody>
-
-      <CardFooter>
-        <Link to="/v2/projects" data-cy="view-my-projects-btn">
-          View all my projects
-        </Link>
-      </CardFooter>
     </Card>
   );
 }
@@ -139,6 +137,7 @@ function ProjectList() {
   const { data, error, isLoading } = useGetProjectsQuery({
     page: 1,
     perPage: 5,
+    direct_member: true,
   });
 
   const noProjects = isLoading ? (
@@ -151,22 +150,38 @@ function ProjectList() {
       <p>Cannot show projects.</p>
       <RtkOrNotebooksError error={error} />
     </div>
-  ) : data == null || data?.total === 0 ? (
+  ) : !data || data?.projects?.length === 0 ? (
     <div>No 2.0 projects.</div>
   ) : null;
 
-  if (noProjects) return <div>{noProjects}</div>;
+  const viewLink = (
+    <ViewAllLink
+      noItems={!data || data?.projects?.length === 0}
+      type="project"
+    />
+  );
+
+  if (noProjects)
+    return (
+      <div className={cx("d-flex", "flex-column", "gap-3")}>
+        {noProjects}
+        {viewLink}
+      </div>
+    );
 
   return (
-    <ListGroup flush data-cy="dashboard-project-list">
-      {data?.projects?.map((project) => (
-        <ProjectShortHandDisplay
-          element="list-item"
-          key={project.id}
-          project={project}
-        />
-      ))}
-    </ListGroup>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <ListGroup flush data-cy="dashboard-project-list">
+        {data?.projects?.map((project) => (
+          <ProjectShortHandDisplay
+            element="list-item"
+            key={project.id}
+            project={project}
+          />
+        ))}
+      </ListGroup>
+      {viewLink}
+    </div>
   );
 }
 
@@ -195,12 +210,6 @@ function GroupsDashboard() {
       <CardBody>
         <GroupsList />
       </CardBody>
-
-      <CardFooter className={cx("bg-white", "py-3")}>
-        <Link to="/v2/groups" data-cy="view-my-groups-btn">
-          View all my groups
-        </Link>
-      </CardFooter>
     </Card>
   );
 }
@@ -209,6 +218,7 @@ function GroupsList() {
   const { data, error, isLoading } = useGetGroupsQuery({
     page: 1,
     perPage: 5,
+    direct_member: true,
   });
 
   const noGroups = isLoading ? (
@@ -221,22 +231,35 @@ function GroupsList() {
       <p>Cannot show groups.</p>
       <RtkOrNotebooksError error={error} />
     </div>
-  ) : data == null || data?.total === 0 ? (
+  ) : !data || data == null || data?.groups?.length === 0 ? (
     <div>No 2.0 groups.</div>
   ) : null;
 
-  if (noGroups) return <div>{noGroups}</div>;
+  const viewLink = (
+    <ViewAllLink noItems={!data || data?.groups?.length === 0} type="group" />
+  );
+
+  if (noGroups)
+    return (
+      <div className={cx("d-flex", "flex-column", "gap-3")}>
+        {noGroups}
+        {viewLink}
+      </div>
+    );
 
   return (
-    <ListGroup flush data-cy="dashboard-group-list">
-      {data?.groups?.map((group) => (
-        <GroupShortHandDisplay
-          element="list-item"
-          key={group.id}
-          group={group}
-        />
-      ))}
-    </ListGroup>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <ListGroup flush data-cy="dashboard-group-list">
+        {data?.groups?.map((group) => (
+          <GroupShortHandDisplay
+            element="list-item"
+            key={group.id}
+            group={group}
+          />
+        ))}
+      </ListGroup>
+      {viewLink}
+    </div>
   );
 }
 
@@ -254,5 +277,29 @@ function SessionsDashboard() {
         <DashboardV2Sessions />
       </CardBody>
     </Card>
+  );
+}
+
+function ViewAllLink({
+  type,
+  noItems,
+}: {
+  type: "project" | "group";
+  noItems: boolean;
+}) {
+  return noItems ? (
+    <Link
+      to={`/v2/search?page=1&perPage=12&q=type:${type}`}
+      data-cy={`view-other-${type}s-btn`}
+    >
+      View other {type === "project" ? "projects" : "groups"}
+    </Link>
+  ) : (
+    <Link
+      to={`/v2/search?page=1&perPage=12&q=role:owner,editor,viewer+type:${type}+sort:created-desc`}
+      data-cy={`view-my-${type}s-btn`}
+    >
+      View all my {type === "project" ? "projects" : "groups"}
+    </Link>
   );
 }

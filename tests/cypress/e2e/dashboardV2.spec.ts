@@ -72,14 +72,56 @@ describe("View v2 landing page", () => {
   });
 
   it("list groups", () => {
-    cy.contains("List Groups").should("not.exist");
+    cy.contains("View other groups").should("not.exist");
     cy.contains("View all my groups").should("be.visible").click();
-    cy.contains("List Groups").should("be.visible");
+    cy.contains("Renku 2.0 Search").should("be.visible");
+    cy.getDataCy("search-filter-role-owner").should("be.checked");
+    cy.getDataCy("search-filter-role-editor").should("be.checked");
+    cy.getDataCy("search-filter-role-viewer").should("be.checked");
+    cy.getDataCy("search-filter-type-group").should("be.checked");
   });
 
   it("list projects", () => {
-    cy.contains("List Projects (V2)").should("not.exist");
+    cy.contains("View other projects").should("not.exist");
     cy.contains("View all my projects").should("be.visible").click();
-    cy.contains("List Projects (V2)").should("be.visible");
+    cy.contains("Renku 2.0 Search").should("be.visible");
+    cy.getDataCy("search-filter-role-owner").should("be.checked");
+    cy.getDataCy("search-filter-role-editor").should("be.checked");
+    cy.getDataCy("search-filter-role-viewer").should("be.checked");
+    cy.getDataCy("search-filter-type-project").should("be.checked");
+  });
+});
+
+describe("View v2 landing page empty", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userTest().namespaces();
+    fixtures.projects().landingUserProjects().readProjectV2ById();
+    cy.visit("/v2");
+  });
+
+  it("view dashboard", () => {
+    cy.contains("Sessions").should("be.visible");
+    cy.contains("Projects").should("be.visible");
+    cy.contains("Groups").should("be.visible");
+  });
+
+  it("list groups", () => {
+    cy.contains("View all my groups").should("not.exist");
+    cy.contains("View other groups").should("be.visible").click();
+    cy.contains("Renku 2.0 Search").should("be.visible");
+    cy.getDataCy("search-filter-role-owner").should("not.be.checked");
+    cy.getDataCy("search-filter-role-editor").should("be.not.checked");
+    cy.getDataCy("search-filter-role-viewer").should("be.not.checked");
+    cy.getDataCy("search-filter-type-group").should("be.checked");
+  });
+
+  it("list projects", () => {
+    cy.contains("View all my projects").should("not.exist");
+    cy.contains("View other projects").should("be.visible").click();
+    cy.contains("Renku 2.0 Search").should("be.visible");
+    cy.getDataCy("search-filter-role-owner").should("be.not.checked");
+    cy.getDataCy("search-filter-role-editor").should("be.not.checked");
+    cy.getDataCy("search-filter-role-viewer").should("be.not.checked");
+    cy.getDataCy("search-filter-type-project").should("be.checked");
   });
 });
