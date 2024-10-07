@@ -42,9 +42,9 @@ export default function ProjectShortHandDisplay({
       data-cy="project-item"
     >
       <div className={cx("d-flex", "justify-content-between")}>
-        <h6 className={cx("m-0", "fw-bold", "text-truncate", "me-2")}>
+        <p className={cx("m-0", "fw-bold", "text-truncate", "me-2")}>
           {project.name}
-        </h6>
+        </p>
         <VisibilityIcon visibility={project.visibility} />
       </div>
 

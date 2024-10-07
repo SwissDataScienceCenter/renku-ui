@@ -89,7 +89,9 @@ function DashboardWelcome() {
       <Row>
         <Col>
           <WarnAlert className="mb-0" timeout={0} dismissible={false}>
-            <h6>Do not do any important work in the Renku 2.0 beta preview!</h6>
+            <p className="fw-bold">
+              Do not do any important work in the Renku 2.0 beta preview!
+            </p>
             <p className={cx("mb-0", "pb-0")}>
               The beta is for testing only. We do not guarantee saving and
               persisting work in the beta. You can go{" "}

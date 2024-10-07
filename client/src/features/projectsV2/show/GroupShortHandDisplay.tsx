@@ -40,7 +40,7 @@ export default function GroupShortHandDisplay({
       data-cy="group-item"
     >
       <div className={cx("d-flex", "justify-content-between", "gap-2")}>
-        <h6 className={cx("m-0", "fw-bold", "text-truncate")}>{group.name}</h6>
+        <p className={cx("m-0", "fw-bold", "text-truncate")}>{group.name}</p>
         <TimeCaption
           className={cx("ms-auto", "my-auto", "text-truncate")}
           datetime={group.creation_date}

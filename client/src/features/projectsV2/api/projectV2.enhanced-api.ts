@@ -61,7 +61,7 @@ const injectedApi = api.injectEndpoints({
         params: {
           page: queryArg.page,
           per_page: queryArg.perPage,
-          direct_member: queryArg["direct_member"],
+          direct_member: queryArg.direct_member,
         },
       }),
       transformResponse: (response, meta, queryArg) => {
