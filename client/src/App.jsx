@@ -103,11 +103,6 @@ function CentralContentContainer(props) {
           <title>Reproducible Data Science | Open Research | Renku</title>
         </Helmet>
         <Switch>
-          {/* <CompatRoute exact path="/login">
-            <ContainerWrap fullSize>
-              <LoginRedirect />
-            </ContainerWrap>
-          </CompatRoute> */}
           <CompatRoute exact path="/">
             {props.user.logged ? (
               <ContainerWrap>
