@@ -93,7 +93,7 @@ function ForkProject(props) {
   const history = useHistory();
 
   useEffect(() => {
-    if (!logged) {
+    if (!logged && typeof window === "object") {
       window.location.assign(loginUrl);
     }
     // This only needs to run once
