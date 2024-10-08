@@ -64,7 +64,7 @@ export default function ProjectDeleteConfirmation({
 
   useEffect(() => {
     if (result.isSuccess) {
-      navigate(ABSOLUTE_ROUTES.v2.projects.root);
+      navigate(ABSOLUTE_ROUTES.v2.root);
       if (notifications)
         notificationProjectDeleted(notifications, project.name);
     }

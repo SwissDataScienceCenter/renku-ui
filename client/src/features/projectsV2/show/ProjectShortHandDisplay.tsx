@@ -18,12 +18,10 @@
 
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-
-import { Project } from "../api/projectV2.api";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import { Project } from "../api/projectV2.api";
 
 interface ProjectShortHandDisplayProps {
   className?: string | string[];
@@ -43,25 +41,32 @@ export default function ProjectShortHandDisplay({
       )}
       data-cy="project-item"
     >
-      <h6 className="m-0 fw-bold">{project.name}</h6>
-      <p className={cx("fst-italic", "mb-2")}>
-        @{project.namespace}/{project.slug}
-      </p>
-
-      {project.description && (
-        <ClampedParagraph className="mb-2">
-          {project.description}
-        </ClampedParagraph>
-      )}
+      <div className={cx("d-flex", "justify-content-between")}>
+        <p className={cx("m-0", "fw-bold", "text-truncate", "me-2")}>
+          {project.name}
+        </p>
+        <VisibilityIcon visibility={project.visibility} />
+      </div>
 
       <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
-        <VisibilityIcon visibility={project.visibility} />
-        <TimeCaption
-          className={cx("ms-auto", "my-auto")}
-          datetime={project.creation_date}
-          enableTooltip
-          prefix="Created"
-        />
+        <p className={cx("fst-italic", "mb-2", "text-truncate")}>
+          @{project.namespace}/{project.slug}
+        </p>
+        {project.updated_at ? (
+          <TimeCaption
+            className={cx("ms-auto", "my-auto", "text-truncate")}
+            datetime={project.updated_at}
+            enableTooltip
+            prefix="Updated"
+          />
+        ) : (
+          <TimeCaption
+            className={cx("ms-auto", "my-auto", "text-truncate")}
+            datetime={project.creation_date}
+            enableTooltip
+            prefix="Created"
+          />
+        )}
       </div>
     </div>
   );

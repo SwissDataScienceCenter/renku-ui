@@ -90,6 +90,8 @@ export type GetProjectsApiArg = {
   page?: number;
   /** The number of results per page */
   perPage?: number;
+  /** A flag to filter projects where the user is a direct member */
+  direct_member?: boolean;
 };
 export type PostProjectsApiResponse =
   /** status 201 The project was created */ Project;
@@ -142,6 +144,7 @@ export type Ulid = string;
 export type ProjectName = string;
 export type Slug = string;
 export type CreationDate = string;
+export type UpdatedAt = string;
 export type UserId = string;
 export type Repository = string;
 export type RepositoriesList = Repository[];
@@ -162,6 +165,7 @@ export type Project = {
   description?: Description;
   etag?: ETag;
   keywords?: KeywordsList;
+  updated_at?: UpdatedAt;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {
