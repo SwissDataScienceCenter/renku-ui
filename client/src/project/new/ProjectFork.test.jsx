@@ -27,15 +27,14 @@ import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
 import { describe, it } from "vitest";
 
 import { testClient as client } from "../../api-client";
+import MemoryRouter from "../../components/router/MemoryRouter";
 import { StateModel, globalSchema } from "../../model";
 import { generateFakeUser } from "../../user/User.test";
 import AppContext from "../../utils/context/appContext";
 import { ForkProject } from "./index";
-import { CompatRouter } from "react-router-dom-v5-compat";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],
@@ -67,16 +66,14 @@ describe("rendering", () => {
       root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <CompatRouter>
-              <AppContext.Provider value={appContext}>
-                <ForkProject
-                  client={client}
-                  model={model}
-                  history={fakeHistory}
-                  user={loggedUser}
-                />
-              </AppContext.Provider>
-            </CompatRouter>
+            <AppContext.Provider value={appContext}>
+              <ForkProject
+                client={client}
+                model={model}
+                history={fakeHistory}
+                user={loggedUser}
+              />
+            </AppContext.Provider>
           </MemoryRouter>
         </Provider>
       );

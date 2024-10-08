@@ -25,13 +25,13 @@
 
 import { DateTime } from "luxon";
 import { createRoot } from "react-dom/client";
-import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
 import { describe, expect, it } from "vitest";
 
 import { RefreshButton } from "../components/buttons/Button";
 import { CommitsUtils, CommitsView } from "../components/commits/Commits";
 import { fixRelativePath } from "../components/markdown/RenkuMarkdownWithPathTranslation";
+import MemoryRouter from "../components/router/MemoryRouter";
 import { StateModel, globalSchema } from "../model";
 import {
   convertUnicodeToAscii,
