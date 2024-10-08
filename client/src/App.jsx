@@ -31,7 +31,7 @@ import { Route, Switch } from "react-router-dom";
 import { CompatRoute } from "react-router-dom-v5-compat";
 import { ToastContainer } from "react-toastify";
 
-import { LoginHelper, LoginRedirect } from "./authentication";
+import { LoginHelper } from "./authentication";
 import { Loader } from "./components/Loader";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import LazyShowDataset from "./dataset/LazyShowDataset";
@@ -103,11 +103,11 @@ function CentralContentContainer(props) {
           <title>Reproducible Data Science | Open Research | Renku</title>
         </Helmet>
         <Switch>
-          <CompatRoute exact path="/login">
+          {/* <CompatRoute exact path="/login">
             <ContainerWrap fullSize>
               <LoginRedirect />
             </ContainerWrap>
-          </CompatRoute>
+          </CompatRoute> */}
           <CompatRoute exact path="/">
             {props.user.logged ? (
               <ContainerWrap>

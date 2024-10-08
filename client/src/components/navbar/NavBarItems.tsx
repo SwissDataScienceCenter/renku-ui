@@ -32,6 +32,7 @@ import {
 } from "reactstrap";
 
 import { LoginHelper } from "../../authentication";
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import AdminDropdownItem from "../../landing/AdminDropdownItem";
 import { User } from "../../model/renkuModels.types";
 import NotificationsMenu from "../../notifications/NotificationsMenu";
@@ -43,7 +44,6 @@ import {
   getActiveProjectPathWithNamespace,
   gitLabUrlFromProfileUrl,
 } from "../../utils/helpers/HelperFunctions";
-import { Url } from "../../utils/helpers/url";
 import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { RenkuNavLink } from "../RenkuNavLink";
@@ -284,8 +284,6 @@ interface RenkuToolbarItemUserProps {
 }
 
 export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
-  const location = useLocation();
-
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
   const { renku10Enabled } = useAppSelector(({ featureFlags }) => featureFlags);
@@ -294,11 +292,14 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
   const uiserverURL = params.UISERVER_URL;
   const redirect_url = encodeURIComponent(params.BASE_URL);
 
+  const loginUrl = useLoginUrl({ params });
+
   if (!user.fetched) {
     return <Loader inline size={16} />;
   } else if (!user.logged) {
-    const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
-    return <RenkuNavLink className="px-2" to={to} title="Login" />;
+    // const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
+    // return <RenkuNavLink className="px-2" to={to} title="Login" />;
+    return <RenkuNavLink className="px-2" to={loginUrl.href} title="Login" />;
   }
 
   return (
