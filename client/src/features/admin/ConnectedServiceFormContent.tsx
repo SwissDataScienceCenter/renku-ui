@@ -58,6 +58,31 @@ export default function ConnectedServiceFormContent({
       </div>
 
       <div className="mb-3">
+        <Label className="form-label" for="addConnectedServiceAppSlug">
+          Application Slug
+        </Label>
+        <Controller
+          control={control}
+          name="app_slug"
+          render={({ field }) => (
+            <>
+              <Input
+                className={cx("form-control", errors.app_slug && "is-invalid")}
+                id="addConnectedServiceAppSlug"
+                placeholder="Application slug"
+                type="text"
+                {...field}
+              />
+            </>
+          )}
+          rules={{ required: true }}
+        />
+        <div className="invalid-feedback">
+          Please provide the appllication slug
+        </div>
+      </div>
+
+      <div className="mb-3">
         <Label className="form-label" for="addConnectedServiceDisplayName">
           Display Name
         </Label>

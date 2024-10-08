@@ -34,7 +34,7 @@ import {
   ConnectedServiceForm,
   CreateProviderParams,
 } from "../connectedServices/api/connectedServices.types";
-import { useCreateProviderMutation } from "../connectedServices/connectedServices.api";
+import { useCreateProviderMutation } from "../connectedServices/connectedServicesLegacy.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
@@ -75,6 +75,7 @@ function AddConnectedServiceModal({
     defaultValues: {
       id: "",
       kind: "gitlab",
+      app_slug: "",
       client_id: "",
       client_secret: "",
       display_name: "",
@@ -88,6 +89,7 @@ function AddConnectedServiceModal({
       createProvider({
         id: data.id,
         kind: data.kind,
+        app_slug: data.app_slug,
         client_id: data.client_id,
         client_secret: data.client_secret,
         display_name: data.display_name,

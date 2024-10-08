@@ -28,8 +28,8 @@ import {
   UpdateProviderParams,
 } from "./api/connectedServices.types";
 
-const connectedServicesApi = createApi({
-  reducerPath: "connectedServicesApi",
+const connectedServicesLegacyApi = createApi({
+  reducerPath: "connectedServicesLegacyApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "/ui-server/api/data/oauth2",
   }),
@@ -132,7 +132,7 @@ const connectedServicesApi = createApi({
   }),
 });
 
-export default connectedServicesApi;
+export default connectedServicesLegacyApi;
 export const {
   useCreateProviderMutation,
   useDeleteProviderMutation,
@@ -140,4 +140,4 @@ export const {
   useGetConnectionsQuery,
   useGetProvidersQuery,
   useUpdateProviderMutation,
-} = connectedServicesApi;
+} = connectedServicesLegacyApi;

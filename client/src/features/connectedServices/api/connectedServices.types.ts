@@ -39,6 +39,7 @@ export interface Provider {
   client_secret: string;
   display_name: string;
   scope: string;
+  app_slug: string;
   url: string;
   use_pkce: boolean;
 }
@@ -67,6 +68,7 @@ export interface GetConnectedAccountParams {
 export interface CreateProviderParams {
   id: string;
   kind: string;
+  app_slug: string;
   client_id: string;
   client_secret?: string;
   display_name: string;
@@ -78,6 +80,7 @@ export interface CreateProviderParams {
 export interface UpdateProviderParams {
   id: string;
   kind?: string;
+  app_slug?: string;
   client_id?: string;
   client_secret?: string;
   display_name?: string;

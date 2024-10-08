@@ -33,7 +33,7 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { useUpdateProviderMutation } from "../connectedServices/connectedServices.api";
+import { useUpdateProviderMutation } from "../connectedServices/connectedServicesLegacy.api";
 import {
   ConnectedServiceForm,
   Provider,
@@ -88,6 +88,7 @@ function UpdateConnectedServiceModal({
   } = useForm<ConnectedServiceForm>({
     defaultValues: {
       kind: "",
+      app_slug: "",
       client_id: "",
       client_secret: "",
       display_name: "",
@@ -101,6 +102,7 @@ function UpdateConnectedServiceModal({
       updateProvider({
         id: provider.id,
         kind: data.kind,
+        app_slug: data.app_slug,
         client_id: data.client_id,
         client_secret: data.client_secret,
         display_name: data.display_name,
@@ -129,6 +131,7 @@ function UpdateConnectedServiceModal({
   useEffect(() => {
     reset({
       kind: provider.kind,
+      app_slug: provider.app_slug,
       client_id: provider.client_id,
       display_name: provider.display_name,
       scope: provider.scope,
