@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { Link } from "react-router-dom";
-
 import { useLoginUrl } from "../authentication/useLoginUrl.hook";
 import { ErrorAlert } from "../components/Alert";
 import LoginAlert from "../components/loginAlert/LoginAlert";
