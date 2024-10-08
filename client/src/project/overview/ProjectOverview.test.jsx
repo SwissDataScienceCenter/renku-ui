@@ -34,6 +34,7 @@ import { ProjectOverviewCommits, ProjectOverviewStats } from ".";
 import { testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
 import { ProjectCoordinator } from "../Project.state";
+import { CompatRouter } from "react-router-dom-v5-compat";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],
@@ -62,7 +63,9 @@ describe("rendering", () => {
       root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <ProjectOverviewCommits {...allProps} />
+            <CompatRouter>
+              <ProjectOverviewCommits {...allProps} />
+            </CompatRouter>
           </MemoryRouter>
         </Provider>
       );
@@ -81,7 +84,9 @@ describe("rendering", () => {
       root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <ProjectOverviewStats {...allProps} />
+            <CompatRouter>
+              <ProjectOverviewStats {...allProps} />
+            </CompatRouter>
           </MemoryRouter>
         </Provider>
       );
