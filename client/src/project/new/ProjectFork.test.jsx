@@ -35,6 +35,7 @@ import { StateModel, globalSchema } from "../../model";
 import { generateFakeUser } from "../../user/User.test";
 import AppContext from "../../utils/context/appContext";
 import { ForkProject } from "./index";
+import { CompatRouter } from "react-router-dom-v5-compat";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],
@@ -53,7 +54,7 @@ describe("rendering", () => {
   const loggedUser = generateFakeUser();
   const appContext = {
     client: client,
-    params: { TEMPLATES: templates },
+    params: { TEMPLATES: templates, GATEWAY_URL: "https://renkulab.io/api" },
     location: fakeLocation,
   };
 
@@ -66,14 +67,16 @@ describe("rendering", () => {
       root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <AppContext.Provider value={appContext}>
-              <ForkProject
-                client={client}
-                model={model}
-                history={fakeHistory}
-                user={loggedUser}
-              />
-            </AppContext.Provider>
+            <CompatRouter>
+              <AppContext.Provider value={appContext}>
+                <ForkProject
+                  client={client}
+                  model={model}
+                  history={fakeHistory}
+                  user={loggedUser}
+                />
+              </AppContext.Provider>
+            </CompatRouter>
           </MemoryRouter>
         </Provider>
       );

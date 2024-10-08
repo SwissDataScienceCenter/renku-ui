@@ -46,8 +46,11 @@ export function useLoginUrl(args?: UseLoginUrlArgs): URL {
     throw new Error("Cannot create login URL");
   }
 
-  const redirectUrl = redirectUrl_ ?? new URL(windowLocationRef.current);
-  if (!redirectUrl.search.includes(RenkuQueryParams.login)) {
+  const redirectUrl =
+    redirectUrl_ ?? windowLocationRef.current
+      ? new URL(windowLocationRef.current)
+      : null;
+  if (redirectUrl && !redirectUrl.search.includes(RenkuQueryParams.login)) {
     redirectUrl.searchParams.append(
       RenkuQueryParams.login,
       RenkuQueryParams.loginValue
@@ -55,7 +58,9 @@ export function useLoginUrl(args?: UseLoginUrlArgs): URL {
   }
 
   const loginUrl = new URL(`${gatewayUrl}/auth/login`);
-  loginUrl.searchParams.set("redirect_url", redirectUrl.href);
+  if (redirectUrl) {
+    loginUrl.searchParams.set("redirect_url", redirectUrl.href);
+  }
 
   return loginUrl;
 }
