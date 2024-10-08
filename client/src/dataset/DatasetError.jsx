@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
+import { useLoginUrl } from "../authentication/useLoginUrl.hook";
 import { ErrorAlert } from "../components/Alert";
 import LoginAlert from "../components/loginAlert/LoginAlert";
 import NotFound from "../not-found/NotFound";
-import { Url } from "../utils/helpers/url";
 
 /**
  *  incubator-renku-ui
@@ -33,10 +33,7 @@ import { Url } from "../utils/helpers/url";
 function DatasetError({ fetchError, insideProject, logged }) {
   const textPre = "You might need to be logged in to see this dataset. ";
   const textPost = "and try again.";
-  const location = useLocation();
-  const loginUrl = Url.get(Url.pages.login.link, {
-    pathname: location.pathname,
-  });
+  const loginUrl = useLoginUrl();
 
   // inside project case
   if (insideProject) {
@@ -95,9 +92,9 @@ function DatasetError({ fetchError, insideProject, logged }) {
     ) : (
       <p>
         {textPre}
-        <Link className="btn btn-secondary btn-sm mx-2" to={loginUrl}>
+        <a className="btn btn-secondary btn-sm mx-2" href={loginUrl.href}>
           Log in
-        </Link>
+        </a>
         {textPost}
       </p>
     );

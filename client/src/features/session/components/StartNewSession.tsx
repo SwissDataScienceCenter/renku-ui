@@ -26,10 +26,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Redirect, useLocation } from "react-router";
-import { Link } from "react-router-dom";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
+import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { InfoAlert, RenkuAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
@@ -54,8 +54,8 @@ import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
-import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
 import { useCoreSupport } from "../../project/useProjectCoreSupport";
+import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
 import { useStartSessionMutation } from "../sessions.api";
 import startSessionSlice, {
   setError,
@@ -542,8 +542,6 @@ function SessionCreateLink() {
 }
 
 function SessionSaveWarning() {
-  const location = useLocation();
-
   const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
@@ -551,11 +549,9 @@ function SessionSaveWarning() {
     (state) => state.stateModel.project.metadata
   );
 
-  if (!logged) {
-    const loginUrl = Url.get(Url.pages.login.link, {
-      pathname: location.pathname,
-    });
+  const loginUrl = useLoginUrl();
 
+  if (!logged) {
     return (
       <InfoAlert timeout={0}>
         <p>
@@ -570,9 +566,12 @@ function SessionSaveWarning() {
           , but you cannot save your work.
         </p>
         <p className="mb-0">
-          <Link className={cx("btn", "btn-primary", "btn-sm")} to={loginUrl}>
+          <a
+            className={cx("btn", "btn-primary", "btn-sm")}
+            href={loginUrl.href}
+          >
             Log in
-          </Link>{" "}
+          </a>{" "}
           for full access.
         </p>
       </InfoAlert>

@@ -28,10 +28,9 @@ interface UseLoginUrlArgs {
   redirectUrl?: URL;
 }
 
-export function useLoginUrl({
-  params: params_,
-  redirectUrl: redirectUrl_,
-}: UseLoginUrlArgs): URL {
+export function useLoginUrl(args?: UseLoginUrlArgs): URL {
+  const { params: params_, redirectUrl: redirectUrl_ } = args ?? {};
+
   const { params: appContextParams } = useContext(AppContext);
   const params = params_ ?? appContextParams;
   const gatewayUrl = params?.GATEWAY_URL;
