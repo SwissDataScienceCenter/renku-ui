@@ -184,7 +184,7 @@ export type UserFirstLastName = string;
 export type GroupRole = "owner" | "editor" | "viewer";
 export type GroupMemberResponse = {
   id: UserId;
-  namespace?: Slug;
+  email?: UserEmail;
   first_name?: UserFirstLastName;
   last_name?: UserFirstLastName;
   role: GroupRole;

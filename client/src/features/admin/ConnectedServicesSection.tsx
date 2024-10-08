@@ -29,7 +29,7 @@ import {
 } from "reactstrap";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
-import { useGetProvidersQuery } from "../connectedServices/connectedServices.api";
+import { useGetProvidersQuery } from "../connectedServices/connectedServicesLegacy.api";
 import {
   Provider,
   ProviderList,
@@ -131,6 +131,9 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
           <CardBody className="pt-0">
             <CardText className="mb-2">ID: {provider.id}</CardText>
             <CardText className="mb-2">Kind: {provider.kind}</CardText>
+            <CardText className="mb-2">
+              Application slug: {provider.app_slug}
+            </CardText>
             <CardText className="mb-2">URL: {provider.url}</CardText>
             <CardText className="mb-2">
               Client ID: {provider.client_id}

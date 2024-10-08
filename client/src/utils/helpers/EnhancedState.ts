@@ -67,6 +67,7 @@ import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "../feature-flags/featureFlags.slice";
+import connectedServicesLegacyApi from "../../features/connectedServices/connectedServicesLegacy.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -92,6 +93,8 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
     [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
+    [connectedServicesLegacyApi.reducerPath]:
+      connectedServicesLegacyApi.reducer,
     [dataServicesUserApi.reducerPath]: dataServicesUserApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
@@ -130,6 +133,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(adminKeycloakApi.middleware)
         .concat(adminSessionsApi.middleware)
         .concat(connectedServicesApi.middleware)
+        .concat(connectedServicesLegacyApi.middleware)
         // this is causing some problems, and I do not know why
         .concat(dataServicesUserApi.middleware)
         .concat(datasetsCoreApi.middleware)
