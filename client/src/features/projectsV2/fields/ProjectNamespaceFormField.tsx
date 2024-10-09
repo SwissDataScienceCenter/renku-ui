@@ -256,7 +256,7 @@ interface ProjectNamespaceControlProps {
   value?: string;
 }
 
-function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
+export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
   const { className, id, onChange, value } = props;
   const dataCy = props["data-cy"];
   const {

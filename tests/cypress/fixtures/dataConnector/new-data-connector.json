@@ -1,0 +1,25 @@
+{
+  "id": "ULID-5",
+  "name": "example-storage",
+  "namespace": "user1-uuid",
+  "slug": "example-storage",
+  "storage": {
+    "storage_type": "s3",
+    "configuration": {
+      "provider": "AWS",
+      "region": "eu-central-2"
+    },
+
+    "source_path": "bucket/my-source",
+    "target_path": "external_storage/aws",
+    "readonly": false,
+    "sensitive_fields": [
+      { "help": "First credential", "name": "first" },
+      { "help": "Second credential", "name": "second" }
+    ]
+  },
+  "creation_date": "2023-11-15T09:55:59Z",
+  "created_by": { "id": "user1-uuid" },
+  "visibility": "private",
+  "description": "Data connector 5 description"
+}

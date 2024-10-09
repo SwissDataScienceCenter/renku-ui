@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,11 @@
  * limitations under the License.
  */
 
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import {
   ArrowRepeat,
   ChevronLeft,
   ChevronRight,
-  CloudFill,
-  Database,
   PencilSquare,
   PlusLg,
   XLg,
@@ -33,41 +30,36 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
-import { useTestCloudStorageConnectionMutation } from "./projectCloudStorage.api";
-import { CLOUD_STORAGE_TOTAL_STEPS } from "./projectCloudStorage.constants";
+import { useTestCloudStorageConnectionMutation } from "../../../project/components/cloudStorage/projectCloudStorage.api";
+import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import {
   AddCloudStorageState,
   CloudStorageDetails,
-  CloudStorageSchema,
-  CredentialSaveStatus,
-} from "./projectCloudStorage.types";
+} from "../../../project/components/cloudStorage/projectCloudStorage.types";
 
-import { SerializedError } from "@reduxjs/toolkit";
-
-interface AddCloudStorageForwardBackButtonProps {
+interface DataConnectorModalForwardBackButtonProps {
   setStateSafe: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
 }
 
-interface AddCloudStorageBackButtonProps
-  extends AddCloudStorageForwardBackButtonProps {
+interface DataConnectorModalBackButtonProps
+  extends DataConnectorModalForwardBackButtonProps {
   success: boolean;
   toggle: () => void;
 }
-export function AddCloudStorageBackButton({
+export function DataConnectorModalBackButton({
   setStateSafe,
   state,
   success,
   toggle,
   validationResult,
-}: AddCloudStorageBackButtonProps) {
+}: DataConnectorModalBackButtonProps) {
   if (state.step <= 1 || success)
     return (
       <Button
         color="outline-primary"
-        data-cy="cloud-storage-edit-close-button"
+        data-cy="data-connector-edit-close-button"
         onClick={() => toggle()}
       >
         <XLg className={cx("bi", "me-1")} />
@@ -77,7 +69,7 @@ export function AddCloudStorageBackButton({
   return (
     <Button
       color="outline-primary"
-      data-cy="cloud-storage-edit-back-button"
+      data-cy="data-connector-edit-back-button"
       disabled={validationResult.isLoading}
       onClick={() => {
         if (!validationResult.isUninitialized) validationResult.reset();
@@ -92,84 +84,8 @@ export function AddCloudStorageBackButton({
   );
 }
 
-export interface AddCloudStorageBodyContentProps
-  extends AddCloudStorageHeaderContentProps {
-  addResultStorageName: string | undefined;
-  credentialSaveStatus: CredentialSaveStatus;
-  redraw: boolean;
-  schema: CloudStorageSchema[] | undefined;
-  schemaError: FetchBaseQueryError | SerializedError | undefined;
-  schemaIsFetching: boolean;
-  setStateSafe: (newState: Partial<AddCloudStorageState>) => void;
-  setStorageDetailsSafe: (
-    newStorageDetails: Partial<CloudStorageDetails>
-  ) => void;
-  state: AddCloudStorageState;
-  storageDetails: CloudStorageDetails;
-  success: boolean;
-  validationSucceeded: boolean;
-}
-export function AddCloudStorageBodyContent({
-  addResultStorageName,
-  credentialSaveStatus,
-  redraw,
-  schema,
-  schemaError,
-  schemaIsFetching,
-  setStateSafe,
-  setStorageDetailsSafe,
-  state,
-  storageDetails,
-  storageId,
-  success,
-}: AddCloudStorageBodyContentProps) {
-  if (redraw) return <Loader />;
-  if (success) {
-    return (
-      <AddCloudStorageSuccessAlert
-        {...{ addResultStorageName, storageId, credentialSaveStatus }}
-      />
-    );
-  }
-  if (schemaIsFetching || !schema) return <Loader />;
-  if (schemaError) return <RtkOrNotebooksError error={schemaError} />;
-  return (
-    <AddOrEditCloudStorage
-      schema={schema}
-      setState={setStateSafe}
-      setStorage={setStorageDetailsSafe}
-      state={state}
-      storage={storageDetails}
-      storageSecrets={[]}
-    />
-  );
-}
-
-interface AddCloudStorageHeaderContentProps {
-  isV2: boolean;
-  storageId: string | null;
-}
-export function AddCloudStorageHeaderContent({
-  storageId,
-  isV2,
-}: AddCloudStorageHeaderContentProps) {
-  if (isV2)
-    return (
-      <>
-        <Database className={cx("bi", "me-1")} /> {storageId ? "Edit" : "Add"}{" "}
-        data source
-      </>
-    );
-  return (
-    <>
-      <CloudFill className={cx("bi", "me-1")} />
-      {storageId ? "Edit" : "Add"} Cloud Storage
-    </>
-  );
-}
-
-interface AddCloudStorageContinueButtonProps
-  extends AddCloudStorageForwardBackButtonProps {
+interface DataConnectorModalContinueButtonProps
+  extends DataConnectorModalForwardBackButtonProps {
   addButtonDisableReason: string;
   addOrEditStorage: () => void;
   disableAddButton: boolean;
@@ -181,7 +97,7 @@ interface AddCloudStorageContinueButtonProps
   storageId: string | null;
   validateConnection: () => void;
 }
-export function AddCloudStorageContinueButton({
+export function DataConnectorModalContinueButton({
   addButtonDisableReason,
   addOrEditStorage,
   disableAddButton,
@@ -195,15 +111,15 @@ export function AddCloudStorageContinueButton({
   storageId,
   validateConnection,
   validationResult,
-}: AddCloudStorageContinueButtonProps) {
-  const addButtonId = "add-cloud-storage-continue";
-  const continueButtonId = "add-cloud-storage-next";
+}: DataConnectorModalContinueButtonProps) {
+  const addButtonId = "add-data-connector-continue";
+  const continueButtonId = "add-data-connector-next";
   if (state.step === 3 && state.completedSteps >= 2) {
     return (
       <div id={`${addButtonId}-div`} className="d-inline-block">
         <Button
           color="primary"
-          data-cy="cloud-storage-edit-update-button"
+          data-cy="data-connector-edit-update-button"
           id={`${addButtonId}-button`}
           disabled={disableAddButton}
           onClick={() => addOrEditStorage()}
@@ -215,7 +131,7 @@ export function AddCloudStorageContinueButton({
           ) : (
             <PlusLg className={cx("bi", "me-1")} />
           )}
-          {storageId ? "Update" : "Add"} storage
+          {storageId ? "Update" : "Add"} connector
         </Button>
         {disableAddButton && (
           <UncontrolledTooltip placement="top" target={`${addButtonId}-div`}>
@@ -235,11 +151,11 @@ export function AddCloudStorageContinueButton({
         <TestConnectionAndContinueButtons
           actionState={setStateSafe}
           actionTest={validateConnection}
-          continueId="add-cloud-storage-continue"
+          continueId="add-data-connector-continue"
           resetTest={validationResult.reset}
           setValidationSucceeded={setValidationSucceeded}
           step={state.step}
-          testId="test-cloud-storage"
+          testId="test-data-connector"
           testIsFailure={validationResult.isError}
           testIsOngoing={validationResult.isLoading}
           testIsSuccess={validationResult.isSuccess}
@@ -262,7 +178,7 @@ export function AddCloudStorageContinueButton({
       <Button
         color="primary"
         id={`${continueButtonId}-button`}
-        data-cy="cloud-storage-edit-next-button"
+        data-cy="data-connector-edit-next-button"
         disabled={disableContinueButton}
         onClick={() => {
           setStateSafe({
@@ -289,13 +205,13 @@ export function AddCloudStorageContinueButton({
   );
 }
 
-interface AddCloudStorageConnectionTestResultProps {
+interface DataConnectorConnectionTestResultProps {
   validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
 }
 
-export function AddCloudStorageConnectionTestResult({
+export function DataConnectorConnectionTestResult({
   validationResult,
-}: AddCloudStorageConnectionTestResultProps) {
+}: DataConnectorConnectionTestResultProps) {
   if (validationResult.isUninitialized || validationResult.isLoading)
     return null;
   if (validationResult.error)
@@ -314,63 +230,12 @@ export function AddCloudStorageConnectionTestResult({
   );
 }
 
-type AddCloudStorageSuccessAlertProps = Pick<
-  AddCloudStorageBodyContentProps,
-  "addResultStorageName" | "credentialSaveStatus" | "storageId"
->;
-
-export function AddCloudStorageSuccessAlert({
-  addResultStorageName,
-  credentialSaveStatus,
-  storageId,
-}: AddCloudStorageSuccessAlertProps) {
-  if (credentialSaveStatus == "trying")
-    return (
-      <SuccessAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          The storage {addResultStorageName} has been successfully{" "}
-          {storageId ? "updated" : "added"}; saving the credentials...
-        </p>
-      </SuccessAlert>
-    );
-
-  if (credentialSaveStatus == "success")
-    return (
-      <SuccessAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          The storage {addResultStorageName} has been successfully{" "}
-          {storageId ? "updated" : "added"}, along with its credentials.
-        </p>
-      </SuccessAlert>
-    );
-  if (credentialSaveStatus == "failure")
-    return (
-      <SuccessAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          The storage {addResultStorageName} has been successfully{" "}
-          {storageId ? "updated" : "added"},{" "}
-          <b>but the credentials were not saved</b>. You can re-enter them and
-          save by editing the storage.
-        </p>
-      </SuccessAlert>
-    );
-
-  return (
-    <SuccessAlert dismissible={false} timeout={0}>
-      <p className="mb-0">
-        The storage {addResultStorageName} has been successfully{" "}
-        {storageId ? "updated" : "added"}.
-      </p>
-    </SuccessAlert>
-  );
-}
-
 interface TestConnectionAndContinueButtonsProps {
   actionState: (newState: Partial<AddCloudStorageState>) => void;
   actionTest: () => void;
   continueId: string;
   resetTest: () => void;
-  setValidationSucceeded: AddCloudStorageContinueButtonProps["setValidationSucceeded"];
+  setValidationSucceeded: DataConnectorModalContinueButtonProps["setValidationSucceeded"];
   step: number;
   testId: string;
   testIsFailure: boolean;
