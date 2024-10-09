@@ -1,9 +1,11 @@
 import cx from "classnames";
-import { Link } from "react-router-dom";
 import { Button } from "reactstrap";
+
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import { HomeHeader } from "../AnonymousHome";
 import heroGraphic from "../Graphics/hero_graph.svg";
 import { AnonymousHomeConfig } from "../anonymousHome.types";
+
 import styles from "./HeroLanding.module.scss";
 
 interface HeroLandingProps extends AnonymousHomeConfig {
@@ -11,6 +13,8 @@ interface HeroLandingProps extends AnonymousHomeConfig {
 }
 export default function HeroLanding(props: HeroLandingProps) {
   const { scrollToGetStarted } = props;
+
+  const loginUrl = useLoginUrl();
 
   return (
     <div id="rk-anon-home-hero" className="rk-bg-shaded-dark">
@@ -50,14 +54,13 @@ export default function HeroLanding(props: HeroLandingProps) {
               >
                 Try it out
               </Button>
-              <Link
+              <a
                 className={cx("btn", "btn-outline-secondary", styles.heroBtn)}
-                role="button"
                 id="hero_link-sign_up"
-                to="/login"
+                href={loginUrl.href}
               >
                 Create an account
-              </Link>
+              </a>
             </div>
           </div>
         </div>

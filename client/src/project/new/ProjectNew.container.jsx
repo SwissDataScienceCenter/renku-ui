@@ -32,7 +32,6 @@ import {
   useState,
 } from "react";
 import { useHistory } from "react-router";
-import { useLocation } from "react-router-dom";
 
 import { Loader } from "../../components/Loader";
 import { newProjectSchema } from "../../model/RenkuModels";
@@ -58,6 +57,7 @@ import {
   checkTitleDuplicates,
   validateTitle,
 } from "./ProjectNew.state";
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 
 const CUSTOM_REPO_NAME = "Custom";
 
@@ -88,15 +88,17 @@ function ForkProject(props) {
     (state) => state.stateModel.user
   );
 
+  const loginUrl = useLoginUrl();
+
   const history = useHistory();
-  const location = useLocation();
 
   useEffect(() => {
-    if (!logged) {
-      const loginUrl = Url.get(Url.pages.login.link, {
-        pathname: location.pathname,
-      });
-      history.push(loginUrl);
+    if (
+      !logged &&
+      typeof window === "object" &&
+      typeof window.location.assign === "function"
+    ) {
+      window.location.assign(loginUrl);
     }
     // This only needs to run once
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

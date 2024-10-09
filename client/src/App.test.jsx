@@ -12,7 +12,11 @@ import { createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
-  const params = { WELCOME_PAGE: "Some text", STATUSPAGE_ID: "5bce9beff4ca" };
+  const params = {
+    WELCOME_PAGE: "Some text",
+    STATUSPAGE_ID: "5bce9beff4ca",
+    GATEWAY_URL: "https://renkulab.io/api",
+  };
   const fakeLocation = { pathname: "" };
 
   it("renders anonymous user without crashing", async () => {

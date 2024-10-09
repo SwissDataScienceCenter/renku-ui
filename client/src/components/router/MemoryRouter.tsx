@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,6 +16,19 @@
  * limitations under the License.
  */
 
-import { LoginHelper } from "./Authentication.container.js";
+import { ReactNode } from "react";
+import { MemoryRouter as BaseRouter } from "react-router-dom";
+import { CompatRouter } from "react-router-dom-v5-compat";
 
-export { LoginHelper };
+interface RouterProps {
+  children?: ReactNode;
+}
+
+/** Temporary router while routing is being upgraded from react-router@v5 to v6. Used for tests. */
+export default function MemoryRouter({ children }: RouterProps) {
+  return (
+    <BaseRouter>
+      <CompatRouter>{children}</CompatRouter>
+    </BaseRouter>
+  );
+}

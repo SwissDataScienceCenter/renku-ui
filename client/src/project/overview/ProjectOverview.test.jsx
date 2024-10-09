@@ -26,12 +26,12 @@
 import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
 import { describe, it } from "vitest";
 
 import { ProjectOverviewCommits, ProjectOverviewStats } from ".";
 import { testClient as client } from "../../api-client";
+import MemoryRouter from "../../components/router/MemoryRouter";
 import { StateModel, globalSchema } from "../../model";
 import { ProjectCoordinator } from "../Project.state";
 

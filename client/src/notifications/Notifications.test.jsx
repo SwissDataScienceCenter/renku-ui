@@ -24,18 +24,18 @@
  */
 
 import { createRoot } from "react-dom/client";
-import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { testClient as client } from "../api-client";
+import MemoryRouter from "../components/router/MemoryRouter";
 import { StateModel, globalSchema } from "../model";
+import AppContext from "../utils/context/appContext";
 import NotificationsPage from "./Notifications.container";
 import { CloseToast } from "./Notifications.present";
 import { NotificationsInfo } from "./Notifications.state";
 import NotificationsManager, { Notification } from "./NotificationsManager";
 import NotificationsMenu from "./NotificationsMenu";
-import AppContext from "../utils/context/appContext";
 
 const fakeLocation = { pathname: "" };
 

@@ -119,8 +119,7 @@ export default function LoggedInNavBar({
                 />
               </NavItem>
               <NavItem className="nav-item col-auto">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                <RenkuToolbarItemUser params={params as any} />
+                <RenkuToolbarItemUser params={params} />
               </NavItem>
             </Nav>
           </Collapse>

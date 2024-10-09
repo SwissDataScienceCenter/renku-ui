@@ -21,6 +21,8 @@ import React from "react";
 import { List } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
+
+import { useLoginUrl } from "../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import { Url } from "../utils/helpers/url";
@@ -157,6 +159,9 @@ function TopNavLink({ title, to }: BottomNavLinkProps) {
 function TopNav() {
   const [isOpen, setIsOpen] = React.useState(false);
   const toggleOpen = () => setIsOpen(!isOpen);
+
+  const loginUrl = useLoginUrl();
+
   return (
     <>
       <header className="pt-2 pb-4 d-flex rk-anon-home">
@@ -173,14 +178,13 @@ function TopNav() {
           <div className="d-none d-md-inline-block">
             <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
           </div>
-          <Link
+          <a
             className="btn btn-outline-secondary"
-            role="button"
             id="login-button"
-            to="/login"
+            href={loginUrl.href}
           >
             Login
-          </Link>
+          </a>
           <Button
             onClick={toggleOpen}
             id="nav-hamburger"
