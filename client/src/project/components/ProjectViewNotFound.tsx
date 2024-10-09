@@ -53,9 +53,9 @@ export const ProjectViewNotFound = ({
     <>
       <p>
         You might need to be logged in to see this project. Please try to{" "}
-        <Link className="btn btn-secondary btn-sm" to={loginUrl.href}>
+        <a className="btn btn-secondary btn-sm" href={loginUrl.href}>
           Log in
-        </Link>
+        </a>
       </p>
     </>
   );
