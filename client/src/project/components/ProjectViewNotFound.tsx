@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { Link } from "react-router-dom";
-
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import NotFound from "../../not-found/NotFound";
 
