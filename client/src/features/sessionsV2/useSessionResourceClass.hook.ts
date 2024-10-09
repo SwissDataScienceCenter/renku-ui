@@ -64,7 +64,7 @@ export default function useSessionResourceClass({
   );
 
   // Select the default session class only if it is not a custom launch and
-  // the launcher resource class exists in the user resource pool.
+  // the launcher resource class exists in the user resource pool
   useEffect(() => {
     if (resourcePools == null || isLoadingLauncherClass) {
       return;
