@@ -41,8 +41,8 @@ export function EnvironmentKindField({
               onClick={() => setValue("environment_kind", "GLOBAL")}
               className={cx(
                 field.value === "GLOBAL"
-                  ? "text-white bg-primary"
-                  : "text-primary bg-white"
+                  ? ["text-white", "bg-primary"]
+                  : ["text-primary", "bg-white"]
               )}
             >
               Global environment
@@ -53,8 +53,8 @@ export function EnvironmentKindField({
               onClick={() => setValue("environment_kind", "CUSTOM")}
               className={cx(
                 field.value === "CUSTOM"
-                  ? "text-white bg-primary"
-                  : "text-primary bg-white"
+                  ? ["text-white", "bg-primary"]
+                  : ["text-primary", "bg-white"]
               )}
             >
               Custom Environment

@@ -74,7 +74,8 @@ export function CustomEnvironmentFields({
           className={cx("fw-bold", "cursor-pointer")}
           onClick={toggleIsOpen}
         >
-          Advance settings <ChevronFlippedIcon flipped={isAdvanceSettingOpen} />
+          Advanced settings{" "}
+          <ChevronFlippedIcon flipped={isAdvanceSettingOpen} />
         </span>
       </div>
       <Collapse isOpen={isAdvanceSettingOpen}>
