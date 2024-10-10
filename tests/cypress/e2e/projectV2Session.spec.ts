@@ -30,19 +30,15 @@ describe("launch sessions with cloud storage", () => {
           email: "user1@email.com",
         },
       })
-      .namespaces();
-    fixtures
       .projects()
       .landingUserProjects()
-      .listProjectV2()
+      //      .listProjectV2()
       .readProjectV2()
+      .listProjectDataConnectors()
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .resourcePoolsTest()
       .getResourceClass()
-      .listProjectV2Members();
-    fixtures
-      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" });
-    fixtures
+      .listProjectV2Members()
       .sessionLaunchers({
         fixture: "projectV2/session-launchers.json",
       })
@@ -54,26 +50,36 @@ describe("launch sessions with cloud storage", () => {
     cy.wait("@readProjectV2");
   });
 
-  it("launch session with public data source", () => {
-    fixtures.testCloudStorage().cloudStorage({
-      isV2: true,
-      fixture: "cloudStorage/cloud-storage.json",
-      name: "getCloudStorageV2",
-    });
+  it("launch session with public data connector", () => {
+    fixtures
+      .testCloudStorage()
+      .getDataConnector({
+        fixture: "dataConnector/data-connector-public.json",
+      })
+      .dataConnectorSecrets({
+        fixture: "dataConnector/data-connector-secrets-empty.json",
+      });
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessionServers");
     cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
 
     // ensure the data source is there
-    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
-    cy.getDataCy("data-storage-name").click();
-    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
+    cy.getDataCy("data-connector-name").should(
+      "contain.text",
+      "example storage"
+    );
+    cy.getDataCy("data-connector-name").click();
+    cy.getDataCy("data-connector-title").should(
+      "contain.text",
+      "example storage"
+    );
     cy.getDataCy("requires-credentials-section")
       .contains("No")
       .should("be.visible");
-    cy.getDataCy("data-source-view-back-button").click();
+    cy.getDataCy("data-connector-view-back-button").click();
 
     // ensure the session launcher is there
     cy.getDataCy("session-launcher-item")

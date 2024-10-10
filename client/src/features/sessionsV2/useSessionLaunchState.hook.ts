@@ -23,9 +23,10 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
-import useDataSourceConfiguration from "../ProjectPageV2/ProjectPageContent/DataSources/useDataSourceConfiguration.hook";
+import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
+import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api";
+import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetDockerImageQuery } from "../session/sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
 import { DockerImageStatus } from "../session/startSessionOptions.types";
@@ -49,14 +50,23 @@ export default function useSessionLauncherState({
   const { environment_kind, default_url } = launcher;
 
   const {
-    data: storages,
-    isFetching: isFetchingStorages,
-    isLoading: isLoadingStorages,
-  } = useGetStoragesV2Query({
-    storageV2Params: {
-      project_id: project.id,
-    },
+    data: dataConnectorLinks,
+    isFetching: isFetchingDataConnectorLinks,
+    isLoading: isLoadingDataConnectorLinks,
+  } = useGetProjectsByProjectIdDataConnectorLinksQuery({
+    projectId: project.id,
   });
+  const dataConnectorIds = useMemo(
+    () => dataConnectorLinks?.map((link) => link.data_connector_id),
+    [dataConnectorLinks]
+  );
+  const {
+    data: dataConnectorsMap,
+    isFetching: isFetchingDataConnectors,
+    isLoading: isLoadingDataConnectors,
+  } = useGetDataConnectorsListByDataConnectorIdsQuery(
+    dataConnectorIds ? { dataConnectorIds } : skipToken
+  );
   const { data: resourcePools } = useGetResourcePoolsQuery({});
   const { isPendingResourceClass, setResourceClass } = useSessionResourceClass({
     launcher,
@@ -160,21 +170,31 @@ export default function useSessionLauncherState({
     dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
   }, [dispatch, project.repositories]);
 
-  const { cloudStorageConfigs: initialCloudStorages } =
-    useDataSourceConfiguration({
-      storages,
+  const dataConnectors = useMemo(
+    () => Object.values(dataConnectorsMap ?? {}),
+    [dataConnectorsMap]
+  );
+  const { dataConnectorConfigs: initialDataConnectorConfigs } =
+    useDataConnectorConfiguration({
+      dataConnectors,
     });
   useEffect(() => {
-    if (initialCloudStorages == null) return;
+    if (initialDataConnectorConfigs == null) return;
     dispatch(
-      startSessionOptionsV2Slice.actions.setCloudStorage(initialCloudStorages)
+      startSessionOptionsV2Slice.actions.setCloudStorage(
+        initialDataConnectorConfigs
+      )
     );
-  }, [dispatch, initialCloudStorages]);
+  }, [dispatch, initialDataConnectorConfigs, project.id]);
 
   return {
     containerImage,
     defaultSessionClass,
-    isFetchingOrLoadingStorages: isFetchingStorages || isLoadingStorages,
+    isFetchingOrLoadingStorages:
+      isFetchingDataConnectorLinks ||
+      isLoadingDataConnectorLinks ||
+      isLoadingDataConnectors ||
+      isFetchingDataConnectors,
     resourcePools,
     startSessionOptionsV2,
     isPendingResourceClass,

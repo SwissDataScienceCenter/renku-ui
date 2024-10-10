@@ -20,11 +20,11 @@ import type {
   DockerImageStatus,
   SessionEnvironmentVariable,
 } from "../session/startSessionOptions.types";
-import type { CloudStorageGetRead } from "../projectsV2/api/storagesV2.api";
+import type { DataConnectorRead } from "../dataConnectorsV2/api/data-connectors.api";
 
-export interface SessionStartCloudStorageConfiguration {
+export interface SessionStartDataConnectorConfiguration {
   active: boolean;
-  cloudStorage: CloudStorageGetRead;
+  dataConnector: DataConnectorRead;
   sensitiveFieldDefinitions: {
     friendlyName: string;
     help: string;
@@ -36,7 +36,7 @@ export interface SessionStartCloudStorageConfiguration {
 }
 
 export interface StartSessionOptionsV2 {
-  cloudStorage: SessionStartCloudStorageConfiguration[];
+  cloudStorage: SessionStartDataConnectorConfiguration[];
   defaultUrl: string;
   dockerImageStatus: DockerImageStatus;
   environmentVariables: SessionEnvironmentVariable[];
