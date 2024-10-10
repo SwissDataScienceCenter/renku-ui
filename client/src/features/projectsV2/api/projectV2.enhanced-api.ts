@@ -350,11 +350,5 @@ export const {
   useGetNamespacesByNamespaceSlugQuery,
 
   // storages hooks
-  useDeleteStoragesV2ByStorageIdSecretsMutation,
-  useGetStoragesV2Query,
-  useGetStorageSecretsByV2StorageIdQuery,
-  useGetStoragesV2ByStorageIdSecretsQuery,
-  usePostStoragesV2Mutation,
-  usePostStoragesV2ByStorageIdSecretsMutation,
   usePostStoragesV2SecretsForSessionLaunchMutation,
 } = enhancedApi;

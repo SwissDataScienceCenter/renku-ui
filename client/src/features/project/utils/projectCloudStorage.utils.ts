@@ -41,7 +41,7 @@ import {
   CloudStorageSchemaOptions,
 } from "../components/cloudStorage/projectCloudStorage.types";
 
-import { SessionStartCloudStorageConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
+import { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 
 const LAST_POSITION = 1000;
 
@@ -429,27 +429,35 @@ export function findSensitive(
 }
 
 export function storageDefinitionAfterSavingCredentialsFromConfig(
-  cs: SessionStartCloudStorageConfiguration
+  cs: SessionStartDataConnectorConfiguration
 ) {
   const newCs = { ...cs, saveCredentials: false };
-  const newStorage = { ...newCs.cloudStorage.storage };
+  const newStorage = { ...newCs.dataConnector.storage };
   // The following two lines remove the sensitive fields from the storage configuration,
   // which should be ok, but isn't; so keep in the sensitive fields.
   // newCs.sensitiveFieldValues = {};
   // newStorage.configuration = {};
-  const newCloudStorage = {
-    ...newCs.cloudStorage,
+  const newDataConnector = {
+    ...newCs.dataConnector,
     storage: newStorage,
   };
-  newCs.cloudStorage = newCloudStorage;
+  newCs.dataConnector = newDataConnector;
   return newCs;
 }
 
 export function storageDefinitionFromConfig(
-  config: SessionStartCloudStorageConfiguration
+  config: SessionStartDataConnectorConfiguration,
+  projectId: string
 ): CloudStorageWithIdRead {
-  const storageDefinition = config.cloudStorage.storage;
-  const newStorageDefinition = { ...storageDefinition };
+  const storageDefinition = config.dataConnector.storage;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { sensitive_fields, ...s } = config.dataConnector.storage;
+  const newStorageDefinition = {
+    ...s,
+    name: config.dataConnector.slug,
+    project_id: projectId,
+    storage_id: config.dataConnector.id,
+  };
   newStorageDefinition.configuration = { ...storageDefinition.configuration };
   const sensitiveFieldValues = config.sensitiveFieldValues;
   Object.entries(sensitiveFieldValues).forEach(([name, value]) => {

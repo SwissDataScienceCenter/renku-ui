@@ -30,19 +30,15 @@ describe("launch sessions with cloud storage", () => {
           email: "user1@email.com",
         },
       })
-      .namespaces();
-    fixtures
       .projects()
       .landingUserProjects()
-      .listProjectV2()
+      //      .listProjectV2()
       .readProjectV2()
+      .listProjectDataConnectors()
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .resourcePoolsTest()
       .getResourceClass()
-      .listProjectV2Members();
-    fixtures
-      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" });
-    fixtures
+      .listProjectV2Members()
       .sessionLaunchers({
         fixture: "projectV2/session-launchers.json",
       })
@@ -54,26 +50,31 @@ describe("launch sessions with cloud storage", () => {
     cy.wait("@readProjectV2");
   });
 
-  it("launch session with public data source", () => {
-    fixtures.testCloudStorage().cloudStorage({
-      isV2: true,
-      fixture: "cloudStorage/cloud-storage.json",
-      name: "getCloudStorageV2",
+  it("launch session with public data connector", () => {
+    fixtures.testCloudStorage().getDataConnector({
+      fixture: "dataConnector/data-connector-public.json",
     });
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessionServers");
     cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
 
     // ensure the data source is there
-    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
-    cy.getDataCy("data-storage-name").click();
-    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
+    cy.getDataCy("data-connector-name").should(
+      "contain.text",
+      "example storage"
+    );
+    cy.getDataCy("data-connector-name").click();
+    cy.getDataCy("data-connector-title").should(
+      "contain.text",
+      "example storage"
+    );
     cy.getDataCy("requires-credentials-section")
       .contains("No")
       .should("be.visible");
-    cy.getDataCy("data-source-view-back-button").click();
+    cy.getDataCy("data-connector-view-back-button").click();
 
     // ensure the session launcher is there
     cy.getDataCy("session-launcher-item")
@@ -104,25 +105,28 @@ describe("launch sessions with cloud storage", () => {
   });
 
   it("launch session with data source requiring credentials", () => {
-    fixtures.testCloudStorage().cloudStorage({
-      isV2: true,
-      fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
-      name: "getCloudStorageV2",
-    });
+    fixtures.testCloudStorage().getDataConnector();
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessionServers");
     cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
 
     // ensure the data source is there
-    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
-    cy.getDataCy("data-storage-name").click();
-    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
+    cy.getDataCy("data-connector-name").should(
+      "contain.text",
+      "example storage"
+    );
+    cy.getDataCy("data-connector-name").click();
+    cy.getDataCy("data-connector-title").should(
+      "contain.text",
+      "example storage"
+    );
     cy.getDataCy("requires-credentials-section")
       .contains("Yes")
       .should("be.visible");
-    cy.getDataCy("data-source-view-back-button").click();
+    cy.getDataCy("data-connector-view-back-button").click();
 
     // ensure the session launcher is there
     cy.getDataCy("session-launcher-item")
@@ -156,27 +160,27 @@ describe("launch sessions with cloud storage", () => {
         cy.getDataCy("start-session-button").click();
       });
     cy.wait("@getResourceClass");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .should("be.visible")
       .contains("Please provide")
       .should("not.be.visible");
 
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Continue")
       .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Please provide")
       .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#access_key_id")
       .type("access key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Secret Access Key (password)")
       .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#secret_access_key")
       .type("secret key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Continue")
       .click();
     cy.wait("@testCloudStorage");
@@ -187,33 +191,26 @@ describe("launch sessions with cloud storage", () => {
   it("launch session with data source, saving credentials", () => {
     fixtures
       .testCloudStorage()
-      .cloudStorage({
-        isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
-        name: "getCloudStorageV2",
-      })
-      .cloudStorageSecrets({
-        fixture: "cloudStorage/cloud-storage-secrets-empty.json",
+      .getDataConnector()
+      .patchDataConnectorSecrets({
+        dataConnectorId: "ULID-5",
+        content: [
+          {
+            name: "access_key_id",
+            value: "access key",
+          },
+          {
+            name: "secret_access_key",
+            value: "secret key",
+          },
+        ],
       });
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessionServers");
     cy.wait("@sessionLaunchers");
-
-    // start session
-    fixtures.postCloudStorageSecrets({
-      content: [
-        {
-          name: "access_key_id",
-          value: "access key",
-        },
-        {
-          name: "secret_access_key",
-          value: "secret key",
-        },
-      ],
-    });
+    cy.wait("@listProjectDataConnectors");
 
     cy.fixture("sessions/sessionsV2.json").then((sessions) => {
       // eslint-disable-next-line max-nested-callbacks
@@ -243,33 +240,33 @@ describe("launch sessions with cloud storage", () => {
       .within(() => {
         cy.getDataCy("start-session-button").click();
       });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .should("be.visible")
       .contains("Please provide")
       .should("not.be.visible");
 
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Continue")
       .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Please provide")
       .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#access_key_id")
       .type("access key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Secret Access Key (password)")
       .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#secret_access_key")
       .type("secret key");
     cy.get("#saveCredentials").click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Continue")
       .click();
     cy.wait("@testCloudStorage");
     cy.contains("Saving credentials...").should("be.visible");
-    cy.wait("@postCloudStorageSecrets");
+    cy.wait("@patchDataConnectorSecrets");
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
@@ -277,33 +274,26 @@ describe("launch sessions with cloud storage", () => {
   it("launch session with data source, saving credentials on skip", () => {
     fixtures
       .testCloudStorage()
-      .cloudStorage({
-        isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
-        name: "getCloudStorageV2",
-      })
-      .cloudStorageSecrets({
-        fixture: "cloudStorage/cloud-storage-secrets-empty.json",
+      .getDataConnector()
+      .patchDataConnectorSecrets({
+        dataConnectorId: "ULID-5",
+        content: [
+          {
+            name: "access_key_id",
+            value: "access key",
+          },
+          {
+            name: "secret_access_key",
+            value: "secret key",
+          },
+        ],
       });
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessionServers");
     cy.wait("@sessionLaunchers");
-
-    // start session
-    fixtures.postCloudStorageSecrets({
-      content: [
-        {
-          name: "access_key_id",
-          value: "access key",
-        },
-        {
-          name: "secret_access_key",
-          value: "secret key",
-        },
-      ],
-    });
+    cy.wait("@listProjectDataConnectors");
 
     cy.fixture("sessions/sessionsV2.json").then((sessions) => {
       // eslint-disable-next-line max-nested-callbacks
@@ -328,44 +318,38 @@ describe("launch sessions with cloud storage", () => {
         cy.getDataCy("start-session-button").click();
       });
     fixtures.testCloudStorage({ success: false });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#access_key_id")
       .type("access key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Secret Access Key (password)")
       .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#secret_access_key")
       .type("secret key");
     cy.get("#saveCredentials").click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Continue")
       .click();
     cy.wait("@testCloudStorage");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Skip")
       .click();
     cy.contains("Saving credentials...").should("be.visible");
-    cy.wait("@postCloudStorageSecrets");
+    cy.wait("@patchDataConnectorSecrets");
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
   it("launch session with saved credentials", () => {
-    fixtures
-      .testCloudStorage()
-      .sessionServersEmpty()
-      .cloudStorage({
-        isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets-values-full.json",
-        name: "getCloudStorageV2",
-      })
-      .cloudStorageSecrets();
+    fixtures;
+    fixtures.testCloudStorage().getDataConnector().dataConnectorSecrets();
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessionServers");
     cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
 
     // start session
     cy.fixture("sessions/sessionsV2.json").then((sessions) => {
@@ -374,7 +358,7 @@ describe("launch sessions with cloud storage", () => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(1);
         const storage = csConfig[0];
-        expect(storage.storage_id).to.equal("2");
+        expect(storage.storage_id).to.equal("ULID-1");
         expect(storage.configuration).to.not.have.property("access_key_id");
         expect(storage.configuration).to.not.have.property("secret_access_key");
         req.reply({ body: sessions[0] });
@@ -445,16 +429,16 @@ describe("launch sessions with cloud storage", () => {
       .within(() => {
         cy.getDataCy("start-session-button").click();
       });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#access_key_id")
       .type("access key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Secret Access Key (password)")
       .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#secret_access_key")
       .type("secret key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Continue")
       .click();
     cy.wait("@testCloudStorage");
@@ -507,33 +491,33 @@ describe("launch sessions with cloud storage", () => {
       .within(() => {
         cy.getDataCy("start-session-button").click();
       });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#access_key_id")
       .type("access key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#secret_access_key")
       .type("secret key");
     fixtures.testCloudStorage({ success: false });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Continue")
       .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("could not be mounted")
       .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Retry")
       .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("could not be mounted")
       .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Skip")
       .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#pass")
       .type("webDav pass");
     fixtures.testCloudStorage({ success: true });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Continue")
       .click();
     cy.wait("@testCloudStorage");
@@ -587,26 +571,26 @@ describe("launch sessions with cloud storage", () => {
       .within(() => {
         cy.getDataCy("start-session-button").click();
       });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#access_key_id")
       .type("access key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#secret_access_key")
       .type("secret key");
     fixtures.testCloudStorage({ success: false });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Continue")
       .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Skip")
       .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .find("#pass")
       .type("webDav pass");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Continue")
       .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Skip")
       .click();
     cy.wait("@testCloudStorage");

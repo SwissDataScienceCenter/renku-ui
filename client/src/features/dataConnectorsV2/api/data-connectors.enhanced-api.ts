@@ -6,6 +6,8 @@ import { dataConnectorsApi as api } from "./data-connectors.api";
 import type {
   GetDataConnectorsApiArg,
   GetDataConnectorsApiResponse as GetDataConnectorsApiResponseOrig,
+  GetDataConnectorsByDataConnectorIdApiArg,
+  GetDataConnectorsByDataConnectorIdApiResponse,
   GetDataConnectorsByDataConnectorIdSecretsApiArg,
   GetDataConnectorsByDataConnectorIdSecretsApiResponse,
 } from "./data-connectors.api";
@@ -14,6 +16,15 @@ export interface GetDataConnectorsApiResponse
   extends AbstractKgPaginatedResponse {
   dataConnectors: GetDataConnectorsApiResponseOrig;
 }
+
+interface GetDataConnectorsListByDataConnectorIdsApiArg {
+  dataConnectorIds: GetDataConnectorsByDataConnectorIdApiArg["dataConnectorId"][];
+}
+
+type GetDataConnectorsListByDataConnectorIdsApiResponse = Record<
+  string,
+  GetDataConnectorsByDataConnectorIdApiResponse
+>;
 
 interface GetDataConnectorListSecretsApiArg {
   dataConnectorIds: GetDataConnectorsByDataConnectorIdSecretsApiArg["dataConnectorId"][];
@@ -56,6 +67,27 @@ const injectedApi = api.injectEndpoints({
           total: headerResponse.total,
           totalPages: headerResponse.totalPages,
         };
+      },
+    }),
+    getDataConnectorsListByDataConnectorIds: builder.query<
+      GetDataConnectorsListByDataConnectorIdsApiResponse,
+      GetDataConnectorsListByDataConnectorIdsApiArg
+    >({
+      async queryFn(queryArg, _api, _options, fetchWithBQ) {
+        const { dataConnectorIds } = queryArg;
+        const result: GetDataConnectorsListByDataConnectorIdsApiResponse = {};
+        const promises = dataConnectorIds.map((dataConnectorId) =>
+          fetchWithBQ(`/data_connectors/${dataConnectorId}`)
+        );
+        const responses = await Promise.all(promises);
+        for (let i = 0; i < dataConnectorIds.length; i++) {
+          const dataConnectorId = dataConnectorIds[i];
+          const response = responses[i];
+          if (response.error) return response;
+          result[dataConnectorId] =
+            response.data as GetDataConnectorsByDataConnectorIdApiResponse;
+        }
+        return { data: result };
       },
     }),
     getDataConnectorsListSecrets: builder.query<
@@ -104,6 +136,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getDataConnectorsByDataConnectorId: {
       providesTags: ["DataConnectors"],
     },
+    getDataConnectorsListByDataConnectorIds: {
+      providesTags: ["DataConnectors"],
+    },
     getDataConnectorsListSecrets: {
       providesTags: ["DataConnectorSecrets"],
     },
@@ -141,6 +176,7 @@ export const {
   useGetDataConnectorsByDataConnectorIdQuery,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
+  useGetDataConnectorsListByDataConnectorIdsQuery,
   useGetDataConnectorsListSecretsQuery,
   useGetNamespacesByNamespaceDataConnectorsAndSlugQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
