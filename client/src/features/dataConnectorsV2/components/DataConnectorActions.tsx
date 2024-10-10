@@ -56,52 +56,6 @@ interface DataConnectorRemoveModalProps {
   onDelete: () => void;
   toggleModal: () => void;
 }
-function DataConnectorRemoveModal({
-  dataConnector,
-  dataConnectorLink,
-  onDelete,
-  toggleModal,
-  isOpen,
-}: DataConnectorRemoveModalProps) {
-  const location = useLocation();
-  const pathMatch = matchPath(
-    ABSOLUTE_ROUTES.v2.projects.show.root,
-    location.pathname
-  );
-  if (pathMatch === null) {
-    return (
-      <DataConnectorRemoveDeleteModal
-        {...{ dataConnector, onDelete, toggleModal, isOpen }}
-      />
-    );
-  }
-  const namespace = pathMatch?.params?.namespace;
-  const slug = pathMatch?.params?.slug;
-  if (
-    namespace === undefined ||
-    slug === undefined ||
-    dataConnectorLink == null
-  ) {
-    return (
-      <DataConnectorRemoveDeleteModal
-        {...{ dataConnector, onDelete, toggleModal, isOpen }}
-      />
-    );
-  }
-  const projectId = `${namespace}/${slug}`;
-  return (
-    <DataConnectorRemoveUnlinkModal
-      {...{
-        dataConnector,
-        dataConnectorLink,
-        projectId,
-        onDelete,
-        toggleModal,
-        isOpen,
-      }}
-    />
-  );
-}
 
 function DataConnectorRemoveDeleteModal({
   dataConnector,

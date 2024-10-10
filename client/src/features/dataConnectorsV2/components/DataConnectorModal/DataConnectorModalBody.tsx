@@ -42,7 +42,6 @@ import {
   AddStorageType,
   type AddStorageStepProps,
 } from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
-import type { Visibility } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import SlugFormField from "../../../projectsV2/fields/SlugFormField";
 import type { CloudStorageSecretGet } from "../../../projectsV2/api/storagesV2.api";
