@@ -50,7 +50,7 @@ describe("Set up project components", () => {
       .getDataConnector()
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .testCloudStorage({ success: false })
-      .postDataConnector({ namespace: "user1-uuid" })
+      .postDataConnector({ namespace: "user1-uuid", visibility: "public" })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
@@ -72,6 +72,11 @@ describe("Set up project components", () => {
     cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
     cy.getDataCy("data-connector-edit-mount").within(() => {
       cy.get("#name").type("example storage without credentials");
+      cy.get("#visibility")
+        .children()
+        .first()
+        .should("have.value", "public")
+        .should("be.checked");
     });
 
     cy.getDataCy("data-connector-edit-update-button").click();

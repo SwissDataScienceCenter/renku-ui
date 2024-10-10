@@ -42,6 +42,7 @@ import {
   AddStorageType,
   type AddStorageStepProps,
 } from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
+import type { Visibility } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import SlugFormField from "../../../projectsV2/fields/SlugFormField";
 import type { CloudStorageSecretGet } from "../../../projectsV2/api/storagesV2.api";
@@ -122,11 +123,11 @@ export default function DataConnectorModalBody({
         </p>
       )}
       <AddOrEditDataConnector
+        flatDataConnector={flatDataConnector}
         schema={schema}
         setState={setStateSafe}
         setFlatDataConnector={setFlatDataConnectorSafe}
         state={state}
-        flatDataConnector={flatDataConnector}
         storageSecrets={storageSecrets}
         validationSucceeded={validationSucceeded}
       />
@@ -135,11 +136,11 @@ export default function DataConnectorModalBody({
 }
 
 function AddOrEditDataConnector({
+  flatDataConnector,
   schema,
   setFlatDataConnector,
   setState,
   state,
-  flatDataConnector,
   storageSecrets,
   validationSucceeded,
 }: AddOrEditDataConnectorProps) {
@@ -213,10 +214,10 @@ type DataConnectorMountFormFields =
   | "readOnly"
   | "saveCredentials";
 export function DataConnectorMount({
+  flatDataConnector,
   schema,
   setFlatDataConnector,
   setState,
-  flatDataConnector,
   state,
   validationSucceeded,
 }: AddOrEditDataConnectorProps) {

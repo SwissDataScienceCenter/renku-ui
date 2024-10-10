@@ -112,7 +112,7 @@ function ProjectDataConnectorBoxContent({
       <ProjectConnectDataConnectorsModal
         isOpen={isModalOpen}
         namespace={project.namespace}
-        projectId={project.id}
+        project={project}
         toggle={toggleOpen}
       />
     </div>

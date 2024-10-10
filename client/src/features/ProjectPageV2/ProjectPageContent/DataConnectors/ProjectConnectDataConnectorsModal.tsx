@@ -45,6 +45,7 @@ import DataConnectorModal, {
 } from "../../../dataConnectorsV2/components/DataConnectorModal/index";
 import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
+import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
 
 interface ProjectConnectDataConnectorsModalProps
@@ -52,7 +53,7 @@ interface ProjectConnectDataConnectorsModalProps
     Parameters<typeof DataConnectorModal>[0],
     "dataConnector" | "projectId"
   > {
-  projectId: string;
+  project: Project;
 }
 
 type ProjectConnectDataConnectorMode = "create" | "link";
@@ -60,7 +61,7 @@ type ProjectConnectDataConnectorMode = "create" | "link";
 export default function ProjectConnectDataConnectorsModal({
   isOpen,
   namespace,
-  projectId,
+  project,
   toggle,
 }: ProjectConnectDataConnectorsModalProps) {
   const [mode, setMode] = useState<ProjectConnectDataConnectorMode>("link");
@@ -89,7 +90,7 @@ export default function ProjectConnectDataConnectorsModal({
           {...{
             isOpen,
             namespace,
-            projectId,
+            project,
             toggle,
           }}
         />
@@ -98,7 +99,7 @@ export default function ProjectConnectDataConnectorsModal({
           {...{
             isOpen,
             namespace,
-            projectId,
+            project,
             toggle,
           }}
         />
@@ -166,7 +167,7 @@ function ProjectConnectDataConnectorModalHeader({
 function ProjectCreateDataConnectorBodyAndFooter({
   isOpen,
   namespace,
-  projectId,
+  project,
   toggle,
 }: ProjectConnectDataConnectorsModalProps) {
   return (
@@ -175,7 +176,7 @@ function ProjectCreateDataConnectorBodyAndFooter({
       {...{
         isOpen,
         namespace,
-        projectId,
+        project,
         toggle,
       }}
     />
@@ -187,7 +188,7 @@ interface DataConnectorLinkFormFields {
 }
 
 function ProjectLinkDataConnectorBodyAndFooter({
-  projectId,
+  project,
   toggle,
 }: ProjectConnectDataConnectorsModalProps) {
   const dispatch = useAppDispatch();
@@ -226,11 +227,11 @@ function ProjectLinkDataConnectorBodyAndFooter({
       linkDataConnector({
         dataConnectorId: dataConnector.id,
         dataConnectorToProjectLinkPost: {
-          project_id: projectId,
+          project_id: project.id,
         },
       });
     },
-    [dispatch, linkDataConnector, projectId, setError]
+    [dispatch, linkDataConnector, project.id, setError]
   );
 
   useEffect(() => {

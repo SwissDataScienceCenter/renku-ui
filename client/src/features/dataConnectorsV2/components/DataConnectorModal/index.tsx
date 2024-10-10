@@ -56,6 +56,7 @@ import {
 } from "../../api/data-connectors.enhanced-api";
 import type { DataConnectorRead } from "../../api/data-connectors.api";
 
+import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
 
 import styles from "./DataConnectorModal.module.scss";
@@ -78,7 +79,7 @@ export function DataConnectorModalBodyAndFooter({
   dataConnector = null,
   isOpen,
   namespace,
-  projectId,
+  project,
   toggle: originalToggle,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
@@ -118,6 +119,7 @@ export function DataConnectorModalBodyAndFooter({
   );
   const initialFlatDataConnector = EMPTY_DATA_CONNECTOR_FLAT;
   initialFlatDataConnector.namespace = namespace;
+  initialFlatDataConnector.visibility = project?.visibility ?? "private";
   const [flatDataConnector, setFlatDataConnector] = useState<DataConnectorFlat>(
     initialFlatDataConnector
   );
@@ -371,16 +373,16 @@ export function DataConnectorModalBodyAndFooter({
   useEffect(() => {
     const dataConnectorId = createResult.data?.id;
     if (dataConnectorId == null) return;
-    const shouldLinkToProject = projectId != null && dataConnector == null;
+    const shouldLinkToProject = project?.id != null && dataConnector == null;
     if (!shouldLinkToProject) return;
 
     createProjectLink({
       dataConnectorId,
       dataConnectorToProjectLinkPost: {
-        project_id: projectId,
+        project_id: project.id,
       },
     });
-  }, [createResult.data?.id, createProjectLink, dataConnector, projectId]);
+  }, [createResult.data?.id, createProjectLink, dataConnector, project?.id]);
 
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -388,7 +390,7 @@ export function DataConnectorModalBodyAndFooter({
       dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
     }
     const status =
-      projectId == null
+      project?.id == null
         ? "none"
         : createResult.data?.id == null ||
           createProjectLinkResult.isUninitialized
@@ -401,7 +403,7 @@ export function DataConnectorModalBodyAndFooter({
         ? "failure"
         : "none";
     setProjectLinkStatus(status);
-  }, [createResult, createProjectLinkResult, dispatch, projectId]);
+  }, [createResult, createProjectLinkResult, dispatch, project?.id]);
 
   // Visual elements
   const disableContinueButton =
@@ -521,14 +523,14 @@ interface DataConnectorModalProps {
   dataConnector?: DataConnectorRead | null;
   isOpen: boolean;
   namespace: string;
-  projectId?: string;
+  project?: Project;
   toggle: () => void;
 }
 export default function DataConnectorModal({
   dataConnector = null,
   isOpen,
   namespace,
-  projectId,
+  project,
   toggle,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
@@ -554,7 +556,7 @@ export default function DataConnectorModal({
           dataConnector,
           isOpen,
           namespace,
-          projectId,
+          project,
           toggle,
         }}
       />
