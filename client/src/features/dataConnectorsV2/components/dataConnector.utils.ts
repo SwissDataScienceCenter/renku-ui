@@ -29,7 +29,7 @@ import type {
   CloudStorageCorePost,
   DataConnectorPost,
   DataConnectorRead,
-} from "../../projectsV2/api/data-connectors.api";
+} from "../api/data-connectors.api";
 import type { DataConnectorConfiguration } from "./useDataConnectorConfiguration.hook";
 
 // This contains the information in a DataConnector, but it is flattened

@@ -223,34 +223,44 @@ describe("Work with group data connectors", () => {
       .dataServicesUser({
         response: { id: "0945f006-e117-49b7-8966-4c0842146313" },
       })
-      .namespaces()
-      .listNamespaceV2();
-    fixtures.projects().landingUserProjects().listGroupV2();
-    cy.visit("/v2/groups");
-  });
-
-  it("shows group data connectors", () => {
-    fixtures
-      .readGroupV2()
-      .readGroupV2Namespace()
-      .listGroupV2Members()
-      .listProjectV2ByNamespace()
-      .listDataConnectors({ namespace: "test-2-group-v2" });
-    cy.contains("List Groups").should("be.visible");
-    cy.contains("test 2 group-v2").should("be.visible").click();
-    cy.wait("@readGroupV2");
-    cy.contains("test 2 group-v2").should("be.visible");
-    cy.contains("public-storage").should("be.visible");
-  });
-
-  it("add a group data connector", () => {
-    fixtures
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .projects()
+      .landingUserProjects()
+      .listNamespaceV2()
+      .listGroupV2()
       .readGroupV2()
       .readGroupV2Namespace()
       .listGroupV2Members()
       .listProjectV2ByNamespace()
       .listDataConnectors({ namespace: "test-2-group-v2" })
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" });
+    cy.visit("/v2/groups");
+  });
+
+  it("shows group data connectors", () => {
+    fixtures
+      .dataConnectorSecrets({
+        dataConnectorId: "ULID-2",
+        fixture: "dataConnector/data-connector-secrets-empty.json",
+      })
+      .listDataConnectorProjectLinks({
+        dataConnectorId: "ULID-2",
+        fixture: "dataConnector/project-data-connector-links-multiple.json",
+      })
+      .readProjectV2ById({ projectId: "PROJECT-ULID-1", name: "readProject1" })
+      .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" });
+    cy.contains("List Groups").should("be.visible");
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("test 2 group-v2").should("be.visible");
+    cy.contains("public-storage").should("be.visible").click();
+    cy.wait("@listDataConnectorProjectLinks");
+    cy.wait("@readProject1");
+    cy.wait("@readProject2");
+    cy.contains("user1-uuid/test-2-v2-project").should("be.visible");
+  });
+
+  it("add a group data connector", () => {
+    fixtures
       .testCloudStorage({ success: false })
       .postDataConnector({ namespace: "test-2-group-v2" });
     cy.contains("test 2 group-v2").should("be.visible").click();
@@ -278,17 +288,11 @@ describe("Work with group data connectors", () => {
       "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
     );
     cy.getDataCy("data-connector-edit-close-button").click();
-    cy.wait("@getDataConnectors");
+    cy.wait("@listDataConnectors");
   });
 
   it("edit a group data connector", () => {
     fixtures
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
-      .readGroupV2()
-      .readGroupV2Namespace()
-      .listGroupV2Members()
-      .listProjectV2ByNamespace()
-      .listDataConnectors({ namespace: "test-2-group-v2" })
       .testCloudStorage({ success: true })
       .patchDataConnector({ namespace: "test-2-group-v2" });
     cy.contains("test 2 group-v2").should("be.visible").click();
@@ -307,19 +311,11 @@ describe("Work with group data connectors", () => {
       "The data connector test-2-group-v2/public-storage has been successfully updated."
     );
     cy.getDataCy("data-connector-edit-close-button").click();
-    cy.wait("@getDataConnectors");
+    cy.wait("@listDataConnectors");
   });
 
   it("delete a group data connector", () => {
-    fixtures
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
-      .readGroupV2()
-      .readGroupV2Namespace()
-      .listGroupV2Members()
-      .listProjectV2ByNamespace()
-      .listDataConnectors({ namespace: "test-2-group-v2" })
-      .testCloudStorage({ success: true })
-      .deleteDataConnector();
+    fixtures.deleteDataConnector();
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible").click();
@@ -333,6 +329,6 @@ describe("Work with group data connectors", () => {
       .should("be.visible")
       .click();
     cy.wait("@deleteDataConnector");
-    cy.wait("@getDataConnectors");
+    cy.wait("@listDataConnectors");
   });
 });

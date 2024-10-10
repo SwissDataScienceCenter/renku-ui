@@ -59,7 +59,7 @@ const CONTEXT_STRINGS = {
     dataCy: "session-data-connector-credentials-modal",
     header: "Session Storage Credentials",
     testError:
-      "The data connector could not be mounted. Please retry with different credentials, or skip the test. If you skip, the data source will still try to mount, using the provided credentials, at session launch time.",
+      "The data connector could not be mounted. Please retry with different credentials, or skip the test. If you skip, the data connector will still try to mount, using the provided credentials, at session launch time.",
   },
   storage: {
     continueButton: "Test and Save",
@@ -144,8 +144,8 @@ function DataConnectorSecrets({
       {context === "session" && <SaveCredentialsInput control={control} />}
       {context === "storage" && hasIncompleteSavedCredentials && (
         <div className={cx("text-danger", "mb-3")}>
-          The saved credentials for this data source are incomplete so they will
-          be ignored at session launch.
+          The saved credentials for this data connector are incomplete so they
+          will be ignored at session launch.
         </div>
       )}
     </>

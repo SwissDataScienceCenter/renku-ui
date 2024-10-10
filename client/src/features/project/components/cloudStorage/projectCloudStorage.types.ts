@@ -158,7 +158,7 @@ export type CloudStorageDetails = {
   readOnly?: boolean;
 };
 
-export type CredentialSaveStatus = "failure" | "none" | "success" | "trying";
+export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";
 
 export interface TestCloudStorageConnectionParams {
   configuration: CloudStorageDetailsOptions;

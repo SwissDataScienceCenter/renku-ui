@@ -25,8 +25,8 @@ import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import {
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
-} from "../../projectsV2/api/data-connectors.enhanced-api";
-import type { DataConnectorRead } from "../../projectsV2/api/data-connectors.api";
+} from "../api/data-connectors.enhanced-api";
+import type { DataConnectorRead } from "../api/data-connectors.api";
 import DataConnectorSecretsModal from "../../sessionsV2/DataConnectorSecretsModal";
 
 import useDataConnectorConfiguration, {
@@ -34,16 +34,16 @@ import useDataConnectorConfiguration, {
 } from "./useDataConnectorConfiguration.hook";
 import { Loader } from "../../../components/Loader";
 
-interface DataSourceCredentialsModalProps {
+interface DataConnectorCredentialsModalProps {
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
   dataConnector: DataConnectorRead;
 }
-export default function DataSourceCredentialsModal({
+export default function DataConnectorCredentialsModal({
   isOpen,
   dataConnector,
   setOpen,
-}: DataSourceCredentialsModalProps) {
+}: DataConnectorCredentialsModalProps) {
   const { dataConnectorConfigs } = useDataConnectorConfiguration({
     dataConnectors: [dataConnector],
   });
@@ -103,7 +103,7 @@ export default function DataSourceCredentialsModal({
           No credentials required
         </ModalHeader>
         <ModalBody>
-          This data source does not require any credentials.
+          This data connector does not require any credentials.
         </ModalBody>
         <ModalFooter>
           <Button

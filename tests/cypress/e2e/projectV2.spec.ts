@@ -47,7 +47,7 @@ describe("Add new v2 project", () => {
     cy.contains("button", "Create").click();
 
     cy.wait("@createProjectV2");
-    cy.location("pathname").should("eq", `/v2/projects/user1.uuid/${slug}`);
+    cy.location("pathname").should("eq", `/v2/projects/user1-uuid/${slug}`);
   });
 
   it("keeps namespace set after going back", () => {
@@ -58,10 +58,10 @@ describe("Add new v2 project", () => {
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click();
-    cy.contains("user1.uuid").should("exist");
+    cy.contains("user1-uuid").should("exist");
     cy.contains("Set visibility").click();
     cy.get("button").contains("Back").click();
-    cy.contains("user1.uuid").should("exist");
+    cy.contains("user1-uuid").should("exist");
   });
 
   it("prevents invalid input", () => {
@@ -103,7 +103,7 @@ describe("Add new v2 project", () => {
 
     cy.contains("button", "Create").click();
     cy.wait("@createProjectV2");
-    cy.location("pathname").should("eq", `/v2/projects/user1.uuid/${slug}`);
+    cy.location("pathname").should("eq", `/v2/projects/user1-uuid/${slug}`);
   });
 });
 
@@ -482,7 +482,9 @@ describe("Editor cannot maintain members", () => {
       .landingUserProjects()
       .listProjectV2()
       .readProjectV2()
-      .listProjectV2Members();
+      .listProjectV2Members()
+      .listProjectDataConnectors()
+      .getDataConnector();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
   });
@@ -498,7 +500,7 @@ describe("Editor cannot maintain members", () => {
     cy.wait("@listProjectV2Members");
     cy.wait("@getDataServicesUser");
     cy.getDataCy("add-session-launcher").should("be.visible");
-    cy.getDataCy("add-data-source").should("be.visible");
+    cy.getDataCy("add-data-connector").should("be.visible");
     cy.getDataCy("add-code-repository").should("be.visible");
   });
 
@@ -549,7 +551,7 @@ describe("Viewer cannot edit project", () => {
     cy.wait("@listProjectV2Members");
     cy.wait("@getDataServicesUser");
     cy.getDataCy("add-session-launcher").should("not.exist");
-    cy.getDataCy("add-data-source").should("not.exist");
+    cy.getDataCy("add-data-connector").should("not.exist");
     cy.getDataCy("add-code-repository").should("not.exist");
   });
 });

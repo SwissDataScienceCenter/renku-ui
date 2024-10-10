@@ -6,6 +6,8 @@ import { projectStoragesApi as api } from "./storagesV2.api";
 import type {
   GetProjectsApiArg,
   GetProjectsApiResponse as GetProjectsApiResponseOrig,
+  GetProjectsByProjectIdApiArg,
+  GetProjectsByProjectIdApiResponse,
   ProjectsList,
 } from "./projectV2.api";
 
@@ -32,6 +34,15 @@ import type {
 interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;
 }
+
+interface GetProjectsByProjectIdsApiArg {
+  projectIds: GetProjectsByProjectIdApiArg["projectId"][];
+}
+
+type GetProjectsByProjectIdsApiResponse = Record<
+  string,
+  GetProjectsByProjectIdApiResponse
+>;
 
 export interface GetNamespacesApiResponse extends AbstractKgPaginatedResponse {
   namespaces: GetNamespacesApiResponseOrig;
@@ -112,18 +123,14 @@ const injectedApi = api.injectEndpoints({
     getProjectsPaged: builder.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: "/projects",
-        params: {
-          namespace: queryArg["namespace"],
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-        },
+        params: queryArg.params,
       }),
       transformResponse: (response, meta, queryArg) => {
         const projects = response as ProjectsList;
         const headers = meta?.response?.headers;
         const headerResponse = processPaginationHeaders(
           headers,
-          queryArg,
+          { page: queryArg.params?.page, perPage: queryArg.params?.per_page },
           projects
         );
 
@@ -134,6 +141,27 @@ const injectedApi = api.injectEndpoints({
           total: headerResponse.total,
           totalPages: headerResponse.totalPages,
         };
+      },
+    }),
+    getProjectsByProjectIds: builder.query<
+      GetProjectsByProjectIdsApiResponse,
+      GetProjectsByProjectIdsApiArg
+    >({
+      async queryFn(queryArg, _api, _options, fetchWithBQ) {
+        const { projectIds } = queryArg;
+        const result: GetProjectsByProjectIdsApiResponse = {};
+        const promises = projectIds.map((projectId) =>
+          fetchWithBQ(`/projects/${projectId}`)
+        );
+        const responses = await Promise.all(promises);
+        for (let i = 0; i < projectIds.length; i++) {
+          const projectId = projectIds[i];
+          const response = responses[i];
+          if (response.error) return response;
+          result[projectId] =
+            response.data as GetProjectsByProjectIdApiResponse;
+        }
+        return { data: result };
       },
     }),
     getStoragesPaged: builder.query<
@@ -179,6 +207,7 @@ const injectedApi = api.injectEndpoints({
 
 const enhancedApi = injectedApi.enhanceEndpoints({
   addTagTypes: [
+    "DataConnectors",
     "Group",
     "GroupMembers",
     "Namespace",
@@ -231,11 +260,17 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsPaged: {
       providesTags: ["Project"],
     },
+    getProjectsByProjectIds: {
+      providesTags: ["Project"],
+    },
     getProjectsByNamespaceAndSlug: {
       providesTags: ["Project"],
     },
     getProjectsByProjectId: {
       providesTags: ["Project"],
+    },
+    getProjectsByProjectIdDataConnectorLinks: {
+      providesTags: ["DataConnectors"],
     },
     getProjectsByProjectIdMembers: {
       providesTags: ["ProjectMembers"],
@@ -289,11 +324,15 @@ export const {
   usePostProjectsMutation,
   useGetProjectsByNamespaceAndSlugQuery,
   useGetProjectsByProjectIdQuery,
+  useGetProjectsByProjectIdsQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+
+  // data connector hooks
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
 
   // group hooks
   useGetGroupsPagedQuery: useGetGroupsQuery,

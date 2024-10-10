@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Database, Globe2, Lock, PlusLg } from "react-bootstrap-icons";
+import { Database, PlusLg } from "react-bootstrap-icons";
 import { useSearchParams } from "react-router-dom-v5-compat";
 import {
   Badge,
@@ -26,29 +26,23 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Col,
   ListGroup,
-  ListGroupItem,
-  Row,
 } from "reactstrap";
 
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
-import { TimeCaption } from "../../../components/TimeCaption";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
 import type { NamespaceKind } from "../../projectsV2/api/namespace.api";
-import type { DataConnector } from "../../projectsV2/api/data-connectors.api";
 import { useGetGroupsByGroupSlugMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import {
   useGetDataConnectorsQuery,
   type GetDataConnectorsApiResponse,
-} from "../../projectsV2/api/data-connectors.enhanced-api";
+} from "../api/data-connectors.enhanced-api";
 import { useGetUserQuery } from "../../user/dataServicesUser.api";
 
+import DataConnectorBoxListDisplay from "./DataConnectorsBoxListDisplay";
 import DataConnectorModal from "./DataConnectorModal";
-import DataConnectorView from "./DataConnectorView";
 
 const DEFAULT_PER_PAGE = 12;
 const DEFAULT_PAGE_PARAM = "page";
@@ -227,7 +221,7 @@ function DataConnectorBoxContent({
           )}
           <ListGroup flush>
             {data.dataConnectors?.map((dc) => (
-              <DataConnectorDisplay key={dc.id} dataConnector={dc} />
+              <DataConnectorBoxListDisplay key={dc.id} dataConnector={dc} />
             ))}
           </ListGroup>
           <Pagination
@@ -323,75 +317,5 @@ function DataConnectorLoadingBoxContent() {
         <div>Retrieving data connectors...</div>
       </CardBody>
     </Card>
-  );
-}
-
-interface DataConnectorDisplayProps {
-  dataConnector: DataConnector;
-}
-function DataConnectorDisplay({ dataConnector }: DataConnectorDisplayProps) {
-  const {
-    name,
-    description,
-    visibility,
-    creation_date: creationDate,
-  } = dataConnector;
-
-  const [showDetails, setShowDetails] = useState(false);
-  const toggleDetails = useCallback(() => {
-    setShowDetails((open) => !open);
-  }, []);
-
-  return (
-    <>
-      <ListGroupItem
-        action
-        className={cx("cursor-pointer", "link-primary", "text-body")}
-        onClick={toggleDetails}
-      >
-        <Row className={cx("align-items-center", "g-2")}>
-          <Col>
-            <span className="fw-bold" data-cy="data-connector-name">
-              {name}
-            </span>
-            {description && <ClampedParagraph>{description}</ClampedParagraph>}
-            <div
-              className={cx(
-                "align-items-center",
-                "d-flex",
-                "flex-wrap",
-                "gap-2",
-                "justify-content-between",
-                "mt-auto"
-              )}
-            >
-              <div>
-                {visibility.toLowerCase() === "private" ? (
-                  <>
-                    <Lock className={cx("bi", "me-1")} />
-                    Private
-                  </>
-                ) : (
-                  <>
-                    <Globe2 className={cx("bi", "me-1")} />
-                    Public
-                  </>
-                )}
-              </div>
-              <TimeCaption
-                datetime={creationDate}
-                prefix="Created"
-                enableTooltip
-              />
-            </div>
-          </Col>
-        </Row>
-      </ListGroupItem>
-      <DataConnectorView
-        dataConnector={dataConnector}
-        showView={showDetails}
-        toggleView={toggleDetails}
-      />
-    </>
   );
 }

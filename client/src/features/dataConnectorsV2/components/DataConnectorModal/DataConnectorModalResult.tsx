@@ -17,58 +17,80 @@
  */
 
 import { SuccessAlert } from "../../../../components/Alert";
-export type CredentialSaveStatus = "failure" | "none" | "success" | "trying";
+export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";
 
 interface DataConnectorModalResultProps {
   alreadyExisted: boolean;
-  credentialSaveStatus: CredentialSaveStatus;
+  credentialSaveStatus: AuxiliaryCommandStatus;
   dataConnectorResultName: string | undefined;
+  projectLinkStatus: AuxiliaryCommandStatus;
 }
 
 export default function DataConnectorModalResult({
-  dataConnectorResultName,
-  credentialSaveStatus,
   alreadyExisted,
+  credentialSaveStatus,
+  dataConnectorResultName,
+  projectLinkStatus,
 }: DataConnectorModalResultProps) {
-  if (credentialSaveStatus == "trying")
-    return (
-      <SuccessAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          The data connector <b>{dataConnectorResultName}</b> has been
-          successfully {alreadyExisted ? "updated" : "added"}; saving the
-          credentials...
-        </p>
-      </SuccessAlert>
-    );
-
-  if (credentialSaveStatus == "success")
-    return (
-      <SuccessAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          The data connector <b>{dataConnectorResultName}</b> has been
-          successfully {alreadyExisted ? "updated" : "added"}, along with its
-          credentials.
-        </p>
-      </SuccessAlert>
-    );
-  if (credentialSaveStatus == "failure")
-    return (
-      <SuccessAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          The data connector <b>{dataConnectorResultName}</b> has been
-          successfully {alreadyExisted ? "updated" : "added"},{" "}
-          <b>but the credentials were not saved</b>. You can re-enter them and
-          save by editing the storage.
-        </p>
-      </SuccessAlert>
-    );
-
+  const dataConnectorFragment = (
+    <>
+      The data connector <b>{dataConnectorResultName}</b> has been successfully{" "}
+      {alreadyExisted ? "updated" : "added"}
+    </>
+  );
   return (
     <SuccessAlert dismissible={false} timeout={0}>
-      <p className="mb-0">
-        The data connector <b>{dataConnectorResultName}</b> has been
-        successfully {alreadyExisted ? "updated" : "added"}.
-      </p>
+      <DataConnectorResultAlertContent
+        dataConnectorFragment={dataConnectorFragment}
+        credentialSaveStatus={credentialSaveStatus}
+        projectLinkStatus={projectLinkStatus}
+      />
     </SuccessAlert>
+  );
+}
+
+interface DataConnectorResultAlertContentProps
+  extends Pick<
+    DataConnectorModalResultProps,
+    "credentialSaveStatus" | "projectLinkStatus"
+  > {
+  dataConnectorFragment: React.ReactNode;
+}
+function DataConnectorResultAlertContent({
+  credentialSaveStatus,
+  dataConnectorFragment,
+  projectLinkStatus,
+}: DataConnectorResultAlertContentProps) {
+  if (credentialSaveStatus == "none" && projectLinkStatus == "none") {
+    return <p className="mb-0">{dataConnectorFragment}.</p>;
+  }
+
+  const credentialSaveFragment =
+    credentialSaveStatus == "trying" ? (
+      <li>saving the credentials...</li>
+    ) : credentialSaveStatus == "success" ? (
+      <li>credentials were saved</li>
+    ) : credentialSaveStatus == "failure" ? (
+      <li>
+        <b>credentials were not saved</b>, you can re-enter them and save by
+        editing the storage
+      </li>
+    ) : null;
+  const projectLinkFragment =
+    projectLinkStatus == "trying" ? (
+      <li>linking the project...</li>
+    ) : projectLinkStatus == "success" ? (
+      <li>project was linked</li>
+    ) : projectLinkStatus == "failure" ? (
+      <li>
+        <b>project was not linked</b>, you can link the existing data connector
+      </li>
+    ) : null;
+  return (
+    <p className="mb-0">
+      {dataConnectorFragment}
+      {credentialSaveFragment && <ul>{credentialSaveFragment}</ul>}
+      {projectLinkFragment && <ul>{projectLinkFragment}</ul>}
+    </p>
   );
 }
