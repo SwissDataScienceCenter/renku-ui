@@ -32,6 +32,7 @@ import {
 } from "react-bootstrap-icons";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";
+import CrosshairIcon from "../../../components/icons/CrosshairIcon";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
@@ -58,9 +59,9 @@ function ConfigurationKeyIcon({ configKey }: { configKey: string }) {
     return <UniversalAccessCircle className={cx("bi", "me-1")} />;
   }
   if (configKey === "mountPoint") {
-    return <img src="/crosshair.svg" className={cx("bi", "me-1")} />;
+    return <CrosshairIcon className={cx("bi", "me-1")} />;
   }
-  return <span classname={cx("bi", "me-1")}/>;
+  return <span className={cx("bi", "me-1")} />;
 }
 
 interface DataConnectorViewProps {
