@@ -60,7 +60,7 @@ function ConfigurationKeyIcon({ configKey }: { configKey: string }) {
   if (configKey === "mountPoint") {
     return <img src="/crosshair.svg" className={cx("bi", "me-1")} />;
   }
-  return <>&nbsp;</>;
+  return <span classname={cx("bi", "me-1")}/>;
 }
 
 interface DataConnectorViewProps {
