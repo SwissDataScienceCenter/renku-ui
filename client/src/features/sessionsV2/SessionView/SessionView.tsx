@@ -48,7 +48,6 @@ import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { useGetStoragesV2Query } from "../../projectsV2/api/storagesV2.api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { Session, Sessions } from "../../session/sessions.types";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
@@ -63,12 +62,16 @@ import {
 import sessionsV2Api from "../sessionsV2.api";
 import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
 
+import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
 import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
 import {
   useGetResourceClassByIdQuery,
   useGetResourcePoolsQuery,
 } from "../../dataServices/computeResources.api";
-import { useGetProjectsByProjectIdMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import {
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
+  useGetProjectsByProjectIdMembersQuery,
+} from "../../projectsV2/api/projectV2.enhanced-api";
 import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 
@@ -293,11 +296,18 @@ export function SessionView({
     return undefined;
   }, [environments, launcher]);
 
-  const { data: dataSources } = useGetStoragesV2Query({
-    storageV2Params: {
-      project_id: project.id,
-    },
-  });
+  const { data: dataConnectorLinks } =
+    useGetProjectsByProjectIdDataConnectorLinksQuery({
+      projectId: project.id,
+    });
+  const dataConnectorIds = dataConnectorLinks?.map(
+    (link) => link.data_connector_id
+  );
+  const { data: dataConnectorsMap } =
+    useGetDataConnectorsListByDataConnectorIdsQuery(
+      dataConnectorIds ? { dataConnectorIds } : skipToken
+    );
+  const dataConnectors = Object.values(dataConnectorsMap ?? {});
 
   const { data: resourcePools } = useGetResourcePoolsQuery({});
   const {
@@ -499,13 +509,13 @@ export function SessionView({
                 <Database className={cx("me-1", "bi")} />
                 Data Sources
               </h4>
-              <Badge>{dataSources?.length || 0}</Badge>
+              <Badge>{dataConnectors?.length || 0}</Badge>
             </div>
-            {dataSources && dataSources?.length > 0 ? (
+            {dataConnectors && dataConnectors?.length > 0 ? (
               <ListGroup>
-                {dataSources?.map((storage, index) => (
+                {dataConnectors?.map((storage, index) => (
                   <ListGroupItem key={`storage-${index}`}>
-                    <div>Name: {storage.storage.name}</div>
+                    <div>Name: {storage.name}</div>
                     <div>Type: {storage.storage.storage_type}</div>
                   </ListGroupItem>
                 ))}
@@ -527,7 +537,7 @@ export function SessionView({
                 <Badge>{project?.repositories?.length}</Badge>
               )}
             </div>
-            {dataSources && dataSources?.length > 0 ? (
+            {dataConnectors && dataConnectors?.length > 0 ? (
               <ListGroup>
                 {project.repositories?.map((repositoryUrl, index) => (
                   <RepositoryItem

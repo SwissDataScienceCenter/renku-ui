@@ -38,6 +38,8 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 import { resetFavicon, setFavicon } from "../display";
+import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
+import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import {
   storageDefinitionAfterSavingCredentialsFromConfig,
   storageDefinitionFromConfig,
@@ -46,21 +48,20 @@ import type { Project } from "../projectsV2/api/projectV2.api";
 import {
   projectV2Api,
   useGetProjectsByNamespaceAndSlugQuery,
-  usePostStoragesV2SecretsForSessionLaunchMutation,
 } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import { useStartRenku2SessionMutation } from "../session/sessions.api";
-import type { CloudStorageConfiguration } from "./DataStorageSecretsModal";
-import DataStorageSecretsModal from "./DataStorageSecretsModal";
+
+import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
-  SessionStartCloudStorageConfiguration,
+  SessionStartDataConnectorConfiguration,
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
-import useSessionLauncherState from "./useSessionLaunchState.hook";
+import useSessionLaunchState from "./useSessionLaunchState.hook";
 
 interface SaveCloudStorageProps
   extends Omit<StartSessionFromLauncherProps, "containerImage" | "project"> {
@@ -74,14 +75,14 @@ function SaveCloudStorage({
   const dispatch = useAppDispatch();
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
   const [saveCredentials, saveCredentialsResult] =
-    usePostStoragesV2SecretsForSessionLaunchMutation();
+    usePatchDataConnectorsByDataConnectorIdSecretsMutation();
 
   const credentialsToSave = useMemo(() => {
     return startSessionOptionsV2.cloudStorage
       .filter(shouldCloudStorageSaveCredentials)
       .map((cs) => ({
-        storageName: cs.cloudStorage.storage.name,
-        storageId: cs.cloudStorage.storage.storage_id,
+        storageName: cs.dataConnector.name,
+        storageId: cs.dataConnector.id,
         secrets: cs.sensitiveFieldValues,
       }));
   }, [startSessionOptionsV2.cloudStorage]);
@@ -112,8 +113,8 @@ function SaveCloudStorage({
     });
     const storage = credentialsToSave[index];
     saveCredentials({
-      storageId: storage.storageId,
-      cloudStorageSecretPostList: Object.entries(storage.secrets).map(
+      dataConnectorId: storage.storageId,
+      dataConnectorSecretPatchList: Object.entries(storage.secrets).map(
         ([key, value]) => ({
           name: key,
           value,
@@ -206,7 +207,7 @@ function SessionStarting({
       launcherId: launcher.id,
       repositories: startSessionOptionsV2.repositories,
       cloudStorage: startSessionOptionsV2.cloudStorage.map((cs) =>
-        storageDefinitionFromConfig(cs)
+        storageDefinitionFromConfig(cs, project.id)
       ),
       defaultUrl: startSessionOptionsV2.defaultUrl,
       environmentVariables: {},
@@ -277,7 +278,7 @@ function SessionStarting({
 }
 
 function doesCloudStorageNeedCredentials(
-  config: SessionStartCloudStorageConfiguration
+  config: SessionStartDataConnectorConfiguration
 ) {
   if (config.active === false) return false;
   const sensitiveFields = Object.keys(config.sensitiveFieldValues);
@@ -295,14 +296,17 @@ function doesCloudStorageNeedCredentials(
 }
 
 function shouldCloudStorageSaveCredentials(
-  config: SessionStartCloudStorageConfiguration
+  config: SessionStartDataConnectorConfiguration
 ) {
   return config.saveCredentials;
 }
 
 interface StartSessionWithCloudStorageModalProps
   extends Omit<SessionStartingProps, "cloudStorages"> {
-  cloudStorageConfigs: Omit<CloudStorageConfiguration, "sensitiveFields">[];
+  cloudStorageConfigs: Omit<
+    SessionStartDataConnectorConfiguration,
+    "sensitiveFields"
+  >[];
 }
 
 function StartSessionWithCloudStorageModal({
@@ -312,7 +316,7 @@ function StartSessionWithCloudStorageModal({
   startSessionOptionsV2,
   cloudStorageConfigs,
 }: StartSessionWithCloudStorageModalProps) {
-  const [showDataStorageSecretsModal, setShowDataConnectorSecretsModal] =
+  const [showDataConnectorSecretsModal, setShowDataConnectorSecretsModal] =
     useState<boolean>(false);
   const dispatch = useAppDispatch();
 
@@ -338,8 +342,9 @@ function StartSessionWithCloudStorageModal({
   }, [configsNeedingCredentials]);
 
   const onStart = useCallback(
-    (changedCloudStorageConfigs: CloudStorageConfiguration[]) => {
+    (configs: DataConnectorConfiguration[]) => {
       setShowDataConnectorSecretsModal(false);
+      const changedCloudStorageConfigs = configs;
       const cloudStorageConfigs = [
         ...configsWithCredentials,
         ...changedCloudStorageConfigs,
@@ -394,11 +399,11 @@ function StartSessionWithCloudStorageModal({
           title={`Starting session ${launcher.name}`}
           status={steps}
         />
-        <DataStorageSecretsModal
-          isOpen={showDataStorageSecretsModal}
+        <DataConnectorSecretsModal
+          isOpen={showDataConnectorSecretsModal}
           onCancel={onCancel}
           onStart={onStart}
-          cloudStorageConfigs={configsNeedingCredentials}
+          dataConnectorConfigs={configsNeedingCredentials}
         />
       </div>
     </div>
@@ -425,7 +430,7 @@ function StartSessionFromLauncher({
     isFetchingOrLoadingStorages,
     isPendingResourceClass,
     setResourceClass,
-  } = useSessionLauncherState({
+  } = useSessionLaunchState({
     launcher,
     project,
     isCustomLaunch: hasCustomQuery,

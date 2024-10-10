@@ -247,7 +247,8 @@ describe("Work with group data connectors", () => {
         fixture: "dataConnector/project-data-connector-links-multiple.json",
       })
       .readProjectV2ById({ projectId: "PROJECT-ULID-1", name: "readProject1" })
-      .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" });
+      .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" })
+      .readProjectV2ById({ projectId: "PROJECT-ULID-3", name: "readProject2" });
     cy.contains("List Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
