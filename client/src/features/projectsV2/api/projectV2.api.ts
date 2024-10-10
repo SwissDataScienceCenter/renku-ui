@@ -49,7 +49,7 @@ const injectedRtkApi = api.injectEndpoints({
       GetProjectsByNamespaceAndSlugApiArg
     >({
       query: (queryArg) => ({
-        url: `/projects/${queryArg["namespace"]}/${queryArg.slug}`,
+        url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.slug}`,
       }),
     }),
     getProjectsByProjectIdMembers: build.query<
