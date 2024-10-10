@@ -61,7 +61,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
   return class DataConnectorFixtures extends Parent {
     dataConnectorSecrets(args?: DataConnectorIdArgs) {
       const {
-        fixture = "tests/cypress/fixtures/dataConnector/data-connector-secrets.json",
+        fixture = "dataConnector/data-connector-secrets.json",
         name = "getDataConnectorSecrets",
         dataConnectorId = "ULID-1",
       } = args ?? {};
