@@ -236,6 +236,10 @@ function DataConnectorRemoveUnlinkModal({
               <strong>{dataConnector.slug}</strong> from the project{" "}
               <strong>{projectId}</strong>?
             </p>
+            <p>
+              The data from the data connector will no longer be available in
+              sessions.
+            </p>
           </Col>
         </Row>
       </ModalBody>
@@ -259,7 +263,7 @@ function DataConnectorRemoveUnlinkModal({
               </>
             ) : (
               <>
-                <Trash className={cx("bi", "me-1")} />
+                <NodeMinus className={cx("bi", "me-1")} />
                 Unlink data connector
               </>
             )}
