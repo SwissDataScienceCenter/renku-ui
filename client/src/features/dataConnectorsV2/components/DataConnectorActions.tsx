@@ -284,7 +284,16 @@ export default function DataConnectorActions({
     ABSOLUTE_ROUTES.v2.projects.show.root,
     location.pathname
   );
-  const removeMode = pathMatch === null ? "delete" : "unlink";
+  const namespace = pathMatch?.params?.namespace;
+  const slug = pathMatch?.params?.slug;
+  const projectId = `${namespace}/${slug}`;
+  const removeMode =
+    pathMatch === null ||
+    namespace == null ||
+    slug == null ||
+    dataConnectorLink == null
+      ? "delete"
+      : "unlink";
   const [isCredentialsOpen, setCredentialsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -314,6 +323,26 @@ export default function DataConnectorActions({
       Edit
     </Button>
   );
+
+  const removeModal =
+    removeMode == "delete" ? (
+      <DataConnectorRemoveDeleteModal
+        dataConnector={dataConnector}
+        dataConnectorLink={dataConnectorLink}
+        isOpen={isDeleteOpen}
+        onDelete={onDelete}
+        toggleModal={toggleDelete}
+      />
+    ) : (
+      <DataConnectorRemoveUnlinkModal
+        dataConnector={dataConnector}
+        dataConnectorLink={dataConnectorLink!}
+        isOpen={isDeleteOpen}
+        onDelete={onDelete}
+        projectId={projectId}
+        toggleModal={toggleDelete}
+      />
+    );
 
   return (
     <>
@@ -349,13 +378,7 @@ export default function DataConnectorActions({
         setOpen={setCredentialsOpen}
         isOpen={isCredentialsOpen}
       />
-      <DataConnectorRemoveModal
-        dataConnector={dataConnector}
-        dataConnectorLink={dataConnectorLink}
-        isOpen={isDeleteOpen}
-        onDelete={onDelete}
-        toggleModal={toggleDelete}
-      />
+      {removeModal}
       <DataConnectorModal
         dataConnector={dataConnector}
         isOpen={isEditOpen}
