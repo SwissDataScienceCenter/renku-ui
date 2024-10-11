@@ -19,15 +19,12 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router-dom-v5-compat";
-import { Button, Col, Collapse, Row } from "reactstrap";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import NotFoundImage from "../../../not-found/NotFoundImage.tsx";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import styles from "./NotFound.module.scss";
 import ContainerWrap from "../../../components/container/ContainerWrap";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import rkNotFoundImgV2 from "../../../styles/assets/not-foundV2.svg";
 
 interface GroupNotFoundProps {
   error?: FetchBaseQueryError | SerializedError | undefined | null;
@@ -35,11 +32,6 @@ interface GroupNotFoundProps {
 
 export default function GroupNotFound({ error }: GroupNotFoundProps) {
   const { slug: groupSlug } = useParams<{ slug: string }>();
-
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const onClickDetails = useCallback(() => {
-    setDetailsOpen((open) => !open);
-  }, []);
 
   const notFoundText = groupSlug ? (
     <>
@@ -52,50 +44,33 @@ export default function GroupNotFound({ error }: GroupNotFoundProps) {
 
   return (
     <ContainerWrap>
-      <div className={cx("d-flex", "justify-content-center", "m-auto")}>
-        <div className={cx(styles.errorNotFoundContainer, "m-auto")}>
-          <Row>
-            <Col className={cx("p-4", "mt-5")}>
-              <h3
-                className={cx(
-                  "text-primary",
-                  "fw-bold",
-                  "mt-3",
-                  "d-flex",
-                  "align-items-center",
-                  "gap-3"
-                )}
-              >
-                <NotFoundImage />
-                Group not found
-              </h3>
-              <div className={cx("text-start", "mt-3")}>
-                <p>{notFoundText}</p>
-                <p>
-                  It is possible that the group has been deleted by its owner.
-                </p>
-              </div>
-              <div className={cx("my-3", "d-flex", "gap-3")}>
-                {error && (
-                  <Button color="outline-primary" onClick={onClickDetails}>
-                    Show error details
-                  </Button>
-                )}
-                <Link
-                  to={ABSOLUTE_ROUTES.v2.root}
-                  className={cx("btn", "btn-primary")}
-                >
-                  <ArrowLeft className={cx("bi", "me-1")} />
-                  Return to the groups list
-                </Link>
-              </div>
-              {error && (
-                <Collapse isOpen={detailsOpen}>
-                  <RtkOrNotebooksError error={error} dismissible={false} />
-                </Collapse>
-              )}
-            </Col>
-          </Row>
+      <div className="d-flex">
+        <div className={cx("m-auto", "d-flex", "flex-column")}>
+          <h3
+            className={cx(
+              "text-primary",
+              "fw-bold",
+              "my-0",
+              "d-flex",
+              "align-items-center",
+              "gap-3"
+            )}
+          >
+            <img src={rkNotFoundImgV2} />
+            Group not found
+          </h3>
+          <div className={cx("text-start", "mt-3")}>
+            <p>{notFoundText}</p>
+            <p>It is possible that the group has been deleted by its owner.</p>
+            {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+            <Link
+              to={ABSOLUTE_ROUTES.v2.root}
+              className={cx("btn", "btn-primary")}
+            >
+              <ArrowLeft className={cx("bi", "me-1")} />
+              Return to the groups list
+            </Link>
+          </div>
         </div>
       </div>
     </ContainerWrap>

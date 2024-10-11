@@ -42,7 +42,7 @@ export default function GroupV2Settings() {
   } = useGetGroupsByGroupSlugQuery(slug ? { groupSlug: slug } : skipToken);
 
   if (!slug) {
-    return <LazyNotFound isV2={true} />;
+    return <LazyNotFound />;
   }
 
   if (isLoading) {

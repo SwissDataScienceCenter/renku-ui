@@ -19,18 +19,17 @@
 import * as Sentry from "@sentry/react";
 import cx from "classnames";
 import { ReactNode, useCallback } from "react";
-
 import { ArrowLeft } from "react-bootstrap-icons";
-import OopsImage from "../not-found/OopsImage.tsx";
-import useLegacySelector from "../utils/customHooks/useLegacySelector.hook.ts";
-import { StyleHandler } from "../index.jsx";
+import { StyleHandler } from "../index";
+import rkOopsImg from "../styles/assets/oops.svg";
+import rkOopsV2Img from "../styles/assets/oopsV2.svg";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
 }
 
 export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
-  const logged = useLegacySelector((state) => state.stateModel.user.logged);
   // Handle chunk load errors by reloading the page
   const onError = useCallback((error: Error) => {
     if (error.name === "ChunkLoadError") {
@@ -45,7 +44,7 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
     }
   }, []);
 
-  const fallbackErrorPage = <ErrorPage logged={logged} />;
+  const fallbackErrorPage = <ErrorPage />;
 
   return (
     <Sentry.ErrorBoundary onError={onError} fallback={fallbackErrorPage}>
@@ -54,8 +53,9 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
   );
 }
 
-const ErrorPage = ({ logged }: { logged: boolean }) => {
+const ErrorPage = () => {
   const isV2 = location.pathname.startsWith("/v2");
+  const logged = useLegacySelector((state) => state.stateModel.user.logged);
   return (
     <>
       <StyleHandler />
@@ -63,7 +63,7 @@ const ErrorPage = ({ logged }: { logged: boolean }) => {
         className={cx("d-flex", "flex-column", "align-items-center", "mt-5")}
       >
         <div className={cx("p-4")}>
-          <OopsImage className={cx(isV2 ? "text-primary" : "text-rk-green")} />
+          <img src={isV2 ? rkOopsV2Img : rkOopsImg} />
           <h3
             className={cx(
               isV2 ? "text-primary" : "text-rk-green",

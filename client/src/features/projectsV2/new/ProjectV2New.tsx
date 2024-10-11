@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { FormEvent, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
@@ -30,6 +31,7 @@ import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook
 import type { ProjectPost } from "../api/projectV2.api";
 import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 
+import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import WipBadge from "../shared/WipBadge";
 import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2DescriptionAndRepositories";
 import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
@@ -168,7 +170,18 @@ export default function ProjectV2New() {
   }, [dispatch]);
   const { currentStep } = useAppSelector((state) => state.newProjectV2);
   if (!user.logged) {
-    return <h2>Please log in to create a project.</h2>;
+    const textIntro = "Only authenticated users can create new projects.";
+    const textPost = "to create a new project.";
+    return (
+      <div className={cx("d-flex", "flex-column")}>
+        <h2 className={cx("mb-0", "me-2")}>New project</h2>
+        <LoginAlert
+          logged={user.logged}
+          textIntro={textIntro}
+          textPost={textPost}
+        />
+      </div>
+    );
   }
   return (
     <FormSchema
