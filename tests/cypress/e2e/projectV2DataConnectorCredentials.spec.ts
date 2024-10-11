@@ -43,8 +43,10 @@ describe("Set up data sources with credentials", () => {
   it("set up data connector with failed connection test", () => {
     fixtures
       .testCloudStorage({ success: false })
-      .postDataConnector({ namespace: "user1-uuid" })
-      .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" })
+      .postDataConnector({ namespace: "user1-uuid", visibility: "public" })
+      .postDataConnectorProjectLink({
+        dataConnectorId: "ULID-5",
+      })
       .dataConnectorSecrets({
         fixture: "dataConnector/data-connector-secrets-empty.json",
       })
@@ -106,7 +108,7 @@ describe("Set up data sources with credentials", () => {
   it("set up data connector with credentials", () => {
     fixtures
       .testCloudStorage({ success: true })
-      .postDataConnector({ namespace: "user1-uuid" })
+      .postDataConnector({ namespace: "user1-uuid", visibility: "public" })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" })
       .patchDataConnectorSecrets({
         dataConnectorId: "ULID-5",
