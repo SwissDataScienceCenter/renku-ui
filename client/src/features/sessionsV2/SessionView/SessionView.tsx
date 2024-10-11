@@ -507,7 +507,7 @@ export function SessionView({
             <div className={cx("align-items-center", "d-flex", "mb-2")}>
               <h4 className={cx("mb-0", "me-2")}>
                 <Database className={cx("me-1", "bi")} />
-                Data Sources
+                Data Connectors
               </h4>
               <Badge>{dataConnectors?.length || 0}</Badge>
             </div>
@@ -521,7 +521,7 @@ export function SessionView({
                 ))}
               </ListGroup>
             ) : (
-              <p className="fst-italic">No data sources included</p>
+              <p className="fst-italic">No data connectors included</p>
             )}
           </div>
 

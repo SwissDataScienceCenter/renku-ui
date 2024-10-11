@@ -67,7 +67,7 @@ export default function DataConnectorSaveCredentialsInfo({
             <p className="mb-0">
               The credentials will be stored as secrets and only be for your
               use. Other users will have to supply their credentials to use this
-              data source.
+              data connector.
             </p>
           </WarnAlert>
         </div>

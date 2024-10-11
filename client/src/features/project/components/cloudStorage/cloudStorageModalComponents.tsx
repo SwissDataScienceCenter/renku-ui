@@ -23,7 +23,6 @@ import {
   ChevronLeft,
   ChevronRight,
   CloudFill,
-  Database,
   PencilSquare,
   PlusLg,
   XLg,
@@ -146,20 +145,11 @@ export function AddCloudStorageBodyContent({
 }
 
 interface AddCloudStorageHeaderContentProps {
-  isV2: boolean;
   storageId: string | null;
 }
 export function AddCloudStorageHeaderContent({
   storageId,
-  isV2,
 }: AddCloudStorageHeaderContentProps) {
-  if (isV2)
-    return (
-      <>
-        <Database className={cx("bi", "me-1")} /> {storageId ? "Edit" : "Add"}{" "}
-        data source
-      </>
-    );
   return (
     <>
       <CloudFill className={cx("bi", "me-1")} />

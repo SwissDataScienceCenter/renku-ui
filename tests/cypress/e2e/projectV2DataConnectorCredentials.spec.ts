@@ -18,7 +18,7 @@
 
 import fixtures from "../support/renkulab-fixtures";
 
-describe("Set up data sources with credentials", () => {
+describe("Set up data connectors with credentials", () => {
   beforeEach(() => {
     fixtures
       .config()

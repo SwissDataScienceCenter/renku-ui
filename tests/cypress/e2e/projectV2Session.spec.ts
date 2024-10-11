@@ -60,7 +60,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
 
-    // ensure the data source is there
+    // ensure the data connector is there
     cy.getDataCy("data-connector-name").should(
       "contain.text",
       "example storage"
@@ -103,7 +103,7 @@ describe("launch sessions with data connectors", () => {
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
-  it("launch session with data source requiring credentials", () => {
+  it("launch session with data connector requiring credentials", () => {
     fixtures
       .testCloudStorage()
       .listProjectDataConnectors()
@@ -118,7 +118,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
 
-    // ensure the data source is there
+    // ensure the data connector is there
     cy.getDataCy("data-connector-name").should(
       "contain.text",
       "example storage"
@@ -193,7 +193,7 @@ describe("launch sessions with data connectors", () => {
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
-  it("launch session with data source, saving credentials", () => {
+  it("launch session with data connector, saving credentials", () => {
     fixtures
       .testCloudStorage()
       .listProjectDataConnectors()
@@ -277,7 +277,7 @@ describe("launch sessions with data connectors", () => {
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
-  it("launch session with data source, saving credentials on skip", () => {
+  it("launch session with data connector, saving credentials on skip", () => {
     fixtures
       .testCloudStorage()
       .listProjectDataConnectors()
@@ -440,7 +440,7 @@ describe("launch sessions with data connectors", () => {
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
-  it("launch session multiple data sources requiring multiple credentials", () => {
+  it("launch session multiple data connectors requiring multiple credentials", () => {
     fixtures
       .testCloudStorage({ success: false })
       .listProjectDataConnectors({

@@ -26,7 +26,7 @@ function openDataConnectorMenu() {
     .click();
 }
 
-describe("Set up data sources with credentials", () => {
+describe("Set up data connectors with credentials", () => {
   beforeEach(() => {
     fixtures
       .config()
@@ -238,7 +238,7 @@ describe("Set up data sources with credentials", () => {
       "<saved secret>"
     );
 
-    // edit data source, without touching the credentials
+    // edit data connector, without touching the credentials
     fixtures.getStorageSchema({
       fixture: "cloudStorage/storage-schema-s3.json",
     });
@@ -303,7 +303,7 @@ describe("Set up data sources with credentials", () => {
     cy.getDataCy("access_key_id-value").should("contain.text", "<sensitive>");
   });
 
-  describe("Set up multiple data sources", () => {
+  describe("Set up multiple data connectors", () => {
     beforeEach(() => {
       fixtures
         .config()

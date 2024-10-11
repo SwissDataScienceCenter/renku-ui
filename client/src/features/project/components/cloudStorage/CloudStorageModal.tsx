@@ -385,14 +385,13 @@ export default function CloudStorageModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle} data-cy="cloud-storage-edit-header">
-        <AddCloudStorageHeaderContent isV2={false} storageId={storageId} />
+        <AddCloudStorageHeaderContent storageId={storageId} />
       </ModalHeader>
 
       <ModalBody data-cy="cloud-storage-edit-body">
         <AddCloudStorageBodyContent
           addResultStorageName={addResultStorageName}
           credentialSaveStatus={credentialSaveStatus}
-          isV2={false}
           redraw={redraw}
           schema={schema}
           schemaError={schemaError}
