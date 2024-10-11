@@ -52,52 +52,52 @@ export default function GroupNotFound({ error }: GroupNotFoundProps) {
 
   return (
     <ContainerWrap>
-    <div className={cx("d-flex", "justify-content-center", "m-auto")}>
-      <div className={cx(styles.errorNotFoundContainer, "m-auto")}>
-        <Row>
-          <Col className={cx("p-4", "mt-5")}>
-            <h3
-              className={cx(
-                "text-primary",
-                "fw-bold",
-                "mt-3",
-                "d-flex",
-                "align-items-center",
-                "gap-3"
-              )}
-            >
-              <NotFoundImage />
-              Group not found
-            </h3>
-            <div className={cx("text-start", "mt-3")}>
-              <p>{notFoundText}</p>
-              <p>
-                It is possible that the group has been deleted by its owner.
-              </p>
-            </div>
-            <div className={cx("my-3", "d-flex", "gap-3")}>
-              {error && (
-                <Button color="outline-primary" onClick={onClickDetails}>
-                  Show error details
-                </Button>
-              )}
-              <Link
-                to={ABSOLUTE_ROUTES.v2.root}
-                className={cx("btn", "btn-primary")}
+      <div className={cx("d-flex", "justify-content-center", "m-auto")}>
+        <div className={cx(styles.errorNotFoundContainer, "m-auto")}>
+          <Row>
+            <Col className={cx("p-4", "mt-5")}>
+              <h3
+                className={cx(
+                  "text-primary",
+                  "fw-bold",
+                  "mt-3",
+                  "d-flex",
+                  "align-items-center",
+                  "gap-3"
+                )}
               >
-                <ArrowLeft className={cx("bi", "me-1")} />
-                Return to the groups list
-              </Link>
-            </div>
-            {error && (
-              <Collapse isOpen={detailsOpen}>
-                <RtkOrNotebooksError error={error} dismissible={false} />
-              </Collapse>
-            )}
-          </Col>
-        </Row>
+                <NotFoundImage />
+                Group not found
+              </h3>
+              <div className={cx("text-start", "mt-3")}>
+                <p>{notFoundText}</p>
+                <p>
+                  It is possible that the group has been deleted by its owner.
+                </p>
+              </div>
+              <div className={cx("my-3", "d-flex", "gap-3")}>
+                {error && (
+                  <Button color="outline-primary" onClick={onClickDetails}>
+                    Show error details
+                  </Button>
+                )}
+                <Link
+                  to={ABSOLUTE_ROUTES.v2.root}
+                  className={cx("btn", "btn-primary")}
+                >
+                  <ArrowLeft className={cx("bi", "me-1")} />
+                  Return to the groups list
+                </Link>
+              </div>
+              {error && (
+                <Collapse isOpen={detailsOpen}>
+                  <RtkOrNotebooksError error={error} dismissible={false} />
+                </Collapse>
+              )}
+            </Col>
+          </Row>
+        </div>
       </div>
-    </div>
     </ContainerWrap>
   );
 }
