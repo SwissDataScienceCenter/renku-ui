@@ -44,7 +44,7 @@ import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
-import { dataConnectorsApi } from "../../features/projectsV2/api/data-connectors.enhanced-api";
+import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";

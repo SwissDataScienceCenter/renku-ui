@@ -18,7 +18,7 @@
 
 import fixtures from "../support/renkulab-fixtures";
 
-function openDataSourceMenu() {
+function openDataConnectorMenu() {
   cy.getDataCy("data-connector-edit")
     .parent()
     .find("[data-cy=button-with-menu-dropdown]")
@@ -42,7 +42,8 @@ describe("Set up data sources with credentials", () => {
       .listProjectV2ByNamespace()
       .projects()
       .readGroupV2()
-      .readGroupV2Namespace();
+      .readGroupV2Namespace()
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" });
   });
 
   it("shows information about credentials", () => {
@@ -65,7 +66,6 @@ describe("Set up data sources with credentials", () => {
 
   it("create data connector after failed connection test", () => {
     fixtures
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .listDataConnectors({ namespace: "test-2-group-v2" })
       .testCloudStorage({ success: false })
       .postDataConnector({ namespace: "test-2-group-v2" })
@@ -104,7 +104,7 @@ describe("Set up data sources with credentials", () => {
       "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
     );
     cy.getDataCy("data-connector-edit-close-button").click();
-    cy.wait("@getDataConnectors");
+    cy.wait("@listDataConnectors");
   });
 
   it("create data connector with credentials", () => {
@@ -159,10 +159,14 @@ describe("Set up data sources with credentials", () => {
     cy.wait("@patchDataConnectorSecrets");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector test-2-group-v2/example-storage has been successfully added, along with its credentials."
+      "The data connector test-2-group-v2/example-storage has been successfully added"
+    );
+    cy.getDataCy("data-connector-edit-body").should(
+      "contain.text",
+      "credentials were saved"
     );
     cy.getDataCy("data-connector-edit-close-button").click();
-    cy.wait("@getDataConnectors");
+    cy.wait("@listDataConnectors");
   });
 
   it("set credentials for a data connector", () => {
@@ -177,7 +181,7 @@ describe("Set up data sources with credentials", () => {
 
     cy.visit("/v2/groups/test-2-group-v2");
     cy.wait("@readGroupV2");
-    cy.wait("@getDataConnectors");
+    cy.wait("@listDataConnectors");
     // Credentials should not yet be stored
     cy.getDataCy("data-connector-name").contains("example storage").click();
     cy.wait("@getDataConnectorSecrets");
@@ -188,7 +192,7 @@ describe("Set up data sources with credentials", () => {
     cy.getDataCy("access_key_id-value").should("contain.text", "<sensitive>");
 
     // set credentials
-    openDataSourceMenu();
+    openDataConnectorMenu();
     cy.getDataCy("data-connector-credentials").click();
 
     fixtures
@@ -238,7 +242,7 @@ describe("Set up data sources with credentials", () => {
     fixtures.getStorageSchema({
       fixture: "cloudStorage/storage-schema-s3.json",
     });
-    openDataSourceMenu();
+    openDataConnectorMenu();
     cy.getDataCy("data-connector-edit").click();
     cy.getDataCy("data-connector-edit-modal")
       .find("#access_key_id")
@@ -262,7 +266,7 @@ describe("Set up data sources with credentials", () => {
       });
     cy.visit("/v2/groups/test-2-group-v2");
     cy.wait("@readGroupV2");
-    cy.wait("@getDataConnectors");
+    cy.wait("@listDataConnectors");
 
     // Credentials should be stored
     cy.getDataCy("data-connector-name").contains("example storage").click();
@@ -277,10 +281,10 @@ describe("Set up data sources with credentials", () => {
     );
 
     // clear credentials
-    openDataSourceMenu();
+    openDataConnectorMenu();
     cy.getDataCy("data-connector-credentials").click();
     cy.getDataCy("data-connector-credentials-modal")
-      .contains("The saved credentials for this data source are incomplete")
+      .contains("The saved credentials for this data connector are incomplete")
       .should("be.visible");
 
     fixtures.deleteDataConnectorSecrets().dataConnectorSecrets({
@@ -318,7 +322,7 @@ describe("Set up data sources with credentials", () => {
         .readGroupV2Namespace();
     });
 
-    it("set up one data source that succeeds, another with failed credentials", () => {
+    it("set up one data connector that succeeds, another with failed credentials", () => {
       fixtures
         .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
         .listDataConnectors({ namespace: "test-2-group-v2" })
@@ -372,10 +376,14 @@ describe("Set up data sources with credentials", () => {
       cy.wait("@patchDataConnectorSecrets");
       cy.getDataCy("data-connector-edit-body").should(
         "contain.text",
-        "The data connector test-2-group-v2/example-storage has been successfully added, along with its credentials."
+        "The data connector test-2-group-v2/example-storage has been successfully added"
+      );
+      cy.getDataCy("data-connector-edit-body").should(
+        "contain.text",
+        "credentials were saved"
       );
       cy.getDataCy("data-connector-edit-close-button").click();
-      cy.wait("@getDataConnectors");
+      cy.wait("@listDataConnectors");
 
       fixtures.testCloudStorage({ success: false }).patchDataConnectorSecrets({
         content: [],
@@ -412,7 +420,7 @@ describe("Set up data sources with credentials", () => {
         "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
       );
       cy.getDataCy("data-connector-edit-close-button").click();
-      cy.wait("@getDataConnectors");
+      cy.wait("@listDataConnectors");
     });
   });
 });

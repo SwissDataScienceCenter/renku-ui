@@ -40,7 +40,7 @@ import {
   AddCloudStorageState,
   CloudStorageDetails,
   CloudStorageSchema,
-  CredentialSaveStatus,
+  AuxiliaryCommandStatus,
 } from "./projectCloudStorage.types";
 
 import { SerializedError } from "@reduxjs/toolkit";
@@ -95,7 +95,7 @@ export function AddCloudStorageBackButton({
 export interface AddCloudStorageBodyContentProps
   extends AddCloudStorageHeaderContentProps {
   addResultStorageName: string | undefined;
-  credentialSaveStatus: CredentialSaveStatus;
+  credentialSaveStatus: AuxiliaryCommandStatus;
   redraw: boolean;
   schema: CloudStorageSchema[] | undefined;
   schemaError: FetchBaseQueryError | SerializedError | undefined;

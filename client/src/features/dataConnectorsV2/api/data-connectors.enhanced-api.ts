@@ -83,10 +83,17 @@ const injectedApi = api.injectEndpoints({
 });
 
 const enhancedApi = injectedApi.enhanceEndpoints({
-  addTagTypes: ["DataConnectors", "DataConnectorSecrets"],
+  addTagTypes: [
+    "DataConnectors",
+    "DataConnectorsProjectLinks",
+    "DataConnectorSecrets",
+  ],
   endpoints: {
     deleteDataConnectorsByDataConnectorId: {
       invalidatesTags: ["DataConnectors"],
+    },
+    deleteDataConnectorsByDataConnectorIdProjectLinksAndLinkId: {
+      invalidatesTags: ["DataConnectorsProjectLinks"],
     },
     deleteDataConnectorsByDataConnectorIdSecrets: {
       invalidatesTags: ["DataConnectorSecrets"],
@@ -94,11 +101,20 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getDataConnectorsPaged: {
       providesTags: ["DataConnectors"],
     },
+    getDataConnectorsByDataConnectorId: {
+      providesTags: ["DataConnectors"],
+    },
     getDataConnectorsListSecrets: {
       providesTags: ["DataConnectorSecrets"],
     },
+    getDataConnectorsByDataConnectorIdProjectLinks: {
+      providesTags: ["DataConnectorsProjectLinks"],
+    },
     getDataConnectorsByDataConnectorIdSecrets: {
       providesTags: ["DataConnectorSecrets"],
+    },
+    getNamespacesByNamespaceDataConnectorsAndSlug: {
+      providesTags: ["DataConnectors"],
     },
     patchDataConnectorsByDataConnectorId: {
       invalidatesTags: ["DataConnectors"],
@@ -109,6 +125,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postDataConnectors: {
       invalidatesTags: ["DataConnectors"],
     },
+    postDataConnectorsByDataConnectorIdProjectLinks: {
+      invalidatesTags: ["DataConnectorsProjectLinks"],
+    },
   },
 });
 
@@ -116,11 +135,16 @@ export { enhancedApi as dataConnectorsApi };
 export const {
   // data connectors hooks
   useDeleteDataConnectorsByDataConnectorIdMutation,
+  useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
   useGetDataConnectorsPagedQuery: useGetDataConnectorsQuery,
+  useGetDataConnectorsByDataConnectorIdQuery,
+  useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
   useGetDataConnectorsListSecretsQuery,
+  useGetNamespacesByNamespaceDataConnectorsAndSlugQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
-  usePostDataConnectorsMutation,
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
+  usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
+  usePostDataConnectorsMutation,
 } = enhancedApi;

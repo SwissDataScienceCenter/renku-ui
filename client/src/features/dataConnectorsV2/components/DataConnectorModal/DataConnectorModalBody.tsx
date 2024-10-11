@@ -48,7 +48,7 @@ import type { CloudStorageSecretGet } from "../../../projectsV2/api/storagesV2.a
 
 import { type DataConnectorFlat } from "../dataConnector.utils";
 import DataConnectorModalResult, {
-  type CredentialSaveStatus,
+  type AuxiliaryCommandStatus,
 } from "./DataConnectorModalResult";
 import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo";
 
@@ -65,7 +65,8 @@ interface AddOrEditDataConnectorProps {
 interface DataConnectorModalBodyProps {
   dataConnectorResultName: string | undefined;
   flatDataConnector: DataConnectorFlat;
-  credentialSaveStatus: CredentialSaveStatus;
+  credentialSaveStatus: AuxiliaryCommandStatus;
+  projectLinkStatus: AuxiliaryCommandStatus;
   redraw: boolean;
   schemaQueryResult: SchemaQueryResult;
   setFlatDataConnectorSafe: (
@@ -84,6 +85,7 @@ export default function DataConnectorModalBody({
   dataConnectorResultName,
   flatDataConnector,
   credentialSaveStatus,
+  projectLinkStatus,
   redraw,
   schemaQueryResult,
   setFlatDataConnectorSafe,
@@ -105,6 +107,7 @@ export default function DataConnectorModalBody({
         alreadyExisted={!!flatDataConnector.dataConnectorId}
         credentialSaveStatus={credentialSaveStatus}
         dataConnectorResultName={dataConnectorResultName}
+        projectLinkStatus={projectLinkStatus}
       />
     );
   }
@@ -119,11 +122,11 @@ export default function DataConnectorModalBody({
         </p>
       )}
       <AddOrEditDataConnector
+        flatDataConnector={flatDataConnector}
         schema={schema}
         setState={setStateSafe}
         setFlatDataConnector={setFlatDataConnectorSafe}
         state={state}
-        flatDataConnector={flatDataConnector}
         storageSecrets={storageSecrets}
         validationSucceeded={validationSucceeded}
       />
@@ -132,11 +135,11 @@ export default function DataConnectorModalBody({
 }
 
 function AddOrEditDataConnector({
+  flatDataConnector,
   schema,
   setFlatDataConnector,
   setState,
   state,
-  flatDataConnector,
   storageSecrets,
   validationSucceeded,
 }: AddOrEditDataConnectorProps) {
@@ -210,10 +213,10 @@ type DataConnectorMountFormFields =
   | "readOnly"
   | "saveCredentials";
 export function DataConnectorMount({
+  flatDataConnector,
   schema,
   setFlatDataConnector,
   setState,
-  flatDataConnector,
   state,
   validationSucceeded,
 }: AddOrEditDataConnectorProps) {
@@ -358,7 +361,7 @@ export function DataConnectorMount({
         </div>
         {flatDataConnector.namespace && flatDataConnector.slug ? (
           <div className={cx("form-text", "text-muted")}>
-            The url for this data source will be{" "}
+            The url for this data connector will be{" "}
             <b>{`${flatDataConnector.namespace}/${flatDataConnector.slug}`}</b>.
           </div>
         ) : (

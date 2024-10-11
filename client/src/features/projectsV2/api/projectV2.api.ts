@@ -4,11 +4,7 @@ const injectedRtkApi = api.injectEndpoints({
     getProjects: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: `/projects`,
-        params: {
-          namespace: queryArg["namespace"],
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-        },
+        params: { params: queryArg.params },
       }),
     }),
     postProjects: build.mutation<PostProjectsApiResponse, PostProjectsApiArg>({
@@ -77,6 +73,14 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getProjectsByProjectIdDataConnectorLinks: build.query<
+      GetProjectsByProjectIdDataConnectorLinksApiResponse,
+      GetProjectsByProjectIdDataConnectorLinksApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/data_connector_links`,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -84,12 +88,8 @@ export { injectedRtkApi as projectV2Api };
 export type GetProjectsApiResponse =
   /** status 200 List of projects */ ProjectsList;
 export type GetProjectsApiArg = {
-  /** A namespace, used as a filter. */
-  namespace?: string;
-  /** Result's page number starting from 1 */
-  page?: number;
-  /** The number of results per page */
-  perPage?: number;
+  /** query parameters */
+  params?: ProjectGetQuery;
 };
 export type PostProjectsApiResponse =
   /** status 201 The project was created */ Project;
@@ -138,6 +138,12 @@ export type DeleteProjectsByProjectIdMembersAndMemberIdApiArg = {
   /** This is user's KeyCloak ID */
   memberId: UserId;
 };
+export type GetProjectsByProjectIdDataConnectorLinksApiResponse =
+  /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
+export type GetProjectsByProjectIdDataConnectorLinksApiArg = {
+  /** the ID of the project */
+  projectId: Ulid;
+};
 export type Ulid = string;
 export type ProjectName = string;
 export type Slug = string;
@@ -171,6 +177,16 @@ export type ErrorResponse = {
     message: string;
   };
 };
+export type PaginationRequest = {
+  /** Result's page number starting from 1 */
+  page?: number;
+  /** The number of results per page */
+  per_page?: number;
+};
+export type ProjectGetQuery = PaginationRequest & {
+  /** A namespace, used as a filter. */
+  namespace?: string;
+};
 export type ProjectPost = {
   name: ProjectName;
   namespace: Slug;
@@ -188,7 +204,6 @@ export type ProjectPatch = {
   description?: Description;
   keywords?: KeywordsList;
 };
-export type UserEmail = string;
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
@@ -204,6 +219,14 @@ export type ProjectMemberPatchRequest = {
   role: Role;
 };
 export type ProjectMemberListPatchRequest = ProjectMemberPatchRequest[];
+export type DataConnectorToProjectLink = {
+  id: Ulid;
+  data_connector_id: Ulid;
+  project_id: Ulid;
+  creation_date: CreationDate;
+  created_by: UserId;
+};
+export type DataConnectorToProjectLinksList = DataConnectorToProjectLink[];
 export const {
   useGetProjectsQuery,
   usePostProjectsMutation,
@@ -214,4 +237,5 @@ export const {
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
 } = injectedRtkApi;
