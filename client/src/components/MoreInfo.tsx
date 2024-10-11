@@ -16,35 +16,31 @@
  * limitations under the License.
  */
 
-export interface AddSessionEnvironmentParams {
-  container_image: string;
-  name: string;
-  default_url?: string;
-  description?: string;
-  uid?: number;
-  gid?: number;
-  working_directory?: string;
-  mount_directory?: string;
-  port?: number;
-  command?: string[] | null;
-  args?: string[] | null;
-}
+import cx from "classnames";
+import { ReactNode, useRef } from "react";
+import { InfoCircleFill } from "react-bootstrap-icons";
+import { PopoverBody, UncontrolledPopover } from "reactstrap";
 
-export interface UpdateSessionEnvironmentParams {
-  environmentId: string;
-  container_image?: string;
-  default_url?: string;
-  description?: string;
-  name?: string;
-  uid?: number;
-  gid?: number;
-  working_directory?: string;
-  mount_directory?: string;
-  port?: number;
-  command?: string[] | null;
-  args?: string[] | null;
-}
+export function MoreInfo({
+  trigger = "hover focus",
+  children,
+}: {
+  trigger?: string;
+  children?: ReactNode;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
 
-export interface DeleteSessionEnvironmentParams {
-  environmentId: string;
+  return (
+    <>
+      <span ref={ref}>
+        <InfoCircleFill
+          className={cx("bi", "ms-1", "cursor-pointer", "text-light-emphasis")}
+          tabIndex={0}
+        />
+      </span>
+      <UncontrolledPopover target={ref} placement="right" trigger={trigger}>
+        <PopoverBody>{children}</PopoverBody>
+      </UncontrolledPopover>
+    </>
+  );
 }

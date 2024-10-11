@@ -28,15 +28,16 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { Loader } from "../../components/Loader";
 import ButtonStyles from "../../components/buttons/Buttons.module.scss";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
 import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
+import { getSessionEnvironmentValues } from "./adminSessions.utils";
 
 interface UpdateSessionEnvironmentButtonProps {
   environment: SessionEnvironment;
@@ -93,22 +94,31 @@ function UpdateSessionEnvironmentModal({
     handleSubmit,
     reset,
   } = useForm<SessionEnvironmentForm>({
-    defaultValues: {
-      container_image: environment.container_image,
-      default_url: environment.default_url,
-      description: environment.description,
-      name: environment.name,
-    },
+    defaultValues: getSessionEnvironmentValues(environment),
   });
   const onSubmit = useCallback(
     (data: SessionEnvironmentForm) => {
-      updateSessionEnvironment({
-        environmentId: environment.id,
-        container_image: data.container_image,
-        name: data.name,
-        default_url: data.default_url.trim() ? data.default_url : "",
-        description: data.description.trim() ? data.description : "",
-      });
+      const commandParsed = safeParseJSONStringArray(data.command);
+      const argsParsed = safeParseJSONStringArray(data.args);
+      if (commandParsed.parsed && argsParsed.parsed)
+        updateSessionEnvironment({
+          environmentId: environment.id,
+          container_image: data.container_image,
+          name: data.name,
+          default_url: data.default_url.trim() ? data.default_url : "",
+          description: data.description.trim() ? data.description : "",
+          port: data.port ?? undefined,
+          working_directory: data.working_directory.trim()
+            ? data.working_directory
+            : undefined,
+          mount_directory: data.mount_directory.trim()
+            ? data.mount_directory
+            : undefined,
+          uid: data.uid ?? undefined,
+          gid: data.gid ?? undefined,
+          command: commandParsed.data,
+          args: argsParsed.data,
+        });
     },
     [environment.id, updateSessionEnvironment]
   );
@@ -127,12 +137,7 @@ function UpdateSessionEnvironmentModal({
   }, [isOpen, result]);
 
   useEffect(() => {
-    reset({
-      container_image: environment.container_image,
-      default_url: environment.default_url ?? "",
-      description: environment.description ?? "",
-      name: environment.name,
-    });
+    reset(getSessionEnvironmentValues(environment));
   }, [environment, reset]);
 
   return (
@@ -152,7 +157,6 @@ function UpdateSessionEnvironmentModal({
         <ModalHeader toggle={toggle}>Update session environment</ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
-
           <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>

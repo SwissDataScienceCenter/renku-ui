@@ -35,6 +35,7 @@ import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
 import { useAddSessionEnvironmentMutation } from "./adminSessions.api";
+import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 
 export default function AddSessionEnvironmentButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -79,12 +80,26 @@ function AddSessionEnvironmentModal({
   });
   const onSubmit = useCallback(
     (data: SessionEnvironmentForm) => {
-      addSessionEnvironment({
-        container_image: data.container_image,
-        name: data.name,
-        default_url: data.default_url.trim() ? data.default_url : undefined,
-        description: data.description.trim() ? data.description : undefined,
-      });
+      const commandParsed = safeParseJSONStringArray(data.command);
+      const argsParsed = safeParseJSONStringArray(data.args);
+      if (commandParsed.parsed && argsParsed.parsed)
+        addSessionEnvironment({
+          container_image: data.container_image,
+          name: data.name,
+          default_url: data.default_url.trim() ? data.default_url : undefined,
+          description: data.description.trim() ? data.description : undefined,
+          port: data.port ?? undefined,
+          working_directory: data.working_directory.trim()
+            ? data.working_directory
+            : undefined,
+          mount_directory: data.mount_directory.trim()
+            ? data.mount_directory
+            : undefined,
+          uid: data.uid ?? undefined,
+          gid: data.gid ?? undefined,
+          command: commandParsed.data,
+          args: argsParsed.data,
+        });
     },
     [addSessionEnvironment]
   );
@@ -120,7 +135,6 @@ function AddSessionEnvironmentModal({
         <ModalHeader toggle={toggle}>Add session environment</ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
-
           <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
