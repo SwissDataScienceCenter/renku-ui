@@ -1,7 +1,7 @@
 import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
 
-import { projectStoragesApi as api } from "./storagesV2.api";
+import { projectAndNamespaceApi as api } from "./namespace.api";
 
 import type {
   GetProjectsApiArg,
@@ -19,17 +19,6 @@ import type {
   GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
   NamespaceResponseList,
 } from "./namespace.api";
-import {
-  GetStoragesV2ApiArg,
-  GetStoragesV2ApiResponse as GetStoragesV2ApiResponseOrig,
-  GetStoragesV2ByStorageIdSecretsApiArg,
-  GetStoragesV2ByStorageIdSecretsApiResponse,
-} from "./storagesV2.api";
-import type {
-  CloudStorageSecretGetList,
-  PostStoragesV2ByStorageIdSecretsApiArg,
-  PostStoragesV2ByStorageIdSecretsApiResponse,
-} from "./storagesV2.api";
 
 interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;
@@ -50,19 +39,6 @@ export interface GetNamespacesApiResponse extends AbstractKgPaginatedResponse {
 
 interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
   projects: GetProjectsApiResponseOrig;
-}
-
-interface GetStoragesV2ApiResponse extends AbstractKgPaginatedResponse {
-  storages: GetStoragesV2ApiResponseOrig;
-}
-
-type GetStoragesV2StorageIdSecretsApiResponse = Record<
-  string,
-  GetStoragesV2ByStorageIdSecretsApiResponse
->;
-
-interface GetStoragesV2StorageIdSecretsApiArg {
-  storageIds: GetStoragesV2ByStorageIdSecretsApiArg["storageId"][];
 }
 
 const injectedApi = api.injectEndpoints({
@@ -164,44 +140,6 @@ const injectedApi = api.injectEndpoints({
         return { data: result };
       },
     }),
-    getStoragesPaged: builder.query<
-      GetStoragesV2ApiResponse,
-      GetStoragesV2ApiArg
-    >({
-      query: (queryArg) => ({
-        url: "/storages",
-        params: queryArg,
-      }),
-    }),
-    getStorageSecretsByV2StorageId: builder.query<
-      GetStoragesV2StorageIdSecretsApiResponse,
-      GetStoragesV2StorageIdSecretsApiArg
-    >({
-      async queryFn(queryArg, _api, _options, fetchWithBQ) {
-        const { storageIds } = queryArg;
-        const result: GetStoragesV2StorageIdSecretsApiResponse = {};
-        for (const storageId of storageIds) {
-          const response = await fetchWithBQ(
-            `/storages_v2/${storageId}/secrets`
-          );
-          if (response.error) {
-            return response;
-          }
-          result[storageId] = response.data as CloudStorageSecretGetList;
-        }
-        return { data: result };
-      },
-    }),
-    postStoragesV2SecretsForSessionLaunch: builder.mutation<
-      PostStoragesV2ByStorageIdSecretsApiResponse,
-      PostStoragesV2ByStorageIdSecretsApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/storages_v2/${queryArg.storageId}/secrets`,
-        method: "POST",
-        body: queryArg.cloudStorageSecretPostList,
-      }),
-    }),
   }),
 });
 
@@ -213,8 +151,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "Namespace",
     "Project",
     "ProjectMembers",
-    "Storages",
-    "StorageSecrets",
   ],
   endpoints: {
     deleteGroupsByGroupSlug: {
@@ -228,12 +164,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     deleteProjectsByProjectIdMembersAndMemberId: {
       invalidatesTags: ["ProjectMembers"],
-    },
-    deleteStoragesV2ByStorageId: {
-      invalidatesTags: ["Storages"],
-    },
-    deleteStoragesV2ByStorageIdSecrets: {
-      invalidatesTags: ["Storages", "StorageSecrets"],
     },
     getGroups: {
       providesTags: ["Group"],
@@ -275,15 +205,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsByProjectIdMembers: {
       providesTags: ["ProjectMembers"],
     },
-    getStorageSecretsByV2StorageId: {
-      providesTags: ["StorageSecrets"],
-    },
-    getStoragesV2: {
-      providesTags: ["Storages"],
-    },
-    getStoragesV2ByStorageIdSecrets: {
-      providesTags: ["StorageSecrets"],
-    },
     patchGroupsByGroupSlug: {
       invalidatesTags: ["Group", "Namespace"],
     },
@@ -296,23 +217,11 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     patchProjectsByProjectIdMembers: {
       invalidatesTags: ["ProjectMembers"],
     },
-    patchStoragesV2ByStorageId: {
-      invalidatesTags: ["Storages"],
-    },
     postGroups: {
       invalidatesTags: ["Group", "Namespace"],
     },
     postProjects: {
       invalidatesTags: ["Project"],
-    },
-    postStoragesV2: {
-      invalidatesTags: ["Storages"],
-    },
-    postStoragesV2ByStorageIdSecrets: {
-      invalidatesTags: ["Storages", "StorageSecrets"],
-    },
-    postStoragesV2SecretsForSessionLaunch: {
-      invalidatesTags: ["StorageSecrets"],
     },
   },
 });
@@ -348,7 +257,4 @@ export const {
   useGetNamespacesPagedQuery: useGetNamespacesQuery,
   useLazyGetNamespacesPagedQuery: useLazyGetNamespacesQuery,
   useGetNamespacesByNamespaceSlugQuery,
-
-  // storages hooks
-  usePostStoragesV2SecretsForSessionLaunchMutation,
 } = enhancedApi;
