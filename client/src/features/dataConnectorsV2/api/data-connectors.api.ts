@@ -211,7 +211,6 @@ export type RCloneOption = {
   /** The cloud provider the option is for (See 'provider' RCloneOption in the schema for potential values) */
   provider?: string;
   /** default value for the option */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   default?: number | string | boolean | object | any;
   /** string representation of the default value */
   default_str?: string;

@@ -44,7 +44,7 @@ import {
 } from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import SlugFormField from "../../../projectsV2/fields/SlugFormField";
-import type { CloudStorageSecretGet } from "../../../projectsV2/api/storagesV2.api";
+import type { DataConnectorSecret } from "../../api/data-connectors.api";
 
 import { type DataConnectorFlat } from "../dataConnector.utils";
 import DataConnectorModalResult, {
@@ -58,7 +58,7 @@ interface AddOrEditDataConnectorProps {
   setFlatDataConnector: (newDetails: Partial<DataConnectorFlat>) => void;
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
-  storageSecrets: CloudStorageSecretGet[];
+  storageSecrets: DataConnectorSecret[];
   validationSucceeded: boolean;
 }
 
@@ -76,7 +76,7 @@ interface DataConnectorModalBodyProps {
   state: AddCloudStorageState;
   success: boolean;
   validationSucceeded: boolean;
-  storageSecrets: CloudStorageSecretGet[];
+  storageSecrets: DataConnectorSecret[];
 }
 
 type SchemaQueryResult = ReturnType<typeof useGetCloudStorageSchemaQuery>;
