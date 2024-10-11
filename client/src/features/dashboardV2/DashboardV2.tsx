@@ -135,9 +135,11 @@ function ProjectsDashboard() {
 
 function ProjectList() {
   const { data, error, isLoading } = useGetProjectsQuery({
-    page: 1,
-    perPage: 5,
-    direct_member: true,
+    params: {
+      page: 1,
+      per_page: 5,
+      direct_member: true,
+    },
   });
 
   const noProjects = isLoading ? (
