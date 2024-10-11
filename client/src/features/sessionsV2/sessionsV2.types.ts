@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { ResourceClass } from "../dataServices/dataServices.types";
+
 export interface SessionEnvironment {
   container_image: string;
   creation_date: string;
@@ -23,6 +25,14 @@ export interface SessionEnvironment {
   name: string;
   default_url?: string;
   description?: string;
+  uid?: number;
+  gid?: number;
+  working_directory?: string;
+  mount_directory?: string;
+  port?: number;
+  environment_kind: EnvironmentKind;
+  command?: string[];
+  args?: string[];
 }
 
 export type SessionEnvironmentList = SessionEnvironment[];
@@ -32,22 +42,46 @@ export type SessionLauncher = {
   project_id: string;
   name: string;
   creation_date: string;
-  default_url?: string;
   description?: string;
   resource_class_id?: number;
+  environment: SessionLauncherEnvironment;
+};
+
+export type EnvironmentKind = "GLOBAL" | "CUSTOM";
+
+export type SessionLauncherEnvironment = {
+  id?: string;
+  name: string;
+  description?: string;
+  container_image: string;
+  default_url?: string;
+  uid?: number;
+  gid?: number;
+  working_directory?: string;
+  mount_directory?: string;
+  port?: number;
   environment_kind: EnvironmentKind;
-} & SessionLauncherEnvironment;
+  command?: string[];
+  args?: string[];
+};
 
-export type EnvironmentKind = "global_environment" | "container_image";
-
-export type SessionLauncherEnvironment =
+export type SessionLauncherEnvironmentParams =
   | {
-      environment_kind: Extract<EnvironmentKind, "global_environment">;
-      environment_id: string;
+      id: string;
     }
   | {
-      environment_kind: Extract<EnvironmentKind, "container_image">;
+      name: string;
+      description?: string;
       container_image: string;
+      default_url?: string;
+      uid?: number;
+      gid?: number;
+      working_directory?: string;
+      mount_directory?: string;
+      port?: number;
+      environment_kind: EnvironmentKind;
+      command?: string[] | null;
+      args?: string[] | null;
     };
 
 export type SessionLauncherList = SessionLauncher[];
@@ -57,25 +91,38 @@ export interface GetProjectSessionLaunchersParams {
 }
 
 export type AddSessionLauncherParams = {
-  default_url?: string;
   description?: string;
   name: string;
   project_id: string;
   resource_class_id?: number;
-  environment_kind: EnvironmentKind;
-} & SessionLauncherEnvironment;
+  environment: SessionLauncherEnvironmentParams;
+};
 
 export interface UpdateSessionLauncherParams {
   launcherId?: string;
-  default_url?: string;
   description?: string;
   name?: string;
-  environment_kind?: EnvironmentKind;
-  environment_id?: string;
   resource_class_id?: number;
-  container_image?: string;
+  environment?: SessionLauncherEnvironmentParams;
 }
 
 export interface DeleteSessionLauncherParams {
   launcherId: string;
+}
+
+export interface SessionLauncherForm {
+  name: string;
+  container_image: string;
+  description: string;
+  default_url: string;
+  environment_kind: EnvironmentKind;
+  environment_id: string;
+  resourceClass: ResourceClass;
+  port: number;
+  working_directory: string;
+  uid: number;
+  gid: number;
+  mount_directory: string;
+  command: string;
+  args: string;
 }

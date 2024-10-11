@@ -15,31 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import faviconICO from "../../styles/assets/favicon/Favicon.ico";
-import faviconErrorICO from "../../styles/assets/favicon/FaviconError.ico";
-import faviconPauseICO from "../../styles/assets/favicon/FaviconPause.ico";
-import faviconRunningICO from "../../styles/assets/favicon/FaviconRunning.ico";
-import faviconWaitingICO from "../../styles/assets/favicon/FaviconWaiting.ico";
+
 import { FaviconStatus } from "../display/display.types";
 import { SessionStatusState } from "../session/sessions.types";
-
-import faviconSVG from "../../styles/assets/favicon/Favicon.svg";
-import faviconErrorSVG from "../../styles/assets/favicon/FaviconError.svg";
-import faviconPauseSVG from "../../styles/assets/favicon/FaviconPause.svg";
-import faviconRunningSVG from "../../styles/assets/favicon/FaviconRunning.svg";
-import faviconWaitingSVG from "../../styles/assets/favicon/FaviconWaiting.svg";
-
-import favicon16px from "../../styles/assets/favicon/Favicon16px.png";
-import faviconError16px from "../../styles/assets/favicon/FaviconError16px.png";
-import faviconPause16px from "../../styles/assets/favicon/FaviconPause16px.png";
-import faviconRunning16px from "../../styles/assets/favicon/FaviconRunning16px.png";
-import faviconWaiting16px from "../../styles/assets/favicon/FaviconWaiting16px.png";
-
-import favicon32px from "../../styles/assets/favicon/Favicon32px.png";
-import faviconError32px from "../../styles/assets/favicon/FaviconError32px.png";
-import faviconPause32px from "../../styles/assets/favicon/FaviconPause32px.png";
-import faviconRunning32px from "../../styles/assets/favicon/FaviconRunning32px.png";
-import faviconWaiting32px from "../../styles/assets/favicon/FaviconWaiting32px.png";
+import { DEFAULT_URL } from "./session.constants";
+import {
+  SessionEnvironmentList,
+  SessionLauncher,
+  SessionLauncherEnvironmentParams,
+  SessionLauncherForm,
+} from "./sessionsV2.types";
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
@@ -67,35 +52,173 @@ export function getSessionFavicon(
   }
 }
 
-export const FAVICON_BY_SESSION_STATUS = {
-  general: {
-    ico: faviconICO,
-    png_16x16: favicon16px,
-    png_32x32: favicon32px,
-    svg: faviconSVG,
-  },
-  running: {
-    ico: faviconRunningICO,
-    png_16x16: faviconRunning16px,
-    png_32x32: faviconRunning32px,
-    svg: faviconRunningSVG,
-  },
-  waiting: {
-    ico: faviconWaitingICO,
-    png_16x16: faviconWaiting16px,
-    png_32x32: faviconWaiting32px,
-    svg: faviconWaitingSVG,
-  },
-  error: {
-    ico: faviconErrorICO,
-    png_16x16: faviconError16px,
-    png_32x32: faviconError32px,
-    svg: faviconErrorSVG,
-  },
-  pause: {
-    ico: faviconPauseICO,
-    png_16x16: faviconPause16px,
-    png_32x32: faviconPause32px,
-    svg: faviconPauseSVG,
-  },
-};
+export function prioritizeSelectedEnvironment(
+  environments?: SessionEnvironmentList,
+  selectedEnvironmentId?: string
+): SessionEnvironmentList | undefined {
+  if (!environments || !selectedEnvironmentId) return environments;
+  const targetEnvironment = environments.find(
+    (env) => env.id === selectedEnvironmentId
+  );
+
+  if (!targetEnvironment) {
+    return environments;
+  }
+  const otherEnvironments = environments.filter(
+    (env) => env.id !== selectedEnvironmentId
+  );
+  return [targetEnvironment, ...otherEnvironments];
+}
+
+/**
+ * Formats and validates the environment values for launching a session.
+ *
+ * @param {SessionLauncherForm} data - The form data used to configure the environment for a session launch.
+ *
+ * @returns {{ success: boolean; data?: SessionLauncherEnvironmentParams; error?: string }} -
+ *  Returns an object with the following structure:
+ *   - `success`: A boolean indicating whether the function executed successfully.
+ *   - `data`: If `success` is true, contains the formatted `SessionLauncherEnvironmentParams` object.
+ *   - `error`: If `success` is false, contains a string describing the error (e.g., "Invalid command or args format").
+ */
+export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
+  success: boolean;
+  data?: SessionLauncherEnvironmentParams;
+  error?: string;
+} {
+  const {
+    container_image,
+    default_url,
+    name,
+    port,
+    working_directory,
+    uid,
+    gid,
+    mount_directory,
+    environment_id,
+    environment_kind,
+    command,
+    args,
+  } = data;
+
+  if (environment_kind === "GLOBAL") {
+    return { success: true, data: { id: environment_id } };
+  }
+
+  const commandFormatted = safeParseJSONStringArray(command);
+  const argsFormatted = safeParseJSONStringArray(args);
+  if (!commandFormatted.parsed || !argsFormatted.parsed)
+    return { success: false, error: "Invalid command or args format" };
+
+  return {
+    success: true,
+    data: {
+      environment_kind: "CUSTOM",
+      container_image,
+      name,
+      default_url: default_url.trim() || DEFAULT_URL,
+      port,
+      working_directory,
+      mount_directory,
+      uid,
+      gid,
+      command: commandFormatted.data,
+      args: argsFormatted.data,
+    },
+  };
+}
+
+export function getJSONStringArray(value: string[] | undefined) {
+  const valueToString = safeStringify(value);
+  return valueToString === null ? undefined : valueToString;
+}
+
+export function getLauncherDefaultValues(launcher: SessionLauncher) {
+  return {
+    name: launcher.name,
+    description: launcher.description ?? "",
+    environment_kind: launcher.environment?.environment_kind,
+    environment_id:
+      launcher.environment?.environment_kind === "GLOBAL"
+        ? launcher.environment?.id
+        : "",
+    container_image:
+      launcher.environment?.environment_kind === "CUSTOM"
+        ? launcher.environment?.container_image
+        : "",
+    default_url: launcher.environment?.default_url ?? DEFAULT_URL,
+    port: launcher.environment?.port,
+    working_directory: launcher.environment?.working_directory,
+    mount_directory: launcher.environment?.mount_directory,
+    uid: launcher.environment?.uid,
+    gid: launcher.environment?.gid,
+    command: getJSONStringArray(launcher.environment?.command),
+    args: getJSONStringArray(launcher.environment?.args),
+  };
+}
+
+/**
+ * Safely converts any value to a JSON string.
+ * @param value - The value to stringify.
+ * @returns
+ * - The JSON string representation of the value if successful.
+ * - An null if `JSON.stringify` throws an error.
+ *
+ * @example
+ * safeStringify({ key: "value" }); // '{"key":"value"}'
+ * safeStringify(undefined); // "undefined"
+ * safeStringify(() => {}); // null
+ */
+export function safeStringify(value: unknown) {
+  try {
+    return JSON.stringify(value);
+  } catch (error) {
+    return null;
+  }
+}
+
+interface ParseResult {
+  parsed: boolean;
+  data?: string[] | null;
+  error?: string;
+}
+/**
+ * Safely parses a JSON string and checks if it is a valid JSON array of strings.
+ */
+export function safeParseJSONStringArray(value: string): ParseResult {
+  if (!value?.trim()) return { parsed: true, data: null };
+
+  try {
+    const parsedValue = JSON.parse(value);
+    if (!Array.isArray(parsedValue))
+      return { parsed: false, error: "Input must be a valid JSON array" };
+
+    if (!parsedValue.every((item) => typeof item === "string"))
+      return {
+        parsed: false,
+        error: "Array must contain only string elements",
+      };
+
+    return { parsed: true, data: parsedValue };
+  } catch (error) {
+    return { parsed: false, error: "Input must be a valid JSON format" };
+  }
+}
+
+/**
+ * Validates whether a given string is a valid JSON array, intended for use in form validation.
+ * @param value - The string to validate as a JSON array.
+ * @returns
+ * - `true` if the string is a valid JSON array.
+ * - An error message as a string if the input is not a valid JSON format or not a JSON array.
+ * - `undefined` if the input is an empty or whitespace-only string (i.e., no validation performed).
+ */
+export function isValidJSONStringArray(
+  value: string
+): true | string | undefined {
+  const parseString = safeParseJSONStringArray(value);
+  if (parseString.parsed && parseString.data === null) return undefined;
+
+  if (parseString.parsed) return true;
+  return parseString.error ?? "Is not a valid JSON array string";
+}

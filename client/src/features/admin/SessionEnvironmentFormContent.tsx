@@ -19,12 +19,20 @@
 import cx from "classnames";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { Input, Label } from "reactstrap";
+import SessionEnvironmentAdvancedFields from "./SessionEnvironmentAdvancedFields";
 
 export interface SessionEnvironmentForm {
   container_image: string;
   default_url: string;
   description: string;
   name: string;
+  port: number;
+  working_directory: string;
+  uid: number;
+  gid: number;
+  mount_directory: string;
+  command: string;
+  args: string;
 }
 
 interface SessionEnvironmentFormContentProps {
@@ -101,25 +109,7 @@ export default function SessionEnvironmentFormContent({
         />
         <div className="invalid-feedback">Please provide a container image</div>
       </div>
-
-      <div>
-        <Label className="form-label" for="addSessionEnvironmentDefaultUrl">
-          Default URL
-        </Label>
-        <Controller
-          control={control}
-          name="default_url"
-          render={({ field }) => (
-            <Input
-              className="form-control"
-              id="addSessionEnvironmentDefaultUrl"
-              placeholder="/lab"
-              type="text"
-              {...field}
-            />
-          )}
-        />
-      </div>
+      <SessionEnvironmentAdvancedFields control={control} errors={errors} />
     </>
   );
 }
