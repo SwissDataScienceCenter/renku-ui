@@ -27,9 +27,9 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getStoragesV2: build.query<GetStoragesV2ApiResponse, GetStoragesV2ApiArg>({
-      query: (queryArg) => ({
+      query: ({ storageV2Params }) => ({
         url: `/storages_v2`,
-        params: queryArg.storageV2Params,
+        params: storageV2Params,
       }),
     }),
     postStoragesV2: build.mutation<

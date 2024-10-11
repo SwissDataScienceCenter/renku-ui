@@ -4,11 +4,7 @@ const injectedRtkApi = api.injectEndpoints({
     getProjects: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: `/projects`,
-        params: {
-          namespace: queryArg["namespace"],
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-        },
+        params: { params: queryArg.params },
       }),
     }),
     postProjects: build.mutation<PostProjectsApiResponse, PostProjectsApiArg>({
@@ -77,6 +73,14 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getProjectsByProjectIdPermissions: build.query<
+      GetProjectsByProjectIdPermissionsApiResponse,
+      GetProjectsByProjectIdPermissionsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/permissions`,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -84,14 +88,8 @@ export { injectedRtkApi as projectV2Api };
 export type GetProjectsApiResponse =
   /** status 200 List of projects */ ProjectsList;
 export type GetProjectsApiArg = {
-  /** A namespace, used as a filter. */
-  namespace?: string;
-  /** Result's page number starting from 1 */
-  page?: number;
-  /** The number of results per page */
-  perPage?: number;
-  /** A flag to filter projects where the user is a direct member */
-  direct_member?: boolean;
+  /** query parameters */
+  params?: ProjectGetQuery;
 };
 export type PostProjectsApiResponse =
   /** status 201 The project was created */ Project;
@@ -140,12 +138,17 @@ export type DeleteProjectsByProjectIdMembersAndMemberIdApiArg = {
   /** This is user's KeyCloak ID */
   memberId: UserId;
 };
+export type GetProjectsByProjectIdPermissionsApiResponse =
+  /** status 200 The set of permissions. */ ProjectPermissions;
+export type GetProjectsByProjectIdPermissionsApiArg = {
+  projectId: Ulid;
+};
 export type Ulid = string;
 export type ProjectName = string;
 export type Slug = string;
 export type CreationDate = string;
-export type UpdatedAt = string;
 export type UserId = string;
+export type UpdatedAt = string;
 export type Repository = string;
 export type RepositoriesList = Repository[];
 export type Visibility = "private" | "public";
@@ -160,12 +163,12 @@ export type Project = {
   slug: Slug;
   creation_date: CreationDate;
   created_by: UserId;
+  updated_at?: UpdatedAt;
   repositories?: RepositoriesList;
   visibility: Visibility;
   description?: Description;
   etag?: ETag;
   keywords?: KeywordsList;
-  updated_at?: UpdatedAt;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {
@@ -174,6 +177,18 @@ export type ErrorResponse = {
     detail?: string;
     message: string;
   };
+};
+export type PaginationRequest = {
+  /** Result's page number starting from 1 */
+  page?: number;
+  /** The number of results per page */
+  per_page?: number;
+};
+export type ProjectGetQuery = PaginationRequest & {
+  /** A namespace, used as a filter. */
+  namespace?: string;
+  /** A flag to filter projects where the user is a direct member. */
+  direct_member?: boolean;
 };
 export type ProjectPost = {
   name: ProjectName;
@@ -192,7 +207,6 @@ export type ProjectPatch = {
   description?: Description;
   keywords?: KeywordsList;
 };
-export type UserEmail = string;
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
@@ -208,6 +222,12 @@ export type ProjectMemberPatchRequest = {
   role: Role;
 };
 export type ProjectMemberListPatchRequest = ProjectMemberPatchRequest[];
+export type ProjectPermissions = {
+  /** The user can edit the project */
+  write?: boolean;
+  /** The user can delete the project and manage members */
+  admin?: boolean;
+};
 export const {
   useGetProjectsQuery,
   usePostProjectsMutation,
@@ -218,4 +238,5 @@ export const {
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+  useGetProjectsByProjectIdPermissionsQuery,
 } = injectedRtkApi;

@@ -113,21 +113,17 @@ const injectedApi = api.injectEndpoints({
       },
     }),
     getProjectsPaged: builder.query<GetProjectsApiResponse, GetProjectsApiArg>({
-      query: (queryArg) => ({
+      query: ({ params }) => ({
         url: "/projects",
-        params: {
-          namespace: queryArg["namespace"],
-          direct_member: queryArg["direct_member"],
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-        },
+        params,
       }),
-      transformResponse: (response, meta, queryArg) => {
+      transformResponse: (response, meta, { params }) => {
         const projects = response as ProjectsList;
         const headers = meta?.response?.headers;
+        const { page, per_page: perPage } = params ?? {};
         const headerResponse = processPaginationHeaders(
           headers,
-          queryArg,
+          { page, perPage },
           projects
         );
 
@@ -298,6 +294,7 @@ export const {
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+  useGetProjectsByProjectIdPermissionsQuery,
 
   // group hooks
   useGetGroupsPagedQuery: useGetGroupsQuery,
