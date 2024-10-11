@@ -20,8 +20,7 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { PlusLg } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
-
-import { Step1AddSessionModal } from "./components/SessionModals/AddSession.tsx";
+import NewSessionLauncherModal from "./components/SessionModals/NewSessionLauncherModal.tsx";
 
 export default function AddSessionLauncherButton({
   "data-cy": dataCy,
@@ -52,7 +51,7 @@ export default function AddSessionLauncherButton({
           <PlusLg className="icon-text" />
         </Button>
       )}
-      <Step1AddSessionModal isOpen={isOpen} toggleModal={toggle} />
+      <NewSessionLauncherModal isOpen={isOpen} toggle={toggle} />
     </>
   );
 }
