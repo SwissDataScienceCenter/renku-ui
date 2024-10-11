@@ -42,6 +42,7 @@ import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.con
 import { NotificationsManager } from "../../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import AppContext from "../../../../utils/context/appContext";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField";
@@ -51,8 +52,7 @@ import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibi
 
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import type { ProjectV2Metadata } from "../../settings/projectSettings.types";
-import AccessGuard from "../../utils/AccessGuard";
-import useProjectAccess from "../../utils/useProjectAccess.hook";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
@@ -110,7 +110,7 @@ function ProjectReadOnlyVisibilityField({
 }
 
 function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
-  const { userRole } = useProjectAccess({ projectId: project.id });
+  const permissions = useProjectPermissions({ projectId: project.id });
   const {
     control,
     formState: { errors, isDirty },
@@ -181,7 +181,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
 
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ProjectNameFormField name="name" control={control} errors={errors} />
-        <AccessGuard
+        <PermissionsGuard
           disabled={
             <ProjectReadOnlyNamespaceField namespace={project.namespace} />
           }
@@ -193,7 +193,8 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
               errors={errors}
             />
           }
-          role={userRole}
+          requestedPermission="admin"
+          userPermissions={permissions}
         />
         {currentNamespace !== project.namespace && (
           <RenkuAlert color={"warning"} dismissible={false} timeout={0}>
@@ -201,7 +202,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
             change is saved, it will redirect to the updated project URL.
           </RenkuAlert>
         )}
-        <AccessGuard
+        <PermissionsGuard
           disabled={
             <ProjectReadOnlyVisibilityField visibility={project.visibility} />
           }
@@ -212,7 +213,8 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
               errors={errors}
             />
           }
-          role={userRole}
+          requestedPermission="admin"
+          userPermissions={permissions}
         />
         <ProjectDescriptionFormField
           name="description"
@@ -287,11 +289,12 @@ function ProjectSettingsDisplay({ project }: ProjectPageSettingsProps) {
 }
 
 function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
-  const { userRole } = useProjectAccess({ projectId: project.id });
+  const permissions = useProjectPermissions({ projectId: project.id });
+
   return (
     <Card id="general">
       <CardHeader>
-        <AccessGuard
+        <PermissionsGuard
           disabled={<h4 className="m-0">General settings</h4>}
           enabled={
             <>
@@ -305,15 +308,16 @@ function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
               </p>
             </>
           }
-          role={userRole}
+          requestedPermission="admin"
+          userPermissions={permissions}
         />
       </CardHeader>
       <CardBody>
-        <AccessGuard
+        <PermissionsGuard
           disabled={<ProjectSettingsDisplay project={project} />}
           enabled={<ProjectSettingsEditForm project={project} />}
-          minimumRole="editor"
-          role={userRole}
+          requestedPermission="write"
+          userPermissions={permissions}
         />
       </CardBody>
     </Card>
@@ -327,7 +331,7 @@ export default function ProjectPageSettings() {
   const { project } = useProject();
 
   const { hash } = useLocation();
-  const { userRole } = useProjectAccess({ projectId: project.id });
+  const permissions = useProjectPermissions({ projectId: project.id });
 
   // Handle anchor links https://stackoverflow.com/a/61311926/5804638
   useEffect(() => {
@@ -351,10 +355,11 @@ export default function ProjectPageSettings() {
     <div className={cx("d-flex", "flex-column", "gap-4")}>
       <ProjectSettingsMetadata project={project} />
       <ProjectPageSettingsMembers project={project} />
-      <AccessGuard
+      <PermissionsGuard
         disabled={null}
         enabled={<ProjectPageDelete project={project} />}
-        role={userRole}
+        requestedPermission="admin"
+        userPermissions={permissions}
       />
     </div>
   );
