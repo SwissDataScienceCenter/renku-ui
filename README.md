@@ -460,7 +460,6 @@ flowchart LR
       subgraph L1
         A(/)-->DA(/datasets)
         A-->HE(/help)
-        A-->LO(/login)
         A-->LOOUT(/logout)
         A-->PR(/projects)
         A-->SEA(/search)

@@ -27,10 +27,10 @@ import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
 import { describe, it } from "vitest";
 
 import { testClient as client } from "../../api-client";
+import MemoryRouter from "../../components/router/MemoryRouter";
 import { StateModel, globalSchema } from "../../model";
 import { generateFakeUser } from "../../user/User.test";
 import AppContext from "../../utils/context/appContext";
@@ -53,7 +53,7 @@ describe("rendering", () => {
   const loggedUser = generateFakeUser();
   const appContext = {
     client: client,
-    params: { TEMPLATES: templates },
+    params: { TEMPLATES: templates, GATEWAY_URL: "https://renkulab.io/api" },
     location: fakeLocation,
   };
 

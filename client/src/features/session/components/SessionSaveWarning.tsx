@@ -18,11 +18,10 @@
 
 import cx from "classnames";
 import { useCallback, useContext, useState } from "react";
-import { useLocation } from "react-router";
-import { Link } from "react-router-dom";
 import { Button, Modal } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
+import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { InfoAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { User } from "../../../model/renkuModels.types";
@@ -31,11 +30,8 @@ import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { Url } from "../../../utils/helpers/url";
 
 export default function SessionSaveWarning() {
-  const location = useLocation();
-
   const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
@@ -43,11 +39,9 @@ export default function SessionSaveWarning() {
     (state) => state.stateModel.project.metadata
   );
 
-  if (!logged) {
-    const loginUrl = Url.get(Url.pages.login.link, {
-      pathname: location.pathname,
-    });
+  const loginUrl = useLoginUrl();
 
+  if (!logged) {
     return (
       <InfoAlert timeout={0}>
         <p>
@@ -62,9 +56,12 @@ export default function SessionSaveWarning() {
           , but you cannot save your work.
         </p>
         <p className="mb-0">
-          <Link className={cx("btn ", "btn-primary", "btn-sm")} to={loginUrl}>
+          <a
+            className={cx("btn ", "btn-primary", "btn-sm")}
+            href={loginUrl.href}
+          >
             Log in
-          </Link>{" "}
+          </a>{" "}
           for full access.
         </p>
       </InfoAlert>
