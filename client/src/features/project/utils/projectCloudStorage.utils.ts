@@ -19,9 +19,11 @@
 import {
   CloudStorageGetRead,
   CloudStorageWithIdRead,
+} from "../../projectsV2/api/storagesV2.api";
+import {
   RCloneConfig,
   RCloneOption,
-} from "../../projectsV2/api/storagesV2.api";
+} from "../../dataConnectorsV2/api/data-connectors.api";
 import {
   CLOUD_OPTIONS_OVERRIDE,
   CLOUD_STORAGE_MOUNT_PATH_HELP,
