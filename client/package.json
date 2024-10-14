@@ -115,7 +115,7 @@
     "@storybook/react": "^7.6.20",
     "@storybook/react-vite": "^7.6.20",
     "@storybook/test": "^7.6.20",
-    "@storybook/test-runner": "^0.16.0",
+    "@storybook/test-runner": "^0.19.1",
     "@storybook/testing-library": "^0.2.2",
     "@storybook/theming": "^7.6.20",
     "@types/dompurify": "^2.4.0",
