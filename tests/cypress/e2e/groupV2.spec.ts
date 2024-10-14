@@ -102,7 +102,7 @@ describe("Edit v2 group", () => {
       .listGroupV2Members()
       .listProjectV2ByNamespace()
       .listDataConnectors({ namespace: "test-2-group-v2" });
-    cy.contains("List Groups").should("be.visible");
+    cy.contains("Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -235,7 +235,7 @@ describe("Work with group data connectors", () => {
       .listProjectV2ByNamespace()
       .listDataConnectors({ namespace: "test-2-group-v2" })
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" });
-    cy.visit("/v2/groups");
+    cy.visit("/v2");
   });
 
   it("shows group data connectors", () => {
@@ -251,7 +251,7 @@ describe("Work with group data connectors", () => {
       .readProjectV2ById({ projectId: "PROJECT-ULID-1", name: "readProject1" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-3", name: "readProject2" });
-    cy.contains("List Groups").should("be.visible");
+    cy.contains("Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");

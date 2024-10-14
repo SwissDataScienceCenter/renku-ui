@@ -4,7 +4,7 @@ const injectedRtkApi = api.injectEndpoints({
     getProjects: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: `/projects`,
-        params: { params: queryArg.params },
+        params: { params: queryArg },
       }),
     }),
     postProjects: build.mutation<PostProjectsApiResponse, PostProjectsApiArg>({
@@ -156,7 +156,6 @@ export type Slug = string;
 export type CreationDate = string;
 export type UpdatedAt = string;
 export type UserId = string;
-export type UpdatedAt = string;
 export type Repository = string;
 export type RepositoriesList = Repository[];
 export type Visibility = "private" | "public";
@@ -171,7 +170,6 @@ export type Project = {
   slug: Slug;
   creation_date: CreationDate;
   created_by: UserId;
-  updated_at?: UpdatedAt;
   repositories?: RepositoriesList;
   visibility: Visibility;
   description?: Description;

@@ -115,7 +115,7 @@ const injectedApi = api.injectEndpoints({
         const headers = meta?.response?.headers;
         const headerResponse = processPaginationHeaders(
           headers,
-          { page: queryArg.params?.page, perPage: queryArg.params?.per_page },
+          { page: queryArg.page, perPage: queryArg.perPage },
           projects
         );
 
