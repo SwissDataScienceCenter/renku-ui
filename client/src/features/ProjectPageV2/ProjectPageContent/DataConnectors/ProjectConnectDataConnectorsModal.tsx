@@ -268,6 +268,9 @@ function ProjectLinkDataConnectorBodyAndFooter({
               pattern: /^(.+)\/(.+)$/,
             }}
           />
+          <div className="form-text">
+            The the info sidebar for a data connector shows the identifier.
+          </div>
           <div className="invalid-feedback">
             Please provide an identifier (namespace/group) for the data
             connector
