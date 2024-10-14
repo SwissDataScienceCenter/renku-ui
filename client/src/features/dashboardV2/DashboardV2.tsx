@@ -20,7 +20,6 @@ import { Folder, People, PlayCircle, PlusLg } from "react-bootstrap-icons";
 import { Link } from "react-router-dom-v5-compat";
 import { Card, CardBody, CardHeader, Col, ListGroup, Row } from "reactstrap";
 
-import { WarnAlert } from "../../components/Alert";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
@@ -28,7 +27,6 @@ import {
   useGetGroupsQuery,
   useGetProjectsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
-import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import DashboardV2Sessions from "./DashboardV2Sessions";
@@ -66,7 +64,7 @@ function DashboardWelcome() {
       </Row>
       <Row>
         <Col>
-          <p className="text-center">
+          <p className={cx("text-center", "mb-0")}>
             <b>Learn more about Renku 2.0</b> on our{" "}
             <ExternalLink
               url="https://blog.renkulab.io/renku-2/"
@@ -84,20 +82,6 @@ function DashboardWelcome() {
             . Feedback?{" "}
             <a href="mailto:hello@renku.io">We&rsquo;d love to hear it!</a>
           </p>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <WarnAlert className="mb-0" timeout={0} dismissible={false}>
-            <p className="fw-bold">
-              Do not do any important work in the Renku 2.0 beta preview!
-            </p>
-            <p className={cx("mb-0", "pb-0")}>
-              The beta is for testing only. We do not guarantee saving and
-              persisting work in the beta. You can go{" "}
-              <BackToV1Button color="warning" /> at any time.
-            </p>
-          </WarnAlert>
         </Col>
       </Row>
     </div>
