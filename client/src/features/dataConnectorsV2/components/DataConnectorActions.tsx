@@ -43,6 +43,7 @@ import type {
 import {
   useDeleteDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
+  useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
 } from "../api/data-connectors.enhanced-api";
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 
@@ -64,6 +65,10 @@ function DataConnectorRemoveDeleteModal({
   isOpen,
 }: DataConnectorRemoveModalProps) {
   const dispatch = useAppDispatch();
+  const { data: dataConnectorLinks, isLoading: isLoadingLinks } =
+    useGetDataConnectorsByDataConnectorIdProjectLinksQuery({
+      dataConnectorId: dataConnector.id,
+    });
   const [deleteDataConnector, { isLoading, isSuccess }] =
     useDeleteDataConnectorsByDataConnectorIdMutation();
 
@@ -81,11 +86,11 @@ function DataConnectorRemoveDeleteModal({
       onDelete();
     }
   }, [dispatch, isSuccess, onDelete]);
-  const onDeleteDataCollector = () => {
+  const onDeleteDataCollector = useCallback(() => {
     deleteDataConnector({
       dataConnectorId: dataConnector.id,
     });
-  };
+  }, [deleteDataConnector, dataConnector.id]);
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
@@ -93,21 +98,37 @@ function DataConnectorRemoveDeleteModal({
         Delete data connector
       </ModalHeader>
       <ModalBody>
-        <Row>
-          <Col>
-            <p>
-              Are you sure you want to delete this data connector? It will
-              affect all projects that use it. Please type{" "}
-              <strong>{dataConnector.slug}</strong>, the slug of the data
-              connector, to confirm.
-            </p>
-            <Input
-              data-cy="delete-confirmation-input"
-              value={typedName}
-              onChange={onChange}
-            />
-          </Col>
-        </Row>
+        {isLoadingLinks || dataConnectorLinks == null ? (
+          <Loader />
+        ) : (
+          <Row>
+            <Col>
+              <p>
+                Are you sure you want to delete this data connector?{" "}
+                {dataConnectorLinks.length <
+                1 ? null : dataConnectorLinks.length === 1 ? (
+                  <>
+                    It will affect <b>1 project that uses it</b>.
+                  </>
+                ) : (
+                  <>
+                    It will affect{" "}
+                    <b>{dataConnectorLinks.length} projects that use it</b>.
+                  </>
+                )}
+              </p>
+              <p>
+                Please type <strong>{dataConnector.slug}</strong>, the slug of
+                the data connector, to confirm.
+              </p>
+              <Input
+                data-cy="delete-confirmation-input"
+                value={typedName}
+                onChange={onChange}
+              />
+            </Col>
+          </Row>
+        )}
       </ModalBody>
       <ModalFooter>
         <div className="d-flex justify-content-end">

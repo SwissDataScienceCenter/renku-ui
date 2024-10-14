@@ -318,7 +318,10 @@ describe("Work with group data connectors", () => {
   });
 
   it("delete a group data connector", () => {
-    fixtures.deleteDataConnector();
+    fixtures.deleteDataConnector().listDataConnectorProjectLinks({
+      dataConnectorId: "ULID-2",
+      fixture: "dataConnector/project-data-connector-links-multiple.json",
+    });
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible").click();
