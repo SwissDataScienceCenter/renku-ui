@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useEffect, useMemo, useState } from "react";
-import { SingleValue } from "react-select";
+import { Globe2 } from "react-bootstrap-icons";
 import {
   Control,
   Controller,
@@ -29,18 +29,18 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
-import { Input, Label, ListGroup, ListGroupItem, Row } from "reactstrap";
-import { Globe2 } from "react-bootstrap-icons";
+import { SingleValue } from "react-select";
+import { Input, Label, ListGroup, ListGroupItem } from "reactstrap";
 
+import { ErrorAlert, WarnAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
-import { EnvironmentKind, SessionEnvironment } from "./sessionsV2.types";
-import { ErrorAlert, WarnAlert } from "../../components/Alert.jsx";
 import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import { ResourceClass } from "../dataServices/dataServices.types";
 import { SessionClassSelectorV2 } from "../session/components/options/SessionClassOption";
+import { useGetSessionEnvironmentsQuery } from "./sessionsV2.api";
+import { EnvironmentKind, SessionEnvironment } from "./sessionsV2.types";
 
 export interface SessionLauncherForm {
   name: string;
@@ -165,6 +165,7 @@ export default function SessionLauncherFormContent({
 
       <div
         className={cx(
+          "mb-3",
           watchEnvironmentKind !== "global_environment" && "d-none"
         )}
       >
@@ -187,7 +188,7 @@ export default function SessionLauncherFormContent({
             name="environment_id"
             render={({ field }) => (
               <>
-                <Row>
+                <ListGroup>
                   {environments.map((environment) => (
                     <SessionEnvironmentItem
                       key={environment.id}
@@ -198,7 +199,7 @@ export default function SessionLauncherFormContent({
                       control={control}
                     />
                   ))}
-                </Row>
+                </ListGroup>
                 <Input
                   className={cx(errors.environment_id && "is-invalid")}
                   id="addSessionLauncherEnvironmentId"
