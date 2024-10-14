@@ -24,15 +24,9 @@ import {
   PopoverBody,
   UncontrolledPopover,
 } from "reactstrap";
-import {
-  Database,
-  InfoCircleFill,
-  Link45deg,
-  UniversalAccessCircle,
-} from "react-bootstrap-icons";
+import { InfoCircleFill, Gear, PersonBadge } from "react-bootstrap-icons";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";
-import CrosshairIcon from "../../../components/icons/CrosshairIcon";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
@@ -44,24 +38,26 @@ import type {
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
 import { storageSecretNameToFieldName } from "../../secrets/secrets.utils";
+import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
 
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
 
-function ConfigurationKeyIcon({ configKey }: { configKey: string }) {
-  if (configKey === "type") {
-    return <Database className={cx("bi", "me-1")} />;
-  }
-  if (configKey === "url" || configKey === "endpoint") {
-    return <Link45deg className={cx("bi", "me-1")} />;
-  }
-  if (configKey === "accessMode") {
-    return <UniversalAccessCircle className={cx("bi", "me-1")} />;
-  }
-  if (configKey === "mountPoint") {
-    return <CrosshairIcon className={cx("bi", "me-1")} />;
-  }
-  return <span className={cx("bi", "me-1")} />;
+interface DataConnectorPropertyProps {
+  title: string | React.ReactNode;
+  children: React.ReactNode;
+}
+
+function DataConnectorPropertyValue({
+  title,
+  children,
+}: DataConnectorPropertyProps) {
+  return (
+    <>
+      <div className="fw-bold">{title}</div>
+      <div className="mb-4">{children}</div>
+    </>
+  );
 }
 
 interface DataConnectorViewProps {
@@ -96,6 +92,7 @@ export default function DataConnectorView({
         <DataConnectorViewHeader
           {...{ dataConnector, dataConnectorLink, toggleView }}
         />
+        <DataConnectorViewMetadata dataConnector={dataConnector} />
         <DataConnectorViewConfiguration dataConnector={dataConnector} />
         <DataConnectorViewProjects dataConnector={dataConnector} />
         <DataConnectorViewAccess dataConnector={dataConnector} />
@@ -138,78 +135,59 @@ function DataConnectorViewAccess({
   );
   return (
     <section
-      className={cx("border-top", "pt-3")}
-      data-cy="data-connector-details-section"
+      className={cx("border-top", "border-dark", "pt-3")}
+      data-cy="data-connector-access-section"
     >
+      <h4 className="mb-4">
+        <PersonBadge className={cx("bi", "me-1")} />
+        Credentials
+      </h4>
       <div>
-        <h4>Access</h4>
+        <DataConnectorPropertyValue title="Requires credentials">
+          <span data-cy="requires-credentials-section">
+            {anySensitiveField ? "Yes" : "No"}
+          </span>
+        </DataConnectorPropertyValue>
+        {anySensitiveField &&
+          requiredCredentials &&
+          requiredCredentials.length > 0 && (
+            <div className="mt-3">
+              <p className={cx("fw-bold", "m-0")}>Required credentials</p>
+              <table className={cx("ps-4", "mb-0", "table", "table-sm")}>
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {requiredCredentials.map(({ name, help }, index) => {
+                    const value =
+                      name == null
+                        ? "unknown"
+                        : savedCredentialFields[name]
+                        ? CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE
+                        : storageDefinition.configuration[name]?.toString();
+                    return (
+                      <tr key={index}>
+                        <td>
+                          {name}
+                          {help && <CredentialMoreInfo help={help} />}
+                        </td>
+                        <td data-cy={`${name}-value`}>{value}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        <DataConnectorPropertyValue title="Access mode">
+          {storageDefinition.readonly
+            ? "Force Read-only"
+            : "Allow Read-Write (requires adequate privileges on the storage)"}
+        </DataConnectorPropertyValue>
       </div>
-      <div className="mt-3" data-cy="requires-credentials-section">
-        <table>
-          <tbody>
-            <tr>
-              <td>
-                <ConfigurationKeyIcon configKey="accessMode" />
-              </td>
-              <td>Access mode</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td className={cx("fw-bold", "m-0")}>
-                {storageDefinition.readonly
-                  ? "Force Read-only"
-                  : "Allow Read-Write (requires adequate privileges on the storage)"}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <ConfigurationKeyIcon configKey="requiresCredentials" />
-              </td>
-              <td>Requires credentials</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td className={cx("fw-bold", "m-0")}>
-                {anySensitiveField ? "Yes" : "No"}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      {anySensitiveField &&
-        requiredCredentials &&
-        requiredCredentials.length > 0 && (
-          <div className="mt-3">
-            <p className={cx("fw-bold", "m-0")}>Required credentials</p>
-            <table className={cx("ps-4", "mb-0", "table", "table-sm")}>
-              <thead>
-                <tr>
-                  <th>Field</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {requiredCredentials.map(({ name, help }, index) => {
-                  const value =
-                    name == null
-                      ? "unknown"
-                      : savedCredentialFields[name]
-                      ? CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE
-                      : storageDefinition.configuration[name]?.toString();
-                  return (
-                    <tr key={index}>
-                      <td>
-                        {name}
-                        {help && <CredentialMoreInfo help={help} />}
-                      </td>
-                      <td data-cy={`${name}-value`}>{value}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
     </section>
   );
 }
@@ -218,73 +196,24 @@ function DataConnectorViewConfiguration({
   dataConnector,
 }: Pick<DataConnectorViewProps, "dataConnector">) {
   const storageDefinition = dataConnector.storage;
-  const credentialFieldDefinitions = useMemo(
-    () =>
-      getCredentialFieldDefinitions({
-        storage: storageDefinition,
-        sensitive_fields: storageDefinition.sensitive_fields,
-      }),
-    [storageDefinition]
-  );
-  const requiredCredentials = useMemo(
-    () =>
-      credentialFieldDefinitions?.filter((field) => field.requiredCredential),
-    [credentialFieldDefinitions]
-  );
-  const nonRequiredCredentialConfigurationKeys = Object.keys(
-    storageDefinition.configuration
-  ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
 
   return (
     <section
-      className={cx("border-top", "pt-3")}
+      className={cx("border-top", "border-dark", "pt-3")}
       data-cy="data-connector-configuration-section"
     >
       <div>
-        <h4>Configuration</h4>
+        <h4 className="mb-4">
+          <Gear className={cx("bi", "me-1")} /> Configuration
+        </h4>
       </div>
       <div>
-        <table>
-          <tbody>
-            {nonRequiredCredentialConfigurationKeys.map((key) => {
-              const value =
-                storageDefinition.configuration[key]?.toString() ?? "";
-              return (
-                <NonCredentialConfigurationRows
-                  key={key}
-                  keyName={key}
-                  value={value}
-                />
-              );
-            })}
-            <tr>
-              <td>
-                <ConfigurationKeyIcon configKey="mountPoint" />
-              </td>
-              <td>
-                <MountPointHead />
-              </td>
-            </tr>
-            <tr>
-              <td></td>
-              <td className={cx("fw-bold", "m-0")}>
-                {storageDefinition.target_path}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <ConfigurationKeyIcon configKey="sourcePath" />
-              </td>
-              <td>Source path</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td className={cx("fw-bold", "m-0")}>
-                {storageDefinition.source_path}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <DataConnectorPropertyValue title="Source path">
+          {storageDefinition.source_path}
+        </DataConnectorPropertyValue>
+        <DataConnectorPropertyValue title={<MountPointHead />}>
+          {storageDefinition.target_path}
+        </DataConnectorPropertyValue>
       </div>
     </section>
   );
@@ -309,16 +238,6 @@ function DataConnectorViewHeader({
           />
         </div>
       </div>
-      <div
-        className={cx("fw-bold", "mx-0", "my-1")}
-        data-cy="data-connector-title"
-      >
-        {dataConnector.namespace}/{dataConnector.slug}
-        <Clipboard
-          className={cx("border-0", "btn", "ms-1", "p-0")}
-          clipboardText={`${dataConnector.namespace}/${dataConnector.slug}`}
-        ></Clipboard>
-      </div>
     </div>
   );
 }
@@ -329,7 +248,7 @@ function DataConnectorViewProjects({
   const { projects, isLoading } = useDataConnectorProjects({ dataConnector });
   return (
     <section
-      className={cx("border-top", "pt-3")}
+      className={cx("border-top", "boarder-dark", "pt-3")}
       data-cy="data-connector-projects-section"
     >
       <div>
@@ -368,6 +287,58 @@ function DataConnectorViewProjects({
   );
 }
 
+function DataConnectorViewMetadata({
+  dataConnector,
+}: Pick<DataConnectorViewProps, "dataConnector">) {
+  const storageDefinition = dataConnector.storage;
+  const credentialFieldDefinitions = useMemo(
+    () =>
+      getCredentialFieldDefinitions({
+        storage: storageDefinition,
+        sensitive_fields: storageDefinition.sensitive_fields,
+      }),
+    [storageDefinition]
+  );
+  const requiredCredentials = useMemo(
+    () =>
+      credentialFieldDefinitions?.filter((field) => field.requiredCredential),
+    [credentialFieldDefinitions]
+  );
+  const nonRequiredCredentialConfigurationKeys = Object.keys(
+    storageDefinition.configuration
+  ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
+
+  return (
+    <section className={cx("pt-3")} data-cy="data-connector-metadata-section">
+      <DataConnectorPropertyValue title="ID">
+        <div className={cx("d-flex", "justify-content-between", "mx-0")}>
+          <div>
+            {dataConnector.namespace}/{dataConnector.slug}
+          </div>
+          <div>
+            <Clipboard
+              className={cx("border-0", "btn", "ms-1", "p-0")}
+              clipboardText={`${dataConnector.namespace}/${dataConnector.slug}`}
+            ></Clipboard>
+          </div>
+        </div>
+      </DataConnectorPropertyValue>
+      <DataConnectorPropertyValue title="Owner">
+        {dataConnector.namespace}
+      </DataConnectorPropertyValue>
+      {nonRequiredCredentialConfigurationKeys.map((key) => {
+        const title = toCapitalized(key);
+        const value = storageDefinition.configuration[key]?.toString() ?? "";
+        return (
+          <DataConnectorPropertyValue key={key} title={title}>
+            {value}
+          </DataConnectorPropertyValue>
+        );
+      })}
+    </section>
+  );
+}
+
 function MountPointHead() {
   const ref = useRef(null);
   return (
@@ -381,29 +352,6 @@ function MountPointHead() {
           This is where the storage will be mounted during sessions.
         </PopoverBody>
       </UncontrolledPopover>
-    </>
-  );
-}
-
-function NonCredentialConfigurationRows({
-  keyName,
-  value,
-}: {
-  keyName: string;
-  value: string;
-}) {
-  return (
-    <>
-      <tr>
-        <td className="mx-5">
-          <ConfigurationKeyIcon configKey={keyName} />
-        </td>
-        <td>{keyName}</td>
-      </tr>
-      <tr>
-        <td></td>
-        <td className={cx("fw-bold", "m-0")}>{value}</td>
-      </tr>
     </>
   );
 }
