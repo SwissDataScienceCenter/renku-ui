@@ -52,7 +52,9 @@ describe("Add new group -- not logged in", () => {
   });
 
   it("create a new group", () => {
-    cy.contains("Please log in to create a group").should("be.visible");
+    cy.contains("Only authenticated users can create new groups.").should(
+      "be.visible"
+    );
   });
 });
 
@@ -198,6 +200,5 @@ describe("Edit v2 group", () => {
       name: "listGroupV2PostDelete",
     });
     cy.contains("Group with slug test-2-group-v2 does not exist");
-    cy.contains("Return to the dashboard").click();
   });
 });

@@ -114,7 +114,9 @@ describe("Add new v2 project -- not logged in", () => {
   });
 
   it("create a new project", () => {
-    cy.contains("Please log in to create a project").should("be.visible");
+    cy.contains("Only authenticated users can create new projects.").should(
+      "be.visible"
+    );
   });
 });
 

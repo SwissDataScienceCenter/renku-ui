@@ -43,7 +43,7 @@ export default function NotFound({
   description: description_,
   children,
 }: NotFoundProps) {
-  const isV2 = location.pathname.startsWith("/v2");
+  const isV2 = location.pathname?.startsWith("/v2");
   const title = title_ ?? "Page not found";
   const description =
     description_ ??
@@ -61,6 +61,7 @@ export default function NotFound({
       <div className={cx("d-flex")}>
         <div className={cx("m-auto", "d-flex", "flex-column")}>
           <h3
+            data-cy="not-found-title"
             className={cx(
               "fw-bold",
               "mt-0",
