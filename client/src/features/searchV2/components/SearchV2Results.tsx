@@ -277,7 +277,7 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
   const projectUrl =
     namespace?.namespace != null
       ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-          namespace: namespace?.namespace ?? "",
+          namespace: namespace.namespace,
           slug,
         })
       : generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
