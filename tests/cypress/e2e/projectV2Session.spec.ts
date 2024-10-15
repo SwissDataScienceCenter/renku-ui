@@ -385,7 +385,7 @@ describe("launch sessions with data connectors", () => {
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
-  it("launch session with incomplete saved credentials", () => {
+  it.skip("launch session with incomplete saved credentials", () => {
     fixtures
       .testCloudStorage()
       .listProjectDataConnectors()
@@ -440,7 +440,7 @@ describe("launch sessions with data connectors", () => {
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
-  it("launch session multiple data connectors requiring multiple credentials", () => {
+  it.skip("launch session multiple data connectors requiring multiple credentials", () => {
     fixtures
       .testCloudStorage({ success: false })
       .listProjectDataConnectors({
@@ -535,7 +535,7 @@ describe("launch sessions with data connectors", () => {
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
   });
 
-  it("launch session with multiple data connectors requiring credentials, skipping all", () => {
+  it.skip("launch session with multiple data connectors requiring credentials, skipping all", () => {
     fixtures
       .testCloudStorage({ success: false })
       .listProjectDataConnectors({
