@@ -29,11 +29,11 @@ import {
 } from "reactstrap";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
-import { useGetProvidersQuery } from "../connectedServices/connectedServices.api";
 import {
   Provider,
   ProviderList,
-} from "../connectedServices/api/connectedServices.types";
+  useGetOauth2ProvidersQuery,
+} from "../connectedServices/api/connectedServices.api";
 import AddConnectedServiceButton from "./AddConnectedServiceButton";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { useCallback, useState } from "react";
@@ -50,7 +50,7 @@ export default function ConnectedServicesSection() {
 }
 
 function ConnectedServices() {
-  const { data: providers, isLoading, error } = useGetProvidersQuery();
+  const { data: providers, isLoading, error } = useGetOauth2ProvidersQuery();
 
   if (isLoading) {
     return <Loader />;
@@ -131,6 +131,9 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
           <CardBody className="pt-0">
             <CardText className="mb-2">ID: {provider.id}</CardText>
             <CardText className="mb-2">Kind: {provider.kind}</CardText>
+            <CardText className="mb-2">
+              Application slug: {provider.app_slug}
+            </CardText>
             <CardText className="mb-2">URL: {provider.url}</CardText>
             <CardText className="mb-2">
               Client ID: {provider.client_id}

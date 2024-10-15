@@ -34,10 +34,10 @@ import {
   ConnectedServiceForm,
   CreateProviderParams,
 } from "../connectedServices/api/connectedServices.types";
-import { useCreateProviderMutation } from "../connectedServices/connectedServices.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
+import { usePostOauth2ProvidersMutation } from "../connectedServices/api/connectedServices.api";
 
 export default function AddConnectedServiceButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,7 +64,7 @@ function AddConnectedServiceModal({
   isOpen,
   toggle,
 }: AddConnectedServiceModalProps) {
-  const [createProvider, result] = useCreateProviderMutation();
+  const [createProvider, result] = usePostOauth2ProvidersMutation();
 
   const {
     control,
@@ -75,6 +75,7 @@ function AddConnectedServiceModal({
     defaultValues: {
       id: "",
       kind: "gitlab",
+      app_slug: "",
       client_id: "",
       client_secret: "",
       display_name: "",
@@ -86,14 +87,17 @@ function AddConnectedServiceModal({
   const onSubmit = useCallback(
     (data: CreateProviderParams) => {
       createProvider({
-        id: data.id,
-        kind: data.kind,
-        client_id: data.client_id,
-        client_secret: data.client_secret,
-        display_name: data.display_name,
-        scope: data.scope,
-        url: data.url,
-        use_pkce: data.use_pkce,
+        providerPost: {
+          id: data.id,
+          kind: data.kind,
+          app_slug: data.app_slug,
+          client_id: data.client_id,
+          client_secret: data.client_secret,
+          display_name: data.display_name,
+          scope: data.scope ?? "",
+          url: data.url,
+          use_pkce: data.use_pkce,
+        },
       });
     },
     [createProvider]

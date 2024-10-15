@@ -33,13 +33,17 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { useUpdateProviderMutation } from "../connectedServices/connectedServices.api";
+
 import {
   ConnectedServiceForm,
-  Provider,
   UpdateProviderParams,
 } from "../connectedServices/api/connectedServices.types";
 import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
+import {
+  Provider,
+  ProviderKind,
+  usePatchOauth2ProvidersByProviderIdMutation,
+} from "../connectedServices/api/connectedServices.api";
 
 interface UpdateConnectedServiceButtonProps {
   provider: Provider;
@@ -78,7 +82,8 @@ function UpdateConnectedServiceModal({
   isOpen,
   toggle,
 }: UpdateConnectedServiceModalProps) {
-  const [updateProvider, result] = useUpdateProviderMutation();
+  const [updateProvider, result] =
+    usePatchOauth2ProvidersByProviderIdMutation();
 
   const {
     control,
@@ -87,7 +92,8 @@ function UpdateConnectedServiceModal({
     reset,
   } = useForm<ConnectedServiceForm>({
     defaultValues: {
-      kind: "",
+      kind: undefined,
+      app_slug: "",
       client_id: "",
       client_secret: "",
       display_name: "",
@@ -99,14 +105,17 @@ function UpdateConnectedServiceModal({
   const onSubmit = useCallback(
     (data: UpdateProviderParams) => {
       updateProvider({
-        id: provider.id,
-        kind: data.kind,
-        client_id: data.client_id,
-        client_secret: data.client_secret,
-        display_name: data.display_name,
-        scope: data.scope,
-        url: data.url,
-        use_pkce: data.use_pkce,
+        providerId: provider.id,
+        providerPatch: {
+          kind: data.kind,
+          app_slug: data.app_slug,
+          client_id: data.client_id,
+          client_secret: data.client_secret,
+          display_name: data.display_name,
+          scope: data.scope,
+          url: data.url,
+          use_pkce: data.use_pkce,
+        },
       });
     },
     [provider.id, updateProvider]
@@ -128,7 +137,8 @@ function UpdateConnectedServiceModal({
 
   useEffect(() => {
     reset({
-      kind: provider.kind,
+      kind: provider.kind as ProviderKind | undefined,
+      app_slug: provider.app_slug,
       client_id: provider.client_id,
       display_name: provider.display_name,
       scope: provider.scope,

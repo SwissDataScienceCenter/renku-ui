@@ -62,6 +62,15 @@ const enhanced = connectedServicesGeneratedApi.enhanceEndpoints({
             ]
           : [],
     },
+    postOauth2Providers: {
+      invalidatesTags: ["Provider"],
+    },
+    deleteOauth2ProvidersByProviderId: {
+      invalidatesTags: ["Provider"],
+    },
+    patchOauth2ProvidersByProviderId: {
+      invalidatesTags: ["Provider"],
+    },
   },
 });
 

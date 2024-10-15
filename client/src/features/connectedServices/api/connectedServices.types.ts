@@ -20,7 +20,11 @@ import type {
   Pagination as BasePagination,
   PaginatedResponse,
 } from "../../../utils/types/pagination.types";
-import type { AppInstallation } from "./connectedServices.generated-api";
+import type {
+  AppInstallation,
+  ProviderPatch,
+  ProviderPost,
+} from "./connectedServices.generated-api";
 
 export type Pagination = Required<
   Pick<BasePagination, "currentPage" | "perPage" | "totalItems" | "totalPages">
@@ -64,26 +68,6 @@ export interface GetConnectedAccountParams {
   connectionId: string;
 }
 
-export interface CreateProviderParams {
-  id: string;
-  kind: string;
-  client_id: string;
-  client_secret?: string;
-  display_name: string;
-  scope?: string;
-  url: string;
-  use_pkce: boolean;
-}
-
-export interface UpdateProviderParams {
-  id: string;
-  kind?: string;
-  client_id?: string;
-  client_secret?: string;
-  display_name?: string;
-  scope?: string;
-  url?: string;
-  use_pkce?: boolean;
-}
-
-export type ConnectedServiceForm = Provider;
+export type UpdateProviderParams = ProviderPatch;
+export type ConnectedServiceForm = ProviderPost;
+export type CreateProviderParams = ProviderPost;

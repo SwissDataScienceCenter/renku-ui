@@ -22,9 +22,9 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { TrashFill, XLg } from "react-bootstrap-icons";
 
-import { Provider } from "../connectedServices/api/connectedServices.types";
-import { useDeleteProviderMutation } from "../connectedServices/connectedServices.api";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { Provider } from "../connectedServices/api/connectedServices.generated-api";
+import { useDeleteOauth2ProvidersByProviderIdMutation } from "../connectedServices/api/connectedServices.api";
 
 interface DeleteConnectedServiceButtonProps {
   provider: Provider;
@@ -64,10 +64,11 @@ function DeleteConnectedServiceModal({
   isOpen,
   toggle,
 }: DeleteConnectedServiceModalProps) {
-  const [deleteSessionEnvironment, result] = useDeleteProviderMutation();
+  const [deleteSessionEnvironment, result] =
+    useDeleteOauth2ProvidersByProviderIdMutation();
 
   const onDelete = useCallback(() => {
-    deleteSessionEnvironment(provider.id);
+    deleteSessionEnvironment({ providerId: provider.id });
   }, [deleteSessionEnvironment, provider.id]);
 
   useEffect(() => {
@@ -84,14 +85,7 @@ function DeleteConnectedServiceModal({
   }, [isOpen, result]);
 
   return (
-    <Modal
-      backdrop="static"
-      centered
-      // fullscreen="lg"
-      isOpen={isOpen}
-      // size="lg"
-      toggle={toggle}
-    >
+    <Modal backdrop="static" centered isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>Are you sure?</ModalHeader>
       <ModalBody>
         {result.error && <RtkOrNotebooksError error={result.error} />}
