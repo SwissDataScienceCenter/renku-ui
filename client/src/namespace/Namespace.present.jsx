@@ -23,12 +23,23 @@
  *  Namespace presentational components.
  */
 
+import { createMemoryHistory } from "history";
 import { Link } from "react-router-dom";
 import { Col, Row } from "reactstrap";
+import cx from "classnames";
 
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import NotFound from "../not-found/NotFound";
+
+const fakeHistory = createMemoryHistory({
+  initialEntries: ["/"],
+  initialIndex: 0,
+});
+fakeHistory.push({
+  pathname: "/projects",
+  search: "?page=1",
+});
 
 const NamespaceProjects = (props) => {
   const { namespace } = props;
@@ -96,16 +107,27 @@ const NamespaceProjects = (props) => {
   }
 
   return (
-    <Row>
-      <Col>
-        <h3>
-          {userOrGroup} {props.namespace}
-        </h3>
-        <div>&nbsp;</div>
-        {checking}
-        {outcome}
-      </Col>
-    </Row>
+    <div
+      className={cx(
+        "container-lg",
+        "d-flex",
+        "flex-column",
+        "align-items-center",
+        "m-auto",
+        "mt-5"
+      )}
+    >
+      <Row>
+        <Col>
+          <h3>
+            {userOrGroup} {props.namespace}
+          </h3>
+          <div>&nbsp;</div>
+          {checking}
+          {outcome}
+        </Col>
+      </Row>
+    </div>
   );
 };
 

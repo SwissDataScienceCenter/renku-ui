@@ -25,10 +25,11 @@
 import cx from "classnames";
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "reactstrap";
 
-import { HouseFill } from "react-bootstrap-icons";
-
+import { ArrowLeft } from "react-bootstrap-icons";
+import ContainerWrap from "../components/container/ContainerWrap";
+import rkNotFoundImg from "../styles/assets/not-found.svg";
+import rkNotFoundImgV2 from "../styles/assets/not-foundV2.svg";
 import "./NotFound.css";
 
 interface NotFoundProps {
@@ -42,6 +43,7 @@ export default function NotFound({
   description: description_,
   children,
 }: NotFoundProps) {
+  const isV2 = location.pathname?.startsWith("/v2");
   const title = title_ ?? "Page not found";
   const description =
     description_ ??
@@ -53,30 +55,43 @@ export default function NotFound({
     descriptionType === "boolean"
       ? "p"
       : "div";
+
   return (
-    <div className="not-found-box">
-      <div className={cx("container-xxl", "p-5")}>
-        <div className={cx("p-4", "bg-white", "bg-opacity-75")}>
-          <h1 data-cy="not-found-title">404</h1>
-          <h3 className="mb-4" data-cy="not-found-subtitle">
+    <ContainerWrap>
+      <div className={cx("d-flex")}>
+        <div className={cx("m-auto", "d-flex", "flex-column")}>
+          <h3
+            data-cy="not-found-title"
+            className={cx(
+              "fw-bold",
+              "mt-0",
+              "mb-3",
+              "d-flex",
+              "align-items-center",
+              "gap-3",
+              isV2 ? "text-primary" : "text-rk-green"
+            )}
+          >
+            <img src={isV2 ? rkNotFoundImgV2 : rkNotFoundImg} />
             {title}
           </h3>
           <Tag data-cy="not-found-description">{description}</Tag>
           <div>
-            <Link to="/">
-              <Button color="primary" className="btn-rk-green">
-                <HouseFill className={cx("bi", "me-1")} />
-                Return Home
-              </Button>
+            <Link
+              to="/"
+              className={cx("btn", isV2 ? "btn-primary" : "btn-rk-green")}
+            >
+              <ArrowLeft className={cx("bi", "me-1")} />
+              Return to home
             </Link>
           </div>
+          {children == null ? null : (
+            <div className="mt-3" data-cy="not-found-children">
+              {children}
+            </div>
+          )}
         </div>
-        {children == null ? null : (
-          <div className="mt-4" data-cy="not-found-children">
-            {children}
-          </div>
-        )}
       </div>
-    </div>
+    </ContainerWrap>
   );
 }
