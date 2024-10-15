@@ -122,6 +122,7 @@ jobs:
           - useSession
           - checkWorkflows
           - rstudioSession
+          - dashboardV2
 
     steps:
       - name: Extract Renku repository reference
