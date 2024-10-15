@@ -44,16 +44,14 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
     }
   }, []);
 
-  const fallbackErrorPage = <ErrorPage />;
-
   return (
-    <Sentry.ErrorBoundary onError={onError} fallback={fallbackErrorPage}>
+    <Sentry.ErrorBoundary onError={onError} fallback={<ErrorPage />}>
       {children}
     </Sentry.ErrorBoundary>
   );
 }
 
-const ErrorPage = () => {
+function ErrorPage() {
   const isV2 = location.pathname.startsWith("/v2");
   const logged = useLegacySelector((state) => state.stateModel.user.logged);
   return (
@@ -104,4 +102,4 @@ const ErrorPage = () => {
       </div>
     </>
   );
-};
+}
