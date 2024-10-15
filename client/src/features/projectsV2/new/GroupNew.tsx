@@ -30,6 +30,7 @@ import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import type { GroupPostRequest } from "../api/namespace.api";
 import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
 import DescriptionFormField from "../fields/DescriptionFormField";
@@ -164,9 +165,16 @@ function GroupMetadataForm() {
 export default function GroupNew() {
   const user = useLegacySelector((state) => state.stateModel.user);
   if (!user.logged) {
+    const textIntro = "Only authenticated users can create new groups.";
+    const textPost = "to create a new group.";
     return (
       <ContainerWrap>
-        <h2>Please log in to create a group.</h2>
+        <h2 className={cx("mb-0", "me-2")}>New group</h2>
+        <LoginAlert
+          logged={user.logged}
+          textIntro={textIntro}
+          textPost={textPost}
+        />
       </ContainerWrap>
     );
   }
