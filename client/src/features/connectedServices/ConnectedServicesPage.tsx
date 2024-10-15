@@ -291,14 +291,15 @@ function GitHubAppInstallations({
 
   const {
     data: installations,
-    isLoading: isLoadingInstallations,
+    isFetching: isFetchingInstallations,
     error: installationsError,
+    refetch: refetchInstallations,
   } = useGetOauth2ConnectionsByConnectionIdInstallationsQuery({
     connectionId: connection.id,
     params: { per_page: 100 },
   });
 
-  const isLoading = isLoadingAccount || isLoadingInstallations;
+  const isLoading = isLoadingAccount || isFetchingInstallations;
   const error = accountError ?? installationsError;
 
   if (isLoadingAccount) {
@@ -337,6 +338,18 @@ function GitHubAppInstallations({
       )
     : null;
 
+  const refreshInstallationsButton = (
+    <Button
+      color="primary"
+      role="button"
+      onClick={() => {
+        refetchInstallations();
+      }}
+    >
+      Check again
+    </Button>
+  );
+
   return (
     <>
       {installations.data?.length ? (
@@ -356,18 +369,24 @@ function GitHubAppInstallations({
           {installations.data.every(
             (installation) => !!installation.suspended_at
           ) && (
-            <WarnAlert timeout={0}>
-              The application is not active in any project nor namespace. Please
-              update the settings.
+            <WarnAlert dismissible={false}>
+              <p className="mb-2">
+                The application is not active in any project nor namespace.
+                Please update the settings.
+              </p>
+              {refreshInstallationsButton}
             </WarnAlert>
           )}
         </>
       ) : (
         <>
           <CardText>{app} is not installed.</CardText>
-          <WarnAlert timeout={0}>
-            The application is not installed in any project nor namespace yet.
-            Please update the settings.
+          <WarnAlert dismissible={false}>
+            <p className="mb-2">
+              The application is not installed in any project nor namespace yet.
+              Please update the settings.
+            </p>
+            {refreshInstallationsButton}
           </WarnAlert>
         </>
       )}
@@ -385,6 +404,7 @@ function GitHubAppInstallations({
         account={account}
         installations={installations}
         provider={provider}
+        refetchInstallations={refetchInstallations}
       />
     </>
   );
@@ -424,12 +444,14 @@ interface GitHubStatusCheckProps {
   account: Account;
   installations: AppInstallationsPaginated;
   provider: Provider;
+  refetchInstallations: () => void;
 }
 
 function GitHubStatusCheck({
   account,
   installations,
   provider,
+  refetchInstallations,
 }: GitHubStatusCheckProps) {
   const [search, setSearch] = useSearchParams();
 
@@ -474,20 +496,32 @@ function GitHubStatusCheck({
     return null;
   }
 
-  return <GitHubStatusCheckModal provider={provider} />;
+  return (
+    <GitHubStatusCheckModal
+      provider={provider}
+      refetchInstallations={refetchInstallations}
+    />
+  );
 }
 
 interface GitHubStatusCheckModalProps {
   provider: Provider;
+  refetchInstallations: () => void;
 }
 
-function GitHubStatusCheckModal({ provider }: GitHubStatusCheckModalProps) {
+function GitHubStatusCheckModal({
+  provider,
+  refetchInstallations,
+}: GitHubStatusCheckModalProps) {
   const [, setSearch] = useSearchParams();
 
   const [isOpen, setIsOpen] = useState(true);
+  const [hasOpenedTheLink, setHasOpenedTheLink] = useState(false);
   const toggle = useCallback(() => {
+    // ? NOTE: refetch when the modal is closed in case the user has updated the settings
+    if (hasOpenedTheLink) refetchInstallations();
     setIsOpen((open) => !open);
-  }, []);
+  }, [hasOpenedTheLink, refetchInstallations]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -520,9 +554,10 @@ function GitHubStatusCheckModal({ provider }: GitHubStatusCheckModalProps) {
             </p>
             <p>
               <ExternalLink
-                url={settingsUrl.href}
-                role="button"
                 color="primary"
+                onClick={() => setHasOpenedTheLink(true)}
+                role="button"
+                url={settingsUrl.href}
               >
                 Configure {provider.app_slug} on {provider.display_name}
               </ExternalLink>
@@ -542,7 +577,7 @@ function GitHubStatusCheckModal({ provider }: GitHubStatusCheckModalProps) {
         )}
       </ModalBody>
       <ModalFooter>
-        <Button className="outline-primary" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
