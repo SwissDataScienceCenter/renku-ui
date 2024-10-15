@@ -105,13 +105,13 @@ function UpdateSessionEnvironmentModal({
           environmentId: environment.id,
           container_image: data.container_image,
           name: data.name,
-          default_url: data.default_url.trim() ? data.default_url : "",
-          description: data.description.trim() ? data.description : "",
+          default_url: data.default_url?.trim() ? data.default_url : "",
+          description: data.description?.trim() ? data.description : "",
           port: data.port ?? undefined,
-          working_directory: data.working_directory.trim()
+          working_directory: data.working_directory?.trim()
             ? data.working_directory
             : undefined,
-          mount_directory: data.mount_directory.trim()
+          mount_directory: data.mount_directory?.trim()
             ? data.mount_directory
             : undefined,
           uid: data.uid ?? undefined,

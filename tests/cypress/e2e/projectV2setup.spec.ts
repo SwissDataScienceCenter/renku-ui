@@ -176,9 +176,9 @@ describe("Set up project components", () => {
   });
 
   it("set up sessions", () => {
-    cy.intercept("/ui-server/api/notebooks/servers*", {
-      body: { servers: {} },
-    }).as("getSessions");
+    cy.intercept("/ui-server/api/data/sessions*", {
+      body: [],
+    }).as("getSessionsV2");
     fixtures
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
       .listProjectDataConnectors()
@@ -191,7 +191,7 @@ describe("Set up project components", () => {
       .environments();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.wait("@getSessions");
+    cy.wait("@getSessionsV2");
     cy.wait("@sessionLaunchers");
     // ADD SESSION CUSTOM IMAGE
     cy.getDataCy("add-session-launcher").click();
@@ -212,7 +212,6 @@ describe("Set up project components", () => {
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-custom");
     cy.getDataCy("close-cancel-button").click();
-
     // check session values
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("session-name").should("contain.text", "Session-custom");

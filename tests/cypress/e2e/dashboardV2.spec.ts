@@ -22,7 +22,7 @@ describe("View v2 landing page", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures
-      .getSessions({ fixture: "sessions/sessionsV2.json" })
+      .getSessionsV2({ fixture: "sessions/sessionsV2.json" })
       .projects()
       .landingUserProjects()
       .listManyGroupV2()
