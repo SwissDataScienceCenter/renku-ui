@@ -160,6 +160,7 @@ export default function ConnectedServiceFormContent({
           name="client_id"
           render={({ field }) => (
             <Input
+              autoComplete="section-connected-service username"
               className={cx("form-control", errors.client_id && "is-invalid")}
               id="addConnectedServiceClientId"
               placeholder="Client ID"
@@ -181,6 +182,7 @@ export default function ConnectedServiceFormContent({
           name="client_secret"
           render={({ field }) => (
             <Input
+              autoComplete="section-connected-service current-password"
               className={cx(
                 "form-control",
                 errors.client_secret && "is-invalid"
