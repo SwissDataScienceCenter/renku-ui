@@ -52,17 +52,24 @@ import {
   type ProviderKind,
 } from "./api/connectedServices.api";
 import { AppInstallationsPaginated } from "./api/connectedServices.types";
+import { InfoAlert, WarnAlert } from "../../components/Alert";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 const CHECK_STATUS_QUERY_PARAM = "check-status";
 
 export default function ConnectedServicesPage() {
+  const isUserLoggedIn = useLegacySelector(
+    (state) => state.stateModel.user.logged
+  );
+
   const {
     data: providers,
     isLoading: isLoadingProviders,
     error: providersError,
-  } = useGetOauth2ProvidersQuery();
+  } = useGetOauth2ProvidersQuery(isUserLoggedIn ? undefined : skipToken);
   const { isLoading: isLoadingConnections, error: connectionsError } =
-    useGetOauth2ConnectionsQuery();
+    useGetOauth2ConnectionsQuery(isUserLoggedIn ? undefined : skipToken);
 
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
@@ -78,24 +85,22 @@ export default function ConnectedServicesPage() {
       </div>
     );
   }
-
-  if (providers == null || providers.length == 0) {
-    return (
-      <>
-        <h1>Connected Services</h1>
-        <p>There are currently no external services users can connect to.</p>
-      </>
-    );
-  }
-
   return (
     <>
-      <h1>Connected Services</h1>
-      <div className={cx("row", "g-3")}>
-        {providers.map((provider) => (
-          <ConnectedServiceCard key={provider.id} provider={provider} />
-        ))}
-      </div>
+      <h1>Connected services</h1>
+      {!isUserLoggedIn ? (
+        <InfoAlert dismissible={false}>
+          Anonymous users cannot connect to external services.
+        </InfoAlert>
+      ) : providers == null || providers.length == 0 ? (
+        <p>There are currently no external services users can connect to.</p>
+      ) : (
+        <div className={cx("row", "g-3")}>
+          {providers.map((provider) => (
+            <ConnectedServiceCard key={provider.id} provider={provider} />
+          ))}
+        </div>
+      )}
     </>
   );
 }
@@ -169,14 +174,14 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
               />
             </div>
           </CardTitle>
-          <CardText className="mb-1">
+          <CardText>
             URL:{" "}
             <ExternalLink url={url} role="text">
               <BoxArrowUpRight className={cx("bi", "me-1")} />
               {url}
             </ExternalLink>
           </CardText>
-          <CardText className="mb-1">
+          <CardText>
             Status: <ConnectedServiceStatus connection={connection} />
           </CardText>
           {connection?.status === "connected" && (
@@ -238,7 +243,7 @@ function ConnectedAccount({ connection }: ConnectedAccountProps) {
 
   if (isLoading) {
     return (
-      <CardText className="mb-1">
+      <CardText>
         <Loader inline className="me-1" size={16} />
         Checking connected account...
       </CardText>
@@ -250,17 +255,13 @@ function ConnectedAccount({ connection }: ConnectedAccountProps) {
   }
 
   if (account == null) {
-    return (
-      <CardText className="mb-1">
-        Error: could not find connected account.
-      </CardText>
-    );
+    return <CardText>Error: could not find connected account.</CardText>;
   }
 
   const text = `@${account.username}`;
 
   return (
-    <CardText className="mb-1">
+    <CardText>
       Account:{" "}
       <ExternalLink role="text" url={account.web_url}>
         {text}
@@ -306,7 +307,7 @@ function GitHubAppInstallations({
 
   if (isLoading) {
     return (
-      <CardText className="mb-1">
+      <CardText>
         <Loader inline className="me-1" size={16} />
         Checking GitHub app installations...
       </CardText>
@@ -318,11 +319,7 @@ function GitHubAppInstallations({
   }
 
   if (account == null || installations == null) {
-    return (
-      <CardText className="mb-1">
-        Error: could not load app installations.
-      </CardText>
-    );
+    return <CardText>Error: could not load app installations.</CardText>;
   }
 
   const app = provider.app_slug ? (
@@ -342,18 +339,39 @@ function GitHubAppInstallations({
 
   return (
     <>
-      <CardText className="mb-1">{app} is installed in:</CardText>
-      <ul>
-        {installations.data.map((installation) => (
-          <GitHubAppInstallationItem
-            key={installation.id}
-            installation={installation}
-          />
-        ))}
-        {installations.pagination.totalPages > 1 && (
-          <li className="fst-italic">and more...</li>
-        )}
-      </ul>
+      {installations.data?.length ? (
+        <>
+          <CardText className="mb-1">{app} is installed in:</CardText>
+          <ul>
+            {installations.data.map((installation) => (
+              <GitHubAppInstallationItem
+                key={installation.id}
+                installation={installation}
+              />
+            ))}
+            {installations.pagination.totalPages > 1 && (
+              <li className="fst-italic">and more...</li>
+            )}
+          </ul>
+          {installations.data.every(
+            (installation) => !!installation.suspended_at
+          ) && (
+            <WarnAlert timeout={0}>
+              The application is not active in any project nor namespace. Please
+              update the settings.
+            </WarnAlert>
+          )}
+        </>
+      ) : (
+        <>
+          <CardText>{app} is not installed.</CardText>
+          <WarnAlert timeout={0}>
+            The application is not installed in any project nor namespace yet.
+            Please update the settings.
+          </WarnAlert>
+        </>
+      )}
+
       {settingsUrl && (
         <ExternalLink
           url={settingsUrl.href}
@@ -386,7 +404,7 @@ function GitHubAppInstallationItem({
   const restrictedSelection = repository_selection === "selected";
 
   return (
-    <li>
+    <li className="mb-1">
       <ExternalLink url={account_web_url} role="text">
         <BoxArrowUpRight className={cx("bi", "me-1")} />
         <span className={cx(isSuspended && "text-decoration-line-through")}>
@@ -509,14 +527,14 @@ function GitHubStatusCheckModal({ provider }: GitHubStatusCheckModalProps) {
                 Configure {provider.app_slug} on {provider.display_name}
               </ExternalLink>
             </p>
-            <p className="mb-1">
+            <p>
               The {provider.app_slug} GitHub app needs to be installed for users
               and organizations so that RenkuLab can use repositories in
               projects and sessions.
             </p>
           </>
         ) : (
-          <p className="mb-1">
+          <p>
             In order to finish setting up the connection to{" "}
             {provider.display_name}, you may need to configure where this app
             integration is installed on {provider.url}.
