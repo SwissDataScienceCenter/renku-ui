@@ -18,9 +18,10 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { BoxArrowUpRight, XLg } from "react-bootstrap-icons";
+import { BoxArrowUpRight, CircleFill, XLg } from "react-bootstrap-icons";
 import { useSearchParams } from "react-router-dom-v5-compat";
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -99,6 +100,46 @@ export default function ConnectedServicesPage() {
   );
 }
 
+interface ConnectedServiceStatusProps {
+  connection?: Connection;
+}
+function ConnectedServiceStatus({ connection }: ConnectedServiceStatusProps) {
+  const status =
+    connection == null
+      ? {
+          text: "Not connected",
+          classes: [
+            "bg-danger-subtle",
+            "border-danger",
+            "text-danger-emphasis",
+          ],
+        }
+      : connection.status === "connected"
+      ? {
+          text: "Connected",
+          classes: [
+            "bg-success-subtle",
+            "border-success",
+            "text-success-emphasis",
+          ],
+        }
+      : {
+          text: "Pending",
+          classes: [
+            "bg-warning-subtle",
+            "border-warning",
+            "text-warning-emphasis",
+          ],
+        };
+
+  return (
+    <Badge className={cx("border", ...status.classes)} color="info">
+      <CircleFill className={cx("bi", "me-1")} />
+      {status.text}
+    </Badge>
+  );
+}
+
 interface ConnectedServiceCardProps {
   provider: Provider;
 }
@@ -113,12 +154,6 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
     () => connections?.find(({ provider_id }) => provider_id === id),
     [connections, id]
   );
-  const status =
-    connection?.status === "connected"
-      ? "connected"
-      : connection?.status === "pending"
-      ? "pending"
-      : "not connected";
 
   return (
     <div className={cx("col-12", "col-lg-6")}>
@@ -126,7 +161,7 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
         <CardBody>
           <CardTitle>
             <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
-              <span className="pe-2">{display_name}</span>
+              <h4 className="pe-2">{display_name}</h4>
               <ConnectButton
                 id={id}
                 connectionStatus={connection?.status}
@@ -135,12 +170,15 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
             </div>
           </CardTitle>
           <CardText className="mb-1">
+            URL:{" "}
             <ExternalLink url={url} role="text">
               <BoxArrowUpRight className={cx("bi", "me-1")} />
               {url}
             </ExternalLink>
           </CardText>
-          <CardText className="mb-1">Status: {status}</CardText>
+          <CardText className="mb-1">
+            Status: <ConnectedServiceStatus connection={connection} />
+          </CardText>
           {connection?.status === "connected" && (
             <ConnectedAccount connection={connection} />
           )}
