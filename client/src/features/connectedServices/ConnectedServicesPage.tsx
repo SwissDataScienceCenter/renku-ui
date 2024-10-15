@@ -466,7 +466,7 @@ function GitHubStatusCheckModal({ provider }: GitHubStatusCheckModalProps) {
               <ExternalLink
                 url={settingsUrl.href}
                 role="button"
-                color="outline-primary"
+                color="primary"
               >
                 Configure {provider.app_slug} on {provider.display_name}
               </ExternalLink>
@@ -486,7 +486,7 @@ function GitHubStatusCheckModal({ provider }: GitHubStatusCheckModalProps) {
         )}
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button className="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
