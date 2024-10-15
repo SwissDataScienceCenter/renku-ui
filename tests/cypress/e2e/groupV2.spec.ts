@@ -60,19 +60,21 @@ describe("List v2 groups", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects().listManyGroupV2();
-    cy.visit("/v2/groups");
+    cy.visit("/v2");
   });
 
   it("list groups", () => {
-    cy.contains("List Groups").should("be.visible");
-    cy.contains("test 15 group-v2").should("not.exist");
-    cy.get(".page-item").find("a").contains("2").click();
-    cy.contains("test 15 group-v2").should("be.visible");
+    cy.contains("Groups").should("be.visible");
+    cy.contains("test 1 group-v2").should("exist");
+    cy.getDataCy("dashboard-group-list")
+      .find("a")
+      .its("length")
+      .should("eq", 5);
   });
 
   it("shows groups", () => {
     fixtures.readGroupV2().readGroupV2Namespace();
-    cy.contains("List Groups").should("be.visible");
+    cy.contains("Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -90,7 +92,7 @@ describe("Edit v2 group", () => {
       })
       .namespaces();
     fixtures.projects().landingUserProjects().listGroupV2();
-    cy.visit("/v2/groups");
+    cy.visit("/v2");
   });
 
   it("allows editing group metadata", () => {
@@ -99,7 +101,7 @@ describe("Edit v2 group", () => {
       .readGroupV2Namespace()
       .listGroupV2Members()
       .updateGroupV2();
-    cy.contains("List Groups").should("be.visible");
+    cy.contains("Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -134,7 +136,7 @@ describe("Edit v2 group", () => {
       .readGroupV2()
       .readGroupV2Namespace();
 
-    cy.contains("List Groups").should("be.visible");
+    cy.contains("Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -173,7 +175,7 @@ describe("Edit v2 group", () => {
       .readGroupV2Namespace()
       .listGroupV2Members()
       .deleteGroupV2();
-    cy.contains("List Groups").should("be.visible");
+    cy.contains("Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -196,6 +198,6 @@ describe("Edit v2 group", () => {
       name: "listGroupV2PostDelete",
     });
     cy.contains("Group with slug test-2-group-v2 does not exist");
-    cy.contains("Return to the groups list").click();
+    cy.contains("Return to the dashboard").click();
   });
 });

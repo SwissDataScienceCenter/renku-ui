@@ -24,11 +24,11 @@
  */
 
 import { createRoot } from "react-dom/client";
-import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
 import { describe, it } from "vitest";
 
 import { statuspage as fakeStatuspage } from "../api-client/test-samples";
+import MemoryRouter from "../components/router/MemoryRouter";
 import { StateModel, globalSchema } from "../model";
 import { StatuspageBanner, StatuspageDisplay } from "../statuspage";
 

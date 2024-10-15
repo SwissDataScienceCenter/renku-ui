@@ -22,11 +22,11 @@
  *  ProjectSuggestionActions.test.js
  *  Tests for project Suggestion Actions.
  */
-import { MemoryRouter } from "react-router-dom";
 import TestRenderer, { act } from "react-test-renderer";
 import { describe, expect, it } from "vitest";
 
 import { ACCESS_LEVELS, testClient as client } from "../api-client";
+import MemoryRouter from "../components/router/MemoryRouter";
 import { StateModel, globalSchema, projectSchema } from "../model";
 import {
   ProjectSuggestActions,

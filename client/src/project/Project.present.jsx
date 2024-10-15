@@ -897,7 +897,6 @@ function ProjectView(props) {
         userLogged={logged}
         projectPathWithNamespace={props.projectPathWithNamespace}
         projectId={props.projectId}
-        location={props.location}
       />
     );
   }

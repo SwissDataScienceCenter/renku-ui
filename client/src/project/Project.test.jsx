@@ -27,10 +27,10 @@ import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { testClient as client } from "../api-client";
+import MemoryRouter from "../components/router/MemoryRouter";
 import { StateModel, globalSchema } from "../model";
 import { generateFakeUser } from "../user/User.test";
 import Project, { mapProjectFeatures, withProjectMapped } from "./Project";

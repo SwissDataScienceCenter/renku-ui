@@ -25,7 +25,6 @@ export const ABSOLUTE_ROUTES = {
       show: "/v2/users/:username",
     },
     groups: {
-      root: "/v2/groups",
       new: "/v2/groups/new",
       show: {
         root: "/v2/groups/:slug",
@@ -33,7 +32,6 @@ export const ABSOLUTE_ROUTES = {
       },
     },
     projects: {
-      root: "/v2/projects",
       new: "/v2/projects/new",
       show: {
         root: "/v2/projects/:namespace/:slug",

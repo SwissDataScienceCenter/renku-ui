@@ -24,8 +24,7 @@
  */
 import { describe, expect, it, vi } from "vitest";
 
-import { LoginHelper } from "./Authentication.container";
-import { createLoginUrl } from "./LoginRedirect";
+import { LoginHelper, RenkuQueryParams } from "./Authentication.container";
 
 // Mock relevant react objects
 const location = { pathname: "", state: "", previous: "", search: "" };
@@ -62,24 +61,19 @@ async function dispatchStorageEvent(key, newValue) {
 describe("LoginHelper functions", () => {
   const { queryParams } = LoginHelper;
 
-  it("createLoginUrl", async () => {
-    const extraParam = `${queryParams.login}=${queryParams.loginValue}`;
-
-    expect(createLoginUrl(url)).toBe(`${url}?${extraParam}`);
-
-    const urlWithParam = `${url}?test=1`;
-    expect(createLoginUrl(urlWithParam)).toBe(`${urlWithParam}&${extraParam}`);
-  });
-
   it("handleLoginParams", async () => {
     localStorage.clear();
 
     LoginHelper.handleLoginParams(history);
     expect(localStorage.length).toBe(0);
-    const loginUrl = createLoginUrl(url);
+    const loginUrl = new URL(url);
+    loginUrl.searchParams.set(
+      RenkuQueryParams.login,
+      RenkuQueryParams.loginValue
+    );
     const loginHistory = {
       ...history,
-      location: { ...location, search: loginUrl.replace(url, "") },
+      location: { ...location, search: loginUrl.href.replace(url, "") },
     };
     const datePre = new Date().getTime();
 

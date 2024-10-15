@@ -15,16 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
-  Pencil,
   CircleFill,
+  Pencil,
   Trash,
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
+import { Link } from "react-router-dom-v5-compat";
 import {
   Badge,
   Button,
@@ -43,32 +45,30 @@ import {
   OffcanvasBody,
   Row,
 } from "reactstrap";
-import { skipToken } from "@reduxjs/toolkit/query";
 
-import { Loader } from "../../../../components/Loader";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
-import { Project } from "../../../projectsV2/api/projectV2.api";
-import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import {
   ErrorAlert,
   RenkuAlert,
   WarnAlert,
 } from "../../../../components/Alert";
+import { Loader } from "../../../../components/Loader";
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import {
   connectedServicesApi,
   useGetOauth2ProvidersQuery,
 } from "../../../connectedServices/api/connectedServices.api";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
+import { Project } from "../../../projectsV2/api/projectV2.api";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import repositoriesApi, {
   useGetRepositoryMetadataQuery,
   useGetRepositoryProbeQuery,
 } from "../../../repositories/repositories.api";
-import { Link, useLocation } from "react-router-dom-v5-compat";
-import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import { Url } from "../../../../utils/helpers/url";
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
+import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -682,8 +682,6 @@ function RepositoryView({
 function RepositoryPermissionsAlert({
   repositoryUrl,
 }: RepositoryPermissionsProps) {
-  const location = useLocation();
-
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
@@ -732,9 +730,7 @@ function RepositoryPermissionsAlert({
       ? "connected"
       : "not-connected";
 
-  const loginUrl = Url.get(Url.pages.login.link, {
-    pathname: location.pathname,
-  });
+  const loginUrl = useLoginUrl();
 
   if (error && isNotFound) {
     const color = permissions.pull ? "warning" : "danger";
@@ -772,8 +768,8 @@ function RepositoryPermissionsAlert({
           </p>
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
-              You need to <Link to={loginUrl}>log in</Link> to perform pushes on
-              git repositories.
+              You need to <a href={loginUrl.href}>log in</a> to perform pushes
+              on git repositories.
             </p>
           ) : provider && status === "not-connected" ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
@@ -799,8 +795,8 @@ function RepositoryPermissionsAlert({
           </p>
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
-              You need to <Link to={loginUrl}>log in</Link> to perform pushes on
-              git repositories.
+              You need to <a href={loginUrl.href}>log in</a> to perform pushes
+              on git repositories.
             </p>
           ) : provider && status === "not-connected" ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
