@@ -263,7 +263,7 @@ interface SearchV2ResultProjectProps {
   project: Project;
 }
 function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
-  const { creationDate, description, name, namespace, slug, visibility } =
+  const { creationDate, description, id, name, namespace, slug, visibility } =
     project;
 
   const namespaceUrl =
@@ -274,10 +274,15 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
       : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
           slug: namespace?.namespace ?? "",
         });
-  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-    namespace: namespace?.namespace ?? "",
-    slug,
-  });
+  const projectUrl =
+    namespace?.namespace != null
+      ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: namespace.namespace,
+          slug,
+        })
+      : generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
+          id,
+        });
 
   return (
     <SearchV2ResultsContainer>
