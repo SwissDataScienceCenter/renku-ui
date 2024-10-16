@@ -102,11 +102,13 @@ function ProjectDataConnectorBoxContent({
               cloud storage to read and write custom data.
             </p>
           )}
-          <ListGroup flush>
-            {data?.map((dc) => (
-              <DataConnectorLinkDisplay key={dc.id} dataConnectorLink={dc} />
-            ))}
-          </ListGroup>
+          {data != null && data.length > 0 && (
+            <ListGroup flush>
+              {data.map((dc) => (
+                <DataConnectorLinkDisplay key={dc.id} dataConnectorLink={dc} />
+              ))}
+            </ListGroup>
+          )}
         </CardBody>
       </Card>
       <ProjectConnectDataConnectorsModal
