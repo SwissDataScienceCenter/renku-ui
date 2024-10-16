@@ -204,7 +204,8 @@ function DataConnectorViewConfiguration({
     >
       <div>
         <h4 className="mb-4">
-          <Gear className={cx("bi", "me-1")} /> Configuration
+          <Gear className={cx("bi", "me-1")} />
+          Configuration
         </h4>
       </div>
       <div>
