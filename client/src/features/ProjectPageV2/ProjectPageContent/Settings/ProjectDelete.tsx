@@ -77,7 +77,7 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
           Delete project
         </h4>
         <p className="m-0">
-          Deleting the project will remove its repository and launcher sessions.
+          Deleting the project will remove its repository and session launchers.
         </p>
       </CardHeader>
       <CardBody>
