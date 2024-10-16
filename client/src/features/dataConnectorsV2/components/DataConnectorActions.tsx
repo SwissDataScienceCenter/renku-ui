@@ -65,10 +65,13 @@ function DataConnectorRemoveDeleteModal({
   isOpen,
 }: DataConnectorRemoveModalProps) {
   const dispatch = useAppDispatch();
-  const { data: dataConnectorLinks, isLoading: isLoadingLinks } =
-    useGetDataConnectorsByDataConnectorIdProjectLinksQuery({
-      dataConnectorId: dataConnector.id,
-    });
+  const {
+    data: dataConnectorLinks,
+    isLoading: isLoadingLinks,
+    isError: isLoadingLinksError,
+  } = useGetDataConnectorsByDataConnectorIdProjectLinksQuery({
+    dataConnectorId: dataConnector.id,
+  });
   const [deleteDataConnector, { isLoading, isSuccess }] =
     useDeleteDataConnectorsByDataConnectorIdMutation();
 
@@ -98,8 +101,26 @@ function DataConnectorRemoveDeleteModal({
         Delete data connector
       </ModalHeader>
       <ModalBody>
-        {isLoadingLinks || dataConnectorLinks == null ? (
+        {isLoadingLinks ? (
           <Loader />
+        ) : dataConnectorLinks == null || isLoadingLinksError ? (
+          <Row>
+            <Col>
+              <p>
+                Are you sure you want to delete this data connector? It is
+                possible that it is used in some projects.
+              </p>
+              <p>
+                Please type <strong>{dataConnector.slug}</strong>, the slug of
+                the data connector, to confirm.
+              </p>
+              <Input
+                data-cy="delete-confirmation-input"
+                value={typedName}
+                onChange={onChange}
+              />
+            </Col>
+          </Row>
         ) : (
           <Row>
             <Col>
@@ -108,11 +129,11 @@ function DataConnectorRemoveDeleteModal({
                 {dataConnectorLinks.length <
                 1 ? null : dataConnectorLinks.length === 1 ? (
                   <>
-                    It will affect <b>1 project that uses it</b>.
+                    It will affect at least <b>1 project that uses it</b>.
                   </>
                 ) : (
                   <>
-                    It will affect{" "}
+                    It will affect at least{" "}
                     <b>{dataConnectorLinks.length} projects that use it</b>.
                   </>
                 )}
