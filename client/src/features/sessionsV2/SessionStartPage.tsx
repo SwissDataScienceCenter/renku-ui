@@ -197,6 +197,7 @@ function SessionStarting({
 
   // Request session
   useEffect(() => {
+    if (isLoadingStartSession || session != null) return;
     startSession({
       projectId: project.id,
       launcherId: launcher.id,
@@ -214,8 +215,10 @@ function SessionStarting({
     dispatch(setFavicon("waiting"));
   }, [
     containerImage,
+    isLoadingStartSession,
     launcher.id,
     project.id,
+    session,
     startSession,
     startSessionOptionsV2,
     dispatch,
