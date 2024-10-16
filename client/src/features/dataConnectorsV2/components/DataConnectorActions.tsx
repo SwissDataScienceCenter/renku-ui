@@ -126,8 +126,12 @@ function DataConnectorRemoveDeleteModal({
             <Col>
               <p>
                 Are you sure you want to delete this data connector?{" "}
-                {dataConnectorLinks.length <
-                1 ? null : dataConnectorLinks.length === 1 ? (
+                {dataConnectorLinks.length < 1 ? (
+                  <>
+                    It is not used in any projects that are visible to you, but
+                    it will affect any projects where it is used.
+                  </>
+                ) : dataConnectorLinks.length === 1 ? (
                   <>
                     It will affect at least <b>1 project that uses it</b>.
                   </>
