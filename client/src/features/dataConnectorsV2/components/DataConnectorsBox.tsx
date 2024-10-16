@@ -219,11 +219,13 @@ function DataConnectorBoxContent({
               cloud storage to read and write custom data.
             </p>
           )}
-          <ListGroup flush>
-            {data.dataConnectors?.map((dc) => (
-              <DataConnectorBoxListDisplay key={dc.id} dataConnector={dc} />
-            ))}
-          </ListGroup>
+          {data.total > 0 && (
+            <ListGroup flush>
+              {data.dataConnectors?.map((dc) => (
+                <DataConnectorBoxListDisplay key={dc.id} dataConnector={dc} />
+              ))}
+            </ListGroup>
+          )}
           <Pagination
             currentPage={data.page}
             perPage={perPage}
