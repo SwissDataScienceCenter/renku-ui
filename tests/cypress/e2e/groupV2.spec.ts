@@ -262,6 +262,7 @@ describe("Work with group data connectors", () => {
         dataConnectorId: "ULID-2",
         fixture: "dataConnector/project-data-connector-links-multiple.json",
       })
+      .readGroupV2Namespace()
       .readProjectV2ById({ projectId: "PROJECT-ULID-1", name: "readProject1" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-3", name: "readProject2" });
