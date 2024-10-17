@@ -396,6 +396,47 @@
         "tags": ["projects"]
       }
     },
+    "/projects/{project_id}/permissions": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the permissions of the current user on the project",
+        "responses": {
+          "200": {
+            "description": "The set of permissions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectPermissions"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
+    },
     "/projects/{project_id}/data_connector_links": {
       "parameters": [
         {
@@ -788,6 +829,24 @@
             }
           }
         ]
+      },
+      "ProjectPermissions": {
+        "description": "The set of permissions on a project",
+        "type": "object",
+        "properties": {
+          "write": {
+            "description": "The user can edit the project",
+            "type": "boolean"
+          },
+          "delete": {
+            "description": "The user can delete the project",
+            "type": "boolean"
+          },
+          "change_membership": {
+            "description": "The user can manage project members",
+            "type": "boolean"
+          }
+        }
       },
       "PaginationRequest": {
         "type": "object",

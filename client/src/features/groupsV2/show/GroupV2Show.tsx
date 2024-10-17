@@ -34,18 +34,18 @@ import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
-import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { GroupResponse } from "../../projectsV2/api/namespace.api";
 import {
-  useGetGroupsByGroupSlugMembersQuery,
   useGetGroupsByGroupSlugQuery,
   useGetNamespacesByNamespaceSlugQuery,
 } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
+import { EntityPill } from "../../searchV2/components/SearchV2Results";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
-import { EntityPill } from "../../searchV2/components/SearchV2Results";
+import useGroupPermissions from "../utils/useGroupPermissions.hook";
 
 export default function GroupV2Show() {
   const { slug } = useParams<{ slug: string }>();
@@ -152,12 +152,10 @@ interface GroupSettingsButtonProps {
 }
 
 function GroupSettingsButton({ group }: GroupSettingsButtonProps) {
-  const { data: members } = useGetGroupsByGroupSlugMembersQuery({
-    groupSlug: group.slug,
-  });
+  const permissions = useGroupPermissions({ groupSlug: group.slug });
 
   return (
-    <MembershipGuard
+    <PermissionsGuard
       enabled={
         <Link
           to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.settings, {
@@ -170,8 +168,8 @@ function GroupSettingsButton({ group }: GroupSettingsButtonProps) {
         </Link>
       }
       disabled={null}
-      members={members}
-      minimumRole="editor"
+      requestedPermission="write"
+      userPermissions={permissions}
     />
   );
 }

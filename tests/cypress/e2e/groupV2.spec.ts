@@ -115,12 +115,14 @@ describe("Edit v2 group", () => {
     fixtures
       .readGroupV2()
       .readGroupV2Namespace()
+      .getGroupV2Permissions()
       .listGroupV2Members()
       .updateGroupV2();
     cy.contains("Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
+    cy.wait("@getGroupV2Permissions");
     cy.contains("Edit settings").should("be.visible").click();
     cy.getDataCy("group-name-input").clear().type("new name");
     cy.getDataCy("group-slug-input").clear().type("new-slug");
@@ -148,6 +150,7 @@ describe("Edit v2 group", () => {
     fixtures
       .deleteGroupV2Member({ userId: groupMemberToRemove })
       .searchV2ListProjects({ numberOfProjects: 0, numberOfUsers: 5 })
+      .getGroupV2Permissions()
       .listGroupV2Members()
       .readGroupV2()
       .readGroupV2Namespace();
@@ -156,6 +159,7 @@ describe("Edit v2 group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
+    cy.wait("@getGroupV2Permissions");
     cy.contains("Edit settings").should("be.visible").click();
     cy.contains("@user1").should("be.visible");
     cy.contains("user3-uuid").should("be.visible");
@@ -189,12 +193,14 @@ describe("Edit v2 group", () => {
     fixtures
       .readGroupV2()
       .readGroupV2Namespace()
+      .getGroupV2Permissions()
       .listGroupV2Members()
       .deleteGroupV2();
     cy.contains("Groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
+    cy.wait("@getGroupV2Permissions");
     cy.contains("Edit settings").should("be.visible").click();
     cy.getDataCy("group-description-input").clear().type("new description");
     cy.get("button").contains("Delete").should("be.visible").click();
@@ -232,6 +238,7 @@ describe("Work with group data connectors", () => {
       .listGroupV2()
       .readGroupV2()
       .readGroupV2Namespace()
+      .getGroupV2Permissions()
       .listGroupV2Members()
       .listProjectV2ByNamespace()
       .listDataConnectors({ namespace: "test-2-group-v2" })
@@ -270,6 +277,7 @@ describe("Work with group data connectors", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible");
+    cy.wait("@getGroupV2Permissions");
     cy.getDataCy("add-data-connector").should("be.visible").click();
     // Pick a provider
     cy.getDataCy("data-storage-s3").click();
