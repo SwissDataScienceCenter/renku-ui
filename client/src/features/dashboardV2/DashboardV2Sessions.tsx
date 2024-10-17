@@ -4,7 +4,7 @@ import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Col, ListGroup, Row } from "reactstrap";
 import { Loader } from "../../components/Loader";
-import { EnvironmentLogsV2 } from "../../components/LogsV2";
+import EnvironmentLogsV2 from "../../components/LogsV2";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../../features/sessionsV2/sessionsV2.api";
 import "../../notebooks/Notebooks.css";
@@ -36,37 +36,45 @@ export default function DashboardV2Sessions() {
   return <SessionDashboardList sessions={sessions} />;
 }
 
-const LoadingState = () => (
-  <div className={cx("d-flex", "flex-column", "mx-auto")}>
-    <Loader />
-    <p className={cx("mx-auto", "my-3")}>Retrieving sessions...</p>
-  </div>
-);
+function LoadingState() {
+  return (
+    <div className={cx("d-flex", "flex-column", "mx-auto")}>
+      <Loader />
+      <p className={cx("mx-auto", "my-3")}>Retrieving sessions...</p>
+    </div>
+  );
+}
 
-const ErrorState = ({
+function ErrorState({
   error,
 }: {
   error: FetchBaseQueryError | SerializedError | undefined;
-}) => (
-  <div>
-    <p>Cannot show sessions.</p>
-    <RtkErrorAlert error={error} />
-  </div>
-);
+}) {
+  return (
+    <div>
+      <p>Cannot show sessions.</p>
+      <RtkErrorAlert error={error} />
+    </div>
+  );
+}
 
-const NoSessionsState = () => <div>No running sessions.</div>;
+function NoSessionsState() {
+  return <div>No running sessions.</div>;
+}
 
-const SessionDashboardList = ({
+function SessionDashboardList({
   sessions,
 }: {
   sessions: SessionList | undefined;
-}) => (
-  <ListGroup flush data-cy="dashboard-session-list">
-    {sessions?.map((session) => (
-      <DashboardSession key={session.name} session={session} />
-    ))}
-  </ListGroup>
-);
+}) {
+  return (
+    <ListGroup flush data-cy="dashboard-session-list">
+      {sessions?.map((session) => (
+        <DashboardSession key={session.name} session={session} />
+      ))}
+    </ListGroup>
+  );
+}
 
 interface DashboardSessionProps {
   session: SessionV2;

@@ -31,7 +31,6 @@ import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useGetDockerImageQuery } from "./sessionsV2.api";
-import { useGetStoragesV2Query } from "../projectsV2/api/storagesV2.api";
 import { DEFAULT_URL } from "./session.constants";
 
 interface StartSessionFromLauncherProps {

@@ -46,7 +46,7 @@ import {
 
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
-import { EnvironmentLogsV2 } from "../../../../components/LogsV2";
+import EnvironmentLogsV2 from "../../../../components/LogsV2";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { User } from "../../../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
@@ -612,8 +612,7 @@ function ModifySessionModalContent({
               resourcePools.length == 0 ||
               isError ||
               currentSessionClass == null ||
-              (resource_class_id != null &&
-                resource_class_id === `${currentSessionClass?.id}`)
+              resource_class_id === `${currentSessionClass?.id}`
             }
             onClick={onClick({ resumeSession: true })}
             type="submit"

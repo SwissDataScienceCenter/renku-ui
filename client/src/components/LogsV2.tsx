@@ -16,12 +16,11 @@
  * limitations under the License.
  */
 
-import { Modal, ModalBody, ModalHeader } from "reactstrap";
 import { displaySlice } from "../features/display";
 import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../utils/customHooks/useAppSelector.hook";
 import { useGetSessionLogsV2 } from "../utils/customHooks/UseGetSessionLogs";
-import { IFetchableLogs, ILogs, SessionLogs } from "./Logs";
+import { EnvironmentLogsPresent } from "./Logs";
 
 /**
  * Sessions logs container integrating state and actions V2
@@ -31,7 +30,7 @@ import { IFetchableLogs, ILogs, SessionLogs } from "./Logs";
 interface EnvironmentLogsPropsV2 {
   name: string;
 }
-export const EnvironmentLogsV2 = ({ name }: EnvironmentLogsPropsV2) => {
+export default function EnvironmentLogsV2({ name }: EnvironmentLogsPropsV2) {
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
   );
@@ -47,50 +46,12 @@ export const EnvironmentLogsV2 = ({ name }: EnvironmentLogsPropsV2) => {
   };
 
   return (
-    <EnvironmentLogsPresentV2
+    <EnvironmentLogsPresent
       fetchLogs={fetchLogs}
       toggleLogs={toggleLogs}
       logs={logs}
       name={name}
+      title="Logs"
     />
   );
-};
-interface EnvironmentLogsPresentV2Props {
-  fetchLogs: IFetchableLogs["fetchLogs"];
-  logs?: ILogs;
-  name: string;
-  toggleLogs: (name: string) => unknown;
 }
-const EnvironmentLogsPresentV2 = ({
-  logs,
-  name,
-  toggleLogs,
-  fetchLogs,
-}: EnvironmentLogsPresentV2Props) => {
-  if (!logs?.show || logs?.show !== name || !logs) return null;
-
-  return (
-    <Modal
-      isOpen={!!logs.show}
-      className="modal-xl"
-      scrollable={true}
-      toggle={() => {
-        toggleLogs(name);
-      }}
-    >
-      <ModalHeader
-        className="header-multiline"
-        toggle={() => {
-          toggleLogs(name);
-        }}
-      >
-        <div>Logs</div>
-      </ModalHeader>
-      <ModalBody>
-        <div className="mx-2">
-          <SessionLogs fetchLogs={fetchLogs} logs={logs} name={name} />
-        </div>
-      </ModalBody>
-    </Modal>
-  );
-};

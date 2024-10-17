@@ -72,7 +72,7 @@ export function StartSessionProgressBarV2({
   const statusData = session?.status;
   const description =
     statusData?.ready_containers && statusData?.total_containers
-      ? `${statusData?.ready_containers} of ${statusData?.total_containers} containers ready`
+      ? `${statusData.ready_containers} of ${statusData.total_containers} containers ready`
       : "Loading containers status";
 
   return (

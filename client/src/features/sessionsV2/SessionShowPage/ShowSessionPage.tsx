@@ -44,7 +44,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { Loader } from "../../../components/Loader";
-import { EnvironmentLogsV2 } from "../../../components/LogsV2";
+import EnvironmentLogsV2 from "../../../components/LogsV2";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import RenkuFrogIcon from "../../../components/icons/RenkuIcon";
@@ -85,9 +85,11 @@ export default function ShowSessionPage() {
     slug: slug ?? "",
   });
 
-  const { data: sessions, isLoading } = useGetSessionsQuery(undefined, {
-    skip: false,
-  });
+  const {
+    data: sessions,
+    isLoading,
+    isFetching,
+  } = useGetSessionsQuery(undefined, { refetchOnMountOrArgChange: true });
 
   const thisSession = useMemo(() => {
     if (sessions == null) {
@@ -99,14 +101,14 @@ export default function ShowSessionPage() {
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
       thisSession?.status?.state,
-      isLoading
+      isLoading || isFetching
     );
     dispatch(setFavicon(faviconByStatus));
     return () => {
       // cleanup and set favicon to default
       dispatch(resetFavicon());
     };
-  }, [thisSession?.status?.state, isLoading, dispatch]);
+  }, [thisSession?.status?.state, isLoading, isFetching, dispatch]);
 
   const [isTheSessionReady, setIsTheSessionReady] = useState(false);
 
@@ -173,7 +175,7 @@ export default function ShowSessionPage() {
   );
   const logs = thisSession && <EnvironmentLogsV2 name={sessionName} />;
   const content =
-    !isLoading && thisSession == null ? (
+    !isLoading && !isFetching && !thisSession ? (
       <SessionUnavailable />
     ) : thisSession?.status.state === "hibernated" ? (
       <SessionHibernated sessionName={thisSession.name} />

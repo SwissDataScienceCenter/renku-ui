@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import {
   Button,
   Modal,
@@ -335,42 +335,6 @@ const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
     );
   };
 
-  return (
-    <EnvironmentLogsPresent
-      fetchLogs={fetchLogs}
-      toggleLogs={toggleLogs}
-      logs={logs}
-      name={name}
-      annotations={annotations}
-    />
-  );
-};
-
-/**
- * Simple environment logs container
- *
- * @param {function} fetchLogs - async function to get logs as an array string
- * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
- * @param {object} logs - log object from redux store enhanced with `show` property
- * @param {string} name - server name
- * @param {object} annotations - list of annotations
- */
-interface EnvironmentLogsPresentProps {
-  annotations: Record<string, unknown>;
-  fetchLogs: IFetchableLogs["fetchLogs"];
-  logs?: ILogs;
-  name: string;
-  toggleLogs: (name: string) => unknown;
-}
-const EnvironmentLogsPresent = ({
-  logs,
-  name,
-  toggleLogs,
-  fetchLogs,
-  annotations,
-}: EnvironmentLogsPresentProps) => {
-  if (!logs?.show || logs?.show !== name || !logs) return null;
-
   const cleanAnnotations = NotebooksHelper.cleanAnnotations(
     annotations
   ) as NotebookAnnotations;
@@ -384,6 +348,42 @@ const EnvironmentLogsPresent = ({
       </small>
     </div>
   );
+
+  return (
+    <EnvironmentLogsPresent
+      fetchLogs={fetchLogs}
+      toggleLogs={toggleLogs}
+      logs={logs}
+      name={name}
+      title={modalTitle}
+    />
+  );
+};
+
+/**
+ * Simple environment logs container
+ *
+ * @param {function} fetchLogs - async function to get logs as an array string
+ * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
+ * @param {object} logs - log object from redux store enhanced with `show` property
+ * @param {string} name - server name
+ * @param {ReactNode | string} title - modal title
+ */
+interface EnvironmentLogsPresentProps {
+  title: ReactNode | string;
+  fetchLogs: IFetchableLogs["fetchLogs"];
+  logs?: ILogs;
+  name: string;
+  toggleLogs: (name: string) => unknown;
+}
+function EnvironmentLogsPresent({
+  logs,
+  name,
+  toggleLogs,
+  fetchLogs,
+  title,
+}: EnvironmentLogsPresentProps) {
+  if (!logs?.show || logs?.show !== name || !logs) return null;
 
   return (
     <Modal
@@ -400,8 +400,7 @@ const EnvironmentLogsPresent = ({
           toggleLogs(name);
         }}
       >
-        <div>Logs</div>
-        {modalTitle}
+        {title}
       </ModalHeader>
       <ModalBody>
         <div className="mx-2">
@@ -410,6 +409,6 @@ const EnvironmentLogsPresent = ({
       </ModalBody>
     </Modal>
   );
-};
+}
 
 export { EnvironmentLogs, EnvironmentLogsPresent, SessionLogs };

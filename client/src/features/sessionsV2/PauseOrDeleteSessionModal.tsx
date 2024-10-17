@@ -19,7 +19,6 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { DateTime } from "luxon";
 import { useCallback, useContext, useEffect, useState } from "react";
 import {
   generatePath,
@@ -27,24 +26,20 @@ import {
   useParams,
 } from "react-router-dom-v5-compat";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
-import { InfoAlert } from "../../components/Alert";
-import { Loader } from "../../components/Loader";
 import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { toHumanRelativeDuration } from "../../utils/helpers/DurationUtils";
+import styles from "../session/components/SessionModals.module.scss";
 import { useWaitForSessionStatusV2 } from "../session/useWaitForSessionStatus.hook";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
 } from "../sessionsV2/sessionsV2.api";
-
-import styles from "../session/components/SessionModals.module.scss";
 import { SessionV2 } from "./sessionsV2.types";
+import { Loader } from "../../components/Loader";
 
 interface PauseOrDeleteSessionModalProps {
   action?: "pause" | "delete";
@@ -258,13 +253,14 @@ function PauseSessionModalContent({
     }
   }, [backUrl, isSuccess, isWaiting, navigate]);
 
-  const now = DateTime.utc();
-  const hibernationThreshold = session?.status?.will_hibernate_at
-    ? toHumanRelativeDuration({
-        datetime: session?.status?.will_hibernate_at,
-        now,
-      })
-    : 0;
+  // TODO: Uncomment when hibernatedSecondsThreshold is available
+  // const now = DateTime.utc();
+  // const hibernationThreshold = session?.status?.hibernatedSecondsThreshold
+  //   ? toHumanRelativeDuration({
+  //       datetime: session?.status?.hibernatedSecondsThreshold,
+  //       now,
+  //     })
+  //   : 0;
   return (
     <>
       <ModalBody>
@@ -273,13 +269,13 @@ function PauseSessionModalContent({
           session (new and edited files) will be preserved while the session is
           paused.
         </p>
-        {session?.status?.will_hibernate_at &&
-          session?.status?.will_hibernate_at?.length > 0 && (
+        {/* TODO: Uncomment when hibernatedSecondsThreshold is available
+          { hibernationThreshold > 0 && (
             <InfoAlert dismissible={false} timeout={0}>
-              Please note that paused session are deleted after{" "}
+              Please note that paused sessions are deleted after{" "}
               {hibernationThreshold} of inactivity.
             </InfoAlert>
-          )}
+          )} */}
         <div className="my-2">
           <Button
             className={cx("float-right", "p-0")}

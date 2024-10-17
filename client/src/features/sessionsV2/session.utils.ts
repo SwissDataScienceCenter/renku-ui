@@ -26,7 +26,7 @@ import {
   SessionLauncherEnvironmentParams,
   SessionLauncherForm,
 } from "./sessionsV2.types";
-import { SessionStartCloudStorageConfiguration } from "./startSessionOptionsV2.types";
+import { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
@@ -226,9 +226,9 @@ export function isValidJSONStringArray(
 }
 
 export function storageDefinitionFromConfigV2(
-  config: SessionStartCloudStorageConfiguration
+  config: SessionStartDataConnectorConfiguration
 ): SessionCloudStorageV2 {
-  const { storage: storageDefinition } = config.cloudStorage;
+  const storageDefinition = config.dataConnector.storage;
   const { sensitiveFieldValues } = config;
 
   // Merge configuration with sensitive field values, excluding empty ones
@@ -245,7 +245,7 @@ export function storageDefinitionFromConfigV2(
     readonly: !!storageDefinition.readonly,
     source_path: storageDefinition.source_path,
     target_path: storageDefinition.target_path,
-    storage_id: storageDefinition.storage_id,
+    storage_id: config.dataConnector.id,
     configuration,
   };
 }
@@ -273,9 +273,6 @@ export function ensureHTTPS(url: string): string {
 
     throw new Error("Unsupported protocol");
   } catch (error) {
-    if (url && !url.includes("://")) {
-      return `https://${url}`;
-    }
     throw new Error(`Invalid URL: ${url}`);
   }
 }
