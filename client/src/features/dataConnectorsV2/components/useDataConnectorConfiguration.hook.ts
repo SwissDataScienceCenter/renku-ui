@@ -18,29 +18,35 @@
 
 import { useMemo } from "react";
 
-import { CLOUD_OPTIONS_OVERRIDE } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
-import { RCloneOption } from "../../../projectsV2/api/storagesV2.api";
-import type {
-  CloudStorageGetV2Read,
-  CloudStorageSecretGet,
-} from "../../../projectsV2/api/storagesV2.api";
+import { CLOUD_OPTIONS_OVERRIDE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
+import { RCloneOption } from "../api/data-connectors.api";
+import type { DataConnectorRead } from "../api/data-connectors.api";
+import { useGetDataConnectorsListSecretsQuery } from "../api/data-connectors.enhanced-api";
 
-import type { SessionStartCloudStorageConfiguration } from "../../../sessionsV2/startSessionOptionsV2.types";
+import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 
-interface UseDataSourceConfigurationArgs {
-  storages: CloudStorageGetV2Read[] | undefined;
+export interface DataConnectorConfiguration
+  extends Omit<SessionStartDataConnectorConfiguration, "cloudStorage"> {
+  dataConnector: DataConnectorRead;
 }
 
-export default function useDataSourceConfiguration({
-  storages,
+interface UseDataSourceConfigurationArgs {
+  dataConnectors: DataConnectorRead[] | undefined;
+}
+
+export default function useDataConnectorConfiguration({
+  dataConnectors,
 }: UseDataSourceConfigurationArgs) {
-  const cloudStorageConfigs = useMemo(
+  const { data: dataConnectorSecrets } = useGetDataConnectorsListSecretsQuery({
+    dataConnectorIds: dataConnectors?.map((dc) => dc.id) ?? [],
+  });
+  const dataConnectorConfigs = useMemo(
     () =>
-      storages?.map((cloudStorage) => {
-        const storageDefinition = cloudStorage.storage;
+      dataConnectors?.map((dataConnector) => {
+        const storageDefinition = dataConnector.storage;
         const defSensitiveFieldsMap: Record<string, RCloneOption> = {};
-        if (cloudStorage.sensitive_fields != null) {
-          cloudStorage.sensitive_fields.forEach((f) => {
+        if (dataConnector.storage.sensitive_fields != null) {
+          dataConnector.storage.sensitive_fields.forEach((f) => {
             if (f.name != null) defSensitiveFieldsMap[f.name] = f;
           });
         }
@@ -65,36 +71,29 @@ export default function useDataSourceConfiguration({
             };
           });
 
-        const sensitiveFieldValues: SessionStartCloudStorageConfiguration["sensitiveFieldValues"] =
+        const sensitiveFieldValues: SessionStartDataConnectorConfiguration["sensitiveFieldValues"] =
           {};
         configSensitiveFields.forEach((key) => {
           const { name } = defSensitiveFieldsMap[key];
           if (name == null) return;
           sensitiveFieldValues[name] = "";
         });
-        const storagesSecrets = storages?.reduce(
-          (a: Record<string, CloudStorageSecretGet[]>, s) => {
-            a[s.storage.storage_id] = s.secrets ? s.secrets : [];
-            return a;
-          },
-          {}
-        );
-        const savedCredentialFields = storagesSecrets
-          ? storagesSecrets[storageDefinition.storage_id].map((s) => s.name)
+        const savedCredentialFields = dataConnectorSecrets
+          ? dataConnectorSecrets[dataConnector.id].map((s) => s.name)
           : [];
         return {
           active: true,
-          cloudStorage,
+          dataConnector,
           sensitiveFieldDefinitions,
           sensitiveFieldValues,
           saveCredentials: false,
           savedCredentialFields,
         };
       }),
-    [storages]
+    [dataConnectors, dataConnectorSecrets]
   );
 
   return {
-    cloudStorageConfigs,
+    dataConnectorConfigs,
   };
 }

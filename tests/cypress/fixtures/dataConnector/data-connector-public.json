@@ -1,0 +1,23 @@
+[
+  {
+    "id": "ULID-1",
+    "name": "example storage",
+    "namespace": "user1-uuid",
+    "slug": "example-storage",
+    "storage": {
+      "storage_type": "s3",
+      "configuration": {
+        "type": "s3",
+        "provider": "AWS"
+      },
+      "source_path": "bucket/my-source",
+      "target_path": "external_storage/aws",
+      "readonly": true,
+      "sensitive_fields": []
+    },
+    "creation_date": "2023-11-15T09:55:59Z",
+    "created_by": { "id": "user1-uuid" },
+    "visibility": "public",
+    "description": "Example storage description"
+  }
+]

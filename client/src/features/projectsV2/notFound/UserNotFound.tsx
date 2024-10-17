@@ -19,14 +19,14 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router-dom-v5-compat";
-import { Button, Col, Collapse, Row } from "reactstrap";
 
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import rkNotFoundImgV2 from "../../../styles/assets/not-foundV2.svg";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook.ts";
 
 interface UserNotFoundProps {
   error?: FetchBaseQueryError | SerializedError | undefined | null;
@@ -34,11 +34,7 @@ interface UserNotFoundProps {
 
 export default function UserNotFound({ error }: UserNotFoundProps) {
   const { username } = useParams<{ username: string }>();
-
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const onClickDetails = useCallback(() => {
-    setDetailsOpen((open) => !open);
-  }, []);
+  const logged = useLegacySelector((state) => state.stateModel.user.logged);
 
   const notFoundText = username ? (
     <>
@@ -50,38 +46,36 @@ export default function UserNotFound({ error }: UserNotFoundProps) {
   );
 
   return (
-    <ContainerWrap fullSize className="container-lg">
-      <Row className="mt-3">
-        <Col>
-          <h1>Error 404</h1>
-          <h2>User not found</h2>
-
-          <p>{notFoundText}</p>
-
-          <div>
+    <ContainerWrap>
+      <div className={cx("d-flex")}>
+        <div className={cx("m-auto", "d-flex", "flex-column")}>
+          <h3
+            className={cx(
+              "text-primary",
+              "fw-bold",
+              "my-0",
+              "d-flex",
+              "align-items-center",
+              "gap-3"
+            )}
+          >
+            <img src={rkNotFoundImgV2} />
+            User not found
+          </h3>
+          <div className={cx("text-start", "mt-3")}>
+            <p>{notFoundText}</p>
+            <p>It is possible that the user has been deleted.</p>
+            {error && <RtkOrNotebooksError error={error} dismissible={false} />}
             <Link
               to={ABSOLUTE_ROUTES.v2.root}
-              className={cx("btn", "btn-rk-green")}
+              className={cx("btn", "btn-primary")}
             >
-              <ArrowLeft className={cx("bi", "me-1")} />
-              Return to the home page
+              <ArrowLeft className={cx("me-2", "text-icon")} />
+              {logged ? "Return to the dashboard" : "Return to home page"}
             </Link>
           </div>
-
-          {error && (
-            <>
-              <div className={cx("mt-3", "mb-1")}>
-                <Button color="link" className="p-0" onClick={onClickDetails}>
-                  Show error details
-                </Button>
-              </div>
-              <Collapse isOpen={detailsOpen}>
-                <RtkOrNotebooksError error={error} dismissible={false} />
-              </Collapse>
-            </>
-          )}
-        </Col>
-      </Row>
+        </div>
+      </div>
     </ContainerWrap>
   );
 }

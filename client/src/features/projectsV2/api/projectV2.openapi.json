@@ -20,34 +20,12 @@
         "parameters": [
           {
             "in": "query",
-            "description": "A namespace, used as a filter.",
-            "name": "namespace",
-            "required": false,
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "description": "Result's page number starting from 1",
-            "name": "page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1
-            }
-          },
-          {
-            "in": "query",
-            "description": "The number of results per page",
-            "name": "per_page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20
+              "$ref": "#/components/schemas/ProjectGetQuery"
             }
           }
         ],
@@ -417,6 +395,38 @@
         },
         "tags": ["projects"]
       }
+    },
+    "/projects/{project_id}/data_connector_links": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the project"
+        }
+      ],
+      "get": {
+        "summary": "Get all links from data connectors to a given project",
+        "responses": {
+          "200": {
+            "description": "List of data connector to project links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnectorToProjectLinksList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
     }
   },
   "components": {
@@ -450,6 +460,9 @@
           },
           "created_by": {
             "$ref": "#/components/schemas/UserId"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/UpdatedAt"
           },
           "repositories": {
             "$ref": "#/components/schemas/RepositoriesList"
@@ -556,7 +569,7 @@
         "type": "string",
         "minLength": 26,
         "maxLength": 26,
-        "pattern": "^[A-Z0-9]{26}$"
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
       "ProjectName": {
         "description": "Renku project name",
@@ -575,6 +588,12 @@
       },
       "CreationDate": {
         "description": "The date and time the resource was created (in UTC and ISO-8601 format)",
+        "type": "string",
+        "format": "date-time",
+        "example": "2023-11-01T17:32:28Z"
+      },
+      "UpdatedAt": {
+        "description": "The date and time the resource was updated (in UTC and ISO-8601 format)",
         "type": "string",
         "format": "date-time",
         "example": "2023-11-01T17:32:28Z"
@@ -667,15 +686,15 @@
         "minItems": 0
       },
       "ProjectMemberResponse": {
-        "description": "A member with full info (email, name, ...) and the access level to the project",
+        "description": "A member with full info (namespace, name, ...) and the access level to the project",
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "id": {
             "$ref": "#/components/schemas/UserId"
           },
-          "email": {
-            "$ref": "#/components/schemas/UserEmail"
+          "namespace": {
+            "$ref": "#/components/schemas/Slug"
           },
           "first_name": {
             "$ref": "#/components/schemas/UserFirstLastName"
@@ -707,16 +726,87 @@
         "minLength": 1,
         "maxLength": 256
       },
-      "UserEmail": {
-        "type": "string",
-        "format": "email",
-        "description": "User email",
-        "example": "some-user@gmail.com"
-      },
       "ETag": {
         "type": "string",
         "description": "Entity Tag",
         "example": "9EE498F9D565D0C41E511377425F32F3"
+      },
+      "DataConnectorToProjectLinksList": {
+        "description": "A list of links from a data connector to a project",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/DataConnectorToProjectLink"
+        }
+      },
+      "DataConnectorToProjectLink": {
+        "description": "A link from a data connector to a project in Renku 2.0",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "data_connector_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/UserId"
+          }
+        },
+        "required": [
+          "id",
+          "data_connector_id",
+          "project_id",
+          "creation_date",
+          "created_by"
+        ]
+      },
+      "ProjectGetQuery": {
+        "description": "Query params for project get request",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationRequest"
+          },
+          {
+            "properties": {
+              "namespace": {
+                "description": "A namespace, used as a filter.",
+                "type": "string",
+                "default": ""
+              },
+              "direct_member": {
+                "description": "A flag to filter projects where the user is a direct member.",
+                "type": "boolean",
+                "default": false
+              }
+            }
+          }
+        ]
+      },
+      "PaginationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "description": "Result's page number starting from 1",
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "per_page": {
+            "description": "The number of results per page",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
       },
       "ErrorResponse": {
         "type": "object",
