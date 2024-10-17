@@ -27,18 +27,24 @@ import {
 } from "react-bootstrap-icons";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";
+import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
+import { EntityPill } from "../../searchV2/components/SearchV2Results";
 
 import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
 import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../project/utils/projectCloudStorage.utils";
+import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+
 import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
 import { storageSecretNameToFieldName } from "../../secrets/secrets.utils";
-import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
+
+import UserAvatar from "../../usersV2/show/UserAvatar";
 
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
@@ -317,6 +323,10 @@ function DataConnectorViewMetadata({
   const nonRequiredCredentialConfigurationKeys = Object.keys(
     storageDefinition.configuration
   ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
+  const { data: namespace, isLoading: isLoadingNamespace } =
+    useGetNamespacesByNamespaceSlugQuery({
+      namespaceSlug: dataConnector.namespace,
+    });
 
   return (
     <section className={cx("pt-3")} data-cy="data-connector-metadata-section">
@@ -334,7 +344,30 @@ function DataConnectorViewMetadata({
         </div>
       </DataConnectorPropertyValue>
       <DataConnectorPropertyValue title="Owner">
-        {dataConnector.namespace}
+        <div className={cx("d-flex", "align-items-center")}>
+          <div className="me-1">
+            <UserAvatar username={dataConnector.namespace} />{" "}
+          </div>
+          <div className="me-1">{dataConnector.namespace}</div>
+          <div>
+            {isLoadingNamespace ? (
+              <Loader inline size={16} />
+            ) : namespace == null ? null : namespace.namespace_kind ==
+              "user" ? (
+              <EntityPill
+                entityType="User"
+                size="sm"
+                tooltipPlacement="bottom"
+              />
+            ) : (
+              <EntityPill
+                entityType="Group"
+                size="sm"
+                tooltipPlacement="bottom"
+              />
+            )}
+          </div>
+        </div>
       </DataConnectorPropertyValue>
       {nonRequiredCredentialConfigurationKeys.map((key) => {
         const title = toCapitalized(key);
