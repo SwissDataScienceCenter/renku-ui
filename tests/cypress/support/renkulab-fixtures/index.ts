@@ -21,6 +21,7 @@
  */
 import { Admin } from "./admin";
 import { CloudStorage } from "./cloudStorage";
+import { ConnectedServices } from "./connectedServices";
 import { Dashboard } from "./dashboard";
 import { DataServices } from "./dataServices";
 import { Datasets } from "./datasets";
@@ -54,8 +55,10 @@ const V1Fixtures = NewProject(
                       Secrets(
                         Terms(
                           User(
-                            UserPreferences(
-                              Workflows(KgSearch(Global(BaseFixtures)))
+                            ConnectedServices(
+                              UserPreferences(
+                                Workflows(KgSearch(Global(BaseFixtures)))
+                              )
                             )
                           )
                         )

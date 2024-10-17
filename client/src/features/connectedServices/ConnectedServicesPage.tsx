@@ -74,34 +74,29 @@ export default function ConnectedServicesPage() {
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
 
-  if (isLoading) {
-    return <PageLoader />;
-  }
+  const content = isLoading ? (
+    <PageLoader />
+  ) : error ? (
+    <RtkOrNotebooksError error={error} dismissible={false} />
+  ) : !isUserLoggedIn ? (
+    <InfoAlert dismissible={false}>
+      Anonymous users cannot connect to external services.
+    </InfoAlert>
+  ) : !providers || providers.length === 0 ? (
+    <p>There are currently no external services users can connect to.</p>
+  ) : (
+    <div className={cx("row", "g-3")}>
+      {providers.map((provider) => (
+        <ConnectedServiceCard key={provider.id} provider={provider} />
+      ))}
+    </div>
+  );
 
-  if (error) {
-    return (
-      <div>
-        <RtkOrNotebooksError error={error} dismissible={false} />
-      </div>
-    );
-  }
   return (
-    <>
+    <div data-cy="connected-services-page">
       <h1>Connected services</h1>
-      {!isUserLoggedIn ? (
-        <InfoAlert dismissible={false}>
-          Anonymous users cannot connect to external services.
-        </InfoAlert>
-      ) : providers == null || providers.length == 0 ? (
-        <p>There are currently no external services users can connect to.</p>
-      ) : (
-        <div className={cx("row", "g-3")}>
-          {providers.map((provider) => (
-            <ConnectedServiceCard key={provider.id} provider={provider} />
-          ))}
-        </div>
-      )}
-    </>
+      {content}
+    </div>
   );
 }
 
@@ -161,7 +156,7 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
   );
 
   return (
-    <div className={cx("col-12", "col-lg-6")}>
+    <div data-cy="connected-services-card" className={cx("col-12", "col-lg-6")}>
       <Card className="h-100">
         <CardBody>
           <CardTitle>
