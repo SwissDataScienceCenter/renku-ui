@@ -74,7 +74,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       },
       "post": {
         "summary": "Create a new data connector",
@@ -103,7 +103,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       }
     },
     "/data_connectors/{data_connector_id}": {
@@ -145,7 +145,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       },
       "patch": {
         "summary": "Update specific fields of an existing data connector",
@@ -189,7 +189,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       },
       "delete": {
         "summary": "Remove a data connector",
@@ -201,7 +201,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       }
     },
     "/namespaces/{namespace}/data_connectors/{slug}": {
@@ -250,7 +250,49 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
+      }
+    },
+    "/data_connectors/{data_connector_id}/permissions": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "data_connector_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the data connector"
+        }
+      ],
+      "get": {
+        "summary": "Get the permissions of the current user on the data connector",
+        "responses": {
+          "200": {
+            "description": "The set of permissions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnectorPermissions"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The data connector does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
       }
     },
     "/data_connectors/{data_connector_id}/project_links": {
@@ -282,7 +324,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       },
       "post": {
         "summary": "Create a new link from a data connector to a project",
@@ -311,7 +353,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       }
     },
     "/data_connectors/{data_connector_id}/project_links/{link_id}": {
@@ -345,7 +387,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       }
     },
     "/data_connectors/{data_connector_id}/secrets": {
@@ -387,7 +429,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       },
       "patch": {
         "summary": "Save secrets for a data connector",
@@ -417,7 +459,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       },
       "delete": {
         "summary": "Remove all saved secrets for a data connector",
@@ -429,7 +471,7 @@
             "$ref": "#/components/responses/Error"
           }
         },
-        "tags": ["data connectors"]
+        "tags": ["data_connectors"]
       }
     }
   },
@@ -461,12 +503,6 @@
           },
           "storage": {
             "$ref": "#/components/schemas/CloudStorageCore"
-          },
-          "secrets": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataConnectorSecret"
-            }
           },
           "creation_date": {
             "$ref": "#/components/schemas/CreationDate"
@@ -743,7 +779,7 @@
         "type": "object",
         "properties": {
           "name": {
-            "$ref": "#/components/schemas/DataConnectorName"
+            "$ref": "#/components/schemas/DataConnectorSecretFieldName"
           },
           "secret_id": {
             "$ref": "#/components/schemas/Ulid"
@@ -762,13 +798,20 @@
         "description": "Information about a credential to save for a data connector",
         "properties": {
           "name": {
-            "$ref": "#/components/schemas/DataConnectorName"
+            "$ref": "#/components/schemas/DataConnectorSecretFieldName"
           },
           "value": {
             "$ref": "#/components/schemas/SecretValueNullable"
           }
         },
         "required": ["name", "value"]
+      },
+      "DataConnectorSecretFieldName": {
+        "description": "Name of the credential field",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "example": "secret_key"
       },
       "SecretValueNullable": {
         "description": "Secret value that can be any text",
@@ -967,6 +1010,24 @@
             }
           }
         ]
+      },
+      "DataConnectorPermissions": {
+        "description": "The set of permissions on a data connector",
+        "type": "object",
+        "properties": {
+          "write": {
+            "description": "The user can edit the data connector",
+            "type": "boolean"
+          },
+          "delete": {
+            "description": "The user can delete the data connector",
+            "type": "boolean"
+          },
+          "change_membership": {
+            "description": "The user can manage data connector members",
+            "type": "boolean"
+          }
+        }
       },
       "PaginationRequest": {
         "type": "object",

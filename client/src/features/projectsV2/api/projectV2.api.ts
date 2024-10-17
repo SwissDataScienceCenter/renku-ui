@@ -4,7 +4,7 @@ const injectedRtkApi = api.injectEndpoints({
     getProjects: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: `/projects`,
-        params: { params: queryArg },
+        params: { params: queryArg.params },
       }),
     }),
     postProjects: build.mutation<PostProjectsApiResponse, PostProjectsApiArg>({
@@ -73,6 +73,14 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getProjectsByProjectIdPermissions: build.query<
+      GetProjectsByProjectIdPermissionsApiResponse,
+      GetProjectsByProjectIdPermissionsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/permissions`,
+      }),
+    }),
     getProjectsByProjectIdDataConnectorLinks: build.query<
       GetProjectsByProjectIdDataConnectorLinksApiResponse,
       GetProjectsByProjectIdDataConnectorLinksApiArg
@@ -137,6 +145,11 @@ export type DeleteProjectsByProjectIdMembersAndMemberIdApiArg = {
   projectId: Ulid;
   /** This is user's KeyCloak ID */
   memberId: UserId;
+};
+export type GetProjectsByProjectIdPermissionsApiResponse =
+  /** status 200 The set of permissions. */ ProjectPermissions;
+export type GetProjectsByProjectIdPermissionsApiArg = {
+  projectId: Ulid;
 };
 export type GetProjectsByProjectIdDataConnectorLinksApiResponse =
   /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
@@ -223,6 +236,14 @@ export type ProjectMemberPatchRequest = {
   role: Role;
 };
 export type ProjectMemberListPatchRequest = ProjectMemberPatchRequest[];
+export type ProjectPermissions = {
+  /** The user can edit the project */
+  write?: boolean;
+  /** The user can delete the project */
+  delete?: boolean;
+  /** The user can manage project members */
+  change_membership?: boolean;
+};
 export type DataConnectorToProjectLink = {
   id: Ulid;
   data_connector_id: Ulid;
@@ -241,5 +262,6 @@ export const {
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+  useGetProjectsByProjectIdPermissionsQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
 } = injectedRtkApi;

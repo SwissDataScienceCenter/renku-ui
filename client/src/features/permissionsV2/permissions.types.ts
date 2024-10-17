@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-export type RequestedPermission = "write" | "admin";
+export type RequestedPermission = "write" | "delete" | "change_membership";
 
 export type Permissions = {
   [key in RequestedPermission]: boolean;

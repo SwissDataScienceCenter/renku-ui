@@ -35,8 +35,8 @@ export default function useProjectPermissions({
   }
 
   const permissions: Permissions = {
-    write: data.write ?? false,
-    admin: data.admin ?? false,
+    ...DEFAULT_PERMISSIONS,
+    ...data,
   };
   return permissions;
 }

@@ -32,10 +32,7 @@ export default function PermissionsGuard({
   requestedPermission,
   userPermissions,
 }: PermissionsGuardProps) {
-  if (requestedPermission === "admin" && userPermissions.admin) {
-    return enabled;
-  }
-  if (requestedPermission === "write" && userPermissions.write) {
+  if (userPermissions[requestedPermission]) {
     return enabled;
   }
   return disabled;

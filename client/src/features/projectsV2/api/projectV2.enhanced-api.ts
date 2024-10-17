@@ -44,20 +44,16 @@ interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
 const injectedApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getGroupsPaged: builder.query<GetGroupsApiResponse, GetGroupsApiArg>({
-      query: (queryArg) => ({
+      query: ({ params }) => ({
         url: "/groups",
-        params: {
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-          direct_member: queryArg.direct_member,
-        },
+        params,
       }),
-      transformResponse: (response, meta, queryArg) => {
+      transformResponse: (response, meta, { params }) => {
         const groups = response as GroupResponseList;
         const headers = meta?.response?.headers;
         const headerResponse = processPaginationHeaders(
           headers,
-          queryArg,
+          { page: params?.page, perPage: params?.per_page },
           groups
         );
 
@@ -74,20 +70,16 @@ const injectedApi = api.injectEndpoints({
       GetNamespacesApiResponse,
       GetNamespacesApiArg
     >({
-      query: (queryArg) => ({
+      query: ({ params }) => ({
         url: "/namespaces",
-        params: {
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-          minimum_role: queryArg.minimumRole,
-        },
+        params,
       }),
-      transformResponse: (response, meta, queryArg) => {
+      transformResponse: (response, meta, { params }) => {
         const namespaces = response as NamespaceResponseList;
         const headers = meta?.response?.headers;
         const headerResponse = processPaginationHeaders(
           headers,
-          queryArg,
+          { page: params?.page, perPage: params?.per_page },
           namespaces
         );
 
@@ -108,10 +100,9 @@ const injectedApi = api.injectEndpoints({
       transformResponse: (response, meta, { params }) => {
         const projects = response as ProjectsList;
         const headers = meta?.response?.headers;
-        const { page, per_page: perPage } = params ?? {};
         const headerResponse = processPaginationHeaders(
           headers,
-          { page: queryArg.page, perPage: queryArg.perPage },
+          { page: params?.page, perPage: params?.per_page },
           projects
         );
 

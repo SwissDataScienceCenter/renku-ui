@@ -20,5 +20,6 @@ import type { Permissions } from "./permissions.types";
 
 export const DEFAULT_PERMISSIONS: Permissions = {
   write: false,
-  admin: false,
+  delete: false,
+  change_membership: false,
 };

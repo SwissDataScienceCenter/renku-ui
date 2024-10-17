@@ -193,7 +193,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
               errors={errors}
             />
           }
-          requestedPermission="admin"
+          requestedPermission="delete"
           userPermissions={permissions}
         />
         {currentNamespace !== project.namespace && (
@@ -213,7 +213,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
               errors={errors}
             />
           }
-          requestedPermission="admin"
+          requestedPermission="delete"
           userPermissions={permissions}
         />
         <ProjectDescriptionFormField
@@ -308,7 +308,7 @@ function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
               </p>
             </>
           }
-          requestedPermission="admin"
+          requestedPermission="delete"
           userPermissions={permissions}
         />
       </CardHeader>
@@ -358,7 +358,7 @@ export default function ProjectPageSettings() {
       <PermissionsGuard
         disabled={null}
         enabled={<ProjectPageDelete project={project} />}
-        requestedPermission="admin"
+        requestedPermission="delete"
         userPermissions={permissions}
       />
     </div>
