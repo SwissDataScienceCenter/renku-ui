@@ -396,7 +396,7 @@
         "tags": ["projects"]
       }
     },
-    "/projects/{project_id}/permissions": {
+    "/projects/{project_id}/data_connector_links": {
       "parameters": [
         {
           "in": "path",
@@ -404,28 +404,19 @@
           "required": true,
           "schema": {
             "$ref": "#/components/schemas/Ulid"
-          }
+          },
+          "description": "the ID of the project"
         }
       ],
       "get": {
-        "summary": "Get the permissions of the current user on the project",
+        "summary": "Get all links from data connectors to a given project",
         "responses": {
           "200": {
-            "description": "The set of permissions.",
+            "description": "List of data connector to project links",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectPermissions"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The project does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/DataConnectorToProjectLinksList"
                 }
               }
             }
@@ -740,6 +731,42 @@
         "description": "Entity Tag",
         "example": "9EE498F9D565D0C41E511377425F32F3"
       },
+      "DataConnectorToProjectLinksList": {
+        "description": "A list of links from a data connector to a project",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/DataConnectorToProjectLink"
+        }
+      },
+      "DataConnectorToProjectLink": {
+        "description": "A link from a data connector to a project in Renku 2.0",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "data_connector_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/UserId"
+          }
+        },
+        "required": [
+          "id",
+          "data_connector_id",
+          "project_id",
+          "creation_date",
+          "created_by"
+        ]
+      },
       "ProjectGetQuery": {
         "description": "Query params for project get request",
         "allOf": [
@@ -761,20 +788,6 @@
             }
           }
         ]
-      },
-      "ProjectPermissions": {
-        "description": "The set of permissions on a project",
-        "type": "object",
-        "properties": {
-          "write": {
-            "description": "The user can edit the project",
-            "type": "boolean"
-          },
-          "admin": {
-            "description": "The user can delete the project and manage members",
-            "type": "boolean"
-          }
-        }
       },
       "PaginationRequest": {
         "type": "object",

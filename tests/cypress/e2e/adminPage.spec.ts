@@ -29,8 +29,6 @@ describe("admin page", () => {
     cy.wait("@getUser");
 
     cy.visit("/admin");
-
-    cy.contains("404").should("be.visible");
     cy.contains("Page not found").should("be.visible");
   });
 
@@ -41,8 +39,6 @@ describe("admin page", () => {
     cy.wait("@getKeycloakUser");
 
     cy.visit("/admin");
-
-    cy.contains("404").should("be.visible");
     cy.contains("Page not found").should("be.visible");
   });
 

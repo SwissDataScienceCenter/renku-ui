@@ -19,14 +19,13 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router-dom-v5-compat";
-import { Button, Col, Collapse, Row } from "reactstrap";
 
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import rkNotFoundImgV2 from "../../../styles/assets/not-foundV2.svg";
 
 interface ProjectNotFoundProps {
   error?: FetchBaseQueryError | SerializedError | undefined | null;
@@ -42,11 +41,6 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
     namespace: string;
     slug: string;
   }>();
-
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const onClickDetails = useCallback(() => {
-    setDetailsOpen((open) => !open);
-  }, []);
 
   const notFoundText =
     namespace && slug ? (
@@ -69,41 +63,38 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
 
   return (
     <ContainerWrap>
-      <Row>
-        <Col>
-          <h1>Error 404</h1>
-          <h2 className="mb-3">Project not found</h2>
-
-          <p>{notFoundText}</p>
-          <p>
-            It is possible that the project has been deleted by its owner or you
-            do not have permission to access it.
-          </p>
-
-          <div>
+      <div className={cx("d-flex")}>
+        <div className={cx("m-auto", "d-flex", "flex-column")}>
+          <h3
+            className={cx(
+              "text-primary",
+              "fw-bold",
+              "my-0",
+              "d-flex",
+              "align-items-center",
+              "gap-3"
+            )}
+          >
+            <img src={rkNotFoundImgV2} />
+            Project not found
+          </h3>
+          <div className={cx("text-start", "mt-3")}>
+            <p>{notFoundText}</p>
+            <p>
+              It is possible that the project has been deleted by its owner or
+              you do not have permission to access it.
+            </p>
+            {error && <RtkOrNotebooksError error={error} dismissible={false} />}
             <Link
               to={ABSOLUTE_ROUTES.v2.root}
-              className={cx("btn", "btn-outline-primary")}
+              className={cx("btn", "btn-primary")}
             >
               <ArrowLeft className={cx("bi", "me-1")} />
-              Return to the dashboard
+              Return to the projects list
             </Link>
           </div>
-
-          {error && (
-            <>
-              <div className="my-3">
-                <Button color="outline-secondary" onClick={onClickDetails}>
-                  Show error details
-                </Button>
-              </div>
-              <Collapse isOpen={detailsOpen}>
-                <RtkOrNotebooksError error={error} dismissible={false} />
-              </Collapse>
-            </>
-          )}
-        </Col>
-      </Row>
+        </div>
+      </div>
     </ContainerWrap>
   );
 }

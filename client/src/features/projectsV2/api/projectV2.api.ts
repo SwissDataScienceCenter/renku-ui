@@ -4,7 +4,7 @@ const injectedRtkApi = api.injectEndpoints({
     getProjects: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: `/projects`,
-        params: { params: queryArg.params },
+        params: { params: queryArg },
       }),
     }),
     postProjects: build.mutation<PostProjectsApiResponse, PostProjectsApiArg>({
@@ -73,12 +73,12 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
-    getProjectsByProjectIdPermissions: build.query<
-      GetProjectsByProjectIdPermissionsApiResponse,
-      GetProjectsByProjectIdPermissionsApiArg
+    getProjectsByProjectIdDataConnectorLinks: build.query<
+      GetProjectsByProjectIdDataConnectorLinksApiResponse,
+      GetProjectsByProjectIdDataConnectorLinksApiArg
     >({
       query: (queryArg) => ({
-        url: `/projects/${queryArg.projectId}/permissions`,
+        url: `/projects/${queryArg.projectId}/data_connector_links`,
       }),
     }),
   }),
@@ -138,9 +138,10 @@ export type DeleteProjectsByProjectIdMembersAndMemberIdApiArg = {
   /** This is user's KeyCloak ID */
   memberId: UserId;
 };
-export type GetProjectsByProjectIdPermissionsApiResponse =
-  /** status 200 The set of permissions. */ ProjectPermissions;
-export type GetProjectsByProjectIdPermissionsApiArg = {
+export type GetProjectsByProjectIdDataConnectorLinksApiResponse =
+  /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
+export type GetProjectsByProjectIdDataConnectorLinksApiArg = {
+  /** the ID of the project */
   projectId: Ulid;
 };
 export type Ulid = string;
@@ -222,12 +223,14 @@ export type ProjectMemberPatchRequest = {
   role: Role;
 };
 export type ProjectMemberListPatchRequest = ProjectMemberPatchRequest[];
-export type ProjectPermissions = {
-  /** The user can edit the project */
-  write?: boolean;
-  /** The user can delete the project and manage members */
-  admin?: boolean;
+export type DataConnectorToProjectLink = {
+  id: Ulid;
+  data_connector_id: Ulid;
+  project_id: Ulid;
+  creation_date: CreationDate;
+  created_by: UserId;
 };
+export type DataConnectorToProjectLinksList = DataConnectorToProjectLink[];
 export const {
   useGetProjectsQuery,
   usePostProjectsMutation,
@@ -238,5 +241,5 @@ export const {
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
-  useGetProjectsByProjectIdPermissionsQuery,
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
 } = injectedRtkApi;
