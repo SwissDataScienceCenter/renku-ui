@@ -145,6 +145,14 @@ function simpleHash(str: string, seed = 0): number {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
+/**
+ * Sorts the properties of an object alphabetically by their keys.
+ * Returns a new object with the same properties but in sorted order.
+ *
+ * @param unsortedObject - The object whose properties will be sorted.
+ *                         The keys can be of any type and the values can be any valid JavaScript value.
+ * @returns A new object with the same properties as the input object but with the keys sorted in ascending order.
+ */
 function sortObjectProperties(
   unsortedObject: Record<string, unknown>
 ): Record<string, unknown> {
@@ -156,14 +164,41 @@ function sortObjectProperties(
     );
 }
 
+/**
+ * Recursively flattens a nested object to a single-level object.
+ * The keys of the resulting object will represent the path of the original
+ * object's properties, concatenated by a period (`.`).
+ *
+ * @param obj - The object to be flattened. Can contain nested objects.
+ * @param parentKey - The key path from the root object to the current level. Defaults to an empty string.
+ * @param result - The resulting flat object. Defaults to an empty object.
+ * @returns A new object where all nested properties are flattened to one level.
+ */
+function flattenNestedObject(
+  obj: Record<string, unknown>,
+  parentKey = "",
+  flatResult: Record<string, unknown> = {}
+): Record<string, unknown> {
+  Object.entries(obj).forEach(([key, value]) => {
+    const newKey = parentKey ? `${parentKey}.${key}` : key;
+
+    if (typeof value === "object" && value !== null && !Array.isArray(value))
+      flattenNestedObject(value as Record<string, unknown>, newKey, flatResult);
+    else flatResult[newKey] = value;
+  });
+
+  return flatResult;
+}
+
 export {
   clamp,
   convertType,
+  flattenNestedObject,
   getCookieValueByName,
   getRelease,
   serializeCookie,
-  sortObjectProperties,
   simpleHash,
   sleep,
+  sortObjectProperties,
   urlJoin,
 };
