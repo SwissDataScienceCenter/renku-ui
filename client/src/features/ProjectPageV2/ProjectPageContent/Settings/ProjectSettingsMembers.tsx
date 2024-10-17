@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   PencilSquare,
   People,
@@ -37,25 +38,28 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button.tsx";
+
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
-
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
   Project,
   ProjectMemberResponse,
 } from "../../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdMembersQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import AddProjectMemberModal from "../../../projectsV2/fields/AddProjectMemberModal";
-import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal.tsx";
+import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal";
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 import { ProjectMemberDisplay } from "../../../projectsV2/shared/ProjectMemberDisplay";
-import MembershipGuard from "../../utils/MembershipGuard.tsx";
-import { toSortedMembers } from "../../utils/roleUtils.ts";
+import { useGetUserQuery } from "../../../user/dataServicesUser.api/dataServicesUser.api";
+import { toSortedMembers } from "../../utils/roleUtils";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 type MemberActionMenuProps = Omit<
   ProjectPageSettingsMembersListItemProps,
-  "member" | "members" | "numberOfOwners"
+  "member" | "members" | "numberOfOwners" | "projectId"
 > & { disabled?: boolean; tooltip?: React.ReactNode };
 
 function MemberActionMenu({
@@ -103,11 +107,63 @@ function ProjectMemberAction({
   member,
   members,
   numberOfOwners,
+  projectId,
   onRemove,
   onEdit,
 }: ProjectPageSettingsMembersListItemProps) {
+  const logged = useLegacySelector((state) => state.stateModel.user.logged);
+
+  const permissions = useProjectPermissions({ projectId });
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    error: userError,
+  } = useGetUserQuery(logged ? undefined : skipToken);
+  const userMember = useMemo(() => {
+    if (isUserLoading || userError || !user || !member) {
+      return undefined;
+    }
+    return members.find((member) => member.id === user.id);
+  }, [isUserLoading, member, members, user, userError]);
+
+  if (userMember === member) {
+    return (
+      <PermissionsGuard
+        disabled={
+          <Button
+            color="danger"
+            data-cy={`project-member-remove-${index}`}
+            onClick={onRemove}
+          >
+            <Trash className={cx("bi", "me-1")} />
+            Remove
+          </Button>
+        }
+        enabled={
+          numberOfOwners >= 1 ? (
+            <MemberActionMenu
+              index={index}
+              onRemove={onRemove}
+              onEdit={onEdit}
+            />
+          ) : (
+            <MemberActionMenu
+              disabled={true}
+              index={index}
+              onRemove={onRemove}
+              onEdit={onEdit}
+              tooltip={"A project requires at least one owner."}
+            />
+          )
+        }
+        requestedPermission="change_membership"
+        userPermissions={permissions}
+      />
+    );
+  }
+
   return (
-    <MembershipGuard
+    <PermissionsGuard
       disabled={
         <MemberActionMenu
           disabled={true}
@@ -120,30 +176,8 @@ function ProjectMemberAction({
       enabled={
         <MemberActionMenu index={index} onRemove={onRemove} onEdit={onEdit} />
       }
-      members={members}
-      selfOverride={{
-        disabled: (
-          <Button
-            color="danger"
-            data-cy={`project-member-remove-${index}`}
-            onClick={onRemove}
-          >
-            <Trash className={cx("bi", "me-1")} />
-            Remove
-          </Button>
-        ),
-        enabled:
-          member.role === "owner" && numberOfOwners < 2 ? (
-            <MemberActionMenu
-              disabled={true}
-              index={index}
-              onRemove={onRemove}
-              onEdit={onEdit}
-              tooltip={"A project requires at least one owner."}
-            />
-          ) : undefined,
-        subject: member,
-      }}
+      requestedPermission="change_membership"
+      userPermissions={permissions}
     />
   );
 }
@@ -153,6 +187,7 @@ interface ProjectPageSettingsMembersListItemProps {
   member: ProjectMemberResponse;
   members: ProjectMemberResponse[];
   numberOfOwners: number;
+  projectId: Project["id"];
   onRemove: () => void;
   onEdit: () => void;
 }
@@ -161,6 +196,7 @@ function ProjectPageSettingsMembersListItem({
   member,
   members,
   numberOfOwners,
+  projectId,
   onRemove,
   onEdit,
 }: ProjectPageSettingsMembersListItemProps) {
@@ -182,6 +218,7 @@ function ProjectPageSettingsMembersListItem({
             member={member}
             members={members}
             numberOfOwners={numberOfOwners}
+            projectId={projectId}
             onRemove={onRemove}
             onEdit={onEdit}
           />
@@ -216,6 +253,7 @@ function ProjectPageSettingsMembersList({
               member={d}
               members={members}
               numberOfOwners={numberOfOwners}
+              projectId={projectId}
               onRemove={() => {
                 setMemberToEdit(d);
                 setIsRemoveMemberModalOpen(true);
@@ -258,6 +296,8 @@ function ProjectPageSettingsMembersContent({
   members,
   projectId,
 }: ProjectPageSettingsMembersContentProps) {
+  const permissions = useProjectPermissions({ projectId });
+
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const toggleAddMemberModalOpen = useCallback(() => {
     setIsAddMemberModalOpen((open) => !open);
@@ -283,7 +323,7 @@ function ProjectPageSettingsMembersContent({
           Members ({totalMembers})
         </p>
         <div className="my-auto">
-          <MembershipGuard
+          <PermissionsGuard
             disabled={null}
             enabled={
               <Button
@@ -295,7 +335,9 @@ function ProjectPageSettingsMembersContent({
                 <PlusLg className="icon-text" />
               </Button>
             }
-            members={members}
+            requestedPermission="change_membership"
+            userPermissions={permissions}
+            // members={members}
           />
         </div>
       </div>
@@ -324,10 +366,12 @@ export default function ProjectPageSettingsMembers({
   } = useGetProjectsByProjectIdMembersQuery({
     projectId: project.id,
   });
+  const permissions = useProjectPermissions({ projectId: project.id });
+
   return (
     <Card id="members">
       <CardHeader>
-        <MembershipGuard
+        <PermissionsGuard
           disabled={<h4 className="m-0">Members of the project</h4>}
           enabled={
             <>
@@ -338,7 +382,8 @@ export default function ProjectPageSettingsMembers({
               <p className="m-0">Manage access permissions to the project</p>
             </>
           }
-          members={members}
+          requestedPermission="change_membership"
+          userPermissions={permissions}
         />
       </CardHeader>
       <CardBody>

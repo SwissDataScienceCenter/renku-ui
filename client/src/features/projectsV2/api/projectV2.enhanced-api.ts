@@ -249,6 +249,7 @@ export const {
   useGetGroupsByGroupSlugMembersQuery,
   usePatchGroupsByGroupSlugMembersMutation,
   useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
+  useGetGroupsByGroupSlugPermissionsQuery,
 
   //namespace hooks
   useGetNamespacesPagedQuery: useGetNamespacesQuery,
