@@ -193,6 +193,7 @@ describe("Edit v2 project", () => {
         },
       })
       .namespaces()
+      .getProjectV2Permissions()
       .listProjectV2Members()
       .projects()
       .landingUserProjects()
@@ -455,6 +456,9 @@ describe("Editor cannot maintain members", () => {
       .landingUserProjects()
       .listProjectV2()
       .readProjectV2()
+      .getProjectV2Permissions({
+        fixture: "projectV2/projectV2-permissions-editor.json",
+      })
       .listProjectV2Members()
       .listProjectDataConnectors()
       .getDataConnector();
@@ -504,6 +508,9 @@ describe("Viewer cannot edit project", () => {
       .landingUserProjects()
       .listProjectV2()
       .readProjectV2()
+      .getProjectV2Permissions({
+        fixture: "projectV2/projectV2-permissions-viewer.json",
+      })
       .listProjectV2Members();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");

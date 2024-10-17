@@ -140,7 +140,7 @@ function ProjectMemberAction({
           </Button>
         }
         enabled={
-          numberOfOwners >= 1 ? (
+          numberOfOwners >= 2 ? (
             <MemberActionMenu
               index={index}
               onRemove={onRemove}
@@ -337,7 +337,6 @@ function ProjectPageSettingsMembersContent({
             }
             requestedPermission="change_membership"
             userPermissions={permissions}
-            // members={members}
           />
         </div>
       </div>
