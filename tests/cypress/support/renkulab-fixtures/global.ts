@@ -131,9 +131,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
       const { fixture = "namespaces.json", name = "getNamespaces" } =
         args ?? {};
       const response = { fixture };
-      cy.intercept("GET", "/ui-server/api/data/namespaces?*", response).as(
-        name
-      );
+      cy.intercept("GET", "/ui-server/api/namespaces?*", response).as(name);
       return this;
     }
 
