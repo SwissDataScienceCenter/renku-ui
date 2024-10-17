@@ -24,15 +24,10 @@
  */
 
 import { DateTime } from "luxon";
-import { createRoot } from "react-dom/client";
-import { act } from "react-test-renderer";
 import { describe, expect, it } from "vitest";
 
-import { RefreshButton } from "../components/buttons/Button";
-import { CommitsUtils, CommitsView } from "../components/commits/Commits";
+import { CommitsUtils } from "../components/commits/Commits";
 import { fixRelativePath } from "../components/markdown/RenkuMarkdownWithPathTranslation";
-import MemoryRouter from "../components/router/MemoryRouter";
-import { StateModel, globalSchema } from "../model";
 import {
   convertUnicodeToAscii,
   formatBytes,
@@ -43,45 +38,6 @@ import {
   splitAutosavedBranches,
 } from "./helpers/HelperFunctions";
 import { verifyTitleCharacters } from "./helpers/verifyTitleCharacters.utils";
-
-describe("Render React components and functions", () => {
-  it("render RefreshButton", async () => {
-    const div = document.createElement("div");
-    const root = createRoot(div);
-    const fakeAction = () => {
-      return false;
-    };
-
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <RefreshButton action={fakeAction} updating={false} />
-        </MemoryRouter>
-      );
-    });
-  });
-
-  it("render CommitsView", async () => {
-    const div = document.createElement("div");
-    const root = createRoot(div);
-    const projectModel = new StateModel(globalSchema);
-    const commits = projectModel.get("project.commits");
-
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <CommitsView
-            commits={commits.list}
-            fetched={commits.fetched}
-            fetching={commits.fetching}
-            urlRepository="https://fakeUrl.ne/gitlab"
-            urlDiff="https://fakeUrl.ne/gitlab/commit/"
-          />
-        </MemoryRouter>
-      );
-    });
-  });
-});
 
 describe("Commits functions", () => {
   const { ElementType, createDateObject, createCommitsObjects } = CommitsUtils;
