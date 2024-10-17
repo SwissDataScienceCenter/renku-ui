@@ -20,7 +20,7 @@ import fixtures from "../support/renkulab-fixtures";
 
 describe("Interact with Connected services", () => {
   beforeEach(() => {
-    fixtures.versions().userTest();
+    fixtures.config().versions().userTest();
     fixtures
       .listConnectedServicesProviders({ empty: true })
       .listConnectedServicesConnections({ empty: true });
