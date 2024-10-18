@@ -36,6 +36,7 @@ import {
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
 import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
 
+// Required for logs formatting
 import "../../notebooks/Notebooks.css";
 
 export default function DashboardV2Sessions() {
