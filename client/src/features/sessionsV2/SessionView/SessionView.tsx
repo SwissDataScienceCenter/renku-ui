@@ -54,7 +54,6 @@ import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
-import { Session, Sessions } from "../../session/sessions.types";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
@@ -67,7 +66,7 @@ import {
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
-import { SessionLauncher } from "../sessionsV2.types";
+import { SessionLauncher, SessionV2 } from "../sessionsV2.types";
 import { EnvironmentCard } from "./EnvironmentCard";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
 import {
@@ -115,7 +114,7 @@ function SessionCard({
   session,
   project,
 }: {
-  session: Session;
+  session: SessionV2;
   project: Project;
 }) {
   return (
@@ -130,9 +129,7 @@ function SessionCard({
         />
       }
       contentResources={
-        <SessionRowResourceRequests
-          resourceRequests={session.resources.requests}
-        />
+        <SessionRowResourceRequests resourceRequests={session.resources} />
       }
     />
   );
@@ -200,7 +197,7 @@ interface SessionViewProps {
   isOpen: boolean;
   launcher?: SessionLauncher;
   project: Project;
-  sessions?: Sessions;
+  sessions?: SessionV2[];
   toggle: () => void;
 }
 export function SessionView({

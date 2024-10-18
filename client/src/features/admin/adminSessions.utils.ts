@@ -26,12 +26,8 @@ export function getSessionEnvironmentValues(environment: SessionEnvironment) {
     description: environment.description,
     name: environment.name,
     port: environment.port ?? undefined,
-    working_directory: environment.working_directory?.trim()
-      ? environment.working_directory
-      : undefined,
-    mount_directory: environment.mount_directory?.trim()
-      ? environment.mount_directory
-      : undefined,
+    working_directory: environment.working_directory?.trim() || undefined,
+    mount_directory: environment.mount_directory?.trim() || undefined,
     uid: environment.uid ?? undefined,
     gid: environment.gid ?? undefined,
     command: getJSONStringArray(environment.command),
