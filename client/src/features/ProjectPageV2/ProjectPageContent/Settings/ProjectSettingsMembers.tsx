@@ -140,7 +140,7 @@ function ProjectMemberAction({
           </Button>
         }
         enabled={
-          numberOfOwners >= 2 ? (
+          numberOfOwners >= 2 || userMember.role !== "owner" ? (
             <MemberActionMenu
               index={index}
               onRemove={onRemove}
