@@ -78,7 +78,7 @@ export default function UpdateSessionLauncherModal({
         updateSessionLauncher({
           launcherId: launcher.id,
           name,
-          description: description.trim() ? description : undefined,
+          description: description?.trim() || undefined,
           environment: environment.data,
         });
     },

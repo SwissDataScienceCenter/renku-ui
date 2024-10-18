@@ -40,18 +40,17 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { resetFavicon, setFavicon } from "../display";
 import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
-import {
-  storageDefinitionAfterSavingCredentialsFromConfig,
-  storageDefinitionFromConfig,
-} from "../project/utils/projectCloudStorage.utils";
+import { storageDefinitionAfterSavingCredentialsFromConfig } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
-import { useStartRenku2SessionMutation } from "../session/sessions.api";
 
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
-import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
+import {
+  useGetProjectSessionLaunchersQuery,
+  useLaunchSessionMutation,
+} from "./sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
@@ -59,6 +58,7 @@ import {
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLaunchState from "./useSessionLaunchState.hook";
+import { storageDefinitionFromConfigV2 } from "./session.utils";
 
 interface SaveCloudStorageProps
   extends Omit<StartSessionFromLauncherProps, "containerImage" | "project"> {
@@ -191,26 +191,20 @@ function SessionStarting({
   const dispatch = useAppDispatch();
 
   const [
-    startSession,
-    { data: session, error, isLoading: isLoadingStartSession },
-  ] = useStartRenku2SessionMutation();
+    startSessionV2,
+    { data: session, error: error, isLoading: isLoadingStartSession },
+  ] = useLaunchSessionMutation();
 
   // Request session
   useEffect(() => {
     if (isLoadingStartSession || session != null) return;
-    startSession({
-      projectId: project.id,
-      launcherId: launcher.id,
-      repositories: startSessionOptionsV2.repositories,
-      cloudStorage: startSessionOptionsV2.cloudStorage.map((cs) =>
-        storageDefinitionFromConfig(cs, project.id)
+    startSessionV2({
+      launcher_id: launcher.id,
+      disk_storage: startSessionOptionsV2.storage,
+      resource_class_id: startSessionOptionsV2.sessionClass,
+      cloudstorage: startSessionOptionsV2.cloudStorage.map((cs) =>
+        storageDefinitionFromConfigV2(cs)
       ),
-      defaultUrl: startSessionOptionsV2.defaultUrl,
-      environmentVariables: {},
-      image: containerImage,
-      lfsAutoFetch: false,
-      sessionClass: startSessionOptionsV2.sessionClass,
-      storage: startSessionOptionsV2.storage,
     });
     dispatch(setFavicon("waiting"));
   }, [
@@ -218,10 +212,12 @@ function SessionStarting({
     isLoadingStartSession,
     launcher.id,
     project.id,
-    session,
-    startSession,
-    startSessionOptionsV2,
+    startSessionV2,
+    startSessionOptionsV2.storage,
+    startSessionOptionsV2.sessionClass,
+    startSessionOptionsV2.cloudStorage,
     dispatch,
+    session,
   ]);
 
   // Navigate to the session page when it is ready
