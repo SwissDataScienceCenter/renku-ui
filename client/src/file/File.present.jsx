@@ -167,7 +167,7 @@ class ShowFile extends React.Component {
       <ExternalIconLink
         tooltip="Open in GitLab"
         icon={<BootstrapGitLabIcon className="bi" />}
-        to={`${this.props.externalUrl}/blob/${branch}/${gitLabFilePath}`}
+        url={`${this.props.externalUrl}/blob/${branch}/${gitLabFilePath}`}
       />
     );
 
@@ -226,7 +226,7 @@ class ShowFile extends React.Component {
       <ExternalIconLink
         tooltip="Download File"
         icon={<Download className="bi" />}
-        to={downloadLink}
+        url={downloadLink}
       />
     );
     const body = (
