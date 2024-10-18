@@ -1,13 +1,31 @@
+/*!
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Col, ListGroup, Row } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../../features/sessionsV2/sessionsV2.api";
-import "../../notebooks/Notebooks.css";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
@@ -17,6 +35,8 @@ import {
   SessionStatusV2Label,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
 import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
+
+import "../../notebooks/Notebooks.css";
 
 export default function DashboardV2Sessions() {
   const { data: sessions, error, isLoading } = useGetSessionsQueryV2();
