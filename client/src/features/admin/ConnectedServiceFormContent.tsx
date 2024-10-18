@@ -20,7 +20,7 @@ import cx from "classnames";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 
-import { ConnectedServiceForm } from "../connectedServices/connectedServices.types";
+import { ConnectedServiceForm } from "../connectedServices/api/connectedServices.types";
 
 export interface ConnectedServiceFormContentProps {
   control: Control<ConnectedServiceForm, unknown>;
@@ -55,6 +55,28 @@ export default function ConnectedServiceFormContent({
           rules={{ required: true }}
         />
         <div className="invalid-feedback">Please provide a kind</div>
+      </div>
+
+      <div className="mb-3">
+        <Label className="form-label" for="addConnectedServiceApplicationSlug">
+          Application slug
+        </Label>
+        <Controller
+          control={control}
+          name="app_slug"
+          render={({ field }) => (
+            <Input
+              className={cx("form-control", errors.app_slug && "is-invalid")}
+              id="addConnectedServiceApplicationSlug"
+              placeholder="Application slug"
+              type="text"
+              {...field}
+            />
+          )}
+        />
+        <div className="invalid-feedback">
+          Please provide an application slug
+        </div>
       </div>
 
       <div className="mb-3">
@@ -138,6 +160,7 @@ export default function ConnectedServiceFormContent({
           name="client_id"
           render={({ field }) => (
             <Input
+              autoComplete="section-connected-service username"
               className={cx("form-control", errors.client_id && "is-invalid")}
               id="addConnectedServiceClientId"
               placeholder="Client ID"
@@ -159,6 +182,7 @@ export default function ConnectedServiceFormContent({
           name="client_secret"
           render={({ field }) => (
             <Input
+              autoComplete="section-connected-service current-password"
               className={cx(
                 "form-control",
                 errors.client_secret && "is-invalid"
