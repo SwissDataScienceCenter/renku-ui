@@ -174,6 +174,21 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    getProjectV2Permissions(args?: ProjectV2IdArgs) {
+      const {
+        fixture = "projectV2/projectV2-permissions.json",
+        name = "getProjectV2Permissions",
+        projectId = "THEPROJECTULID26CHARACTERS",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/projects/${projectId}/permissions`,
+        response
+      ).as(name);
+      return this;
+    }
+
     listProjectV2Members(args?: ListProjectV2MembersFixture) {
       const {
         fixture = "projectV2/list-projectV2-members.json",

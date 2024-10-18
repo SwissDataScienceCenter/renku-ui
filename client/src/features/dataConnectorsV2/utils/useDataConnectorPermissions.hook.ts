@@ -16,24 +16,27 @@
  * limitations under the License.
  */
 
-import type { Role } from "../../projectsV2/api/projectV2.api.ts";
+import { DEFAULT_PERMISSIONS } from "../../permissionsV2/permissions.constants";
+import type { Permissions } from "../../permissionsV2/permissions.types";
+import { useGetDataConnectorsByDataConnectorIdPermissionsQuery } from "../api/data-connectors.enhanced-api";
 
-import { toNumericRole } from "./roleUtils.ts";
-
-interface AccessGuardProps {
-  disabled: React.ReactNode;
-  enabled: React.ReactNode;
-  minimumRole?: Role;
-  role: Role;
+interface UseDataConnectorPermissionsArgs {
+  dataConnectorId: string;
 }
 
-export default function AccessGuard({
-  disabled,
-  enabled,
-  minimumRole = "owner",
-  role,
-}: AccessGuardProps) {
-  if (role === "owner") return enabled;
-  if (toNumericRole(role) < toNumericRole(minimumRole)) return disabled;
-  return enabled;
+export default function useDataConnectorPermissions({
+  dataConnectorId,
+}: UseDataConnectorPermissionsArgs): Permissions {
+  const { data, isLoading, isError } =
+    useGetDataConnectorsByDataConnectorIdPermissionsQuery({ dataConnectorId });
+
+  if (isLoading || isError || !data) {
+    return DEFAULT_PERMISSIONS;
+  }
+
+  const permissions: Permissions = {
+    ...DEFAULT_PERMISSIONS,
+    ...data,
+  };
+  return permissions;
 }

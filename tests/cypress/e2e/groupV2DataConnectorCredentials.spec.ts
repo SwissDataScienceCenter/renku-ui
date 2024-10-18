@@ -38,6 +38,7 @@ describe("Set up data connectors with credentials", () => {
       .listNamespaceV2()
       .landingUserProjects()
       .listGroupV2()
+      .getGroupV2Permissions()
       .listGroupV2Members()
       .listProjectV2ByNamespace()
       .projects()

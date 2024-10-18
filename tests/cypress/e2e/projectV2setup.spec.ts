@@ -39,6 +39,7 @@ describe("Set up project components", () => {
           email: "user1@email.com",
         },
       })
+      .getProjectV2Permissions()
       .listProjectV2Members();
     fixtures.projects().landingUserProjects().readProjectV2();
   });

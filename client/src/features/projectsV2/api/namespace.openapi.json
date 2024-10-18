@@ -20,25 +20,12 @@
         "parameters": [
           {
             "in": "query",
-            "description": "Result's page number starting from 1",
-            "name": "page",
-            "required": false,
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1
-            }
-          },
-          {
-            "in": "query",
-            "description": "The number of results per page",
-            "name": "per_page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20
+              "$ref": "#/components/schemas/GroupsGetQuery"
             }
           }
         ],
@@ -364,40 +351,59 @@
         "tags": ["groups"]
       }
     },
+    "/groups/{group_slug}/permissions": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "group_slug",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Slug"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the permissions of the current user on the group",
+        "responses": {
+          "200": {
+            "description": "The set of permissions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupPermissions"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The group does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["groups"]
+      }
+    },
     "/namespaces": {
       "get": {
         "summary": "Get all namespaces",
         "parameters": [
           {
             "in": "query",
-            "description": "Result's page number starting from 1",
-            "name": "page",
-            "required": false,
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1
-            }
-          },
-          {
-            "in": "query",
-            "description": "The number of results per page",
-            "name": "per_page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20
-            }
-          },
-          {
-            "in": "query",
-            "name": "minimum_role",
-            "description": "A minimum role to filter results by.",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/GroupRole"
+              "$ref": "#/components/schemas/NamespaceGetQuery"
             }
           }
         ],
@@ -570,7 +576,7 @@
         "type": "string",
         "minLength": 26,
         "maxLength": 26,
-        "pattern": "^[A-Z0-9]{26}$"
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
       "NamespaceName": {
         "description": "Renku group or namespace name",
@@ -606,8 +612,8 @@
           "id": {
             "$ref": "#/components/schemas/UserId"
           },
-          "email": {
-            "$ref": "#/components/schemas/UserEmail"
+          "namespace": {
+            "$ref": "#/components/schemas/Slug"
           },
           "first_name": {
             "$ref": "#/components/schemas/UserFirstLastName"
@@ -665,7 +671,7 @@
           {
             "id": "another-keycloak-user-id",
             "role": "member",
-            "email": "user@email.com",
+            "namespace": "user-slug",
             "first_name": "John",
             "last_name": "Doe"
           }
@@ -752,11 +758,75 @@
         "minLength": 1,
         "maxLength": 256
       },
-      "UserEmail": {
-        "type": "string",
-        "format": "email",
-        "description": "User email",
-        "example": "some-user@gmail.com"
+      "NamespaceGetQuery": {
+        "description": "Query params for namespace get request",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationRequest"
+          },
+          {
+            "properties": {
+              "minimum_role": {
+                "description": "A minimum role to filter results by.",
+                "$ref": "#/components/schemas/GroupRole"
+              }
+            }
+          }
+        ]
+      },
+      "GroupsGetQuery": {
+        "description": "Query params for namespace get request",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationRequest"
+          },
+          {
+            "properties": {
+              "direct_member": {
+                "description": "A flag to filter groups where the user is a direct member.",
+                "type": "boolean",
+                "default": false
+              }
+            }
+          }
+        ]
+      },
+      "GroupPermissions": {
+        "description": "The set of permissions on a group",
+        "type": "object",
+        "properties": {
+          "write": {
+            "description": "The user can edit the group",
+            "type": "boolean"
+          },
+          "delete": {
+            "description": "The user can delete the group",
+            "type": "boolean"
+          },
+          "change_membership": {
+            "description": "The user can manage group members",
+            "type": "boolean"
+          }
+        }
+      },
+      "PaginationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "description": "Result's page number starting from 1",
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "per_page": {
+            "description": "The number of results per page",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
       },
       "ErrorResponse": {
         "type": "object",

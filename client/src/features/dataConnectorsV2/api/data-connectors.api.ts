@@ -56,6 +56,14 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/namespaces/${queryArg["namespace"]}/data_connectors/${queryArg.slug}`,
       }),
     }),
+    getDataConnectorsByDataConnectorIdPermissions: build.query<
+      GetDataConnectorsByDataConnectorIdPermissionsApiResponse,
+      GetDataConnectorsByDataConnectorIdPermissionsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/${queryArg.dataConnectorId}/permissions`,
+      }),
+    }),
     getDataConnectorsByDataConnectorIdProjectLinks: build.query<
       GetDataConnectorsByDataConnectorIdProjectLinksApiResponse,
       GetDataConnectorsByDataConnectorIdProjectLinksApiArg
@@ -151,6 +159,12 @@ export type GetNamespacesByNamespaceDataConnectorsAndSlugApiResponse =
 export type GetNamespacesByNamespaceDataConnectorsAndSlugApiArg = {
   namespace: string;
   slug: string;
+};
+export type GetDataConnectorsByDataConnectorIdPermissionsApiResponse =
+  /** status 200 The set of permissions. */ DataConnectorPermissions;
+export type GetDataConnectorsByDataConnectorIdPermissionsApiArg = {
+  /** the ID of the data connector */
+  dataConnectorId: Ulid;
 };
 export type GetDataConnectorsByDataConnectorIdProjectLinksApiResponse =
   /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
@@ -252,10 +266,6 @@ export type CloudStorageCoreRead = {
   readonly: StorageReadOnly;
   sensitive_fields: RCloneOption[];
 };
-export type DataConnectorSecret = {
-  name: DataConnectorName;
-  secret_id: Ulid;
-};
 export type CreationDate = string;
 export type UserId = string;
 export type Visibility = "private" | "public";
@@ -269,7 +279,6 @@ export type DataConnector = {
   namespace: Slug;
   slug: Slug;
   storage: CloudStorageCore;
-  secrets?: DataConnectorSecret[];
   creation_date: CreationDate;
   created_by: UserId;
   visibility: Visibility;
@@ -283,7 +292,6 @@ export type DataConnectorRead = {
   namespace: Slug;
   slug: Slug;
   storage: CloudStorageCoreRead;
-  secrets?: DataConnectorSecret[];
   creation_date: CreationDate;
   created_by: UserId;
   visibility: Visibility;
@@ -379,6 +387,14 @@ export type DataConnectorPatchRead = {
   description?: Description;
   keywords?: KeywordsList;
 };
+export type DataConnectorPermissions = {
+  /** The user can edit the data connector */
+  write?: boolean;
+  /** The user can delete the data connector */
+  delete?: boolean;
+  /** The user can manage data connector members */
+  change_membership?: boolean;
+};
 export type DataConnectorToProjectLink = {
   id: Ulid;
   data_connector_id: Ulid;
@@ -390,10 +406,15 @@ export type DataConnectorToProjectLinksList = DataConnectorToProjectLink[];
 export type DataConnectorToProjectLinkPost = {
   project_id: Ulid;
 };
+export type DataConnectorSecretFieldName = string;
+export type DataConnectorSecret = {
+  name: DataConnectorSecretFieldName;
+  secret_id: Ulid;
+};
 export type DataConnectorSecretsList = DataConnectorSecret[];
 export type SecretValueNullable = string | null;
 export type DataConnectorSecretPatch = {
-  name: DataConnectorName;
+  name: DataConnectorSecretFieldName;
   value: SecretValueNullable;
 };
 export type DataConnectorSecretPatchList = DataConnectorSecretPatch[];
@@ -404,6 +425,7 @@ export const {
   usePatchDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdMutation,
   useGetNamespacesByNamespaceDataConnectorsAndSlugQuery,
+  useGetDataConnectorsByDataConnectorIdPermissionsQuery,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,

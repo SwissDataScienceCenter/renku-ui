@@ -35,6 +35,7 @@ import {
 } from "../../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
   ProjectMemberListResponse,
   ProjectMemberResponse,
@@ -44,8 +45,8 @@ import {
   useGetProjectsByProjectIdMembersQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
-import MembershipGuard from "../../utils/MembershipGuard";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import styles from "./ProjectInformation.module.scss";
 
 const MAX_MEMBERS_DISPLAYED = 5;
@@ -57,6 +58,8 @@ export default function ProjectInformation({
   output = "plain",
 }: ProjectInformationProps) {
   const { project } = useProject();
+
+  const permissions = useProjectPermissions({ projectId: project.id });
 
   const { data: members } = useGetProjectsByProjectIdMembersQuery({
     projectId: project.id,
@@ -157,7 +160,7 @@ export default function ProjectInformation({
           </h4>
 
           <div>
-            <MembershipGuard
+            <PermissionsGuard
               disabled={
                 <EditButtonLink
                   disabled={true}
@@ -172,8 +175,8 @@ export default function ProjectInformation({
                   tooltip="Modify project information"
                 />
               }
-              members={members}
-              minimumRole="editor"
+              requestedPermission="write"
+              userPermissions={permissions}
             />
           </div>
         </div>

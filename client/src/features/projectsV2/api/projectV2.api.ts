@@ -4,7 +4,7 @@ const injectedRtkApi = api.injectEndpoints({
     getProjects: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: `/projects`,
-        params: { params: queryArg },
+        params: { params: queryArg.params },
       }),
     }),
     postProjects: build.mutation<PostProjectsApiResponse, PostProjectsApiArg>({
@@ -73,6 +73,14 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getProjectsByProjectIdPermissions: build.query<
+      GetProjectsByProjectIdPermissionsApiResponse,
+      GetProjectsByProjectIdPermissionsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/permissions`,
+      }),
+    }),
     getProjectsByProjectIdDataConnectorLinks: build.query<
       GetProjectsByProjectIdDataConnectorLinksApiResponse,
       GetProjectsByProjectIdDataConnectorLinksApiArg
@@ -88,14 +96,8 @@ export { injectedRtkApi as projectV2Api };
 export type GetProjectsApiResponse =
   /** status 200 List of projects */ ProjectsList;
 export type GetProjectsApiArg = {
-  /** A namespace, used as a filter. */
-  namespace?: string;
-  /** Result's page number starting from 1 */
-  page?: number;
-  /** The number of results per page */
-  perPage?: number;
-  /** A flag to filter projects where the user is a direct member */
-  direct_member?: boolean;
+  /** query parameters */
+  params?: ProjectGetQuery;
 };
 export type PostProjectsApiResponse =
   /** status 201 The project was created */ Project;
@@ -144,6 +146,11 @@ export type DeleteProjectsByProjectIdMembersAndMemberIdApiArg = {
   /** This is user's KeyCloak ID */
   memberId: UserId;
 };
+export type GetProjectsByProjectIdPermissionsApiResponse =
+  /** status 200 The set of permissions. */ ProjectPermissions;
+export type GetProjectsByProjectIdPermissionsApiArg = {
+  projectId: Ulid;
+};
 export type GetProjectsByProjectIdDataConnectorLinksApiResponse =
   /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
 export type GetProjectsByProjectIdDataConnectorLinksApiArg = {
@@ -154,8 +161,8 @@ export type Ulid = string;
 export type ProjectName = string;
 export type Slug = string;
 export type CreationDate = string;
-export type UpdatedAt = string;
 export type UserId = string;
+export type UpdatedAt = string;
 export type Repository = string;
 export type RepositoriesList = Repository[];
 export type Visibility = "private" | "public";
@@ -170,12 +177,12 @@ export type Project = {
   slug: Slug;
   creation_date: CreationDate;
   created_by: UserId;
+  updated_at?: UpdatedAt;
   repositories?: RepositoriesList;
   visibility: Visibility;
   description?: Description;
   etag?: ETag;
   keywords?: KeywordsList;
-  updated_at?: UpdatedAt;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {
@@ -229,6 +236,14 @@ export type ProjectMemberPatchRequest = {
   role: Role;
 };
 export type ProjectMemberListPatchRequest = ProjectMemberPatchRequest[];
+export type ProjectPermissions = {
+  /** The user can edit the project */
+  write?: boolean;
+  /** The user can delete the project */
+  delete?: boolean;
+  /** The user can manage project members */
+  change_membership?: boolean;
+};
 export type DataConnectorToProjectLink = {
   id: Ulid;
   data_connector_id: Ulid;
@@ -247,5 +262,6 @@ export const {
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+  useGetProjectsByProjectIdPermissionsQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
 } = injectedRtkApi;

@@ -183,4 +183,5 @@ export const {
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsMutation,
+  useGetDataConnectorsByDataConnectorIdPermissionsQuery,
 } = enhancedApi;
