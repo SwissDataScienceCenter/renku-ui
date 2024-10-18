@@ -191,6 +191,5 @@ export interface SessionImageParams {
 }
 
 export interface DockerImage {
-  image: string;
-  available: boolean;
+  error?: unknown;
 }
