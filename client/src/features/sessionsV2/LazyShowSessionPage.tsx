@@ -20,7 +20,7 @@ import { Suspense, lazy } from "react";
 
 import PageLoader from "../../components/PageLoader";
 
-const ShowSessionPage = lazy(() => import("./ShowSessionPage"));
+const ShowSessionPage = lazy(() => import("./SessionShowPage/ShowSessionPage"));
 
 export default function LazyShowSessionPage() {
   return (

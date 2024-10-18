@@ -40,6 +40,10 @@ import {
   heartbeatRequestSessionStatus,
 } from "./handlers/sessions";
 import type { Channel, WebSocketHandler } from "./handlers/handlers.types";
+import {
+  handlerRequestSessionStatusV2,
+  heartbeatRequestSessionStatusV2,
+} from "./handlers/sessionsV2";
 
 // *** Channels ***
 // No need to store data in Redis since it's used only locally. We can modify this if necessary.
@@ -76,6 +80,13 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
       handler: handlerRequestSessionStatus,
     } as MessageData,
   ],
+  pullSessionStatusV2: [
+    {
+      required: null,
+      optional: null,
+      handler: handlerRequestSessionStatusV2,
+    } as MessageData,
+  ],
   ping: [
     {
       required: null,
@@ -99,6 +110,7 @@ const longLoopFunctions: Array<WebSocketHandler> = [
 const shortLoopFunctions: Array<WebSocketHandler> = [
   heartbeatRequestSessionStatus,
   heartbeatRequestActivationKgStatus,
+  heartbeatRequestSessionStatusV2,
 ];
 
 /**

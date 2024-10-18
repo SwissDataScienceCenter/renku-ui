@@ -35,6 +35,14 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    getSessionsV2(args?: SimpleFixture) {
+      const { fixture = "sessions/sessions.json", name = "getSessionsV2" } =
+        args ?? {};
+      const response = { fixture };
+      cy.intercept("GET", "/ui-server/api/data/sessions*", response).as(name);
+      return this;
+    }
+
     getSessionsError(args?: SimpleFixture) {
       const {
         fixture = "sessions/sessionError.json",
@@ -237,6 +245,13 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("GET", "/ui-server/api/notebooks/servers", response).as(
         name
       );
+      return this;
+    }
+
+    sessionServersEmptyV2(args?: NameOnlyFixture) {
+      const { name = "sessionServersEmptyV2" } = args ?? {};
+      const response = { body: [] };
+      cy.intercept("GET", "/ui-server/api/data/sessions", response).as(name);
       return this;
     }
 
