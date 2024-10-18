@@ -52,7 +52,7 @@ export default function SlugFormField<T extends FieldValues>({
           required: true,
           maxLength: 99,
           pattern:
-            /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-zA-Z0-9][a-zA-Z0-9\-_.]*$/,
+            /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
         }}
       />
       <div className="invalid-feedback">
