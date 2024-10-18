@@ -118,7 +118,7 @@ export function SessionEnvironmentItem({
             <Globe2 className={cx("bi", "me-1")} />
             Global environment
           </p>
-          {description ? <p className="mb-2">description</p> : null}
+          {description ? <p className="mb-2">{description}</p> : null}
           <p className="m-0">
             <TimeCaption
               datetime={creation_date}

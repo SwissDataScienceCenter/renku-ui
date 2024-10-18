@@ -32,13 +32,14 @@ import AppContext from "../../../utils/context/appContext";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import { usePatchSessionMutation } from "../sessions.api";
-import { Session } from "../sessions.types";
 
 interface SessionHibernatedProps {
-  session: Session;
+  sessionName: string;
 }
 
-export default function SessionHibernated({ session }: SessionHibernatedProps) {
+export default function SessionHibernated({
+  sessionName,
+}: SessionHibernatedProps) {
   const location = useLocation<{ filePath?: string } | undefined>();
   const locationFilePath = location.state?.filePath;
 
@@ -57,9 +58,9 @@ export default function SessionHibernated({ session }: SessionHibernatedProps) {
   const [isResuming, setIsResuming] = useState(false);
 
   const onResumeSession = useCallback(() => {
-    patchSession({ sessionName: session.name, state: "running" });
+    patchSession({ sessionName: sessionName, state: "running" });
     setIsResuming(true);
-  }, [patchSession, session.name]);
+  }, [patchSession, sessionName]);
 
   const { notifications } = useContext(AppContext);
 
