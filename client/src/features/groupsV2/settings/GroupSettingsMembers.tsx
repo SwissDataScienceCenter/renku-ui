@@ -54,7 +54,7 @@ interface GroupSettingsMembersProps {
 export default function GroupSettingsMembers({
   group,
 }: GroupSettingsMembersProps) {
-  const permissions = useGroupPermissions({ groupSlug: group.slug });
+  const { permissions } = useGroupPermissions({ groupSlug: group.slug });
 
   const { data, isLoading } = useGetGroupsByGroupSlugMembersQuery({
     groupSlug: group.slug,
@@ -269,7 +269,7 @@ function GroupMemberAction({
   onRemove,
 }: GroupMemberActionProps) {
   const logged = useLegacySelector((state) => state.stateModel.user.logged);
-  const permissions = useGroupPermissions({ groupSlug: group.slug });
+  const { permissions } = useGroupPermissions({ groupSlug: group.slug });
   const {
     data: user,
     isLoading: isUserLoading,

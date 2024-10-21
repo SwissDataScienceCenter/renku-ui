@@ -26,18 +26,18 @@ interface UseGroupPermissionsArgs {
 
 export default function useGroupPermissions({
   groupSlug,
-}: UseGroupPermissionsArgs): Permissions {
+}: UseGroupPermissionsArgs): { permissions: Permissions; isLoading: boolean } {
   const { data, isLoading, isError } = useGetGroupsByGroupSlugPermissionsQuery({
     groupSlug,
   });
 
   if (isLoading || isError || !data) {
-    return DEFAULT_PERMISSIONS;
+    return { permissions: DEFAULT_PERMISSIONS, isLoading };
   }
 
   const permissions: Permissions = {
     ...DEFAULT_PERMISSIONS,
     ...data,
   };
-  return permissions;
+  return { permissions, isLoading };
 }

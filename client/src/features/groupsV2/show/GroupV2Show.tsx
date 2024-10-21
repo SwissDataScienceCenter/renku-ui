@@ -152,7 +152,7 @@ interface GroupSettingsButtonProps {
 }
 
 function GroupSettingsButton({ group }: GroupSettingsButtonProps) {
-  const permissions = useGroupPermissions({ groupSlug: group.slug });
+  const { permissions } = useGroupPermissions({ groupSlug: group.slug });
 
   return (
     <PermissionsGuard
