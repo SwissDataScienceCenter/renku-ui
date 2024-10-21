@@ -4,7 +4,7 @@ const injectedRtkApi = api.injectEndpoints({
     getGroups: build.query<GetGroupsApiResponse, GetGroupsApiArg>({
       query: (queryArg) => ({
         url: `/groups`,
-        params: { page: queryArg.page, per_page: queryArg.perPage },
+        params: { params: queryArg.params },
       }),
     }),
     postGroups: build.mutation<PostGroupsApiResponse, PostGroupsApiArg>({
@@ -64,14 +64,18 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getGroupsByGroupSlugPermissions: build.query<
+      GetGroupsByGroupSlugPermissionsApiResponse,
+      GetGroupsByGroupSlugPermissionsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/groups/${queryArg.groupSlug}/permissions`,
+      }),
+    }),
     getNamespaces: build.query<GetNamespacesApiResponse, GetNamespacesApiArg>({
       query: (queryArg) => ({
         url: `/namespaces`,
-        params: {
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-          minimum_role: queryArg.minimumRole,
-        },
+        params: { params: queryArg.params },
       }),
     }),
     getNamespacesByNamespaceSlug: build.query<
@@ -87,12 +91,8 @@ export { injectedRtkApi as projectAndNamespaceApi };
 export type GetGroupsApiResponse =
   /** status 200 List of groups */ GroupResponseList;
 export type GetGroupsApiArg = {
-  /** Result's page number starting from 1 */
-  page?: number;
-  /** The number of results per page */
-  perPage?: number;
-  /** A flag to filter groups where the user is a direct member */
-  direct_member?: boolean;
+  /** query parameters */
+  params?: GroupsGetQuery;
 };
 export type PostGroupsApiResponse =
   /** status 201 The group was created */ GroupResponse;
@@ -133,15 +133,16 @@ export type DeleteGroupsByGroupSlugMembersAndUserIdApiArg = {
   /** This is user's KeyCloak ID */
   userId: string;
 };
+export type GetGroupsByGroupSlugPermissionsApiResponse =
+  /** status 200 The set of permissions. */ GroupPermissions;
+export type GetGroupsByGroupSlugPermissionsApiArg = {
+  groupSlug: Slug;
+};
 export type GetNamespacesApiResponse =
   /** status 200 List of namespaces */ NamespaceResponseList;
 export type GetNamespacesApiArg = {
-  /** Result's page number starting from 1 */
-  page?: number;
-  /** The number of results per page */
-  perPage?: number;
-  /** A minimum role to filter results by. */
-  minimumRole?: GroupRole;
+  /** query parameters */
+  params?: NamespaceGetQuery;
 };
 export type GetNamespacesByNamespaceSlugApiResponse =
   /** status 200 The namespace */ NamespaceResponse;
@@ -170,6 +171,16 @@ export type ErrorResponse = {
     message: string;
   };
 };
+export type PaginationRequest = {
+  /** Result's page number starting from 1 */
+  page?: number;
+  /** The number of results per page */
+  per_page?: number;
+};
+export type GroupsGetQuery = PaginationRequest & {
+  /** A flag to filter groups where the user is a direct member. */
+  direct_member?: boolean;
+};
 export type GroupPostRequest = {
   name: NamespaceName;
   slug: Slug;
@@ -181,7 +192,6 @@ export type GroupPatchRequest = {
   description?: Description;
 };
 export type UserId = string;
-export type UserEmail = string;
 export type UserFirstLastName = string;
 export type GroupRole = "owner" | "editor" | "viewer";
 export type GroupMemberResponse = {
@@ -197,6 +207,14 @@ export type GroupMemberPatchRequest = {
   role: GroupRole;
 };
 export type GroupMemberPatchRequestList = GroupMemberPatchRequest[];
+export type GroupPermissions = {
+  /** The user can edit the group */
+  write?: boolean;
+  /** The user can delete the group */
+  delete?: boolean;
+  /** The user can manage group members */
+  change_membership?: boolean;
+};
 export type NamespaceKind = "group" | "user";
 export type NamespaceResponse = {
   id: Ulid;
@@ -207,6 +225,10 @@ export type NamespaceResponse = {
   namespace_kind: NamespaceKind;
 };
 export type NamespaceResponseList = NamespaceResponse[];
+export type NamespaceGetQuery = PaginationRequest & {
+  /** A minimum role to filter results by. */
+  minimum_role?: GroupRole;
+};
 export const {
   useGetGroupsQuery,
   usePostGroupsMutation,
@@ -216,6 +238,7 @@ export const {
   useGetGroupsByGroupSlugMembersQuery,
   usePatchGroupsByGroupSlugMembersMutation,
   useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
+  useGetGroupsByGroupSlugPermissionsQuery,
   useGetNamespacesQuery,
   useGetNamespacesByNamespaceSlugQuery,
 } = injectedRtkApi;

@@ -33,6 +33,7 @@ describe("Set up data connectors with credentials", () => {
       .projects()
       .landingUserProjects()
       .listNamespaceV2()
+      .getProjectV2Permissions()
       .listProjectV2Members()
       .readProjectV2()
       .listProjectDataConnectors()
