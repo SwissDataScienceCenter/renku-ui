@@ -269,7 +269,8 @@ function ProjectLinkDataConnectorBodyAndFooter({
             }}
           />
           <div className="form-text">
-            The the info sidebar for a data connector shows the identifier.
+            Copy a data connector identifier from the data connector&apos;s side
+            panel
           </div>
           <div className="invalid-feedback">
             Please provide an identifier (namespace/group) for the data
@@ -297,7 +298,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
           ) : (
             <NodePlus className={cx("bi", "me-1")} />
           )}
-          Link data
+          Link data connector
         </Button>
       </ModalFooter>
     </Form>
