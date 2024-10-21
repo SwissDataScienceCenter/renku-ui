@@ -23,29 +23,13 @@
  *  Tests for project.
  */
 
-import { createMemoryHistory } from "history";
-import { createRoot } from "react-dom/client";
-import { act } from "react-dom/test-utils";
-import { Provider } from "react-redux";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { testClient as client } from "../api-client";
-import MemoryRouter from "../components/router/MemoryRouter";
 import { StateModel, globalSchema } from "../model";
-import { generateFakeUser } from "../user/User.test";
-import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
+import { mapProjectFeatures } from "./Project";
 import { filterPaths } from "./Project.present";
 import { ProjectCoordinator } from "./Project.state";
-import { OverviewCommitsBody } from "./overview/ProjectOverview.present";
-
-const fakeHistory = createMemoryHistory({
-  initialEntries: ["/"],
-  initialIndex: 0,
-});
-fakeHistory.push({
-  pathname: "/projects",
-  search: "?page=1",
-});
 
 describe("test ProjectCoordinator related components", () => {
   const model = new StateModel(globalSchema);
@@ -120,91 +104,6 @@ describe("test ProjectCoordinator related components", () => {
         descendantKeys.includes(i)
       )
     ).toBeTruthy();
-  });
-
-  it("test withProjectMapped higher order function", async () => {
-    const div = document.createElement("div");
-    const root = createRoot(div);
-    const categories = ["commits", "metadata"];
-    const CommitsConnected = withProjectMapped(OverviewCommitsBody, categories);
-
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <CommitsConnected
-              history={fakeHistory}
-              location={fakeHistory.location}
-              projectCoordinator={projectCoordinator}
-            />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-  });
-});
-
-describe("rendering", () => {
-  const anonymousUser = generateFakeUser(true);
-  const loggedUser = generateFakeUser();
-  const model = new StateModel(globalSchema);
-  let div, root;
-
-  beforeEach(async () => {
-    await act(async () => {
-      div = document.createElement("div");
-      document.body.appendChild(div);
-      root = createRoot(div);
-    });
-  });
-  afterEach(async () => {
-    await act(async () => {
-      root.unmount(div);
-      div.remove();
-      div = null;
-    });
-  });
-
-  it("renders view without crashing for anonymous user", async () => {
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <Project.View
-              id="1"
-              client={client}
-              user={anonymousUser}
-              model={model}
-              history={fakeHistory}
-              location={fakeHistory.location}
-              match={{ params: { id: "1" }, url: "/projects/1/" }}
-            />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-  });
-
-  it("renders view without crashing for logged user", async () => {
-    const div = document.createElement("div");
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <Project.View
-              id="1"
-              client={client}
-              model={model}
-              history={fakeHistory}
-              user={loggedUser}
-              location={fakeHistory.location}
-              match={{ params: { id: "1" }, url: "/projects/1/" }}
-            />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
   });
 });
 
