@@ -43,7 +43,6 @@ import {
   type AddStorageStepProps,
 } from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
-import SlugFormField from "../../../projectsV2/fields/SlugFormField";
 import type { DataConnectorSecret } from "../../api/data-connectors.api";
 
 import { type DataConnectorFlat } from "../dataConnector.utils";
