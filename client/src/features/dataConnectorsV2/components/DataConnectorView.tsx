@@ -328,6 +328,20 @@ function DataConnectorViewMetadata({
       namespaceSlug: dataConnector.namespace,
     });
 
+  const namespaceUrl = useMemo(
+    () =>
+      namespace == null
+        ? null
+        : namespace.namespace_kind == "user"
+        ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+            username: dataConnector.namespace,
+          })
+        : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+            slug: dataConnector.namespace,
+          }),
+    [namespace, dataConnector.namespace]
+  );
+
   return (
     <section className={cx("pt-3")} data-cy="data-connector-metadata-section">
       <DataConnectorPropertyValue title="ID">
@@ -348,7 +362,15 @@ function DataConnectorViewMetadata({
           <div className="me-1">
             <UserAvatar username={dataConnector.namespace} />{" "}
           </div>
-          <div className="me-1">{dataConnector.namespace}</div>
+          {namespaceUrl == null ? (
+            <div className="me-1">{dataConnector.namespace}</div>
+          ) : (
+            <div>
+              <Link className="me-1" to={namespaceUrl}>
+                {dataConnector.namespace}
+              </Link>
+            </div>
+          )}
           <div>
             {isLoadingNamespace ? (
               <Loader inline size={16} />
