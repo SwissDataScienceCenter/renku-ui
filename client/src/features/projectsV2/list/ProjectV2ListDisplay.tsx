@@ -92,9 +92,11 @@ export default function ProjectListDisplay({
   }, [pageParam, searchParams]);
 
   const { data, error, isLoading } = useGetProjectsQuery({
-    namespace: ns,
-    page,
-    perPage: perPage,
+    params: {
+      namespace: ns,
+      page: page,
+      per_page: perPage,
+    },
   });
 
   useEffect(() => {

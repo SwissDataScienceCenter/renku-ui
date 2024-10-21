@@ -20,13 +20,13 @@ import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
   Boxes,
-  Clock,
   CircleFill,
+  Clock,
   Database,
   ExclamationTriangleFill,
+  FileCode,
   Globe2,
   Pencil,
-  FileCode,
 } from "react-bootstrap-icons";
 import {
   Badge,
@@ -47,12 +47,22 @@ import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
+import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
+import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
+import {
+  useGetResourceClassByIdQuery,
+  useGetResourcePoolsQuery,
+} from "../../dataServices/computeResources.api";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { Project } from "../../projectsV2/api/projectV2.api";
+import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { Session, Sessions } from "../../session/sessions.types";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
+import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
+import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import {
   SessionBadge,
   SessionStatusV2Description,
@@ -61,19 +71,6 @@ import {
 } from "../components/SessionStatus/SessionStatus";
 import sessionsV2Api from "../sessionsV2.api";
 import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
-
-import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
-import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
-import {
-  useGetResourceClassByIdQuery,
-  useGetResourcePoolsQuery,
-} from "../../dataServices/computeResources.api";
-import {
-  useGetProjectsByProjectIdDataConnectorLinksQuery,
-  useGetProjectsByProjectIdMembersQuery,
-} from "../../projectsV2/api/projectV2.enhanced-api";
-import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
-import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 
 interface SessionCardContentProps {
   color: string;
@@ -279,9 +276,7 @@ export function SessionView({
   const toggleModifyResources = useCallback(() => {
     setModifyResourcesOpen((open) => !open);
   }, []);
-  const { data: members } = useGetProjectsByProjectIdMembersQuery({
-    projectId: project.id,
-  });
+  const permissions = useProjectPermissions({ projectId: project.id });
   const { data: environments, isLoading } =
     sessionsV2Api.endpoints.getSessionEnvironments.useQueryState(
       launcher && launcher.environment_kind === "global_environment"
@@ -416,7 +411,7 @@ export function SessionView({
             <div>
               <div className={cx("d-flex", "justify-content-between", "mb-2")}>
                 <h4 className="my-auto">Session Environment</h4>
-                <MembershipGuard
+                <PermissionsGuard
                   disabled={null}
                   enabled={
                     <>
@@ -434,8 +429,8 @@ export function SessionView({
                       </UncontrolledTooltip>
                     </>
                   }
-                  members={members}
-                  minimumRole="editor"
+                  requestedPermission="write"
+                  userPermissions={permissions}
                 />
               </div>
               <EnvironmentCard launcher={launcher} environment={environment} />
@@ -449,7 +444,7 @@ export function SessionView({
           <div>
             <div className={cx("d-flex", "justify-content-between", "mb-2")}>
               <h4 className="my-auto">Default Resource Class</h4>
-              <MembershipGuard
+              <PermissionsGuard
                 disabled={null}
                 enabled={
                   <>
@@ -467,8 +462,8 @@ export function SessionView({
                     </UncontrolledTooltip>
                   </>
                 }
-                members={members}
-                minimumRole="editor"
+                requestedPermission="write"
+                userPermissions={permissions}
               />
             </div>
             {resourceDetails}

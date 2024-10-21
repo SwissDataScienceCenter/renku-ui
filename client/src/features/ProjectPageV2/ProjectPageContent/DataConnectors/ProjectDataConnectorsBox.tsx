@@ -31,17 +31,16 @@ import {
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 
+import { useGetDataConnectorsByDataConnectorIdQuery } from "../../../dataConnectorsV2/api/data-connectors.api";
+import DataConnectorBoxListDisplay from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
   DataConnectorToProjectLink,
-  Project,
   GetProjectsByProjectIdDataConnectorLinksApiResponse,
+  Project,
 } from "../../../projectsV2/api/projectV2.api";
-import { useGetDataConnectorsByDataConnectorIdQuery } from "../../../dataConnectorsV2/api/data-connectors.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
-import DataConnectorBoxListDisplay from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";
-
-import AccessGuard from "../../utils/AccessGuard";
-import useProjectAccess from "../../utils/useProjectAccess.hook";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
 
@@ -52,7 +51,6 @@ interface DataConnectorListDisplayProps {
 export default function ProjectDataConnectorsBox({
   project,
 }: DataConnectorListDisplayProps) {
-  const { userRole } = useProjectAccess({ projectId: project.id });
   const { data, error, isLoading } =
     useGetProjectsByProjectIdDataConnectorLinksQuery({
       projectId: project.id,
@@ -64,24 +62,16 @@ export default function ProjectDataConnectorsBox({
     return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
-  return (
-    <ProjectDataConnectorBoxContent
-      data={data}
-      project={project}
-      userRole={userRole}
-    />
-  );
+  return <ProjectDataConnectorBoxContent data={data} project={project} />;
 }
 
 interface ProjectDataConnectorBoxContentProps
   extends DataConnectorListDisplayProps {
   data: GetProjectsByProjectIdDataConnectorLinksApiResponse;
-  userRole: ReturnType<typeof useProjectAccess>["userRole"];
 }
 function ProjectDataConnectorBoxContent({
   data,
   project,
-  userRole,
 }: ProjectDataConnectorBoxContentProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const toggleOpen = useCallback(() => {
@@ -91,9 +81,9 @@ function ProjectDataConnectorBoxContent({
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Card className="h-100" data-cy="data-connector-box">
         <ProjectDataConnectorBoxHeader
+          projectId={project.id}
           toggleOpen={toggleOpen}
           totalConnectors={data.length}
-          userRole={userRole}
         />
         <CardBody>
           {data.length === 0 && (
@@ -121,17 +111,19 @@ function ProjectDataConnectorBoxContent({
   );
 }
 
-interface ProjectDataConnectorBoxHeaderProps
-  extends Pick<ProjectDataConnectorBoxContentProps, "userRole"> {
+interface ProjectDataConnectorBoxHeaderProps {
+  projectId: Project["id"];
   toggleOpen: () => void;
   totalConnectors: number;
 }
 
 function ProjectDataConnectorBoxHeader({
+  projectId,
   toggleOpen,
   totalConnectors,
-  userRole,
 }: ProjectDataConnectorBoxHeaderProps) {
+  const permissions = useProjectPermissions({ projectId });
+
   return (
     <CardHeader>
       <div
@@ -149,7 +141,7 @@ function ProjectDataConnectorBoxHeader({
           <Badge>{totalConnectors}</Badge>
         </div>
         <div className="my-auto">
-          <AccessGuard
+          <PermissionsGuard
             disabled={null}
             enabled={
               <Button
@@ -161,8 +153,8 @@ function ProjectDataConnectorBoxHeader({
                 <PlusLg className="icon-text" />
               </Button>
             }
-            minimumRole="editor"
-            role={userRole}
+            requestedPermission="write"
+            userPermissions={permissions}
           />
         </div>
       </div>

@@ -32,17 +32,17 @@ import {
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import MembershipGuard from "../../ProjectPageV2/utils/MembershipGuard";
+import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { NamespaceKind } from "../../projectsV2/api/namespace.api";
-import { useGetGroupsByGroupSlugMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import { useGetUserQuery } from "../../user/dataServicesUser.api";
 import {
   useGetDataConnectorsQuery,
   type GetDataConnectorsApiResponse,
 } from "../api/data-connectors.enhanced-api";
-import { useGetUserQuery } from "../../user/dataServicesUser.api";
 
-import DataConnectorBoxListDisplay from "./DataConnectorsBoxListDisplay";
 import DataConnectorModal from "./DataConnectorModal";
+import DataConnectorBoxListDisplay from "./DataConnectorsBoxListDisplay";
 
 const DEFAULT_PER_PAGE = 12;
 const DEFAULT_PAGE_PARAM = "page";
@@ -51,11 +51,10 @@ function AddButtonForGroupNamespace({
   namespace,
   toggleOpen,
 }: Pick<DataConnectorBoxHeaderProps, "namespace" | "toggleOpen">) {
-  const { data: members } = useGetGroupsByGroupSlugMembersQuery({
-    groupSlug: namespace,
-  });
+  const permissions = useGroupPermissions({ groupSlug: namespace });
+
   return (
-    <MembershipGuard
+    <PermissionsGuard
       disabled={null}
       enabled={
         <Button
@@ -67,8 +66,8 @@ function AddButtonForGroupNamespace({
           <PlusLg className="icon-text" />
         </Button>
       }
-      members={members}
-      minimumRole="editor"
+      requestedPermission="write"
+      userPermissions={permissions}
     />
   );
 }

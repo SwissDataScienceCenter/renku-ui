@@ -18,12 +18,6 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { FileCode, PlusLg } from "react-bootstrap-icons";
-
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal.tsx";
-import AccessGuard from "../../utils/AccessGuard.tsx";
-import useProjectAccess from "../../utils/useProjectAccess.hook";
-import { RepositoryItem } from "./CodeRepositoryDisplay.tsx";
 import {
   Badge,
   Button,
@@ -33,8 +27,14 @@ import {
   ListGroup,
 } from "reactstrap";
 
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
+import { Project } from "../../../projectsV2/api/projectV2.api";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal";
+import { RepositoryItem } from "./CodeRepositoryDisplay";
+
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
-  const { userRole } = useProjectAccess({ projectId: project.id });
+  const permissions = useProjectPermissions({ projectId: project.id });
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -62,7 +62,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
           </div>
 
           <div className="my-auto">
-            <AccessGuard
+            <PermissionsGuard
               disabled={null}
               enabled={
                 <Button
@@ -74,8 +74,8 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
                   <PlusLg className="icon-text" />
                 </Button>
               }
-              minimumRole="editor"
-              role={userRole}
+              requestedPermission="write"
+              userPermissions={permissions}
             />
           </div>
         </div>
