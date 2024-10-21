@@ -36,6 +36,10 @@ import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 
+import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
+import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
+
 import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
@@ -45,7 +49,6 @@ import {
   useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
 } from "../api/data-connectors.enhanced-api";
-import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 import DataConnectorModal from "./DataConnectorModal";
@@ -64,6 +67,10 @@ function DataConnectorRemoveDeleteModal({
   toggleModal,
   isOpen,
 }: DataConnectorRemoveModalProps) {
+  const { permissions, isLoading: isLoadingPermissions } = useGroupPermissions({
+    groupSlug: dataConnector.namespace,
+  });
+
   const dispatch = useAppDispatch();
   const {
     data: dataConnectorLinks,
@@ -101,8 +108,17 @@ function DataConnectorRemoveDeleteModal({
         Delete data connector
       </ModalHeader>
       <ModalBody>
-        {isLoadingLinks ? (
+        {isLoadingLinks || isLoadingPermissions ? (
           <Loader />
+        ) : permissions == null || permissions["delete"] != true ? (
+          <Row>
+            <Col>
+              <p>
+                You do not have the required permissions to delete this data
+                connector.
+              </p>
+            </Col>
+          </Row>
         ) : dataConnectorLinks == null || isLoadingLinksError ? (
           <Row>
             <Col>
@@ -161,26 +177,44 @@ function DataConnectorRemoveDeleteModal({
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button
-            color="danger"
-            className={cx("float-right", "ms-2")}
-            disabled={typedName !== dataConnector.slug.trim()}
-            data-cy="delete-data-connector-modal-button"
-            type="submit"
-            onClick={onDeleteDataCollector}
-          >
-            {isLoading ? (
-              <>
-                <Loader className="me-1" inline size={16} />
-                Deleting data connector
-              </>
-            ) : (
-              <>
+          <PermissionsGuard
+            disabled={
+              <Button
+                color="danger"
+                className={cx("float-right", "ms-2")}
+                disabled={true}
+                data-cy="delete-data-connector-modal-button"
+                onClick={toggleModal}
+              >
                 <Trash className={cx("bi", "me-1")} />
-                Remove data connector
-              </>
-            )}
-          </Button>
+                Delete data connector
+              </Button>
+            }
+            enabled={
+              <Button
+                color="danger"
+                className={cx("float-right", "ms-2")}
+                disabled={typedName !== dataConnector.slug.trim()}
+                data-cy="delete-data-connector-modal-button"
+                type="submit"
+                onClick={onDeleteDataCollector}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader className="me-1" inline size={16} />
+                    Deleting data connector
+                  </>
+                ) : (
+                  <>
+                    <Trash className={cx("bi", "me-1")} />
+                    Remove data connector
+                  </>
+                )}
+              </Button>
+            }
+            requestedPermission="delete"
+            userPermissions={permissions}
+          />
         </div>
       </ModalFooter>
     </Modal>
