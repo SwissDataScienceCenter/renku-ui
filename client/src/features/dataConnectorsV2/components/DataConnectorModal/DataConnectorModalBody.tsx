@@ -244,13 +244,13 @@ export function DataConnectorMount({
       setValue(field, value);
       if (field === "name") {
         if (!touchedFields.slug && !flatDataConnector.dataConnectorId)
-          setValue("slug", slugFromTitle(value as string));
+          setValue("slug", slugFromTitle(value as string, true, true));
         if (
           !touchedFields.mountPoint &&
           !touchedFields.slug &&
           !flatDataConnector.dataConnectorId
         )
-          setValue("mountPoint", slugFromTitle(value as string));
+          setValue("mountPoint", slugFromTitle(value as string, true, true));
       }
 
       if (
