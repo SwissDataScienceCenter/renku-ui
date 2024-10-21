@@ -29,7 +29,8 @@ import ContainerWrap from "../../../components/container/ContainerWrap";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
-import { useGetUserQuery } from "../../user/dataServicesUser.api";
+// import { useGetUserQuery } from "../../user/dataServicesUser.api";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 export default function UserRedirect() {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export default function UserRedirect() {
   } = useGetUserQuery(isUserLoggedIn ? undefined : skipToken);
 
   useEffect(() => {
-    if (user?.username) {
+    if (user?.isLoggedIn && user.username) {
       navigate(
         generatePath(ABSOLUTE_ROUTES.v2.users.show, {
           username: user.username,
@@ -53,7 +54,7 @@ export default function UserRedirect() {
         { replace: true }
       );
     }
-  }, [navigate, user?.username]);
+  }, [navigate]);
 
   if (!isUserLoggedIn) {
     return <NotLoggedIn />;

@@ -17,7 +17,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { UserInfo, UserInfoResponse } from "./keycloakUser.types";
+import { UserInfo, UserInfoResponse } from "./keycloakUser.types.old";
 
 const RENKU_ADMIN_GROUP_NAME = "renku-admin";
 

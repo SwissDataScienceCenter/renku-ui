@@ -19,10 +19,10 @@
 import cx from "classnames";
 import { Col, Container, Row } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import { useGetSecretsQuery } from "./secrets.api";
-import type { SecretKind } from "./secrets.types";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "../../components/Loader";
+import { useGetUserSecretsQuery } from "../usersV2/api/users.api";
+import type { SecretKind } from "./secrets.types";
 import SecretsListItem from "./SecretsListItem";
 
 interface SecretsListParams {
@@ -30,7 +30,7 @@ interface SecretsListParams {
 }
 
 export default function SecretsList({ kind }: SecretsListParams) {
-  const secrets = useGetSecretsQuery({ kind });
+  const secrets = useGetUserSecretsQuery({ userSecretsParams: { kind } });
 
   if (secrets.isLoading) return <Loader />;
 

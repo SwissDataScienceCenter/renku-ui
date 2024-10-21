@@ -18,7 +18,7 @@
 
 export interface SecretDetails {
   id: string;
-  modification_date: Date;
+  modification_date: string;
   name: string;
   kind: SecretKind;
 }

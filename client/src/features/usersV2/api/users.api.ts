@@ -18,15 +18,32 @@
 
 import type { DataServicesError } from "../../dataServices/dataServices.types";
 import {
+  type GetUserApiArg,
+  type GetUserApiResponse,
   type GetUserPreferencesApiArg,
   type GetUserPreferencesApiResponse,
   usersGeneratedApi,
 } from "./users.generated-api";
+import type { UserInfo } from "./users.types";
 
-// Fixes the GET /user/preferences endpoint
+// Fixes the GET /user and GET /user/preferences endpoints
 const withFixedEndpoints = usersGeneratedApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (build) => ({
+    getUser: build.query<UserInfo, GetUserApiArg>({
+      query: () => ({
+        url: "/user",
+        validateStatus: (response) => {
+          return response.status < 400 || response.status == 401;
+        },
+      }),
+      transformResponse: (result: GetUserApiResponse | null | undefined) => {
+        if (result == null) {
+          return { isLoggedIn: false };
+        }
+        return { ...result, isLoggedIn: true };
+      },
+    }),
     getUserPreferences: build.query<
       GetUserPreferencesApiResponse | null,
       GetUserPreferencesApiArg

@@ -22,7 +22,7 @@ import {
   AddPinnedProjectParams,
   RemovePinnedProjectParams,
   UserPreferences,
-} from "./userPreferences.types";
+} from "./userPreferences.types.old";
 
 const userPreferencesApi = createApi({
   reducerPath: "userPreferencesApi",

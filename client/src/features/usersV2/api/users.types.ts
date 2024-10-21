@@ -16,6 +16,14 @@
  * limitations under the License.
  */
 
-export interface UserV2 {
-  id: string;
+import type { SelfUserInfo } from "./users.generated-api";
+
+export type UserInfo = AnonymousUserInfo | LoggedInUserInfo;
+
+export interface AnonymousUserInfo {
+  isLoggedIn: false;
+}
+
+export interface LoggedInUserInfo extends SelfUserInfo {
+  isLoggedIn: true;
 }
