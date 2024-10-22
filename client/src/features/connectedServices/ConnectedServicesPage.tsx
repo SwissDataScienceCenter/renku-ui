@@ -32,11 +32,14 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+import { skipToken } from "@reduxjs/toolkit/query";
 
+import { InfoAlert, WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { safeNewUrl } from "../../utils/helpers/safeNewUrl.utils";
 import {
   connectedServicesApi,
@@ -52,9 +55,6 @@ import {
   type ProviderKind,
 } from "./api/connectedServices.api";
 import { AppInstallationsPaginated } from "./api/connectedServices.types";
-import { InfoAlert, WarnAlert } from "../../components/Alert";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 const CHECK_STATUS_QUERY_PARAM = "check-status";
 

@@ -57,6 +57,7 @@ import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 import {
   connectedServicesApi,
   useGetOauth2ProvidersQuery,
@@ -68,7 +69,6 @@ import repositoriesApi, {
   useGetRepositoryMetadataQuery,
   useGetRepositoryProbeQuery,
 } from "../../../repositories/repositories.api";
-import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
