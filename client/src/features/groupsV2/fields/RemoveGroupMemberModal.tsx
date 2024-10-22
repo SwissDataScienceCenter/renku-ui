@@ -51,6 +51,7 @@ export default function RemoveGroupMemberModal({
     <Modal
       backdrop="static"
       centered
+      data-cy="remove-group-member-modal"
       fullscreen="lg"
       isOpen={isOpen && member != null}
       size="lg"

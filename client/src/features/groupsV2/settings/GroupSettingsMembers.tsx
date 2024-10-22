@@ -246,7 +246,7 @@ function GroupMemberItem({
           <span className="fst-italic">{`@${member.namespace}`}</span>
           <span className="fw-bold">({capitalize(member.role)})</span>
         </p>
-        <div>
+        <div data-cy={`group-member-actions-${index}`}>
           <GroupMemberAction
             group={group}
             index={index}
@@ -301,7 +301,7 @@ function GroupMemberAction({
         disabled={
           <Button
             color="danger"
-            data-cy={`project-member-remove-${index}`}
+            data-cy={`group-member-remove-${index}`}
             onClick={onRemove}
           >
             <Trash className={cx("bi", "me-1")} />
@@ -354,7 +354,6 @@ interface MemberActionMenuProps {
 function MemberActionMenu({
   disabled,
   index,
-  // onRemove,
   onEdit,
   onRemove,
   tooltip,
@@ -364,7 +363,7 @@ function MemberActionMenu({
     <Button
       color="outline-primary"
       disabled={disabled}
-      data-cy={`project-member-edit-${index}`}
+      data-cy={`group-member-edit-${index}`}
       onClick={onEdit}
       size="sm"
     >

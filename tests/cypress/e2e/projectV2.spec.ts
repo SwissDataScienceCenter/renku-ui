@@ -485,7 +485,7 @@ describe("Editor cannot maintain members", () => {
     cy.contains("test 2 v2-project").should("be.visible");
     cy.wait("@listProjectV2Members");
     cy.get("a[title='Settings']").click();
-    cy.getDataCy("project-member-edit-2").should("be.disabled");
+    cy.getDataCy("project-member-edit-2").should("not.exist");
     // TODO: can edit self
     cy.getDataCy("project-member-remove-1").should("be.enabled");
   });
@@ -523,7 +523,7 @@ describe("Viewer cannot edit project", () => {
     cy.getDataCy("project-settings-edit").should("not.exist");
     cy.getDataCy("project-description-edit").should("not.exist");
     cy.get("a[title='Settings']").click();
-    cy.getDataCy("project-member-edit-0").should("be.disabled");
+    cy.getDataCy("project-member-edit-0").should("not.exist");
   });
 
   it("cannot change project components", () => {
