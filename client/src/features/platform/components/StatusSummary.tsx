@@ -43,9 +43,7 @@ import {
   toHumanDateTime,
 } from "../../../utils/helpers/DateTimeUtils";
 import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
-import keycloakUserApi, {
-  useGetUserInfoQuery,
-} from "../../user/keycloakUser.api";
+import { useGetUserQuery, usersApi } from "../../usersV2/api/users.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
 import type {
   ScheduledMaintenance,
@@ -72,7 +70,7 @@ function NoStatusPage() {
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
-  const { data: userInfo } = useGetUserInfoQuery(
+  const { data: userInfo } = useGetUserQuery(
     userLogged ? undefined : skipToken
   );
 
@@ -82,7 +80,7 @@ function NoStatusPage() {
       <p className="mb-0">
         This instance of Renku cannot provide its current status.
       </p>
-      {userInfo?.isLoggedIn && userInfo.isAdmin && (
+      {userInfo?.isLoggedIn && userInfo.is_admin && (
         <p className={cx("mb-0", "mt-1")}>
           As a Renku administrator, you can see the current configuration in the{" "}
           <Link to="/admin">admin panel</Link>.
@@ -100,10 +98,9 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
-  const { data: userInfo } =
-    keycloakUserApi.endpoints.getUserInfo.useQueryState(
-      userLogged ? undefined : skipToken
-    );
+  const { data: userInfo } = usersApi.endpoints.getUser.useQueryState(
+    userLogged ? undefined : skipToken
+  );
 
   const {
     data: summary,
@@ -125,7 +122,7 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
         <p>
           Error: could not retrieve RenkuLab&apos;s status from statuspage.io.
         </p>
-        {userInfo?.isLoggedIn && userInfo.isAdmin && (
+        {userInfo?.isLoggedIn && userInfo.is_admin && (
           <p>
             As a Renku administrator, you can see the current configuration in
             the <Link to="/admin">admin panel</Link>.

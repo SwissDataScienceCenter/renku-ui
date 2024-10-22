@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,11 +16,17 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+// Run `npm run generate-api:users` to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
 
-// initialize an empty api service that we'll inject endpoints into later as needed
-export const dataServicesUserEmptyApi = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
-  endpoints: () => ({}),
-  reducerPath: "dataServicesUserApi",
-});
+const config: ConfigFile = {
+  apiFile: "./users.empty-api.ts",
+  apiImport: "usersEmptyApi",
+  outputFile: "./users.generated-api.ts",
+  exportName: "usersGeneratedApi",
+  hooks: true,
+  schemaFile: path.join(__dirname, "users.openapi.json"),
+};
+
+export default config;

@@ -25,8 +25,8 @@ import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 
 import { dataConnectorsApi } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
+import { useDeleteUserSecretMutation } from "../usersV2/api/users.api";
 
-import { useDeleteSecretMutation } from "./secrets.api";
 import { SecretDetails } from "./secrets.types";
 
 interface SecretsDeleteProps {
@@ -41,9 +41,9 @@ export default function SecretDelete({ secret }: SecretsDeleteProps) {
   const dispatch = useAppDispatch();
 
   // Handle posting data
-  const [deleteSecretMutation, result] = useDeleteSecretMutation();
+  const [deleteSecretMutation, result] = useDeleteUserSecretMutation();
   const deleteSecret = useCallback(() => {
-    deleteSecretMutation(secret.id);
+    deleteSecretMutation({ secretId: secret.id });
     dispatch(dataConnectorsApi.util.invalidateTags(["DataConnectorSecrets"]));
   }, [deleteSecretMutation, dispatch, secret.id]);
 

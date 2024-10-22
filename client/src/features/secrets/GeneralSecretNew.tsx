@@ -33,7 +33,7 @@ import {
 
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
-import secretsApi, { useAddSecretMutation } from "./secrets.api";
+import { usePostUserSecretMutation, usersApi } from "../usersV2/api/users.api";
 import { AddSecretForm } from "./secrets.types";
 import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
 
@@ -59,11 +59,11 @@ export default function GeneralSecretNew() {
   });
 
   // Handle fetching/posting data
-  const [getSecrets, secrets] = secretsApi.useLazyGetSecretsQuery();
-  const [addSecretMutation, result] = useAddSecretMutation();
+  const [getSecrets, secrets] = usersApi.useLazyGetUserSecretsQuery();
+  const [addSecretMutation, result] = usePostUserSecretMutation();
   const onSubmit = useCallback(
     (newSecret: AddSecretForm) => {
-      addSecretMutation(newSecret);
+      addSecretMutation({ secretPost: newSecret });
     },
     [addSecretMutation]
   );
@@ -71,7 +71,7 @@ export default function GeneralSecretNew() {
   // Force fetching the secrets when trying to add a new one to try to prevent duplicates
   useEffect(() => {
     if (showModal) {
-      getSecrets({ kind: "general" });
+      getSecrets({ userSecretsParams: { kind: "general" } });
     }
   }, [getSecrets, showModal]);
 

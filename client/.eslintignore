@@ -3,3 +3,4 @@
 # Generated files should not be linted
 src/features/projectsV2/api/storagesV2.api.ts
 src/features/dataConnectorsV2/api/data-connectors.api.ts
+src/features/usersV2/api/users.generated-api.ts

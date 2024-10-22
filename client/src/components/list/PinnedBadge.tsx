@@ -25,10 +25,10 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { EntityType } from "../../features/kgSearch";
 import {
-  useAddPinnedProjectMutation,
+  useDeletePinnedProjectsMutation,
   useGetUserPreferencesQuery,
-  useRemovePinnedProjectMutation,
-} from "../../features/user/userPreferences.api";
+  usePostPinnedProjectMutation,
+} from "../../features/usersV2/api/users.api";
 import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import AppContext from "../../utils/context/appContext";
@@ -96,9 +96,9 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
   );
 
   const [addPinnedProject, addPinnedProjectResult] =
-    useAddPinnedProjectMutation();
+    usePostPinnedProjectMutation();
   const [removePinnedProject, removePinnedProjectResult] =
-    useRemovePinnedProjectMutation();
+    useDeletePinnedProjectsMutation();
 
   const onClick = useCallback(() => {
     if (
@@ -109,9 +109,9 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
     }
 
     if (isProjectPinned) {
-      removePinnedProject({ project_slug: slug });
+      removePinnedProject({ deletePinnedParams: { project_slug: slug } });
     } else {
-      addPinnedProject({ project_slug: slug });
+      addPinnedProject({ addPinnedProject: { project_slug: slug } });
     }
   }, [
     addPinnedProject,
