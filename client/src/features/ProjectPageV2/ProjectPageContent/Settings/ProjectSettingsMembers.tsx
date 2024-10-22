@@ -164,15 +164,7 @@ function ProjectMemberAction({
 
   return (
     <PermissionsGuard
-      disabled={
-        <MemberActionMenu
-          disabled={true}
-          index={index}
-          onRemove={onRemove}
-          onEdit={onEdit}
-          tooltip={"Only project owners can modify access to the project."}
-        />
-      }
+      disabled={null}
       enabled={
         <MemberActionMenu index={index} onRemove={onRemove} onEdit={onEdit} />
       }
