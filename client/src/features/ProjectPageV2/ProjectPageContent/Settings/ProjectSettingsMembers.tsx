@@ -53,7 +53,7 @@ import AddProjectMemberModal from "../../../projectsV2/fields/AddProjectMemberMo
 import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal";
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 import { ProjectMemberDisplay } from "../../../projectsV2/shared/ProjectMemberDisplay";
-import { useGetUserQuery } from "../../../user/dataServicesUser.api/dataServicesUser.api";
+import { useGetUserQuery } from "../../../usersV2/api/users.api";
 import { toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
@@ -120,7 +120,7 @@ function ProjectMemberAction({
     error: userError,
   } = useGetUserQuery(logged ? undefined : skipToken);
   const userMember = useMemo(() => {
-    if (isUserLoading || userError || !user || !member) {
+    if (isUserLoading || userError || !user || !user.isLoggedIn || !member) {
       return undefined;
     }
     return members.find((member) => member.id === user.id);

@@ -59,7 +59,7 @@ import {
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
 import { useGetProjectsFromSlugsQuery } from "../../projects/projects.api";
 import { useGetSessionsQuery } from "../../session/sessions.api";
-import { useGetUserPreferencesQuery } from "../../user/userPreferences.api";
+import { useGetUserPreferencesQuery } from "../../usersV2/api/users.api";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
