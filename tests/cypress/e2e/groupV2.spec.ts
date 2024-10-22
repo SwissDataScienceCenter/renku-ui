@@ -277,9 +277,10 @@ describe("Work with group data connectors", () => {
   });
 
   it("add a group data connector", () => {
-    fixtures
-      .testCloudStorage({ success: false })
-      .postDataConnector({ namespace: "test-2-group-v2" });
+    fixtures.testCloudStorage({ success: false }).postDataConnector({
+      namespace: "test-2-group-v2",
+      slug: "example-storage-no-credentials",
+    });
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible");
@@ -298,12 +299,19 @@ describe("Work with group data connectors", () => {
     cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
     cy.getDataCy("data-connector-edit-mount").within(() => {
       cy.get("#name").type("example storage without credentials");
+      cy.get("#data-connector-slug").should(
+        "have.value",
+        "example-storage-without-credentials"
+      );
+      cy.get("#data-connector-slug")
+        .clear()
+        .type("example-storage-no-credentials");
     });
     cy.getDataCy("data-connector-edit-update-button").click();
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
+      "The data connector test-2-group-v2/example-storage-no-credentials has been successfully added."
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listDataConnectors");

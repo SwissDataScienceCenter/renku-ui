@@ -28,6 +28,10 @@ interface DataConnectorListArgs extends SimpleFixture {
   visibility?: string;
 }
 
+interface DataConnectorPostArgs extends DataConnectorListArgs {
+  slug?: string;
+}
+
 interface DataConnectorIdArgs extends SimpleFixture {
   dataConnectorId?: string;
 }
@@ -298,11 +302,12 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    postDataConnector(args?: DataConnectorListArgs) {
+    postDataConnector(args?: DataConnectorPostArgs) {
       const {
         fixture = "dataConnector/new-data-connector.json",
         name = "postDataConnector",
         namespace,
+        slug,
         visibility = "private",
       } = args ?? {};
       cy.fixture(fixture).then((dataConnector) => {
@@ -315,6 +320,9 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
           expect(newDataConnector.visibility).equal(visibility);
           if (namespace) {
             expect(newDataConnector.namespace).equal(namespace);
+          }
+          if (slug) {
+            expect(newDataConnector.slug).equal(slug);
           }
           dataConnector.namespace = newDataConnector.namespace;
           dataConnector.slug = newDataConnector.slug;
