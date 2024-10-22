@@ -31,20 +31,46 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import { User } from "../../searchV2/api/searchV2Api.api";
 import type {
   GroupMemberPatchRequest,
   GroupMemberResponseList,
-} from "../api/namespace.api";
-import { usePatchGroupsByGroupSlugMembersMutation } from "../api/projectV2.enhanced-api";
-import { UserControl } from "./UserSelector";
+} from "../../projectsV2/api/namespace.api";
+import { usePatchGroupsByGroupSlugMembersMutation } from "../../projectsV2/api/projectV2.enhanced-api";
+import { UserControl } from "../../projectsV2/fields/UserSelector";
+import type { User } from "../../searchV2/api/searchV2Api.api";
 
 interface AddGroupMemberModalProps {
   isOpen: boolean;
   members: GroupMemberResponseList;
   groupSlug: string;
   toggle: () => void;
+}
+
+export default function AddGroupMemberModal({
+  isOpen,
+  members,
+  groupSlug,
+  toggle,
+}: AddGroupMemberModalProps) {
+  return (
+    <Modal
+      backdrop="static"
+      centered
+      fullscreen="lg"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
+      <ModalHeader toggle={toggle}>Add a group member</ModalHeader>
+      <AddGroupMemberAccessForm
+        members={members}
+        groupSlug={groupSlug}
+        toggle={toggle}
+      />
+    </Modal>
+  );
 }
 
 interface GroupMemberForAdd extends GroupMemberPatchRequest {}
@@ -162,30 +188,5 @@ function AddGroupMemberAccessForm({
         </Button>
       </ModalFooter>
     </>
-  );
-}
-
-export default function AddProjectMemberModal({
-  isOpen,
-  members,
-  groupSlug,
-  toggle,
-}: AddGroupMemberModalProps) {
-  return (
-    <Modal
-      backdrop="static"
-      centered
-      fullscreen="lg"
-      isOpen={isOpen}
-      size="lg"
-      toggle={toggle}
-    >
-      <ModalHeader toggle={toggle}>Add a group member</ModalHeader>
-      <AddGroupMemberAccessForm
-        members={members}
-        groupSlug={groupSlug}
-        toggle={toggle}
-      />
-    </Modal>
   );
 }

@@ -17,39 +17,33 @@
  */
 
 import cx from "classnames";
-import { capitalize } from "lodash-es";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, PlusLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, Pencil, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
   Form,
   Input,
-  ListGroup,
-  ListGroupItem,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type {
-  GroupMemberResponse,
   GroupPatchRequest,
   GroupResponse,
-} from "../api/namespace.api";
+} from "../../projectsV2/api/namespace.api";
 import {
-  useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
   useDeleteGroupsByGroupSlugMutation,
-  useGetGroupsByGroupSlugMembersQuery,
   usePatchGroupsByGroupSlugMutation,
-} from "../api/projectV2.enhanced-api";
-import AddGroupMemberModal from "../fields/AddGroupMemberModal";
-import DescriptionFormField from "../fields/DescriptionFormField";
-import NameFormField from "../fields/NameFormField";
-import SlugFormField from "../fields/SlugFormField";
+} from "../../projectsV2/api/projectV2.enhanced-api";
+import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
+import NameFormField from "../../projectsV2/fields/NameFormField";
+import SlugFormField from "../../projectsV2/fields/SlugFormField";
 
 type GroupMetadata = Omit<GroupPatchRequest, "repositories">;
 
@@ -120,30 +114,15 @@ function GroupDeleteConfirmation({
   );
 }
 
-interface GroupEditSubmitGroupProps {
-  isUpdating: boolean;
-}
-function GroupEditSubmitGroup({ isUpdating }: GroupEditSubmitGroupProps) {
-  return (
-    <div className={cx("d-flex", "justify-content-between")}>
-      <div>
-        <Button color="primary" disabled={isUpdating} type="submit">
-          {isUpdating && <Loader inline={true} size={16} />} Update
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 interface GroupMetadataFormProps {
   group: GroupResponse;
 }
-export function GroupMetadataForm({ group }: GroupMetadataFormProps) {
+export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
   const navigate = useNavigate();
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
   } = useForm<GroupMetadata>({
     defaultValues: {
@@ -181,6 +160,9 @@ export function GroupMetadataForm({ group }: GroupMetadataFormProps) {
 
   return (
     <div>
+      {updateGroupResult.error && (
+        <RtkOrNotebooksError error={updateGroupResult.error} />
+      )}
       <GroupDeleteConfirmation isOpen={isOpen} group={group} toggle={toggle} />
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <NameFormField
@@ -205,97 +187,20 @@ export function GroupMetadataForm({ group }: GroupMetadataFormProps) {
           <Button className="ms-auto" color="outline-danger" onClick={toggle}>
             Delete
           </Button>
-          <GroupEditSubmitGroup isUpdating={isUpdating} />
-        </div>
-        {updateGroupResult.isError && <div>There was an error</div>}
-      </Form>
-    </div>
-  );
-}
-
-export function GroupMembersForm({ group }: GroupMetadataFormProps) {
-  const { data, isLoading } = useGetGroupsByGroupSlugMembersQuery({
-    groupSlug: group.slug,
-  });
-  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
-  const toggleAddMemberModalOpen = useCallback(() => {
-    setIsAddMemberModalOpen((open) => !open);
-  }, []);
-
-  const [deleteMember] = useDeleteGroupsByGroupSlugMembersAndUserIdMutation();
-
-  const onDelete = useCallback(
-    (member: GroupMemberResponse) => {
-      deleteMember({ groupSlug: group.slug, userId: member.id });
-    },
-    [deleteMember, group.slug]
-  );
-
-  if (isLoading) return <Loader />;
-  if (data == null)
-    return (
-      <>
-        <h4>Group Members</h4>
-        <div className="mb-3">Could not load members</div>
-      </>
-    );
-  return (
-    <>
-      <div className={cx("d-flex", "gap-2", "mb-3")}>
-        <h4>Group Members</h4>
-        <div>
           <Button
-            color="outline-primary"
-            data-cy="group-add-member"
-            onClick={toggleAddMemberModalOpen}
-            size="sm"
+            color="primary"
+            disabled={isUpdating || !isDirty}
+            type="submit"
           >
-            <PlusLg className="bi" id="createPlus" />
+            {isUpdating ? (
+              <Loader inline size={16} />
+            ) : (
+              <Pencil className={cx("bi", "me-1")} />
+            )}
+            Update
           </Button>
         </div>
-      </div>
-      <ListGroup>
-        {data.map((d, i) => {
-          const name =
-            d.first_name && d.last_name
-              ? `${d.first_name} ${d.last_name}`
-              : d.first_name || d.last_name;
-          return (
-            <ListGroupItem key={d.id}>
-              <div
-                className={cx(
-                  "align-items-center",
-                  "d-flex",
-                  "gap-2",
-                  "justify-content-between"
-                )}
-              >
-                <p className={cx("d-flex", "mb-0", "gap-2")}>
-                  <span>{name ?? "Unknown user"}</span>
-                  <span className="fst-italic">{`@${d.namespace}`}</span>
-                  <span className="fw-bold">({capitalize(d.role)})</span>
-                </p>
-                <div>
-                  <Button
-                    color="outline-danger"
-                    data-cy={`delete-member-${i}`}
-                    onClick={() => onDelete(d)}
-                    size="sm"
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            </ListGroupItem>
-          );
-        })}
-      </ListGroup>
-      <AddGroupMemberModal
-        isOpen={isAddMemberModalOpen}
-        members={data}
-        groupSlug={group.slug}
-        toggle={toggleAddMemberModalOpen}
-      />
-    </>
+      </Form>
+    </div>
   );
 }
