@@ -325,3 +325,61 @@ function MyComponent() {
 
 Calling code after an async action may happen after a component has re-rendered or has been removed.
 In this case, if the corresponding code tries to access the component, it will cause an error.
+
+### R008: Interactive handlers can only be used on interactive HTML tags
+
+Do not add interactive handlers, e.g. `onClick`, to HTML tags which are not interactive.
+
+**✅ DO**
+
+```tsx
+function MyComponent() {
+  return (
+    <ul>
+      <li>
+        <a href="...">
+          My Content
+        </a>
+      <li>
+    </ul>
+  );
+}
+```
+
+```tsx
+function MyComponent() {
+  const onClick = ...Some action...;
+
+  return (
+    <ul>
+      <li>
+        <button onClick={onClick}>
+          My Content
+        </button>
+      <li>
+    </ul>
+  );
+}
+```
+
+**❌ DON'T**
+
+```tsx
+function MyComponent() {
+  const onClick = ...Some action...;
+
+  return (
+    <ul>
+      <li onClick={onClick}>
+        My Content
+      <li>
+    </ul>
+  );
+}
+```
+
+**💡 Rationale**
+
+Browsers do not expect tags such as `<div>` or `<span>` to be interactive, which means they will
+not get focused with keyboard navigation. Adding interactive handlers to non-interactive tags will
+therefore hinder accessibility to users which do not have access to a mouse or touch screen.
