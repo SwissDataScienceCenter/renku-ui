@@ -48,9 +48,7 @@ export default function DashboardV2Sessions() {
       <p>Cannot show sessions.</p>
       <RtkErrorAlert error={error} />
     </div>
-  ) : !sessions ||
-    (Object.keys(sessions).length == 0 &&
-      Object.keys(v2Sessions).length == 0) ? (
+  ) : Object.keys(v2Sessions).length == 0 ? (
     <div>No running sessions.</div>
   ) : null;
 
