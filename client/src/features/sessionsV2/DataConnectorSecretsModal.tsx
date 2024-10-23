@@ -79,7 +79,8 @@ function ClearCredentialsButton({
     <>
       <span ref={clearButtonRef}>
         <Button
-          className={cx("ms-2", "btn-outline-rk-green")}
+          color="outline-primary"
+          className={cx("ms-2")}
           onClick={onSkip}
           disabled={!hasSavedCredentials}
         >
@@ -350,11 +351,16 @@ function CredentialsButtons({
         />
       )}
       <Button
-        className={cx(
-          "ms-2",
-          validationResult.isSuccess && "btn-rk-green",
-          validationResult.isError && "btn-danger"
-        )}
+        color={
+          validationResult == null
+            ? "primary"
+            : validationResult.isSuccess
+            ? "primary"
+            : validationResult.isError
+            ? "danger"
+            : "primary"
+        }
+        className={cx("ms-2")}
         disabled={validationResult.isLoading}
         type="submit"
       >
@@ -606,7 +612,7 @@ function SkipConnectionTestButton({
   return (
     <>
       <span ref={skipButtonRef}>
-        <Button className={cx("ms-2", "btn-outline-rk-green")} onClick={onSkip}>
+        <Button color="outline-primary" className={cx("ms-2")} onClick={onSkip}>
           Skip <SkipForward className={cx("bi", "me-1")} />
         </Button>
       </span>
