@@ -259,8 +259,8 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
       <SessionView
         sessions={sessions}
         project={project}
-        setToggleSessionView={openSessionDetails}
-        toggleSessionView={toggleSessionView}
+        toggle={openSessionDetails}
+        isOpen={toggleSessionView}
       />
     </>
   );

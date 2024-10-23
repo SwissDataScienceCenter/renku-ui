@@ -255,17 +255,17 @@ function EnvironmentCard({
   );
 }
 interface SessionViewProps {
+  isOpen: boolean;
   launcher?: SessionLauncher;
-  sessions?: Sessions;
-  toggleSessionView: boolean;
-  setToggleSessionView: () => void;
   project: Project;
+  sessions?: Sessions;
+  toggle: () => void;
 }
 export function SessionView({
   launcher,
   sessions,
-  setToggleSessionView,
-  toggleSessionView,
+  toggle: setToggleSessionView,
+  isOpen: toggleSessionView,
   project,
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
