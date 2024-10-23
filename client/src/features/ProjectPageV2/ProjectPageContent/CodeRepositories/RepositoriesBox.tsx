@@ -30,7 +30,7 @@ import {
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal";
+import AddCodeRepositoryModal from "./AddCodeRepositoryModal";
 import { RepositoryItem } from "./CodeRepositoryDisplay";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
@@ -97,7 +97,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
           </ListGroup>
         )}
       </CardBody>
-      <AddCodeRepositoryStep1Modal
+      <AddCodeRepositoryModal
         toggleModal={toggle}
         isOpen={isOpen}
         project={project}
