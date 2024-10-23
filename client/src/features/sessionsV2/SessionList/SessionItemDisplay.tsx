@@ -33,6 +33,8 @@ export function SessionItemDisplay({
   launcher,
   project,
 }: SessionLauncherDisplayProps) {
+  // TODO: here!
+
   const { name } = launcher;
   const [toggleSessionView, setToggleSessionView] = useState(false);
   const { data: sessions } = sessionsApi.endpoints.getSessions.useQueryState();
