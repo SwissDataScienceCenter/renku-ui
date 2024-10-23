@@ -21,6 +21,8 @@ import {
   SessionStatusV2Label,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
 
+import styles from "./DashboardV2Sessions.module.scss";
+
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
 
@@ -48,9 +50,7 @@ export default function DashboardV2Sessions() {
       <p>Cannot show sessions.</p>
       <RtkErrorAlert error={error} />
     </div>
-  ) : !sessions ||
-    (Object.keys(sessions).length == 0 &&
-      Object.keys(v2Sessions).length == 0) ? (
+  ) : Object.keys(v2Sessions).length == 0 ? (
     <div>No running sessions.</div>
   ) : null;
 
@@ -104,57 +104,64 @@ function DashboardSession({ session }: DashboardSessionProps) {
     : ABSOLUTE_ROUTES.v2.root;
 
   return (
-    <Link
-      className={cx(
-        "d-flex",
-        "flex-column",
-        "gap-3",
-        "link-primary",
-        "list-group-item-action",
-        "list-group-item",
-        "text-body",
-        "text-decoration-none"
-      )}
-      data-cy="list-session"
-      to={{ pathname: projectUrl, hash: sessionHash }}
+    <div
+      className={cx("list-group-item-action", "list-group-item")}
+      data-cy="dashboard-session-list-item"
     >
-      <Row className="g-2">
-        <Col className="order-1" xs={12} md={9} lg={10}>
-          <div data-cy="list-session-link">
-            <h6 className="fw-bold">
-              {project
-                ? project.namespace + "/" + project.slug
-                : projectId ?? "Unknown"}
-            </h6>
-            <p className="mb-0">
-              <b>Container image:</b> {image}
-            </p>
-          </div>
-        </Col>
-        <Col className={cx("order-3", "order-md-2")} xs={12} md={3} lg={2}>
-          <div className={cx("text-start", "text-md-end")}>
-            <ActiveSessionButton
-              className="my-auto"
-              session={session}
-              showSessionUrl={showSessionUrl}
-            />
-          </div>
-        </Col>
-        <Col className={cx("order-2", "order-md-3")} xs={12}>
-          <Row className={cx("justify-content-between", "gap-2")}>
-            <Col xs={12} md="auto">
-              <SessionStatusV2Label session={session} />
-            </Col>
-            <Col xs={12} md="auto">
-              <SessionStatusV2Description session={session} />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+      <Link
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "gap-3",
+          "link-primary",
+          "text-body",
+          "text-decoration-none"
+        )}
+        to={{ pathname: projectUrl, hash: sessionHash }}
+      >
+        <Row className="g-2">
+          <Col className="order-1" xs={12} md={9} lg={10}>
+            <div data-cy="list-session-link">
+              <h6 className="fw-bold">
+                {project
+                  ? project.namespace + "/" + project.slug
+                  : projectId ?? "Unknown"}
+              </h6>
+              <p className="mb-0">
+                <b>Container image:</b> {image}
+              </p>
+            </div>
+          </Col>
+          <Col className={cx("order-3", "order-md-2")} xs={12} md={3} lg={2}>
+            {/* NOTE: This is a placeholder for the session actions button */}
+            <div className={cx("text-start", "text-md-end", "px-2", "py-1")}>
+              <span className="bi" />
+            </div>
+          </Col>
+          <Col className={cx("order-2", "order-md-3")} xs={12}>
+            <Row className={cx("justify-content-between", "gap-2")}>
+              <Col xs={12} md="auto">
+                <SessionStatusV2Label session={session} />
+              </Col>
+              <Col xs={12} md="auto">
+                <SessionStatusV2Description session={session} />
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Link>
+      {/* NOTE: The session actions button is visually placed within the link card, but its DOM tree is kept separate. */}
+      <div className={cx(styles.sessionButton, "position-absolute", "z-1")}>
+        <ActiveSessionButton
+          className="my-auto"
+          session={session}
+          showSessionUrl={showSessionUrl}
+        />
+      </div>
       <EnvironmentLogs
         name={displayModal.targetServer}
         annotations={annotations}
       />
-    </Link>
+    </div>
   );
 }

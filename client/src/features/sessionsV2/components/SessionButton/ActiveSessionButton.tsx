@@ -372,7 +372,7 @@ export default function ActiveSessionButton({
 
   const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
-      <FileEarmarkText className="bi" />
+      <FileEarmarkText className={cx("bi", "me-1")} />
       Get logs
     </DropdownItem>
   );
