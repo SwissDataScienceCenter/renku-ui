@@ -23,6 +23,8 @@ import {
   InfoCircleFill,
   Folder,
   Gear,
+  Key,
+  Lock,
   PersonBadge,
 } from "react-bootstrap-icons";
 
@@ -33,7 +35,7 @@ import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
 import { EntityPill } from "../../searchV2/components/SearchV2Results";
 
 import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
-import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
+import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../project/utils/projectCloudStorage.utils";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 
@@ -166,21 +168,45 @@ function DataConnectorViewAccess({
           requiredCredentials.length > 0 && (
             <div className="mt-3">
               <p className={cx("fw-bold", "m-0")}>Required credentials</p>
-              <table className={cx("ps-4", "mb-0", "table", "table-sm")}>
-                <thead>
-                  <tr>
-                    <th>Field</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
+              <table
+                className={cx(
+                  "ps-4",
+                  "mb-0",
+                  "table",
+                  "table-sm",
+                  "table-borderless"
+                )}
+              >
                 <tbody>
                   {requiredCredentials.map(({ name, help }, index) => {
                     const value =
-                      name == null
-                        ? "unknown"
-                        : savedCredentialFields[name]
-                        ? CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE
-                        : storageDefinition.configuration[name]?.toString();
+                      name == null ? (
+                        "unknown"
+                      ) : savedCredentialFields[name] ? (
+                        <span
+                          className={cx(
+                            "badge",
+                            "rounded-pill",
+                            "text-bg-success"
+                          )}
+                        >
+                          <Key className={cx("bi", "me-2")} /> Credentials saved
+                        </span>
+                      ) : storageDefinition.configuration[name]?.toString() ==
+                        CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN ? (
+                        <span
+                          className={cx(
+                            "badge",
+                            "rounded-pill",
+                            "text-bg-secondary"
+                          )}
+                        >
+                          <Lock className={cx("bi", "me-2")} /> Requires
+                          credentials
+                        </span>
+                      ) : (
+                        storageDefinition.configuration[name]?.toString()
+                      );
                     return (
                       <tr key={index}>
                         <td>
