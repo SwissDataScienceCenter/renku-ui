@@ -344,7 +344,7 @@ function DataConnectorViewMetadata({
 
   return (
     <section className={cx("pt-3")} data-cy="data-connector-metadata-section">
-      <DataConnectorPropertyValue title="ID">
+      <DataConnectorPropertyValue title="Identifier">
         <div className={cx("d-flex", "justify-content-between", "mx-0")}>
           <div>
             {dataConnector.namespace}/{dataConnector.slug}
