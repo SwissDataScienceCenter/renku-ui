@@ -20,9 +20,8 @@ import cx from "classnames";
 import { Control, Controller } from "react-hook-form";
 import { Label } from "reactstrap";
 
+import { InfoAlert } from "../../../../components/Alert";
 import { AddCloudStorageState } from "../../../project/components/cloudStorage/projectCloudStorage.types";
-import { WarnAlert } from "../../../../components/Alert";
-
 import { DataConnectorMountForm } from "./DataConnectorModalBody";
 
 type DataConnectorSaveCredentialsInfoProps = {
@@ -63,13 +62,13 @@ export default function DataConnectorSaveCredentialsInfo({
       />
       {state.saveCredentials && (
         <div className="mt-1">
-          <WarnAlert dismissible={false}>
+          <InfoAlert dismissible={false}>
             <p className="mb-0">
               The credentials will be stored as secrets and only be for your
               use. Other users will have to supply their credentials to use this
               data connector.
             </p>
-          </WarnAlert>
+          </InfoAlert>
         </div>
       )}
       <div className={cx("form-text", "text-muted")}>
