@@ -91,6 +91,10 @@ function DashboardSession({ session }: DashboardSessionProps) {
         id: projectId,
       })
     : ABSOLUTE_ROUTES.v2.root;
+  const sessionHash =
+    project && annotations["launcherId"]
+      ? `launcher-${annotations["launcherId"]}`
+      : "";
   const showSessionUrl = project
     ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
         namespace: project.namespace,
@@ -112,7 +116,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
         "text-decoration-none"
       )}
       data-cy="list-session"
-      to={projectUrl}
+      to={{ pathname: projectUrl, hash: sessionHash }}
     >
       <Row className="g-2">
         <Col className="order-1" xs={12} md={9} lg={10}>
