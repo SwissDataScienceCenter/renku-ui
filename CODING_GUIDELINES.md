@@ -24,6 +24,7 @@ Rules:
 - [R005: File naming conventions](#r005-file-naming-conventions)
 - [R006: Use existing Bootstrap classes or import from CSS modules](#r006-use-existing-bootstrap-classes-or-import-from-css-modules)
 - [R007: Do not perform async actions in React hooks](#r007-do-not-perform-async-actions-in-react-hooks)
+- [R008: Interactive handlers can only be used on interactive HTML tags](#r008-interactive-handlers-can-only-be-used-on-interactive-html-tags)
 
 ### R001: Use utility functions to create CSS class names
 
