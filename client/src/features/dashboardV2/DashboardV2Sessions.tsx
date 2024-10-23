@@ -100,7 +100,10 @@ function DashboardSession({ session }: DashboardSessionProps) {
     : ABSOLUTE_ROUTES.v2.root;
 
   return (
-    <div className={cx("list-group-item-action", "list-group-item")}>
+    <div
+      className={cx("list-group-item-action", "list-group-item")}
+      data-cy="dashboard-session-list-item"
+    >
       <Link
         className={cx(
           "d-flex",
@@ -110,7 +113,6 @@ function DashboardSession({ session }: DashboardSessionProps) {
           "text-body",
           "text-decoration-none"
         )}
-        data-cy="list-session"
         to={projectUrl}
       >
         <Row className="g-2">
