@@ -56,11 +56,6 @@ describe("Set up data connectors with credentials", () => {
         // No call to postCloudStorageSecrets is expected
         shouldNotBeCalled: true,
       });
-    // .cloudStorage({
-    //   isV2: true,
-    //   fixture: "cloudStorage/cloud-storage-with-secrets-values-empty.json",
-    //   name: "getCloudStorageV2",
-    // })
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@listProjectDataConnectors");
@@ -103,7 +98,10 @@ describe("Set up data connectors with credentials", () => {
       "contain.text",
       "example storage"
     );
-    cy.getDataCy("access_key_id-value").should("contain.text", "<sensitive>");
+    cy.getDataCy("access_key_id-value").should(
+      "contain.text",
+      "Requires credentials"
+    );
   });
 
   it("set up data connector with credentials", () => {
@@ -180,7 +178,7 @@ describe("Set up data connectors with credentials", () => {
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "<saved secret>"
+      "Credentials saved"
     );
   });
 });
