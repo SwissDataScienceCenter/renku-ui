@@ -21,6 +21,8 @@ import {
   SessionStatusV2Label,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
 
+import styles from "./DashboardV2Sessions.module.scss";
+
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
 
@@ -124,12 +126,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
               </p>
             </div>
           </Col>
-          <Col
-            className={cx("order-3", "order-md-2", "bg-info")}
-            xs={12}
-            md={3}
-            lg={2}
-          >
+          <Col className={cx("order-3", "order-md-2")} xs={12} md={3} lg={2}>
             {/* NOTE: This is a placeholder for the session actions button */}
             <div className={cx("text-start", "text-md-end", "px-2", "py-1")}>
               <span className="bi" />
@@ -147,25 +144,8 @@ function DashboardSession({ session }: DashboardSessionProps) {
           </Col>
         </Row>
       </Link>
-      <div
-        className={cx(
-          "position-absolute",
-          "z-1"
-          // "bottom-0",
-          // "pb-3",
-        )}
-        style={
-          {
-            // position: "absolute",
-            // top: 0,
-            // marginTop: "1rem",
-            // right: 0,
-            // zIndex: 1,
-            // bottom: 0,
-            // marginBottom: "1rem",
-          }
-        }
-      >
+      {/* NOTE: The session actions button is visually placed within the link card, but its DOM tree is kept separate. */}
+      <div className={cx(styles.sessionButton, "position-absolute", "z-1")}>
         <ActiveSessionButton
           className="my-auto"
           session={session}
