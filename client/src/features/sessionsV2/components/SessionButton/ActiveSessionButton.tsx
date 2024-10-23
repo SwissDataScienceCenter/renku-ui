@@ -282,7 +282,10 @@ export default function ActiveSessionButton({
         color="primary"
         data-cy="resume-session-button"
         disabled={isResuming}
-        onClick={onResumeSession}
+        onClick={(e) => {
+          e.preventDefault();
+          onResumeSession();
+        }}
       >
         {isResuming ? (
           <>
@@ -301,7 +304,10 @@ export default function ActiveSessionButton({
         color="primary"
         className={buttonClassName}
         data-cy="modify-session-button"
-        onClick={toggleModifySession}
+        onClick={(e) => {
+          e.preventDefault();
+          toggleModifySession();
+        }}
       >
         <Tools className={cx("bi", "me-1")} />
         Modify
@@ -311,7 +317,10 @@ export default function ActiveSessionButton({
         color="primary"
         className={buttonClassName}
         data-cy={logged ? "pause-session-button" : "delete-session-button"}
-        onClick={logged ? onHibernateSession : onStopSession}
+        onClick={(e) => {
+          e.preventDefault();
+          logged ? onHibernateSession() : onStopSession();
+        }}
       >
         {logged ? (
           <span className="align-self-start">
@@ -332,7 +341,10 @@ export default function ActiveSessionButton({
     logged && (
       <DropdownItem
         disabled={status === "starting"}
-        onClick={onHibernateSession}
+        onClick={(e) => {
+          e.preventDefault();
+          onHibernateSession();
+        }}
       >
         <PauseCircle className={cx("bi", "me-1")} />
         Pause session
@@ -342,7 +354,10 @@ export default function ActiveSessionButton({
   const deleteAction = status !== "stopping" && !isStopping && (
     <DropdownItem
       data-cy="delete-session-button"
-      onClick={logged ? toggleStopSession : onStopSession}
+      onClick={(e) => {
+        e.preventDefault();
+        logged ? toggleStopSession() : onStopSession();
+      }}
     >
       <Trash className={cx("bi", "me-1")} />
       Delete session
@@ -355,7 +370,10 @@ export default function ActiveSessionButton({
     !failedScheduling && (
       <DropdownItem
         data-cy="modify-session-button"
-        onClick={toggleModifySession}
+        onClick={(e) => {
+          e.preventDefault();
+          toggleModifySession();
+        }}
       >
         <Tools className={cx("bi", "me-1")} />
         Modify session resources
@@ -371,8 +389,14 @@ export default function ActiveSessionButton({
   );
 
   const logsAction = status !== "hibernated" && (
-    <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
-      <FileEarmarkText className="bi" />
+    <DropdownItem
+      data-cy="session-log-button"
+      onClick={(e) => {
+        e.preventDefault();
+        onToggleLogs();
+      }}
+    >
+      <FileEarmarkText className={cx("bi", "me-1")} />
       Get logs
     </DropdownItem>
   );
