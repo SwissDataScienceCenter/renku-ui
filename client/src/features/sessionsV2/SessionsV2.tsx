@@ -52,6 +52,7 @@ import { SessionLauncher } from "./sessionsV2.types";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
+import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 
 export function getShowSessionUrlByProject(
   project: Project,
@@ -241,26 +242,39 @@ interface OrphanSessionProps {
 }
 
 function OrphanSession({ session, project }: OrphanSessionProps) {
-  const [toggleSessionView, setToggleSessionView] = useState(false);
   const sessions = {
     [session.name]: session,
   };
-  const openSessionDetails = () => {
-    setToggleSessionView((open) => !open);
-  };
+
+  const [hash, setHash] = useLocationHash();
+  const sessionHash = useMemo(
+    () => `orphan-session-${session.name}`,
+    [session.name]
+  );
+  const isSessionViewOpen = useMemo(
+    () => hash === sessionHash,
+    [hash, sessionHash]
+  );
+  const toggleSessionView = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = prev === sessionHash;
+      return isOpen ? "" : sessionHash;
+    });
+  }, [sessionHash, setHash]);
 
   return (
     <>
       <SessionItem
         project={project}
         session={session}
-        toggleSessionDetails={openSessionDetails}
+        toggleSessionDetails={toggleSessionView}
       />
       <SessionView
+        id={sessionHash}
         sessions={sessions}
         project={project}
-        toggle={openSessionDetails}
-        isOpen={toggleSessionView}
+        toggle={toggleSessionView}
+        isOpen={isSessionViewOpen}
       />
     </>
   );

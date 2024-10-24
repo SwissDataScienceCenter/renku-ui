@@ -255,6 +255,7 @@ function EnvironmentCard({
   );
 }
 interface SessionViewProps {
+  id?: string;
   isOpen: boolean;
   launcher?: SessionLauncher;
   project: Project;
@@ -262,6 +263,7 @@ interface SessionViewProps {
   toggle: () => void;
 }
 export function SessionView({
+  id,
   launcher,
   sessions,
   toggle: setToggleSessionView,
@@ -352,6 +354,7 @@ export function SessionView({
 
   return (
     <Offcanvas
+      id={id}
       key={`launcher-details-${key}`}
       toggle={setToggleSessionView}
       isOpen={toggleSessionView}

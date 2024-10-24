@@ -38,17 +38,17 @@ export function SessionItemDisplay({
   const { name } = launcher;
 
   const [hash, setHash] = useLocationHash();
-  const hashMatch = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
+  const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
   const isSessionViewOpen = useMemo(
-    () => hash === hashMatch,
-    [hash, hashMatch]
+    () => hash === launcherHash,
+    [hash, launcherHash]
   );
   const toggleSessionView = useCallback(() => {
     setHash((prev) => {
-      const isOpen = prev === hashMatch;
-      return isOpen ? "" : hashMatch;
+      const isOpen = prev === launcherHash;
+      return isOpen ? "" : launcherHash;
     });
-  }, [hashMatch, setHash]);
+  }, [launcherHash, setHash]);
 
   const { data: sessions } = sessionsApi.endpoints.getSessions.useQueryState();
   const filteredSessions = useMemo(
@@ -92,6 +92,7 @@ export function SessionItemDisplay({
         />
       )}
       <SessionView
+        id={launcherHash}
         launcher={launcher}
         project={project}
         sessions={filteredSessions}
