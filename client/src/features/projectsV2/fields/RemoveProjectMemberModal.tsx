@@ -23,12 +23,12 @@ import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import type { ProjectMemberResponse } from "../api/projectV2.api";
 import { useDeleteProjectsByProjectIdMembersAndMemberIdMutation } from "../api/projectV2.enhanced-api";
@@ -80,18 +80,16 @@ function RemoveProjectMemberAccessForm({
           onSubmit={handleSubmit(onRemove)}
         >
           {result.error && <RtkOrNotebooksError error={result.error} />}
-          <div
-            className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
-          >
-            <Label>
+          <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
+            <p className="mb-0">
               Remove <ProjectMemberDisplay member={member} nameInBold={true} />{" "}
               from project?
-            </Label>
+            </p>
           </div>
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>

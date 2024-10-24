@@ -30,7 +30,9 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../components/Loader";
 import type {
   ProjectMemberPatchRequest,
   ProjectMemberResponse,
@@ -64,7 +66,11 @@ function EditProjectMemberAccessForm({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [patchProjectMembers, result] =
     usePatchProjectsByProjectIdMembersMutation();
-  const { control, handleSubmit } = useForm<ProjectMemberForEdit>({
+  const {
+    control,
+    formState: { isDirty },
+    handleSubmit,
+  } = useForm<ProjectMemberForEdit>({
     defaultValues: {
       id: member.id,
       role: member.role,
@@ -99,12 +105,10 @@ function EditProjectMemberAccessForm({
 
   return (
     <>
-      <ModalBody className="pb-0">
+      <ModalBody>
         <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkErrorAlert error={result.error} />}
-          <div
-            className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
-          >
+          <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
             <Label>
               <ProjectMemberDisplay member={member} />
             </Label>
@@ -135,8 +139,17 @@ function EditProjectMemberAccessForm({
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button color="primary" onClick={handleSubmit(onSubmit)} type="submit">
-          <PencilSquare className={cx("bi", "me-1")} />
+        <Button
+          color="primary"
+          disabled={result.isLoading || !isDirty}
+          onClick={handleSubmit(onSubmit)}
+          type="submit"
+        >
+          {result.isLoading ? (
+            <Loader inline size={16} />
+          ) : (
+            <PencilSquare className={cx("bi", "me-1")} />
+          )}
           Change access
         </Button>
       </ModalFooter>
