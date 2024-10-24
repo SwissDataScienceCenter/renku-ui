@@ -35,6 +35,7 @@ import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import PermissionsGuard from "../permissionsV2/PermissionsGuard";
 import type { Project } from "../projectsV2/api/projectV2.api";
@@ -52,7 +53,6 @@ import { SessionLauncher } from "./sessionsV2.types";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
-import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 
 export function getShowSessionUrlByProject(
   project: Project,
