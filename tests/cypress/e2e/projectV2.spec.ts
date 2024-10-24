@@ -268,7 +268,6 @@ describe("Edit v2 project", () => {
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.getDataCy("add-code-repository").click();
-    cy.contains("Connect an existing repository").click();
     cy.getDataCy("project-add-repository-url").type(
       "https://domain.name/repo3.git"
     );
