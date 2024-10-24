@@ -154,7 +154,6 @@ describe("Set up project components", () => {
     });
     cy.getDataCy("add-code-repository").click();
 
-    cy.getDataCy("add-existing-repository-button").click();
     cy.getDataCy("project-add-repository-url").type(
       "gitlab.dev.renku.ch/url-repo"
     );

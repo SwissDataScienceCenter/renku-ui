@@ -23,6 +23,7 @@ Rules:
 - [R004: Include a default export when appropriate](#r004-include-a-default-export-when-appropriate)
 - [R005: File naming conventions](#r005-file-naming-conventions)
 - [R006: Use existing Bootstrap classes or import from CSS modules](#r006-use-existing-bootstrap-classes-or-import-from-css-modules)
+- [R007: Do not perform async actions in React hooks](#r007-do-not-perform-async-actions-in-react-hooks)
 
 ### R001: Use utility functions to create CSS class names
 
@@ -269,3 +270,58 @@ only minimally impacts the interface.
 
 E.G. If a Figma design reference file shows a distance between components
 of 14.5px and `m-3` is 16px, we should use `m-3` instead.
+
+### R007: Do not perform async actions in React hooks
+
+Do not use `.then()` or `.unwrap()` inside React hooks. Instead, listen to the result of the async action and act on the result.
+
+**✅ DO**
+
+```tsx
+function MyComponent() {
+  const [postRequest, result] = usePostRequest();
+
+  const onClick = useCallback(() => {
+    postRequest();
+  }, [postRequest]);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      // Do something...
+    }
+  }, [result.isSuccess]);
+
+  return (
+    <div>
+      <button onClick={onClick}>Some action</button>
+    </div>
+  );
+}
+```
+
+**❌ DON'T**
+
+```tsx
+function MyComponent() {
+  const [postRequest, result] = usePostRequest();
+
+  const onClick = useCallback(() => {
+    postRequest()
+      .unwrap()
+      .then(() => {
+        // Do something...
+      });
+  }, [postRequest]);
+
+  return (
+    <div>
+      <button onClick={onClick}>Some action</button>
+    </div>
+  );
+}
+```
+
+**💡 Rationale**
+
+Calling code after an async action may happen after a component has re-rendered or has been removed.
+In this case, if the corresponding code tries to access the component, it will cause an error.
