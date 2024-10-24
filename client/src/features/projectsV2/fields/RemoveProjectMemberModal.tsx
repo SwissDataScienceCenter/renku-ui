@@ -89,7 +89,7 @@ function RemoveProjectMemberAccessForm({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="outline-primary" onClick={toggle}>
+        <Button color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
