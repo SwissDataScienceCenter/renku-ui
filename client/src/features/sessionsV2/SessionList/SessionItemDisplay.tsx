@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, useState } from "react";
+
+import { useCallback, useMemo } from "react";
 
 import { NotebookAnnotations } from "../../../notebooks/components/session.types";
+import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import sessionsApi from "../../session/sessions.api";
 import { filterSessionsWithCleanedAnnotations } from "../../session/sessions.utils";
@@ -34,7 +36,20 @@ export function SessionItemDisplay({
   project,
 }: SessionLauncherDisplayProps) {
   const { name } = launcher;
-  const [toggleSessionView, setToggleSessionView] = useState(false);
+
+  const [hash, setHash] = useLocationHash();
+  const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
+  const isSessionViewOpen = useMemo(
+    () => hash === launcherHash,
+    [hash, launcherHash]
+  );
+  const toggleSessionView = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = prev === launcherHash;
+      return isOpen ? "" : launcherHash;
+    });
+  }, [launcherHash, setHash]);
+
   const { data: sessions } = sessionsApi.endpoints.getSessions.useQueryState();
   const filteredSessions = useMemo(
     () =>
@@ -53,9 +68,6 @@ export function SessionItemDisplay({
     () => Object.keys(filteredSessions).length,
     [filteredSessions]
   );
-  const toggleSessionDetails = () => {
-    setToggleSessionView((open: boolean) => !open);
-  };
 
   return (
     <>
@@ -67,7 +79,7 @@ export function SessionItemDisplay({
             name={name}
             project={project}
             session={session}
-            toggleSessionDetails={toggleSessionDetails}
+            toggleSessionDetails={toggleSessionView}
           />
         ))
       ) : (
@@ -76,15 +88,16 @@ export function SessionItemDisplay({
           launcher={launcher}
           name={name}
           project={project}
-          toggleSessionDetails={toggleSessionDetails}
+          toggleSessionDetails={toggleSessionView}
         />
       )}
       <SessionView
+        id={launcherHash}
         launcher={launcher}
         project={project}
         sessions={filteredSessions}
-        setToggleSessionView={toggleSessionDetails}
-        toggleSessionView={toggleSessionView}
+        toggle={toggleSessionView}
+        isOpen={isSessionViewOpen}
       />
     </>
   );
