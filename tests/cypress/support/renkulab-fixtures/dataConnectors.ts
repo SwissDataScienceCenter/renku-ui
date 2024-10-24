@@ -168,6 +168,31 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    getDataConnectorByNamespaceAndSlugNotFound(
+      args?: DataConnectorIdentifierArgs
+    ) {
+      const {
+        name = "getDataConnectorByNamespaceAndSlugNotFound",
+        namespace = "user1-uuid",
+        slug = "example-storage",
+      } = args ?? {};
+      const response = {
+        body: {
+          error: {
+            code: 1404,
+            message: `Data connector with identifier '${namespace}/${slug}' does not exist or you do not have access to it.`,
+          },
+        },
+        statusCode: 404,
+      };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/namespaces/${namespace}/data_connectors/${slug}`,
+        response
+      ).as(name);
+      return this;
+    }
+
     listDataConnectorProjectLinks(args?: DataConnectorIdArgs) {
       const {
         fixture = "dataConnector/project-data-connector-links.json",
