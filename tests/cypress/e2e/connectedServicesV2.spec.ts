@@ -68,7 +68,7 @@ describe("Interact with Connected services", () => {
 
     cy.getDataCy("connected-services-card")
       .should("contain", "@my-github-user")
-      .and("contain", "is not installed in any project");
+      .and("contain", "is not installed for any user");
 
     fixtures.listConnectedServicesInstallations({
       fixture: "connectedServicesV2/installationsSuspended.json",
@@ -81,7 +81,7 @@ describe("Interact with Connected services", () => {
     cy.getDataCy("connected-services-card")
       .should("contain", "@my-github-user")
       .and("contain", "suspended")
-      .and("contain", "not active in any project");
+      .and("contain", "not active for any user");
 
     fixtures.listConnectedServicesInstallations();
     cy.getDataCy("connected-services-card")
