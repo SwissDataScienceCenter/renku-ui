@@ -43,6 +43,7 @@ interface DataConnectorIdentifierArgs extends SimpleFixture {
 
 interface DeleteDataConnectorProjectLinkArgs extends DataConnectorIdArgs {
   linkId?: string;
+  projectId?: string;
 }
 
 interface PatchDataConnectorSecretsArgs extends DataConnectorIdArgs {
@@ -96,6 +97,32 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         linkId = "LINK-ULID-1",
       } = args ?? {};
       const response = { statusCode: 204 };
+      cy.intercept(
+        "DELETE",
+        `/ui-server/api/data/data_connectors/${dataConnectorId}/project_links/${linkId}`,
+        response
+      ).as(name);
+      return this;
+    }
+
+    deleteDataConnectorProjectLinkNotAllowed(
+      args?: DeleteDataConnectorProjectLinkArgs
+    ) {
+      const {
+        name = "deleteDataConnectorProjectLinkNotAllowed",
+        dataConnectorId = "ULID-1",
+        linkId = "LINK-ULID-1",
+        projectId = "THEPROJECTULID26CHARACTERS",
+      } = args ?? {};
+      const response = {
+        body: {
+          error: {
+            code: 1404,
+            message: `The user with ID 'userId' cannot perform operation delete_link on the data connector to project link with ID ${projectId} or the resource does not exist.`,
+          },
+        },
+        statusCode: 404,
+      };
       cy.intercept(
         "DELETE",
         `/ui-server/api/data/data_connectors/${dataConnectorId}/project_links/${linkId}`,

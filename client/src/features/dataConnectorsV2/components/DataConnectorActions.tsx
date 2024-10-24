@@ -31,13 +31,15 @@ import {
   Row,
 } from "reactstrap";
 
-import { Loader } from "../../../components/Loader";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
+import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 
 import type {
@@ -194,7 +196,7 @@ function DataConnectorRemoveDeleteModal({
               <Button
                 color="danger"
                 className={cx("float-right", "ms-2")}
-                disabled={typedName !== dataConnector.slug.trim()}
+                disabled={isLoading || typedName !== dataConnector.slug.trim()}
                 data-cy="delete-data-connector-modal-button"
                 type="submit"
                 onClick={onDeleteDataCollector}
@@ -236,8 +238,11 @@ function DataConnectorRemoveUnlinkModal({
   isOpen,
 }: DataConnectorRemoveUnlinkModalProps) {
   const dispatch = useAppDispatch();
-  const [unlinkDataConnector, { isLoading: isLoadingUnlink, isSuccess }] =
-    useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation();
+  const [
+    unlinkDataConnector,
+    { isLoading: isLoadingUnlink, isSuccess, error },
+  ] = useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation();
+  const permissions = useProjectPermissions({ projectId });
 
   const linkId = dataConnectorLink.id;
 
@@ -265,43 +270,72 @@ function DataConnectorRemoveUnlinkModal({
       <ModalBody>
         <Row>
           <Col>
-            <p>
-              Are you sure you want to unlink the data connector{" "}
-              <strong>{dataConnector.slug}</strong> from the project{" "}
-              <strong>{projectId}</strong>?
-            </p>
-            <p>
-              The data from the data connector will no longer be available in
-              sessions.
-            </p>
+            {permissions == null || permissions["write"] != true ? (
+              <p>
+                You do not have the required permissions to unlink this data
+                connector.
+              </p>
+            ) : (
+              <>
+                <p>
+                  Are you sure you want to unlink the data connector{" "}
+                  <strong>{dataConnector.slug}</strong> from the project{" "}
+                  <strong>{projectId}</strong>?
+                </p>
+                <p>
+                  The data from the data connector will no longer be available
+                  in sessions.
+                </p>
+              </>
+            )}
           </Col>
         </Row>
       </ModalBody>
       <ModalFooter>
+        {error && <RtkOrNotebooksError error={error} />}
         <div className="d-flex justify-content-end">
           <Button color="outline-danger" onClick={toggleModal}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button
-            color="danger"
-            className={cx("float-right", "ms-2")}
-            data-cy="delete-data-connector-modal-button"
-            type="submit"
-            onClick={onDeleteDataCollector}
-          >
-            {isLoadingUnlink ? (
-              <>
-                <Loader className="me-1" inline size={16} />
-                Unlinking data connector
-              </>
-            ) : (
-              <>
+          <PermissionsGuard
+            disabled={
+              <Button
+                color="danger"
+                className={cx("float-right", "ms-2")}
+                disabled={true}
+                data-cy="delete-data-connector-modal-button"
+                onClick={toggleModal}
+              >
                 <NodeMinus className={cx("bi", "me-1")} />
                 Unlink data connector
-              </>
-            )}
-          </Button>
+              </Button>
+            }
+            enabled={
+              <Button
+                color="danger"
+                className={cx("float-right", "ms-2")}
+                disabled={isLoadingUnlink}
+                data-cy="delete-data-connector-modal-button"
+                type="submit"
+                onClick={onDeleteDataCollector}
+              >
+                {isLoadingUnlink ? (
+                  <>
+                    <Loader className="me-1" inline size={16} />
+                    Unlinking data connector
+                  </>
+                ) : (
+                  <>
+                    <NodeMinus className={cx("bi", "me-1")} />
+                    Unlink data connector
+                  </>
+                )}
+              </Button>
+            }
+            requestedPermission="write"
+            userPermissions={permissions}
+          />
         </div>
       </ModalFooter>
     </Modal>
