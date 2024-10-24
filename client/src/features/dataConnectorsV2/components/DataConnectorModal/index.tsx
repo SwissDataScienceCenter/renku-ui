@@ -57,7 +57,10 @@ import {
 import type { DataConnectorRead } from "../../api/data-connectors.api";
 
 import type { Project } from "../../../projectsV2/api/projectV2.api";
-import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
+import {
+  projectV2Api,
+  useGetGroupsByGroupSlugPermissionsQuery,
+} from "../../../projectsV2/api/projectV2.enhanced-api";
 
 import styles from "./DataConnectorModal.module.scss";
 
@@ -519,6 +522,24 @@ export function DataConnectorModalBodyAndFooter({
   );
 }
 
+function DataConnectorModalBodyAndFooterUnauthorized() {
+  return (
+    <>
+      <ModalBody data-cy="data-connector-edit-body">
+        <div>
+          You do not have the required permissions to modify this data
+          connector.
+        </div>
+      </ModalBody>
+
+      <ModalFooter
+        className="border-top"
+        data-cy="data-connector-edit-footer"
+      ></ModalFooter>
+    </>
+  );
+}
+
 interface DataConnectorModalProps {
   dataConnector?: DataConnectorRead | null;
   isOpen: boolean;
@@ -534,6 +555,15 @@ export default function DataConnectorModal({
   toggle,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
+  const { data: permissions, isLoading: isLoadingPermissions } =
+    useGetGroupsByGroupSlugPermissionsQuery(
+      dataConnector != null
+        ? {
+            groupSlug: dataConnector.namespace,
+          }
+        : skipToken
+    );
+
   return (
     <Modal
       backdrop="static"
@@ -551,15 +581,20 @@ export default function DataConnectorModal({
       <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
         <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
       </ModalHeader>
-      <DataConnectorModalBodyAndFooter
-        {...{
-          dataConnector,
-          isOpen,
-          namespace,
-          project,
-          toggle,
-        }}
-      />
+      {!isLoadingPermissions &&
+      (permissions == null || permissions["write"] != true) ? (
+        <DataConnectorModalBodyAndFooterUnauthorized />
+      ) : (
+        <DataConnectorModalBodyAndFooter
+          {...{
+            dataConnector,
+            isOpen,
+            namespace,
+            project,
+            toggle,
+          }}
+        />
+      )}
     </Modal>
   );
 }

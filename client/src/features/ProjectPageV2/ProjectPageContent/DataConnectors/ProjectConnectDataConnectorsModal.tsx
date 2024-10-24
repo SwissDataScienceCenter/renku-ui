@@ -35,6 +35,7 @@ import {
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import { isRenkuErrorResponse } from "../../../../utils/helpers/ApiErrors";
 
 import {
   dataConnectorsApi,
@@ -215,12 +216,20 @@ function ProjectLinkDataConnectorBodyAndFooter({
           { namespace, slug }
         )
       );
-      const { data: dataConnector, isSuccess } = await dataConnectorPromise;
+      const {
+        data: dataConnector,
+        isSuccess,
+        error,
+      } = await dataConnectorPromise;
       dataConnectorPromise.unsubscribe();
       if (!isSuccess || dataConnector == null) {
+        const errorMessage = isRenkuErrorResponse(error)
+          ? error.data.error.message
+          : "Data connector not found";
+
         setError("dataConnectorIdentifier", {
           type: "manual",
-          message: "Data connector not found",
+          message: errorMessage,
         });
         return false;
       }
@@ -269,11 +278,16 @@ function ProjectLinkDataConnectorBodyAndFooter({
             }}
           />
           <div className="form-text">
-            The the info sidebar for a data connector shows the identifier.
+            Copy a data connector identifier from the data connector&apos;s side
+            panel
           </div>
           <div className="invalid-feedback">
-            Please provide an identifier (namespace/group) for the data
-            connector
+            {errors.dataConnectorIdentifier == null
+              ? undefined
+              : errors.dataConnectorIdentifier.message != null &&
+                errors.dataConnectorIdentifier.message.length > 0
+              ? errors.dataConnectorIdentifier.message
+              : "Please provide an identifier (namespace/group) for the data connector"}
           </div>
         </div>
         {isSuccess != null && !isSuccess && (
@@ -297,7 +311,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
           ) : (
             <NodePlus className={cx("bi", "me-1")} />
           )}
-          Link data
+          Link data connector
         </Button>
       </ModalFooter>
     </Form>

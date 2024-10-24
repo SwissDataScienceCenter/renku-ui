@@ -18,6 +18,18 @@
 
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 
+interface RenkuError {
+  code: number;
+  message: string;
+}
+
+interface RenkuErrorResponse {
+  data: {
+    error: RenkuError;
+  };
+  status: number;
+}
+
 export const isFetchBaseQueryError = (
   error: FetchBaseQueryError | unknown
 ): error is FetchBaseQueryError => {
@@ -28,3 +40,30 @@ export const isFetchBaseQueryError = (
   }
   return false;
 };
+
+// See also CoreErrorHelpers.js
+export function isRenkuError(error: unknown): error is RenkuError {
+  if (error == null) return false;
+  if (typeof error !== "object") return false;
+  if (!("code" in error)) return false;
+  if (!("message" in error)) return false;
+  const errorCode = (error as RenkuError).code;
+  if (errorCode >= 1000 || errorCode < 0) return true;
+  return false;
+}
+
+export function isRenkuErrorResponse(
+  response: unknown
+): response is RenkuErrorResponse {
+  if (!isFetchBaseQueryError(response)) return false;
+
+  if (
+    !("data" in response) ||
+    typeof response.data !== "object" ||
+    response.data == null
+  )
+    return false;
+  if (!("error" in response.data) || typeof response.data.error !== "object")
+    return false;
+  return isRenkuError(response.data.error);
+}
