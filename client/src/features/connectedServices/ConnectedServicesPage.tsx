@@ -366,7 +366,7 @@ function GitHubAppInstallations({
           ) && (
             <WarnAlert dismissible={false}>
               <p className="mb-2">
-                The application is not active in any project nor namespace.
+                The application is not active for any user or organization.
                 Please update the settings.
               </p>
               {refreshInstallationsButton}
@@ -378,7 +378,7 @@ function GitHubAppInstallations({
           <CardText>{app} is not installed.</CardText>
           <WarnAlert dismissible={false}>
             <p className="mb-2">
-              The application is not installed in any project nor namespace yet.
+              The application is not installed for any user or organization yet.
               Please update the settings.
             </p>
             {refreshInstallationsButton}
