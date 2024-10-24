@@ -23,6 +23,10 @@ import {
   useNavigate,
 } from "react-router-dom-v5-compat";
 
+/**
+ * useLocationHash() is a hook similar to react-router's useSearchParams but for the URL hash.
+ * See: https://reactrouter.com/en/main/hooks/use-search-params
+ */
 export default function useLocationHash(): [string, SetLocationHash] {
   const location = useLocation();
   const navigate = useNavigate();
