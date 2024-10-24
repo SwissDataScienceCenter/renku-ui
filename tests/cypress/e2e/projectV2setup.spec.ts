@@ -275,7 +275,7 @@ describe("Set up data connectors", () => {
     ).should("be.visible");
   });
 
-  it("delete a data connector", () => {
+  it("unlink a data connector", () => {
     fixtures
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
       .listProjectDataConnectors()
@@ -289,6 +289,7 @@ describe("Set up data connectors", () => {
     cy.contains("example storage").should("be.visible").click();
     openDataConnectorMenu();
     cy.getDataCy("data-connector-delete").should("be.visible").click();
+    cy.wait("@getProjectV2Permissions");
     cy.contains("Are you sure you want to unlink the data connector").should(
       "be.visible"
     );
@@ -297,5 +298,27 @@ describe("Set up data connectors", () => {
       .click();
     cy.wait("@deleteDataConnectorProjectLink");
     cy.wait("@listProjectDataConnectors");
+  });
+
+  it("unlink data connector not allowed", () => {
+    fixtures
+      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .listProjectDataConnectors()
+      .getDataConnector()
+      .getProjectV2Permissions({
+        fixture: "projectV2/projectV2-permissions-viewer.json",
+      })
+      .deleteDataConnectorProjectLinkNotAllowed();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@listProjectDataConnectors");
+
+    cy.contains("example storage").should("be.visible").click();
+    openDataConnectorMenu();
+    cy.getDataCy("data-connector-delete").should("be.visible").click();
+    cy.contains(
+      "You do not have the required permissions to unlink this data connector."
+    ).should("be.visible");
+    cy.getDataCy("delete-data-connector-modal-button").should("be.disabled");
   });
 });
