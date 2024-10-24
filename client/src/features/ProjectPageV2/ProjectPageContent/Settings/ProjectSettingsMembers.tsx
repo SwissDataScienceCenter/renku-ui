@@ -164,15 +164,7 @@ function ProjectMemberAction({
 
   return (
     <PermissionsGuard
-      disabled={
-        <MemberActionMenu
-          disabled={true}
-          index={index}
-          onRemove={onRemove}
-          onEdit={onEdit}
-          tooltip={"Only project owners can modify access to the project."}
-        />
-      }
+      disabled={null}
       enabled={
         <MemberActionMenu index={index} onRemove={onRemove} onEdit={onEdit} />
       }
@@ -371,7 +363,12 @@ export default function ProjectPageSettingsMembers({
     <Card id="members">
       <CardHeader>
         <PermissionsGuard
-          disabled={<h4 className="m-0">Members of the project</h4>}
+          disabled={
+            <h4 className="m-0">
+              <PersonGear className={cx("me-1", "bi")} />
+              Members of the project
+            </h4>
+          }
           enabled={
             <>
               <h4>

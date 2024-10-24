@@ -295,7 +295,12 @@ function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
     <Card id="general">
       <CardHeader>
         <PermissionsGuard
-          disabled={<h4 className="m-0">General settings</h4>}
+          disabled={
+            <h4 className="m-0">
+              <Sliders className={cx("me-1", "bi")} />
+              General settings
+            </h4>
+          }
           enabled={
             <>
               <h4>

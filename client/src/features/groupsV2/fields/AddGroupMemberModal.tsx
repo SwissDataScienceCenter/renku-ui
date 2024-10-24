@@ -31,20 +31,46 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import { User } from "../../searchV2/api/searchV2Api.api";
 import type {
   GroupMemberPatchRequest,
   GroupMemberResponseList,
-} from "../api/namespace.api";
-import { usePatchGroupsByGroupSlugMembersMutation } from "../api/projectV2.enhanced-api";
-import { UserControl } from "./UserSelector";
+} from "../../projectsV2/api/namespace.api";
+import { usePatchGroupsByGroupSlugMembersMutation } from "../../projectsV2/api/projectV2.enhanced-api";
+import { UserControl } from "../../projectsV2/fields/UserSelector";
+import type { User } from "../../searchV2/api/searchV2Api.api";
 
 interface AddGroupMemberModalProps {
   isOpen: boolean;
   members: GroupMemberResponseList;
   groupSlug: string;
   toggle: () => void;
+}
+
+export default function AddGroupMemberModal({
+  isOpen,
+  members,
+  groupSlug,
+  toggle,
+}: AddGroupMemberModalProps) {
+  return (
+    <Modal
+      backdrop="static"
+      centered
+      fullscreen="lg"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
+      <ModalHeader toggle={toggle}>Add a group member</ModalHeader>
+      <AddGroupMemberAccessForm
+        members={members}
+        groupSlug={groupSlug}
+        toggle={toggle}
+      />
+    </Modal>
+  );
 }
 
 interface GroupMemberForAdd extends GroupMemberPatchRequest {}
@@ -102,7 +128,7 @@ function AddGroupMemberAccessForm({
         >
           {result.error && <RtkErrorAlert error={result.error} />}
           <div className="mb-3">
-            <Label className="form-label" for="addProjectMemberEmail">
+            <Label className="form-label" for="addProjectMember">
               User
             </Label>
             <Controller
@@ -125,10 +151,8 @@ function AddGroupMemberAccessForm({
             />
             <div className="invalid-feedback">Please select a user to add</div>
           </div>
-          <div
-            className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
-          >
-            <Label>Role</Label>
+          <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
+            <Label for="member-role">Role</Label>
             <Controller
               control={control}
               name="role"
@@ -162,30 +186,5 @@ function AddGroupMemberAccessForm({
         </Button>
       </ModalFooter>
     </>
-  );
-}
-
-export default function AddProjectMemberModal({
-  isOpen,
-  members,
-  groupSlug,
-  toggle,
-}: AddGroupMemberModalProps) {
-  return (
-    <Modal
-      backdrop="static"
-      centered
-      fullscreen="lg"
-      isOpen={isOpen}
-      size="lg"
-      toggle={toggle}
-    >
-      <ModalHeader toggle={toggle}>Add a group member</ModalHeader>
-      <AddGroupMemberAccessForm
-        members={members}
-        groupSlug={groupSlug}
-        toggle={toggle}
-      />
-    </Modal>
   );
 }

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -31,46 +31,64 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
-import type {
-  ProjectMemberPatchRequest,
-  ProjectMemberResponse,
-} from "../api/projectV2.api";
-import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
-import { ProjectMemberDisplay } from "../shared/ProjectMemberDisplay";
+import type { GroupMemberResponse } from "../../projectsV2/api/namespace.api";
+import { usePatchGroupsByGroupSlugMembersMutation } from "../../projectsV2/api/projectV2.enhanced-api";
+import { ProjectMemberDisplay } from "../../projectsV2/shared/ProjectMemberDisplay";
 
-interface EditProjectMemberModalProps {
+interface EditGroupMemberModalProps {
+  groupSlug: string;
   isOpen: boolean;
-  member: ProjectMemberResponse | undefined;
-  members: ProjectMemberPatchRequest[];
-  projectId: string;
+  member: GroupMemberResponse | undefined;
   toggle: () => void;
 }
 
-type ProjectMemberForEdit = ProjectMemberResponse;
-
-interface EditProjectMemberAccessFormProps
-  extends Pick<
-    EditProjectMemberModalProps,
-    "members" | "projectId" | "toggle"
-  > {
-  member: ProjectMemberForEdit;
-}
-function EditProjectMemberAccessForm({
-  members,
-  projectId,
-  toggle,
+export default function EditGroupMemberModal({
+  groupSlug,
+  isOpen,
   member,
-}: EditProjectMemberAccessFormProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [patchProjectMembers, result] =
-    usePatchProjectsByProjectIdMembersMutation();
+  toggle,
+}: EditGroupMemberModalProps) {
+  return (
+    <Modal
+      backdrop="static"
+      centered
+      fullscreen="lg"
+      isOpen={isOpen && member != null}
+      size="lg"
+      toggle={toggle}
+    >
+      <ModalHeader toggle={toggle}>Change access</ModalHeader>
+      {member != null && (
+        <EditGroupMemberAccessForm
+          groupSlug={groupSlug}
+          member={member}
+          toggle={toggle}
+        />
+      )}
+    </Modal>
+  );
+}
+
+interface EditGroupMemberAccessFormProps {
+  groupSlug: string;
+  member: GroupMemberResponse;
+  toggle: () => void;
+}
+
+function EditGroupMemberAccessForm({
+  groupSlug,
+  member,
+  toggle,
+}: EditGroupMemberAccessFormProps) {
+  const [patchGroupMembers, { isLoading, isSuccess, error }] =
+    usePatchGroupsByGroupSlugMembersMutation();
   const {
     control,
     formState: { isDirty },
     handleSubmit,
-  } = useForm<ProjectMemberForEdit>({
+  } = useForm<GroupMemberResponse>({
     defaultValues: {
       id: member.id,
       role: member.role,
@@ -78,38 +96,33 @@ function EditProjectMemberAccessForm({
   });
 
   useEffect(() => {
-    if (!result.isSuccess) {
-      return;
+    if (isSuccess) {
+      toggle();
     }
-    toggle();
-  }, [result.isSuccess, toggle]);
+  }, [isSuccess, toggle]);
 
   const onSubmit = useCallback(
-    (data: ProjectMemberForEdit) => {
-      const projectMembers = members.map((m: ProjectMemberResponse) =>
-        m.id === member.id
-          ? {
-              id: m.id,
-              role: data.role,
-            }
-          : { id: m.id, role: m.role }
-      );
-
-      patchProjectMembers({
-        projectId,
-        projectMemberListPatchRequest: projectMembers,
+    (data: GroupMemberResponse) => {
+      patchGroupMembers({
+        groupSlug,
+        groupMemberPatchRequestList: [
+          {
+            id: data.id,
+            role: data.role,
+          },
+        ],
       });
     },
-    [patchProjectMembers, projectId, members, member]
+    [groupSlug, patchGroupMembers]
   );
 
   return (
     <>
       <ModalBody>
         <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {error && <RtkOrNotebooksError error={error} />}
           <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
-            <Label>
+            <Label for="member-role">
               <ProjectMemberDisplay member={member} />
             </Label>
             <Controller
@@ -141,11 +154,11 @@ function EditProjectMemberAccessForm({
         </Button>
         <Button
           color="primary"
-          disabled={result.isLoading || !isDirty}
+          disabled={isLoading || !isDirty}
           onClick={handleSubmit(onSubmit)}
           type="submit"
         >
-          {result.isLoading ? (
+          {isLoading ? (
             <Loader inline size={16} />
           ) : (
             <PencilSquare className={cx("bi", "me-1")} />
@@ -154,34 +167,5 @@ function EditProjectMemberAccessForm({
         </Button>
       </ModalFooter>
     </>
-  );
-}
-
-export default function EditProjectMemberModal({
-  isOpen,
-  member,
-  members,
-  projectId,
-  toggle,
-}: EditProjectMemberModalProps) {
-  return (
-    <Modal
-      backdrop="static"
-      centered
-      fullscreen="lg"
-      isOpen={isOpen && member != null}
-      size="lg"
-      toggle={toggle}
-    >
-      <ModalHeader toggle={toggle}>Change access</ModalHeader>
-      {member != null && (
-        <EditProjectMemberAccessForm
-          members={members}
-          projectId={projectId}
-          toggle={toggle}
-          member={member}
-        />
-      )}
-    </Modal>
   );
 }

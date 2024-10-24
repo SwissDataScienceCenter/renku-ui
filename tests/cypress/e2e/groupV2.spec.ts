@@ -166,7 +166,13 @@ describe("Edit v2 group", () => {
     fixtures
       .deleteGroupV2Member({ userId: groupMemberToRemove })
       .listGroupV2Members({ removeUserId: groupMemberToRemove });
-    cy.getDataCy("delete-member-2").should("be.visible").click();
+    cy.getDataCy("group-member-actions-2")
+      .find('[data-cy="button-with-menu-dropdown"]')
+      .click();
+    cy.getDataCy("group-member-actions-2").contains("Remove").click();
+    cy.getDataCy("remove-group-member-modal").should("be.visible");
+    cy.contains("button", "Remove member").should("be.visible").click();
+    cy.getDataCy("remove-group-member-modal").should("not.be.visible");
     cy.contains("user3-uuid").should("not.exist");
     cy.get("[data-cy=group-add-member]").should("be.visible").click();
     cy.getDataCy("add-project-member").type("foo");
