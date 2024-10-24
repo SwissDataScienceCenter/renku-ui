@@ -85,12 +85,12 @@ describe("launch sessions with data connectors", () => {
       });
 
     // start session
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+    cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(1);
-        req.reply({ body: sessions[0] });
+        req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
     fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
@@ -98,9 +98,9 @@ describe("launch sessions with data connectors", () => {
       cy.getDataCy("start-session-button").click();
     });
     cy.wait("@getResourceClass");
-    cy.wait("@createSession");
-
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session with data connector requiring credentials", () => {
@@ -143,7 +143,7 @@ describe("launch sessions with data connectors", () => {
       });
 
     // start session
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+    cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
         const csConfig = req.body.cloudstorage;
@@ -155,7 +155,7 @@ describe("launch sessions with data connectors", () => {
         expect(storage.configuration["secret_access_key"]).to.equal(
           "secret key"
         );
-        req.reply({ body: sessions[0] });
+        req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
     fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
@@ -165,6 +165,7 @@ describe("launch sessions with data connectors", () => {
         cy.getDataCy("start-session-button").click();
       });
     cy.wait("@getResourceClass");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
     cy.getDataCy("session-data-connector-credentials-modal")
       .should("be.visible")
       .contains("Please provide")
@@ -190,7 +191,7 @@ describe("launch sessions with data connectors", () => {
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session with data connector, saving credentials", () => {
@@ -218,7 +219,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
 
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+    cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
         const csConfig = req.body.cloudstorage;
@@ -236,7 +237,7 @@ describe("launch sessions with data connectors", () => {
         expect(storage.configuration["secret_access_key"]).to.equal(
           "secret key"
         );
-        req.reply({ body: sessions[0] });
+        req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
 
@@ -274,7 +275,7 @@ describe("launch sessions with data connectors", () => {
     cy.contains("Saving credentials...").should("be.visible");
     cy.wait("@patchDataConnectorSecrets");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session with data connector, saving credentials on skip", () => {
@@ -302,7 +303,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
 
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+    cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
         const csConfig = req.body.cloudstorage;
@@ -314,7 +315,7 @@ describe("launch sessions with data connectors", () => {
         expect(storage.configuration["secret_access_key"]).to.equal(
           "secret key"
         );
-        req.reply({ body: sessions[0] });
+        req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
 
@@ -345,7 +346,7 @@ describe("launch sessions with data connectors", () => {
     cy.contains("Saving credentials...").should("be.visible");
     cy.wait("@patchDataConnectorSecrets");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session with saved credentials", () => {
@@ -362,7 +363,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@listProjectDataConnectors");
 
     // start session
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+    cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
         const csConfig = req.body.cloudstorage;
@@ -371,7 +372,7 @@ describe("launch sessions with data connectors", () => {
         expect(storage.storage_id).to.equal("ULID-1");
         expect(storage.configuration).to.not.have.property("access_key_id");
         expect(storage.configuration).to.not.have.property("secret_access_key");
-        req.reply({ body: sessions[0] });
+        req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
 
@@ -382,10 +383,10 @@ describe("launch sessions with data connectors", () => {
         cy.getDataCy("start-session-button").click();
       });
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
 
-  it.skip("launch session with incomplete saved credentials", () => {
+  it("launch session with incomplete saved credentials", () => {
     fixtures
       .testCloudStorage()
       .listProjectDataConnectors()
@@ -400,7 +401,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
 
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+    cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
         const csConfig = req.body.cloudstorage;
@@ -413,7 +414,7 @@ describe("launch sessions with data connectors", () => {
         expect(storage.configuration["secret_access_key"]).to.equal(
           "secret key"
         );
-        req.reply({ body: sessions[0] });
+        req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
 
@@ -437,10 +438,116 @@ describe("launch sessions with data connectors", () => {
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
 
-  it.skip("launch session multiple data connectors requiring multiple credentials", () => {
+  it.skip("launch session multiple data connectors requiring multiple credentials, saving all", () => {
+    fixtures
+      .testCloudStorage({ success: false })
+      .listProjectDataConnectors({
+        fixture: "dataConnector/project-data-connector-links-multiple.json",
+      })
+      .getDataConnector({
+        dataConnectorId: "ULID-1",
+        fixture: "dataConnector/data-connector-public.json",
+      })
+      .getDataConnector({
+        dataConnectorId: "ULID-2",
+      })
+      .getDataConnector({
+        dataConnectorId: "ULID-3",
+        fixture: "dataConnector/data-connector-webdav.json",
+      })
+      .dataConnectorSecrets({
+        fixture: "dataConnector/data-connector-secrets-empty.json",
+      })
+      .patchDataConnectorSecrets({
+        dataConnectorId: "ULID-2",
+        content: [
+          {
+            name: "access_key_id",
+            value: "access key",
+          },
+          {
+            name: "secret_access_key",
+            value: "secret key",
+          },
+        ],
+      })
+      .patchDataConnectorSecrets({
+        dataConnectorId: "ULID-3",
+        content: [
+          {
+            name: "pass",
+            value: "webDav pass",
+          },
+        ],
+      });
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getSessionServers");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    // start session
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
+        const csConfig = req.body.cloudstorage;
+        expect(csConfig.length).equal(3);
+        const s3Storage = csConfig[0];
+        expect(s3Storage.configuration).to.not.have.property("access_key_id");
+        expect(s3Storage.configuration).to.not.have.property(
+          "secret_access_key"
+        );
+
+        const s3Storage1 = csConfig[1];
+        expect(s3Storage1.configuration).to.have.property("access_key_id");
+        expect(s3Storage1.configuration).to.have.property("secret_access_key");
+        expect(s3Storage1.configuration["access_key_id"]).to.equal(
+          "access key"
+        );
+        expect(s3Storage1.configuration["secret_access_key"]).to.equal(
+          "secret key"
+        );
+        const webDavStorage = csConfig[2];
+        expect(webDavStorage.configuration).to.have.property("pass");
+        expect(webDavStorage.configuration["pass"]).to.equal("webDav pass");
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").click();
+      });
+    cy.getDataCy("session-data-connector-credentials-modal")
+      .find("#access_key_id")
+      .type("access key");
+    cy.getDataCy("session-data-connector-credentials-modal")
+      .find("#secret_access_key")
+      .type("secret key");
+    cy.get("#saveCredentials").click();
+    fixtures.testCloudStorage({ success: true });
+    cy.getDataCy("session-data-connector-credentials-modal")
+      .contains("Continue")
+      .click();
+    cy.getDataCy("session-data-connector-credentials-modal")
+      .find("#pass")
+      .type("webDav pass");
+    cy.get("#saveCredentials").click();
+    cy.getDataCy("session-data-connector-credentials-modal")
+      .contains("Continue")
+      .click();
+    cy.wait("@testCloudStorage");
+    cy.wait("@getResourceClass");
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+  });
+
+  it("launch session multiple data connectors requiring multiple credentials, skipping some", () => {
     fixtures
       .testCloudStorage({ success: false })
       .listProjectDataConnectors({
@@ -468,7 +575,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@listProjectDataConnectors");
 
     // start session
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+    cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
         const csConfig = req.body.cloudstorage;
@@ -491,7 +598,7 @@ describe("launch sessions with data connectors", () => {
         const webDavStorage = csConfig[2];
         expect(webDavStorage.configuration).to.have.property("pass");
         expect(webDavStorage.configuration["pass"]).to.equal("webDav pass");
-        req.reply({ body: sessions[0] });
+        req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
     fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
@@ -532,7 +639,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@testCloudStorage");
     cy.wait("@getResourceClass");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
 
   it.skip("launch session with multiple data connectors requiring credentials, skipping all", () => {
@@ -563,7 +670,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@listProjectDataConnectors");
 
     // start session
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
+    cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
         const csConfig = req.body.cloudstorage;
@@ -586,7 +693,7 @@ describe("launch sessions with data connectors", () => {
         const webDavStorage = csConfig[2];
         expect(webDavStorage.configuration).to.have.property("pass");
         expect(webDavStorage.configuration["pass"]).to.equal("webDav pass");
-        req.reply({ body: sessions[0] });
+        req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
 
@@ -621,6 +728,6 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@testCloudStorage");
     cy.wait("@getResourceClass");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
 });
