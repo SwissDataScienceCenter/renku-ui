@@ -128,7 +128,7 @@ function AddGroupMemberAccessForm({
         >
           {result.error && <RtkErrorAlert error={result.error} />}
           <div className="mb-3">
-            <Label className="form-label" for="addProjectMemberEmail">
+            <Label className="form-label" for="addProjectMember">
               User
             </Label>
             <Controller
@@ -151,10 +151,8 @@ function AddGroupMemberAccessForm({
             />
             <div className="invalid-feedback">Please select a user to add</div>
           </div>
-          <div
-            className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
-          >
-            <Label>Role</Label>
+          <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
+            <Label for="member-role">Role</Label>
             <Controller
               control={control}
               name="role"
