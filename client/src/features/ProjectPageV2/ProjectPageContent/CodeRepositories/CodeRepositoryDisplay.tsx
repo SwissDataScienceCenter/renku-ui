@@ -58,9 +58,10 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
-import connectedServicesApi, {
-  useGetProvidersQuery,
-} from "../../../connectedServices/connectedServices.api";
+import {
+  connectedServicesApi,
+  useGetOauth2ProvidersQuery,
+} from "../../../connectedServices/api/connectedServices.api";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
@@ -540,7 +541,7 @@ function RepositoryView({
     repositoryUrl,
   });
   const { isLoading: isLoadingProviders, error: providersError } =
-    useGetProvidersQuery();
+    useGetOauth2ProvidersQuery();
 
   const isNotFound = error != null && "status" in error && error.status == 404;
 
@@ -690,7 +691,7 @@ function RepositoryPermissionsAlert({
       repositoryUrl,
     });
   const { data: providers } =
-    connectedServicesApi.endpoints.getProviders.useQueryState();
+    connectedServicesApi.endpoints.getOauth2Providers.useQueryState();
 
   const isNotFound = error != null && "status" in error && error.status == 404;
 
@@ -867,7 +868,7 @@ function RepositoryProviderDetails({
     data: providers,
     isLoading: isLoadingProviders,
     error: providersError,
-  } = connectedServicesApi.endpoints.getProviders.useQueryState();
+  } = connectedServicesApi.endpoints.getOauth2Providers.useQueryState();
 
   const isLoading = isLoadingRepositoryProviderMatch || isLoadingProviders;
   const error = repositoryProviderMatchError ?? providersError;
