@@ -39,6 +39,7 @@ describe("Set up project components", () => {
           email: "user1@email.com",
         },
       })
+      .getProjectV2Permissions()
       .listProjectV2Members();
     fixtures.projects().landingUserProjects().readProjectV2();
   });
@@ -153,7 +154,6 @@ describe("Set up project components", () => {
     });
     cy.getDataCy("add-code-repository").click();
 
-    cy.getDataCy("add-existing-repository-button").click();
     cy.getDataCy("project-add-repository-url").type(
       "gitlab.dev.renku.ch/url-repo"
     );

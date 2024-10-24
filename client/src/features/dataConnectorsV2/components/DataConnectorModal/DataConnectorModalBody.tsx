@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback } from "react";
 import { Globe, Lock } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { ButtonGroup, Input, Label } from "reactstrap";
+import { ButtonGroup, FormText, Input, Label } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
@@ -43,7 +43,6 @@ import {
   type AddStorageStepProps,
 } from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
-import SlugFormField from "../../../projectsV2/fields/SlugFormField";
 import type { DataConnectorSecret } from "../../api/data-connectors.api";
 
 import { type DataConnectorFlat } from "../dataConnector.utils";
@@ -244,13 +243,13 @@ export function DataConnectorMount({
       setValue(field, value);
       if (field === "name") {
         if (!touchedFields.slug && !flatDataConnector.dataConnectorId)
-          setValue("slug", slugFromTitle(value as string));
+          setValue("slug", slugFromTitle(value as string, true, true));
         if (
           !touchedFields.mountPoint &&
           !touchedFields.slug &&
           !flatDataConnector.dataConnectorId
         )
-          setValue("mountPoint", slugFromTitle(value as string));
+          setValue("mountPoint", slugFromTitle(value as string, true, true));
       }
 
       if (
@@ -371,12 +370,43 @@ export function DataConnectorMount({
         )}
       </div>
 
-      <SlugFormField
-        control={control}
-        entityName="data-connector"
-        errors={errors}
-        name="slug"
-      />
+      <div className="mb-3">
+        <Label className="form-label" for="data-connector-slug">
+          Slug
+        </Label>
+        <Controller
+          control={control}
+          name="slug"
+          render={({ field }) => (
+            <Input
+              aria-describedby="data-connector-SlugHelp"
+              className={cx("form-control", errors.slug && "is-invalid")}
+              data-cy="data-connector-slug-input"
+              id="data-connector-slug"
+              type="text"
+              {...field}
+              onChange={(e) => {
+                field.onChange(e);
+                onFieldValueChange("slug", e.target.value);
+              }}
+            />
+          )}
+          rules={{
+            required: true,
+            maxLength: 99,
+            pattern:
+              /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
+          }}
+        />
+        <div className="invalid-feedback">
+          Please provide a slug consisting of lowercase letters, numbers, and
+          hyphens.
+        </div>
+        <FormText id="data-connector-SlugHelp" className="input-hint">
+          A short, machine-readable identifier for the data connector,
+          restricted to lowercase letters, numbers, and hyphens.
+        </FormText>
+      </div>
 
       <div className="mb-3">
         <Label className="form-label" for="visibility">

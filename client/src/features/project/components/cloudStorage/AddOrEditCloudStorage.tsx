@@ -34,7 +34,6 @@ import {
 } from "react-bootstrap-icons";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import {
-  Badge,
   Button,
   Input,
   InputGroup,
@@ -44,6 +43,20 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { WarnAlert } from "../../../../components/Alert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
+import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
+import {
+  convertFromAdvancedConfig,
+  getSchemaOptions,
+  getSchemaProviders,
+  getSchemaStorage,
+  getSourcePathHint,
+  hasProviderShortlist,
+  parseCloudStorageConfiguration,
+} from "../../utils/projectCloudStorage.utils";
+import AddStorageBreadcrumbNavbar from "./AddStorageBreadcrumbNavbar";
+import AddStorageMountSaveCredentialsInfo from "./AddStorageMountSaveCredentialsInfo";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
@@ -55,21 +68,6 @@ import {
   CloudStorageSchema,
   CloudStorageSchemaOptions,
 } from "./projectCloudStorage.types";
-import {
-  convertFromAdvancedConfig,
-  getSchemaOptions,
-  getSchemaProviders,
-  getSchemaStorage,
-  getSourcePathHint,
-  hasProviderShortlist,
-  parseCloudStorageConfiguration,
-} from "../../utils/projectCloudStorage.utils";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import { WarnAlert } from "../../../../components/Alert";
-import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
-
-import AddStorageBreadcrumbNavbar from "./AddStorageBreadcrumbNavbar";
-import AddStorageMountSaveCredentialsInfo from "./AddStorageMountSaveCredentialsInfo";
 
 import styles from "./CloudStorage.module.scss";
 
@@ -659,37 +657,6 @@ export function AddStorageType({
     );
   });
   const finalSchemaItems = [
-    isV2 && (
-      <ListGroupItem
-        action
-        disabled
-        className={cx("cursor-pointer", "rounded-top-3")}
-        key="_Zenodo"
-        tag="div"
-      >
-        <div
-          className={cx("d-flex", "justify-content-between", "fw-bold", "py-2")}
-        >
-          Zenodo
-          <Badge
-            pill
-            className={cx(
-              "fst-italic",
-              "text-warning-emphasis",
-              "bg-warning-subtle",
-              "border",
-              "border-warning",
-              "alert-warning",
-              "opacity-50"
-            )}
-            title="coming soon"
-          >
-            {" "}
-            coming soon{" "}
-          </Badge>
-        </div>
-      </ListGroupItem>
-    ),
     ...schemaItems,
     <ListGroupItem
       action

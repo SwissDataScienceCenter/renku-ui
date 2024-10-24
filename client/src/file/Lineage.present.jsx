@@ -311,7 +311,7 @@ class FileLineage extends Component {
       <ExternalIconLink
         tooltip="Open in GitLab"
         icon={<BootstrapGitLabIcon className="bi" />}
-        to={externalFileUrl}
+        url={externalFileUrl}
       />
     );
 
@@ -330,7 +330,7 @@ class FileLineage extends Component {
           tooltip="Download File"
           icon={<Download className="bi" />}
           // TODO: change this!!!
-          to={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
+          url={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
         />
       );
 

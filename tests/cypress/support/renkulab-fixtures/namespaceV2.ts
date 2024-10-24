@@ -201,6 +201,21 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    getGroupV2Permissions(args?: GroupV2Args) {
+      const {
+        fixture = "groupV2/groupV2-permissions.json",
+        name = "getGroupV2Permissions",
+        groupSlug = "test-2-group-v2",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/groups/${groupSlug}/permissions`,
+        response
+      ).as(name);
+      return this;
+    }
+
     listGroupV2Members(args?: ListGroupV2MembersFixture) {
       const {
         fixture = "groupV2/list-groupV2-members.json",

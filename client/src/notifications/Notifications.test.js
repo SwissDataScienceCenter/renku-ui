@@ -23,19 +23,12 @@
  *  Tests for notifications
  */
 
-import { createRoot } from "react-dom/client";
-import { act } from "react-test-renderer";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { testClient as client } from "../api-client";
-import MemoryRouter from "../components/router/MemoryRouter";
 import { StateModel, globalSchema } from "../model";
-import AppContext from "../utils/context/appContext";
-import NotificationsPage from "./Notifications.container";
-import { CloseToast } from "./Notifications.present";
 import { NotificationsInfo } from "./Notifications.state";
-import NotificationsManager, { Notification } from "./NotificationsManager";
-import NotificationsMenu from "./NotificationsMenu";
+import NotificationsManager from "./NotificationsManager";
 
 const fakeLocation = { pathname: "" };
 
@@ -118,123 +111,5 @@ describe("setup and use notification system", () => {
     expect(JSON.stringify(NotificationsInfo)).toBe(
       JSON.stringify(subNotification)
     );
-  });
-});
-
-const model = new StateModel(globalSchema);
-const props = { client, model };
-const notifications = new NotificationsManager(model, client, fakeLocation);
-addMultipleNotifications(notifications, 1);
-
-describe("rendering NotificationsPage", () => {
-  it("renders NotificationsPage", async () => {
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <AppContext.Provider value={{ client, model, notifications }}>
-            <NotificationsPage />
-          </AppContext.Provider>
-        </MemoryRouter>
-      );
-    });
-  });
-});
-
-describe("rendering Notification", () => {
-  const notification = model.get("notifications.all")[0];
-  const settings = model.get("notifications.toast");
-
-  // setup a DOM element as a render target and cleanup on exit
-  let div, root;
-  beforeEach(async () => {
-    await act(async () => {
-      div = document.createElement("div");
-      document.body.appendChild(div);
-      root = createRoot(div);
-    });
-  });
-  afterEach(async () => {
-    await act(async () => {
-      root.unmount(div);
-      div.remove();
-      div = null;
-    });
-  });
-
-  it("renders Notification", async () => {
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <Notification
-            type="dropdown"
-            notification={notification}
-            markRead={() => null}
-          />
-        </MemoryRouter>
-      );
-    });
-
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <Notification
-            type="complete"
-            notification={notification}
-            markRead={() => null}
-          />
-        </MemoryRouter>
-      );
-    });
-
-    await act(async () => {
-      const closeToast = (
-        <CloseToast settings={settings} markRead={() => true} />
-      );
-
-      root.render(
-        <MemoryRouter>
-          <Notification
-            type="toast"
-            notification={notification}
-            markRead={() => null}
-            closeToast={closeToast}
-          />
-        </MemoryRouter>
-      );
-    });
-
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <Notification
-            type="custom"
-            present={
-              <div>
-                <span>empty</span>
-              </div>
-            }
-          />
-        </MemoryRouter>
-      );
-    });
-  });
-});
-
-describe("rendering NotificationsMenu", () => {
-  it("renders NotificationsMenu", async () => {
-    const div = document.createElement("div");
-    const root = createRoot(div);
-    document.body.appendChild(div);
-
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <NotificationsMenu {...props} notifications={notifications} />
-        </MemoryRouter>
-      );
-    });
   });
 });

@@ -264,7 +264,7 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     isError,
     isFetching,
     requestId,
-  } = useGetNamespacesQuery({ minimumRole: "editor" });
+  } = useGetNamespacesQuery({ params: { minimum_role: "editor" } });
 
   const [
     { data: allNamespaces, fetchedPages, hasMore, currentRequestId },
@@ -280,9 +280,11 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     useLazyGetNamespacesQuery();
   const onFetchMore = useCallback(() => {
     const request = fetchNamespacesPage({
-      page: fetchedPages + 1,
-      perPage: namespacesFirstPage?.perPage,
-      minimumRole: "editor",
+      params: {
+        page: fetchedPages + 1,
+        per_page: namespacesFirstPage?.perPage,
+        minimum_role: "editor",
+      },
     });
     setState((prevState: PaginatedState<ResponseNamespace>) => ({
       ...prevState,

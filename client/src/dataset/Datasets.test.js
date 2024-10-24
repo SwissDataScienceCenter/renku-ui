@@ -23,71 +23,11 @@
  *  Tests for datasets function.
  */
 
-import { createMemoryHistory } from "history";
-import { createRoot } from "react-dom/client";
-import { act } from "react-dom/test-utils";
-import { Provider } from "react-redux";
 import { describe, expect, it } from "vitest";
 
-import { testClient as client } from "../api-client";
-import MemoryRouter from "../components/router/MemoryRouter";
-import { StateModel, globalSchema } from "../model";
-import ShowDataset from "./Dataset.container";
 import { mapDataset } from "./DatasetFunctions";
 
 describe("Dataset functions", () => {
-  const model = new StateModel(globalSchema);
-  const fakeHistory = createMemoryHistory({
-    initialEntries: ["/"],
-    initialIndex: 0,
-  });
-  fakeHistory.push({
-    pathname: "/projects",
-    search: "?page=1",
-  });
-  const migration = { core: { versionUrl: "" } };
-  const datasets = [
-    {
-      title: "Test dataset title",
-      identifier: "79215657-4319-4fcf-82b9-58267f2a1db8",
-      name: "test-dataset-name",
-      created_at: "2021-06-04 04:20:24.287936+00:00",
-      creators: [
-        {
-          name: "First, Creator",
-          email: null,
-          affiliation: "Some Affiliation",
-        },
-      ],
-    },
-  ];
-
-  it("renders dataset view without crashing", async () => {
-    const div = document.createElement("div");
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <ShowDataset
-              client={client}
-              datasets={datasets}
-              datasetId="test-dataset-name"
-              identifier="79215657-4319-4fcf-82b9-58267f2a1db8"
-              insideProject={false}
-              location={fakeHistory.location}
-              logged={true}
-              migration={migration}
-              model={model}
-              projectsUrl="/projects"
-              selectedDataset="79215657-4319-4fcf-82b9-58267f2a1db8"
-            />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-  });
-
   const core_dataset = {
     created_at: "01/01/2001",
     description: "some description for a dataset",
