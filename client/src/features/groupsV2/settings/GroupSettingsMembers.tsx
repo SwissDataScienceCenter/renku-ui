@@ -114,7 +114,6 @@ export default function GroupSettingsMembers({
       </CardHeader>
       <CardBody>
         <GroupSettingsMembersList group={group} members={data} />
-
         <AddGroupMemberModal
           isOpen={isAddMemberModalOpen}
           members={data}

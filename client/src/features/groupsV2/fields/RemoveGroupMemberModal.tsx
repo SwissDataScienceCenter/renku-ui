@@ -19,14 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
-import {
-  Button,
-  Label,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
@@ -100,9 +93,7 @@ function RemoveGroupMemberAccessForm({
     <>
       <ModalBody>
         {error && <RtkOrNotebooksError error={error} />}
-        <div
-          className={cx("align-items-baseline", "d-flex", "flex-row")}
-        >
+        <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
           <p className="mb-0">
             Remove <ProjectMemberDisplay member={member} nameInBold={true} />{" "}
             from group?
