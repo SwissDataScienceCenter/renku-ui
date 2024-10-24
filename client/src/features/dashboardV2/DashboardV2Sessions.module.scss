@@ -1,0 +1,16 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.sessionButton {
+  bottom: 0;
+  margin-bottom: 1rem;
+
+  @include media-breakpoint-up(md) {
+    top: 0;
+    margin-top: 1rem;
+    right: 0;
+  }
+}
