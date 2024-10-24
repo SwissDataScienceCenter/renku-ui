@@ -115,18 +115,6 @@ export default function GroupSettingsMembers({
       <CardBody>
         <GroupSettingsMembersList group={group} members={data} />
 
-        {/* <ListGroup>
-          {data.map((member, idx) => (
-            <GroupMemberItem
-              key={member.id}
-              group={group}
-              index={idx}
-              member={member}
-              members={data}
-              onDelete={onDelete}
-            />
-          ))}
-        </ListGroup> */}
         <AddGroupMemberModal
           isOpen={isAddMemberModalOpen}
           members={data}

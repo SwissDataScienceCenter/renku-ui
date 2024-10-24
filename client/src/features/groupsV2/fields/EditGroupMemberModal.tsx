@@ -118,11 +118,11 @@ function EditGroupMemberAccessForm({
 
   return (
     <>
-      <ModalBody className="pb-0">
+      <ModalBody>
         <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {error && <RtkOrNotebooksError error={error} />}
           <div
-            className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
+            className={cx("align-items-baseline", "d-flex", "flex-row")}
           >
             <Label for="member-role">
               <ProjectMemberDisplay member={member} />

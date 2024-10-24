@@ -101,16 +101,16 @@ function RemoveGroupMemberAccessForm({
       <ModalBody>
         {error && <RtkOrNotebooksError error={error} />}
         <div
-          className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
+          className={cx("align-items-baseline", "d-flex", "flex-row")}
         >
-          <Label>
+          <p className="mb-0">
             Remove <ProjectMemberDisplay member={member} nameInBold={true} />{" "}
             from group?
-          </Label>
+          </p>
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
