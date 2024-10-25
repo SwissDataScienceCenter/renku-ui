@@ -287,7 +287,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
               : errors.dataConnectorIdentifier.message != null &&
                 errors.dataConnectorIdentifier.message.length > 0
               ? errors.dataConnectorIdentifier.message
-              : "Please provide an identifier (namespace/group) for the data connector"}
+              : "Please provide an identifier for the data connector"}
           </div>
         </div>
         {isSuccess != null && !isSuccess && (
