@@ -37,7 +37,6 @@ import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 
-import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
@@ -55,6 +54,7 @@ import {
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 import DataConnectorModal from "./DataConnectorModal";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
+import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 
 interface DataConnectorRemoveModalProps {
   dataConnector: DataConnectorRead;
@@ -70,9 +70,8 @@ function DataConnectorRemoveDeleteModal({
   toggleModal,
   isOpen,
 }: DataConnectorRemoveModalProps) {
-  const { permissions, isLoading: isLoadingPermissions } = useGroupPermissions({
-    groupSlug: dataConnector.namespace,
-  });
+  const { permissions, isLoading: isLoadingPermissions } =
+    useDataConnectorPermissions({ dataConnectorId: dataConnector.id });
 
   const dispatch = useAppDispatch();
   const {

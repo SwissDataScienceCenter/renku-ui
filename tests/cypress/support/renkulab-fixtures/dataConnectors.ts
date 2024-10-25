@@ -220,6 +220,25 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    getDataConnectorPermissions(args?: DataConnectorIdArgs) {
+      const {
+        fixture = "dataConnector/data-connector-permissions.json",
+        name = "getDataConnectorPermissions",
+        dataConnectorId = "ULID-1",
+      } = args ?? {};
+      cy.fixture(fixture).then((permissions) => {
+        // eslint-disable-next-line max-nested-callbacks
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/data_connectors/${dataConnectorId}/permissions`,
+          (req) => {
+            req.reply({ body: permissions });
+          }
+        ).as(name);
+      });
+      return this;
+    }
+
     listDataConnectorProjectLinks(args?: DataConnectorIdArgs) {
       const {
         fixture = "dataConnector/project-data-connector-links.json",

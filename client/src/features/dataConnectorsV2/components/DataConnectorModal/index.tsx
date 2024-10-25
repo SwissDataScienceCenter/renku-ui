@@ -57,10 +57,9 @@ import {
 import type { DataConnectorRead } from "../../api/data-connectors.api";
 
 import type { Project } from "../../../projectsV2/api/projectV2.api";
-import {
-  projectV2Api,
-  useGetGroupsByGroupSlugPermissionsQuery,
-} from "../../../projectsV2/api/projectV2.enhanced-api";
+import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
+
+import useDataConnectorPermissions from "../../utils/useDataConnectorPermissions.hook";
 
 import styles from "./DataConnectorModal.module.scss";
 
@@ -555,14 +554,8 @@ export default function DataConnectorModal({
   toggle,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
-  const { data: permissions, isLoading: isLoadingPermissions } =
-    useGetGroupsByGroupSlugPermissionsQuery(
-      dataConnector != null
-        ? {
-            groupSlug: dataConnector.namespace,
-          }
-        : skipToken
-    );
+  const { permissions, isLoading: isLoadingPermissions } =
+    useDataConnectorPermissions({ dataConnectorId: dataConnectorId ?? "" });
 
   return (
     <Modal
@@ -582,6 +575,7 @@ export default function DataConnectorModal({
         <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
       </ModalHeader>
       {!isLoadingPermissions &&
+      dataConnectorId != null &&
       (permissions == null || permissions["write"] != true) ? (
         <DataConnectorModalBodyAndFooterUnauthorized />
       ) : (

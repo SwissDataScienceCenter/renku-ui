@@ -175,6 +175,7 @@ describe("Set up data connectors with credentials", () => {
 
   it("set credentials for a data connector", () => {
     fixtures
+      .getDataConnectorPermissions()
       .listDataConnectors({
         fixture: "dataConnector/data-connector.json",
         namespace: "test-2-group-v2",

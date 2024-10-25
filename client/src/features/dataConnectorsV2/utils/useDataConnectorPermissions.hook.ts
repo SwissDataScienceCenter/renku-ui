@@ -26,17 +26,20 @@ interface UseDataConnectorPermissionsArgs {
 
 export default function useDataConnectorPermissions({
   dataConnectorId,
-}: UseDataConnectorPermissionsArgs): Permissions {
+}: UseDataConnectorPermissionsArgs): {
+  permissions: Permissions;
+  isLoading: boolean;
+} {
   const { data, isLoading, isError } =
     useGetDataConnectorsByDataConnectorIdPermissionsQuery({ dataConnectorId });
 
   if (isLoading || isError || !data) {
-    return DEFAULT_PERMISSIONS;
+    return { permissions: DEFAULT_PERMISSIONS, isLoading };
   }
 
   const permissions: Permissions = {
     ...DEFAULT_PERMISSIONS,
     ...data,
   };
-  return permissions;
+  return { permissions, isLoading };
 }
