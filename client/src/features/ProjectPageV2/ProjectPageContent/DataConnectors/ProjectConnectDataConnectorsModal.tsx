@@ -17,6 +17,8 @@
  */
 
 import cx from "classnames";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { SerializedError } from "@reduxjs/toolkit";
 import { useCallback, useEffect, useState } from "react";
 import { Database, NodePlus, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
@@ -193,6 +195,9 @@ function ProjectLinkDataConnectorBodyAndFooter({
   toggle,
 }: ProjectConnectDataConnectorsModalProps) {
   const dispatch = useAppDispatch();
+  const [lookupDataConnectorError, setLookupDataConnectorError] = useState<
+    FetchBaseQueryError | SerializedError | undefined
+  >(undefined);
   const [
     linkDataConnector,
     { error: linkDataConnectorError, isLoading, isSuccess },
@@ -201,7 +206,6 @@ function ProjectLinkDataConnectorBodyAndFooter({
     control,
     formState: { errors },
     handleSubmit,
-    setError,
   } = useForm<DataConnectorLinkFormFields>({
     defaultValues: {
       dataConnectorIdentifier: "",
@@ -223,14 +227,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
       } = await dataConnectorPromise;
       dataConnectorPromise.unsubscribe();
       if (!isSuccess || dataConnector == null) {
-        const errorMessage = isRenkuErrorResponse(error)
-          ? error.data.error.message
-          : "Data connector not found";
-
-        setError("dataConnectorIdentifier", {
-          type: "manual",
-          message: errorMessage,
-        });
+        setLookupDataConnectorError(error);
         return false;
       }
       linkDataConnector({
@@ -240,7 +237,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
         },
       });
     },
-    [dispatch, linkDataConnector, project.id, setError]
+    [dispatch, linkDataConnector, project.id]
   );
 
   useEffect(() => {
@@ -292,6 +289,9 @@ function ProjectLinkDataConnectorBodyAndFooter({
         </div>
         {isSuccess != null && !isSuccess && (
           <RtkOrNotebooksError error={linkDataConnectorError} />
+        )}
+        {lookupDataConnectorError != null && (
+          <RtkOrNotebooksError error={lookupDataConnectorError} />
         )}
       </ModalBody>
 
