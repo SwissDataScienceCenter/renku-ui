@@ -112,65 +112,77 @@ function DataConnectorRemoveDeleteModal({
       <ModalBody>
         {isLoadingLinks || isLoadingPermissions ? (
           <Loader />
-        ) : permissions == null || permissions["delete"] != true ? (
-          <Row>
-            <Col>
-              <p>
-                You do not have the required permissions to delete this data
-                connector.
-              </p>
-            </Col>
-          </Row>
-        ) : dataConnectorLinks == null || isLoadingLinksError ? (
-          <Row>
-            <Col>
-              <p>
-                Are you sure you want to delete this data connector? It is
-                possible that it is used in some projects.
-              </p>
-              <p>
-                Please type <strong>{dataConnector.slug}</strong>, the slug of
-                the data connector, to confirm.
-              </p>
-              <Input
-                data-cy="delete-confirmation-input"
-                value={typedName}
-                onChange={onChange}
-              />
-            </Col>
-          </Row>
         ) : (
-          <Row>
-            <Col>
-              <p>
-                Are you sure you want to delete this data connector?{" "}
-                {dataConnectorLinks.length < 1 ? (
-                  <>
-                    It is not used in any projects that are visible to you, but
-                    it will affect any projects where it is used.
-                  </>
-                ) : dataConnectorLinks.length === 1 ? (
-                  <>
-                    It will affect at least <b>1 project that uses it</b>.
-                  </>
-                ) : (
-                  <>
-                    It will affect at least{" "}
-                    <b>{dataConnectorLinks.length} projects that use it</b>.
-                  </>
-                )}
-              </p>
-              <p>
-                Please type <strong>{dataConnector.slug}</strong>, the slug of
-                the data connector, to confirm.
-              </p>
-              <Input
-                data-cy="delete-confirmation-input"
-                value={typedName}
-                onChange={onChange}
-              />
-            </Col>
-          </Row>
+          <PermissionsGuard
+            disabled={
+              <Row>
+                <Col>
+                  <p>
+                    You do not have the required permissions to delete this data
+                    connector.
+                  </p>
+                </Col>
+              </Row>
+            }
+            enabled={
+              dataConnectorLinks == null || isLoadingLinksError ? (
+                <Row>
+                  <Col>
+                    <p>
+                      Are you sure you want to delete this data connector? It is
+                      possible that it is used in some projects.
+                    </p>
+                    <p>
+                      Please type <strong>{dataConnector.slug}</strong>, the
+                      slug of the data connector, to confirm.
+                    </p>
+                    <Input
+                      data-cy="delete-confirmation-input"
+                      value={typedName}
+                      onChange={onChange}
+                    />
+                  </Col>
+                </Row>
+              ) : (
+                <Row>
+                  <Col>
+                    <p>
+                      Are you sure you want to delete this data connector?{" "}
+                      {dataConnectorLinks.length < 1 ? (
+                        <>
+                          It is not used in any projects that are visible to
+                          you, but it will affect any projects where it is used.
+                        </>
+                      ) : dataConnectorLinks.length === 1 ? (
+                        <>
+                          It will affect at least <b>1 project that uses it</b>.
+                        </>
+                      ) : (
+                        <>
+                          It will affect at least{" "}
+                          <b>
+                            {dataConnectorLinks.length} projects that use it
+                          </b>
+                          .
+                        </>
+                      )}
+                    </p>
+                    <p>
+                      Please type <strong>{dataConnector.slug}</strong>, the
+                      slug of the data connector, to confirm.
+                    </p>
+                    <Input
+                      data-cy="delete-confirmation-input"
+                      value={typedName}
+                      onChange={onChange}
+                    />
+                  </Col>
+                </Row>
+              )
+            }
+            requestedPermission="delete"
+            userPermissions={permissions}
+          />
         )}
       </ModalBody>
       <ModalFooter>
@@ -275,27 +287,32 @@ function DataConnectorRemoveUnlinkModal({
           <ModalBody>
             <Row>
               <Col>
-                {permissions == null || permissions["write"] != true ? (
-                  <p>
-                    You do not have the required permissions to unlink this data
-                    connector.
-                  </p>
-                ) : (
-                  <>
+                <PermissionsGuard
+                  disabled={
                     <p>
-                      Are you sure you want to unlink the data connector{" "}
-                      <strong>{dataConnector.slug}</strong> from the project{" "}
-                      <strong>
-                        {projectNamespace}/{projectSlug}
-                      </strong>
-                      ?
+                      You do not have the required permissions to unlink this
+                      data connector.
                     </p>
-                    <p>
-                      The data from the data connector will no longer be
-                      available in sessions.
-                    </p>
-                  </>
-                )}
+                  }
+                  enabled={
+                    <>
+                      <p>
+                        Are you sure you want to unlink the data connector{" "}
+                        <strong>{dataConnector.slug}</strong> from the project{" "}
+                        <strong>
+                          {projectNamespace}/{projectSlug}
+                        </strong>
+                        ?
+                      </p>
+                      <p>
+                        The data from the data connector will no longer be
+                        available in sessions.
+                      </p>
+                    </>
+                  }
+                  requestedPermission="write"
+                  userPermissions={permissions}
+                />
               </Col>
             </Row>
           </ModalBody>
