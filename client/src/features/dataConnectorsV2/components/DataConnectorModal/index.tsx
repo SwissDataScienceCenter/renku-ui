@@ -56,6 +56,7 @@ import {
 } from "../../api/data-connectors.enhanced-api";
 import type { DataConnectorRead } from "../../api/data-connectors.api";
 
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
 
@@ -574,10 +575,23 @@ export default function DataConnectorModal({
       <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
         <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
       </ModalHeader>
-      {!isLoadingPermissions &&
-      dataConnectorId != null &&
-      (permissions == null || permissions["write"] != true) ? (
-        <DataConnectorModalBodyAndFooterUnauthorized />
+      {!isLoadingPermissions && dataConnectorId != null ? (
+        <PermissionsGuard
+          disabled={<DataConnectorModalBodyAndFooterUnauthorized />}
+          enabled={
+            <DataConnectorModalBodyAndFooter
+              {...{
+                dataConnector,
+                isOpen,
+                namespace,
+                project,
+                toggle,
+              }}
+            />
+          }
+          requestedPermission={"write"}
+          userPermissions={permissions}
+        />
       ) : (
         <DataConnectorModalBodyAndFooter
           {...{
