@@ -37,7 +37,6 @@ import {
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import { isRenkuErrorResponse } from "../../../../utils/helpers/ApiErrors";
 
 import {
   dataConnectorsApi,
