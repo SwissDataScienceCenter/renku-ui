@@ -319,6 +319,6 @@ describe("Set up data connectors", () => {
     cy.contains(
       "You do not have the required permissions to unlink this data connector."
     ).should("be.visible");
-    cy.getDataCy("delete-data-connector-modal-button").should("be.disabled");
+    cy.getDataCy("delete-data-connector-modal-button").should("not.exist");
   });
 });

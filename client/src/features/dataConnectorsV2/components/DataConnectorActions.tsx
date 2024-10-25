@@ -180,18 +180,7 @@ function DataConnectorRemoveDeleteModal({
             Cancel
           </Button>
           <PermissionsGuard
-            disabled={
-              <Button
-                color="danger"
-                className={cx("float-right", "ms-2")}
-                disabled={true}
-                data-cy="delete-data-connector-modal-button"
-                onClick={toggleModal}
-              >
-                <Trash className={cx("bi", "me-1")} />
-                Delete data connector
-              </Button>
-            }
+            disabled={null}
             enabled={
               <Button
                 color="danger"
@@ -204,7 +193,7 @@ function DataConnectorRemoveDeleteModal({
                 {isLoading ? (
                   <>
                     <Loader className="me-1" inline size={16} />
-                    Deleting data connector
+                    Remove data connector
                   </>
                 ) : (
                   <>
@@ -318,18 +307,7 @@ function DataConnectorRemoveUnlinkModal({
                 Cancel
               </Button>
               <PermissionsGuard
-                disabled={
-                  <Button
-                    color="danger"
-                    className={cx("float-right", "ms-2")}
-                    disabled={true}
-                    data-cy="delete-data-connector-modal-button"
-                    onClick={toggleModal}
-                  >
-                    <NodeMinus className={cx("bi", "me-1")} />
-                    Unlink data connector
-                  </Button>
-                }
+                disabled={null}
                 enabled={
                   <Button
                     color="danger"
@@ -342,7 +320,7 @@ function DataConnectorRemoveUnlinkModal({
                     {isLoadingUnlink ? (
                       <>
                         <Loader className="me-1" inline size={16} />
-                        Unlinking data connector
+                        Unlink data connector
                       </>
                     ) : (
                       <>
