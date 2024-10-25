@@ -186,6 +186,7 @@ function DataConnectorViewAccess({
                         <span
                           className={cx(
                             "badge",
+                            "bg-opacity-25",
                             "rounded-pill",
                             "text-bg-success"
                           )}
