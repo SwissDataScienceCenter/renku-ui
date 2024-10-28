@@ -629,7 +629,7 @@ function ShowContainerImageError({
   projectUrl: string;
 }) {
   if (!("status" in error)) {
-    return false;
+    return null;
   }
 
   return (
