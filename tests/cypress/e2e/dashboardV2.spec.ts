@@ -39,10 +39,12 @@ describe("View v2 landing page", () => {
 
   it("view sessions", () => {
     cy.contains("Sessions").should("be.visible");
-    cy.get("[data-cy=dashboard-session-list] > [data-cy=list-session]")
+    cy.getDataCy("dashboard-session-list")
+      .find("[data-cy=dashboard-session-list-item]")
       .contains("user1-uuid/test-2-v2-project")
       .should("be.visible");
-    cy.get("[data-cy=dashboard-session-list] > [data-cy=list-session]")
+    cy.getDataCy("dashboard-session-list")
+      .find("[data-cy=dashboard-session-list-item]")
       .first()
       .find("a.btn")
       .contains("Open")

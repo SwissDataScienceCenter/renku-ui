@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
-import { CodeSquare, Github, PlusLg, XLg } from "react-bootstrap-icons";
+import { useCallback, useEffect } from "react";
+import { CodeSquare, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Badge,
   Button,
   Col,
   Form,
@@ -36,83 +35,19 @@ import {
 
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import BootstrapGitLabIcon from "../../../../components/icons/BootstrapGitLabIcon";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+
+interface AddCodeRepositoryForm {
+  repositoryUrl: string;
+}
 
 interface AddCodeRepositoryModalProps {
   project: Project;
   isOpen: boolean;
   toggleModal: () => void;
 }
-export function AddCodeRepositoryStep1Modal({
-  project,
-  toggleModal,
-  isOpen,
-}: AddCodeRepositoryModalProps) {
-  const [isOpenStep2, setIsOpenStep2] = useState(false);
-  const toggle = useCallback(() => {
-    setIsOpenStep2((open) => !open);
-  }, []);
-  const openNextStep = useCallback(() => {
-    setIsOpenStep2((open) => !open);
-    toggleModal();
-  }, [toggleModal]);
-  return (
-    <>
-      <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
-        <ModalHeader toggle={toggleModal}>
-          <CodeSquare className={cx("bi", "me-1")} />
-          Add code repositories
-        </ModalHeader>
-        <ModalBody>
-          <p>Connect a code repository to save and share code.</p>
-          <Row className="gap-3">
-            <Col className="d-grid" xs={12}>
-              <Button
-                color="outline-primary"
-                onClick={() => openNextStep()}
-                data-cy="add-existing-repository-button"
-              >
-                <Github className="bi me-2" />
-                <BootstrapGitLabIcon className="bi me-2" />
-                Connect an existing repository
-              </Button>
-            </Col>
-            <Col className="d-grid" xs={12}>
-              <Button color="outline-primary" disabled>
-                <PlusLg className="me-2" />
-                Create new repository
-                <Badge
-                  pill
-                  className={cx(
-                    "fst-italic",
-                    "text-warning-emphasis",
-                    "bg-warning-subtle",
-                    "border",
-                    "border-warning",
-                    "ms-2",
-                    "alert-warning"
-                  )}
-                  title="coming soon"
-                >
-                  {" "}
-                  coming soon{" "}
-                </Badge>
-              </Button>
-            </Col>
-          </Row>
-        </ModalBody>
-      </Modal>
-      <AddCodeRepositoryStep2Modal
-        project={project}
-        toggleModal={toggle}
-        isOpen={isOpenStep2}
-      />
-    </>
-  );
-}
-function AddCodeRepositoryStep2Modal({
+export default function AddCodeRepositoryModal({
   project,
   toggleModal,
   isOpen,
@@ -154,7 +89,7 @@ function AddCodeRepositoryStep2Modal({
   }, [isOpen, reset, result]);
 
   return (
-    <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
+    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggleModal}>
           <CodeSquare className={cx("bi", "me-1")} />
@@ -222,8 +157,4 @@ function AddCodeRepositoryStep2Modal({
       </Form>
     </Modal>
   );
-}
-
-interface AddCodeRepositoryForm {
-  repositoryUrl: string;
 }

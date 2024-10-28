@@ -166,7 +166,13 @@ describe("Edit v2 group", () => {
     fixtures
       .deleteGroupV2Member({ userId: groupMemberToRemove })
       .listGroupV2Members({ removeUserId: groupMemberToRemove });
-    cy.getDataCy("delete-member-2").should("be.visible").click();
+    cy.getDataCy("group-member-actions-2")
+      .find('[data-cy="button-with-menu-dropdown"]')
+      .click();
+    cy.getDataCy("group-member-actions-2").contains("Remove").click();
+    cy.getDataCy("remove-group-member-modal").should("be.visible");
+    cy.contains("button", "Remove member").should("be.visible").click();
+    cy.getDataCy("remove-group-member-modal").should("not.be.visible");
     cy.contains("user3-uuid").should("not.exist");
     cy.get("[data-cy=group-add-member]").should("be.visible").click();
     cy.getDataCy("add-project-member").type("foo");
@@ -256,6 +262,7 @@ describe("Work with group data connectors", () => {
         dataConnectorId: "ULID-2",
         fixture: "dataConnector/project-data-connector-links-multiple.json",
       })
+      .readGroupV2Namespace()
       .readProjectV2ById({ projectId: "PROJECT-ULID-1", name: "readProject1" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-3", name: "readProject2" });
@@ -271,9 +278,10 @@ describe("Work with group data connectors", () => {
   });
 
   it("add a group data connector", () => {
-    fixtures
-      .testCloudStorage({ success: false })
-      .postDataConnector({ namespace: "test-2-group-v2" });
+    fixtures.testCloudStorage({ success: false }).postDataConnector({
+      namespace: "test-2-group-v2",
+      slug: "example-storage-no-credentials",
+    });
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible");
@@ -292,12 +300,19 @@ describe("Work with group data connectors", () => {
     cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
     cy.getDataCy("data-connector-edit-mount").within(() => {
       cy.get("#name").type("example storage without credentials");
+      cy.get("#data-connector-slug").should(
+        "have.value",
+        "example-storage-without-credentials"
+      );
+      cy.get("#data-connector-slug")
+        .clear()
+        .type("example-storage-no-credentials");
     });
     cy.getDataCy("data-connector-edit-update-button").click();
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
+      "The data connector test-2-group-v2/example-storage-no-credentials has been successfully added."
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listDataConnectors");
@@ -305,6 +320,7 @@ describe("Work with group data connectors", () => {
 
   it("edit a group data connector", () => {
     fixtures
+      .getDataConnectorPermissions({ dataConnectorId: "ULID-2" })
       .testCloudStorage({ success: true })
       .patchDataConnector({ namespace: "test-2-group-v2" });
     cy.contains("test 2 group-v2").should("be.visible").click();
@@ -327,10 +343,13 @@ describe("Work with group data connectors", () => {
   });
 
   it("delete a group data connector", () => {
-    fixtures.deleteDataConnector().listDataConnectorProjectLinks({
-      dataConnectorId: "ULID-2",
-      fixture: "dataConnector/project-data-connector-links-multiple.json",
-    });
+    fixtures
+      .deleteDataConnector()
+      .getDataConnectorPermissions({ dataConnectorId: "ULID-2" })
+      .listDataConnectorProjectLinks({
+        dataConnectorId: "ULID-2",
+        fixture: "dataConnector/project-data-connector-links-multiple.json",
+      });
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible").click();
@@ -345,5 +364,93 @@ describe("Work with group data connectors", () => {
       .click();
     cy.wait("@deleteDataConnector");
     cy.wait("@listDataConnectors");
+  });
+});
+
+describe("Work with group data connectors, missing permissions", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: { id: "0945f006-e117-49b7-8966-4c0842146313" },
+      })
+      .projects()
+      .landingUserProjects()
+      .listNamespaceV2()
+      .listGroupV2()
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .getGroupV2Permissions({
+        fixture: "groupV2/groupV2-permissions-none.json",
+      })
+      .listGroupV2Members()
+      .listProjectV2ByNamespace()
+      .listDataConnectors({ namespace: "test-2-group-v2" })
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" });
+    cy.visit("/v2");
+  });
+
+  it("shows group data connectors", () => {
+    fixtures
+      .dataConnectorSecrets({
+        dataConnectorId: "ULID-2",
+        fixture: "dataConnector/data-connector-secrets-empty.json",
+      })
+      .listDataConnectorProjectLinks({
+        dataConnectorId: "ULID-2",
+        fixture: "dataConnector/project-data-connector-links-multiple.json",
+      })
+      .readGroupV2Namespace()
+      .readProjectV2ById({ projectId: "PROJECT-ULID-1", name: "readProject1" })
+      .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" })
+      .readProjectV2ById({ projectId: "PROJECT-ULID-3", name: "readProject2" });
+    cy.contains("Groups").should("be.visible");
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("test 2 group-v2").should("be.visible");
+    cy.contains("public-storage").should("be.visible").click();
+    cy.wait("@listDataConnectorProjectLinks");
+    cy.wait("@readProject1");
+    cy.wait("@readProject2");
+    cy.contains("user1-uuid/test-2-v2-project").should("be.visible");
+  });
+
+  it("add a group data connector", () => {
+    fixtures.testCloudStorage({ success: false }).postDataConnector({
+      namespace: "test-2-group-v2",
+      slug: "example-storage-no-credentials",
+    });
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("public-storage").should("be.visible");
+    cy.wait("@getGroupV2Permissions");
+    cy.getDataCy("add-data-connector").should("not.exist");
+  });
+
+  it("edit a group data connector", () => {
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("public-storage").should("be.visible").click();
+    cy.getDataCy("data-connector-edit").should("be.visible").click();
+    cy.contains(
+      "You do not have the required permissions to modify this data connector"
+    ).should("be.visible");
+  });
+
+  it("delete a group data connector", () => {
+    fixtures.listDataConnectorProjectLinks({
+      dataConnectorId: "ULID-2",
+      fixture: "dataConnector/project-data-connector-links-multiple.json",
+    });
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("public-storage").should("be.visible").click();
+    cy.getDataCy("button-with-menu-dropdown").should("be.visible").click();
+    cy.getDataCy("data-connector-delete").should("be.visible").click();
+    cy.contains(
+      "You do not have the required permissions to delete this data connector"
+    ).should("be.visible");
   });
 });

@@ -35,6 +35,7 @@ import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import PermissionsGuard from "../permissionsV2/PermissionsGuard";
 import type { Project } from "../projectsV2/api/projectV2.api";
@@ -241,26 +242,39 @@ interface OrphanSessionProps {
 }
 
 function OrphanSession({ session, project }: OrphanSessionProps) {
-  const [toggleSessionView, setToggleSessionView] = useState(false);
   const sessions = {
     [session.name]: session,
   };
-  const openSessionDetails = () => {
-    setToggleSessionView((open) => !open);
-  };
+
+  const [hash, setHash] = useLocationHash();
+  const sessionHash = useMemo(
+    () => `orphan-session-${session.name}`,
+    [session.name]
+  );
+  const isSessionViewOpen = useMemo(
+    () => hash === sessionHash,
+    [hash, sessionHash]
+  );
+  const toggleSessionView = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = prev === sessionHash;
+      return isOpen ? "" : sessionHash;
+    });
+  }, [sessionHash, setHash]);
 
   return (
     <>
       <SessionItem
         project={project}
         session={session}
-        toggleSessionDetails={openSessionDetails}
+        toggleSessionDetails={toggleSessionView}
       />
       <SessionView
+        id={sessionHash}
         sessions={sessions}
         project={project}
-        setToggleSessionView={openSessionDetails}
-        toggleSessionView={toggleSessionView}
+        toggle={toggleSessionView}
+        isOpen={isSessionViewOpen}
       />
     </>
   );

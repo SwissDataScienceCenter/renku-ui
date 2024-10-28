@@ -51,7 +51,7 @@ function AddButtonForGroupNamespace({
   namespace,
   toggleOpen,
 }: Pick<DataConnectorBoxHeaderProps, "namespace" | "toggleOpen">) {
-  const permissions = useGroupPermissions({ groupSlug: namespace });
+  const { permissions } = useGroupPermissions({ groupSlug: namespace });
 
   return (
     <PermissionsGuard
