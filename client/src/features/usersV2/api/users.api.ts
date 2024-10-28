@@ -18,15 +18,21 @@
 
 import type { DataServicesError } from "../../dataServices/dataServices.types";
 import {
+  type DeleteUserPreferencesPinnedProjectsApiArg,
+  type DeleteUserPreferencesPinnedProjectsApiResponse,
   type GetUserApiArg,
   type GetUserApiResponse,
   type GetUserPreferencesApiArg,
   type GetUserPreferencesApiResponse,
+  type GetUsersApiArg,
+  type GetUsersApiResponse,
+  type GetUserSecretsApiArg,
+  type GetUserSecretsApiResponse,
   usersGeneratedApi,
 } from "./users.generated-api";
 import type { UserInfo } from "./users.types";
 
-// Fixes the GET /user and GET /user/preferences endpoints
+// Fixes some API endpoints
 const withFixedEndpoints = usersGeneratedApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (build) => ({
@@ -43,6 +49,21 @@ const withFixedEndpoints = usersGeneratedApi.injectEndpoints({
         }
         return { ...result, isLoggedIn: true };
       },
+    }),
+    getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
+      query: ({ userParams }) => ({
+        url: `/users`,
+        params: userParams,
+      }),
+    }),
+    getUserSecrets: build.query<
+      GetUserSecretsApiResponse,
+      GetUserSecretsApiArg
+    >({
+      query: ({ userSecretsParams }) => ({
+        url: `/user/secrets`,
+        params: userSecretsParams,
+      }),
     }),
     getUserPreferences: build.query<
       GetUserPreferencesApiResponse | null,
@@ -66,6 +87,16 @@ const withFixedEndpoints = usersGeneratedApi.injectEndpoints({
         }
         return result;
       },
+    }),
+    deleteUserPreferencesPinnedProjects: build.mutation<
+      DeleteUserPreferencesPinnedProjectsApiResponse,
+      DeleteUserPreferencesPinnedProjectsApiArg
+    >({
+      query: ({ deletePinnedParams }) => ({
+        url: `/user/preferences/pinned_projects`,
+        method: "DELETE",
+        params: deletePinnedParams,
+      }),
     }),
   }),
 });

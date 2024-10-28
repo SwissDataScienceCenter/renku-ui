@@ -86,7 +86,7 @@ export function Secrets<T extends FixturesConstructor>(Parent: T) {
       };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/user/secrets?kind=${secretsKind}`,
+        `/api/data/user/secrets?kind=${secretsKind}`,
         response
       ).as(name);
       return this;
@@ -102,7 +102,7 @@ export function Secrets<T extends FixturesConstructor>(Parent: T) {
           kind: secretsKind,
         },
       };
-      cy.intercept("POST", "/ui-server/api/data/user/secrets", (req) => {
+      cy.intercept("POST", "/api/data/user/secrets", (req) => {
         expect(req.body).to.have.property("kind");
         req.reply(response);
       }).as(name);
@@ -119,9 +119,7 @@ export function Secrets<T extends FixturesConstructor>(Parent: T) {
           kind: secretsKind,
         },
       };
-      cy.intercept("PATCH", "/ui-server/api/data/user/secrets/*", response).as(
-        name
-      );
+      cy.intercept("PATCH", "/api/data/user/secrets/*", response).as(name);
       return this;
     }
 
@@ -130,9 +128,7 @@ export function Secrets<T extends FixturesConstructor>(Parent: T) {
       const response = {
         body: {},
       };
-      cy.intercept("DELETE", "/ui-server/api/data/user/secrets/*", response).as(
-        name
-      );
+      cy.intercept("DELETE", "/api/data/user/secrets/*", response).as(name);
       return this;
     }
   };
