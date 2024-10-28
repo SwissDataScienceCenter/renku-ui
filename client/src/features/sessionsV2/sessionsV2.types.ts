@@ -129,10 +129,12 @@ export interface SessionLauncherForm {
 }
 
 export interface SessionResources {
-  cpu: number;
-  gpu: number;
-  memory: number;
-  storage: number;
+  requests: {
+    cpu: number;
+    gpu: number;
+    memory: number;
+    storage: number;
+  };
 }
 
 export interface SessionStatus {

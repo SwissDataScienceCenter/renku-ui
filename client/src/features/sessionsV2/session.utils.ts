@@ -20,13 +20,11 @@ import { FaviconStatus } from "../display/display.types";
 import { SessionStatusState } from "../session/sessions.types";
 import { DEFAULT_URL } from "./session.constants";
 import {
-  SessionCloudStorageV2,
   SessionEnvironmentList,
   SessionLauncher,
   SessionLauncherEnvironmentParams,
   SessionLauncherForm,
 } from "./sessionsV2.types";
-import { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
@@ -223,31 +221,6 @@ export function isValidJSONStringArray(
 
   if (parseString.parsed) return true;
   return parseString.error ?? "Is not a valid JSON array string";
-}
-
-export function storageDefinitionFromConfigV2(
-  config: SessionStartDataConnectorConfiguration
-): SessionCloudStorageV2 {
-  const storageDefinition = config.dataConnector.storage;
-  const { sensitiveFieldValues } = config;
-
-  // Merge configuration with sensitive field values, excluding empty ones
-  const configuration = {
-    ...storageDefinition.configuration,
-    ...Object.fromEntries(
-      Object.entries(sensitiveFieldValues).filter(
-        ([, value]) => value != null && value !== ""
-      )
-    ),
-  };
-
-  return {
-    readonly: !!storageDefinition.readonly,
-    source_path: storageDefinition.source_path,
-    target_path: storageDefinition.target_path,
-    storage_id: config.dataConnector.id,
-    configuration,
-  };
 }
 
 /**

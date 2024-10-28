@@ -49,8 +49,6 @@ import {
   useGetSessionsQuery as useGetSessionsQueryV2,
 } from "./sessionsV2.api";
 import { SessionLauncher, SessionV2 } from "./sessionsV2.types";
-import SessionItem from "./SessionList/SessionItem";
-import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
@@ -239,10 +237,6 @@ interface OrphanSessionProps {
 }
 
 function OrphanSession({ session, project }: OrphanSessionProps) {
-  const sessions = {
-    [session.name]: session,
-  };
-
   const [hash, setHash] = useLocationHash();
   const sessionHash = useMemo(
     () => `orphan-session-${session.name}`,

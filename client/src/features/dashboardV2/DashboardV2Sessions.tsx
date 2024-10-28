@@ -19,7 +19,6 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useMemo } from "react";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Col, ListGroup, Row } from "reactstrap";
 
@@ -107,7 +106,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
   );
-  const { image, project_id: projectId, launcherId } = session;
+  const { image, project_id: projectId, launcher_id: launcherId } = session;
   const { data: project } = useGetProjectsByProjectIdQuery(
     projectId ? { projectId } : skipToken
   );
@@ -122,10 +121,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
         id: projectId,
       })
     : ABSOLUTE_ROUTES.v2.root;
-  const sessionHash =
-    project && launcherId
-      ? `launcher-${launcherId}`
-      : "";
+  const sessionHash = project && launcherId ? `launcher-${launcherId}` : "";
   const showSessionUrl = project
     ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
         namespace: project.namespace,

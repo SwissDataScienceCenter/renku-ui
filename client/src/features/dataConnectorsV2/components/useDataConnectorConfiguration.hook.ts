@@ -79,7 +79,7 @@ export default function useDataConnectorConfiguration({
           sensitiveFieldValues[name] = "";
         });
         const savedCredentialFields = dataConnectorSecrets
-          ? dataConnectorSecrets[dataConnector.id].map((s) => s.name)
+          ? dataConnectorSecrets[dataConnector.id]?.map((s) => s.name)
           : [];
         return {
           active: true,
