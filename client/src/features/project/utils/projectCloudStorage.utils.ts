@@ -228,14 +228,14 @@ export function hasProviderShortlist(targetProvider?: string): boolean {
 }
 
 export function getSchemaOptions(
-  schema: CloudStorageSchema[],
+  schemata: CloudStorageSchema[],
   shortList = false,
   targetSchema?: string,
   targetProvider?: string,
   flags = { override: true, convertType: true, filterHidden: true }
 ): CloudStorageSchemaOptions[] | undefined {
   if (!targetSchema) return;
-  const storage = schema.find((s) => s.prefix === targetSchema);
+  const storage = schemata.find((s) => s.prefix === targetSchema);
   if (!storage) return;
 
   const optionsOverridden = flags.override

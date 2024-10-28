@@ -33,6 +33,7 @@ import adminSessionsApi from "../../features/admin/adminSessions.api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import dataConnectorFormSlice from "../../features/dataConnectorsV2/state/dataConnectors.slice";
 import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
@@ -75,6 +76,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     ...renkuStateModelReducer,
     // Slices
     [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
+    [dataConnectorFormSlice.name]: dataConnectorFormSlice.reducer,
     [datasetFormSlice.name]: datasetFormSlice.reducer,
     [displaySlice.name]: displaySlice.reducer,
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,

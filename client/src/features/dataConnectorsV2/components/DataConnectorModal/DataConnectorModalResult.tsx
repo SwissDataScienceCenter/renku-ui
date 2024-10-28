@@ -17,21 +17,20 @@
  */
 
 import { SuccessAlert } from "../../../../components/Alert";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+
 export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";
 
 interface DataConnectorModalResultProps {
   alreadyExisted: boolean;
-  credentialSaveStatus: AuxiliaryCommandStatus;
-  dataConnectorResultName: string | undefined;
-  projectLinkStatus: AuxiliaryCommandStatus;
 }
 
 export default function DataConnectorModalResult({
   alreadyExisted,
-  credentialSaveStatus,
-  dataConnectorResultName,
-  projectLinkStatus,
 }: DataConnectorModalResultProps) {
+  const { dataConnectorResultName } = useAppSelector(
+    (state) => state.dataConnectorFormSlice
+  );
   const dataConnectorFragment = (
     <>
       The data connector <b>{dataConnectorResultName}</b> has been successfully{" "}
@@ -42,25 +41,20 @@ export default function DataConnectorModalResult({
     <SuccessAlert dismissible={false} timeout={0}>
       <DataConnectorResultAlertContent
         dataConnectorFragment={dataConnectorFragment}
-        credentialSaveStatus={credentialSaveStatus}
-        projectLinkStatus={projectLinkStatus}
       />
     </SuccessAlert>
   );
 }
 
-interface DataConnectorResultAlertContentProps
-  extends Pick<
-    DataConnectorModalResultProps,
-    "credentialSaveStatus" | "projectLinkStatus"
-  > {
+interface DataConnectorResultAlertContentProps {
   dataConnectorFragment: React.ReactNode;
 }
 function DataConnectorResultAlertContent({
-  credentialSaveStatus,
   dataConnectorFragment,
-  projectLinkStatus,
 }: DataConnectorResultAlertContentProps) {
+  const { credentialSaveStatus, projectLinkStatus } = useAppSelector(
+    (state) => state.dataConnectorFormSlice
+  );
   if (credentialSaveStatus == "none" && projectLinkStatus == "none") {
     return <p className="mb-0">{dataConnectorFragment}.</p>;
   }
