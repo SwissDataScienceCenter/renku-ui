@@ -16,15 +16,19 @@
  * limitations under the License
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { ArrowLeft } from "react-bootstrap-icons";
 import {
   generatePath,
+  Link,
   useNavigate,
   useParams,
   useSearchParams,
 } from "react-router-dom-v5-compat";
+import { ErrorAlert } from "../../components/Alert";
 import PageLoader from "../../components/PageLoader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import ProgressStepsIndicator, {
@@ -47,10 +51,10 @@ import {
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
-
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import {
+  useGetDockerImageQuery,
   useGetProjectSessionLaunchersQuery,
   useLaunchSessionMutation,
 } from "./sessionsV2.api";
@@ -425,6 +429,10 @@ function StartSessionFromLauncher({
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const hasCustomQuery = searchParams.has("custom");
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace: project.namespace,
+    slug: project.slug,
+  });
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
@@ -439,6 +447,16 @@ function StartSessionFromLauncher({
     isCustomLaunch: hasCustomQuery,
   });
 
+  const {
+    isLoading: isLoadingDockerImageStatus,
+    isFetching: isFetchingDockerImageStatus,
+    isError: isErrorDockerImageStatus,
+    error: errorDockerImageStatus,
+  } = useGetDockerImageQuery(
+    { image_url: containerImage },
+    { skip: !containerImage }
+  );
+
   const needsCredentials = startSessionOptionsV2.cloudStorage?.some(
     doesCloudStorageNeedCredentials
   );
@@ -448,10 +466,14 @@ function StartSessionFromLauncher({
   );
 
   const allDataFetched =
-    startSessionOptionsV2.dockerImageStatus === "available" &&
+    !isLoadingDockerImageStatus &&
+    !isFetchingDockerImageStatus &&
+    !isErrorDockerImageStatus &&
+    containerImage &&
     startSessionOptionsV2.sessionClass !== 0 &&
     !isFetchingOrLoadingStorages;
 
+  // set favicon during session launch
   useEffect(() => {
     if (!allDataFetched || needsCredentials) {
       dispatch(setFavicon("waiting"));
@@ -462,7 +484,38 @@ function StartSessionFromLauncher({
     };
   }, [allDataFetched, needsCredentials, dispatch]);
 
-  if (allDataFetched && !needsCredentials)
+  const steps = [
+    {
+      id: 0,
+      status: isErrorDockerImageStatus
+        ? StatusStepProgressBar.FAILED
+        : StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: isErrorDockerImageStatus
+        ? StatusStepProgressBar.CANCELED
+        : StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  // Handle docker image error
+  if (isErrorDockerImageStatus) {
+    return (
+      <ShowContainerImageError
+        error={errorDockerImageStatus}
+        launcherName={launcher.name}
+        steps={steps}
+        containerImage={containerImage}
+        projectUrl={projectUrl}
+      />
+    );
+  }
+
+  // Handle all data fetched and no credentials needed
+  if (allDataFetched && !needsCredentials) {
     return shouldSaveCredentials ? (
       <SaveCloudStorage
         launcher={launcher}
@@ -476,13 +529,10 @@ function StartSessionFromLauncher({
         startSessionOptionsV2={startSessionOptionsV2}
       />
     );
+  }
 
-  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-    namespace: project.namespace,
-    slug: project.slug,
-  });
-
-  if (allDataFetched && needsCredentials)
+  // Handle all data fetched and credentials needed
+  if (allDataFetched && needsCredentials) {
     return (
       <StartSessionWithCloudStorageModal
         cloudStorageConfigs={startSessionOptionsV2.cloudStorage}
@@ -492,19 +542,7 @@ function StartSessionFromLauncher({
         startSessionOptionsV2={startSessionOptionsV2}
       />
     );
-
-  const steps = [
-    {
-      id: 0,
-      status: StatusStepProgressBar.EXECUTING,
-      step: "Loading session configuration",
-    },
-    {
-      id: 1,
-      status: StatusStepProgressBar.WAITING,
-      step: "Requesting session",
-    },
-  ];
+  }
 
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
@@ -575,4 +613,47 @@ export default function SessionStartPage() {
   }
 
   return <StartSessionFromLauncher launcher={launcher} project={project} />;
+}
+
+function ShowContainerImageError({
+  error,
+  launcherName,
+  steps,
+  containerImage,
+  projectUrl,
+}: {
+  error: FetchBaseQueryError | SerializedError;
+  launcherName: string;
+  steps: StepsProgressBar[];
+  containerImage: string;
+  projectUrl: string;
+}) {
+  if (!("status" in error)) {
+    return false;
+  }
+
+  return (
+    <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <ProgressStepsIndicator
+        description="Preparing to start session"
+        type={ProgressType.Determinate}
+        style={ProgressStyle.Light}
+        title={`Starting session ${launcherName}`}
+        status={steps}
+      />
+      <ErrorAlert dismissible={false}>
+        <h5>Error loading container image</h5>
+        <p className="mb-0">
+          Error retrieving container image <code>{containerImage}</code>.
+          {error?.status === 404
+            ? " The image may not exist or is still being built."
+            : " Please verify the container image and try again."}
+        </p>
+      </ErrorAlert>
+      <Link to={projectUrl} className={cx("btn", "btn-primary")}>
+        <ArrowLeft className={cx("me-2", "text-icon")} />
+        Return to project page
+      </Link>
+    </div>
+  );
 }

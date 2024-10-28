@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-import { CheckCircleFill, XCircleFill } from "react-bootstrap-icons";
+import {
+  CheckCircleFill,
+  SlashCircle,
+  XCircleFill,
+} from "react-bootstrap-icons";
 import { Loader } from "../Loader";
 import "./Progress.css";
 
@@ -42,6 +46,7 @@ export enum StatusStepProgressBar {
   EXECUTING = "executing",
   WAITING = "waiting",
   FAILED = "failed",
+  CANCELED = "canceled",
 }
 
 export interface StepsProgressBar {
@@ -129,6 +134,14 @@ function ProgressStep({ step }: progressStepProps) {
         <>
           <XCircleFill className="text-danger" />
           {step.step}
+        </>
+      );
+      break;
+    case StatusStepProgressBar.CANCELED:
+      content = (
+        <>
+          <SlashCircle className="me-1" />
+          <span className="text-decoration-line-through">{step.step}</span>
         </>
       );
       break;
