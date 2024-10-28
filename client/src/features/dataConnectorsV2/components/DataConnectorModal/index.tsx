@@ -56,8 +56,11 @@ import {
 } from "../../api/data-connectors.enhanced-api";
 import type { DataConnectorRead } from "../../api/data-connectors.api";
 
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
+
+import useDataConnectorPermissions from "../../utils/useDataConnectorPermissions.hook";
 
 import styles from "./DataConnectorModal.module.scss";
 
@@ -519,6 +522,24 @@ export function DataConnectorModalBodyAndFooter({
   );
 }
 
+function DataConnectorModalBodyAndFooterUnauthorized() {
+  return (
+    <>
+      <ModalBody data-cy="data-connector-edit-body">
+        <div>
+          You do not have the required permissions to modify this data
+          connector.
+        </div>
+      </ModalBody>
+
+      <ModalFooter
+        className="border-top"
+        data-cy="data-connector-edit-footer"
+      ></ModalFooter>
+    </>
+  );
+}
+
 interface DataConnectorModalProps {
   dataConnector?: DataConnectorRead | null;
   isOpen: boolean;
@@ -534,6 +555,9 @@ export default function DataConnectorModal({
   toggle,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
+  const { permissions, isLoading: isLoadingPermissions } =
+    useDataConnectorPermissions({ dataConnectorId: dataConnectorId ?? "" });
+
   return (
     <Modal
       backdrop="static"
@@ -551,15 +575,34 @@ export default function DataConnectorModal({
       <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
         <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
       </ModalHeader>
-      <DataConnectorModalBodyAndFooter
-        {...{
-          dataConnector,
-          isOpen,
-          namespace,
-          project,
-          toggle,
-        }}
-      />
+      {!isLoadingPermissions && dataConnectorId != null ? (
+        <PermissionsGuard
+          disabled={<DataConnectorModalBodyAndFooterUnauthorized />}
+          enabled={
+            <DataConnectorModalBodyAndFooter
+              {...{
+                dataConnector,
+                isOpen,
+                namespace,
+                project,
+                toggle,
+              }}
+            />
+          }
+          requestedPermission={"write"}
+          userPermissions={permissions}
+        />
+      ) : (
+        <DataConnectorModalBodyAndFooter
+          {...{
+            dataConnector,
+            isOpen,
+            namespace,
+            project,
+            toggle,
+          }}
+        />
+      )}
     </Modal>
   );
 }
