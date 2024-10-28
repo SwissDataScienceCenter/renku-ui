@@ -108,12 +108,14 @@ function DataConnectorSecrets({
   const dataConnector = dataConnectorConfig.dataConnector;
   const storage = dataConnector.storage;
 
-  const credentialFieldDict = Object.fromEntries(
-    dataConnectorConfig.savedCredentialFields.map((secret) => [
-      storageSecretNameToFieldName({ name: secret }),
-      secret,
-    ])
-  );
+  const credentialFieldDict = dataConnectorConfig.savedCredentialFields
+    ? Object.fromEntries(
+        dataConnectorConfig.savedCredentialFields.map((secret) => [
+          storageSecretNameToFieldName({ name: secret }),
+          secret,
+        ])
+      )
+    : {};
 
   const savedCredentialsLength = Object.keys(credentialFieldDict).length;
   const hasIncompleteSavedCredentials =
@@ -267,7 +269,7 @@ export default function DataConnectorSecretsModal({
   if (dataConnectorConfigs == null) return null;
   if (dataConnectorConfigs.length < 1) return null;
   const hasSavedCredentials = dataConnectorConfigs.some(
-    (csc) => csc.savedCredentialFields.length > 0
+    (csc) => csc.savedCredentialFields?.length > 0
   );
 
   return (

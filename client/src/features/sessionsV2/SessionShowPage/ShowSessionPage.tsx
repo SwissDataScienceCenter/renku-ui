@@ -473,7 +473,9 @@ function SessionDetails({
               <Cloud className={cx("bi", "me-2")} />
               Session resources requested:
             </div>
-            <SessionRowResourceRequests resourceRequests={session.resources} />
+            <SessionRowResourceRequests
+              resourceRequests={session?.resources?.requests}
+            />
           </div>
           <div
             className={cx(

@@ -17,13 +17,11 @@
  */
 
 import {
-  CloudStorageGetRead,
-  CloudStorageWithIdRead,
-} from "../../projectsV2/api/storagesV2.api";
-import {
   RCloneConfig,
   RCloneOption,
 } from "../../dataConnectorsV2/api/data-connectors.api";
+import { CloudStorageGetRead } from "../../projectsV2/api/storagesV2.api";
+import { SessionCloudStorageV2 } from "../../sessionsV2/sessionsV2.types.ts";
 import {
   CLOUD_OPTIONS_OVERRIDE,
   CLOUD_STORAGE_MOUNT_PATH_HELP,
@@ -448,16 +446,14 @@ export function storageDefinitionAfterSavingCredentialsFromConfig(
 }
 
 export function storageDefinitionFromConfig(
-  config: SessionStartDataConnectorConfiguration,
-  projectId: string
-): CloudStorageWithIdRead {
+  config: SessionStartDataConnectorConfiguration
+): SessionCloudStorageV2 {
   const storageDefinition = config.dataConnector.storage;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { sensitive_fields, ...s } = config.dataConnector.storage;
   const newStorageDefinition = {
     ...s,
     name: config.dataConnector.slug,
-    project_id: projectId,
     storage_id: config.dataConnector.id,
   };
   newStorageDefinition.configuration = { ...storageDefinition.configuration };

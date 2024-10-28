@@ -19,13 +19,11 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
-  Boxes,
   CircleFill,
   Clock,
   Database,
   ExclamationTriangleFill,
   FileCode,
-  Globe2,
   Pencil,
 } from "react-bootstrap-icons";
 import {
@@ -56,9 +54,9 @@ import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projects
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
-import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
+import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import {
   SessionBadge,
   SessionStatusV2Description,
@@ -68,11 +66,6 @@ import {
 import { DEFAULT_URL } from "../session.constants";
 import { SessionLauncher, SessionV2 } from "../sessionsV2.types";
 import { EnvironmentCard } from "./EnvironmentCard";
-import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
-import {
-  useGetProjectsByProjectIdDataConnectorLinksQuery,
-  useGetProjectsByProjectIdMembersQuery,
-} from "../../projectsV2/api/projectV2.enhanced-api";
 
 interface SessionCardContentProps {
   color: string;
@@ -129,7 +122,9 @@ function SessionCard({
         />
       }
       contentResources={
-        <SessionRowResourceRequests resourceRequests={session.resources} />
+        <SessionRowResourceRequests
+          resourceRequests={session.resources?.requests}
+        />
       }
     />
   );
@@ -217,9 +212,6 @@ export function SessionView({
     setModifyResourcesOpen((open) => !open);
   }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
-  const { data: members } = useGetProjectsByProjectIdMembersQuery({
-    projectId: project.id,
-  });
   const environment = launcher?.environment;
 
   const { data: dataConnectorLinks } =
@@ -469,7 +461,7 @@ export function SessionView({
             </div>
             {dataConnectors && dataConnectors?.length > 0 ? (
               <ListGroup>
-                {project.repositories?.map((repositoryUrl, index) => (
+                {project?.repositories?.map((repositoryUrl, index) => (
                   <RepositoryItem
                     key={`storage-${index}`}
                     project={project}

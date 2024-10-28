@@ -37,10 +37,13 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
-import { resetFavicon, setFavicon } from "../display";
-import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
-import { storageDefinitionAfterSavingCredentialsFromConfig } from "../project/utils/projectCloudStorage.utils";
+import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
+import { resetFavicon, setFavicon } from "../display";
+import {
+  storageDefinitionAfterSavingCredentialsFromConfig,
+  storageDefinitionFromConfig,
+} from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
@@ -58,7 +61,6 @@ import {
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLaunchState from "./useSessionLaunchState.hook";
-import { storageDefinitionFromConfigV2 } from "./session.utils";
 
 interface SaveCloudStorageProps
   extends Omit<StartSessionFromLauncherProps, "containerImage" | "project"> {
@@ -192,18 +194,18 @@ function SessionStarting({
 
   const [
     startSessionV2,
-    { data: session, error: error, isLoading: isLoadingStartSession },
+    { data: session, error: error, isLoading: isLoadingStartSession, isError },
   ] = useLaunchSessionMutation();
 
   // Request session
   useEffect(() => {
-    if (isLoadingStartSession || session != null) return;
+    if (isLoadingStartSession || session != null || isError) return;
     startSessionV2({
       launcher_id: launcher.id,
       disk_storage: startSessionOptionsV2.storage,
       resource_class_id: startSessionOptionsV2.sessionClass,
       cloudstorage: startSessionOptionsV2.cloudStorage.map((cs) =>
-        storageDefinitionFromConfigV2(cs)
+        storageDefinitionFromConfig(cs)
       ),
     });
     dispatch(setFavicon("waiting"));
@@ -218,7 +220,12 @@ function SessionStarting({
     startSessionOptionsV2.cloudStorage,
     dispatch,
     session,
+    isError,
   ]);
+
+  useEffect(() => {
+    if (isError) dispatch(setFavicon("error"));
+  }, [isError, dispatch]);
 
   // Navigate to the session page when it is ready
   useEffect(() => {
@@ -276,12 +283,14 @@ function doesCloudStorageNeedCredentials(
 ) {
   if (config.active === false) return false;
   const sensitiveFields = Object.keys(config.sensitiveFieldValues);
-  const credentialFieldDict = Object.fromEntries(
-    config.savedCredentialFields.map((field) => [
-      storageSecretNameToFieldName({ name: field }),
-      true,
-    ])
-  );
+  const credentialFieldDict = config.savedCredentialFields
+    ? Object.fromEntries(
+        config.savedCredentialFields?.map((field) => [
+          storageSecretNameToFieldName({ name: field }),
+          true,
+        ])
+      )
+    : {};
   if (sensitiveFields.every((key) => credentialFieldDict[key] != null))
     return false;
   return Object.values(config.sensitiveFieldValues).some(
@@ -430,11 +439,11 @@ function StartSessionFromLauncher({
     isCustomLaunch: hasCustomQuery,
   });
 
-  const needsCredentials = startSessionOptionsV2.cloudStorage.some(
+  const needsCredentials = startSessionOptionsV2.cloudStorage?.some(
     doesCloudStorageNeedCredentials
   );
 
-  const shouldSaveCredentials = startSessionOptionsV2.cloudStorage.some(
+  const shouldSaveCredentials = startSessionOptionsV2.cloudStorage?.some(
     shouldCloudStorageSaveCredentials
   );
 
