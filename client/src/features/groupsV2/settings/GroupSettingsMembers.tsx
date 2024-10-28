@@ -42,7 +42,7 @@ import type {
   GroupResponse,
 } from "../../projectsV2/api/namespace.api";
 import { useGetGroupsByGroupSlugMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import { useGetUserQuery } from "../../user/dataServicesUser.api";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
 import AddGroupMemberModal from "../fields/AddGroupMemberModal";
 import EditGroupMemberModal from "../fields/EditGroupMemberModal";
 import RemoveGroupMemberModal from "../fields/RemoveGroupMemberModal";
@@ -276,7 +276,7 @@ function GroupMemberAction({
     error: userError,
   } = useGetUserQuery(logged ? undefined : skipToken);
   const userMember = useMemo(() => {
-    if (isUserLoading || userError || !user || !member) {
+    if (isUserLoading || userError || !user || !user.isLoggedIn || !member) {
       return undefined;
     }
     return members.find((member) => member.id === user.id);
