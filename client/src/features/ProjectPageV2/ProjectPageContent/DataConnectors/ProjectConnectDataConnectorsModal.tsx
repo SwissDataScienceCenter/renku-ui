@@ -17,6 +17,8 @@
  */
 
 import cx from "classnames";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { SerializedError } from "@reduxjs/toolkit";
 import { useCallback, useEffect, useState } from "react";
 import { Database, NodePlus, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
@@ -192,6 +194,9 @@ function ProjectLinkDataConnectorBodyAndFooter({
   toggle,
 }: ProjectConnectDataConnectorsModalProps) {
   const dispatch = useAppDispatch();
+  const [lookupDataConnectorError, setLookupDataConnectorError] = useState<
+    FetchBaseQueryError | SerializedError | undefined
+  >(undefined);
   const [
     linkDataConnector,
     { error: linkDataConnectorError, isLoading, isSuccess },
@@ -200,7 +205,6 @@ function ProjectLinkDataConnectorBodyAndFooter({
     control,
     formState: { errors },
     handleSubmit,
-    setError,
   } = useForm<DataConnectorLinkFormFields>({
     defaultValues: {
       dataConnectorIdentifier: "",
@@ -215,13 +219,14 @@ function ProjectLinkDataConnectorBodyAndFooter({
           { namespace, slug }
         )
       );
-      const { data: dataConnector, isSuccess } = await dataConnectorPromise;
+      const {
+        data: dataConnector,
+        isSuccess,
+        error,
+      } = await dataConnectorPromise;
       dataConnectorPromise.unsubscribe();
       if (!isSuccess || dataConnector == null) {
-        setError("dataConnectorIdentifier", {
-          type: "manual",
-          message: "Data connector not found",
-        });
+        setLookupDataConnectorError(error);
         return false;
       }
       linkDataConnector({
@@ -231,7 +236,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
         },
       });
     },
-    [dispatch, linkDataConnector, project.id, setError]
+    [dispatch, linkDataConnector, project.id]
   );
 
   useEffect(() => {
@@ -269,15 +274,23 @@ function ProjectLinkDataConnectorBodyAndFooter({
             }}
           />
           <div className="form-text">
-            The the info sidebar for a data connector shows the identifier.
+            Copy a data connector identifier from the data connector&apos;s side
+            panel
           </div>
           <div className="invalid-feedback">
-            Please provide an identifier (namespace/group) for the data
-            connector
+            {errors.dataConnectorIdentifier == null
+              ? undefined
+              : errors.dataConnectorIdentifier.message != null &&
+                errors.dataConnectorIdentifier.message.length > 0
+              ? errors.dataConnectorIdentifier.message
+              : "Please provide an identifier for the data connector"}
           </div>
         </div>
         {isSuccess != null && !isSuccess && (
           <RtkOrNotebooksError error={linkDataConnectorError} />
+        )}
+        {lookupDataConnectorError != null && (
+          <RtkOrNotebooksError error={lookupDataConnectorError} />
         )}
       </ModalBody>
 
@@ -297,7 +310,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
           ) : (
             <NodePlus className={cx("bi", "me-1")} />
           )}
-          Link data
+          Link data connector
         </Button>
       </ModalFooter>
     </Form>

@@ -61,7 +61,10 @@ describe("Set up data connectors with credentials", () => {
       "contain.text",
       "private-storage-1"
     );
-    cy.getDataCy("access_key_id-value").should("contain.text", "<sensitive>");
+    cy.getDataCy("access_key_id-value").should(
+      "contain.text",
+      "Requires credentials"
+    );
     cy.getDataCy("data-connector-view-back-button").click();
   });
 
@@ -172,6 +175,7 @@ describe("Set up data connectors with credentials", () => {
 
   it("set credentials for a data connector", () => {
     fixtures
+      .getDataConnectorPermissions()
       .listDataConnectors({
         fixture: "dataConnector/data-connector.json",
         namespace: "test-2-group-v2",
@@ -190,7 +194,10 @@ describe("Set up data connectors with credentials", () => {
       "contain.text",
       "example storage"
     );
-    cy.getDataCy("access_key_id-value").should("contain.text", "<sensitive>");
+    cy.getDataCy("access_key_id-value").should(
+      "contain.text",
+      "Requires credentials"
+    );
 
     // set credentials
     openDataConnectorMenu();
@@ -236,7 +243,7 @@ describe("Set up data connectors with credentials", () => {
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "<saved secret>"
+      "Credentials saved"
     );
 
     // edit data connector, without touching the credentials
@@ -278,7 +285,7 @@ describe("Set up data connectors with credentials", () => {
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "<saved secret>"
+      "Credentials saved"
     );
 
     // clear credentials
@@ -301,7 +308,10 @@ describe("Set up data connectors with credentials", () => {
       "contain.text",
       "example storage"
     );
-    cy.getDataCy("access_key_id-value").should("contain.text", "<sensitive>");
+    cy.getDataCy("access_key_id-value").should(
+      "contain.text",
+      "Requires credentials"
+    );
   });
 
   describe("Set up multiple data connectors", () => {
