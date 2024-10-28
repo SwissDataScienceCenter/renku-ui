@@ -54,7 +54,7 @@ export default function UserRedirect() {
         { replace: true }
       );
     }
-  }, [navigate]);
+  }, [navigate, user]);
 
   if (!isUserLoggedIn) {
     return <NotLoggedIn />;
