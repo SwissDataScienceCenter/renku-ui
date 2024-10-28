@@ -18,8 +18,9 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ArrowLeft } from "react-bootstrap-icons";
+import { ArrowLeft, Sliders } from "react-bootstrap-icons";
 import { Link, generatePath, useParams } from "react-router-dom-v5-compat";
+import { Card, CardBody, CardHeader } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
@@ -27,10 +28,8 @@ import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { useGetGroupsByGroupSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
-import {
-  GroupMembersForm,
-  GroupMetadataForm,
-} from "../../projectsV2/show/groupEditForms";
+import GroupSettingsMembers from "./GroupSettingsMembers";
+import GroupMetadataForm from "./GroupSettingsMetadata";
 
 export default function GroupV2Settings() {
   const { slug } = useParams<{ slug: string }>();
@@ -71,12 +70,23 @@ export default function GroupV2Settings() {
         </div>
 
         <section>
-          <h4>General settings</h4>
-          <GroupMetadataForm group={group} />
+          <Card data-cy="group-general-settings">
+            <CardHeader>
+              <h4 className="m-0">
+                <Sliders className={cx("me-1", "bi")} />
+                General settings
+              </h4>
+            </CardHeader>
+            <CardBody>
+              <GroupMetadataForm group={group} />
+            </CardBody>
+          </Card>
         </section>
 
         <section>
-          <GroupMembersForm group={group} />
+          <Card data-cy="group-members-settings">
+            <GroupSettingsMembers group={group} />
+          </Card>
         </section>
       </div>
     </ContainerWrap>
