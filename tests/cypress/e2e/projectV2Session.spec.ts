@@ -215,7 +215,7 @@ describe("launch sessions with data connectors", () => {
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.wait("@getSessionServers");
+    cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
 
@@ -299,7 +299,7 @@ describe("launch sessions with data connectors", () => {
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.wait("@getSessionServers");
+    cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
 
@@ -382,6 +382,7 @@ describe("launch sessions with data connectors", () => {
       .first()
       .within(() => {
         cy.getDataCy("start-session-button").click();
+        cy.wait("@getDataConnectorSecrets");
       });
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
@@ -571,14 +572,14 @@ describe("launch sessions with data connectors", () => {
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.wait("@getSessionServers");
+    cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
 
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
+      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(3);
         const s3Storage = csConfig[0];
@@ -602,7 +603,7 @@ describe("launch sessions with data connectors", () => {
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
-    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
+
     cy.getDataCy("session-launcher-item")
       .first()
       .within(() => {
