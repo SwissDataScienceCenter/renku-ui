@@ -264,7 +264,9 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     isError,
     isFetching,
     requestId,
-  } = useGetNamespacesQuery({ params: { minimum_role: "editor" } });
+  } = useGetNamespacesQuery({
+    params: { minimum_role: "editor", per_page: 2 },
+  });
 
   const [
     { data: allNamespaces, fetchedPages, hasMore, currentRequestId },
