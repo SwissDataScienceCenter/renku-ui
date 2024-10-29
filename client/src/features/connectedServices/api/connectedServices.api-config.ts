@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,31 +16,17 @@
  * limitations under the License.
  */
 
-export interface AbstractKgPaginatedResponse {
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
-}
+// Run `npm run generate-api:connectedServices` to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
 
-export interface AbstractKgPaginatedQueryArgs {
-  page?: number;
-  perPage?: number;
-}
+const config: ConfigFile = {
+  apiFile: "./connectedServices.empty-api.ts",
+  apiImport: "connectedServicesEmptyApi",
+  outputFile: "./connectedServices.generated-api.ts",
+  exportName: "connectedServicesGeneratedApi",
+  hooks: false,
+  schemaFile: path.join(__dirname, "connectedServices.openapi.json"),
+};
 
-export interface Pagination {
-  currentPage?: number;
-  firstPageLink?: string;
-  lastPageLink?: string;
-  nextPage?: number;
-  nextPageLink?: string;
-  perPage?: number;
-  previousPage?: number;
-  totalItems?: number;
-  totalPages?: number;
-}
-
-export interface PaginatedResponse<T, P extends Pagination = Pagination> {
-  data: T[];
-  pagination: P;
-}
+export default config;
