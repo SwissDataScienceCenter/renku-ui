@@ -28,6 +28,10 @@ interface DataConnectorListArgs extends SimpleFixture {
   visibility?: string;
 }
 
+interface DataConnectorPostArgs extends DataConnectorListArgs {
+  slug?: string;
+}
+
 interface DataConnectorIdArgs extends SimpleFixture {
   dataConnectorId?: string;
 }
@@ -39,6 +43,7 @@ interface DataConnectorIdentifierArgs extends SimpleFixture {
 
 interface DeleteDataConnectorProjectLinkArgs extends DataConnectorIdArgs {
   linkId?: string;
+  projectId?: string;
 }
 
 interface PatchDataConnectorSecretsArgs extends DataConnectorIdArgs {
@@ -92,6 +97,32 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         linkId = "LINK-ULID-1",
       } = args ?? {};
       const response = { statusCode: 204 };
+      cy.intercept(
+        "DELETE",
+        `/ui-server/api/data/data_connectors/${dataConnectorId}/project_links/${linkId}`,
+        response
+      ).as(name);
+      return this;
+    }
+
+    deleteDataConnectorProjectLinkNotAllowed(
+      args?: DeleteDataConnectorProjectLinkArgs
+    ) {
+      const {
+        name = "deleteDataConnectorProjectLinkNotAllowed",
+        dataConnectorId = "ULID-1",
+        linkId = "LINK-ULID-1",
+        projectId = "THEPROJECTULID26CHARACTERS",
+      } = args ?? {};
+      const response = {
+        body: {
+          error: {
+            code: 1404,
+            message: `The user with ID 'userId' cannot perform operation delete_link on the data connector to project link with ID ${projectId} or the resource does not exist.`,
+          },
+        },
+        statusCode: 404,
+      };
       cy.intercept(
         "DELETE",
         `/ui-server/api/data/data_connectors/${dataConnectorId}/project_links/${linkId}`,
@@ -158,6 +189,50 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
               };
             })[0];
             req.reply({ body: response });
+          }
+        ).as(name);
+      });
+      return this;
+    }
+
+    getDataConnectorByNamespaceAndSlugNotFound(
+      args?: DataConnectorIdentifierArgs
+    ) {
+      const {
+        name = "getDataConnectorByNamespaceAndSlugNotFound",
+        namespace = "user1-uuid",
+        slug = "example-storage",
+      } = args ?? {};
+      const response = {
+        body: {
+          error: {
+            code: 1404,
+            message: `Data connector with identifier '${namespace}/${slug}' does not exist or you do not have access to it.`,
+          },
+        },
+        statusCode: 404,
+      };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/namespaces/${namespace}/data_connectors/${slug}`,
+        response
+      ).as(name);
+      return this;
+    }
+
+    getDataConnectorPermissions(args?: DataConnectorIdArgs) {
+      const {
+        fixture = "dataConnector/data-connector-permissions.json",
+        name = "getDataConnectorPermissions",
+        dataConnectorId = "ULID-1",
+      } = args ?? {};
+      cy.fixture(fixture).then((permissions) => {
+        // eslint-disable-next-line max-nested-callbacks
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/data_connectors/${dataConnectorId}/permissions`,
+          (req) => {
+            req.reply({ body: permissions });
           }
         ).as(name);
       });
@@ -298,11 +373,12 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    postDataConnector(args?: DataConnectorListArgs) {
+    postDataConnector(args?: DataConnectorPostArgs) {
       const {
         fixture = "dataConnector/new-data-connector.json",
         name = "postDataConnector",
         namespace,
+        slug,
         visibility = "private",
       } = args ?? {};
       cy.fixture(fixture).then((dataConnector) => {
@@ -315,6 +391,9 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
           expect(newDataConnector.visibility).equal(visibility);
           if (namespace) {
             expect(newDataConnector.namespace).equal(namespace);
+          }
+          if (slug) {
+            expect(newDataConnector.slug).equal(slug);
           }
           dataConnector.namespace = newDataConnector.namespace;
           dataConnector.slug = newDataConnector.slug;

@@ -62,7 +62,7 @@ export default function DataConnectorSaveCredentialsInfo({
       />
       {state.saveCredentials && (
         <div className="mt-1">
-          <InfoAlert dismissible={false}>
+          <InfoAlert timeout={0} dismissible={false}>
             <p className="mb-0">
               The credentials will be stored as secrets and only be for your
               use. Other users will have to supply their credentials to use this

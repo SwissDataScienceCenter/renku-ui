@@ -18,30 +18,45 @@
 import cx from "classnames";
 import { useMemo, useRef } from "react";
 import { Link, generatePath } from "react-router-dom-v5-compat";
+import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
 import {
-  Offcanvas,
-  OffcanvasBody,
-  PopoverBody,
-  UncontrolledPopover,
-} from "reactstrap";
-import { InfoCircleFill, Gear, PersonBadge } from "react-bootstrap-icons";
+  InfoCircleFill,
+  Folder,
+  Gear,
+  Key,
+  Lock,
+  PersonBadge,
+} from "react-bootstrap-icons";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";
+import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
+import { EntityPill } from "../../searchV2/components/SearchV2Results";
 
 import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
-import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
+import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../project/utils/projectCloudStorage.utils";
+import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+
 import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
 import { storageSecretNameToFieldName } from "../../secrets/secrets.utils";
-import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
+
+import UserAvatar from "../../usersV2/show/UserAvatar";
 
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
+
+const SECTION_CLASSES = [
+  "border-top",
+  "border-dark",
+  "border-opacity-50",
+  "pt-3",
+];
 
 interface DataConnectorPropertyProps {
   title: string | React.ReactNode;
@@ -135,7 +150,7 @@ function DataConnectorViewAccess({
   );
   return (
     <section
-      className={cx("border-top", "border-dark", "pt-3")}
+      className={cx(SECTION_CLASSES)}
       data-cy="data-connector-access-section"
     >
       <h4 className="mb-4">
@@ -153,21 +168,46 @@ function DataConnectorViewAccess({
           requiredCredentials.length > 0 && (
             <div className="mt-3">
               <p className={cx("fw-bold", "m-0")}>Required credentials</p>
-              <table className={cx("ps-4", "mb-0", "table", "table-sm")}>
-                <thead>
-                  <tr>
-                    <th>Field</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
+              <table
+                className={cx(
+                  "ps-4",
+                  "mb-0",
+                  "table",
+                  "table-sm",
+                  "table-borderless"
+                )}
+              >
                 <tbody>
                   {requiredCredentials.map(({ name, help }, index) => {
                     const value =
-                      name == null
-                        ? "unknown"
-                        : savedCredentialFields[name]
-                        ? CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE
-                        : storageDefinition.configuration[name]?.toString();
+                      name == null ? (
+                        "unknown"
+                      ) : savedCredentialFields[name] ? (
+                        <span
+                          className={cx(
+                            "badge",
+                            "bg-opacity-25",
+                            "rounded-pill",
+                            "text-bg-success"
+                          )}
+                        >
+                          <Key className={cx("bi", "me-2")} /> Credentials saved
+                        </span>
+                      ) : storageDefinition.configuration[name]?.toString() ==
+                        CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN ? (
+                        <span
+                          className={cx(
+                            "badge",
+                            "rounded-pill",
+                            "text-bg-secondary"
+                          )}
+                        >
+                          <Lock className={cx("bi", "me-2")} /> Requires
+                          credentials
+                        </span>
+                      ) : (
+                        storageDefinition.configuration[name]?.toString()
+                      );
                     return (
                       <tr key={index}>
                         <td>
@@ -199,7 +239,7 @@ function DataConnectorViewConfiguration({
 
   return (
     <section
-      className={cx("border-top", "border-dark", "pt-3")}
+      className={cx(SECTION_CLASSES)}
       data-cy="data-connector-configuration-section"
     >
       <div>
@@ -249,11 +289,13 @@ function DataConnectorViewProjects({
   const { projects, isLoading } = useDataConnectorProjects({ dataConnector });
   return (
     <section
-      className={cx("border-top", "boarder-dark", "pt-3")}
+      className={cx(SECTION_CLASSES)}
       data-cy="data-connector-projects-section"
     >
       <div>
-        <h4>Projects</h4>
+        <h4>
+          <Folder className={cx("bi", "me-1")} /> Projects
+        </h4>
       </div>
       <div>
         {isLoading && <p>Retrieving projects...</p>}
@@ -308,10 +350,28 @@ function DataConnectorViewMetadata({
   const nonRequiredCredentialConfigurationKeys = Object.keys(
     storageDefinition.configuration
   ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
+  const { data: namespace, isLoading: isLoadingNamespace } =
+    useGetNamespacesByNamespaceSlugQuery({
+      namespaceSlug: dataConnector.namespace,
+    });
+
+  const namespaceUrl = useMemo(
+    () =>
+      namespace == null
+        ? null
+        : namespace.namespace_kind == "user"
+        ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+            username: dataConnector.namespace,
+          })
+        : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+            slug: dataConnector.namespace,
+          }),
+    [namespace, dataConnector.namespace]
+  );
 
   return (
     <section className={cx("pt-3")} data-cy="data-connector-metadata-section">
-      <DataConnectorPropertyValue title="ID">
+      <DataConnectorPropertyValue title="Identifier">
         <div className={cx("d-flex", "justify-content-between", "mx-0")}>
           <div>
             {dataConnector.namespace}/{dataConnector.slug}
@@ -325,7 +385,38 @@ function DataConnectorViewMetadata({
         </div>
       </DataConnectorPropertyValue>
       <DataConnectorPropertyValue title="Owner">
-        {dataConnector.namespace}
+        <div className={cx("d-flex", "align-items-center")}>
+          <div className="me-1">
+            <UserAvatar username={dataConnector.namespace} />{" "}
+          </div>
+          {namespaceUrl == null ? (
+            <div className="me-1">{dataConnector.namespace}</div>
+          ) : (
+            <div>
+              <Link className="me-1" to={namespaceUrl}>
+                {dataConnector.namespace}
+              </Link>
+            </div>
+          )}
+          <div>
+            {isLoadingNamespace ? (
+              <Loader inline size={16} />
+            ) : namespace == null ? null : namespace.namespace_kind ==
+              "user" ? (
+              <EntityPill
+                entityType="User"
+                size="sm"
+                tooltipPlacement="bottom"
+              />
+            ) : (
+              <EntityPill
+                entityType="Group"
+                size="sm"
+                tooltipPlacement="bottom"
+              />
+            )}
+          </div>
+        </div>
       </DataConnectorPropertyValue>
       {nonRequiredCredentialConfigurationKeys.map((key) => {
         const title = toCapitalized(key);
@@ -348,11 +439,9 @@ function MountPointHead() {
       <span ref={ref}>
         <InfoCircleFill className={cx("bi ms-1")} />
       </span>
-      <UncontrolledPopover target={ref} trigger="hover" placement="bottom">
-        <PopoverBody>
-          This is where the storage will be mounted during sessions.
-        </PopoverBody>
-      </UncontrolledPopover>
+      <UncontrolledTooltip target={ref} placement="bottom">
+        This is where the data connector will be mounted during sessions.
+      </UncontrolledTooltip>
     </>
   );
 }
