@@ -105,6 +105,7 @@ function CustomMenuList({
         {props.children}
         {hasMore && (
           <div className={cx("d-grid")}>
+            {/* TODO: Make this button accessible. At the moment, it cannot be used from keyboard-only navigation. */}
             <Button
               className={cx("rounded-0", "rounded-bottom")}
               color="secondary"
