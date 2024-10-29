@@ -72,7 +72,7 @@ describe("storageDefinitionFromConfig", () => {
       saveCredentials: false,
       savedCredentialFields: [],
     };
-    const result = storageDefinitionFromConfig(config, "1");
+    const result = storageDefinitionFromConfig(config);
     expect(result).toEqual({
       configuration: {
         type: "s3",
@@ -81,7 +81,6 @@ describe("storageDefinitionFromConfig", () => {
         secret_access_key: "secret key",
       },
       name: "example-storage",
-      project_id: "1",
       readonly: true,
       source_path: "bucket/my-source",
       storage_id: "ULID-1",
