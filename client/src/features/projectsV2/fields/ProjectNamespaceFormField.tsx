@@ -175,8 +175,13 @@ function NamespaceSelector({
 }
 
 const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
-  control: ({ menuIsOpen }) =>
-    cx(menuIsOpen ? "rounded-top" : "rounded", "border", styles.control),
+  control: ({ menuIsOpen, isFocused }) =>
+    cx(
+      menuIsOpen ? "rounded-top" : "rounded",
+      "border",
+      isFocused && "border-primary-subtle",
+      styles.control
+    ),
   dropdownIndicator: () => cx("pe-3"),
   menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0"),
   menuList: () => cx("d-grid"),
