@@ -19,38 +19,233 @@
 // Until we upgrade to CKEditor 5 v6.0.0, it is necessary to
 // wrap the CKEditor component in a JS (not TS) component
 
+import { ClassicEditor as ClassicEditorBase } from "@ckeditor/ckeditor5-editor-classic";
+import { Essentials } from "@ckeditor/ckeditor5-essentials";
+import { Autoformat } from "@ckeditor/ckeditor5-autoformat";
+import { Markdown } from "@ckeditor/ckeditor5-markdown-gfm";
+import {
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  Code,
+  Subscript,
+  Superscript,
+} from "@ckeditor/ckeditor5-basic-styles";
+import { BlockQuote } from "@ckeditor/ckeditor5-block-quote";
+import { CodeBlock } from "@ckeditor/ckeditor5-code-block";
+import Math from "@isaul32/ckeditor5-math/src/math";
+import AutoformatMath from "@isaul32/ckeditor5-math/src/autoformatmath";
+import { Heading } from "@ckeditor/ckeditor5-heading";
+import { SourceEditing } from "@ckeditor/ckeditor5-source-editing";
+import { WordCount } from "@ckeditor/ckeditor5-word-count";
+import { List, TodoList } from "@ckeditor/ckeditor5-list";
+import { Alignment } from "@ckeditor/ckeditor5-alignment";
+import { Link } from "@ckeditor/ckeditor5-link";
+import {
+  Table,
+  TableCaption,
+  TableCellProperties,
+  TableColumnResize,
+  TableProperties,
+  TableToolbar,
+} from "@ckeditor/ckeditor5-table";
+import { HorizontalLine } from "@ckeditor/ckeditor5-horizontal-line";
+/*import {
+  ImageBlock,
+  ImageInsert,
+  ImageResize,
+  ImageToolbar,
+  ImageUpload,
+} from "@ckeditor/ckeditor5-image";
+import { Base64UploadAdapter } from "@ckeditor/ckeditor5-upload";*/
+
 import { CKEditor } from "@ckeditor/ckeditor5-react";
-import RenkuCKEditor from "@renku/ckeditor5-build-renku";
+
+import "ckeditor5/ckeditor5.css";
+import "./ckEditor.css";
+
+import katex from "katex";
+import "katex/dist/katex.min.css";
+
+global.document = document;
+global.window = window;
+window.katex = katex;
+
+class RenkuWordCount extends WordCount {
+  _refreshStats() {
+    const words = this.words;
+    const characters = this.characters;
+    this.fire("update", {
+      words,
+      characters,
+    });
+  }
+}
+
+class ClassicEditor extends ClassicEditorBase {}
+
+ClassicEditor.builtinPlugins = [
+  Essentials,
+  Markdown,
+  Autoformat,
+  SourceEditing,
+  Heading,
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  BlockQuote,
+  BlockQuote,
+  Code,
+  CodeBlock,
+  List,
+  TodoList,
+  Alignment,
+  Superscript,
+  Subscript,
+  Link,
+  HorizontalLine,
+  Table,
+  TableCaption,
+  TableCellProperties,
+  TableColumnResize,
+  TableProperties,
+  TableToolbar,
+  // ImageBlock,
+  // ImageInsert,
+  // ImageResize,
+  // ImageToolbar,
+  // ImageUpload,
+  // Base64UploadAdapter,
+  Math,
+  AutoformatMath,
+  RenkuWordCount,
+];
 
 function CkEditor({
-  data,
-  disabled,
   id,
-  invalid,
   name,
-  outputType,
-  setInputs,
+  data,
+  disabled = false,
+  invalid = false,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setInputs = (value) => {},
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  wordCount = (stats) => {},
 }) {
+  const editorConfig = {
+    toolbar: {
+      items: [
+        "undo",
+        "redo",
+        "|",
+        "heading",
+        "|",
+        "bold",
+        "italic",
+        "underline",
+        "strikethrough",
+        "blockQuote",
+        "|",
+        "code",
+        "codeBlock",
+        "|",
+        {
+          label: "List",
+          withText: true,
+          items: ["bulletedList", "numberedList", "todoList"],
+        },
+        "|",
+        "alignment",
+        "|",
+        "superscript",
+        "subscript",
+        "math",
+        "|",
+        "link",
+        "|",
+        {
+          label: "Other",
+          withText: false,
+          items: [
+            "horizontalLine",
+            "insertTable",
+            // "insertImage",
+            // "resizeImage",
+          ],
+        },
+        "sourceEditing",
+      ],
+    },
+    math: {
+      engine: "katex",
+      enablePreview: true,
+    },
+    wordCount: {
+      onUpdate: wordCount,
+    },
+  };
   return (
     <CKEditor
       id={id}
-      editor={
-        outputType === "markdown"
-          ? RenkuCKEditor.RenkuMarkdownEditor
-          : RenkuCKEditor.RenkuHTMLEditor
-      }
-      data={data}
+      editor={ClassicEditor}
+      config={editorConfig}
       disabled={disabled}
       invalid={invalid}
       customConfig={{ height: 500 }}
       height={800}
       data-cy={`ckeditor-${name}`}
-      onChange={(_event, editor) => {
-        const artificialEvent = {
-          target: { name: name, value: editor.getData() },
-          isPersistent: () => false,
+      onReady={(e) => {
+        if (disabled) {
+          e.ui.view.toolbar.element.style.display = "none";
+        }
+
+        e.data.processor._html2markdown._parser.keep("u");
+        e.data.processor._html2markdown._parser.addRule("math", {
+          filter: ["script"],
+          replacement: function (content) {
+            return "$" + content.replace(/(?:\\(.))/g, "$1") + "$";
+          },
+        });
+        const latex = {
+          name: "latex",
+          level: "inline",
+          start(src) {
+            return src.match(/\$/)?.index;
+          },
+          tokenizer(src) {
+            // Inspired by https://github.com/markedjs/marked/blob/4c5b974b391f913ac923610bd3740ef27ccdae95/src/Tokenizer.js#L647
+            const cap = /^(\$+)([^$]|[^$][\s\S]*?[^$])\1(?!\$)/.exec(src);
+            if (cap) {
+              let formula = cap[2].replace(/\n/g, " ");
+              const hasNonSpaceChars = /[^ ]/.test(formula);
+              const hasSpaceCharsOnBothEnds =
+                /^ /.test(formula) && / $/.test(formula);
+              if (hasNonSpaceChars && hasSpaceCharsOnBothEnds) {
+                formula = formula.substring(1, formula.length - 1);
+              }
+              return {
+                type: "latex",
+                raw: cap[0],
+                text: formula,
+              };
+            }
+          },
+          renderer({ text }) {
+            return `<script type="math/tex">${text}</script>`;
+          },
         };
-        setInputs(artificialEvent);
+        e.data.processor._markdown2html._parser.use({ extensions: [latex] });
+        e.setData(data);
+
+        e.model.document.on("change:data", () => {
+          const artificialEvent = {
+            target: { name: name, value: e.getData() },
+            isPersistent: () => false,
+          };
+          setInputs(artificialEvent);
+        });
       }}
     />
   );

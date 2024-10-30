@@ -18,7 +18,10 @@ const injectedRtkApi = api.injectEndpoints({
       GetProjectsByProjectIdApiResponse,
       GetProjectsByProjectIdApiArg
     >({
-      query: (queryArg) => ({ url: `/projects/${queryArg.projectId}` }),
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}`,
+        with_documentation: queryArg.with_documentation,
+      }),
     }),
     patchProjectsByProjectId: build.mutation<
       PatchProjectsByProjectIdApiResponse,
@@ -108,6 +111,7 @@ export type GetProjectsByProjectIdApiResponse =
   /** status 200 The project */ Project;
 export type GetProjectsByProjectIdApiArg = {
   projectId: Ulid;
+  with_documentation?: boolean;
 };
 export type PatchProjectsByProjectIdApiResponse =
   /** status 200 The patched project */ Project;
@@ -127,6 +131,7 @@ export type GetProjectsByNamespaceAndSlugApiResponse =
 export type GetProjectsByNamespaceAndSlugApiArg = {
   namespace: string;
   slug: string;
+  with_documentation: boolean;
 };
 export type GetProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members */ ProjectMemberListResponse;
@@ -170,6 +175,7 @@ export type Description = string;
 export type ETag = string;
 export type Keyword = string;
 export type KeywordsList = Keyword[];
+export type ProjectDocumentation = string;
 export type Project = {
   id: Ulid;
   name: ProjectName;
@@ -183,6 +189,7 @@ export type Project = {
   description?: Description;
   etag?: ETag;
   keywords?: KeywordsList;
+  documentation?: ProjectDocumentation;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {
@@ -220,6 +227,7 @@ export type ProjectPatch = {
   visibility?: Visibility;
   description?: Description;
   keywords?: KeywordsList;
+  documentation?: ProjectDocumentation;
 };
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";

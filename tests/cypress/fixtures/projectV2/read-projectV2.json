@@ -10,5 +10,6 @@
     "https://domain.name/repo2.git"
   ],
   "visibility": "public",
-  "description": "Project 2 description"
+  "description": "Project 2 description",
+  "documentation": "$\\sqrt(2)$"
 }
