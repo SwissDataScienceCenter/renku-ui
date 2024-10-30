@@ -328,9 +328,6 @@ export function ProjectNamespaceControl({
     }));
   }, [namespacesFirstPage?.perPage, fetchNamespacesPage, fetchedPages]);
 
-  // const [fetchSpecificNamespace, specificNamespaceResult] =
-  //   useLazyGetNamespacesByNamespaceSlugQuery();
-
   useEffect(() => {
     if (namespacesFirstPage == null) {
       return;
@@ -338,16 +335,9 @@ export function ProjectNamespaceControl({
     const userNamespace = namespacesFirstPage.namespaces.find(
       (namespace) => namespace.namespace_kind === "user"
     );
-    // const selectedNamespace = namespacesFirstPage.namespaces.find(
-    //   (namespace) => namespace.slug === value
-    // );
     if (userNamespace != null && !value) {
       onChange(userNamespace);
     }
-    // if (value && selectedNamespace == null) {
-    //   // ? The selected namespace belongs to another user, we need to specifically fetch it.
-    //   fetchSpecificNamespace({ namespaceSlug: value });
-    // }
   }, [namespacesFirstPage, onChange, value]);
 
   useEffect(() => {
@@ -405,31 +395,6 @@ export function ProjectNamespaceControl({
       return { ...prevState, data: namespaces };
     });
   }, [allNamespaces, specificNamespace, specificNamespaceRequestId]);
-
-  // useEffect(() => {
-  //   if (!value || allNamespaces == null) {
-  //     return;
-  //   }
-  //   const selectedNamespace = allNamespaces.find(({ slug }) => slug === value);
-  //   if (value && selectedNamespace == null) {
-  //     // ? The selected namespace belongs to another user, we need to specifically fetch it.
-  //     fetchSpecificNamespace({ namespaceSlug: value });
-  //   }
-  // }, [allNamespaces, fetchSpecificNamespace, value]);
-
-  // useEffect(() => {
-  //   if (specificNamespaceResult.currentData == null) {
-  //     return;
-  //   }
-  //   const specificNamespace = specificNamespaceResult.currentData;
-  //   setState((prevState) => {
-  //     if (prevState.data?.find(({ slug }) => slug === specificNamespace.slug)) {
-  //       return prevState;
-  //     }
-  //     const namespaces = [specificNamespace, ...(prevState.data ?? [])];
-  //     return { ...prevState, data: namespaces };
-  //   });
-  // }, [specificNamespaceResult.currentData]);
 
   if (isFetching) {
     return (

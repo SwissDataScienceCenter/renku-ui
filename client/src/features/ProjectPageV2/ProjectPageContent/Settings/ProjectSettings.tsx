@@ -245,7 +245,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           setDirty={setKeywordsDirty}
           value={project.keywords as string[]}
         />
-        <div className={cx("d-flex", "justify-content-end", "gap-2")}>
+        <div className={cx("d-flex", "justify-content-end")}>
           <Button
             color="primary"
             disabled={isUpdating || !isDirty}
