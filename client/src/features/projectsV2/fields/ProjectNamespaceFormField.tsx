@@ -291,9 +291,7 @@ export function ProjectNamespaceControl({
     isError,
     isFetching,
     requestId,
-  } = useGetNamespacesQuery({
-    params: { minimum_role: "editor", per_page: 2 },
-  });
+  } = useGetNamespacesQuery({ params: { minimum_role: "editor" } });
   const {
     data: specificNamespace,
     isError: specificNamespaceIsError,
