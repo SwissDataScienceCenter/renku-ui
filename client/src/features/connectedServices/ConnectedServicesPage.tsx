@@ -201,7 +201,7 @@ interface ConnectButtonParams {
 }
 
 function ConnectButton({ id, connectionStatus, kind }: ConnectButtonParams) {
-  const hereUrl = useMemo(() => {
+  const hereUrt = useMemo(() => {
     const here = new URL(window.location.href);
     if (kind === "github") {
       here.searchParams.append(CHECK_STATUS_QUERY_PARAM, id);
@@ -209,8 +209,9 @@ function ConnectButton({ id, connectionStatus, kind }: ConnectButtonParams) {
     return here.href;
   }, [id, kind]);
 
-  const authorizeUrl = `/ui-server/api/data/oauth2/providers/${id}/authorize`;
-  const url = `${authorizeUrl}?next_url=${encodeURIComponent(hereUrl)}`;
+  const url = `/ui-server/api/data/oauth2/providers/${id}/authorize?next_url=${encodeURIComponent(
+    hereUrt
+  )}`;
 
   const text = connectionStatus === "connected" ? "Reconnect" : "Connect";
   const color =
