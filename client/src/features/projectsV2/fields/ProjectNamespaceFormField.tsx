@@ -41,6 +41,7 @@ import {
   projectV2Api,
   useGetNamespacesQuery,
   useLazyGetNamespacesQuery,
+  useLazyGetNamespacesByNamespaceSlugQuery,
 } from "../api/projectV2.enhanced-api";
 import type { GenericFormFieldProps } from "./formField.types";
 import styles from "./ProjectNamespaceFormField.module.scss";
@@ -129,6 +130,7 @@ function CustomMenuList({
 interface NamespaceSelectorProps {
   currentNamespace?: string;
   hasMore?: boolean;
+  inputId: string;
   isFetchingMore?: boolean;
   namespaces: ResponseNamespaces;
   onChange?: (newValue: SingleValue<ResponseNamespace>) => void;
@@ -138,6 +140,7 @@ interface NamespaceSelectorProps {
 function NamespaceSelector({
   currentNamespace,
   hasMore,
+  inputId,
   isFetchingMore,
   namespaces,
   onChange,
@@ -158,6 +161,7 @@ function NamespaceSelector({
 
   return (
     <Select
+      inputId={inputId}
       options={namespaces}
       value={currentValue}
       unstyled
@@ -216,7 +220,7 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
   }, [dispatch]);
   return (
     <div className="mb-3">
-      <Label className="form-label" for={`${entityName}-namespace`}>
+      <Label className="form-label" for={`${entityName}-namespace-input`}>
         Namespace
         <RefreshNamespaceButton refresh={refetch} />
       </Label>
@@ -233,6 +237,7 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
               className={cx(errors.namespace && "is-invalid")}
               data-cy={`${entityName}-namespace-input`}
               id={`${entityName}-namespace`}
+              inputId={`${entityName}-namespace-input`}
               onChange={(newValue) => field.onChange(newValue?.slug)}
             />
           );
@@ -258,21 +263,20 @@ interface ProjectNamespaceControlProps {
   className: string;
   "data-cy": string;
   id: string;
+  inputId: string;
   onChange: (newValue: SingleValue<ResponseNamespace>) => void;
   value?: string;
 }
 
 export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
-  const { className, id, onChange, value } = props;
+  const { className, id, inputId, onChange, value } = props;
   const dataCy = props["data-cy"];
   const {
     data: namespacesFirstPage,
     isError,
     isFetching,
     requestId,
-  } = useGetNamespacesQuery({
-    params: { minimum_role: "editor", per_page: 2 },
-  });
+  } = useGetNamespacesQuery({ params: { minimum_role: "editor" } });
 
   const [
     { data: allNamespaces, fetchedPages, hasMore, currentRequestId },
@@ -300,6 +304,9 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     }));
   }, [namespacesFirstPage?.perPage, fetchNamespacesPage, fetchedPages]);
 
+  const [fetchSpecificNamespace, specificNamespaceResult] =
+    useLazyGetNamespacesByNamespaceSlugQuery();
+
   useEffect(() => {
     if (namespacesFirstPage == null) {
       return;
@@ -307,10 +314,17 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     const userNamespace = namespacesFirstPage.namespaces.find(
       (namespace) => namespace.namespace_kind === "user"
     );
+    // const selectedNamespace = namespacesFirstPage.namespaces.find(
+    //   (namespace) => namespace.slug === value
+    // );
     if (userNamespace != null && !value) {
       onChange(userNamespace);
     }
-  }, [onChange, namespacesFirstPage, value]);
+    // if (value && selectedNamespace == null) {
+    //   // ? The selected namespace belongs to another user, we need to specifically fetch it.
+    //   fetchSpecificNamespace({ namespaceSlug: value });
+    // }
+  }, [namespacesFirstPage, onChange, value]);
 
   useEffect(() => {
     if (namespacesFirstPage == null) {
@@ -352,6 +366,31 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     currentRequestId,
   ]);
 
+  useEffect(() => {
+    if (!value || allNamespaces == null) {
+      return;
+    }
+    const selectedNamespace = allNamespaces.find(({ slug }) => slug === value);
+    if (value && selectedNamespace == null) {
+      // ? The selected namespace belongs to another user, we need to specifically fetch it.
+      fetchSpecificNamespace({ namespaceSlug: value });
+    }
+  }, [allNamespaces, fetchSpecificNamespace, value]);
+
+  useEffect(() => {
+    if (specificNamespaceResult.currentData == null) {
+      return;
+    }
+    const specificNamespace = specificNamespaceResult.currentData;
+    setState((prevState) => {
+      if (prevState.data?.find(({ slug }) => slug === specificNamespace.slug)) {
+        return prevState;
+      }
+      const namespaces = [specificNamespace, ...(prevState.data ?? [])];
+      return { ...prevState, data: namespaces };
+    });
+  }, [specificNamespaceResult.currentData]);
+
   if (isFetching) {
     return (
       <div className={cx(className, "form-control")} id={id}>
@@ -376,6 +415,7 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
       <NamespaceSelector
         currentNamespace={value}
         hasMore={hasMore}
+        inputId={inputId}
         isFetchingMore={namespacesPageResult.isFetching}
         namespaces={allNamespaces}
         onChange={onChange}
