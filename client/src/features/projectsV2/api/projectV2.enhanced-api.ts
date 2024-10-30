@@ -255,5 +255,4 @@ export const {
   useGetNamespacesPagedQuery: useGetNamespacesQuery,
   useLazyGetNamespacesPagedQuery: useLazyGetNamespacesQuery,
   useGetNamespacesByNamespaceSlugQuery,
-  useLazyGetNamespacesByNamespaceSlugQuery,
 } = enhancedApi;

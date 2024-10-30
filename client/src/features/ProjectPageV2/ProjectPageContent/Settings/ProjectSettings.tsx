@@ -204,6 +204,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
               name="namespace"
               control={control}
               entityName="project"
+              ensureNamespace={project.namespace}
               errors={errors}
             />
           }
