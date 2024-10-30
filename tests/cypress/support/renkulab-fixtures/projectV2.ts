@@ -380,6 +380,22 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    readProjectV2WithoutDocumentation(args?: ProjectV2NameArgs) {
+      const {
+        fixture = "projectV2/read-projectV2-without-documentation.json",
+        name = "readProjectV2WithoutDocumentation",
+        namespace = "user1-uuid",
+        projectSlug = "test-2-v2-project",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}`,
+        response
+      ).as(name);
+      return this;
+    }
+
     readProjectV2ById(args?: ProjectV2IdArgs) {
       const {
         fixture = "projectV2/read-projectV2.json",
