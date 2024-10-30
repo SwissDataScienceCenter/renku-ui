@@ -153,9 +153,12 @@ describe("Project dataset", () => {
 
         cy.get("div.ck-editor__main").contains("Dataset for testing purposes");
         cy.getDataCy("ckeditor-description")
-          .find("p")
+          .find(".ck-content[contenteditable=true]")
           .click()
-          .type(". New description");
+          // eslint-disable-next-line max-nested-callbacks
+          .then((element) =>
+            element[0].ckeditorInstance.setData(". New description")
+          );
 
         cy.get("div.tree-container").contains("air_quality_no2.txt");
         cy.get('[data-cy="dropzone"]').attachFile(
