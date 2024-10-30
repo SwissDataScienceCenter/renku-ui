@@ -17,87 +17,36 @@
  */
 
 // TODO: Upgrade to ckeditor5 v6.0.0 to get TS support
+import cx from "classnames";
 import React from "react";
-import { Controller } from "react-hook-form";
 import type {
   Control,
   FieldError,
   FieldValues,
-  Path,
   UseFormRegisterReturn,
 } from "react-hook-form";
-import { Input, FormGroup, FormText, Label } from "reactstrap";
+import { FormGroup, FormText } from "reactstrap";
 
 import FormLabel from "./FormLabel";
 import { ErrorLabel } from "../formlabels/FormLabels";
 
 import LazyCkEditor from "./LazyCkEditor";
 
-type EditMarkdownSwitchProps = {
-  codeView: boolean;
-  setCodeView: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function EditMarkdownSwitch(props: EditMarkdownSwitchProps) {
-  const outputType = "markdown";
-  const switchLabel = outputType === "markdown" ? "Raw Markdown" : "Raw HTML";
-  return (
-    <div className="form-check form-switch float-end">
-      <Input
-        className="form-check-input rounded-pill"
-        type="switch"
-        id="CKEditorSwitch"
-        name="customSwitch"
-        checked={props.codeView}
-        onChange={() => {
-          props.setCodeView(!props.codeView);
-        }}
-      />
-      <Label check htmlFor="exampleCustomSwitch" className="form-check-label">
-        {switchLabel}
-      </Label>
-    </div>
-  );
-}
-
-type MarkdownInputProps<T extends FieldValues> = TextAreaInputProps<T> &
-  Omit<EditMarkdownSwitchProps, "setCodeView">;
-
-function MarkdownInput<T extends FieldValues>(props: MarkdownInputProps<T>) {
-  const setInputs = (value: { target: { name: string; value: unknown } }) => {
-    props.register.onChange(value);
+function MarkdownInput<T extends FieldValues>(props: TextAreaInputProps<T>) {
+  const setInputs = async (value: {
+    target: { name: string; value: unknown };
+  }) => {
+    await props.register.onChange(value);
   };
-  const outputType = "markdown";
-  const value = props.getValue();
-  if (props.codeView) {
-    // User wants to input markdown directly
-    return (
-      <Controller
-        control={props.control}
-        name={props.name as Path<T>}
-        render={({ field }) => (
-          <Input
-            id={`${props.name}text-area`}
-            data-cy={`text-area-${props.name}`}
-            type="textarea"
-            disabled={false}
-            rows={value ? value.split("\n").length + 2 : 4}
-            {...field}
-          />
-        )}
-      />
-    );
-  }
-  // User wants to rich-text input
   return (
     <LazyCkEditor
       id={props.name}
-      data={value || ""}
+      data={props.getValue() || ""}
       disabled={false}
       invalid={props.error != null}
       name={props.name}
-      outputType={outputType}
       setInputs={setInputs}
+      wordCount={props.wordCount}
     />
   );
 }
@@ -107,28 +56,42 @@ interface TextAreaInputProps<T extends FieldValues> {
   error?: FieldError;
   getValue: () => string;
   help?: string | React.ReactNode;
-  label: string;
+  label?: string;
   name: string;
   register: UseFormRegisterReturn;
   required?: boolean;
+  wordCount?: (stats: {
+    exact: boolean;
+    characters: number;
+    words: number;
+  }) => void;
 }
 
 function TextAreaInput<T extends FieldValues>(props: TextAreaInputProps<T>) {
-  const [codeView, setCodeView] = React.useState(false);
-
   return (
     <div>
       <FormGroup className="field-group">
         <div className="pb-2">
-          <FormLabel
-            name={props.name}
-            label={props.label}
-            required={props.required ?? false}
-          />
-          <EditMarkdownSwitch codeView={codeView} setCodeView={setCodeView} />
+          {props.label ? (
+            <FormLabel
+              name={props.name}
+              label={props.label}
+              required={props.required ?? false}
+            />
+          ) : (
+            <div className="pb-2" />
+          )}
         </div>
-        <div data-cy={`ckeditor-${props.name}`}>
-          <MarkdownInput {...props} codeView={codeView} />
+        <div
+          data-cy={`ckeditor-${props.name}`}
+          className={cx("border-radius-8")}
+          style={{
+            background: "white",
+            border: "1px solid var(--bs-rk-border-input)",
+            padding: "5px 5px 5px",
+          }}
+        >
+          <MarkdownInput {...props} />
         </div>
         {props.help && <FormText color="muted">{props.help}</FormText>}
         {props.error && (
