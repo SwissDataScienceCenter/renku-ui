@@ -409,15 +409,15 @@ interface EditSaveButtonProps {
   "data-cy"?: string;
   disabled?: boolean;
   toggle: () => void;
-  tooltip: ReactNode;
-  checksBeforeSave: () => boolean;
-  checksBeforeSaveTooltipMessage: () => string | null;
+  tooltipMessage?: string | null;
+  checksBeforeSave?: () => boolean;
+  checksBeforeSaveTooltipMessage?: () => string | null;
 }
 function EditSaveButton({
   "data-cy": dataCy,
   disabled,
   toggle,
-  tooltip = null,
+  tooltipMessage = null,
   checksBeforeSave = () => false,
   checksBeforeSaveTooltipMessage = () => null,
 }: EditSaveButtonProps) {
@@ -449,7 +449,7 @@ function EditSaveButton({
                 onClick={(event) => {
                   if (checksBeforeSave()) {
                     setEditMode(false);
-                    event.target.form.requestSubmit();
+                    (event.target as HTMLInputElement).form?.requestSubmit();
                   } else {
                     setChecksBeforeSaveTooltip(true);
                   }
@@ -462,9 +462,9 @@ function EditSaveButton({
               <Tooltip target={saveButtonRef} isOpen={true}>
                 {checksBeforeSaveTooltipMessage()}
               </Tooltip>
-            ) : tooltip ? (
+            ) : tooltipMessage ? (
               <UncontrolledTooltip target={ref} delay={{ show: 500, hide: 50 }}>
-                {tooltip}
+                {tooltipMessage}
               </UncontrolledTooltip>
             ) : (
               <></>

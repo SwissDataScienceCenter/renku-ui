@@ -18,10 +18,7 @@ const injectedRtkApi = api.injectEndpoints({
       GetProjectsByProjectIdApiResponse,
       GetProjectsByProjectIdApiArg
     >({
-      query: (queryArg) => ({
-        url: `/projects/${queryArg.projectId}`,
-        with_documentation: queryArg.with_documentation,
-      }),
+      query: (queryArg) => ({ url: `/projects/${queryArg.projectId}` }),
     }),
     patchProjectsByProjectId: build.mutation<
       PatchProjectsByProjectIdApiResponse,
@@ -47,9 +44,13 @@ const injectedRtkApi = api.injectEndpoints({
       GetProjectsByNamespaceAndSlugApiResponse,
       GetProjectsByNamespaceAndSlugApiArg
     >({
-      query: (queryArg) => ({
-        url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.slug}`,
-      }),
+      query: (queryArg) => {
+        let url = `/namespaces/${queryArg["namespace"]}/${queryArg.slug}`;
+        if ("with_documentation" in queryArg) {
+          url += `?with_documentation=${queryArg.with_documentation}`;
+        }
+        return { url: url };
+      },
     }),
     getProjectsByProjectIdMembers: build.query<
       GetProjectsByProjectIdMembersApiResponse,
@@ -111,7 +112,6 @@ export type GetProjectsByProjectIdApiResponse =
   /** status 200 The project */ Project;
 export type GetProjectsByProjectIdApiArg = {
   projectId: Ulid;
-  with_documentation?: boolean;
 };
 export type PatchProjectsByProjectIdApiResponse =
   /** status 200 The patched project */ Project;
@@ -131,7 +131,7 @@ export type GetProjectsByNamespaceAndSlugApiResponse =
 export type GetProjectsByNamespaceAndSlugApiArg = {
   namespace: string;
   slug: string;
-  with_documentation: boolean;
+  with_documentation?: boolean;
 };
 export type GetProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members */ ProjectMemberListResponse;
