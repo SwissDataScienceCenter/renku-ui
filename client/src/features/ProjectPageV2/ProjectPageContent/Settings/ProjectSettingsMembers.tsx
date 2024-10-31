@@ -324,7 +324,7 @@ function ProjectPageSettingsMembersContent({
                 onClick={toggleAddMemberModalOpen}
                 size="sm"
               >
-                <PlusLg className="icon-text" />
+                <PlusLg className="bi" />
               </Button>
             }
             requestedPermission="change_membership"

@@ -150,7 +150,7 @@ function ProjectDataConnectorBoxHeader({
                 onClick={toggleOpen}
                 size="sm"
               >
-                <PlusLg className="icon-text" />
+                <PlusLg className="bi" />
               </Button>
             }
             requestedPermission="write"
