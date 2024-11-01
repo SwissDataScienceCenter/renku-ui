@@ -33,7 +33,7 @@ export interface SessionStartDataConnectorConfiguration {
 }
 
 export interface StartSessionOptionsV2 {
-  cloudStorage: SessionStartDataConnectorConfiguration[];
+  cloudStorage?: SessionStartDataConnectorConfiguration[];
   defaultUrl: string;
   environmentVariables: SessionEnvironmentVariable[];
   lfsAutoFetch: boolean;
