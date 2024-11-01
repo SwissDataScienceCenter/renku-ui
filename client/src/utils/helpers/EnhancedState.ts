@@ -30,28 +30,29 @@ import {
 
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import adminSessionsApi from "../../features/admin/adminSessions.api";
-import connectedServicesApi from "../../features/connectedServices/connectedServices.api";
+import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
+import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
+import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
+import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
 import projectCloudStorageApi from "../../features/project/components/cloudStorage/projectCloudStorage.api";
 import { datasetFormSlice } from "../../features/project/dataset";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
-import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import repositoriesApi from "../../features/repositories/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
-// import secretsApi from "../../features/secrets/secrets.api";
 import sessionsApi from "../../features/session/sessions.api";
 import sessionSidecarApi from "../../features/session/sidecar.api";
 import startSessionSlice from "../../features/session/startSession.slice";
@@ -59,16 +60,11 @@ import { startSessionOptionsSlice } from "../../features/session/startSessionOpt
 import sessionsV2Api from "../../features/sessionsV2/sessionsV2.api";
 import startSessionOptionsV2Slice from "../../features/sessionsV2/startSessionOptionsV2.slice";
 import termsApi from "../../features/terms/terms.api";
-// import { dataServicesUserApi } from "../../features/user/dataServicesUser.api";
-// import keycloakUserApi from "../../features/user/keycloakUser.api";
-// import userPreferencesApi from "../../features/user/userPreferences.api";
+import { usersEmptyApi as usersApi } from "../../features/usersV2/api/users.empty-api";
 import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "../feature-flags/featureFlags.slice";
-import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
-import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
-import { usersEmptyApi as usersApi } from "../../features/usersV2/api/users.empty-api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -90,15 +86,13 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectV2NewSlice.name]: projectV2NewSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
-    [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
     [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
+    [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
-    // [dataServicesUserApi.reducerPath]: dataServicesUserApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
-    // [keycloakUserApi.reducerPath]: keycloakUserApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
@@ -110,14 +104,12 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [repositoriesApi.reducerPath]: repositoriesApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
-    // [secretsApi.reducerPath]: secretsApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
     [statuspageApi.reducerPath]: statuspageApi.reducer,
     [termsApi.reducerPath]: termsApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
-    // [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
   };
@@ -136,10 +128,8 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(connectedServicesApi.middleware)
         .concat(dataConnectorsApi.middleware)
         // this is causing some problems, and I do not know why
-        // .concat(dataServicesUserApi.middleware)
         .concat(datasetsCoreApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
-        // .concat(keycloakUserApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(platformApi.middleware)
         .concat(projectCloudStorageApi.middleware)
@@ -151,7 +141,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(recentUserActivityApi.middleware)
         .concat(repositoriesApi.middleware)
         .concat(searchV2Api.middleware)
-        // .concat(secretsApi.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionSidecarApi.middleware)
@@ -159,7 +148,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(statuspageApi.middleware)
         .concat(termsApi.middleware)
         .concat(usersApi.middleware)
-        // .concat(userPreferencesApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),
     enhancers,
