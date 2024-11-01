@@ -57,7 +57,6 @@ export default function SessionItem({
           xs={12}
           md={8}
           lg={9}
-          xl={10}
         >
           <Row className="g-2">
             <Col
