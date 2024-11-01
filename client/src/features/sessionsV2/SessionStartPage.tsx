@@ -78,12 +78,14 @@ function SaveCloudStorage({
 
   const credentialsToSave = useMemo(() => {
     return startSessionOptionsV2.cloudStorage
-      .filter(shouldCloudStorageSaveCredentials)
-      .map((cs) => ({
-        storageName: cs.dataConnector.name,
-        storageId: cs.dataConnector.id,
-        secrets: cs.sensitiveFieldValues,
-      }));
+      ? startSessionOptionsV2.cloudStorage
+          .filter(shouldCloudStorageSaveCredentials)
+          .map((cs) => ({
+            storageName: cs.dataConnector.name,
+            storageId: cs.dataConnector.id,
+            secrets: cs.sensitiveFieldValues,
+          }))
+      : [];
   }, [startSessionOptionsV2.cloudStorage]);
 
   const [results, setResults] = useState<StatusStepProgressBar[]>(
@@ -147,14 +149,18 @@ function SaveCloudStorage({
   }, [index, saveCredentialsResult]);
 
   useEffect(() => {
-    if (saveCredentialsResult.isLoading) return;
+    if (saveCredentialsResult.isLoading || !startSessionOptionsV2.cloudStorage)
+      return;
     if (index >= credentialsToSave.length) {
-      const cloudStorageConfigs = startSessionOptionsV2.cloudStorage.map((cs) =>
-        storageDefinitionAfterSavingCredentialsFromConfig(cs)
+      const cloudStorageConfigs = startSessionOptionsV2.cloudStorage?.map(
+        (cs) => storageDefinitionAfterSavingCredentialsFromConfig(cs)
       );
-      dispatch(
-        startSessionOptionsV2Slice.actions.setCloudStorage(cloudStorageConfigs)
-      );
+      if (cloudStorageConfigs)
+        dispatch(
+          startSessionOptionsV2Slice.actions.setCloudStorage(
+            cloudStorageConfigs
+          )
+        );
     }
   }, [
     dispatch,
@@ -177,50 +183,47 @@ function SaveCloudStorage({
   );
 }
 
-interface SessionStartingProps extends StartSessionFromLauncherProps {
-  containerImage: string;
-  startSessionOptionsV2: StartSessionOptionsV2;
-}
-
-function SessionStarting({
-  containerImage,
-  launcher,
-  project,
-  startSessionOptionsV2,
-}: SessionStartingProps) {
+function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const startSessionOptionsV2 = useAppSelector(
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+  );
 
   const [
     startSessionV2,
     { data: session, error: error, isLoading: isLoadingStartSession, isError },
   ] = useLaunchSessionMutation();
 
-  // Request session
-  useEffect(() => {
-    if (isLoadingStartSession || session != null || isError) return;
-    startSessionV2({
+  const launcherToStart = useMemo(() => {
+    return {
       launcher_id: launcher.id,
       disk_storage: startSessionOptionsV2.storage,
       resource_class_id: startSessionOptionsV2.sessionClass,
-      cloudstorage: startSessionOptionsV2.cloudStorage.map((cs) =>
+      cloudstorage: startSessionOptionsV2.cloudStorage?.map((cs) =>
         storageDefinitionFromConfig(cs)
       ),
-    });
-    dispatch(setFavicon("waiting"));
+    };
   }, [
-    containerImage,
-    isLoadingStartSession,
     launcher.id,
-    project.id,
-    startSessionV2,
     startSessionOptionsV2.storage,
     startSessionOptionsV2.sessionClass,
     startSessionOptionsV2.cloudStorage,
+  ]);
+
+  // Request session
+  useEffect(() => {
+    if (isLoadingStartSession || session != null || isError) return;
+    startSessionV2(launcherToStart);
+    dispatch(setFavicon("waiting"));
+  }, [
+    isLoadingStartSession,
+    startSessionV2,
     dispatch,
     session,
     isError,
+    launcherToStart,
   ]);
 
   useEffect(() => {
@@ -305,7 +308,7 @@ function shouldCloudStorageSaveCredentials(
 }
 
 interface StartSessionWithCloudStorageModalProps
-  extends Omit<SessionStartingProps, "cloudStorages"> {
+  extends Omit<StartSessionFromLauncherProps, "cloudStorages"> {
   cloudStorageConfigs: Omit<
     SessionStartDataConnectorConfiguration,
     "sensitiveFields"
@@ -313,10 +316,8 @@ interface StartSessionWithCloudStorageModalProps
 }
 
 function StartSessionWithCloudStorageModal({
-  containerImage,
   launcher,
   project,
-  startSessionOptionsV2,
   cloudStorageConfigs,
 }: StartSessionWithCloudStorageModalProps) {
   const [showDataConnectorSecretsModal, setShowDataConnectorSecretsModal] =
@@ -382,14 +383,7 @@ function StartSessionWithCloudStorageModal({
   }, [navigate, project.namespace, project.slug]);
 
   if (configsNeedingCredentials.length === 0) {
-    return (
-      <SessionStarting
-        containerImage={containerImage}
-        launcher={launcher}
-        project={project}
-        startSessionOptionsV2={startSessionOptionsV2}
-      />
-    );
+    return <SessionStarting launcher={launcher} project={project} />;
   }
 
   return (
@@ -429,7 +423,6 @@ function StartSessionFromLauncher({
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
   const {
-    containerImage,
     isFetchingOrLoadingStorages,
     isPendingResourceClass,
     setResourceClass,
@@ -462,19 +455,14 @@ function StartSessionFromLauncher({
     };
   }, [allDataFetched, needsCredentials, dispatch]);
 
-  if (allDataFetched && !needsCredentials)
+  if (allDataFetched && !needsCredentials && startSessionOptionsV2.cloudStorage)
     return shouldSaveCredentials ? (
       <SaveCloudStorage
         launcher={launcher}
         startSessionOptionsV2={startSessionOptionsV2}
       />
     ) : (
-      <SessionStarting
-        containerImage={containerImage}
-        launcher={launcher}
-        project={project}
-        startSessionOptionsV2={startSessionOptionsV2}
-      />
+      <SessionStarting launcher={launcher} project={project} />
     );
 
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
@@ -482,14 +470,12 @@ function StartSessionFromLauncher({
     slug: project.slug,
   });
 
-  if (allDataFetched && needsCredentials)
+  if (allDataFetched && needsCredentials && startSessionOptionsV2.cloudStorage)
     return (
       <StartSessionWithCloudStorageModal
         cloudStorageConfigs={startSessionOptionsV2.cloudStorage}
-        containerImage={containerImage}
         launcher={launcher}
         project={project}
-        startSessionOptionsV2={startSessionOptionsV2}
       />
     );
 
