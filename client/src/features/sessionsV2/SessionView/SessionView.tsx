@@ -408,7 +408,7 @@ export function SessionView({
           <div>
             <h4>Default URL</h4>
             <p className="mb-2">
-              The default URL specifies the URL fragment on the session to go to
+              The default URL specifies the URL pathname on the session to go to
               upon launch
             </p>
             <div>
