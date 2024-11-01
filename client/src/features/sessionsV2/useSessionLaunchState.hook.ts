@@ -153,18 +153,20 @@ export default function useSessionLauncherState({
     () => Object.values(dataConnectorsMap ?? {}),
     [dataConnectorsMap]
   );
-  const { dataConnectorConfigs: initialDataConnectorConfigs } =
-    useDataConnectorConfiguration({
-      dataConnectors,
-    });
+  const {
+    dataConnectorConfigs: initialDataConnectorConfigs,
+    isReadyDataConnectorConfigs,
+  } = useDataConnectorConfiguration({ dataConnectors });
+
   useEffect(() => {
-    if (initialDataConnectorConfigs == null) return;
-    dispatch(
-      startSessionOptionsV2Slice.actions.setCloudStorage(
-        initialDataConnectorConfigs
-      )
-    );
-  }, [dispatch, initialDataConnectorConfigs, project.id]);
+    if (initialDataConnectorConfigs && isReadyDataConnectorConfigs) {
+      dispatch(
+        startSessionOptionsV2Slice.actions.setCloudStorage(
+          initialDataConnectorConfigs
+        )
+      );
+    }
+  }, [initialDataConnectorConfigs, isReadyDataConnectorConfigs, dispatch]);
 
   return {
     containerImage,
@@ -173,7 +175,8 @@ export default function useSessionLauncherState({
       isFetchingDataConnectorLinks ||
       isLoadingDataConnectorLinks ||
       isLoadingDataConnectors ||
-      isFetchingDataConnectors,
+      isFetchingDataConnectors ||
+      !isReadyDataConnectorConfigs,
     resourcePools,
     startSessionOptionsV2,
     isPendingResourceClass,

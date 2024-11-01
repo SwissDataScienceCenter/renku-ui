@@ -30,7 +30,7 @@ import {
 } from "./startSessionOptionsV2.types";
 
 const initialState: StartSessionOptionsV2 = {
-  cloudStorage: [],
+  cloudStorage: undefined,
   defaultUrl: "",
   dockerImageStatus: "unknown",
   environmentVariables: [],
@@ -48,7 +48,7 @@ const startSessionOptionsV2Slice = createSlice({
       state,
       action: PayloadAction<SessionStartDataConnectorConfiguration>
     ) => {
-      state.cloudStorage.push(action.payload);
+      state.cloudStorage?.push(action.payload);
     },
     addEnvironmentVariable: (state) => {
       state.environmentVariables.push({ name: "", value: "" });
@@ -57,7 +57,7 @@ const startSessionOptionsV2Slice = createSlice({
       state,
       action: PayloadAction<{ index: number }>
     ) => {
-      state.cloudStorage.splice(action.payload.index, 1);
+      state.cloudStorage?.splice(action.payload.index, 1);
     },
     removeEnvironmentVariable: (
       state,
@@ -96,7 +96,8 @@ const startSessionOptionsV2Slice = createSlice({
         storage: SessionStartDataConnectorConfiguration;
       }>
     ) => {
-      state.cloudStorage[action.payload.index] = action.payload.storage;
+      if (state.cloudStorage)
+        state.cloudStorage[action.payload.index] = action.payload.storage;
     },
     updateEnvironmentVariable: (
       state,
