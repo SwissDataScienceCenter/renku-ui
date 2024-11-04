@@ -18,7 +18,7 @@
 
 import { Link } from "react-router-dom";
 import { DropdownItem } from "reactstrap";
-import { useGetUserInfoQuery } from "../features/user/keycloakUser.api";
+import { useGetUserQuery } from "../features/usersV2/api/users.api";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 
 export default function AdminDropdownItem() {
@@ -26,9 +26,9 @@ export default function AdminDropdownItem() {
     (state) => state.stateModel.user.logged
   );
 
-  const { data: userInfo } = useGetUserInfoQuery();
+  const { data: userInfo } = useGetUserQuery();
 
-  if (!userLogged || !userInfo?.isLoggedIn || !userInfo.isAdmin) {
+  if (!userLogged || !userInfo?.isLoggedIn || !userInfo.is_admin) {
     return null;
   }
 

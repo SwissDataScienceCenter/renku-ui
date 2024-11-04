@@ -32,7 +32,7 @@ import {
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { useEditSecretMutation } from "./secrets.api";
+import { usePatchUserSecretMutation } from "../usersV2/api/users.api";
 import { EditSecretForm, SecretDetails } from "./secrets.types";
 import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
 
@@ -59,10 +59,10 @@ export default function SecretEdit({ secret }: SecretsEditProps) {
   });
 
   // Handle posting data
-  const [editSecretMutation, result] = useEditSecretMutation();
+  const [editSecretMutation, result] = usePatchUserSecretMutation();
   const onSubmit = useCallback(
     (newSecret: EditSecretForm) => {
-      editSecretMutation({ id: secret.id, ...newSecret });
+      editSecretMutation({ secretId: secret.id, secretPatch: newSecret });
     },
     [editSecretMutation, secret.id]
   );

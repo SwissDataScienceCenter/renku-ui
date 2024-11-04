@@ -45,8 +45,7 @@ import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import LazySecrets from "./features/secrets/LazySecrets";
 import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
-import { useGetUserQuery } from "./features/user/dataServicesUser.api";
-import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
+import { useGetUserQuery } from "./features/usersV2/api/users.api";
 import LazyHelp from "./help/LazyHelp";
 import LazyAnonymousHome from "./landing/LazyAnonymousHome";
 import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
@@ -76,12 +75,9 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 function CentralContentContainer(props) {
   const { coreApiVersionedUrlConfig, notifications, socket, user } = props;
 
-  const { data: userInfo } = useGetUserInfoQuery(
+  const { data: userInfo } = useGetUserQuery(
     props.user.logged ? undefined : skipToken
   );
-  // ? In the future, we should get the user info from `renku-data-services` instead of Keycloak.
-  // ? See: https://github.com/SwissDataScienceCenter/renku-ui/pull/3080.
-  useGetUserQuery(props.user.logged ? undefined : skipToken);
 
   const appContext = {
     client: props.client,
@@ -196,7 +192,7 @@ function CentralContentContainer(props) {
               <LazyStyleGuide />
             </ContainerWrap>
           </CompatRoute>
-          {userInfo?.isAdmin && (
+          {userInfo?.isLoggedIn && userInfo.is_admin && (
             <CompatRoute path="/admin">
               <ContainerWrap>
                 <LazyAdminPage />

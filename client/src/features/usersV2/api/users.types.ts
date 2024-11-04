@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,17 +16,14 @@
  * limitations under the License.
  */
 
-// Run `npx @rtk-query/codegen-openapi dataServicesUser.api-config.ts` to generate the API
-import type { ConfigFile } from "@rtk-query/codegen-openapi";
-import path from "path";
+import type { SelfUserInfo } from "./users.generated-api";
 
-const config: ConfigFile = {
-  apiFile: "./dataServicesUser-empty.api.ts",
-  apiImport: "dataServicesUserEmptyApi",
-  outputFile: "./dataServicesUser.api.ts",
-  exportName: "dataServicesUserApi",
-  hooks: true,
-  schemaFile: path.join(__dirname, "dataServicesUser.openapi.json"),
-};
+export type UserInfo = AnonymousUserInfo | LoggedInUserInfo;
 
-export default config;
+export interface AnonymousUserInfo {
+  isLoggedIn: false;
+}
+
+export interface LoggedInUserInfo extends SelfUserInfo {
+  isLoggedIn: true;
+}

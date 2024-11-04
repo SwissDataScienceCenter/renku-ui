@@ -34,12 +34,9 @@ import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsB
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
-import {
-  useGetUserQuery,
-  useGetUsersByUserIdQuery,
-} from "../../user/dataServicesUser.api";
-import UserAvatar from "./UserAvatar";
 import { EntityPill } from "../../searchV2/components/SearchV2Results";
+import { useGetUserByIdQuery, useGetUserQuery } from "../api/users.api";
+import UserAvatar from "./UserAvatar";
 
 export default function UserShow() {
   const { username } = useParams<{ username: string }>();
@@ -57,7 +54,7 @@ export default function UserShow() {
     data: user,
     isLoading: isLoadingUser,
     error: userError,
-  } = useGetUsersByUserIdQuery(
+  } = useGetUserByIdQuery(
     namespace?.namespace_kind === "user" && namespace.created_by
       ? { userId: namespace.created_by }
       : skipToken
@@ -158,7 +155,7 @@ interface ItsYouBadgeProps {
 function ItsYouBadge({ username }: ItsYouBadgeProps) {
   const { data: currentUser } = useGetUserQuery();
 
-  if (currentUser?.username === username) {
+  if (currentUser?.isLoggedIn && currentUser.username === username) {
     return (
       <Badge
         className={cx(

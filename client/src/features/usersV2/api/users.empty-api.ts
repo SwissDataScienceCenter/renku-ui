@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
-export interface UserV2 {
-  id: string;
-}
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const usersEmptyApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
+  endpoints: () => ({}),
+  reducerPath: "usersApi",
+});

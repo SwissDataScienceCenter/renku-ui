@@ -19,11 +19,11 @@
 import cx from "classnames";
 import { Col, Container, Row } from "reactstrap";
 
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
-import { useGetSecretsQuery } from "./secrets.api";
+import { useGetUserSecretsQuery } from "../usersV2/api/users.api";
 import type { SecretDetails } from "./secrets.types";
 import { storageSecretNameToStorageId } from "./secrets.utils";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import SecretsListItem from "./SecretsListItem";
 
 interface SecretGroupProps {
@@ -50,7 +50,9 @@ function SecretGroup({ group, secrets }: SecretGroupProps) {
 }
 
 export default function StorageSecretsList() {
-  const secrets = useGetSecretsQuery({ kind: "storage" });
+  const secrets = useGetUserSecretsQuery({
+    userSecretsParams: { kind: "storage" },
+  });
 
   if (secrets.isLoading) return <Loader />;
 
