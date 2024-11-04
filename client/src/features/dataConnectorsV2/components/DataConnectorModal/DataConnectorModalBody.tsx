@@ -325,7 +325,7 @@ export function DataConnectorMount({
       </div>
 
       <div className="mb-3">
-        <Label className="form-label" for="namespace">
+        <Label className="form-label" for="namespace-input">
           Owner
         </Label>
 
@@ -341,6 +341,7 @@ export function DataConnectorMount({
                 className={cx(errors.namespace && "is-invalid")}
                 data-cy={"data-controller-namespace-input"}
                 id="namespace"
+                inputId="namespace-input"
                 onChange={(e) => {
                   field.onChange(e);
                   onFieldValueChange("namespace", e?.slug ?? "");

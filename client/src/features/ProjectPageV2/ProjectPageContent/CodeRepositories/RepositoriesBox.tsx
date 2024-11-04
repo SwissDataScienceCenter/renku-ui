@@ -71,7 +71,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
                   onClick={toggle}
                   size="sm"
                 >
-                  <PlusLg className="icon-text" />
+                  <PlusLg className="bi" />
                 </Button>
               }
               requestedPermission="write"

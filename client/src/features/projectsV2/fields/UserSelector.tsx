@@ -57,7 +57,7 @@ const selectComponents: SelectComponentsConfig<User, false, GroupBase<User>> = {
   DropdownIndicator: (props) => {
     return (
       <components.DropdownIndicator {...props}>
-        <ChevronDown className="icon-text" />
+        <ChevronDown className="bi" />
       </components.DropdownIndicator>
     );
   },

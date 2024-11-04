@@ -227,7 +227,11 @@ describe("Edit v2 project", () => {
   });
 
   it("changes project namespace", () => {
-    fixtures.readProjectV2().updateProjectV2().listManyNamespaceV2();
+    fixtures
+      .readProjectV2()
+      .updateProjectV2()
+      .listManyNamespaceV2()
+      .readUserV2Namespace();
     cy.getDataCy("dashboard-project-list")
       .contains("a", "test 2 v2-project")
       .should("be.visible")
@@ -237,6 +241,7 @@ describe("Edit v2 project", () => {
     cy.getDataCy("project-settings-edit").should("be.visible").click();
     // Fetch the second page of namespaces
     cy.wait("@listNamespaceV2");
+    cy.wait("@readUserV2Namespace");
     cy.findReactSelectOptions("project-namespace-input", "namespace-select");
     cy.get("button").contains("Fetch more").click();
     // Need to click away so the dropdown option selection works
@@ -244,7 +249,7 @@ describe("Edit v2 project", () => {
     cy.wait("@listNamespaceV2");
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       // Pick an element from the second page of results
-      .eq(25)
+      .contains("test-25-group-v2")
       .click();
     fixtures.readProjectV2({
       fixture: "projectV2/update-projectV2-metadata.json",

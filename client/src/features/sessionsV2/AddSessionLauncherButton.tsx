@@ -39,7 +39,7 @@ export default function AddSessionLauncherButton({
     <>
       {styleBtn === "iconTextBtn" ? (
         <Button data-cy={dataCy} onClick={() => toggle()}>
-          <PlusLg className={cx("me-2", "icon-text")} />
+          <PlusLg className={cx("me-2", "bi")} />
           Add session
         </Button>
       ) : (
@@ -49,7 +49,7 @@ export default function AddSessionLauncherButton({
           onClick={toggle}
           size="sm"
         >
-          <PlusLg className="icon-text" />
+          <PlusLg className="bi" />
         </Button>
       )}
       <Step1AddSessionModal isOpen={isOpen} toggleModal={toggle} />

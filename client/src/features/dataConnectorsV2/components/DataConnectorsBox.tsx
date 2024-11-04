@@ -63,7 +63,7 @@ function AddButtonForGroupNamespace({
           onClick={toggleOpen}
           size="sm"
         >
-          <PlusLg className="icon-text" />
+          <PlusLg className="bi" />
         </Button>
       }
       requestedPermission="write"
@@ -86,7 +86,7 @@ function AddButtonForUserNamespace({
         onClick={toggleOpen}
         size="sm"
       >
-        <PlusLg className="icon-text" />
+        <PlusLg className="bi" />
       </Button>
     );
   }

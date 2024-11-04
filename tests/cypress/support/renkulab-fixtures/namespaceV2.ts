@@ -53,6 +53,10 @@ interface ListManyNamespacesArgs extends NameOnlyFixture {
   numberOfNamespaces?: number;
 }
 
+interface UserNamespaceV2Args extends SimpleFixture {
+  username?: string;
+}
+
 function generateGroups(numberOfGroups: number, start: number) {
   const groups = [];
   for (let i = 0; i < numberOfGroups; ++i) {
@@ -299,6 +303,21 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/data/namespaces/${groupSlug}`,
+        response
+      ).as(name);
+      return this;
+    }
+
+    readUserV2Namespace(args?: UserNamespaceV2Args) {
+      const {
+        fixture = "namespaceV2/namespaceV2-user1.json",
+        name = "readUserV2Namespace",
+        username = "user1-uuid",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/namespaces/${username}`,
         response
       ).as(name);
       return this;
