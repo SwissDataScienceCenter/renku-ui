@@ -117,13 +117,14 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
     handleSubmit,
     watch,
     register,
+    reset,
   } = useForm<Required<ProjectV2Metadata>>({
     defaultValues: {
-      description: project.description,
+      description: project.description ?? "",
       name: project.name,
       namespace: project.namespace,
       visibility: project.visibility,
-      keywords: project.keywords,
+      keywords: project.keywords ?? [],
     },
   });
   const currentNamespace = watch("namespace");
@@ -133,7 +134,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
   const { notifications } = useContext(AppContext);
   const [areKeywordsDirty, setKeywordsDirty] = useState(false);
 
-  const [updateProject, { isLoading, error, isSuccess }] =
+  const [updateProject, { isLoading, error, isSuccess, data: updatedProject }] =
     usePatchProjectsByProjectIdMutation();
 
   const isUpdating = isLoading;
@@ -150,6 +151,19 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
     },
     [project, updateProject]
   );
+
+  useEffect(() => {
+    if (isSuccess && updatedProject != null) {
+      reset({
+        description: updatedProject.description ?? "",
+        name: updatedProject.name,
+        namespace: updatedProject.namespace,
+        visibility: updatedProject.visibility,
+        keywords: updatedProject.keywords ?? [],
+      });
+    }
+  }, [isSuccess, reset, updatedProject]);
+
   useEffect(() => {
     if (isSuccess && redirectAfterUpdate) {
       if (notifications && currentName)
@@ -190,6 +204,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
               name="namespace"
               control={control}
               entityName="project"
+              ensureNamespace={project.namespace}
               errors={errors}
             />
           }
