@@ -19,10 +19,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { MIN_SESSION_STORAGE_GB } from "../session/startSessionOptions.constants";
-import type {
-  DockerImageStatus,
-  SessionEnvironmentVariable,
-} from "../session/startSessionOptions.types";
+import type { SessionEnvironmentVariable } from "../session/startSessionOptions.types";
 import {
   SessionRepository,
   SessionStartDataConnectorConfiguration,
@@ -32,7 +29,6 @@ import {
 const initialState: StartSessionOptionsV2 = {
   cloudStorage: undefined,
   defaultUrl: "",
-  dockerImageStatus: "unknown",
   environmentVariables: [],
   lfsAutoFetch: false,
   repositories: [],
@@ -73,9 +69,6 @@ const startSessionOptionsV2Slice = createSlice({
     },
     setDefaultUrl: (state, action: PayloadAction<string>) => {
       state.defaultUrl = action.payload;
-    },
-    setDockerImageStatus: (state, action: PayloadAction<DockerImageStatus>) => {
-      state.dockerImageStatus = action.payload;
     },
     setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
       state.lfsAutoFetch = action.payload;

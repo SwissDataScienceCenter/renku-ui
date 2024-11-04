@@ -24,13 +24,10 @@ import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../dataConnecto
 import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../session/startSessionOptions.constants";
-import { DockerImageStatus } from "../session/startSessionOptions.types";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useGetDockerImageQuery } from "./sessionsV2.api";
 import { DEFAULT_URL } from "./session.constants";
 
 interface StartSessionFromLauncherProps {
@@ -77,21 +74,6 @@ export default function useSessionLauncherState({
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
 
-  const { data: dockerImageStatus, isLoading: isLoadingDockerImageStatus } =
-    useGetDockerImageQuery(
-      containerImage !== "unknown"
-        ? {
-            image_url: containerImage,
-          }
-        : skipToken,
-      {
-        pollingInterval:
-          startSessionOptionsV2.dockerImageStatus === "not-available"
-            ? SESSION_CI_PIPELINE_POLLING_INTERVAL_MS
-            : 0,
-      }
-    );
-
   const defaultSessionClass = useMemo(
     () =>
       resourcePools
@@ -119,30 +101,6 @@ export default function useSessionLauncherState({
       dispatch(startSessionOptionsV2Slice.actions.setDefaultUrl(defaultUrl));
     }
   }, [default_url, dispatch, startSessionOptionsV2.defaultUrl]);
-
-  // Set the image status
-  useEffect(() => {
-    const newStatus: DockerImageStatus = isLoadingDockerImageStatus
-      ? "unknown"
-      : dockerImageStatus == null
-      ? "not-available"
-      : dockerImageStatus.available
-      ? "available"
-      : "not-available";
-    if (newStatus !== startSessionOptionsV2.dockerImageStatus) {
-      dispatch(
-        startSessionOptionsV2Slice.actions.setDockerImageStatus(newStatus)
-      );
-    }
-    dispatch(
-      startSessionOptionsV2Slice.actions.setDockerImageStatus("available")
-    );
-  }, [
-    dispatch,
-    dockerImageStatus,
-    isLoadingDockerImageStatus,
-    startSessionOptionsV2.dockerImageStatus,
-  ]);
 
   useEffect(() => {
     const repositories = (project.repositories ?? []).map((url) => ({ url }));
