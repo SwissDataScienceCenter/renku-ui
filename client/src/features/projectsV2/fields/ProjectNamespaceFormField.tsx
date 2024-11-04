@@ -41,9 +41,11 @@ import {
   projectV2Api,
   useGetNamespacesQuery,
   useLazyGetNamespacesQuery,
+  useGetNamespacesByNamespaceSlugQuery,
 } from "../api/projectV2.enhanced-api";
 import type { GenericFormFieldProps } from "./formField.types";
 import styles from "./ProjectNamespaceFormField.module.scss";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 type ResponseNamespaces = GetNamespacesApiResponse["namespaces"];
 type ResponseNamespace = ResponseNamespaces[number];
@@ -105,6 +107,7 @@ function CustomMenuList({
         {props.children}
         {hasMore && (
           <div className={cx("d-grid")}>
+            {/* TODO: Make this button accessible. At the moment, it cannot be used from keyboard-only navigation. */}
             <Button
               className={cx("rounded-0", "rounded-bottom")}
               color="secondary"
@@ -128,6 +131,7 @@ function CustomMenuList({
 interface NamespaceSelectorProps {
   currentNamespace?: string;
   hasMore?: boolean;
+  inputId: string;
   isFetchingMore?: boolean;
   namespaces: ResponseNamespaces;
   onChange?: (newValue: SingleValue<ResponseNamespace>) => void;
@@ -137,6 +141,7 @@ interface NamespaceSelectorProps {
 function NamespaceSelector({
   currentNamespace,
   hasMore,
+  inputId,
   isFetchingMore,
   namespaces,
   onChange,
@@ -157,6 +162,7 @@ function NamespaceSelector({
 
   return (
     <Select
+      inputId={inputId}
       options={namespaces}
       value={currentValue}
       unstyled
@@ -175,8 +181,13 @@ function NamespaceSelector({
 }
 
 const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
-  control: ({ menuIsOpen }) =>
-    cx(menuIsOpen ? "rounded-top" : "rounded", "border", styles.control),
+  control: ({ menuIsOpen, isFocused }) =>
+    cx(
+      menuIsOpen ? "rounded-top" : "rounded",
+      "border",
+      isFocused && "border-primary-subtle",
+      styles.control
+    ),
   dropdownIndicator: () => cx("pe-3"),
   menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0"),
   menuList: () => cx("d-grid"),
@@ -197,12 +208,18 @@ const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
     cx("d-flex", "flex-column", "flex-sm-row", "column-gap-3", "px-3"),
 };
 
+interface ProjectNamespaceFormFieldProps<T extends FieldValues>
+  extends GenericFormFieldProps<T> {
+  ensureNamespace?: string;
+}
+
 export default function ProjectNamespaceFormField<T extends FieldValues>({
   control,
   entityName,
+  ensureNamespace,
   errors,
   name,
-}: GenericFormFieldProps<T>) {
+}: ProjectNamespaceFormFieldProps<T>) {
   // Handle forced refresh
   const dispatch = useAppDispatch();
   const refetch = useCallback(() => {
@@ -210,7 +227,7 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
   }, [dispatch]);
   return (
     <div className="mb-3">
-      <Label className="form-label" for={`${entityName}-namespace`}>
+      <Label className="form-label" for={`${entityName}-namespace-input`}>
         Namespace
         <RefreshNamespaceButton refresh={refetch} />
       </Label>
@@ -226,7 +243,9 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
               aria-describedby={`${entityName}NamespaceHelp`}
               className={cx(errors.namespace && "is-invalid")}
               data-cy={`${entityName}-namespace-input`}
+              ensureNamespace={ensureNamespace}
               id={`${entityName}-namespace`}
+              inputId={`${entityName}-namespace-input`}
               onChange={(newValue) => field.onChange(newValue?.slug)}
             />
           );
@@ -251,20 +270,35 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
 interface ProjectNamespaceControlProps {
   className: string;
   "data-cy": string;
+  ensureNamespace?: string;
   id: string;
+  inputId: string;
   onChange: (newValue: SingleValue<ResponseNamespace>) => void;
   value?: string;
 }
 
-export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
-  const { className, id, onChange, value } = props;
-  const dataCy = props["data-cy"];
+export function ProjectNamespaceControl({
+  className,
+  ensureNamespace,
+  id,
+  inputId,
+  onChange,
+  value,
+  "data-cy": dataCy,
+}: ProjectNamespaceControlProps) {
   const {
     data: namespacesFirstPage,
     isError,
     isFetching,
     requestId,
   } = useGetNamespacesQuery({ params: { minimum_role: "editor" } });
+  const {
+    data: specificNamespace,
+    isError: specificNamespaceIsError,
+    requestId: specificNamespaceRequestId,
+  } = useGetNamespacesByNamespaceSlugQuery(
+    ensureNamespace ? { namespaceSlug: ensureNamespace } : skipToken
+  );
 
   const [
     { data: allNamespaces, fetchedPages, hasMore, currentRequestId },
@@ -302,7 +336,7 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     if (userNamespace != null && !value) {
       onChange(userNamespace);
     }
-  }, [onChange, namespacesFirstPage, value]);
+  }, [namespacesFirstPage, onChange, value]);
 
   useEffect(() => {
     if (namespacesFirstPage == null) {
@@ -344,6 +378,22 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     currentRequestId,
   ]);
 
+  useEffect(() => {
+    if (specificNamespace == null || allNamespaces == null) {
+      return;
+    }
+    const hasNamespace = allNamespaces.find(
+      ({ slug }) => slug === specificNamespace.slug
+    );
+    if (hasNamespace) {
+      return;
+    }
+    setState((prevState) => {
+      const namespaces = [specificNamespace, ...(prevState.data ?? [])];
+      return { ...prevState, data: namespaces };
+    });
+  }, [allNamespaces, specificNamespace, specificNamespaceRequestId]);
+
   if (isFetching) {
     return (
       <div className={cx(className, "form-control")} id={id}>
@@ -353,7 +403,7 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     );
   }
 
-  if (!allNamespaces || isError) {
+  if (!allNamespaces || isError || specificNamespaceIsError) {
     return (
       <div className={className} id={id}>
         <ErrorAlert>
@@ -368,6 +418,7 @@ export function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
       <NamespaceSelector
         currentNamespace={value}
         hasMore={hasMore}
+        inputId={inputId}
         isFetchingMore={namespacesPageResult.isFetching}
         namespaces={allNamespaces}
         onChange={onChange}
