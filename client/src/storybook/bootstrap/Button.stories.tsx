@@ -85,10 +85,10 @@ export const IconOnly_: Story = {
   render: ({ ..._args }) => (
     <div className="d-flex gap-3">
       <Button {..._args} color="outline-primary">
-        <PlusLg className="icon-text" />
+        <PlusLg className="bi" />
       </Button>
       <Button {..._args} color="primary">
-        <PlusLg className="icon-text" />
+        <PlusLg className="bi" />
       </Button>
     </div>
   ),

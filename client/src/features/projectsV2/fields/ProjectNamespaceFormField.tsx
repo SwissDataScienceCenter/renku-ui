@@ -58,7 +58,7 @@ const selectComponents: SelectComponentsConfig<
   DropdownIndicator: (props) => {
     return (
       <components.DropdownIndicator {...props}>
-        <ChevronDown className="icon-text" />
+        <ChevronDown className="bi" />
       </components.DropdownIndicator>
     );
   },
