@@ -233,7 +233,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       const response = { status: 200 };
       cy.intercept(
         "GET",
-        "/ui-server/api/notebooks/images?image_url=*",
+        "/ui-server/api/data/sessions/images?image_url=*",
         response
       ).as(name);
       return this;

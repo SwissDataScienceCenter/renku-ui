@@ -4,14 +4,19 @@
     "project_id": "01HYJE5FR1JV4CWFMBFJQFQ4RM",
     "name": "Session-custom",
     "creation_date": "2024-05-23T09:59:59Z",
-    "environment_kind": "container_image",
-    "container_image": "renku/renkulab-py:latest",
-    "resource_class_id": 2,
-    "port": "8080",
-    "workingDirectory": "/",
-    "uid": "1000",
-    "gid": "1000",
-    "mountDirectory": "",
-    "default_url": "/jdbqksdgsahd/bsajhfdjhsdv/jasgdjhf/lab"
+    "environment": {
+      "id": "01JBXS0N2RESJP9W7ZWGZV3A2K",
+      "name": "Session-custom",
+      "creation_date": "2024-11-05T09:03:12.977947Z",
+      "container_image": "renku/renkulab-py:latest",
+      "default_url": "/jdbqksdgsahd/bsajhfdjhsdv/jasgdjhf/lab",
+      "uid": 1000,
+      "gid": 1000,
+      "working_directory": "/",
+      "mount_directory": "",
+      "port": 8080,
+      "environment_kind": "CUSTOM"
+    },
+    "resource_class_id": 2
   }
 ]

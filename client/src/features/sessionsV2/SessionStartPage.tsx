@@ -386,10 +386,6 @@ function StartSessionWithCloudStorageModal({
     navigate(url);
   }, [navigate, project.namespace, project.slug]);
 
-  if (configsNeedingCredentials.length === 0) {
-    return <SessionStarting launcher={launcher} project={project} />;
-  }
-
   return (
     <div>
       <div className={cx("progress-box-small", "progress-box-small--steps")}>
@@ -423,6 +419,8 @@ function StartSessionFromLauncher({
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const hasCustomQuery = searchParams.has("custom");
+  const [sessionStarted, setSessionStarted] = useState(false);
+  const [showSaveCredentials, setShowSaveCredentials] = useState(false);
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: project.namespace,
     slug: project.slug,
@@ -479,6 +477,33 @@ function StartSessionFromLauncher({
     };
   }, [allDataFetched, needsCredentials, dispatch]);
 
+  useEffect(() => {
+    // Handle all data fetched and no credentials needed
+    if (
+      allDataFetched &&
+      !needsCredentials &&
+      startSessionOptionsV2.cloudStorage &&
+      shouldSaveCredentials
+    )
+      setShowSaveCredentials(shouldSaveCredentials);
+    else setShowSaveCredentials(false);
+
+    if (
+      allDataFetched &&
+      !needsCredentials &&
+      startSessionOptionsV2.cloudStorage &&
+      !shouldSaveCredentials &&
+      !sessionStarted
+    )
+      setSessionStarted(true);
+  }, [
+    allDataFetched,
+    needsCredentials,
+    startSessionOptionsV2.cloudStorage,
+    shouldSaveCredentials,
+    sessionStarted,
+  ]);
+
   const steps = [
     {
       id: 0,
@@ -509,17 +534,16 @@ function StartSessionFromLauncher({
     );
   }
 
-  // Handle all data fetched and no credentials needed
-  if (allDataFetched && !needsCredentials) {
-    return shouldSaveCredentials ? (
+  if (showSaveCredentials)
+    return (
       <SaveCloudStorage
         launcher={launcher}
         startSessionOptionsV2={startSessionOptionsV2}
       />
-    ) : (
-      <SessionStarting launcher={launcher} project={project} />
     );
-  }
+
+  if (sessionStarted)
+    return <SessionStarting launcher={launcher} project={project} />;
 
   // Handle all data fetched and credentials needed
   if (

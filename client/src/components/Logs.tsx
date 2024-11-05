@@ -370,7 +370,7 @@ const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
  * @param {ReactNode | string} title - modal title
  */
 interface EnvironmentLogsPresentProps {
-  title: ReactNode | string;
+  title: ReactNode;
   fetchLogs: IFetchableLogs["fetchLogs"];
   logs?: ILogs;
   name: string;
