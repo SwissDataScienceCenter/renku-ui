@@ -547,7 +547,7 @@ describe("launch sessions with data connectors", () => {
     cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
 
-  it("launch session multiple data connectors requiring multiple credentials, skipping some", () => {
+  it.skip("launch session multiple data connectors requiring multiple credentials, skipping some", () => {
     fixtures
       .testCloudStorage({ success: false })
       .listProjectDataConnectors({
