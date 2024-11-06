@@ -132,39 +132,14 @@ export default function DataConnectorModalFooter({
         dataConnectorId,
         dataConnectorPatch: dataConnectorPost,
         "If-Match": dataConnector.etag,
-      }).then((result) => {
-        if ("data" in result && result.data.id) {
-          const dataConnectorResultNamespace = result.data.namespace;
-          const dataConnectorResultSlug = result.data.slug;
-          const dataConnectorResultName = `${dataConnectorResultNamespace}/${dataConnectorResultSlug}`;
-          dispatch(
-            dataConnectorFormSlice.actions.setSuccess({
-              success: true,
-              dataConnectorResultName,
-            })
-          );
-        }
       });
     } else {
       createDataConnector({
         dataConnectorPost,
-      }).then((result) => {
-        if ("data" in result && result.data.id) {
-          const dataConnectorResultNamespace = result.data.namespace;
-          const dataConnectorResultSlug = result.data.slug;
-          const dataConnectorResultName = `${dataConnectorResultNamespace}/${dataConnectorResultSlug}`;
-          dispatch(
-            dataConnectorFormSlice.actions.setSuccess({
-              success: true,
-              dataConnectorResultName,
-            })
-          );
-        }
       });
     }
   }, [
     createDataConnector,
-    dispatch,
     dataConnector,
     dataConnectorId,
     updateDataConnector,
@@ -176,6 +151,42 @@ export default function DataConnectorModalFooter({
     () => hasProviderShortlist(flatDataConnector.schema),
     [flatDataConnector.schema]
   );
+
+  useEffect(() => {
+    if (
+      "data" in createResult &&
+      createResult.data != null &&
+      createResult.data.id
+    ) {
+      const dataConnectorResultNamespace = createResult.data.namespace;
+      const dataConnectorResultSlug = createResult.data.slug;
+      const dataConnectorResultName = `${dataConnectorResultNamespace}/${dataConnectorResultSlug}`;
+      dispatch(
+        dataConnectorFormSlice.actions.setSuccess({
+          success: true,
+          dataConnectorResultName,
+        })
+      );
+    }
+  }, [createResult, dispatch]);
+
+  useEffect(() => {
+    if (
+      "data" in updateResult &&
+      updateResult.data != null &&
+      updateResult.data.id
+    ) {
+      const dataConnectorResultNamespace = updateResult.data.namespace;
+      const dataConnectorResultSlug = updateResult.data.slug;
+      const dataConnectorResultName = `${dataConnectorResultNamespace}/${dataConnectorResultSlug}`;
+      dispatch(
+        dataConnectorFormSlice.actions.setSuccess({
+          success: true,
+          dataConnectorResultName,
+        })
+      );
+    }
+  }, [dispatch, updateResult]);
 
   useEffect(() => {
     const dataConnectorId = createResult.data?.id;
