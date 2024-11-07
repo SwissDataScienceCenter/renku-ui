@@ -180,5 +180,11 @@ describe("Set up data connectors with credentials", () => {
       "contain.text",
       "Credentials saved"
     );
+    cy.getDataCy("data-connector-view-back-button").click();
+
+    // Check that the state was reset
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
   });
 });

@@ -46,6 +46,7 @@ import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "../../../dataConnectorsV2/components/DataConnectorModal/index";
 import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
+import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
@@ -64,9 +65,14 @@ export default function ProjectConnectDataConnectorsModal({
   isOpen,
   namespace,
   project,
-  toggle,
+  toggle: originalToggle,
 }: ProjectConnectDataConnectorsModalProps) {
   const [mode, setMode] = useState<ProjectConnectDataConnectorMode>("link");
+  const dispatch = useAppDispatch();
+  const toggle = useCallback(() => {
+    dispatch(dataConnectorFormSlice.actions.resetTransientState());
+    originalToggle();
+  }, [dispatch, originalToggle]);
   return (
     <Modal
       backdrop="static"
@@ -205,6 +211,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
     control,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm<DataConnectorLinkFormFields>({
     defaultValues: {
       dataConnectorIdentifier: "",
@@ -242,9 +249,10 @@ function ProjectLinkDataConnectorBodyAndFooter({
   useEffect(() => {
     if (isSuccess) {
       dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
+      reset();
       toggle();
     }
-  }, [dispatch, isSuccess, toggle]);
+  }, [dispatch, isSuccess, reset, toggle]);
 
   return (
     <Form noValidate onSubmit={handleSubmit(onSubmit)}>

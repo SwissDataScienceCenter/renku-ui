@@ -57,17 +57,19 @@ type DataConnectorOptions = Record<
 >;
 
 export const EMPTY_DATA_CONNECTOR_FLAT: DataConnectorFlat = {
+  // Remote storage fields
+  options: undefined,
+  provider: undefined,
+  schema: undefined,
+  sourcePath: undefined,
+
+  // DataConnector fields
   name: undefined,
   namespace: undefined,
   slug: undefined,
   visibility: "private",
-
   mountPoint: undefined,
-  options: undefined,
-  provider: undefined,
   readOnly: true,
-  schema: undefined,
-  sourcePath: undefined,
 };
 
 export function dataConnectorPostFromFlattened(

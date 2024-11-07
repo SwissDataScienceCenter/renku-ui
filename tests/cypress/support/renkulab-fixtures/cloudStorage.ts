@@ -171,6 +171,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       const response = {
         fixture,
         statusCode: 200,
+        delay: 1000,
       };
       cy.intercept("GET", "/ui-server/api/data/storage_schema", response).as(
         name

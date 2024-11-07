@@ -111,6 +111,35 @@ describe("Set up data connectors with credentials", () => {
     cy.wait("@listDataConnectors");
   });
 
+  it("resets validation state when content changes", () => {
+    fixtures
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .listDataConnectors({ namespace: "test-2-group-v2" })
+      .testCloudStorage({ success: true });
+    cy.visit("/v2/groups/test-2-group-v2");
+    cy.wait("@readGroupV2");
+    // add data connector
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.wait("@getStorageSchema");
+
+    // Pick a provider
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
+    cy.getDataCy("data-connector-edit-next-button").click();
+
+    // Fill out the details
+    cy.get("#sourcePath").type("bucket/my-source");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("test-data-connector-button")
+      .contains("Test connection")
+      .click();
+    cy.getDataCy("test-data-connector-button").contains("Re-test");
+    cy.getDataCy("add-data-connector-continue-button").contains("Continue");
+    cy.get("#sourcePath").clear().type("foo");
+    cy.getDataCy("test-data-connector-button").contains("Test connection");
+  });
+
   it("create data connector with credentials", () => {
     fixtures
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
@@ -171,6 +200,11 @@ describe("Set up data connectors with credentials", () => {
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listDataConnectors");
+
+    // Check that the state was reset
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
   });
 
   it("set credentials for a data connector", () => {

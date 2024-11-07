@@ -21,20 +21,22 @@ import { Control, Controller } from "react-hook-form";
 import { Label } from "reactstrap";
 
 import { InfoAlert } from "../../../../components/Alert";
-import { AddCloudStorageState } from "../../../project/components/cloudStorage/projectCloudStorage.types";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+
 import { DataConnectorMountForm } from "./DataConnectorModalBody";
 
 type DataConnectorSaveCredentialsInfoProps = {
   control: Control<DataConnectorMountForm>;
   onFieldValueChange: (field: "saveCredentials", value: boolean) => void;
-  state: AddCloudStorageState;
 };
 
 export default function DataConnectorSaveCredentialsInfo({
   control,
   onFieldValueChange,
-  state,
 }: DataConnectorSaveCredentialsInfoProps) {
+  const { cloudStorageState } = useAppSelector(
+    (state) => state.dataConnectorFormSlice
+  );
   return (
     <div className="mt-3">
       <Label className="form-label" for="saveCredentials">
@@ -55,12 +57,12 @@ export default function DataConnectorSaveCredentialsInfo({
               onFieldValueChange("saveCredentials", e.target.checked);
             }}
             value=""
-            checked={state.saveCredentials}
+            checked={cloudStorageState.saveCredentials}
           />
         )}
         rules={{ required: true }}
       />
-      {state.saveCredentials && (
+      {cloudStorageState.saveCredentials && (
         <div className="mt-1">
           <InfoAlert timeout={0} dismissible={false}>
             <p className="mb-0">

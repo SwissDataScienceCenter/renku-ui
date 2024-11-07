@@ -23,16 +23,15 @@ import { Controller, useForm } from "react-hook-form";
 import { ButtonGroup, FormText, Input, Label } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { WarnAlert } from "../../../../components/Alert";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
 
 import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
-import { useGetCloudStorageSchemaQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import type {
   AddCloudStorageState,
   CloudStorageDetails,
-  CloudStorageSchema,
 } from "../../../project/components/cloudStorage/projectCloudStorage.types";
 import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.utils";
 import {
@@ -44,74 +43,31 @@ import {
 } from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import type { DataConnectorSecret } from "../../api/data-connectors.api";
+import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
-import { type DataConnectorFlat } from "../dataConnector.utils";
-import DataConnectorModalResult, {
-  type AuxiliaryCommandStatus,
-} from "./DataConnectorModalResult";
+import DataConnectorModalResult from "./DataConnectorModalResult";
 import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo";
 
 interface AddOrEditDataConnectorProps {
-  flatDataConnector: DataConnectorFlat;
-  schema: CloudStorageSchema[];
-  setFlatDataConnector: (newDetails: Partial<DataConnectorFlat>) => void;
-  setState: (newState: Partial<AddCloudStorageState>) => void;
-  state: AddCloudStorageState;
-  storageSecrets: DataConnectorSecret[];
-  validationSucceeded: boolean;
-}
-
-interface DataConnectorModalBodyProps {
-  dataConnectorResultName: string | undefined;
-  flatDataConnector: DataConnectorFlat;
-  credentialSaveStatus: AuxiliaryCommandStatus;
-  projectLinkStatus: AuxiliaryCommandStatus;
-  redraw: boolean;
-  schemaQueryResult: SchemaQueryResult;
-  setFlatDataConnectorSafe: (
-    newDataConnector: Partial<DataConnectorFlat>
-  ) => void;
-  setStateSafe: (newState: Partial<AddCloudStorageState>) => void;
-  state: AddCloudStorageState;
-  success: boolean;
-  validationSucceeded: boolean;
   storageSecrets: DataConnectorSecret[];
 }
 
-type SchemaQueryResult = ReturnType<typeof useGetCloudStorageSchemaQuery>;
+type DataConnectorModalBodyProps = AddOrEditDataConnectorProps;
 
 export default function DataConnectorModalBody({
-  dataConnectorResultName,
-  flatDataConnector,
-  credentialSaveStatus,
-  projectLinkStatus,
-  redraw,
-  schemaQueryResult,
-  setFlatDataConnectorSafe,
-  setStateSafe,
-  state,
   storageSecrets,
-  success,
-  validationSucceeded,
 }: DataConnectorModalBodyProps) {
-  const {
-    data: schema,
-    error: schemaError,
-    isFetching: schemaIsFetching,
-  } = schemaQueryResult;
-  if (redraw) return <Loader />;
+  const { flatDataConnector, schemata, success } = useAppSelector(
+    (state) => state.dataConnectorFormSlice
+  );
   if (success) {
     return (
       <DataConnectorModalResult
         alreadyExisted={!!flatDataConnector.dataConnectorId}
-        credentialSaveStatus={credentialSaveStatus}
-        dataConnectorResultName={dataConnectorResultName}
-        projectLinkStatus={projectLinkStatus}
       />
     );
   }
-  if (schemaIsFetching || !schema) return <Loader />;
-  if (schemaError) return <RtkOrNotebooksError error={schemaError} />;
+  if (schemata.length < 1) return <Loader />;
   return (
     <>
       {!flatDataConnector.dataConnectorId && (
@@ -120,75 +76,81 @@ export default function DataConnectorModalBody({
           Or, connect to cloud storage to read and write custom data.
         </p>
       )}
-      <AddOrEditDataConnector
-        flatDataConnector={flatDataConnector}
-        schema={schema}
-        setState={setStateSafe}
-        setFlatDataConnector={setFlatDataConnectorSafe}
-        state={state}
-        storageSecrets={storageSecrets}
-        validationSucceeded={validationSucceeded}
-      />
+      <AddOrEditDataConnector storageSecrets={storageSecrets} />
     </>
   );
 }
 
 function AddOrEditDataConnector({
-  flatDataConnector,
-  schema,
-  setFlatDataConnector,
-  setState,
-  state,
   storageSecrets,
-  validationSucceeded,
 }: AddOrEditDataConnectorProps) {
-  const setStorage = useCallback(
-    (newDetails: Partial<CloudStorageDetails>) => {
-      setFlatDataConnector({ ...newDetails });
+  const { cloudStorageState, flatDataConnector, schemata, validationResult } =
+    useAppSelector((state) => state.dataConnectorFormSlice);
+  const dispatch = useAppDispatch();
+  const setState = useCallback(
+    (newState: Partial<AddCloudStorageState>) => {
+      dispatch(
+        dataConnectorFormSlice.actions.setCloudStorageState({
+          cloudStorageState: newState,
+        })
+      );
     },
-    [setFlatDataConnector]
+    [dispatch]
+  );
+  const setFlatDataConnector = useCallback(
+    (newDetails: Partial<CloudStorageDetails>) => {
+      dispatch(
+        dataConnectorFormSlice.actions.setFlatDataConnector({
+          flatDataConnector: {
+            ...newDetails,
+          },
+          validationSucceeded: null,
+        })
+      );
+    },
+    [dispatch]
   );
   const CloudStorageContentByStep =
-    state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
-      ? mapCloudStorageStepToElement[state.step]
+    cloudStorageState.step >= 0 &&
+    cloudStorageState.step <= CLOUD_STORAGE_TOTAL_STEPS
+      ? mapCloudStorageStepToElement[cloudStorageState.step]
       : null;
   if (CloudStorageContentByStep)
     return (
       <>
         <div className={cx("d-flex", "justify-content-end")}>
-          <AddStorageAdvancedToggle state={state} setState={setState} />
+          <AddStorageAdvancedToggle
+            state={cloudStorageState}
+            setState={setState}
+          />
         </div>
         <CloudStorageContentByStep
-          schema={schema}
-          state={state}
+          schema={schemata}
+          state={cloudStorageState}
           storage={flatDataConnector}
           setState={setState}
-          setStorage={setStorage}
+          setStorage={setFlatDataConnector}
           storageSecrets={storageSecrets}
+          validationSucceeded={validationResult?.isSuccess ?? false}
           isV2={true}
-          validationSucceeded={validationSucceeded}
         />
       </>
     );
   const DataConnectorContentByStep =
-    state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
-      ? mapDataConnectorStepToElement[state.step]
+    cloudStorageState.step >= 0 &&
+    cloudStorageState.step <= CLOUD_STORAGE_TOTAL_STEPS
+      ? mapDataConnectorStepToElement[cloudStorageState.step]
       : null;
   if (DataConnectorContentByStep)
     return (
       <>
         <div className={cx("d-flex", "justify-content-end")}>
-          <AddStorageAdvancedToggle state={state} setState={setState} />
+          <AddStorageAdvancedToggle
+            state={cloudStorageState}
+            setState={setState}
+          />
         </div>
-        <DataConnectorContentByStep
-          flatDataConnector={flatDataConnector}
-          schema={schema}
-          state={state}
-          setState={setState}
-          setFlatDataConnector={setFlatDataConnector}
-          storageSecrets={storageSecrets}
-          validationSucceeded={validationSucceeded}
-        />
+        <DataConnectorContentByStep storageSecrets={storageSecrets} />
       </>
     );
   return <p>Error - not implemented yet</p>;
@@ -211,14 +173,11 @@ type DataConnectorMountFormFields =
   | "mountPoint"
   | "readOnly"
   | "saveCredentials";
-export function DataConnectorMount({
-  flatDataConnector,
-  schema,
-  setFlatDataConnector,
-  setState,
-  state,
-  validationSucceeded,
-}: AddOrEditDataConnectorProps) {
+export function DataConnectorMount() {
+  const dispatch = useAppDispatch();
+  const { cloudStorageState, flatDataConnector, schemata } = useAppSelector(
+    (state) => state.dataConnectorFormSlice
+  );
   const {
     control,
     formState: { errors, touchedFields },
@@ -235,7 +194,7 @@ export function DataConnectorMount({
         flatDataConnector.mountPoint ||
         `${flatDataConnector.schema?.toLowerCase()}`,
       readOnly: flatDataConnector.readOnly ?? false,
-      saveCredentials: state.saveCredentials,
+      saveCredentials: cloudStorageState.saveCredentials,
     },
   });
   const onFieldValueChange = useCallback(
@@ -259,15 +218,22 @@ export function DataConnectorMount({
       )
         setValue("mountPoint", value as string);
       if (field === "saveCredentials") {
-        setState({ saveCredentials: !!value });
+        dispatch(
+          dataConnectorFormSlice.actions.setCloudStorageState({
+            cloudStorageState: { saveCredentials: !!value },
+          })
+        );
         return;
       }
-      setFlatDataConnector({ ...getValues() });
+      dispatch(
+        dataConnectorFormSlice.actions.setFlatDataConnector({
+          flatDataConnector: { ...getValues() },
+        })
+      );
     },
     [
+      dispatch,
       getValues,
-      setState,
-      setFlatDataConnector,
       flatDataConnector.dataConnectorId,
       setValue,
       touchedFields.mountPoint,
@@ -275,8 +241,11 @@ export function DataConnectorMount({
     ]
   );
 
+  const { validationResult } = useAppSelector(
+    (state) => state.dataConnectorFormSlice
+  );
   const options = getSchemaOptions(
-    schema,
+    schemata,
     true,
     flatDataConnector.schema,
     flatDataConnector.provider
@@ -562,11 +531,10 @@ export function DataConnectorMount({
 
       {flatDataConnector.dataConnectorId == null &&
         hasPasswordFieldWithInput &&
-        validationSucceeded && (
+        validationResult?.isSuccess && (
           <DataConnectorSaveCredentialsInfo
             control={control}
             onFieldValueChange={onFieldValueChange}
-            state={state}
           />
         )}
     </form>

@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+import { useCallback, useEffect } from "react";
 import {
   ArrowRepeat,
   ChevronLeft,
@@ -30,18 +31,20 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+
 import { useTestCloudStorageConnectionMutation } from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import {
   AddCloudStorageState,
-  CloudStorageDetails,
+  CloudStorageDetailsOptions,
+  TestCloudStorageConnectionParams,
 } from "../../../project/components/cloudStorage/projectCloudStorage.types";
 
-interface DataConnectorModalForwardBackButtonProps {
-  setStateSafe: (newState: Partial<AddCloudStorageState>) => void;
-  state: AddCloudStorageState;
-  validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
-}
+import dataConnectorFormSlice from "../../state/dataConnectors.slice";
+
+interface DataConnectorModalForwardBackButtonProps {}
 
 interface DataConnectorModalBackButtonProps
   extends DataConnectorModalForwardBackButtonProps {
@@ -49,13 +52,15 @@ interface DataConnectorModalBackButtonProps
   toggle: () => void;
 }
 export function DataConnectorModalBackButton({
-  setStateSafe,
-  state,
   success,
   toggle,
-  validationResult,
 }: DataConnectorModalBackButtonProps) {
-  if (state.step <= 1 || success)
+  const { cloudStorageState, isActionOngoing } = useAppSelector(
+    (state) => state.dataConnectorFormSlice
+  );
+  useAppSelector((state) => state.dataConnectorFormSlice);
+  const dispatch = useAppDispatch();
+  if (cloudStorageState.step <= 1 || success)
     return (
       <Button
         color="outline-primary"
@@ -70,12 +75,18 @@ export function DataConnectorModalBackButton({
     <Button
       color="outline-primary"
       data-cy="data-connector-edit-back-button"
-      disabled={validationResult.isLoading}
+      disabled={isActionOngoing}
       onClick={() => {
-        if (!validationResult.isUninitialized) validationResult.reset();
-        setStateSafe({
-          step: state.advancedMode ? 0 : state.step - 1,
-        });
+        dispatch(
+          dataConnectorFormSlice.actions.setCloudStorageState({
+            cloudStorageState: {
+              step: cloudStorageState.advancedMode
+                ? 0
+                : cloudStorageState.step - 1,
+            },
+            validationResult: null,
+          })
+        );
       }}
     >
       <ChevronLeft className={cx("bi", "me-1")} />
@@ -92,10 +103,7 @@ interface DataConnectorModalContinueButtonProps
   disableContinueButton: boolean;
   hasStoredCredentialsInConfig: boolean;
   isResultLoading: boolean;
-  setValidationSucceeded: (succeeded: boolean) => void;
-  storageDetails: CloudStorageDetails;
-  storageId: string | null;
-  validateConnection: () => void;
+  dataConnectorId: string | null;
 }
 export function DataConnectorModalContinueButton({
   addButtonDisableReason,
@@ -104,17 +112,25 @@ export function DataConnectorModalContinueButton({
   disableContinueButton,
   hasStoredCredentialsInConfig,
   isResultLoading,
-  setStateSafe,
-  setValidationSucceeded,
-  state,
-  storageDetails,
-  storageId,
-  validateConnection,
-  validationResult,
+  dataConnectorId,
 }: DataConnectorModalContinueButtonProps) {
   const addButtonId = "add-data-connector-continue";
   const continueButtonId = "add-data-connector-next";
-  if (state.step === 3 && state.completedSteps >= 2) {
+  const { cloudStorageState, flatDataConnector } = useAppSelector(
+    (state) => state.dataConnectorFormSlice
+  );
+  const dispatch = useAppDispatch();
+  const setState = useCallback(
+    (newState: Partial<AddCloudStorageState>) => {
+      dispatch(
+        dataConnectorFormSlice.actions.setCloudStorageState({
+          cloudStorageState: newState,
+        })
+      );
+    },
+    [dispatch]
+  );
+  if (cloudStorageState.step === 3 && cloudStorageState.completedSteps >= 2) {
     return (
       <div id={`${addButtonId}-div`} className="d-inline-block">
         <Button
@@ -126,12 +142,12 @@ export function DataConnectorModalContinueButton({
         >
           {isResultLoading ? (
             <Loader className="me-1" inline size={16} />
-          ) : storageId ? (
+          ) : dataConnectorId ? (
             <PencilSquare className={cx("bi", "me-1")} />
           ) : (
             <PlusLg className={cx("bi", "me-1")} />
           )}
-          {storageId ? "Update" : "Add"} connector
+          {dataConnectorId ? "Update" : "Add"} connector
         </Button>
         {disableAddButton && (
           <UncontrolledTooltip placement="top" target={`${addButtonId}-div`}>
@@ -142,30 +158,23 @@ export function DataConnectorModalContinueButton({
     );
   }
   if (
-    state.step === 2 &&
-    state.completedSteps >= 1 &&
+    cloudStorageState.step === 2 &&
+    cloudStorageState.completedSteps >= 1 &&
     !hasStoredCredentialsInConfig
   ) {
     return (
       <div id={`${continueButtonId}-div`} className="d-inline-block">
         <TestConnectionAndContinueButtons
-          actionState={setStateSafe}
-          actionTest={validateConnection}
           continueId="add-data-connector-continue"
-          resetTest={validationResult.reset}
-          setValidationSucceeded={setValidationSucceeded}
-          step={state.step}
+          step={cloudStorageState.step}
           testId="test-data-connector"
-          testIsFailure={validationResult.isError}
-          testIsOngoing={validationResult.isLoading}
-          testIsSuccess={validationResult.isSuccess}
         />
         {disableContinueButton && (
           <UncontrolledTooltip
             placement="top"
             target={`${continueButtonId}-div`}
           >
-            {!storageDetails.schema
+            {!flatDataConnector.schema
               ? "Please select a storage type"
               : "Please select a provider or change storage type"}
           </UncontrolledTooltip>
@@ -181,14 +190,17 @@ export function DataConnectorModalContinueButton({
         data-cy="data-connector-edit-next-button"
         disabled={disableContinueButton}
         onClick={() => {
-          setStateSafe({
+          setState({
             completedSteps:
-              state.step === 0
+              cloudStorageState.step === 0
                 ? CLOUD_STORAGE_TOTAL_STEPS - 1
-                : state.step > state.completedSteps
-                ? state.step
-                : state.completedSteps,
-            step: state.step === 0 ? CLOUD_STORAGE_TOTAL_STEPS : state.step + 1,
+                : cloudStorageState.step > cloudStorageState.completedSteps
+                ? cloudStorageState.step
+                : cloudStorageState.completedSteps,
+            step:
+              cloudStorageState.step === 0
+                ? CLOUD_STORAGE_TOTAL_STEPS
+                : cloudStorageState.step + 1,
           });
         }}
       >
@@ -196,7 +208,7 @@ export function DataConnectorModalContinueButton({
       </Button>
       {disableContinueButton && (
         <UncontrolledTooltip placement="top" target={`${continueButtonId}-div`}>
-          {!storageDetails.schema
+          {!flatDataConnector.schema
             ? "Please select a storage type"
             : "Please select a provider or change storage type"}
         </UncontrolledTooltip>
@@ -205,14 +217,15 @@ export function DataConnectorModalContinueButton({
   );
 }
 
-interface DataConnectorConnectionTestResultProps {
-  validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
-}
-
-export function DataConnectorConnectionTestResult({
-  validationResult,
-}: DataConnectorConnectionTestResultProps) {
-  if (validationResult.isUninitialized || validationResult.isLoading)
+export function DataConnectorConnectionTestResult() {
+  const { cloudStorageState, isActionOngoing, validationResult } =
+    useAppSelector((state) => state.dataConnectorFormSlice);
+  if (
+    cloudStorageState.step !== 2 ||
+    cloudStorageState.completedSteps < 2 ||
+    validationResult == null ||
+    isActionOngoing
+  )
     return null;
   if (validationResult.error)
     return (
@@ -230,49 +243,96 @@ export function DataConnectorConnectionTestResult({
   );
 }
 
-interface TestConnectionAndContinueButtonsProps {
-  actionState: (newState: Partial<AddCloudStorageState>) => void;
-  actionTest: () => void;
+interface TestConnectionAndContinueButtonsProps
+  extends DataConnectorModalForwardBackButtonProps {
   continueId: string;
-  resetTest: () => void;
-  setValidationSucceeded: DataConnectorModalContinueButtonProps["setValidationSucceeded"];
   step: number;
   testId: string;
-  testIsFailure: boolean;
-  testIsOngoing: boolean;
-  testIsSuccess: boolean;
 }
 function TestConnectionAndContinueButtons({
-  actionState,
-  actionTest,
   continueId,
-  resetTest,
-  setValidationSucceeded,
   step,
   testId,
-  testIsFailure,
-  testIsOngoing,
-  testIsSuccess,
 }: TestConnectionAndContinueButtonsProps) {
+  const dispatch = useAppDispatch();
+  const { flatDataConnector, isActionOngoing, validationResultIsCurrent } =
+    useAppSelector((state) => state.dataConnectorFormSlice);
+
+  const [validateCloudStorageConnection, validationResult] =
+    useTestCloudStorageConnectionMutation();
+
+  useEffect(() => {
+    if (
+      !isActionOngoing &&
+      !validationResultIsCurrent &&
+      validationResult != null
+    ) {
+      dispatch(
+        dataConnectorFormSlice.actions.setValidationResult({
+          validationResult: null,
+        })
+      );
+      validationResult.reset();
+    }
+  }, [dispatch, isActionOngoing, validationResult, validationResultIsCurrent]);
+
+  const validateConnection = useCallback(() => {
+    const validateParameters: TestCloudStorageConnectionParams = {
+      configuration: {
+        type: flatDataConnector.schema,
+      },
+      source_path: flatDataConnector.sourcePath ?? "/",
+    };
+    if (flatDataConnector.provider) {
+      validateParameters.configuration.provider = flatDataConnector.provider;
+    }
+    if (
+      flatDataConnector.options &&
+      Object.keys(flatDataConnector.options).length > 0
+    ) {
+      const options = flatDataConnector.options as CloudStorageDetailsOptions;
+      Object.entries(options).forEach(([key, value]) => {
+        if (value != undefined && value !== "") {
+          validateParameters.configuration[key] = value;
+        }
+      });
+    }
+    dispatch(
+      dataConnectorFormSlice.actions.setActionOngoing({ isActionOngoing: true })
+    );
+    validateCloudStorageConnection(validateParameters).then((result) => {
+      const validationResult =
+        "data" in result
+          ? { isSuccess: true, isError: false, error: null }
+          : { isSuccess: false, isError: true, error: result.error };
+
+      dispatch(
+        dataConnectorFormSlice.actions.setValidationResult({
+          validationResult,
+          isActionOngoing: false,
+        })
+      );
+    });
+  }, [dispatch, flatDataConnector, validateCloudStorageConnection]);
   const buttonTestId = `${testId}-button`;
   const divTestId = `${testId}-div`;
   const testConnectionContent =
-    testIsSuccess || testIsFailure ? (
+    validationResult.isSuccess || validationResult.isError ? (
       <>
         Re-test <ArrowRepeat className="bi" />
       </>
-    ) : testIsOngoing ? (
+    ) : validationResult.isLoading ? (
       <>
-        Testing connection <Loader inline size={16} />
+        Test connection <Loader inline size={16} />
       </>
     ) : (
       <>
         Test connection <ChevronRight className={cx("bi", "me-1")} />
       </>
     );
-  const testConnectionColor = testIsSuccess
+  const testConnectionColor = validationResult.isSuccess
     ? "outline-primary"
-    : testIsFailure
+    : validationResult.isError
     ? "danger"
     : "outline-primary";
   const testConnectionSection = (
@@ -281,8 +341,8 @@ function TestConnectionAndContinueButtons({
         color={testConnectionColor}
         id={buttonTestId}
         data-cy={buttonTestId}
-        disabled={testIsOngoing}
-        onClick={() => actionTest()}
+        disabled={validationResult.isLoading}
+        onClick={() => validateConnection()}
       >
         {testConnectionContent}
       </Button>
@@ -291,43 +351,56 @@ function TestConnectionAndContinueButtons({
 
   const buttonContinueId = `${continueId}-button`;
   const divContinueId = `${continueId}-div`;
-  const continueContent = testIsSuccess ? (
+  const continueContent = validationResult.isSuccess ? (
     <>
       Continue <ChevronRight className="bi" />
     </>
-  ) : testIsFailure ? (
+  ) : validationResult.isError ? (
     <>
       Skip Test <ChevronRight className="bi" />
     </>
   ) : null;
-  const continueColorClass = testIsSuccess
+  const continueColorClass = validationResult.isSuccess
     ? "btn-primary"
-    : testIsFailure
+    : validationResult.isError
     ? "btn-outline-danger"
     : "btn-primary";
   const continueSection =
-    !testIsFailure && !testIsSuccess ? null : (
+    !validationResult.isError && !validationResult.isSuccess ? null : (
       <div id={divContinueId} className={cx("d-inline-block", "ms-2")}>
         <Button
           color=""
           id={buttonContinueId}
           data-cy={buttonContinueId}
           className={cx(continueColorClass)}
-          disabled={testIsOngoing}
+          disabled={validationResult.isLoading}
           onClick={() => {
-            setValidationSucceeded(testIsSuccess);
-            if (testIsFailure || testIsSuccess) {
-              resetTest();
+            dispatch(
+              dataConnectorFormSlice.actions.setValidationResult({
+                validationResult: {
+                  isSuccess: validationResult.isSuccess,
+                  isError: validationResult.isError,
+                  error: validationResult.error,
+                },
+              })
+            );
+            if (validationResult.isError || validationResult.isSuccess) {
+              validationResult.reset();
             }
-            actionState({
-              step: step === 0 ? CLOUD_STORAGE_TOTAL_STEPS : step + 1,
-              completedSteps: step === 0 ? CLOUD_STORAGE_TOTAL_STEPS - 1 : step,
-            });
+            dispatch(
+              dataConnectorFormSlice.actions.setCloudStorageState({
+                cloudStorageState: {
+                  step: step === 0 ? CLOUD_STORAGE_TOTAL_STEPS : step + 1,
+                  completedSteps:
+                    step === 0 ? CLOUD_STORAGE_TOTAL_STEPS - 1 : step,
+                },
+              })
+            );
           }}
         >
           {continueContent}
         </Button>
-        {testIsFailure && (
+        {validationResult.isError && (
           <UncontrolledTooltip placement="top" target={divContinueId}>
             The connection is not working as configured. You can make changes
             and try again, or skip and continue.
