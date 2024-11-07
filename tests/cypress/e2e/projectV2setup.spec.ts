@@ -72,7 +72,7 @@ describe("Set up project components", () => {
     cy.wait("@getProjectAfterUpdate");
 
     // edit code repository
-    cy.getDataCy("code-repository-edit").click();
+    cy.getDataCy("code-repository-edit").first().click();
     cy.getDataCy("project-edit-repository-url").type("2");
     cy.getDataCy("edit-code-repository-modal-button").click();
     cy.wait("@updateProjectV2");
