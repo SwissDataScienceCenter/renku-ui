@@ -80,6 +80,30 @@ export function generateProjects(numberOfProjects: number, start: number) {
 
 export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
   return class ProjectV2Fixtures extends Parent {
+    copyProjectV2(args?: ProjectV2IdArgs) {
+      const {
+        fixture = "projectV2/create-projectV2.json",
+        projectId = "THEPROJECTULID26CHARACTERS",
+        name = "copyProjectV2",
+      } = args ?? {};
+      cy.fixture(fixture).then((project) => {
+        cy.intercept(
+          "POST",
+          `/ui-server/api/data/projects/${projectId}/copies`,
+          (req) => {
+            const newProject = req.body;
+            expect(newProject.name).to.not.be.undefined;
+            expect(newProject.namespace).to.not.be.undefined;
+            expect(newProject.slug).to.not.be.undefined;
+            expect(newProject.visibility).to.not.be.undefined;
+            const body = { ...project, ...newProject };
+            req.reply({ body, statusCode: 201, delay: 1000 });
+          }
+        ).as(name);
+      });
+      return this;
+    }
+
     createProjectV2(args?: SimpleFixture) {
       const {
         fixture = "projectV2/create-projectV2.json",

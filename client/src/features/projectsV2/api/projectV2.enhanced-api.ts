@@ -195,6 +195,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsByProjectId: {
       providesTags: ["Project"],
     },
+    getProjectsByProjectIdCopies: {
+      providesTags: ["Project"],
+    },
     getProjectsByProjectIdDataConnectorLinks: {
       providesTags: ["DataConnectors"],
     },
@@ -219,23 +222,28 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjects: {
       invalidatesTags: ["Project"],
     },
+    postProjectsByProjectIdCopies: {
+      invalidatesTags: ["Project"],
+    },
   },
 });
 
 export { enhancedApi as projectV2Api };
 export const {
   // project hooks
+  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsPagedQuery: useGetProjectsQuery,
-  usePostProjectsMutation,
   useGetProjectsByNamespaceAndSlugQuery,
+  useGetProjectsByProjectIdCopiesQuery,
+  useGetProjectsByProjectIdPermissionsQuery,
   useGetProjectsByProjectIdQuery,
   useGetProjectsByProjectIdsQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
-  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
-  useGetProjectsByProjectIdPermissionsQuery,
+  usePostProjectsMutation,
+  usePostProjectsByProjectIdCopiesMutation,
 
   // data connector hooks
   useGetProjectsByProjectIdDataConnectorLinksQuery,

@@ -539,3 +539,59 @@ describe("Viewer cannot edit project", () => {
     cy.getDataCy("add-code-repository").should("not.exist");
   });
 });
+
+describe("Copy a project", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userTest().namespaces();
+    fixtures.projects().landingUserProjects().readProjectV2();
+  });
+  it("copy a project", () => {
+    fixtures.listNamespaceV2();
+    fixtures.copyProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.getDataCy("copy-project-button").click();
+    cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
+      "be.visible"
+    );
+    cy.wait("@listNamespaceV2");
+    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.get("button").contains("Copy project").click();
+    fixtures.readProjectV2({
+      projectSlug: "copy-project-name",
+      name: "readProjectCopy",
+    });
+    cy.wait("@copyProjectV2");
+    cy.wait("@readProjectCopy");
+    cy.location("pathname").should(
+      "eq",
+      "/v2/projects/user1-uuid/copy-project-name"
+    );
+  });
+
+  it("copy a project, overriding the slug", () => {
+    fixtures.listNamespaceV2();
+    fixtures.copyProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.getDataCy("copy-project-button").click();
+    cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
+      "be.visible"
+    );
+    cy.wait("@listNamespaceV2");
+    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.get("button").contains("Configure").click();
+    cy.getDataCy("project-slug-input").clear().type("copy-of-test2");
+    cy.get("button").contains("Copy project").click();
+    fixtures.readProjectV2({
+      projectSlug: "copy-of-test2",
+      name: "readProjectCopy",
+    });
+    cy.wait("@copyProjectV2");
+    cy.wait("@readProjectCopy");
+    cy.location("pathname").should(
+      "eq",
+      "/v2/projects/user1-uuid/copy-of-test2"
+    );
+  });
+});
