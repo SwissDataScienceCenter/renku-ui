@@ -23,7 +23,4 @@ export default defineConfig({
       "~bootstrap": resolve(__dirname, "node_modules/bootstrap"),
     },
   },
-  define: {
-    global: { document: null, window: null },
-  },
 });

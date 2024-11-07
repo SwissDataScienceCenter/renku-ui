@@ -68,8 +68,6 @@ import "./ckEditor.css";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 
-global.document = document;
-global.window = window;
 window.katex = katex;
 
 class RenkuWordCount extends WordCount {
