@@ -33,6 +33,7 @@
   },
   "type": "module",
   "dependencies": {
+    "ckeditor5": "43.1.1",
     "@ckeditor/ckeditor5-build-classic": "43.1.1",
     "@ckeditor/ckeditor5-list": "43.1.1",
     "@ckeditor/ckeditor5-react": "^9.3.0",
