@@ -540,14 +540,14 @@ describe("Viewer cannot edit project", () => {
   });
 });
 
-describe("Copy a project", () => {
+describe("Project copies", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects().readProjectV2();
   });
-  it("copy a project", () => {
-    fixtures.listNamespaceV2();
-    fixtures.copyProjectV2();
+
+  it("copy a regular project", () => {
+    fixtures.listNamespaceV2().copyProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.getDataCy("copy-project-button").click();
@@ -558,15 +558,13 @@ describe("Copy a project", () => {
     cy.getDataCy("project-name-input").clear().type("copy project name");
     cy.get("button").contains("Copy project").click();
     fixtures.readProjectV2({
+      namespace: "e2e",
       projectSlug: "copy-project-name",
       name: "readProjectCopy",
     });
     cy.wait("@copyProjectV2");
     cy.wait("@readProjectCopy");
-    cy.location("pathname").should(
-      "eq",
-      "/v2/projects/user1-uuid/copy-project-name"
-    );
+    cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
   });
 
   it("copy a project, overriding the slug", () => {
@@ -584,14 +582,32 @@ describe("Copy a project", () => {
     cy.getDataCy("project-slug-input").clear().type("copy-of-test2");
     cy.get("button").contains("Copy project").click();
     fixtures.readProjectV2({
+      namespace: "e2e",
       projectSlug: "copy-of-test2",
       name: "readProjectCopy",
     });
     cy.wait("@copyProjectV2");
     cy.wait("@readProjectCopy");
-    cy.location("pathname").should(
-      "eq",
-      "/v2/projects/user1-uuid/copy-of-test2"
-    );
+    cy.location("pathname").should("eq", "/v2/projects/e2e/copy-of-test2");
+  });
+
+  it("show a copied project", () => {
+    fixtures.readProjectV2({
+      overrides: {
+        template_id: "TEMPLATE-ULID",
+      },
+    });
+    fixtures.readProjectV2ById({
+      projectId: "TEMPLATE-ULID",
+      overrides: {
+        name: "template project",
+        namespace: "user1-uuid",
+        slug: "template-project",
+      },
+    });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2ById");
+    cy.contains("This project was copied from:").should("be.visible");
   });
 });

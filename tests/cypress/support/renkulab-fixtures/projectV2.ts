@@ -19,6 +19,17 @@
 import { FixturesConstructor } from "./fixtures";
 import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
+interface ProjectOverrides {
+  id: string;
+  name: string;
+  namespace: string;
+  slug: string;
+  visibility: string;
+  description?: string;
+  keywords?: string[];
+  template_id?: string;
+}
+
 /**
  * Fixtures for New Project
  */
@@ -40,6 +51,7 @@ interface ListProjectV2MembersFixture extends ProjectV2IdArgs {
 
 interface ProjectV2IdArgs extends SimpleFixture {
   projectId?: string;
+  overrides?: Partial<ProjectOverrides>;
 }
 
 interface ProjectV2DeleteFixture extends NameOnlyFixture {
@@ -49,6 +61,7 @@ interface ProjectV2DeleteFixture extends NameOnlyFixture {
 interface ProjectV2NameArgs extends SimpleFixture {
   namespace?: string;
   projectSlug?: string;
+  overrides?: Partial<ProjectOverrides>;
 }
 
 interface ProjectV2PatchOrDeleteMemberFixture extends ProjectV2IdArgs {
@@ -280,13 +293,21 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         name = "readProjectV2",
         namespace = "user1-uuid",
         projectSlug = "test-2-v2-project",
+        overrides = {},
       } = args ?? {};
-      const response = { fixture };
-      cy.intercept(
-        "GET",
-        `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}`,
-        response
-      ).as(name);
+      cy.fixture(fixture).then((project) => {
+        const response = {
+          ...project,
+          namespace,
+          slug: projectSlug,
+          ...overrides,
+        };
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}`,
+          response
+        ).as(name);
+      });
       return this;
     }
 
@@ -295,13 +316,14 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         fixture = "projectV2/read-projectV2.json",
         name = "readProjectV2ById",
         projectId = "THEPROJECTULID26CHARACTERS",
+        overrides = {},
       } = args ?? {};
       cy.fixture(fixture).then((project) => {
         cy.intercept(
           "GET",
           `/ui-server/api/data/projects/${projectId}`,
           (req) => {
-            const response = { ...project, id: projectId };
+            const response = { ...project, ...overrides, id: projectId };
             req.reply({ body: response, delay: 1000 });
           }
         ).as(name);

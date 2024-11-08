@@ -36,6 +36,7 @@ import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
 import { type Visibility } from "../../projectsV2/api/projectV2.api";
 import { usePostProjectsByProjectIdCopiesMutation } from "../../projectsV2/api/projectV2.enhanced-api";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
 import ProjectNameFormField from "../../projectsV2/fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectOwnerSlugFormField from "../../projectsV2/fields/ProjectOwnerSlugFormField";
@@ -44,6 +45,7 @@ import ProjectVisibilityFormField from "../../projectsV2/fields/ProjectVisibilit
 import { useProject } from "../ProjectPageContainer/ProjectPageContainer";
 
 interface ProjectCopyModalProps {
+  currentUser: ReturnType<typeof useGetUserQuery>["data"];
   isOpen: boolean;
   project: ReturnType<typeof useProject>["project"];
   toggle: () => void;
@@ -56,7 +58,12 @@ interface ProjectCopyFormValues {
   visibility: Visibility;
 }
 
-function ProjectCopyModal({ isOpen, project, toggle }: ProjectCopyModalProps) {
+function ProjectCopyModal({
+  currentUser,
+  isOpen,
+  project,
+  toggle,
+}: ProjectCopyModalProps) {
   const navigate = useNavigate();
   const [copyProject, copyProjectResult] =
     usePostProjectsByProjectIdCopiesMutation();
@@ -70,7 +77,7 @@ function ProjectCopyModal({ isOpen, project, toggle }: ProjectCopyModalProps) {
   } = useForm({
     defaultValues: {
       name: project.name,
-      namespace: project.namespace,
+      namespace: currentUser ? currentUser.username : project.namespace,
       slug: project.slug,
       visibility: project.visibility,
     },
@@ -150,7 +157,9 @@ function ProjectCopyModal({ isOpen, project, toggle }: ProjectCopyModalProps) {
             Cancel
           </Button>
           <Button
-            disabled={copyProjectResult.isLoading}
+            disabled={
+              copyProjectResult.isLoading || copyProjectResult.error != null
+            }
             color="primary"
             type="submit"
           >
@@ -164,6 +173,7 @@ function ProjectCopyModal({ isOpen, project, toggle }: ProjectCopyModalProps) {
 
 export default function ProjectCopyButton() {
   const { project } = useProject();
+  const { data: currentUser } = useGetUserQuery();
 
   const [isModalOpen, setModalOpen] = useState(false);
   const toggleOpen = useCallback(() => {
@@ -181,6 +191,7 @@ export default function ProjectCopyButton() {
         <span className={cx("ms-2")}>Copy this project</span>
       </Button>
       <ProjectCopyModal
+        currentUser={currentUser}
         isOpen={isModalOpen}
         project={project}
         toggle={toggleOpen}
