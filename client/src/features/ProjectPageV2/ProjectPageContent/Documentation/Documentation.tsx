@@ -59,12 +59,21 @@ export default function Documentation({ project }: { project: Project }) {
     setValue("description", description);
   };
 
-  const markdownByteLimit = 20;
-  const charactersLimit = Math.floor(((2 / 3) * markdownByteLimit) / 10) * 10;
+  const markdownCharactersLimit = 20;
+  const aboutCharactersLimit =
+    Math.floor(((2 / 3) * markdownCharactersLimit) / 10) * 10;
+  const [charactersLimit, setCharactersLimit] = useState(aboutCharactersLimit);
   const [characters, setCharacters] = useState(0);
   const [disabledSaveButton, setDisabledSaveButton] = useState(false);
 
-  const wordCount = (stats: { characters: number; words: number }) => {
+  const wordCount = (stats: {
+    exact: boolean;
+    characters: number;
+    words: number;
+  }) => {
+    stats.exact
+      ? setCharactersLimit(markdownCharactersLimit)
+      : setCharactersLimit(aboutCharactersLimit);
     setCharacters(stats.characters);
   };
 
@@ -95,7 +104,9 @@ export default function Documentation({ project }: { project: Project }) {
             <span>
               {showEditor ? (
                 <span style={{ verticalAlign: "middle" }}>
-                  {characters} of about {charactersLimit} characters &nbsp;
+                  {characters} of
+                  {charactersLimit == aboutCharactersLimit ? "about" : ""}
+                  {charactersLimit} characters &nbsp;
                 </span>
               ) : (
                 <></>
@@ -106,14 +117,16 @@ export default function Documentation({ project }: { project: Project }) {
                 disabled={disabledSaveButton}
                 // tooltip="Save or discard your changes."
                 checksBeforeSave={() => {
-                  if (getValues("description").length <= markdownByteLimit) {
+                  if (
+                    getValues("description").length <= markdownCharactersLimit
+                  ) {
                     return true;
                   }
                   setDisabledSaveButton(true);
                   return false;
                 }}
                 checksBeforeSaveTooltipMessage={() =>
-                  `Documentation is too long.\n The document can not be longer\nthan ${markdownByteLimit} bytes.`
+                  `Documentation is too long.\n The document can not be longer\nthan ${markdownCharactersLimit} characters.`
                 }
               />
             </span>

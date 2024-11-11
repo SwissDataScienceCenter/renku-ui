@@ -71,13 +71,53 @@ import "katex/dist/katex.min.css";
 window.katex = katex;
 
 class RenkuWordCount extends WordCount {
+  constructor(editor) {
+    super(editor);
+    this.isSourceEditingMode = false;
+    const sourceEditing = editor.plugins.get("SourceEditing");
+    sourceEditing.on(
+      "change:isSourceEditingMode",
+      (_eventInfo, _name, value) => {
+        if (value) {
+          this.isSourceEditingMode = true;
+          // Source editing textarea is not yet available.
+          setTimeout(() => {
+            const sourceEditingTextarea =
+              editor.editing.view.getDomRoot().nextSibling.firstChild;
+            if (sourceEditingTextarea) {
+              sourceEditingTextarea.addEventListener("input", (event) => {
+                sourceEditing.updateEditorData();
+                this.fire("update", {
+                  exact: true,
+                  words: this.words,
+                  characters: () => event.target.value.length,
+                });
+              });
+              this.fire("update", {
+                exact: true,
+                words: this.words,
+                characters: () => sourceEditingTextarea.value.length,
+              });
+            }
+          });
+        } else {
+          this.isSourceEditingMode = false;
+          this._refreshStats();
+        }
+      }
+    );
+  }
+
   _refreshStats() {
-    const words = this.words;
-    const characters = this.characters;
-    this.fire("update", {
-      words,
-      characters,
-    });
+    if (!this.isSourceEditingMode) {
+      const words = this.words;
+      const characters = this.characters;
+      this.fire("update", {
+        exact: false,
+        words,
+        characters,
+      });
+    }
   }
 }
 
