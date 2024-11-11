@@ -60,7 +60,11 @@ interface TextAreaInputProps<T extends FieldValues> {
   name: string;
   register: UseFormRegisterReturn;
   required?: boolean;
-  wordCount?: (stats: { characters: number; words: number }) => void;
+  wordCount?: (stats: {
+    exact: boolean;
+    characters: number;
+    words: number;
+  }) => void;
 }
 
 function TextAreaInput<T extends FieldValues>(props: TextAreaInputProps<T>) {
