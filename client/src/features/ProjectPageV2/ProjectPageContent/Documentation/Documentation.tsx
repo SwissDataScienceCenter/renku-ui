@@ -105,7 +105,7 @@ export default function Documentation({ project }: { project: Project }) {
               {showEditor ? (
                 <span style={{ verticalAlign: "middle" }}>
                   {characters} of
-                  {charactersLimit == aboutCharactersLimit ? "about" : ""}
+                  {charactersLimit == aboutCharactersLimit ? " about " : " "}
                   {charactersLimit} characters &nbsp;
                 </span>
               ) : (
