@@ -24,6 +24,7 @@ import { CloudStorageGetRead } from "../../projectsV2/api/storagesV2.api";
 import { SessionCloudStorageV2 } from "../../sessionsV2/sessionsV2.types.ts";
 import {
   CLOUD_OPTIONS_OVERRIDE,
+  CLOUD_STORAGE_ACCESS_LEVEL_SHORTLIST,
   CLOUD_STORAGE_MOUNT_PATH_HELP,
   CLOUD_STORAGE_OVERRIDE,
   CLOUD_STORAGE_PROVIDERS_SHORTLIST,
@@ -36,6 +37,7 @@ import {
   CloudStorageConfiguration,
   CloudStorageCredential,
   CloudStorageDetails,
+  CloudStorageOptionTypes,
   CloudStorageProvider,
   CloudStorageSchema,
   CloudStorageSchemaOptions,
@@ -92,6 +94,7 @@ export function convertFromAdvancedConfig(
   const values: string[] = [];
   storage.schema && values.push(`type = ${storage.schema}`);
   storage.provider && values.push(`provider = ${storage.provider}`);
+  storage.access_level && values.push(`access_level = ${storage.access_level}`);
   if (storage.options) {
     Object.entries(storage.options).forEach(([key, value]) => {
       if (value != undefined && value !== "") values.push(`${key} = ${value}`);
@@ -168,7 +171,10 @@ export function getSchemaStorage(
   );
 }
 
-export function getSchemaProviders(
+/**
+ * get provider or access_level schema
+ */
+export function getSchemaProvidersOrAccessLevel(
   schema: CloudStorageSchema[],
   shortList = false,
   targetSchema?: string,
@@ -177,8 +183,23 @@ export function getSchemaProviders(
   if (!targetSchema) return;
   const storage = schema.find((s) => s.prefix === targetSchema);
   if (!storage) return;
+  const access_levels = storage.options.find((o) => o.name === "access_level");
   const providers = storage.options.find((o) => o.name === "provider");
-  if (!providers || !providers.examples || !providers.examples.length) return;
+
+  const hasProviders = !!providers?.examples?.length;
+  const hasAccessLevels = !!access_levels?.examples?.length;
+  if (!hasProviders && !hasAccessLevels) return;
+
+  // get access_level
+  if (hasAccessLevels)
+    return access_levels?.examples.map(
+      (a) =>
+        ({
+          name: a.friendlyName ?? a.value,
+          description: a.help,
+          position: undefined,
+        } as CloudStorageProvider)
+    );
 
   const providerOverrides = Object.keys(
     CLOUD_STORAGE_OVERRIDE.storage
@@ -186,7 +207,7 @@ export function getSchemaProviders(
     ? CLOUD_STORAGE_OVERRIDE.storage[targetSchema].providers
     : undefined;
 
-  const finalProviders = providers.examples.reduce<
+  const finalProviders = providers?.examples.reduce<
     CloudStorageProvider[] | undefined
   >((current, e) => {
     if (
@@ -218,18 +239,27 @@ export function getSchemaProviders(
     (a, b) => (a.position ?? LAST_POSITION) - (b.position ?? LAST_POSITION)
   );
 }
-
 export function hasProviderShortlist(targetProvider?: string): boolean {
   if (!targetProvider) return false;
   if (CLOUD_STORAGE_PROVIDERS_SHORTLIST[targetProvider]) return true;
   return false;
 }
+export function hasAccessLevelShortlist(targetAccessLevel?: string): boolean {
+  if (!targetAccessLevel) return false;
+  if (CLOUD_STORAGE_ACCESS_LEVEL_SHORTLIST[targetAccessLevel]) return true;
+  return false;
+}
 
+/**
+ * Fetches and processes schema options. Options can be filtered and customized
+ * based on specific criteria like provider, access level, or visibility settings.
+ */
 export function getSchemaOptions(
   schema: CloudStorageSchema[],
   shortList = false,
   targetSchema?: string,
   targetProvider?: string,
+  targetAccessLevel?: string,
   flags = { override: true, convertType: true, filterHidden: true }
 ): CloudStorageSchemaOptions[] | undefined {
   if (!targetSchema) return;
@@ -237,144 +267,26 @@ export function getSchemaOptions(
   if (!storage) return;
 
   const optionsOverridden = flags.override
-    ? storage.options.map((option) => {
-        if (Object.keys(CLOUD_OPTIONS_OVERRIDE).includes(targetSchema)) {
-          const override = CLOUD_OPTIONS_OVERRIDE[targetSchema][option.name]
-            ? CLOUD_OPTIONS_OVERRIDE[targetSchema][option.name]
-            : undefined;
-          if (override) {
-            return {
-              ...option,
-              ...override,
-            };
-          }
-        }
-        return option;
-      })
+    ? overrideOptions(storage.options, targetSchema)
     : storage.options;
 
-  const optionsFiltered = optionsOverridden.filter((option) => {
-    if (flags.filterHidden) {
-      const shouldHide = !(
-        option.hide === 0 ||
-        option.hide === false ||
-        option.hide == undefined
-      )
-        ? true
-        : false;
-      if (shouldHide) return false;
-    }
-
-    if (!option.name || option.name === "provider") {
-      return false;
-    }
-    if (option.advanced && shortList) {
-      return false;
-    }
-    if (option.provider.startsWith("!")) {
-      if (!targetProvider) {
-        return true;
-      }
-      const providers = option.provider.slice(1).split(",");
-      return !providers.includes(targetProvider);
-    }
-    if (option.provider) {
-      if (!targetProvider) {
-        return false;
-      }
-      const providers = option.provider.split(",");
-      return providers.includes(targetProvider);
-    }
-    return true;
-  });
+  const optionsFiltered = optionsOverridden.filter((option) =>
+    filterOption(
+      option,
+      shortList,
+      targetProvider,
+      targetAccessLevel,
+      flags.filterHidden
+    )
+  );
 
   if (!optionsFiltered.length) return;
 
-  const convertedOptions = flags.convertType
-    ? optionsFiltered.map((option) => {
-        const convertedOption = { ...option };
+  const sortedOptions = sortOptionsByPosition(optionsFiltered);
 
-        // make "hide" a boolean
-        convertedOption.convertedHide = !(
-          option.hide === 0 ||
-          option.hide === false ||
-          option.hide == undefined
-        )
-          ? true
-          : false;
-
-        // try to infer the type
-        const optionType = option.type.toString().toLowerCase();
-        // eslint-disable-next-line spellcheck/spell-checker
-        if (option.ispassword || option.sensitive) {
-          convertedOption.convertedType = "secret";
-        } else if (optionType.startsWith("bool")) {
-          convertedOption.convertedType = "boolean";
-        } else if (
-          optionType.startsWith("float") ||
-          optionType.startsWith("int") ||
-          optionType.startsWith("number") ||
-          optionType === "duration" ||
-          optionType === "sizesuffix" || // eslint-disable-line spellcheck/spell-checker
-          optionType === "multiencoder" // eslint-disable-line spellcheck/spell-checker
-        ) {
-          convertedOption.convertedType = "number";
-        } else {
-          convertedOption.convertedType = "string";
-        }
-
-        // type conversion is scary; for the default and value, we _try_ to convert it
-        try {
-          if (option.default != undefined && option.default !== "") {
-            if (convertedOption.convertedType === "number")
-              convertedOption.convertedDefault = parseFloat(
-                option.default.toString()
-              );
-            else if (convertedOption.convertedType === "boolean")
-              convertedOption.convertedDefault =
-                option.default.toString().toLowerCase() === "true"
-                  ? true
-                  : undefined;
-            else if (option.default.toString() !== "[object Object]")
-              convertedOption.convertedDefault = option.default.toString();
-          } else if (option.value != undefined && option.value !== "") {
-            if (convertedOption.convertedType === "number")
-              convertedOption.convertedDefault = parseFloat(
-                option.value.toString()
-              );
-            else if (convertedOption.convertedType === "boolean")
-              convertedOption.convertedDefault =
-                option.value.toString().toLowerCase() === "true"
-                  ? true
-                  : undefined;
-            else if (option.value.toString() !== "[object Object]")
-              convertedOption.convertedDefault = option.value.toString();
-          }
-        } catch (e) {
-          convertedOption.convertedDefault = undefined;
-        }
-
-        // examples should be filtered by the provider
-        if (option.examples) {
-          const filteredExamples = option.examples.filter((e) => {
-            if (!targetProvider || !e.provider) return true;
-            if (e.provider.startsWith("!")) {
-              const providers = e.provider.slice(1).split(",");
-              return !providers.includes(targetProvider);
-            }
-            const providers = e.provider.split(",");
-            return providers.includes(targetProvider);
-          });
-          if (filteredExamples.length) {
-            convertedOption.filteredExamples = filteredExamples;
-          }
-        }
-
-        return convertedOption;
-      })
-    : optionsFiltered;
-
-  return convertedOptions;
+  return flags.convertType
+    ? convertOptions(sortedOptions, targetProvider, targetAccessLevel)
+    : sortedOptions;
 }
 
 export function getSourcePathHint(
@@ -410,6 +322,9 @@ export function getCurrentStorageDetails(
     readOnly: existingCloudStorage.storage.readonly,
     provider: existingCloudStorage.storage.configuration.provider
       ? (existingCloudStorage.storage.configuration.provider as string)
+      : undefined,
+    access_level: existingCloudStorage.storage.configuration.access_level
+      ? (existingCloudStorage.storage.configuration.access_level as string)
       : undefined,
     options,
   };
@@ -466,4 +381,161 @@ export function storageDefinitionFromConfig(
     }
   });
   return newStorageDefinition;
+}
+
+function overrideOptions(
+  options: CloudStorageSchemaOptions[],
+  targetSchema: string
+): CloudStorageSchemaOptions[] {
+  return options.map((option) => {
+    const override = CLOUD_OPTIONS_OVERRIDE[targetSchema]?.[option.name];
+    return override ? { ...option, ...override } : option;
+  });
+}
+
+function filterOption(
+  option: CloudStorageSchemaOptions,
+  shortList: boolean,
+  targetProvider?: string,
+  targetAccessLevel?: string,
+  filterHidden = true
+): boolean {
+  if (filterHidden && shouldHideOption(option)) return false;
+  if (!option.name || ["provider", "access_level"].includes(option.name))
+    return false;
+  if (option.advanced && shortList) return false;
+
+  if (option.provider) {
+    if (!filterByProvider(option.provider, targetProvider)) return false;
+  }
+
+  if (option.access_level) {
+    if (!filterByAccessLevel(option.access_level, targetAccessLevel))
+      return false;
+  }
+
+  return true;
+}
+
+function shouldHideOption(option: CloudStorageSchemaOptions): boolean {
+  return !(
+    option.hide === 0 ||
+    option.hide === false ||
+    option.hide == undefined
+  );
+}
+
+function filterByProvider(provider: string, targetProvider?: string): boolean {
+  if (!targetProvider) return !provider.startsWith("!");
+  const providers = provider.startsWith("!")
+    ? provider.slice(1).split(",")
+    : provider.split(",");
+  return provider.startsWith("!")
+    ? !providers.includes(targetProvider)
+    : providers.includes(targetProvider);
+}
+
+function filterByAccessLevel(
+  accessLevel: string,
+  targetAccessLevel?: string
+): boolean {
+  if (!targetAccessLevel) return false;
+  return accessLevel.split(",").includes(targetAccessLevel);
+}
+
+function convertOptions(
+  options: CloudStorageSchemaOptions[],
+  targetProvider?: string,
+  targetAccessLevel?: string
+): CloudStorageSchemaOptions[] {
+  return options.map((option) => {
+    const convertedOption = { ...option };
+
+    // Convert "hide" to boolean
+    convertedOption.convertedHide = shouldHideOption(option);
+
+    // Infer type
+    convertedOption.convertedType = inferOptionType(option);
+
+    // Convert default values
+    convertedOption.convertedDefault = convertDefaultValue(
+      option,
+      convertedOption.convertedType
+    );
+
+    // Filter examples
+    if (option.examples) {
+      convertedOption.filteredExamples = option.examples.filter((example) =>
+        filterExample(example, targetProvider, targetAccessLevel)
+      );
+    }
+
+    return convertedOption;
+  });
+}
+
+function inferOptionType(
+  option: CloudStorageSchemaOptions
+): CloudStorageOptionTypes {
+  const optionType = option.type.toString().toLowerCase();
+  if (option.ispassword || option.sensitive) return "secret";
+  if (optionType.startsWith("bool")) return "boolean";
+  if (
+    // eslint-disable-next-line spellcheck/spell-checker
+    ["float", "int", "number", "duration", "sizesuffix", "multiencoder"].some(
+      (type) => optionType.startsWith(type)
+    )
+  ) {
+    return "number";
+  }
+  return "string";
+}
+
+function convertDefaultValue(
+  option: CloudStorageSchemaOptions,
+  type: string
+): undefined | string | number | boolean {
+  try {
+    const value = option.default ?? option.value;
+    if (value === undefined || value === "[object Object]") return undefined;
+
+    if (type === "number") return parseFloat(value.toString());
+    if (type === "boolean") return value.toString().toLowerCase() === "true";
+    return value.toString();
+  } catch {
+    return undefined;
+  }
+}
+
+function filterExample(
+  example: { provider?: string; access_level?: string },
+  targetProvider?: string,
+  targetAccessLevel?: string
+): boolean {
+  if (
+    !targetProvider ||
+    !targetAccessLevel ||
+    (!example.provider && !example.access_level)
+  )
+    return true;
+
+  if (example.access_level) {
+    return filterByAccessLevel(example.access_level, targetAccessLevel);
+  }
+
+  if (example.provider) {
+    return filterByProvider(example.provider, targetProvider);
+  }
+
+  return true;
+}
+
+function sortOptionsByPosition(
+  options: CloudStorageSchemaOptions[]
+): CloudStorageSchemaOptions[] {
+  return options.sort((a, b) => {
+    const positionA = a.position ?? Infinity; // Default to Infinity if "position" is undefined
+    const positionB = b.position ?? Infinity;
+    return positionA - positionB;
+  });
 }

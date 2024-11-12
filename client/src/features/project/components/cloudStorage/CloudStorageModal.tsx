@@ -28,7 +28,7 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import {
   findSensitive,
   getCurrentStorageDetails,
-  getSchemaProviders,
+  getSchemaProvidersOrAccessLevel,
   hasProviderShortlist,
 } from "../../utils/projectCloudStorage.utils";
 import {
@@ -46,19 +46,19 @@ import {
 import {
   AddCloudStorageForProjectParams,
   AddCloudStorageState,
+  AuxiliaryCommandStatus,
   CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
-  AuxiliaryCommandStatus,
   TestCloudStorageConnectionParams,
   UpdateCloudStorageParams,
 } from "./projectCloudStorage.types";
 
 import {
-  AddCloudStorageContinueButton,
   AddCloudStorageBackButton,
   AddCloudStorageBodyContent,
   AddCloudStorageConnectionTestResult,
+  AddCloudStorageContinueButton,
   AddCloudStorageHeaderContent,
 } from "./cloudStorageModalComponents.tsx";
 
@@ -138,9 +138,11 @@ export default function CloudStorageModal({
             !schema?.find((s) => s.prefix === storageDetails.schema) ||
             (hasProviderShortlist(storageDetails.schema) &&
               (!storageDetails.provider ||
-                !getSchemaProviders(schema, false, storageDetails.schema)?.find(
-                  (p) => p.name === storageDetails.provider
-                )))
+                !getSchemaProvidersOrAccessLevel(
+                  schema,
+                  false,
+                  storageDetails.schema
+                )?.find((p) => p.name === storageDetails.provider)))
           ) {
             fullNewState.step = 1;
           } else {

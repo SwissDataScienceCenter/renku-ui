@@ -49,9 +49,10 @@ import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/
 import {
   convertFromAdvancedConfig,
   getSchemaOptions,
-  getSchemaProviders,
+  getSchemaProvidersOrAccessLevel,
   getSchemaStorage,
   getSourcePathHint,
+  hasAccessLevelShortlist,
   hasProviderShortlist,
   parseCloudStorageConfiguration,
 } from "../../utils/projectCloudStorage.utils";
@@ -200,10 +201,11 @@ export function AddStorageAdvanced({
   const onConfigurationChange = useCallback(
     (value: string) => {
       const config = parseCloudStorageConfiguration(value);
-      const { type, provider, ...options } = config;
+      const { type, provider, access_level, ...options } = config;
       setStorage({
         schema: type,
         provider,
+        access_level,
         options,
       });
     },
@@ -423,11 +425,15 @@ function PasswordOptionItem({
     );
   }
 
+  const inputName =
+    option.filteredExamples?.length > 0
+      ? option.filteredExamples[0]?.friendlyName
+      : option.friendlyName ?? option.name;
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
     <>
       <label htmlFor={option.name}>
-        {option.friendlyName ?? option.name}{" "}
+        {inputName}{" "}
         <div id={tooltipContainerId} className="d-inline">
           <KeyFill className={cx("bi", "ms-1")} />
           <ExclamationTriangleFill
@@ -554,9 +560,16 @@ function InputOptionItem({
   const additionalProps: Record<string, string> = {
     ...(inputType === "dropdown" ? { list: `${option.name}__list` } : {}),
   };
+
+  const inputName =
+    inputType !== "dropdown" &&
+    option.filteredExamples?.length > 0 &&
+    option.filteredExamples[0]?.friendlyName
+      ? option.filteredExamples[0]?.friendlyName
+      : option.friendlyName ?? option.name;
   return (
     <>
-      <label htmlFor={option.name}>{option.friendlyName ?? option.name}</label>
+      <label htmlFor={option.name}>{inputName}</label>
 
       <Controller
         name={option.name}
@@ -631,7 +644,8 @@ export function AddStorageType({
   const setFinalSchema = (value: string) => {
     setStorage({ schema: value });
     if (state.showAllSchema) setState({ showAllSchema: false });
-    hasProviderShortlist(value) && scrollToProvider();
+    (hasProviderShortlist(value) || hasAccessLevelShortlist(value)) &&
+      scrollToProvider();
   };
 
   const schemaItems = availableSchema.map((s, index) => {
@@ -698,14 +712,18 @@ export function AddStorageType({
     </div>
   );
 
-  const setFinalProvider = (value: string) => {
-    setStorage({ provider: value });
+  const setFinalProviderOrAccessLevel = (
+    value: string,
+    isAccessLevel = false
+  ) => {
+    if (isAccessLevel) setStorage({ access_level: value });
+    else setStorage({ provider: value });
     if (state.showAllProviders) setState({ showAllProviders: false });
   };
 
-  const availableProviders = useMemo(
+  const availableProvidersOrAccessLevel = useMemo(
     () =>
-      getSchemaProviders(
+      getSchemaProvidersOrAccessLevel(
         schema,
         !state.showAllProviders,
         storage.schema,
@@ -717,15 +735,29 @@ export function AddStorageType({
     () => hasProviderShortlist(storage.schema),
     [storage.schema]
   );
-  const providerItems = availableProviders
-    ? availableProviders.map((p, index) => {
+  const hasAccessLevel = useMemo(() => {
+    const selectedSchema = availableSchema.find(
+      (s) => s.prefix === storage?.schema
+    );
+    const access_levels = selectedSchema?.options?.find(
+      (o) => o.name === "access_level"
+    );
+    return !!access_levels;
+  }, [storage.schema, availableSchema]);
+
+  const providerOrAccessLevelItems = availableProvidersOrAccessLevel
+    ? availableProvidersOrAccessLevel.map((p, index) => {
         const topBorder = index === 0 ? "rounded-top-3" : null;
         const bottomBorder =
-          index === availableProviders.length - 1 && !providerHasShortlist
+          index === availableProvidersOrAccessLevel.length - 1 &&
+          !providerHasShortlist
             ? "rounded-bottom-3"
             : null;
         const itemActive =
-          p.name === storage.provider ? styles.listGroupItemActive : null;
+          (!hasAccessLevel && p.name === storage.provider) ||
+          (hasAccessLevel && p.name === storage.access_level)
+            ? styles.listGroupItemActive
+            : null;
         return (
           <ListGroupItem
             action
@@ -739,7 +771,9 @@ export function AddStorageType({
             tag="div"
             value={p.name}
             data-cy={`data-provider-${p.name}`}
-            onClick={() => setFinalProvider(p.name)}
+            onClick={() =>
+              setFinalProviderOrAccessLevel(p.name, hasAccessLevel)
+            }
           >
             <p className="mb-0">
               <b>{p.name}</b>
@@ -750,10 +784,10 @@ export function AddStorageType({
         );
       })
     : null;
-  const finalProviderItems =
-    providerItems && providerHasShortlist
+  const finalProviderOraAccessLevelItems =
+    providerOrAccessLevelItems && !hasAccessLevel && providerHasShortlist
       ? [
-          ...providerItems,
+          ...providerOrAccessLevelItems,
           <ListGroupItem
             action
             className={cx("cursor-pointer", "rounded-bottom-3")}
@@ -766,42 +800,58 @@ export function AddStorageType({
             <b>Show {state.showAllProviders ? "less" : "more"}</b>
           </ListGroupItem>,
         ]
-      : providerItems;
+      : providerOrAccessLevelItems;
 
   const missingProvider =
-    availableProviders &&
+    availableProvidersOrAccessLevel &&
     storage.provider &&
-    !availableProviders.find((p) => p.name === storage.provider) ? (
+    !availableProvidersOrAccessLevel.find(
+      (p) => p.name === storage.provider
+    ) ? (
       <WarnAlert>
         The storage provider <code>{storage.provider}</code> might be invalid.
         You should select a valid provider from the list.
       </WarnAlert>
     ) : null;
 
-  const finalProviders = providerItems ? (
-    <div className="mt-3" data-cy="cloud-storage-edit-providers">
-      <h5>Provider</h5>
-      <p>
-        We support the following providers for this storage type. If you do not
-        find yours, you can select Others to manually specify the required
-        options, or switch to the Advanced mode to manually configure the
-        storage using an rclone configuration.
-      </p>
-      {missingProvider}
-      <div ref={providerRef}>
-        <ListGroup
-          className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
-        >
-          {finalProviderItems}
-        </ListGroup>
+  const finalProvidersOrAccessLevel =
+    providerOrAccessLevelItems && !hasAccessLevel ? (
+      <div className="mt-3" data-cy="cloud-storage-edit-providers">
+        <h5>Provider</h5>
+        <p>
+          We support the following providers for this storage type. If you do
+          not find yours, you can select Others to manually specify the required
+          options, or switch to the Advanced mode to manually configure the
+          storage using an rclone configuration.
+        </p>
+        {missingProvider}
+        <div ref={providerRef}>
+          <ListGroup
+            className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
+          >
+            {finalProviderOraAccessLevelItems}
+          </ListGroup>
+        </div>
       </div>
-    </div>
-  ) : null;
+    ) : providerOrAccessLevelItems && hasAccessLevel ? (
+      <div className="mt-3" data-cy="cloud-storage-edit-providers">
+        <h5>Mode</h5>
+        <p>We support the following modes for this storage type.</p>
+        {missingProvider}
+        <div ref={providerRef}>
+          <ListGroup
+            className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
+          >
+            {finalProviderOraAccessLevelItems}
+          </ListGroup>
+        </div>
+      </div>
+    ) : null;
 
   return (
     <>
       {finalSchema}
-      {finalProviders}
+      {finalProvidersOrAccessLevel}
     </>
   );
 }
@@ -820,7 +870,8 @@ export function AddStorageOptions({
     schema,
     !state.showAllOptions,
     storage.schema,
-    storage.provider
+    storage.provider,
+    storage.access_level
   );
   const { control, setValue, getValues } = useForm();
 
@@ -845,31 +896,24 @@ export function AddStorageOptions({
         ? "checkbox"
         : o.convertedType === "number"
         ? "number"
-        : o.filteredExamples?.length
+        : o.filteredExamples?.length > 1
         ? "dropdown"
         : "text";
 
+      const defaultValue = o.default ?? "";
       return (
         <div className="mb-3" key={o.name}>
           {inputType === "checkbox" ? (
             <CheckboxOptionItem
               control={control}
-              defaultValue={
-                storage.options && storage.options[o.name]
-                  ? (storage.options[o.name] as boolean)
-                  : (o.convertedDefault as boolean) ?? undefined
-              }
+              defaultValue={defaultValue as boolean}
               onFieldValueChange={onFieldValueChange}
               option={o}
             />
           ) : inputType === "password" ? (
             <PasswordOptionItem
               control={control}
-              defaultValue={
-                storage.options && storage.options[o.name]
-                  ? (storage.options[o.name] as string)
-                  : ""
-              }
+              defaultValue={defaultValue as string}
               isV2={isV2}
               onFieldValueChange={onFieldValueChange}
               option={o}
@@ -878,18 +922,20 @@ export function AddStorageOptions({
           ) : (
             <InputOptionItem
               control={control}
-              defaultValue={
-                storage.options && storage.options[o.name]
-                  ? (storage.options[o.name] as string | number | undefined)
-                  : ""
-              }
+              defaultValue={defaultValue as string | number | undefined}
               inputType={inputType}
               onFieldValueChange={onFieldValueChange}
               option={o}
             />
           )}
           <div className={cx("form-text", "text-muted")}>
-            <OptionTruncatedText text={o.help} />
+            <OptionTruncatedText
+              text={
+                inputType !== "dropdown" && o.filteredExamples?.length > 0
+                  ? o.filteredExamples[0]?.help
+                  : o.help
+              }
+            />
           </div>
         </div>
       );
@@ -1033,7 +1079,8 @@ export function AddStorageMount({
     schema,
     true,
     storage.schema,
-    storage.provider
+    storage.provider,
+    storage.access_level
   );
   const secretFields =
     options == null

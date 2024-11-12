@@ -32,7 +32,7 @@ export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
 export const CLOUD_STORAGE_OVERRIDE = {
   storage: {
     azureblob: {
-      position: 3,
+      position: 2,
     },
     drive: {
       hide: true,
@@ -59,9 +59,20 @@ export const CLOUD_STORAGE_OVERRIDE = {
       },
     },
     webdav: {
+      name: "webDav",
       description:
         "WebDAV compatible services, including PolyBox and SwitchDrive",
-      position: 2,
+      position: 5,
+    },
+    polybox: {
+      name: "polyBox",
+      description: "Online data storage for ETH members",
+      position: 3,
+    },
+    switchDrive: {
+      name: "switchDrive",
+      description: "Online data storage for ETH members",
+      position: 4,
     },
   } as Record<string, Partial<CloudStorageOverride>>,
 };
@@ -96,6 +107,79 @@ export const CLOUD_OPTIONS_OVERRIDE = {
       help: "Endpoint for S3 API. You should leave this blank if you entered the region already.",
     },
   },
+  polybox: {
+    bearer_token: { friendlyName: "Bearer Token", advanced: true },
+    url: {
+      friendlyName: "URL",
+      help: "",
+    },
+    user: {
+      friendlyName: "UserName",
+    },
+    public_link: {
+      friendlyName: "Public link",
+      position: 1,
+    },
+    vendor: {
+      hide: 1,
+    },
+    nextcloud_chunk_size: {
+      hide: 1,
+    },
+    pass: {
+      examples: [
+        {
+          value: "",
+          help: "For secure access to your Polybox WebDAV shares, we recommend using an application token instead of your account password. To create one, open Polybox, go to Settings > Security, and generate a new Application pass-code.",
+          access_level: "Private",
+          provider: "",
+          friendlyName: "Token (or password)",
+        },
+        {
+          value: "",
+          help: "If you set a password for the shared folder, enter that in the password field. Otherwise, leave it blank",
+          access_level: "Public",
+          provider: "",
+          friendlyName: "Password",
+        },
+      ],
+    },
+  },
+  switchDrive: {
+    bearer_token: { friendlyName: "Bearer Token", advanced: true },
+    url: {
+      friendlyName: "URL",
+    },
+    user: {
+      friendlyName: "UserName",
+    },
+    public_link: {
+      friendlyName: "Public link",
+      position: 1,
+    },
+    vendor: { hide: true },
+    nextcloud_chunk_size: {
+      hide: true,
+    },
+    pass: {
+      examples: [
+        {
+          value: "",
+          help: "For secure access to your SwitchDrive WebDAV shares, we recommend using an application token instead of your account password. To create one, open SwitchDrive, go to Settings > Security, and generate a new Application password",
+          access_level: "Private",
+          provider: "",
+          friendlyName: "Token (or password)",
+        },
+        {
+          value: "",
+          help: "If you set a password for the shared folder, enter that in the password field. Otherwise, leave it blank",
+          access_level: "Public",
+          provider: "",
+          friendlyName: "Password",
+        },
+      ],
+    },
+  },
   webdav: {
     pass: {
       friendlyName: "Token (or password)",
@@ -123,11 +207,22 @@ export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
   },
 } as Record<string, Record<"help" | "placeholder", string>>;
 
-export const CLOUD_STORAGE_SCHEMA_SHORTLIST = ["s3", "webdav", "azureblob"];
+export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
+  "s3",
+  "polybox",
+  "switchDrive",
+  "webdav",
+  "azureblob",
+];
 
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {
   s3: ["AWS", "GCS", "Switch"],
 } as Record<string, string[]>;
+
+export const CLOUD_STORAGE_ACCESS_LEVEL_SHORTLIST = {} as Record<
+  string,
+  string[]
+>;
 
 export const CLOUD_STORAGE_TOTAL_STEPS = 3;
 

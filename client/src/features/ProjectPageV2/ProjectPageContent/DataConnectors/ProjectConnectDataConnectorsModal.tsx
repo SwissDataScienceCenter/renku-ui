@@ -47,6 +47,7 @@ import DataConnectorModal, {
 } from "../../../dataConnectorsV2/components/DataConnectorModal/index";
 import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
@@ -123,10 +124,21 @@ function ProjectConnectDataConnectorModalHeader({
   mode: ProjectConnectDataConnectorMode;
   setMode: (mode: ProjectConnectDataConnectorMode) => void;
 }) {
+  const { flatDataConnector, cloudStorageState } = useAppSelector(
+    (state) => state.dataConnectorFormSlice
+  );
+
+  const title =
+    cloudStorageState?.step > 1
+      ? `${flatDataConnector?.access_level?.toLocaleLowerCase() ?? ""} ${
+          flatDataConnector?.schema ?? ""
+        } ${flatDataConnector?.provider ?? ""}`
+      : "";
   return (
     <>
       <div>
-        <Database className={cx("bi", "me-1")} /> Link or create data connector
+        <Database className={cx("bi", "me-1")} /> Link or create data connector{" "}
+        {title.trim()}
       </div>
       <div className="mt-3">
         <ButtonGroup>

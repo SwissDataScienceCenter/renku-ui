@@ -24,7 +24,8 @@ import {
   CloudStorageSchema,
 } from "../../project/components/cloudStorage/projectCloudStorage.types";
 import {
-  getSchemaProviders,
+  getSchemaProvidersOrAccessLevel,
+  hasAccessLevelShortlist,
   hasProviderShortlist,
 } from "../../project/utils/projectCloudStorage.utils";
 
@@ -80,7 +81,8 @@ const dataConnectorFormSlice = createSlice({
       }>
     ) => {
       // flatDataConnector is the same as the one in the initial state in this case
-      if (!action.payload.hasDataConnector) return initialState;
+      if (!action.payload.hasDataConnector)
+        return { ...initialState, schemata: state.schemata };
       state.cloudStorageState = {
         ...initialState.cloudStorageState,
         step: state.cloudStorageState.step,
@@ -134,11 +136,20 @@ const dataConnectorFormSlice = createSlice({
             ) ||
             (hasProviderShortlist(state.flatDataConnector.schema) &&
               (!state.flatDataConnector.provider ||
-                !getSchemaProviders(
+                !getSchemaProvidersOrAccessLevel(
                   schemata,
                   false,
                   state.flatDataConnector.schema
-                )?.find((p) => p.name === state.flatDataConnector.provider)))
+                )?.find((p) => p.name === state.flatDataConnector.provider))) ||
+            (hasAccessLevelShortlist(state.flatDataConnector.schema) &&
+              (!state.flatDataConnector.access_level ||
+                !getSchemaProvidersOrAccessLevel(
+                  schemata,
+                  false,
+                  state.flatDataConnector.schema
+                )?.find(
+                  (p) => p.name === state.flatDataConnector.access_level
+                )))
           ) {
             fullNewState.step = 1;
           } else {
@@ -171,10 +182,14 @@ const dataConnectorFormSlice = createSlice({
       // reset follow-up properties: schema > provider > options
       if (fullNewDetails.schema !== state.flatDataConnector.schema) {
         fullNewDetails.provider = undefined;
+        fullNewDetails.access_level = undefined;
         fullNewDetails.options = undefined;
         fullNewDetails.sourcePath = undefined;
         state.validationResult = null;
-      } else if (fullNewDetails.provider !== state.flatDataConnector.provider) {
+      } else if (
+        fullNewDetails.provider !== state.flatDataConnector.provider ||
+        fullNewDetails.access_level !== state.flatDataConnector.access_level
+      ) {
         fullNewDetails.options = undefined;
         fullNewDetails.sourcePath = undefined;
         state.validationResult = null;
