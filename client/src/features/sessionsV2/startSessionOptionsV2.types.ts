@@ -16,10 +16,7 @@
  * limitations under the License.
  */
 
-import type {
-  DockerImageStatus,
-  SessionEnvironmentVariable,
-} from "../session/startSessionOptions.types";
+import type { SessionEnvironmentVariable } from "../session/startSessionOptions.types";
 import type { DataConnectorRead } from "../dataConnectorsV2/api/data-connectors.api";
 
 export interface SessionStartDataConnectorConfiguration {
@@ -36,9 +33,8 @@ export interface SessionStartDataConnectorConfiguration {
 }
 
 export interface StartSessionOptionsV2 {
-  cloudStorage: SessionStartDataConnectorConfiguration[];
+  cloudStorage?: SessionStartDataConnectorConfiguration[];
   defaultUrl: string;
-  dockerImageStatus: DockerImageStatus;
   environmentVariables: SessionEnvironmentVariable[];
   lfsAutoFetch: boolean;
   repositories: SessionRepository[];

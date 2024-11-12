@@ -83,9 +83,9 @@ describe("Set up project components", () => {
   });
 
   it("set up sessions", () => {
-    cy.intercept("/ui-server/api/notebooks/servers*", {
-      body: { servers: {} },
-    }).as("getSessions");
+    cy.intercept("/ui-server/api/data/sessions*", {
+      body: [],
+    }).as("getSessionsV2");
     fixtures
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
       .listProjectDataConnectors()
@@ -98,7 +98,7 @@ describe("Set up project components", () => {
       .environments();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.wait("@getSessions");
+    cy.wait("@getSessionsV2");
     cy.wait("@sessionLaunchers");
     // ADD SESSION CUSTOM IMAGE
     cy.getDataCy("add-session-launcher").click();
@@ -108,16 +108,17 @@ describe("Set up project components", () => {
       name: "session-launchers-custom",
     });
     const customImage = "renku/renkulab-py:latest";
-    cy.getDataCy("add-custom-image").click();
+    cy.getDataCy("existing-custom-button").click();
     cy.getDataCy("custom-image-input")
       .clear()
       .type(customImage, { delay: 0 })
       .should("have.value", customImage);
+    cy.getDataCy("next-session-button").click();
     cy.getDataCy("launcher-name-input").type("Session-custom");
-    cy.getDataCy("add-launcher-custom-button").click();
+    cy.getDataCy("add-session-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-custom");
-
+    cy.getDataCy("close-cancel-button").click();
     // check session values
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("session-name").should("contain.text", "Session-custom");
@@ -133,10 +134,10 @@ describe("Set up project components", () => {
     cy.getDataCy("session-view-menu-delete").should("be.visible");
     cy.getDataCy("session-view-menu-edit").should("be.visible").click();
     cy.getDataCy("edit-session-name").clear().type("Session custom");
-    cy.getDataCy("edit-session-type-custom").should("be.visible");
-    cy.getDataCy("edit-session-type-existing").should("be.visible");
+    cy.getDataCy("existing-custom-button").should("be.visible");
     cy.getDataCy("edit-session-button").click();
     cy.wait("@editLauncher");
+    cy.getDataCy("close-cancel-button").click();
     cy.getDataCy("get-back-session-view").click();
 
     // start session
@@ -153,9 +154,10 @@ describe("Set up project components", () => {
       fixture: "projectV2/session-launchers-global.json",
       name: "session-launchers-global",
     });
-    cy.getDataCy("add-existing-environment").click();
+    cy.getDataCy("existing-global-button").click();
     cy.getDataCy("global-environment-item").first().click();
-    cy.getDataCy("add-session-launcher-button").click();
+    cy.getDataCy("next-session-button").click();
+    cy.getDataCy("add-session-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-global");
 

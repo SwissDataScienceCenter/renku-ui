@@ -46,6 +46,19 @@ class APIClient {
   }
 
   /**
+   * Fetch session status
+   *
+   */
+  async getSessionStatusV2(authHeathers: HeadersInit): Promise<Response> {
+    const sessionsUrl = `${this.gatewayUrl}/data/sessions`;
+    logger.debug(`Fetching session status.`);
+    const options = {
+      headers: new Headers(authHeathers),
+    };
+    return this.clientFetch(sessionsUrl, options, RETURN_TYPES.json);
+  }
+
+  /**
    * Fetch kg activation status by projectId
    *
    * @param {number} projectId - Project Id

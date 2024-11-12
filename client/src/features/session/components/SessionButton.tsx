@@ -755,7 +755,7 @@ function ModifySessionModalContent({
           <Col>
             {message}
             <p>
-              <span className="fw-bold me-3">Current resources:</span>
+              <span className={cx("fw-bold", "me-3")}>Current resources:</span>
               <span>
                 <SessionRowResourceRequests
                   resourceRequests={resources.requests}
