@@ -440,24 +440,23 @@ function EditSaveButton({
           </Button>
         ) : editMode ? (
           <ButtonGroup>
-            <span ref={saveButtonRef}>
-              <Button
-                disabled={localDisabled}
-                color="outline-primary"
-                size="sm"
-                data-cy={dataCy}
-                onClick={(event) => {
-                  if (checksBeforeSave()) {
-                    setEditMode(false);
-                    (event.target as HTMLInputElement).form?.requestSubmit();
-                  } else {
-                    setChecksBeforeSaveTooltip(true);
-                  }
-                }}
-              >
-                Save
-              </Button>
-            </span>
+            <Button
+              innerRef={saveButtonRef}
+              disabled={localDisabled}
+              color="outline-primary"
+              size="sm"
+              data-cy={dataCy}
+              onClick={(event) => {
+                if (checksBeforeSave()) {
+                  setEditMode(false);
+                  (event.target as HTMLInputElement).form?.requestSubmit();
+                } else {
+                  setChecksBeforeSaveTooltip(true);
+                }
+              }}
+            >
+              Save
+            </Button>
             {checksBeforeSaveTooltip && localDisabled ? (
               <Tooltip target={saveButtonRef} isOpen={true}>
                 {checksBeforeSaveTooltipMessage()}
