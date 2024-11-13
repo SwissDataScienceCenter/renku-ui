@@ -31,7 +31,7 @@ export default function DescriptionFormField<T extends FieldValues>({
   name,
 }: GenericFormFieldProps<T>) {
   return (
-    <div className="mb-3">
+    <>
       <Label className="form-label" for={`${entityName}-description`}>
         Description
       </Label>
@@ -54,6 +54,6 @@ export default function DescriptionFormField<T extends FieldValues>({
         A brief (at most 500 character) description of the {entityName}.
       </FormText>
       <div className="invalid-feedback">Please provide a description</div>
-    </div>
+    </>
   );
 }

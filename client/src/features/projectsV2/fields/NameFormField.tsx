@@ -28,10 +28,11 @@ export default function NameFormField<T extends FieldValues>({
   control,
   entityName,
   errors,
+  helpText,
   name,
 }: GenericFormFieldProps<T>) {
   return (
-    <div className="mb-3">
+    <>
       <Label className="form-label" for={`${entityName}-name`}>
         Name
       </Label>
@@ -40,7 +41,7 @@ export default function NameFormField<T extends FieldValues>({
         name={name}
         render={({ field }) => (
           <Input
-            aria-describedby={`${entityName}NameHelp`}
+            aria-describedby={`${entityName}-help`}
             className={cx("form-control", errors.name && "is-invalid")}
             data-cy={`${entityName}-name-input`}
             id={`${entityName}-name`}
@@ -51,9 +52,12 @@ export default function NameFormField<T extends FieldValues>({
         rules={{ required: true, maxLength: 99 }}
       />
       <div className="invalid-feedback">Please provide a name</div>
-      <FormText id={`${entityName}NameHelp`} className="input-hint">
-        The name you will use to refer to the {entityName}.
-      </FormText>
-    </div>
+      {helpText && typeof helpText === "string" && (
+        <FormText id={`${entityName}-help`} className="input-hint">
+          {helpText}
+        </FormText>
+      )}
+      {helpText && typeof helpText !== "string" && <>{helpText}</>}
+    </>
   );
 }

@@ -22,66 +22,77 @@ import type { FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
 import { Globe, Lock } from "react-bootstrap-icons";
-import { FormText, Input, Label } from "reactstrap";
+import { ButtonGroup, Input, Label } from "reactstrap";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 
 export default function ProjectVisibilityFormField<T extends FieldValues>({
   control,
-  errors,
   name,
 }: GenericProjectFormFieldProps<T>) {
   return (
-    <div className="mb-3">
+    <>
       <Label className="form-label" for="project-visibility">
         Visibility
       </Label>
-      <Controller
-        aria-describedby="projectVisibilityHelp"
-        control={control}
-        name={name}
-        render={({ field }) => (
-          <div className={cx("d-flex", "flex-row gap-4")}>
-            <div className={cx("d-flex", "gap-2")}>
-              <Input
-                type="radio"
-                className={cx(errors.visibility && "is-invalid")}
-                data-cy="project-visibility-public"
-                id="project-visibility-public"
-                {...field}
-                value="public"
-                checked={field.value === "public"}
-              />
-              <Label for="project-visibility-public" className="cursor-pointer">
-                <Globe className={cx("bi", "me-1")} />
-                Public
-              </Label>
-            </div>
-            <div className={cx("d-flex", "gap-2")}>
-              <Input
-                type="radio"
-                className={cx(errors.visibility && "is-invalid")}
-                data-cy="project-visibility-private"
-                id="project-visibility-private"
-                {...field}
-                value="private"
-                checked={field.value === "private"}
-              />
-              <Label
-                for="project-visibility-private"
-                className="cursor-pointer"
+      <div>
+        <Controller
+          aria-describedby="projectVisibilityHelp"
+          control={control}
+          name={name}
+          render={({ field }) => (
+            <>
+              <ButtonGroup id="project-visibility">
+                <Input
+                  type="radio"
+                  className="btn-check"
+                  data-cy="project-visibility-public"
+                  id="project-visibility-public"
+                  value="public"
+                  checked={field.value === "public"}
+                  onChange={(e) => {
+                    field.onChange(e);
+                  }}
+                />
+                <Label
+                  className={cx("btn", "btn-outline-primary", "mb-0")}
+                  for="project-visibility-public"
+                >
+                  <Globe className={cx("bi", "me-1")} />
+                  Public
+                </Label>
+                <Input
+                  type="radio"
+                  className="btn-check"
+                  data-cy="project-visibility-private"
+                  id="project-visibility-private"
+                  value="private"
+                  checked={field.value === "private"}
+                  onChange={(e) => {
+                    field.onChange(e);
+                  }}
+                />
+                <Label
+                  className={cx("btn", "btn-outline-primary", "mb-0")}
+                  for="project-visibility-private"
+                >
+                  <Lock className={cx("bi", "me-1")} />
+                  Private
+                </Label>
+              </ButtonGroup>
+              <div
+                id="project-visibility-help"
+                className={cx("form-text", "text-muted")}
               >
-                <Lock className={cx("bi", "me-1")} />
-                Private
-              </Label>
-            </div>
-          </div>
-        )}
-        rules={{ required: true }}
-      />
+                {field.value === "public"
+                  ? "Your project is visible for everyone."
+                  : "Your project is visible for you and people you add to the project."}
+              </div>
+            </>
+          )}
+          rules={{ required: true }}
+        />
+      </div>
       <div className="invalid-feedback">Please select a visibility</div>
-      <FormText id="projectVisibilityHelp" className="input-hint">
-        Should the project be visible to everyone or only to members?
-      </FormText>
-    </div>
+    </>
   );
 }
