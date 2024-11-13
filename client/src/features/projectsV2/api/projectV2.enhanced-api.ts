@@ -189,7 +189,8 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsByProjectIds: {
       providesTags: ["Project"],
     },
-    getProjectsByNamespaceAndSlug: {
+    // getProjectsByNamespaceAndSlug: {
+    getNamespacesByNamespaceProjectsAndSlug: {
       providesTags: ["Project"],
     },
     getProjectsByProjectId: {
@@ -227,7 +228,7 @@ export const {
   // project hooks
   useGetProjectsPagedQuery: useGetProjectsQuery,
   usePostProjectsMutation,
-  useGetProjectsByNamespaceAndSlugQuery,
+  useGetNamespacesByNamespaceProjectsAndSlugQuery,
   useGetProjectsByProjectIdQuery,
   useGetProjectsByProjectIdsQuery,
   usePatchProjectsByProjectIdMutation,
@@ -236,6 +237,10 @@ export const {
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsByProjectIdPermissionsQuery,
+
+  // project session secret hooks
+  useGetProjectsByProjectIdSecretSlotsQuery,
+  useGetProjectsByProjectIdSecretsQuery,
 
   // data connector hooks
   useGetProjectsByProjectIdDataConnectorLinksQuery,

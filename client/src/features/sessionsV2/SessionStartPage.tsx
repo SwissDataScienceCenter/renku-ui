@@ -49,7 +49,7 @@ import {
   storageDefinitionFromConfig,
 } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
@@ -588,7 +588,7 @@ export default function SessionStartPage() {
     data: project,
     isLoading: isLoadingProject,
     error: projectError,
-  } = useGetProjectsByNamespaceAndSlugQuery(
+  } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
     namespace && slug ? { namespace, slug } : skipToken
   );
   const projectId = project?.id ?? "";

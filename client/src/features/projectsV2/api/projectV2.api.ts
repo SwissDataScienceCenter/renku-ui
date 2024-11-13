@@ -40,9 +40,9 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
-    getProjectsByNamespaceAndSlug: build.query<
-      GetProjectsByNamespaceAndSlugApiResponse,
-      GetProjectsByNamespaceAndSlugApiArg
+    getNamespacesByNamespaceProjectsAndSlug: build.query<
+      GetNamespacesByNamespaceProjectsAndSlugApiResponse,
+      GetNamespacesByNamespaceProjectsAndSlugApiArg
     >({
       query: (queryArg) => ({
         url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.slug}`,
@@ -89,6 +89,76 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/projects/${queryArg.projectId}/data_connector_links`,
       }),
     }),
+    getProjectsByProjectIdSecretSlots: build.query<
+      GetProjectsByProjectIdSecretSlotsApiResponse,
+      GetProjectsByProjectIdSecretSlotsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/secret_slots`,
+      }),
+    }),
+    getProjectsByProjectIdSecrets: build.query<
+      GetProjectsByProjectIdSecretsApiResponse,
+      GetProjectsByProjectIdSecretsApiArg
+    >({
+      query: (queryArg) => ({ url: `/projects/${queryArg.projectId}/secrets` }),
+    }),
+    patchProjectsByProjectIdSecrets: build.mutation<
+      PatchProjectsByProjectIdSecretsApiResponse,
+      PatchProjectsByProjectIdSecretsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/secrets`,
+        method: "PATCH",
+        body: queryArg.sessionSecretPatchList,
+      }),
+    }),
+    deleteProjectsByProjectIdSecrets: build.mutation<
+      DeleteProjectsByProjectIdSecretsApiResponse,
+      DeleteProjectsByProjectIdSecretsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/secrets`,
+        method: "DELETE",
+      }),
+    }),
+    postSessionSecretSlots: build.mutation<
+      PostSessionSecretSlotsApiResponse,
+      PostSessionSecretSlotsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/session_secret_slots`,
+        method: "POST",
+        body: queryArg.sessionSecretSlotPost,
+      }),
+    }),
+    getSessionSecretSlotsBySlotId: build.query<
+      GetSessionSecretSlotsBySlotIdApiResponse,
+      GetSessionSecretSlotsBySlotIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/session_secret_slots/${queryArg.slotId}`,
+      }),
+    }),
+    patchSessionSecretSlotsBySlotId: build.mutation<
+      PatchSessionSecretSlotsBySlotIdApiResponse,
+      PatchSessionSecretSlotsBySlotIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/session_secret_slots/${queryArg.slotId}`,
+        method: "PATCH",
+        body: queryArg.sessionSecretSlotPatch,
+      }),
+    }),
+    deleteSessionSecretSlotsBySlotId: build.mutation<
+      DeleteSessionSecretSlotsBySlotIdApiResponse,
+      DeleteSessionSecretSlotsBySlotIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/session_secret_slots/${queryArg.slotId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -122,9 +192,9 @@ export type DeleteProjectsByProjectIdApiResponse =
 export type DeleteProjectsByProjectIdApiArg = {
   projectId: Ulid;
 };
-export type GetProjectsByNamespaceAndSlugApiResponse =
+export type GetNamespacesByNamespaceProjectsAndSlugApiResponse =
   /** status 200 The project */ Project;
-export type GetProjectsByNamespaceAndSlugApiArg = {
+export type GetNamespacesByNamespaceProjectsAndSlugApiArg = {
   namespace: string;
   slug: string;
 };
@@ -157,9 +227,52 @@ export type GetProjectsByProjectIdDataConnectorLinksApiArg = {
   /** the ID of the project */
   projectId: Ulid;
 };
+export type GetProjectsByProjectIdSecretSlotsApiResponse =
+  /** status 200 The list of session secret slots */ SessionSecretSlotList;
+export type GetProjectsByProjectIdSecretSlotsApiArg = {
+  projectId: Ulid;
+};
+export type GetProjectsByProjectIdSecretsApiResponse =
+  /** status 200 The list of secrets */ SessionSecretList;
+export type GetProjectsByProjectIdSecretsApiArg = {
+  projectId: Ulid;
+};
+export type PatchProjectsByProjectIdSecretsApiResponse =
+  /** status 201 The secrets for the project were saved */ SessionSecretList;
+export type PatchProjectsByProjectIdSecretsApiArg = {
+  projectId: Ulid;
+  sessionSecretPatchList: SessionSecretPatchList;
+};
+export type DeleteProjectsByProjectIdSecretsApiResponse =
+  /** status 204 The secrets were removed or did not exist in the first place or the project doesn't exist */ void;
+export type DeleteProjectsByProjectIdSecretsApiArg = {
+  projectId: Ulid;
+};
+export type PostSessionSecretSlotsApiResponse =
+  /** status 201 The secret slot was created */ SessionSecretSlot;
+export type PostSessionSecretSlotsApiArg = {
+  sessionSecretSlotPost: SessionSecretSlotPost;
+};
+export type GetSessionSecretSlotsBySlotIdApiResponse =
+  /** status 200 The session secret slot */ SessionSecretSlot;
+export type GetSessionSecretSlotsBySlotIdApiArg = {
+  slotId: Ulid;
+};
+export type PatchSessionSecretSlotsBySlotIdApiResponse =
+  /** status 200 The patched session secret slot */ object;
+export type PatchSessionSecretSlotsBySlotIdApiArg = {
+  slotId: Ulid;
+  sessionSecretSlotPatch: SessionSecretSlotPatch;
+};
+export type DeleteSessionSecretSlotsBySlotIdApiResponse =
+  /** status 204 The session secret slot was removed or did not exist in the first place */ void;
+export type DeleteSessionSecretSlotsBySlotIdApiArg = {
+  slotId: Ulid;
+};
 export type Ulid = string;
 export type ProjectName = string;
 export type Slug = string;
+export type LegacySlug = string;
 export type CreationDate = string;
 export type UserId = string;
 export type UpdatedAt = string;
@@ -174,7 +287,7 @@ export type Project = {
   id: Ulid;
   name: ProjectName;
   namespace: Slug;
-  slug: Slug;
+  slug: LegacySlug;
   creation_date: CreationDate;
   created_by: UserId;
   updated_at?: UpdatedAt;
@@ -225,7 +338,7 @@ export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
   id: UserId;
-  namespace?: Slug;
+  namespace?: LegacySlug;
   first_name?: UserFirstLastName;
   last_name?: UserFirstLastName;
   role: Role;
@@ -252,16 +365,61 @@ export type DataConnectorToProjectLink = {
   created_by: UserId;
 };
 export type DataConnectorToProjectLinksList = DataConnectorToProjectLink[];
+export type SecretSlotName = string;
+export type SecretSlotFileName = string;
+export type SessionSecretSlot = {
+  id: Ulid;
+  project_id: Ulid;
+  name: SecretSlotName;
+  description?: Description;
+  filename: SecretSlotFileName;
+};
+export type SessionSecretSlotList = SessionSecretSlot[];
+export type SessionSecret = {
+  secret_slot: SessionSecretSlot;
+  secret_id: Ulid;
+};
+export type SessionSecretList = SessionSecret[];
+export type SessionSecretPatchExistingSecret = {
+  secret_id: Ulid;
+};
+export type SecretValueNullable = string | null;
+export type SessionSecretPatchSecretValue = {
+  value?: SecretValueNullable;
+};
+export type SessionSecretPatch = {
+  secret_slot_id: Ulid;
+} & (SessionSecretPatchExistingSecret | SessionSecretPatchSecretValue);
+export type SessionSecretPatchList = SessionSecretPatch[];
+export type SessionSecretSlotPost = {
+  project_id: Ulid;
+  name?: SecretSlotName;
+  description?: Description;
+  filename: SecretSlotFileName;
+};
+export type SessionSecretSlotPatch = {
+  name?: SecretSlotName;
+  description?: Description;
+  filename?: SecretSlotFileName;
+};
 export const {
   useGetProjectsQuery,
   usePostProjectsMutation,
   useGetProjectsByProjectIdQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
-  useGetProjectsByNamespaceAndSlugQuery,
+  useGetNamespacesByNamespaceProjectsAndSlugQuery,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsByProjectIdPermissionsQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
+  useGetProjectsByProjectIdSecretSlotsQuery,
+  useGetProjectsByProjectIdSecretsQuery,
+  usePatchProjectsByProjectIdSecretsMutation,
+  useDeleteProjectsByProjectIdSecretsMutation,
+  usePostSessionSecretSlotsMutation,
+  useGetSessionSecretSlotsBySlotIdQuery,
+  usePatchSessionSecretSlotsBySlotIdMutation,
+  useDeleteSessionSecretSlotsBySlotIdMutation,
 } = injectedRtkApi;
