@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRepeat, ChevronDown, ThreeDots } from "react-bootstrap-icons";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
 import type { FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import Select, {
@@ -31,21 +32,20 @@ import Select, {
   SingleValueProps,
   components,
 } from "react-select";
-import { Button, FormText, Label, UncontrolledTooltip } from "reactstrap";
+import { Button, FormText, Label } from "reactstrap";
+
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
-import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import type { PaginatedState } from "../../session/components/options/fetchMore.types";
 import type { GetNamespacesApiResponse } from "../api/projectV2.enhanced-api";
 import {
-  projectV2Api,
+  useGetNamespacesByNamespaceSlugQuery,
   useGetNamespacesQuery,
   useLazyGetNamespacesQuery,
-  useGetNamespacesByNamespaceSlugQuery,
 } from "../api/projectV2.enhanced-api";
 import type { GenericFormFieldProps } from "./formField.types";
+
 import styles from "./ProjectNamespaceFormField.module.scss";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 type ResponseNamespaces = GetNamespacesApiResponse["namespaces"];
 type ResponseNamespace = ResponseNamespaces[number];
@@ -189,7 +189,7 @@ const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
       styles.control
     ),
   dropdownIndicator: () => cx("pe-3"),
-  menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0"),
+  menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0", "z-2"),
   menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected }) =>
     cx(
@@ -218,18 +218,13 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
   entityName,
   ensureNamespace,
   errors,
+  helpText,
   name,
 }: ProjectNamespaceFormFieldProps<T>) {
-  // Handle forced refresh
-  const dispatch = useAppDispatch();
-  const refetch = useCallback(() => {
-    dispatch(projectV2Api.util.invalidateTags(["Namespace"]));
-  }, [dispatch]);
   return (
-    <div className="mb-3">
+    <>
       <Label className="form-label" for={`${entityName}-namespace-input`}>
-        Namespace
-        <RefreshNamespaceButton refresh={refetch} />
+        Owner
       </Label>
       <Controller
         control={control}
@@ -240,7 +235,6 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
           return (
             <ProjectNamespaceControl
               {...fields}
-              aria-describedby={`${entityName}NamespaceHelp`}
               className={cx(errors.namespace && "is-invalid")}
               data-cy={`${entityName}-namespace-input`}
               ensureNamespace={ensureNamespace}
@@ -257,13 +251,14 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
             /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-zA-Z0-9][a-zA-Z0-9\-_.]*$/,
         }}
       />
-      <div className="invalid-feedback">
-        A project must belong to a namespace.
-      </div>
-      <FormText id={`${entityName}NamespaceHelp`} className="input-hint">
-        The user or group namespace where this project should be located.
-      </FormText>
-    </div>
+      <div className="invalid-feedback">A project must belong to a owner.</div>
+      {helpText && typeof helpText === "string" && (
+        <FormText id={`${entityName}-help`} className="input-hint">
+          {helpText}
+        </FormText>
+      )}
+      {helpText && typeof helpText !== "string" && <>{helpText}</>}
+    </>
   );
 }
 
@@ -441,31 +436,6 @@ function OptionOrSingleValueContent({
       <span className={cx("fst-italic", "text-body-secondary", styles.kind)}>
         ({namespace.namespace_kind})
       </span>
-    </>
-  );
-}
-
-interface RefreshNamespaceButtonProps {
-  refresh: () => void;
-}
-
-function RefreshNamespaceButton({ refresh }: RefreshNamespaceButtonProps) {
-  const ref = useRef<HTMLButtonElement>(null);
-
-  return (
-    <>
-      <Button
-        className="ms-2"
-        color="outline-primary"
-        innerRef={ref}
-        onClick={refresh}
-        size="sm"
-      >
-        <ArrowRepeat className="bi" />
-      </Button>
-      <UncontrolledTooltip placement="top" target={ref}>
-        Refresh namespaces
-      </UncontrolledTooltip>
     </>
   );
 }

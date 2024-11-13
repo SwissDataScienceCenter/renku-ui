@@ -50,30 +50,11 @@ export const projectV2NewSlice = createSlice({
   name: "newProjectV2",
   initialState,
   reducers: {
-    projectWasCreated: (state) => {
-      state.project = initialState.project;
-    },
-    setAccess: (state, action: PayloadAction<Project["access"]>) => {
-      state.project.access = action.payload;
-    },
-    setContent: (state, action: PayloadAction<Project["content"]>) => {
-      state.project.content = action.payload;
-    },
     setCurrentStep: (state, action: PayloadAction<NewProjectV2Step>) => {
       state.currentStep = action.payload;
-    },
-    setMetadata: (state, action: PayloadAction<Project["metadata"]>) => {
-      state.project.metadata = action.payload;
     },
     reset: () => initialState,
   },
 });
 
-export const {
-  projectWasCreated,
-  setAccess,
-  setContent,
-  setCurrentStep,
-  setMetadata,
-  reset,
-} = projectV2NewSlice.actions;
+export const { setCurrentStep, reset } = projectV2NewSlice.actions;
