@@ -59,7 +59,7 @@ export default function Documentation({ project }: { project: Project }) {
     setValue("description", description);
   };
 
-  const markdownCharactersLimit = 20;
+  const markdownCharactersLimit = 5000;
   const aboutCharactersLimit =
     Math.floor(((2 / 3) * markdownCharactersLimit) / 10) * 10;
   const [charactersLimit, setCharactersLimit] = useState(aboutCharactersLimit);
