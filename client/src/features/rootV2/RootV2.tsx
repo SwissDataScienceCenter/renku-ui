@@ -27,13 +27,15 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 
-import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
-import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
-import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
+import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 import LazyGroupV2Show from "../groupsV2/LazyGroupV2Show";
+import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
+import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
+import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
+import LazyProjectSessionSecrets from "../ProjectPageV2/ProjectPageContent/LazyProjectSessionSecrets";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
@@ -43,7 +45,6 @@ import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
 import NavbarV2 from "./NavbarV2";
-import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -183,6 +184,10 @@ function ProjectsV2Routes() {
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
         <Route element={<LazyProjectPageV2Show />}>
           <Route index element={<LazyProjectPageOverview />} />
+          <Route
+            path={RELATIVE_ROUTES.v2.projects.show.sessionSecrets}
+            element={<LazyProjectSessionSecrets />}
+          />
           <Route
             path={RELATIVE_ROUTES.v2.projects.show.settings}
             element={<LazyProjectPageSettings />}
