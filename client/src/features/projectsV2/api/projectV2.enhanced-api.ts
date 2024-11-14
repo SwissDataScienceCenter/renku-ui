@@ -240,6 +240,7 @@ export const {
 
   // project session secret hooks
   useGetProjectsByProjectIdSecretSlotsQuery,
+  usePostSessionSecretSlotsMutation,
   useGetProjectsByProjectIdSecretsQuery,
 
   // data connector hooks

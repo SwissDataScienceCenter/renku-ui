@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
-import { Key, Lock, Pencil, PlusLg, ShieldLock } from "react-bootstrap-icons";
+import { Key, Lock, Pencil, ShieldLock } from "react-bootstrap-icons";
 import {
   Badge,
   Button,
@@ -47,6 +47,7 @@ import {
 import { useGetUserQuery } from "../../../usersV2/api/users.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import AddSessionSecretButton from "./AddSessionSecretButton";
 import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 
@@ -111,17 +112,7 @@ export default function ProjectSessionSecrets() {
           <div className="my-auto">
             <PermissionsGuard
               disabled={null}
-              enabled={
-                <Button
-                  color="outline-primary"
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}
-                  size="sm"
-                >
-                  <PlusLg className="bi" />
-                </Button>
-              }
+              enabled={<AddSessionSecretButton />}
               requestedPermission="write"
               userPermissions={permissions}
             />
