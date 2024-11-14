@@ -19,13 +19,10 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  FormText,
-  Input,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
@@ -37,6 +34,9 @@ import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { usePostSessionSecretSlotsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
+import DescriptionField from "./fields/DescriptionField";
+import FilenameField from "./fields/FilenameField";
+import NameField from "./fields/NameField";
 
 export default function AddSessionSecretButton() {
   const ref = useRef<HTMLButtonElement>(null);
@@ -123,88 +123,13 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
             <RtkOrNotebooksError error={result.error} dismissible={false} />
           )}
 
-          <div className="mt-3">
-            <Label for="add-session-secret-name">Name</Label>
-            <Controller
-              name="name"
-              control={control}
-              render={({ field: { ref, ...rest } }) => (
-                <Input
-                  className={cx(errors.name && "is-invalid")}
-                  id="add-session-secret-name"
-                  innerRef={ref}
-                  placeholder="API Token"
-                  type="text"
-                  {...rest}
-                />
-              )}
-            />
-            <div className="invalid-feedback">
-              {errors.name?.message ? (
-                <>{errors.name?.message}</>
-              ) : (
-                <>Invalid name</>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-3">
-            <Label for="add-session-secret-filename">Filename</Label>
-            <Controller
-              name="filename"
-              control={control}
-              render={({ field: { ref, ...rest } }) => (
-                <Input
-                  aria-describedby="add-session-secret-filename-help"
-                  className={cx(errors.filename && "is-invalid")}
-                  id="add-session-secret-filename"
-                  innerRef={ref}
-                  placeholder="api_token"
-                  type="text"
-                  {...rest}
-                />
-              )}
-              rules={{ required: "Please provide a filename" }}
-            />
-            <div className="invalid-feedback">
-              {errors.filename?.message ? (
-                <>{errors.filename?.message}</>
-              ) : (
-                <>Invalid filename</>
-              )}
-            </div>
-            <FormText id="add-session-secret-filename-help" tag="div">
-              This is the filename which will be used when mounting the secret
-              inside sessions.
-            </FormText>
-          </div>
-
-          <div className="mt-3">
-            <Label for="add-session-secret-description">Description</Label>
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <textarea
-                  id="add-session-secret-description"
-                  className={cx(
-                    "form-control",
-                    errors.description && "is-invalid"
-                  )}
-                  placeholder="A short description..."
-                  rows={3}
-                  {...field}
-                />
-              )}
-            />
-            <div className="invalid-feedback">
-              {errors.description?.message ? (
-                <>{errors.description?.message}</>
-              ) : (
-                <>Invalid description</>
-              )}
-            </div>
-          </div>
+          <NameField control={control} errors={errors} name="name" />
+          <FilenameField control={control} errors={errors} name="filename" />
+          <DescriptionField
+            control={control}
+            errors={errors}
+            name="description"
+          />
         </ModalBody>
         <ModalFooter>
           <Button color="outline-primary" onClick={toggle}>

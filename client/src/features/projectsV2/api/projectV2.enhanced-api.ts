@@ -242,6 +242,12 @@ const enhancedApi = injectedApi.enhanceEndpoints({
           ? [{ type: "SessionSecretSlot", id: `LIST-${projectId}` }]
           : ["SessionSecretSlot"],
     },
+    patchSessionSecretSlotsBySlotId: {
+      invalidatesTags: (result, _, { slotId }) =>
+        result
+          ? [{ type: "SessionSecretSlot", id: slotId }]
+          : ["SessionSecretSlot"],
+    },
     deleteSessionSecretSlotsBySlotId: {
       invalidatesTags: ["SessionSecretSlot"],
     },
@@ -266,6 +272,7 @@ export const {
   // project session secret hooks
   useGetProjectsByProjectIdSecretSlotsQuery,
   usePostSessionSecretSlotsMutation,
+  usePatchSessionSecretSlotsBySlotIdMutation,
   useDeleteSessionSecretSlotsBySlotIdMutation,
   useGetProjectsByProjectIdSecretsQuery,
 

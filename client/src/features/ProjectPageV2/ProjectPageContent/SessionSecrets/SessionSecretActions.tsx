@@ -17,26 +17,34 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pencil, Trash, XLg } from "react-bootstrap-icons";
 import {
   Button,
   Col,
   DropdownItem,
+  Form,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
 
+import { useForm } from "react-hook-form";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
-import { useDeleteSessionSecretSlotsBySlotIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
+import {
+  useDeleteSessionSecretSlotsBySlotIdMutation,
+  usePatchSessionSecretSlotsBySlotIdMutation,
+} from "../../../projectsV2/api/projectV2.enhanced-api";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import FilenameField from "./fields/FilenameField";
+import NameField from "./fields/NameField";
+import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
+import DescriptionField from "./fields/DescriptionField";
 
 interface SessionSecretActionsProps {
   secretSlot: SessionSecretSlotWithSecret;
@@ -48,6 +56,9 @@ export default function SessionSecretActions({
   const projectId = secretSlot.secretSlot.project_id;
   const permissions = useProjectPermissions({ projectId });
 
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const toggleEdit = useCallback(() => setIsEditOpen((isOpen) => !isOpen), []);
+
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const toggleRemove = useCallback(
     () => setIsRemoveOpen((isOpen) => !isOpen),
@@ -55,13 +66,7 @@ export default function SessionSecretActions({
   );
 
   const defaultAction = (
-    <Button
-      color="outline-primary"
-      onClick={(e) => {
-        e.preventDefault();
-      }}
-      size="sm"
-    >
+    <Button color="outline-primary" onClick={toggleEdit} size="sm">
       <Pencil className={cx("bi", "me-1")} />
       Edit
     </Button>
@@ -91,6 +96,11 @@ export default function SessionSecretActions({
         requestedPermission="write"
         userPermissions={permissions}
       />
+      <EditSessionSecretModal
+        isOpen={isEditOpen}
+        secretSlot={secretSlot.secretSlot}
+        toggle={toggleEdit}
+      />
       <RemoveSessionSecretModal
         isOpen={isRemoveOpen}
         secretSlot={secretSlot.secretSlot}
@@ -98,6 +108,131 @@ export default function SessionSecretActions({
       />
     </>
   );
+}
+
+interface EditSessionSecretModalProps {
+  isOpen: boolean;
+  secretSlot: SessionSecretSlot;
+  toggle: () => void;
+}
+
+function EditSessionSecretModal({
+  isOpen,
+  secretSlot,
+  toggle,
+}: EditSessionSecretModalProps) {
+  const { id: slotId } = secretSlot;
+
+  const [patchSessionSecretSlot, result] =
+    usePatchSessionSecretSlotsBySlotIdMutation();
+
+  const {
+    control,
+    formState: { errors, isDirty },
+    handleSubmit,
+    reset,
+  } = useForm<EditSessionSecretForm>({
+    defaultValues: {
+      description: secretSlot.description ?? "",
+      filename: secretSlot.filename,
+      name: secretSlot.name,
+    },
+  });
+
+  const submitHandler = useCallback(
+    (data: EditSessionSecretForm) => {
+      const description_ = data.description?.trim();
+      const description = description_ ? description_ : "";
+      const name = data.name?.trim();
+      patchSessionSecretSlot({
+        slotId,
+        sessionSecretSlotPatch: {
+          //   description,
+          //   filename: data.filename,
+          //   name,
+          // Only update edited fields
+          ...(description !== (secretSlot.description ?? "")
+            ? { description }
+            : {}),
+          ...(data.filename !== secretSlot.filename
+            ? { filename: data.filename }
+            : {}),
+          ...(name !== secretSlot.name ? { name } : {}),
+        },
+      });
+    },
+    [patchSessionSecretSlot, secretSlot, slotId]
+  );
+  const onSubmit = useMemo(
+    () => handleSubmit(submitHandler),
+    [handleSubmit, submitHandler]
+  );
+
+  useEffect(() => {
+    reset({
+      description: secretSlot.description ?? "",
+      filename: secretSlot.filename,
+      name: secretSlot.name,
+    });
+  }, [reset, secretSlot]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+      result.reset();
+    }
+  }, [isOpen, reset, result]);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      toggle();
+    }
+  }, [result.isSuccess, toggle]);
+
+  return (
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <Form noValidate onSubmit={onSubmit}>
+        <ModalHeader toggle={toggle}>Edit session secret</ModalHeader>
+        <ModalBody>
+          {result.error && (
+            <RtkOrNotebooksError error={result.error} dismissible={false} />
+          )}
+
+          <NameField control={control} errors={errors} name="name" />
+          <FilenameField control={control} errors={errors} name="filename" />
+          <DescriptionField
+            control={control}
+            errors={errors}
+            name="description"
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button color="outline-primary" onClick={toggle}>
+            <XLg className={cx("bi", "me-1")} />
+            Close
+          </Button>
+          <Button
+            color="primary"
+            disabled={!isDirty || result.isLoading}
+            type="submit"
+          >
+            {result.isLoading ? (
+              <Loader className="me-1" inline size={16} />
+            ) : (
+              <Pencil className={cx("bi", "me-1")} />
+            )}
+            Edit session secret
+          </Button>
+        </ModalFooter>
+      </Form>
+    </Modal>
+  );
+}
+
+interface EditSessionSecretForm {
+  name: string | undefined;
+  description: string | undefined;
+  filename: string | undefined;
 }
 
 interface RemoveSessionSecretModalProps {
