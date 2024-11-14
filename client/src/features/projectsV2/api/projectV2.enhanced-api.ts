@@ -147,6 +147,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "Namespace",
     "Project",
     "ProjectMembers",
+    "SessionSecretSlot",
   ],
   endpoints: {
     deleteGroupsByGroupSlug: {
@@ -189,7 +190,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsByProjectIds: {
       providesTags: ["Project"],
     },
-    // getProjectsByNamespaceAndSlug: {
     getNamespacesByNamespaceProjectsAndSlug: {
       providesTags: ["Project"],
     },
@@ -220,6 +220,31 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjects: {
       invalidatesTags: ["Project"],
     },
+    getProjectsByProjectIdSecretSlots: {
+      providesTags: (result, _, { projectId }) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                type: "SessionSecretSlot" as const,
+                id,
+              })),
+              { type: "SessionSecretSlot", id: `LIST-${projectId}` },
+            ]
+          : ["SessionSecretSlot"],
+    },
+    postSessionSecretSlots: {
+      invalidatesTags: (
+        result,
+        _,
+        { sessionSecretSlotPost: { project_id: projectId } }
+      ) =>
+        result
+          ? [{ type: "SessionSecretSlot", id: `LIST-${projectId}` }]
+          : ["SessionSecretSlot"],
+    },
+    deleteSessionSecretSlotsBySlotId: {
+      invalidatesTags: ["SessionSecretSlot"],
+    },
   },
 });
 
@@ -241,6 +266,7 @@ export const {
   // project session secret hooks
   useGetProjectsByProjectIdSecretSlotsQuery,
   usePostSessionSecretSlotsMutation,
+  useDeleteSessionSecretSlotsBySlotIdMutation,
   useGetProjectsByProjectIdSecretsQuery,
 
   // data connector hooks

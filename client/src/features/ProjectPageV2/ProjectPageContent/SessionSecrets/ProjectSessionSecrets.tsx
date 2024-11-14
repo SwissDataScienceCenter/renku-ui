@@ -19,10 +19,9 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
-import { Key, Lock, Pencil, ShieldLock } from "react-bootstrap-icons";
+import { Key, Lock, ShieldLock } from "react-bootstrap-icons";
 import {
   Badge,
-  Button,
   Card,
   CardBody,
   CardHeader,
@@ -36,7 +35,6 @@ import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
-  Project,
   SessionSecret,
   SessionSecretSlot,
 } from "../../../projectsV2/api/projectV2.api";
@@ -48,6 +46,7 @@ import { useGetUserQuery } from "../../../usersV2/api/users.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import AddSessionSecretButton from "./AddSessionSecretButton";
+import SessionSecretActions from "./SessionSecretActions";
 import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 
@@ -85,7 +84,6 @@ export default function ProjectSessionSecrets() {
     </>
   ) : (
     <ProjectSessionSecretsContent
-      project={project}
       sessionSecretSlots={sessionSecretSlots}
       sessionSecrets={sessionSecrets ?? []}
     />
@@ -125,13 +123,11 @@ export default function ProjectSessionSecrets() {
 }
 
 interface ProjectSessionSecretsContentProps {
-  project: Project;
   sessionSecretSlots: SessionSecretSlot[];
   sessionSecrets: SessionSecret[];
 }
 
 function ProjectSessionSecretsContent({
-  project,
   sessionSecretSlots,
   sessionSecrets,
 }: ProjectSessionSecretsContentProps) {
@@ -150,7 +146,6 @@ function ProjectSessionSecretsContent({
       {sessionSecretSlotsWithSecrets.map((secretSlot) => (
         <SessionSecretSlotItem
           key={secretSlot.secretSlot.id}
-          project={project}
           secretSlot={secretSlot}
         />
       ))}
@@ -159,18 +154,11 @@ function ProjectSessionSecretsContent({
 }
 
 interface SessionSecretSlotItemProps {
-  project: Project;
   secretSlot: SessionSecretSlotWithSecret;
 }
 
-function SessionSecretSlotItem({
-  project,
-  secretSlot,
-}: SessionSecretSlotItemProps) {
-  const { id: projectId } = project;
+function SessionSecretSlotItem({ secretSlot }: SessionSecretSlotItemProps) {
   const { filename, name, description } = secretSlot.secretSlot;
-
-  const permissions = useProjectPermissions({ projectId });
 
   return (
     <ListGroupItem action>
@@ -211,25 +199,7 @@ function SessionSecretSlotItem({
           </div>
           {description && <p className="mb-0">{description}</p>}
         </Col>
-        <PermissionsGuard
-          disabled={null}
-          enabled={
-            <Col xs={12} sm="auto" className="ms-auto">
-              <Button
-                color="outline-primary"
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
-                size="sm"
-              >
-                <Pencil className={cx("bi", "me-1")} />
-                Edit
-              </Button>
-            </Col>
-          }
-          requestedPermission="write"
-          userPermissions={permissions}
-        />
+        <SessionSecretActions secretSlot={secretSlot} />
       </Row>
     </ListGroupItem>
   );

@@ -34,7 +34,7 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { usePostSessionSecretSlotsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 
@@ -106,6 +106,12 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
     }
   }, [isOpen, reset, result]);
 
+  useEffect(() => {
+    if (result.isSuccess) {
+      toggle();
+    }
+  }, [result.isSuccess, toggle]);
+
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <Form noValidate onSubmit={onSubmit}>
@@ -114,7 +120,7 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
           <p>Add a new slot for a secret to be mounted in sessions.</p>
 
           {result.error && (
-            <RtkErrorAlert error={result.error} dismissible={false} />
+            <RtkOrNotebooksError error={result.error} dismissible={false} />
           )}
 
           <div className="mt-3">
