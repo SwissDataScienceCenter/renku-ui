@@ -94,10 +94,11 @@ export default function Documentation({ project }: { project: Project }) {
             className={cx(
               "align-items-center",
               "d-flex",
+              "flex-wrap",
               "justify-content-between"
             )}
           >
-            <h4 className="m-0">
+            <h4 className={cx("m-0")}>
               <FileEarmarkText className={cx("me-1", "bi")} />
               Documentation
             </h4>
