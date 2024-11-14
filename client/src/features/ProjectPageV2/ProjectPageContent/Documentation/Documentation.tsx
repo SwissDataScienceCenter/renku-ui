@@ -59,11 +59,11 @@ export default function Documentation({ project }: { project: Project }) {
     setValue("description", description);
   };
 
-  const markdownCharactersLimit = 5000;
-  const aboutCharactersLimit =
-    Math.floor(((2 / 3) * markdownCharactersLimit) / 10) * 10;
-  const [charactersLimit, setCharactersLimit] = useState(aboutCharactersLimit);
-  const [characters, setCharacters] = useState(0);
+  const markdownCharacterLimit = 5000;
+  const aboutCharacterLimit =
+    Math.floor(((2 / 3) * markdownCharacterLimit) / 10) * 10;
+  const [characterLimit, setCharacterLimit] = useState(aboutCharacterLimit);
+  const [character, setCharacter] = useState(0);
   const [disabledSaveButton, setDisabledSaveButton] = useState(false);
 
   const wordCount = (stats: {
@@ -72,9 +72,9 @@ export default function Documentation({ project }: { project: Project }) {
     words: number;
   }) => {
     stats.exact
-      ? setCharactersLimit(markdownCharactersLimit)
-      : setCharactersLimit(aboutCharactersLimit);
-    setCharacters(stats.characters);
+      ? setCharacterLimit(markdownCharacterLimit)
+      : setCharacterLimit(aboutCharacterLimit);
+    setCharacter(stats.characters);
   };
 
   const descriptionField = register("description");
@@ -104,9 +104,9 @@ export default function Documentation({ project }: { project: Project }) {
             <span>
               {showEditor ? (
                 <span style={{ verticalAlign: "middle" }}>
-                  {characters} of
-                  {charactersLimit == aboutCharactersLimit ? " about " : " "}
-                  {charactersLimit} characters &nbsp;
+                  {character} of
+                  {characterLimit == aboutCharacterLimit ? " about " : " "}
+                  {characterLimit} characters &nbsp;
                 </span>
               ) : (
                 <></>
@@ -118,7 +118,7 @@ export default function Documentation({ project }: { project: Project }) {
                 // tooltip="Save or discard your changes."
                 checksBeforeSave={() => {
                   if (
-                    getValues("description").length <= markdownCharactersLimit
+                    getValues("description").length <= markdownCharacterLimit
                   ) {
                     return true;
                   }
@@ -126,7 +126,7 @@ export default function Documentation({ project }: { project: Project }) {
                   return false;
                 }}
                 checksBeforeSaveTooltipMessage={() =>
-                  `Documentation is too long.\n The document can not be longer\nthan ${markdownCharactersLimit} characters.`
+                  `Documentation is too long.\n The document can not be longer\nthan ${markdownCharacterLimit} characters.`
                 }
               />
             </span>
