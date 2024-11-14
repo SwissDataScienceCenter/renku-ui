@@ -176,6 +176,12 @@ function NamespaceSelector({
       isClearable={false}
       isSearchable={false}
       isLoading={isFetchingMore}
+      styles={{
+        menu: (base: Record<string, unknown>) => ({
+          ...base,
+          zIndex: 1000,
+        }),
+      }}
     />
   );
 }
