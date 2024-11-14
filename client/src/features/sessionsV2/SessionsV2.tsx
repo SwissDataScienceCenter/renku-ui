@@ -33,23 +33,22 @@ import {
 import { Loader } from "../../components/Loader";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { NotebookAnnotations } from "../../notebooks/components/session.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import PermissionsGuard from "../permissionsV2/PermissionsGuard";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetSessionsQuery } from "../session/sessions.api";
-import { Session } from "../session/sessions.types";
-import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import SessionItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
-import UpdateSessionLauncherModal from "./UpdateSessionLauncherModal";
-import { useGetProjectSessionLaunchersQuery } from "./sessionsV2.api";
-import { SessionLauncher } from "./sessionsV2.types";
+import UpdateSessionLauncherModal from "./components/SessionModals/UpdateSessionLauncherModal";
+import {
+  useGetProjectSessionLaunchersQuery,
+  useGetSessionsQuery as useGetSessionsQueryV2,
+} from "./sessionsV2.api";
+import { SessionLauncher, SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
@@ -83,7 +82,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
     data: sessions,
     error: sessionsError,
     isLoading: isLoadingSessions,
-  } = useGetSessionsQuery();
+  } = useGetSessionsQueryV2();
 
   const isLoading = isLoadingLaunchers || isLoadingSessions;
   const error = launchersError || sessionsError;
@@ -91,15 +90,13 @@ export default function SessionsV2({ project }: SessionsV2Props) {
   const orphanSessions = useMemo(
     () =>
       launchers != null && sessions != null
-        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
-            sessions,
-            ({ annotations }) =>
-              annotations["renkuVersion"] === "2.0" &&
-              annotations["projectId"] === projectId &&
-              launchers.every(({ id }) => annotations["launcherId"] !== id)
+        ? sessions.filter(
+            (session) =>
+              launchers.every(({ id }) => session.launcher_id !== id) &&
+              session.project_id === projectId
           )
-        : {},
-    [launchers, projectId, sessions]
+        : [],
+    [launchers, sessions, projectId]
   );
 
   const loading = isLoading && (
@@ -112,8 +109,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
   const errorAlert = error && <RtkErrorAlert error={error} />;
 
   const totalSessions =
-    (launchers ? launchers?.length : 0) +
-    Object.entries(orphanSessions)?.length;
+    (launchers ? launchers?.length : 0) + orphanSessions.length;
   return (
     <Card>
       <CardHeader
@@ -146,15 +142,14 @@ export default function SessionsV2({ project }: SessionsV2Props) {
         />
       </CardHeader>
       <CardBody>
-        {loading}
         {errorAlert}
         <p>
           {totalSessions > 0
             ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
             : "Define interactive environments in which to do your work and share it  with others."}
         </p>
-
-        {totalSessions > 0 && (
+        {loading}
+        {totalSessions > 0 && !isLoading && (
           <ListGroup flush>
             {launchers?.map((launcher) => (
               <SessionItemDisplay
@@ -163,9 +158,9 @@ export default function SessionsV2({ project }: SessionsV2Props) {
                 project={project}
               />
             ))}
-            {Object.entries(orphanSessions).map(([key, session]) => (
+            {orphanSessions?.map((session) => (
               <OrphanSession
-                key={`orphan-${key}`}
+                key={`orphan-${session.name}`}
                 session={session}
                 project={project}
               />
@@ -237,15 +232,11 @@ export function SessionV2Actions({
 }
 
 interface OrphanSessionProps {
-  session: Session;
+  session: SessionV2;
   project: Project;
 }
 
 function OrphanSession({ session, project }: OrphanSessionProps) {
-  const sessions = {
-    [session.name]: session,
-  };
-
   const [hash, setHash] = useLocationHash();
   const sessionHash = useMemo(
     () => `orphan-session-${session.name}`,
@@ -271,7 +262,7 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
       />
       <SessionView
         id={sessionHash}
-        sessions={sessions}
+        sessions={[session]}
         project={project}
         toggle={toggleSessionView}
         isOpen={isSessionViewOpen}

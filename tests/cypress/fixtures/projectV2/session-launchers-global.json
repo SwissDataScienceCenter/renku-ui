@@ -4,8 +4,19 @@
     "project_id": "01HYJE5FR1JV4CWFMBFJQFQ4RM",
     "name": "Jupyter Notebook",
     "creation_date": "2024-05-24T08:18:15Z",
-    "environment_kind": "global_environment",
-    "environment_id": "01HYMSPE2D9K4Q3WAME1NN4244",
-    "resource_class_id": 2
+    "resource_class_id": 2,
+    "environment": {
+      "id": "01HYMSPE2D9K4Q3WAME1NN4244",
+      "name": "Jupyter Notebook",
+      "creation_date": "2024-11-05T09:03:12.977947Z",
+      "container_image": "renku/renkulab-py:latest",
+      "default_url": "/jdbqksdgsahd/bsajhfdjhsdv/jasgdjhf/lab",
+      "uid": 1000,
+      "gid": 1000,
+      "working_directory": "/",
+      "mount_directory": "",
+      "port": 8080,
+      "environment_kind": "GLOBAL"
+    }
   }
 ]

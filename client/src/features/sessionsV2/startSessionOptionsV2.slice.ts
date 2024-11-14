@@ -19,10 +19,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { MIN_SESSION_STORAGE_GB } from "../session/startSessionOptions.constants";
-import type {
-  DockerImageStatus,
-  SessionEnvironmentVariable,
-} from "../session/startSessionOptions.types";
+import type { SessionEnvironmentVariable } from "../session/startSessionOptions.types";
 import {
   SessionRepository,
   SessionStartDataConnectorConfiguration,
@@ -30,9 +27,8 @@ import {
 } from "./startSessionOptionsV2.types";
 
 const initialState: StartSessionOptionsV2 = {
-  cloudStorage: [],
+  cloudStorage: undefined,
   defaultUrl: "",
-  dockerImageStatus: "unknown",
   environmentVariables: [],
   lfsAutoFetch: false,
   repositories: [],
@@ -48,7 +44,7 @@ const startSessionOptionsV2Slice = createSlice({
       state,
       action: PayloadAction<SessionStartDataConnectorConfiguration>
     ) => {
-      state.cloudStorage.push(action.payload);
+      state.cloudStorage?.push(action.payload);
     },
     addEnvironmentVariable: (state) => {
       state.environmentVariables.push({ name: "", value: "" });
@@ -57,7 +53,7 @@ const startSessionOptionsV2Slice = createSlice({
       state,
       action: PayloadAction<{ index: number }>
     ) => {
-      state.cloudStorage.splice(action.payload.index, 1);
+      state.cloudStorage?.splice(action.payload.index, 1);
     },
     removeEnvironmentVariable: (
       state,
@@ -73,9 +69,6 @@ const startSessionOptionsV2Slice = createSlice({
     },
     setDefaultUrl: (state, action: PayloadAction<string>) => {
       state.defaultUrl = action.payload;
-    },
-    setDockerImageStatus: (state, action: PayloadAction<DockerImageStatus>) => {
-      state.dockerImageStatus = action.payload;
     },
     setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
       state.lfsAutoFetch = action.payload;
@@ -96,7 +89,8 @@ const startSessionOptionsV2Slice = createSlice({
         storage: SessionStartDataConnectorConfiguration;
       }>
     ) => {
-      state.cloudStorage[action.payload.index] = action.payload.storage;
+      if (state.cloudStorage)
+        state.cloudStorage[action.payload.index] = action.payload.storage;
     },
     updateEnvironmentVariable: (
       state,

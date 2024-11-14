@@ -37,7 +37,11 @@ interface UseDataSourceConfigurationArgs {
 export default function useDataConnectorConfiguration({
   dataConnectors,
 }: UseDataSourceConfigurationArgs) {
-  const { data: dataConnectorSecrets } = useGetDataConnectorsListSecretsQuery({
+  const {
+    data: dataConnectorSecrets,
+    isLoading,
+    isFetching,
+  } = useGetDataConnectorsListSecretsQuery({
     dataConnectorIds: dataConnectors?.map((dc) => dc.id) ?? [],
   });
   const dataConnectorConfigs = useMemo(
@@ -79,7 +83,7 @@ export default function useDataConnectorConfiguration({
           sensitiveFieldValues[name] = "";
         });
         const savedCredentialFields = dataConnectorSecrets
-          ? dataConnectorSecrets[dataConnector.id].map((s) => s.name)
+          ? dataConnectorSecrets[dataConnector.id]?.map((s) => s.name)
           : [];
         return {
           active: true,
@@ -95,5 +99,6 @@ export default function useDataConnectorConfiguration({
 
   return {
     dataConnectorConfigs,
+    isReadyDataConnectorConfigs: !isLoading && !isFetching,
   };
 }

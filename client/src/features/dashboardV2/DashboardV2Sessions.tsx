@@ -1,25 +1,40 @@
-import { skipToken } from "@reduxjs/toolkit/query";
+/*!
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useMemo } from "react";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Col, ListGroup, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
-import { EnvironmentLogs } from "../../components/Logs";
+import EnvironmentLogsV2 from "../../components/LogsV2";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { NotebooksHelper } from "../../notebooks";
-import { NotebookAnnotations } from "../../notebooks/components/session.types";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../../features/sessionsV2/sessionsV2.api";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { useGetSessionsQuery } from "../session/sessions.api";
-import { Session } from "../session/sessions.types";
-import { filterSessionsWithCleanedAnnotations } from "../session/sessions.utils";
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
   SessionStatusV2Description,
   SessionStatusV2Label,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
+import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
 
 import styles from "./DashboardV2Sessions.module.scss";
 
@@ -27,58 +42,73 @@ import styles from "./DashboardV2Sessions.module.scss";
 import "../../notebooks/Notebooks.css";
 
 export default function DashboardV2Sessions() {
-  const { data: sessions, error, isLoading } = useGetSessionsQuery();
+  const { data: sessions, error, isLoading } = useGetSessionsQueryV2();
 
-  const v2Sessions = useMemo(
-    () =>
-      sessions != null
-        ? filterSessionsWithCleanedAnnotations<NotebookAnnotations>(
-            sessions,
-            ({ annotations }) => annotations["renkuVersion"] === "2.0"
-          )
-        : {},
-    [sessions]
-  );
+  if (isLoading) {
+    return <LoadingState />;
+  }
 
-  const noSessions = isLoading ? (
+  if (error) {
+    return <ErrorState error={error} />;
+  }
+
+  if (!sessions || sessions.length === 0) {
+    return <NoSessionsState />;
+  }
+
+  return <SessionDashboardList sessions={sessions} />;
+}
+
+function LoadingState() {
+  return (
     <div className={cx("d-flex", "flex-column", "mx-auto")}>
       <Loader />
       <p className={cx("mx-auto", "my-3")}>Retrieving sessions...</p>
     </div>
-  ) : error ? (
+  );
+}
+
+function ErrorState({
+  error,
+}: {
+  error: FetchBaseQueryError | SerializedError | undefined;
+}) {
+  return (
     <div>
       <p>Cannot show sessions.</p>
       <RtkErrorAlert error={error} />
     </div>
-  ) : Object.keys(v2Sessions).length == 0 ? (
-    <div>No running sessions.</div>
-  ) : null;
+  );
+}
 
-  if (noSessions) return <div>{noSessions}</div>;
+function NoSessionsState() {
+  return <div>No running sessions.</div>;
+}
 
+function SessionDashboardList({
+  sessions,
+}: {
+  sessions: SessionList | undefined;
+}) {
   return (
     <ListGroup flush data-cy="dashboard-session-list">
-      {Object.entries(v2Sessions).map(([key, session]) => (
-        <DashboardSession key={key} session={session} />
+      {sessions?.map((session) => (
+        <DashboardSession key={session.name} session={session} />
       ))}
     </ListGroup>
   );
 }
 
 interface DashboardSessionProps {
-  session: Session;
+  session: SessionV2;
 }
 function DashboardSession({ session }: DashboardSessionProps) {
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
   );
-  const { image } = session;
-  const annotations = NotebooksHelper.cleanAnnotations(
-    session.annotations
-  ) as NotebookAnnotations;
-  const projectId = annotations.projectId;
+  const { image, project_id: projectId, launcher_id: launcherId } = session;
   const { data: project } = useGetProjectsByProjectIdQuery(
-    projectId ? { projectId: projectId } : skipToken
+    projectId ? { projectId } : skipToken
   );
 
   const projectUrl = project
@@ -91,10 +121,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
         id: projectId,
       })
     : ABSOLUTE_ROUTES.v2.root;
-  const sessionHash =
-    project && annotations["launcherId"]
-      ? `launcher-${annotations["launcherId"]}`
-      : "";
+  const sessionHash = project && launcherId ? `launcher-${launcherId}` : "";
   const showSessionUrl = project
     ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
         namespace: project.namespace,
@@ -158,10 +185,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
           showSessionUrl={showSessionUrl}
         />
       </div>
-      <EnvironmentLogs
-        name={displayModal.targetServer}
-        annotations={annotations}
-      />
+      <EnvironmentLogsV2 name={displayModal.targetServer} />
     </div>
   );
 }

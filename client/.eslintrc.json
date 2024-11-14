@@ -170,6 +170,7 @@
           "jupyter",
           "katex",
           "kernelspec",
+          "kubernetes",
           "Keycloak",
           "Lausanne",
           "linkify",

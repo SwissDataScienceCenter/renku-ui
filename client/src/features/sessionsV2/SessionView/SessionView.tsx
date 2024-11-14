@@ -19,13 +19,11 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
-  Boxes,
   CircleFill,
   Clock,
   Database,
   ExclamationTriangleFill,
   FileCode,
-  Globe2,
   Pencil,
 } from "react-bootstrap-icons";
 import {
@@ -33,7 +31,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
   Col,
   ListGroup,
   ListGroupItem,
@@ -42,10 +39,8 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
-import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -57,20 +52,20 @@ import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
-import { Session, Sessions } from "../../session/sessions.types";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
-import UpdateSessionLauncherModal from "../UpdateSessionLauncherModal";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
+import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import {
   SessionBadge,
   SessionStatusV2Description,
   SessionStatusV2Label,
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
-import sessionsV2Api from "../sessionsV2.api";
-import { SessionEnvironment, SessionLauncher } from "../sessionsV2.types";
+import { DEFAULT_URL } from "../session.constants";
+import { SessionLauncher, SessionV2 } from "../sessionsV2.types";
+import { EnvironmentCard } from "./EnvironmentCard";
 
 interface SessionCardContentProps {
   color: string;
@@ -112,7 +107,7 @@ function SessionCard({
   session,
   project,
 }: {
-  session: Session;
+  session: SessionV2;
   project: Project;
 }) {
   return (
@@ -128,7 +123,7 @@ function SessionCard({
       }
       contentResources={
         <SessionRowResourceRequests
-          resourceRequests={session.resources.requests}
+          resourceRequests={session.resources?.requests}
         />
       }
     />
@@ -192,74 +187,12 @@ function getSessionColor(state: string) {
     : "dark";
 }
 
-function EnvironmentCard({
-  launcher,
-  environment,
-}: {
-  launcher: SessionLauncher;
-  environment?: SessionEnvironment;
-}) {
-  return (
-    <>
-      <Card>
-        <CardHeader tag="h5">
-          {launcher.environment_kind === "global_environment"
-            ? environment?.name || <span className="fst-italic">No name</span>
-            : launcher.name}
-        </CardHeader>
-        <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
-          <p className="m-0">
-            {launcher.environment_kind === "container_image" ? (
-              <>
-                <Boxes className={cx("bi", "me-1")} />
-                Custom image
-              </>
-            ) : (
-              <>
-                <Globe2 className={cx("bi", "me-1")} />
-                Global environment
-              </>
-            )}
-          </p>
-          {launcher.environment_kind === "global_environment" ? (
-            <>
-              <p className="m-0">
-                {environment?.description ? (
-                  environment.description
-                ) : (
-                  <span className="fst-italic">No description</span>
-                )}
-              </p>
-              <div>
-                <span>Container image:</span>
-                <CommandCopy command={environment?.container_image || ""} />
-              </div>
-              <div>
-                <Clock className={cx("bi", "me-1")} />
-                Created by <strong>Renku</strong> on{" "}
-                {toHumanDateTime({
-                  datetime: launcher.creation_date,
-                  format: "date",
-                })}
-              </div>
-            </>
-          ) : (
-            <div>
-              <label>Container image:</label>
-              <CommandCopy command={launcher.container_image || ""} />
-            </div>
-          )}
-        </CardBody>
-      </Card>
-    </>
-  );
-}
 interface SessionViewProps {
   id?: string;
   isOpen: boolean;
   launcher?: SessionLauncher;
   project: Project;
-  sessions?: Sessions;
+  sessions?: SessionV2[];
   toggle: () => void;
 }
 export function SessionView({
@@ -279,19 +212,7 @@ export function SessionView({
     setModifyResourcesOpen((open) => !open);
   }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
-  const { data: environments, isLoading } =
-    sessionsV2Api.endpoints.getSessionEnvironments.useQueryState(
-      launcher && launcher.environment_kind === "global_environment"
-        ? undefined
-        : skipToken
-    );
-  const environment = useMemo(() => {
-    if (!launcher || launcher.environment_kind === "container_image")
-      return undefined;
-    if (launcher.environment_kind === "global_environment" && environments)
-      return environments?.find((env) => env.id === launcher.environment_id);
-    return undefined;
-  }, [environments, launcher]);
+  const environment = launcher?.environment;
 
   const { data: dataConnectorLinks } =
     useGetProjectsByProjectIdDataConnectorLinksQuery({
@@ -410,7 +331,7 @@ export function SessionView({
               </div>
             )}
           </div>
-          {launcher && !isLoading && (
+          {launcher && (
             <div>
               <div className={cx("d-flex", "justify-content-between", "mb-2")}>
                 <h4 className="my-auto">Session Environment</h4>
@@ -436,7 +357,7 @@ export function SessionView({
                   userPermissions={permissions}
                 />
               </div>
-              <EnvironmentCard launcher={launcher} environment={environment} />
+              <EnvironmentCard launcher={launcher} />
               <UpdateSessionLauncherModal
                 isOpen={isUpdateOpen}
                 launcher={launcher}
@@ -487,16 +408,19 @@ export function SessionView({
           <div>
             <h4>Default URL</h4>
             <p className="mb-2">
-              The default URL specifies the URL fragment on the session to go to
+              The default URL specifies the URL pathname on the session to go to
               upon launch
             </p>
             <div>
-              {launcher && launcher.default_url ? (
-                <CommandCopy command={launcher.default_url} noMargin />
-              ) : environment && environment.default_url ? (
-                <CommandCopy command={environment.default_url} noMargin />
+              {launcher && launcher.environment?.default_url ? (
+                <CommandCopy
+                  command={launcher.environment?.default_url}
+                  noMargin
+                />
+              ) : environment && environment?.default_url ? (
+                <CommandCopy command={environment?.default_url} noMargin />
               ) : (
-                <CommandCopy command="/lab" noMargin />
+                <CommandCopy command={DEFAULT_URL} noMargin />
               )}
             </div>
           </div>
@@ -537,7 +461,7 @@ export function SessionView({
             </div>
             {dataConnectors && dataConnectors?.length > 0 ? (
               <ListGroup>
-                {project.repositories?.map((repositoryUrl, index) => (
+                {project?.repositories?.map((repositoryUrl, index) => (
                   <RepositoryItem
                     key={`storage-${index}`}
                     project={project}
