@@ -29,8 +29,8 @@ import {
   Underline,
   Strikethrough,
   Code,
-  Subscript,
-  Superscript,
+  // Subscript,
+  // Superscript,
 } from "@ckeditor/ckeditor5-basic-styles";
 import { BlockQuote } from "@ckeditor/ckeditor5-block-quote";
 import { CodeBlock } from "@ckeditor/ckeditor5-code-block";
@@ -40,8 +40,17 @@ import { Heading } from "@ckeditor/ckeditor5-heading";
 import { SourceEditing } from "@ckeditor/ckeditor5-source-editing";
 import { WordCount } from "@ckeditor/ckeditor5-word-count";
 import { List, TodoList } from "@ckeditor/ckeditor5-list";
-import { Alignment } from "@ckeditor/ckeditor5-alignment";
-import { Link } from "@ckeditor/ckeditor5-link";
+// import { Alignment } from "@ckeditor/ckeditor5-alignment";
+import { Link, LinkImage } from "@ckeditor/ckeditor5-link";
+import {
+  ImageBlockEditing,
+  // ImageInsert,
+  ImageInsertViaUrl,
+  // ImageResize,
+  // ImageToolbar,
+  // ImageUpload,
+} from "@ckeditor/ckeditor5-image";
+// import { Base64UploadAdapter } from "@ckeditor/ckeditor5-upload";
 import {
   Table,
   TableCaption,
@@ -51,14 +60,6 @@ import {
   TableToolbar,
 } from "@ckeditor/ckeditor5-table";
 import { HorizontalLine } from "@ckeditor/ckeditor5-horizontal-line";
-/*import {
-  ImageBlock,
-  ImageInsert,
-  ImageResize,
-  ImageToolbar,
-  ImageUpload,
-} from "@ckeditor/ckeditor5-image";
-import { Base64UploadAdapter } from "@ckeditor/ckeditor5-upload";*/
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 
@@ -139,10 +140,13 @@ ClassicEditor.builtinPlugins = [
   CodeBlock,
   List,
   TodoList,
-  Alignment,
-  Superscript,
-  Subscript,
+  // Alignment,
+  // Superscript,
+  // Subscript,
   Link,
+  LinkImage,
+  ImageInsertViaUrl,
+  ImageBlockEditing,
   HorizontalLine,
   Table,
   TableCaption,
@@ -195,24 +199,26 @@ function CkEditor({
           items: ["bulletedList", "numberedList", "todoList"],
         },
         "|",
-        "alignment",
-        "|",
-        "superscript",
-        "subscript",
+        // "alignment",
+        // "|",
+        // "superscript",
+        // "subscript",
         "math",
         "|",
         "link",
+        "insertImage",
         "|",
-        {
+        "horizontalLine",
+        "insertTable",
+        "|",
+        /*{
           label: "Other",
           withText: false,
           items: [
-            "horizontalLine",
-            "insertTable",
-            // "insertImage",
-            // "resizeImage",
+            "insertImage",
+            "resizeImage",
           ],
-        },
+        },*/
         "sourceEditing",
       ],
     },
