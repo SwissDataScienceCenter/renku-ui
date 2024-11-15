@@ -99,27 +99,20 @@ export default function SessionSecretActions({
   }
 
   const actions = [
-    secretSlot.secretId == null
-      ? {
-          key: "provide-secret",
-          onClick: toggleProvide,
-          content: (
-            <>
-              <ShieldPlus className={cx("bi", "me-1")} />
-              Provide secret
-            </>
-          ),
-        }
-      : {
-          key: "clear-secret",
-          onClick: toggleClear,
-          content: (
-            <>
-              <ShieldMinus className={cx("bi", "me-1")} />
-              Clear secret
-            </>
-          ),
-        },
+    ...(secretSlot.secretId == null
+      ? [
+          {
+            key: "provide-secret",
+            onClick: toggleProvide,
+            content: (
+              <>
+                <ShieldPlus className={cx("bi", "me-1")} />
+                Provide secret
+              </>
+            ),
+          },
+        ]
+      : []),
     ...(permissions.write
       ? [
           {
@@ -132,6 +125,24 @@ export default function SessionSecretActions({
               </>
             ),
           },
+        ]
+      : []),
+    ...(secretSlot.secretId != null
+      ? [
+          {
+            key: "clear-secret",
+            onClick: toggleClear,
+            content: (
+              <>
+                <ShieldMinus className={cx("bi", "me-1")} />
+                Clear secret
+              </>
+            ),
+          },
+        ]
+      : []),
+    ...(permissions.write
+      ? [
           {
             key: "remove-secret",
             onClick: toggleRemove,
