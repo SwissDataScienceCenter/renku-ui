@@ -18,7 +18,12 @@
 
 import cx from "classnames";
 import { Controller, type FieldValues } from "react-hook-form";
-import Select, { type ClassNamesConfig } from "react-select";
+import Select, {
+  type SelectComponentsConfig,
+  type ClassNamesConfig,
+  type GroupBase,
+  components,
+} from "react-select";
 
 import { Input, Label } from "reactstrap";
 import { Loader } from "../../../../../components/Loader";
@@ -30,6 +35,7 @@ import {
 import type { SessionSecretFormFieldProps } from "./fields.types";
 
 import styles from "./SelectUserSecretField.module.scss";
+import { ChevronDown } from "react-bootstrap-icons";
 
 type SelectUserSecretFieldProps<T extends FieldValues> =
   SessionSecretFormFieldProps<T>;
@@ -109,15 +115,17 @@ function UserSecretSelector<T extends FieldValues>({
 }: UserSecretSelectorProps<T>) {
   return (
     <>
-      <Label>User secret</Label>
+      <Label for="session-secret-select-user-secret">User secret</Label>
       <Controller
         name={name}
         control={control}
         render={({ field: { onChange, value, ...rest } }) => (
           <Select
             classNames={selectClassNames}
+            components={selectComponents}
             getOptionValue={(option) => option.id}
             getOptionLabel={(option) => option.name}
+            inputId="session-secret-select-user-secret"
             isClearable={false}
             options={userSecrets}
             onChange={(newValue) => {
@@ -134,26 +142,48 @@ function UserSecretSelector<T extends FieldValues>({
 }
 
 const selectClassNames: ClassNamesConfig<SecretWithId, false> = {
-  control: ({ menuIsOpen }) =>
+  control: ({ menuIsOpen, isFocused }) =>
     cx(
       menuIsOpen ? "rounded-top" : "rounded",
-      "bg-white",
       "border",
       "cursor-pointer",
-      styles.control
+      isFocused && "border-primary-subtle"
+      // styles.control
     ),
   dropdownIndicator: () => cx("pe-3"),
   input: () => cx("px-3"),
-  menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0"),
-  menuList: () => cx("d-grid", "gap-2"),
+  menu: () =>
+    cx(
+      "bg-white",
+      "rounded-bottom",
+      "border",
+      "border-top-0",
+      "border-primary-subtle"
+    ),
+  menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected }) =>
     cx(
       "px-3",
       "py-2",
+      "cursor-pointer",
       styles.option,
       isFocused && styles.optionIsFocused,
       !isFocused && isSelected && styles.optionIsSelected
     ),
   placeholder: () => cx("px-3"),
   singleValue: () => cx("px-3"),
+};
+
+const selectComponents: SelectComponentsConfig<
+  SecretWithId,
+  false,
+  GroupBase<SecretWithId>
+> = {
+  DropdownIndicator: (props) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        <ChevronDown className="bi" />
+      </components.DropdownIndicator>
+    );
+  },
 };

@@ -536,20 +536,12 @@ function ProvideSessionSecretModalExistingContent({
 
   const submitHandler = useCallback(
     (data: ProvideExistingSecretForm) => {
-      console.log({
-        patchSessionSecrets: {
-          projectId,
-          sessionSecretPatchList: [
-            { secret_slot_id: slotId, secret_id: data.secretId },
-          ],
-        },
+      patchSessionSecrets({
+        projectId,
+        sessionSecretPatchList: [
+          { secret_slot_id: slotId, secret_id: data.secretId },
+        ],
       });
-      // patchSessionSecrets({
-      //   projectId,
-      //   sessionSecretPatchList: [
-      //     { secret_slot_id: slotId, secret_id: data.secretId },
-      //   ],
-      // });
     },
     [patchSessionSecrets, projectId, slotId]
   );
