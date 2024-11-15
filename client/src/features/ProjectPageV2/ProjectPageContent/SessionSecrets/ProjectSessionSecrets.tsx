@@ -33,6 +33,7 @@ import {
 
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
   SessionSecret,
@@ -42,7 +43,6 @@ import {
   useGetProjectsByProjectIdSecretSlotsQuery,
   useGetProjectsByProjectIdSecretsQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
-import { useGetUserQuery } from "../../../usersV2/api/users.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import AddSessionSecretButton from "./AddSessionSecretButton";
@@ -51,14 +51,13 @@ import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 
 export default function ProjectSessionSecrets() {
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
+  );
+
   const { project } = useProject();
   const { id: projectId } = project;
   const permissions = useProjectPermissions({ projectId });
-  const {
-    data: user,
-    isLoading: isLoadingUser,
-    error: userError,
-  } = useGetUserQuery();
   const {
     data: sessionSecretSlots,
     isLoading: isLoadingSessionSecretSlots,
@@ -69,15 +68,14 @@ export default function ProjectSessionSecrets() {
     isLoading: isLoadingSessionSecrets,
     error: sessionSecretsError,
   } = useGetProjectsByProjectIdSecretsQuery(
-    user?.isLoggedIn ? { projectId } : skipToken
+    userLogged ? { projectId } : skipToken
   );
-  const isLoading =
-    isLoadingUser || isLoadingSessionSecretSlots || isLoadingSessionSecrets;
-  const error = userError ?? sessionSecretSlotsError ?? sessionSecretsError;
+  const isLoading = isLoadingSessionSecretSlots || isLoadingSessionSecrets;
+  const error = sessionSecretSlotsError ?? sessionSecretsError;
 
   const content = isLoading ? (
     <Loader />
-  ) : error || !sessionSecretSlots || (user?.isLoggedIn && !sessionSecrets) ? (
+  ) : error || !sessionSecretSlots || (userLogged && !sessionSecrets) ? (
     <>
       <p>Error: could not load this project&apos;s session secrets.</p>
       {error && <RtkOrNotebooksError error={error} dismissible={false} />}

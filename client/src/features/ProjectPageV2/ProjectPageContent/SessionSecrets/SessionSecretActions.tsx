@@ -22,6 +22,7 @@ import {
   BoxArrowInLeft,
   Pencil,
   PlusLg,
+  ShieldMinus,
   ShieldPlus,
   Trash,
   XLg,
@@ -44,7 +45,7 @@ import { Controller, useForm } from "react-hook-form";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
-import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import {
   useDeleteSessionSecretSlotsBySlotIdMutation,
@@ -65,6 +66,10 @@ interface SessionSecretActionsProps {
 export default function SessionSecretActions({
   secretSlot,
 }: SessionSecretActionsProps) {
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
+  );
+
   const projectId = secretSlot.secretSlot.project_id;
   const permissions = useProjectPermissions({ projectId });
 
@@ -83,40 +88,102 @@ export default function SessionSecretActions({
     []
   );
 
-  const defaultAction = (
-    <Button color="outline-primary" onClick={toggleEdit} size="sm">
-      <Pencil className={cx("bi", "me-1")} />
-      Edit
-    </Button>
+  const [isClearOpen, setIsClearOpen] = useState(false);
+  const toggleClear = useCallback(
+    () => setIsClearOpen((isOpen) => !isOpen),
+    []
   );
+
+  if (!userLogged) {
+    return null;
+  }
+
+  const actions = [
+    secretSlot.secretId == null
+      ? {
+          key: "provide-secret",
+          onClick: toggleProvide,
+          content: (
+            <>
+              <ShieldPlus className={cx("bi", "me-1")} />
+              Provide secret
+            </>
+          ),
+        }
+      : {
+          key: "clear-secret",
+          onClick: toggleClear,
+          content: (
+            <>
+              <ShieldMinus className={cx("bi", "me-1")} />
+              Clear secret
+            </>
+          ),
+        },
+    ...(permissions.write
+      ? [
+          {
+            key: "edit-secret",
+            onClick: toggleEdit,
+            content: (
+              <>
+                <Pencil className={cx("bi", "me-1")} />
+                Edit
+              </>
+            ),
+          },
+          {
+            key: "remove-secret",
+            onClick: toggleRemove,
+            content: (
+              <>
+                <Trash className={cx("bi", "me-1")} />
+                Remove
+              </>
+            ),
+          },
+        ]
+      : []),
+  ];
+
+  if (actions.length < 1) {
+    return null;
+  }
+
+  const actionsContent =
+    actions.length == 1 ? (
+      <Col xs={12} sm="auto" className="ms-auto">
+        <Button color="outline-primary" onClick={actions[0].onClick} size="sm">
+          {actions[0].content}
+        </Button>
+      </Col>
+    ) : (
+      <Col xs={12} sm="auto" className="ms-auto">
+        <ButtonWithMenuV2
+          color="outline-primary"
+          default={
+            <Button
+              color="outline-primary"
+              onClick={actions[0].onClick}
+              size="sm"
+            >
+              {actions[0].content}
+            </Button>
+          }
+          size="sm"
+        >
+          {actions.slice(1).map(({ key, onClick, content }) => (
+            <DropdownItem key={key} onClick={onClick}>
+              {content}
+            </DropdownItem>
+          ))}
+        </ButtonWithMenuV2>
+      </Col>
+    );
 
   return (
     <>
-      <PermissionsGuard
-        disabled={null}
-        enabled={
-          <Col xs={12} sm="auto" className="ms-auto">
-            <ButtonWithMenuV2
-              color="outline-primary"
-              default={defaultAction}
-              size="sm"
-            >
-              {secretSlot.secretId == null && (
-                <DropdownItem onClick={toggleProvide}>
-                  <ShieldPlus className={cx("bi", "me-1")} />
-                  Provide secret
-                </DropdownItem>
-              )}
-              <DropdownItem onClick={toggleRemove}>
-                <Trash className={cx("bi", "me-1")} />
-                Remove
-              </DropdownItem>
-            </ButtonWithMenuV2>
-          </Col>
-        }
-        requestedPermission="write"
-        userPermissions={permissions}
-      />
+      {actionsContent}
       <EditSessionSecretModal
         isOpen={isEditOpen}
         secretSlot={secretSlot.secretSlot}
@@ -131,6 +198,11 @@ export default function SessionSecretActions({
         isOpen={isProvideOpen}
         secretSlot={secretSlot.secretSlot}
         toggle={toggleProvide}
+      />
+      <ClearSessionSecretModal
+        isOpen={isClearOpen}
+        secretSlotWithSecret={secretSlot}
+        toggle={toggleClear}
       />
     </>
   );
@@ -306,7 +378,7 @@ function RemoveSessionSecretModal({
       <ModalFooter>
         <Button color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
-          Cancel
+          Close
         </Button>
         <Button
           color="danger"
@@ -600,4 +672,65 @@ function ProvideSessionSecretModalExistingContent({
 
 interface ProvideExistingSecretForm {
   secretId: string;
+}
+
+interface ClearSessionSecretModalProps {
+  isOpen: boolean;
+  secretSlotWithSecret: SessionSecretSlotWithSecret;
+  toggle: () => void;
+}
+
+function ClearSessionSecretModal({
+  isOpen,
+  secretSlotWithSecret,
+  toggle,
+}: ClearSessionSecretModalProps) {
+  const {
+    id: slotId,
+    name,
+    project_id: projectId,
+  } = secretSlotWithSecret.secretSlot;
+
+  const [patchSessionSecrets, result] =
+    usePatchProjectsByProjectIdSecretsMutation();
+
+  const onClear = useCallback(() => {
+    patchSessionSecrets({
+      projectId,
+      sessionSecretPatchList: [{ secret_slot_id: slotId, value: null }],
+    });
+  }, [patchSessionSecrets, projectId, slotId]);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      toggle();
+    }
+  }, [result.isSuccess, toggle]);
+
+  return (
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalHeader toggle={toggle}>Clear session secret</ModalHeader>
+      <ModalBody>
+        <p>
+          This action will clear the secret value from the{" "}
+          <span className="fw-bold">{name}</span> session secret slot.
+        </p>
+        <p className="mb-0">Your user secret will not be deleted.</p>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="outline-primary" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Close
+        </Button>
+        <Button color="primary" type="button" onClick={onClear}>
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <ShieldMinus className={cx("bi", "me-1")} />
+          )}
+          Clear session secret
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
 }
