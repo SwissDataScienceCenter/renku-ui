@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { Controller, type FieldValues } from "react-hook-form";
-import Select from "react-select";
+import Select, { type ClassNamesConfig } from "react-select";
 
 import { Input, Label } from "reactstrap";
 import { Loader } from "../../../../../components/Loader";
@@ -28,6 +28,8 @@ import {
   useGetUserSecretsQuery,
 } from "../../../../usersV2/api/users.api";
 import type { SessionSecretFormFieldProps } from "./fields.types";
+
+import styles from "./SelectUserSecretField.module.scss";
 
 type SelectUserSecretFieldProps<T extends FieldValues> =
   SessionSecretFormFieldProps<T>;
@@ -113,6 +115,7 @@ function UserSecretSelector<T extends FieldValues>({
         control={control}
         render={({ field: { onChange, value, ...rest } }) => (
           <Select
+            classNames={selectClassNames}
             getOptionValue={(option) => option.id}
             getOptionLabel={(option) => option.name}
             isClearable={false}
@@ -120,6 +123,7 @@ function UserSecretSelector<T extends FieldValues>({
             onChange={(newValue) => {
               onChange(newValue?.id);
             }}
+            unstyled
             value={userSecrets.find(({ id }) => id === value)}
             {...rest}
           />
@@ -128,3 +132,28 @@ function UserSecretSelector<T extends FieldValues>({
     </>
   );
 }
+
+const selectClassNames: ClassNamesConfig<SecretWithId, false> = {
+  control: ({ menuIsOpen }) =>
+    cx(
+      menuIsOpen ? "rounded-top" : "rounded",
+      "bg-white",
+      "border",
+      "cursor-pointer",
+      styles.control
+    ),
+  dropdownIndicator: () => cx("pe-3"),
+  input: () => cx("px-3"),
+  menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0"),
+  menuList: () => cx("d-grid", "gap-2"),
+  option: ({ isFocused, isSelected }) =>
+    cx(
+      "px-3",
+      "py-2",
+      styles.option,
+      isFocused && styles.optionIsFocused,
+      !isFocused && isSelected && styles.optionIsSelected
+    ),
+  placeholder: () => cx("px-3"),
+  singleValue: () => cx("px-3"),
+};
