@@ -74,7 +74,7 @@ export default function useSessionSecrets({
     ) {
       dispatch(startSessionOptionsV2Slice.actions.setUserSecretsReady(true));
     }
-  }, [dispatch, sessionSecretSlotsWithSecrets]);
+  }, [dispatch, sessionSecretSlotsWithSecrets, userLogged]);
 
   return {
     sessionSecretSlotsWithSecrets,
