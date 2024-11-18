@@ -111,6 +111,50 @@ describe("Set up data connectors with credentials", () => {
     cy.wait("@listDataConnectors");
   });
 
+  it("do not store credentials if there are none", () => {
+    fixtures
+      .listDataConnectors({ namespace: "test-2-group-v2" })
+      .testCloudStorage({ success: true })
+      .postDataConnector({ namespace: "test-2-group-v2" })
+      .dataConnectorSecrets({
+        fixture: "dataConnector/data-connector-secrets-empty.json",
+      })
+      .patchDataConnectorSecrets({
+        content: [],
+        // No call to postCloudStorageSecrets is expected
+        shouldNotBeCalled: true,
+      });
+    cy.visit("/v2/groups/test-2-group-v2");
+    cy.wait("@readGroupV2");
+    // add data connector
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.wait("@getStorageSchema");
+
+    // Pick a provider
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-Switch").click();
+    cy.getDataCy("data-connector-edit-next-button").click();
+
+    // // Fill out the details
+    cy.get("#sourcePath").type("bucket/my-source");
+    cy.get("#endpoint").clear().type("https://s3-zh.os.switch.ch");
+    cy.getDataCy("test-data-connector-button").click();
+    cy.getDataCy("add-data-connector-continue-button")
+      .contains("Continue")
+      .click();
+    cy.getDataCy("data-connector-edit-mount").within(() => {
+      cy.get("#name").type("example storage without credentials");
+    });
+    cy.getDataCy("data-connector-edit-update-button").click();
+    cy.wait("@postDataConnector");
+    cy.getDataCy("data-connector-edit-body").should(
+      "contain.text",
+      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
+    );
+    cy.getDataCy("data-connector-edit-close-button").click();
+    cy.wait("@listDataConnectors");
+  });
+
   it("resets validation state when content changes", () => {
     fixtures
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
