@@ -47,7 +47,14 @@ export default function FilenameField<T extends FieldValues>({
             {...rest}
           />
         )}
-        rules={{ required: "Please provide a filename" }}
+        rules={{
+          required: "Please provide a filename",
+          pattern: {
+            value: /^[a-zA-Z0-9_\-.]+$/,
+            message:
+              'A valid filename must consist of alphanumeric characters, "-", "_" or "."',
+          },
+        }}
       />
       <div className="invalid-feedback">
         {errors.filename?.message ? (

@@ -31,6 +31,7 @@ import {
   Row,
 } from "reactstrap";
 
+import { InfoAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -88,35 +89,47 @@ export default function ProjectSessionSecrets() {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <div
-          className={cx(
-            "align-items-center",
-            "d-flex",
-            "justify-content-between"
-          )}
-        >
-          <div className={cx("align-items-center", "d-flex")}>
-            <h4 className={cx("m-0", "me-2")}>
-              <ShieldLock className={cx("me-1", "bi")} />
-              Session Secrets
-            </h4>
-            {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
-          </div>
+    <>
+      {!userLogged && (
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-0">
+            As an anonymous user, you cannot mout user secrets inside sessions.
+          </p>
+        </InfoAlert>
+      )}
 
-          <div className="my-auto">
-            <PermissionsGuard
-              disabled={null}
-              enabled={<AddSessionSecretButton />}
-              requestedPermission="write"
-              userPermissions={permissions}
-            />
+      <Card>
+        <CardHeader>
+          <div
+            className={cx(
+              "align-items-center",
+              "d-flex",
+              "justify-content-between"
+            )}
+          >
+            <div className={cx("align-items-center", "d-flex")}>
+              <h4 className={cx("m-0", "me-2")}>
+                <ShieldLock className={cx("me-1", "bi")} />
+                Session Secrets
+              </h4>
+              {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
+            </div>
+
+            <div className="my-auto">
+              <PermissionsGuard
+                disabled={null}
+                enabled={<AddSessionSecretButton />}
+                requestedPermission="write"
+                userPermissions={permissions}
+              />
+            </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardBody>{content}</CardBody>
-    </Card>
+        </CardHeader>
+        <CardBody className={cx(sessionSecretSlots?.length == 0 && "pb-0")}>
+          {content}
+        </CardBody>
+      </Card>
+    </>
   );
 }
 
