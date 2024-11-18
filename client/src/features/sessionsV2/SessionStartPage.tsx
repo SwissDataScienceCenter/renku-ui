@@ -597,10 +597,10 @@ export default function SessionStartPage() {
     data: launchers,
     isLoading: isLoadingLaunchers,
     error: launchersError,
-  } = useGetProjectSessionLaunchersQuery({ projectId: projectId ?? "" });
+  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
 
   const isLoading = isLoadingProject || isLoadingLaunchers;
-  const error = projectError || launchersError;
+  const error = projectError ?? launchersError;
 
   const launcher = useMemo(
     () => launchers?.find(({ id }) => id === launcherId),
