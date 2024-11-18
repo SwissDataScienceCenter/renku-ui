@@ -900,7 +900,8 @@ export function AddStorageOptions({
         ? "dropdown"
         : "text";
 
-      const defaultValue = o.default ?? "";
+      const defaultValue =
+        storage?.options?.[o.name as string] ?? o.default ?? "";
       return (
         <div className="mb-3" key={o.name}>
           {inputType === "checkbox" ? (
