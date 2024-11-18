@@ -37,12 +37,15 @@ import type { SessionSecretFormFieldProps } from "./fields.types";
 import styles from "./SelectUserSecretField.module.scss";
 import { ChevronDown } from "react-bootstrap-icons";
 
-type SelectUserSecretFieldProps<T extends FieldValues> =
-  SessionSecretFormFieldProps<T>;
+interface SelectUserSecretFieldProps<T extends FieldValues>
+  extends SessionSecretFormFieldProps<T> {
+  formId?: string;
+}
 
 export default function SelectUserSecretField<T extends FieldValues>({
   control,
   errors,
+  formId,
   name,
 }: SelectUserSecretFieldProps<T>) {
   const {
@@ -69,6 +72,7 @@ export default function SelectUserSecretField<T extends FieldValues>({
     <UserSecretSelector
       control={control}
       errors={errors}
+      formId={formId}
       name={name}
       userSecrets={userSecrets}
     />
@@ -110,12 +114,16 @@ interface UserSecretSelectorProps<T extends FieldValues>
 
 function UserSecretSelector<T extends FieldValues>({
   control,
+  formId,
   name,
   userSecrets,
 }: UserSecretSelectorProps<T>) {
+  const fieldIdSuffix = `session-secret-${name}`;
+  const fieldId = formId ? `${formId}-${fieldIdSuffix}` : fieldIdSuffix;
+
   return (
     <>
-      <Label for="session-secret-select-user-secret">User secret</Label>
+      <Label for={fieldId}>User secret</Label>
       <Controller
         name={name}
         control={control}

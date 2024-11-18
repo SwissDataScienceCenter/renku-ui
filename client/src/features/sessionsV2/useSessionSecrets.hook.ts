@@ -56,19 +56,14 @@ export default function useSessionSecrets({
   const error = sessionSecretSlotsError ?? sessionSecretsError;
 
   const sessionSecretSlotsWithSecrets = useMemo(() => {
-    if (
-      isFetching ||
-      error ||
-      !sessionSecretSlots ||
-      (userLogged && !sessionSecrets)
-    ) {
+    if (error || !sessionSecretSlots || (userLogged && !sessionSecrets)) {
       return null;
     }
     return getSessionSecretSlotsWithSecrets({
       sessionSecretSlots,
       sessionSecrets: sessionSecrets ?? [],
     });
-  }, [error, isFetching, sessionSecretSlots, sessionSecrets, userLogged]);
+  }, [error, sessionSecretSlots, sessionSecrets, userLogged]);
 
   const dispatch = useAppDispatch();
 

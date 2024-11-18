@@ -1,5 +1,6 @@
-import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
+import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
+import { usersApi } from "../../usersV2/api/users.api";
 
 import { projectAndNamespaceApi as api } from "./namespace.api";
 
@@ -14,9 +15,9 @@ import type {
 import type {
   GetGroupsApiArg,
   GetGroupsApiResponse as GetGroupsApiResponseOrig,
-  GroupResponseList,
   GetNamespacesApiArg,
   GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
+  GroupResponseList,
   NamespaceResponseList,
 } from "./namespace.api";
 
@@ -263,6 +264,16 @@ const enhancedApi = injectedApi.enhanceEndpoints({
         result
           ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
           : ["SessionSecret"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(
+            usersApi.endpoints.getUserSecrets.initiate(
+              { userSecretsParams: { kind: "general" } },
+              { forceRefetch: true }
+            )
+          );
+        });
+      },
     },
   },
 });

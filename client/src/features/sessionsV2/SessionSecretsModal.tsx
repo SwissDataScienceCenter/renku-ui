@@ -17,15 +17,15 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowInLeft,
   CheckCircleFill,
   PlusLg,
   SkipForward,
-  XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
@@ -43,12 +43,16 @@ import {
   Row,
 } from "reactstrap";
 
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import SelectUserSecretField from "../ProjectPageV2/ProjectPageContent/SessionSecrets/fields/SelectUserSecretField";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
-import type {
-  Project,
-  SessionSecretSlot,
+import {
+  usePatchProjectsByProjectIdSecretsMutation,
+  type Project,
+  type SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
@@ -241,25 +245,180 @@ function UnreadySessionSecretItem({
           </ButtonGroup>
         </CardBody>
         {mode === "new-value" ? (
-          <>
-            NV
-            {/* <ProvideSessionSecretModalNewValueContent
-          isOpen={isOpen}
-          secretSlot={secretSlot}
-          toggle={toggle}
-        /> */}
-          </>
+          <ProvideNewValueContent secretSlot={secretSlot} />
         ) : (
-          <>
-            E
-            {/* <ProvideSessionSecretModalExistingContent
-              isOpen={isOpen}
-              secretSlot={secretSlot}
-              toggle={toggle}
-            /> */}
-          </>
+          <ProvideExistingContent secretSlot={secretSlot} />
         )}
       </Card>
     </Col>
   );
+}
+
+interface ProvideNewValueContentProps {
+  secretSlot: SessionSecretSlot;
+}
+function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
+  const { id: slotId, project_id: projectId } = secretSlot;
+
+  const [patchSessionSecrets, result] =
+    usePatchProjectsByProjectIdSecretsMutation();
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<ProvideNewSecretValueForm>({
+    defaultValues: { value: "" },
+  });
+
+  const submitHandler = useCallback(
+    (data: ProvideNewSecretValueForm) => {
+      patchSessionSecrets({
+        projectId,
+        sessionSecretPatchList: [{ secret_slot_id: slotId, value: data.value }],
+      });
+    },
+    [patchSessionSecrets, projectId, slotId]
+  );
+  const onSubmit = useMemo(
+    () => handleSubmit(submitHandler),
+    [handleSubmit, submitHandler]
+  );
+
+  useEffect(() => {
+    reset({ value: "" });
+  }, [reset, secretSlot]);
+
+  if (result.isSuccess) {
+    return null;
+  }
+
+  const newValueFieldId = `provide-session-secret-new-value-${slotId}`;
+
+  return (
+    <Form noValidate onSubmit={onSubmit}>
+      <CardBody className="py-0">
+        {result.error && (
+          <RtkOrNotebooksError error={result.error} dismissible={false} />
+        )}
+
+        <div className="mb-3">
+          <Label for={newValueFieldId}>Secret value</Label>
+          <Controller
+            name="value"
+            control={control}
+            render={({ field }) => (
+              <textarea
+                id={newValueFieldId}
+                className={cx("form-control", errors.value && "is-invalid")}
+                placeholder="Your secret value..."
+                rows={6}
+                {...field}
+              />
+            )}
+            rules={{ required: "Please provide a value" }}
+          />
+          <div className="invalid-feedback">
+            {errors.value?.message ? (
+              <>{errors.value?.message}</>
+            ) : (
+              <>Invalid secret value</>
+            )}
+          </div>
+        </div>
+      </CardBody>
+      <CardBody className={cx("d-flex", "flex-row", "justify-content-end")}>
+        <Button color="primary" disabled={result.isLoading} type="submit">
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <PlusLg className={cx("bi", "me-1")} />
+          )}
+          Save new secret
+        </Button>
+      </CardBody>
+    </Form>
+  );
+}
+
+interface ProvideNewSecretValueForm {
+  value: string;
+}
+
+interface ProvideExistingContentProps {
+  secretSlot: SessionSecretSlot;
+}
+
+function ProvideExistingContent({ secretSlot }: ProvideExistingContentProps) {
+  const { id: slotId, project_id: projectId } = secretSlot;
+
+  const [patchSessionSecrets, result] =
+    usePatchProjectsByProjectIdSecretsMutation();
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<ProvideExistingSecretForm>({
+    defaultValues: { secretId: "" },
+  });
+
+  const submitHandler = useCallback(
+    (data: ProvideExistingSecretForm) => {
+      patchSessionSecrets({
+        projectId,
+        sessionSecretPatchList: [
+          { secret_slot_id: slotId, secret_id: data.secretId },
+        ],
+      });
+    },
+    [patchSessionSecrets, projectId, slotId]
+  );
+  const onSubmit = useMemo(
+    () => handleSubmit(submitHandler),
+    [handleSubmit, submitHandler]
+  );
+
+  useEffect(() => {
+    reset({ secretId: "" });
+  }, [reset, secretSlot]);
+
+  if (result.isSuccess) {
+    return null;
+  }
+
+  const formId = `existing-${slotId}`;
+
+  return (
+    <Form noValidate onSubmit={onSubmit}>
+      <CardBody className="py-0">
+        {result.error && (
+          <RtkOrNotebooksError error={result.error} dismissible={false} />
+        )}
+
+        <SelectUserSecretField
+          control={control}
+          errors={errors}
+          formId={formId}
+          name="secretId"
+        />
+      </CardBody>
+      <CardBody className={cx("d-flex", "flex-row", "justify-content-end")}>
+        <Button color="primary" disabled={result.isLoading} type="submit">
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <BoxArrowInLeft className={cx("bi", "me-1")} />
+          )}
+          Use secret
+        </Button>
+      </CardBody>
+    </Form>
+  );
+}
+
+interface ProvideExistingSecretForm {
+  secretId: string;
 }

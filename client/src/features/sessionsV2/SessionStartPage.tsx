@@ -556,7 +556,6 @@ function StartSessionFromLauncher({
 
   // TODO
   if (
-    allDataFetched &&
     sessionSecretSlotsWithSecrets &&
     !startSessionOptionsV2.userSecretsReady
   ) {
