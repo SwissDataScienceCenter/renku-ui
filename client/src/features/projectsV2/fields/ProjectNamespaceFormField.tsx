@@ -176,12 +176,6 @@ function NamespaceSelector({
       isClearable={false}
       isSearchable={false}
       isLoading={isFetchingMore}
-      styles={{
-        menu: (base: Record<string, unknown>) => ({
-          ...base,
-          zIndex: 1000,
-        }),
-      }}
     />
   );
 }
@@ -195,7 +189,14 @@ const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
       styles.control
     ),
   dropdownIndicator: () => cx("pe-3"),
-  menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0"),
+  menu: () =>
+    cx(
+      "bg-white",
+      "rounded-bottom",
+      "border",
+      "border-top-0",
+      styles.zDropdown
+    ),
   menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected }) =>
     cx(
