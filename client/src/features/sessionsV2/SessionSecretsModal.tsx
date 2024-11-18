@@ -17,15 +17,31 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
+  BoxArrowInLeft,
   CheckCircleFill,
+  PlusLg,
   SkipForward,
   XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import {
+  Button,
+  ButtonGroup,
+  Card,
+  CardBody,
+  Col,
+  Form,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+} from "reactstrap";
 
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
@@ -103,11 +119,14 @@ function ReadySessionSecrets({
   }
 
   return (
-    <div>
-      {readySessionSecrets.map(({ secretSlot }) => (
-        <ReadySessionSecretItem key={secretSlot.id} secretSlot={secretSlot} />
-      ))}
-    </div>
+    <>
+      <p className={cx("h5")}>Ready</p>
+      <div className="mb-3">
+        {readySessionSecrets.map(({ secretSlot }) => (
+          <ReadySessionSecretItem key={secretSlot.id} secretSlot={secretSlot} />
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -148,11 +167,17 @@ function UnreadySessionSecrets({
   }
 
   return (
-    <div>
-      {unreadySessionSecrets.map(({ secretSlot }) => (
-        <UnreadySessionSecretItem key={secretSlot.id} secretSlot={secretSlot} />
-      ))}
-    </div>
+    <>
+      <p className={cx("h5")}>Required secrets</p>
+      <Row className="gy-3">
+        {unreadySessionSecrets.map(({ secretSlot }) => (
+          <UnreadySessionSecretItem
+            key={secretSlot.id}
+            secretSlot={secretSlot}
+          />
+        ))}
+      </Row>
+    </>
   );
 }
 
@@ -163,17 +188,78 @@ interface UnreadySessionSecretItemProps {
 function UnreadySessionSecretItem({
   secretSlot,
 }: UnreadySessionSecretItemProps) {
-  const { name, filename } = secretSlot;
+  const { id: slotId, name, filename } = secretSlot;
+
+  const [mode, setMode] = useState<"new-value" | "existing">("new-value");
+
+  const newValueId = `provide-session-secret-mode-new-value-${slotId}`;
+  const existingId = `provide-session-secret-mode-existing-${slotId}`;
 
   return (
-    <div>
-      <span>
-        <XCircleFill className={cx("bi", "me-1", "text-danger")} />
-        <span className="fw-bold">{name}</span>
-        {" (filename: "}
-        <code>{filename}</code>
-        {")"}
-      </span>
-    </div>
+    <Col xs={12}>
+      <Card>
+        <CardBody className="pb-0">
+          <div className="fw-bold">
+            {name}
+            {" (filename: "}
+            <code>{filename}</code>
+            {")"}
+          </div>
+        </CardBody>
+        <CardBody>
+          <ButtonGroup>
+            <Input
+              type="radio"
+              className="btn-check"
+              id={newValueId}
+              value="new-value"
+              checked={mode == "new-value"}
+              onChange={() => setMode("new-value")}
+            />
+            <Label
+              for={newValueId}
+              className={cx("btn", "btn-outline-primary")}
+            >
+              <PlusLg className={cx("bi", "me-1")} />
+              Provide a new secret value
+            </Label>
+            <Input
+              type="radio"
+              className="btn-check"
+              id={existingId}
+              value="existing"
+              checked={mode == "existing"}
+              onChange={() => setMode("existing")}
+            />
+            <Label
+              for={existingId}
+              className={cx("btn", "btn-outline-primary")}
+            >
+              <BoxArrowInLeft className={cx("bi", "me-1")} />
+              Provide an existing secret value
+            </Label>
+          </ButtonGroup>
+        </CardBody>
+        {mode === "new-value" ? (
+          <>
+            NV
+            {/* <ProvideSessionSecretModalNewValueContent
+          isOpen={isOpen}
+          secretSlot={secretSlot}
+          toggle={toggle}
+        /> */}
+          </>
+        ) : (
+          <>
+            E
+            {/* <ProvideSessionSecretModalExistingContent
+              isOpen={isOpen}
+              secretSlot={secretSlot}
+              toggle={toggle}
+            /> */}
+          </>
+        )}
+      </Card>
+    </Col>
   );
 }
