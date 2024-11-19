@@ -34,7 +34,6 @@ import ProjectNameFormField from "../fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectSlugFormField from "../fields/ProjectSlugFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
-import { INITIAL_PROJECT_STATE } from "./projectV2New.constants";
 import { NewProjectForm } from "./projectV2New.types";
 
 export default function ProjectV2New() {
@@ -75,7 +74,13 @@ function ProjectV2CreationDetails() {
     watch,
   } = useForm<NewProjectForm>({
     mode: "onChange",
-    defaultValues: INITIAL_PROJECT_STATE,
+    defaultValues: {
+      description: "",
+      name: "",
+      namespace: "",
+      slug: "",
+      visibility: "private",
+    },
   });
 
   // We watch for changes in the name and derive the slug from it
@@ -224,9 +229,15 @@ function ProjectV2CreationDetails() {
             </div>
           )}
 
-          <Button color="primary" data-cy="project-create-button" type="submit">
-            Create
-          </Button>
+          <div>
+            <Button
+              color="primary"
+              data-cy="project-create-button"
+              type="submit"
+            >
+              Create
+            </Button>
+          </div>
         </FormGroup>
       </Form>
     </>
