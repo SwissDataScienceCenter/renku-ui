@@ -66,7 +66,7 @@ function GroupV2CreationDetails() {
   // Form initialization
   const {
     control,
-    formState: { errors, touchedFields },
+    formState: { dirtyFields, errors },
     handleSubmit,
     setValue,
     watch,
@@ -163,28 +163,29 @@ function GroupV2CreationDetails() {
                     control={control}
                     entityName="group"
                     errors={errors}
+                    isDirty={dirtyFields.slug && dirtyFields.name}
                     name="slug"
+                    resetFunction={resetUrl}
                   />
                 </div>
               </Collapse>
 
-              {errors.slug && touchedFields.slug && (
+              {dirtyFields.slug && !dirtyFields.name ? (
                 <div className={cx("d-block", "invalid-feedback")}>
-                  <p className="mb-1">
-                    You can customize the slug only with lowercase letters,
-                    numbers, and hyphens.
+                  <p className="mb-0">
+                    Mind the URL will be updated once you provide a name.
                   </p>
-
-                  {currentName ? (
-                    <Button color="danger" size="sm" onClick={resetUrl}>
-                      Reset URL
-                    </Button>
-                  ) : (
-                    <p className="mb-0">
-                      Mind the URL will be updated once you provide a name.
-                    </p>
-                  )}
                 </div>
+              ) : (
+                errors.slug &&
+                dirtyFields.slug && (
+                  <div className={cx("d-block", "invalid-feedback")}>
+                    <p className="mb-1">
+                      You can customize the slug only with lowercase letters,
+                      numbers, and hyphens.
+                    </p>
+                  </div>
+                )
               )}
             </div>
           </div>

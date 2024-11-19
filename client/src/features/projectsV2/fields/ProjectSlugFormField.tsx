@@ -19,21 +19,25 @@
 import type { FieldValues } from "react-hook-form";
 
 import SlugFormField from "./SlugFormField";
-import type { GenericProjectFormFieldProps } from "./formField.types";
+import type { GenericProjectFormFieldPropsWithReset } from "./formField.types";
 
 export default function ProjectSlugFormField<T extends FieldValues>({
   compact = false,
   control,
   errors,
+  isDirty,
   name,
-}: GenericProjectFormFieldProps<T>) {
+  resetFunction,
+}: GenericProjectFormFieldPropsWithReset<T>) {
   return (
     <SlugFormField
       compact={compact}
       control={control}
       entityName="project"
       errors={errors}
+      isDirty={isDirty}
       name={name}
+      resetFunction={resetFunction}
     />
   );
 }

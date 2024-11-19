@@ -17,38 +17,50 @@
  */
 
 import cx from "classnames";
-
-import { Controller } from "react-hook-form";
+import { ArrowCounterclockwise } from "react-bootstrap-icons";
 import type { FieldValues } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import { Button, FormText, Input, InputGroup, Label } from "reactstrap";
 
-import { FormText, Input, Label } from "reactstrap";
-import type { GenericFormFieldProps } from "./formField.types";
+import type { GenericFormFieldPropsWithReset } from "./formField.types";
 
 export default function SlugFormField<T extends FieldValues>({
   compact,
   control,
   entityName,
   errors,
+  isDirty,
+  resetFunction,
   name,
-}: GenericFormFieldProps<T>) {
+}: GenericFormFieldPropsWithReset<T>) {
   const content = (
     <Controller
       control={control}
       name={name}
-      render={({ field }) => (
-        <Input
-          aria-describedby={`${entityName}SlugHelp`}
-          className={cx(
-            "form-control",
-            errors.slug && "is-invalid",
-            compact && ["p-1", "w-auto"]
-          )}
-          data-cy={`${entityName}-slug-input`}
-          id={`${entityName}-slug`}
-          type="text"
-          {...field}
-        />
-      )}
+      render={({ field }) => {
+        return (
+          <InputGroup className={cx(compact && "w-auto")}>
+            <Input
+              aria-describedby={`${entityName}SlugHelp`}
+              className={cx(
+                "form-control",
+                errors.slug && isDirty && "is-invalid",
+                compact && "p-1"
+              )}
+              data-cy={`${entityName}-slug-input`}
+              id={`${entityName}-slug`}
+              type="text"
+              {...field}
+            />
+
+            {errors.slug && isDirty && resetFunction && (
+              <Button className="py-1" color="danger" onClick={resetFunction}>
+                <ArrowCounterclockwise className="bi" />
+              </Button>
+            )}
+          </InputGroup>
+        );
+      }}
       rules={{
         required: true,
         maxLength: 99,
