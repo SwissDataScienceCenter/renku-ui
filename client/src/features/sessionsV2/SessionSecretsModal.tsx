@@ -55,6 +55,7 @@ import {
   type SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 
 interface SessionSecretsModalProps {
   isOpen: boolean;
@@ -83,7 +84,7 @@ export default function SessionSecretsModal({
   }, [dispatch]);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg">
+    <ScrollableModal centered isOpen={isOpen} size="lg">
       <ModalHeader>Session secrets</ModalHeader>
       <ModalBody>
         <ReadySessionSecrets
@@ -102,7 +103,7 @@ export default function SessionSecretsModal({
           Skip <SkipForward className={cx("bi", "me-1")} />
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
