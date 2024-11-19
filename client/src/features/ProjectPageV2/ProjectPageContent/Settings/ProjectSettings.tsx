@@ -193,12 +193,16 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
         </SuccessAlert>
       )}
 
-      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-3">
+      <Form
+        className={cx("d-flex", "flex-column", "gap-3")}
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div>
           <ProjectNameFormField name="name" control={control} errors={errors} />
         </div>
 
-        <div className="mb-3">
+        <div>
           <PermissionsGuard
             disabled={
               <ProjectReadOnlyNamespaceField namespace={project.namespace} />
@@ -225,7 +229,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           )}
         </div>
 
-        <div className="mb-3">
+        <div>
           <PermissionsGuard
             disabled={
               <ProjectReadOnlyVisibilityField visibility={project.visibility} />
@@ -242,20 +246,28 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           />
         </div>
 
-        <ProjectDescriptionFormField
-          name="description"
-          control={control}
-          errors={errors}
-        />
-        <KeywordsInput
-          hasError={errors.keywords != null}
-          help="Keywords are used to describe the project. To add one, type a keyword and press enter."
-          label="Keywords"
-          name="keywords"
-          register={register("keywords", { validate: () => !areKeywordsDirty })}
-          setDirty={setKeywordsDirty}
-          value={project.keywords as string[]}
-        />
+        <div>
+          <ProjectDescriptionFormField
+            name="description"
+            control={control}
+            errors={errors}
+          />
+        </div>
+
+        <div>
+          <KeywordsInput
+            hasError={errors.keywords != null}
+            help="Keywords are used to describe the project. To add one, type a keyword and press enter."
+            label="Keywords"
+            name="keywords"
+            register={register("keywords", {
+              validate: () => !areKeywordsDirty,
+            })}
+            setDirty={setKeywordsDirty}
+            value={project.keywords as string[]}
+          />
+        </div>
+
         <div className={cx("d-flex", "justify-content-end")}>
           <Button
             color="primary"
