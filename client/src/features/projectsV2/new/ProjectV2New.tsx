@@ -132,8 +132,11 @@ function ProjectV2CreationDetails() {
   return (
     <>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        <FormGroup disabled={result.isLoading}>
-          <div className="mb-3">
+        <FormGroup
+          className={cx("d-flex", "flex-column", "gap-3")}
+          disabled={result.isLoading}
+        >
+          <div>
             <ProjectNameFormField
               control={control}
               errors={errors}
@@ -141,67 +144,68 @@ function ProjectV2CreationDetails() {
             />
           </div>
 
-          <div className="mb-1">
-            <ProjectNamespaceFormField
-              control={control}
-              entityName="project"
-              errors={errors}
-              helpText={ownerHelpText}
-              name="namespace"
-            />
-          </div>
-
-          <div className="mb-3">
-            <button
-              className={cx("btn", "btn-link", "p-0", "text-decoration-none")}
-              data-cy="project-slug-toggle"
-              onClick={toggleCollapse}
-              type="button"
-            >
-              Customize project URL <ChevronDown className="bi" />
-            </button>
-            <Collapse isOpen={isCollapseOpen}>
-              <div
-                className={cx(
-                  "align-items-center",
-                  "d-flex",
-                  "flex-wrap",
-                  "mb-0"
-                )}
-              >
-                <span>
-                  renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
-                </span>
-                <ProjectSlugFormField
-                  compact={true}
+          <div>
+            <div>
+              <div className="mb-1">
+                <ProjectNamespaceFormField
                   control={control}
+                  entityName="project"
                   errors={errors}
-                  name="slug"
+                  helpText={ownerHelpText}
+                  name="namespace"
                 />
               </div>
-            </Collapse>
+              <button
+                className={cx("btn", "btn-link", "p-0", "text-decoration-none")}
+                data-cy="project-slug-toggle"
+                onClick={toggleCollapse}
+                type="button"
+              >
+                Customize project URL <ChevronDown className="bi" />
+              </button>
+              <Collapse isOpen={isCollapseOpen}>
+                <div
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "flex-wrap",
+                    "mb-0"
+                  )}
+                >
+                  <span>
+                    renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
+                  </span>
+                  <ProjectSlugFormField
+                    compact={true}
+                    control={control}
+                    errors={errors}
+                    name="slug"
+                  />
+                </div>
+              </Collapse>
 
-            {errors.slug && touchedFields.slug && (
-              <div className={cx("d-block", "invalid-feedback")}>
-                <p className="mb-1">
-                  You can customize the slug only with lowercase letters,
-                  numbers, and hyphens.
-                </p>
-
-                {currentName ? (
-                  <Button color="danger" size="sm" onClick={resetUrl}>
-                    Reset URL
-                  </Button>
-                ) : (
-                  <p className="mb-0">
-                    Mind the URL will be updated once you provide a name.
+              {errors.slug && touchedFields.slug && (
+                <div className={cx("d-block", "invalid-feedback")}>
+                  <p className="mb-1">
+                    You can customize the slug only with lowercase letters,
+                    numbers, and hyphens.
                   </p>
-                )}
-              </div>
-            )}
+
+                  {currentName ? (
+                    <Button color="danger" size="sm" onClick={resetUrl}>
+                      Reset URL
+                    </Button>
+                  ) : (
+                    <p className="mb-0">
+                      Mind the URL will be updated once you provide a name.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="mb-3">
+          <div>
             <div className="mb-1">
               <ProjectVisibilityFormField
                 name="visibility"
@@ -215,7 +219,7 @@ function ProjectV2CreationDetails() {
             </Label>
           </div>
 
-          <div className="mb-3">
+          <div>
             <ProjectDescriptionFormField
               control={control}
               errors={errors}
@@ -224,7 +228,7 @@ function ProjectV2CreationDetails() {
           </div>
 
           {result.error && (
-            <div className="mb-3">
+            <div>
               <RtkOrNotebooksError error={result.error} />
             </div>
           )}

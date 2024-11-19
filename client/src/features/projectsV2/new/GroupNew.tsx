@@ -21,7 +21,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
-import { Button, Collapse, Form, FormText } from "reactstrap";
+import { Button, Collapse, Form, FormGroup, FormText } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
@@ -125,84 +125,90 @@ function GroupV2CreationDetails() {
   return (
     <>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-1">
-          <NameFormField
-            control={control}
-            entityName="group"
-            errors={errors}
-            helpText={nameHelpText}
-            name="name"
-          />
-        </div>
-
-        <div className="mb-3">
-          <button
-            className={cx("btn", "btn-link", "p-0", "text-decoration-none")}
-            data-cy="group-slug-toggle"
-            onClick={toggleCollapse}
-            type="button"
-          >
-            Customize group URL <ChevronDown className="bi" />
-          </button>
-          <Collapse isOpen={isCollapseOpen}>
-            <div
-              className={cx(
-                "align-items-center",
-                "d-flex",
-                "flex-wrap",
-                "mb-0"
-              )}
-            >
-              <span>renkulab.io/v2/groups/</span>
-              <SlugFormField
-                compact={true}
+        <FormGroup
+          className={cx("d-flex", "flex-column", "gap-3")}
+          disabled={result.isLoading}
+        >
+          <div>
+            <div className="mb-1">
+              <NameFormField
                 control={control}
                 entityName="group"
                 errors={errors}
-                name="slug"
+                helpText={nameHelpText}
+                name="name"
               />
             </div>
-          </Collapse>
+            <div>
+              <button
+                className={cx("btn", "btn-link", "p-0", "text-decoration-none")}
+                data-cy="group-slug-toggle"
+                onClick={toggleCollapse}
+                type="button"
+              >
+                Customize group URL <ChevronDown className="bi" />
+              </button>
+              <Collapse isOpen={isCollapseOpen}>
+                <div
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "flex-wrap",
+                    "mb-0"
+                  )}
+                >
+                  <span>renkulab.io/v2/groups/</span>
+                  <SlugFormField
+                    compact={true}
+                    control={control}
+                    entityName="group"
+                    errors={errors}
+                    name="slug"
+                  />
+                </div>
+              </Collapse>
 
-          {errors.slug && touchedFields.slug && (
-            <div className={cx("d-block", "invalid-feedback")}>
-              <p className="mb-1">
-                You can customize the slug only with lowercase letters, numbers,
-                and hyphens.
-              </p>
+              {errors.slug && touchedFields.slug && (
+                <div className={cx("d-block", "invalid-feedback")}>
+                  <p className="mb-1">
+                    You can customize the slug only with lowercase letters,
+                    numbers, and hyphens.
+                  </p>
 
-              {currentName ? (
-                <Button color="danger" size="sm" onClick={resetUrl}>
-                  Reset URL
-                </Button>
-              ) : (
-                <p className="mb-0">
-                  Mind the URL will be updated once you provide a name.
-                </p>
+                  {currentName ? (
+                    <Button color="danger" size="sm" onClick={resetUrl}>
+                      Reset URL
+                    </Button>
+                  ) : (
+                    <p className="mb-0">
+                      Mind the URL will be updated once you provide a name.
+                    </p>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
-
-        <div className="mb-3">
-          <DescriptionFormField
-            control={control}
-            entityName="group"
-            errors={errors}
-            name="description"
-          />
-        </div>
-
-        {result.error && (
-          <div className="mb-3">
-            <RtkOrNotebooksError error={result.error} />
           </div>
-        )}
-        <div>
-          <Button color="primary" data-cy="group-create-button" type="submit">
-            Create
-          </Button>
-        </div>
+
+          <div>
+            <DescriptionFormField
+              control={control}
+              entityName="group"
+              errors={errors}
+              name="description"
+            />
+          </div>
+
+          {result.error && (
+            <div>
+              <RtkOrNotebooksError error={result.error} />
+            </div>
+          )}
+          <div>
+            <Button color="primary" data-cy="group-create-button" type="submit">
+              Create
+            </Button>
+          </div>
+        </FormGroup>
       </Form>
     </>
   );
