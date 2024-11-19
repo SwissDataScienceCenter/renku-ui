@@ -410,8 +410,7 @@ function filterOption(
   }
 
   if (option.access_level) {
-    if (!filterByAccessLevel(option.access_level, targetAccessLevel))
-      return false;
+    return option.access_level === targetAccessLevel;
   }
 
   return true;
@@ -435,14 +434,6 @@ function filterByProvider(provider: string, targetProvider?: string): boolean {
     : providers.includes(targetProvider);
 }
 
-function filterByAccessLevel(
-  accessLevel: string,
-  targetAccessLevel?: string
-): boolean {
-  if (!targetAccessLevel) return false;
-  return accessLevel.split(",").includes(targetAccessLevel);
-}
-
 function convertOptions(
   options: CloudStorageSchemaOptions[],
   targetProvider?: string,
@@ -451,19 +442,16 @@ function convertOptions(
   return options.map((option) => {
     const convertedOption = { ...option };
 
-    // Convert "hide" to boolean
     convertedOption.convertedHide = shouldHideOption(option);
 
-    // Infer type
     convertedOption.convertedType = inferOptionType(option);
 
-    // Convert default values
     convertedOption.convertedDefault = convertDefaultValue(
       option,
       convertedOption.convertedType
     );
 
-    // Filter examples
+    // Filter examples by provider and access_level
     if (option.examples) {
       convertedOption.filteredExamples = option.examples.filter((example) =>
         filterExample(example, targetProvider, targetAccessLevel)
@@ -513,14 +501,13 @@ function filterExample(
   targetAccessLevel?: string
 ): boolean {
   if (
-    !targetProvider ||
-    !targetAccessLevel ||
+    (!targetProvider && !targetAccessLevel) ||
     (!example.provider && !example.access_level)
   )
     return true;
 
   if (example.access_level) {
-    return filterByAccessLevel(example.access_level, targetAccessLevel);
+    return example.access_level === targetAccessLevel;
   }
 
   if (example.provider) {

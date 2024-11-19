@@ -60,18 +60,17 @@ export const CLOUD_STORAGE_OVERRIDE = {
     },
     webdav: {
       name: "webDav",
-      description:
-        "WebDAV compatible services, including PolyBox and SwitchDrive",
+      description: "WebDAV compatible services",
       position: 5,
     },
     polybox: {
       name: "polyBox",
-      description: "Online data storage for ETH members",
+      description: "Online data storage service exclusively for ETH members",
       position: 3,
     },
     switchDrive: {
       name: "switchDrive",
-      description: "Online data storage for ETH members",
+      description: "Cloud storage platform for ETH members",
       position: 4,
     },
   } as Record<string, Partial<CloudStorageOverride>>,
@@ -114,7 +113,7 @@ export const CLOUD_OPTIONS_OVERRIDE = {
       help: "",
     },
     user: {
-      friendlyName: "UserName",
+      friendlyName: "Username",
     },
     public_link: {
       friendlyName: "Public link",
@@ -151,7 +150,7 @@ export const CLOUD_OPTIONS_OVERRIDE = {
       friendlyName: "URL",
     },
     user: {
-      friendlyName: "UserName",
+      friendlyName: "Username",
     },
     public_link: {
       friendlyName: "Public link",
