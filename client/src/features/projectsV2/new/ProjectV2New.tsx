@@ -40,7 +40,7 @@ import { NewProjectForm } from "./projectV2New.types";
 export default function ProjectV2New() {
   const user = useLegacySelector((state) => state.stateModel.user);
   return (
-    <>
+    <div data-cy="create-new-project-page">
       <h2>Create a new project</h2>
       <p>
         A Renku project groups together data, code, and compute resources for
@@ -55,7 +55,7 @@ export default function ProjectV2New() {
           textPost="to create a new project."
         />
       )}
-    </>
+    </div>
   );
 }
 
@@ -149,6 +149,7 @@ function ProjectV2CreationDetails() {
           <div className="mb-3">
             <button
               className={cx("btn", "btn-link", "p-0", "text-decoration-none")}
+              data-cy="project-slug-toggle"
               onClick={toggleCollapse}
               type="button"
             >
@@ -223,7 +224,7 @@ function ProjectV2CreationDetails() {
             </div>
           )}
 
-          <Button color="primary" type="submit">
+          <Button color="primary" data-cy="project-create-button" type="submit">
             Create
           </Button>
         </FormGroup>
