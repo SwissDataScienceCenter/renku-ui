@@ -20,14 +20,7 @@ import fixtures from "../support/renkulab-fixtures";
 
 describe("View v2 landing page", () => {
   beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
-    fixtures
-      .getSessions({ fixture: "sessions/sessionsV2.json" })
-      .projects()
-      .landingUserProjects()
-      .listManyGroupV2()
-      .listManyProjectV2()
-      .readProjectV2ById();
+    fixtures.config().versions().userTest();
     cy.visit("/v2");
   });
 
@@ -44,8 +37,9 @@ describe("View v2 landing page", () => {
   });
 
   it("create new project", () => {
+    fixtures.listNamespaceV2();
     cy.get("#plus-dropdown").click();
     cy.getDataCy("navbar-project-new").click();
-    cy.contains("New Project").should("be.visible");
+    cy.contains("Create a new project").should("be.visible");
   });
 });
