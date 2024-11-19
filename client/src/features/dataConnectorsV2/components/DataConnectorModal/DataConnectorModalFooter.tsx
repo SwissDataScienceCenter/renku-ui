@@ -191,18 +191,12 @@ export default function DataConnectorModalFooter({
   useEffect(() => {
     const dataConnectorId = createResult.data?.id;
     if (dataConnectorId == null) return;
-    const shouldSaveCredentials = shouldSaveDataConnectorCredentials(
-      flatDataConnector.options,
-      cloudStorageState.saveCredentials,
-      validationResult?.isSuccess ?? false
-    );
-    if (!shouldSaveCredentials) return;
-
-    const options = flatDataConnector.options as CloudStorageDetailsOptions;
     if (!schemata) return;
     const sensitiveFieldNames = findSensitive(
       schemata.find((s) => s.prefix === flatDataConnector.schema)
     );
+    const options = flatDataConnector.options as CloudStorageDetailsOptions;
+    if (!options) return;
     const dataConnectorSecretPatchList = sensitiveFieldNames
       .map((name) => ({
         name,
@@ -213,6 +207,13 @@ export default function DataConnectorModalFooter({
         name: secret.name,
         value: "" + secret.value,
       }));
+    const shouldSaveCredentials = shouldSaveDataConnectorCredentials(
+      dataConnectorSecretPatchList,
+      cloudStorageState.saveCredentials,
+      validationResult?.isSuccess ?? false
+    );
+    if (!shouldSaveCredentials) return;
+
     saveCredentials({
       dataConnectorId,
       dataConnectorSecretPatchList,
@@ -365,12 +366,12 @@ export default function DataConnectorModalFooter({
 }
 
 function shouldSaveDataConnectorCredentials(
-  flatDataConnectorOptions: CloudStorageDetailsOptions | undefined,
+  dataConnectorSecretPatchList: { name: string; value: string }[],
   stateSaveCredentials: boolean,
   validationSucceeded: boolean
 ) {
   return !!(
-    flatDataConnectorOptions &&
+    dataConnectorSecretPatchList.length > 0 &&
     stateSaveCredentials &&
     validationSucceeded
   );

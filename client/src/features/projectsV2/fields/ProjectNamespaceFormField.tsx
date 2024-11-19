@@ -189,7 +189,14 @@ const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
       styles.control
     ),
   dropdownIndicator: () => cx("pe-3"),
-  menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0", "z-2"),
+  menu: () =>
+    cx(
+      "bg-white",
+      "rounded-bottom",
+      "border",
+      "border-top-0",
+      styles.zDropdown
+    ),
   menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected }) =>
     cx(
