@@ -36,7 +36,6 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -45,6 +44,7 @@ import {
 
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import SelectUserSecretField from "../ProjectPageV2/ProjectPageContent/SessionSecrets/fields/SelectUserSecretField";
@@ -55,7 +55,6 @@ import {
   type SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-import ScrollableModal from "../../components/modal/ScrollableModal";
 
 interface SessionSecretsModalProps {
   isOpen: boolean;
