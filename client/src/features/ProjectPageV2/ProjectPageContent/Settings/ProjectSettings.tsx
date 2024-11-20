@@ -221,7 +221,12 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           />
           {currentNamespace !== project.namespace && (
             <div className="mt-1">
-              <RenkuAlert color="warning" dismissible={false} timeout={0}>
+              <RenkuAlert
+                className="mb-0"
+                color="warning"
+                dismissible={false}
+                timeout={0}
+              >
                 Modifying the owner also change the project&apos;s URL. Once the
                 change is saved, it will redirect to the updated project URL.
               </RenkuAlert>
