@@ -28,7 +28,7 @@ import WipBadge from "../projectsV2/shared/WipBadge";
 
 import GeneralSecretNew from "./GeneralSecretNew";
 import SecretsList from "./SecretsList";
-import StorageSecretsList from "./StorageSecretsList";
+// import StorageSecretsList from "./StorageSecretsList";
 import { SECRETS_DOCS_URL } from "./secrets.utils";
 
 function GeneralSecretSection() {
@@ -59,28 +59,28 @@ function GeneralSecretSection() {
   );
 }
 
-function StorageSecretSection() {
-  return (
-    <>
-      <Row className="mt-5">
-        <Col>
-          <div className={cx("d-flex", "justify-content-between")}>
-            <h3>Storage Secrets</h3>
-          </div>
-          <p>
-            Credentials used to access data connectors can be persisted as
-            storage secrets.
-          </p>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <StorageSecretsList />
-        </Col>
-      </Row>
-    </>
-  );
-}
+// function StorageSecretSection() {
+//   return (
+//     <>
+//       <Row className="mt-5">
+//         <Col>
+//           <div className={cx("d-flex", "justify-content-between")}>
+//             <h3>Storage Secrets</h3>
+//           </div>
+//           <p>
+//             Credentials used to access data connectors can be persisted as
+//             storage secrets.
+//           </p>
+//         </Col>
+//       </Row>
+//       <Row>
+//         <Col>
+//           <StorageSecretsList />
+//         </Col>
+//       </Row>
+//     </>
+//   );
+// }
 
 function SecretsPageInfo() {
   return (
@@ -130,7 +130,7 @@ export default function Secrets() {
         </Col>
       </Row>
       {user.logged && <GeneralSecretSection />}
-      {user.logged && <StorageSecretSection />}
+      {/* {user.logged && <StorageSecretSection />} */}
     </div>
   );
 }
