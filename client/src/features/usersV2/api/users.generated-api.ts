@@ -220,23 +220,30 @@ export type UserWithId = {
 export type UsersWithId = UserWithId[];
 export type Ulid = string;
 export type SecretName = string;
+export type SecretDefaultFilename = string;
 export type ModificationDate = string;
 export type SecretKind = "general" | "storage";
+export type UlidList = Ulid[];
 export type SecretWithId = {
   id: Ulid;
   name: SecretName;
+  default_filename: SecretDefaultFilename;
   modification_date: ModificationDate;
   kind: SecretKind;
+  session_secret_ids: UlidList;
 };
 export type SecretsList = SecretWithId[];
 export type SecretValue = string;
 export type SecretPost = {
   name: SecretName;
+  default_filename?: SecretDefaultFilename;
   value: SecretValue;
   kind?: SecretKind & any;
 };
 export type SecretPatch = {
-  value: SecretValue;
+  name?: SecretName;
+  default_filename?: SecretDefaultFilename;
+  value?: SecretValue;
 };
 export type Version = {
   version: string;
