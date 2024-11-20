@@ -46,34 +46,18 @@ import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectSlugFormField from "../fields/ProjectSlugFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 import { NewProjectForm } from "./projectV2New.types";
-
-// // export default function ProjectV2New() {
-// //   const user = useLegacySelector((state) => state.stateModel.user);
-// //   return (
-// //     <div data-cy="create-new-project-page">
-// //       <h2>Create a new project</h2>
-// //       <p>
-// //         A Renku project groups together data, code, and compute resources for
-// //         you and your collaborators.
-// //       </p>
-// //       {user.logged ? (
-// //         <ProjectV2CreationDetails />
-// //       ) : (
-// //         <LoginAlert
-// //           logged={user.logged}
-// //           textIntro="Only authenticated users can create new projects."
-// //           textPost="to create a new project."
-// //         />
-// //       )}
-// //     </div>
-// //   );
-// // }
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { useDispatch } from "react-redux";
+import { toggleProjectCreationModal } from "./projectV2New.slice";
 
 export default function ProjectV2New() {
-  const [isModalOpen, setModalOpen] = useState(false);
-  const toggleOpen = useCallback(() => {
-    setModalOpen((open) => !open);
-  }, []);
+  const { showProjectCreationModal } = useAppSelector(
+    (state) => state.newProjectV2
+  );
+  const dispatch = useDispatch();
+  const toggleModal = useCallback(() => {
+    dispatch(toggleProjectCreationModal());
+  }, [dispatch]);
 
   const user = useLegacySelector((state) => state.stateModel.user);
   return (
@@ -81,7 +65,7 @@ export default function ProjectV2New() {
       <Button
         color="primary"
         data-cy="create-new-project-button"
-        onClick={toggleOpen}
+        onClick={toggleModal}
       >
         Create a new project
       </Button>
@@ -90,16 +74,16 @@ export default function ProjectV2New() {
         centered
         data-cy="new-project-modal"
         fullscreen="lg"
-        isOpen={isModalOpen}
+        isOpen={showProjectCreationModal}
         scrollable
         size="lg"
         unmountOnClose={true}
-        toggle={toggleOpen}
+        toggle={toggleModal}
       >
         <ModalHeader
           data-cy="new-project-modal-header"
           tag="div"
-          toggle={toggleOpen}
+          toggle={toggleModal}
         >
           <h2>Create a new project</h2>
           <p className="mb-0">
@@ -110,7 +94,7 @@ export default function ProjectV2New() {
 
         <div data-cy="create-new-project-content">
           {user.logged ? (
-            <ProjectV2CreationDetails toggleOpen={toggleOpen} />
+            <ProjectV2CreationDetails toggleModal={toggleModal} />
           ) : (
             <LoginAlert
               logged={user.logged}
@@ -125,11 +109,11 @@ export default function ProjectV2New() {
 }
 
 interface ProjectV2CreationDetailsProps {
-  toggleOpen: () => void;
+  toggleModal: () => void;
 }
 
 function ProjectV2CreationDetails({
-  toggleOpen,
+  toggleModal,
 }: ProjectV2CreationDetailsProps) {
   const [isCollapseOpen, setIsCollapseOpen] = useState(false);
   const toggleCollapse = () => setIsCollapseOpen(!isCollapseOpen);
@@ -314,7 +298,7 @@ function ProjectV2CreationDetails({
           </ModalBody>
 
           <ModalFooter data-cy="new-project-modal-footer">
-            <Button color="outline-primary" onClick={toggleOpen} type="button">
+            <Button color="outline-primary" onClick={toggleModal} type="button">
               Cancel
             </Button>
             <Button
