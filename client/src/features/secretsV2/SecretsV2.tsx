@@ -17,6 +17,8 @@
  */
 
 import cx from "classnames";
+import { useMemo } from "react";
+import { Database, QuestionSquare, ShieldLock } from "react-bootstrap-icons";
 import {
   Badge,
   Card,
@@ -36,8 +38,7 @@ import {
   type SecretWithId,
   useGetUserSecretsQuery,
 } from "../usersV2/api/users.api";
-import { Database, QuestionSquare, ShieldLock } from "react-bootstrap-icons";
-import { useMemo } from "react";
+import GeneralSecretItem from "./GeneralSecretItem";
 
 export default function SecretsV2() {
   const user = useLegacySelector<User>((state) => state.stateModel.user);
@@ -149,6 +150,9 @@ function SessionSecretsContent({
 
   return (
     <ListGroup flush>
+      {secretsUsedInSessions.map((secret) => (
+        <GeneralSecretItem key={secret.id} secret={secret} />
+      ))}
       {/* {sessionSecretSlotsWithSecrets.map((secretSlot) => (
             <SessionSecretSlotItem
               key={secretSlot.secretSlot.id}
