@@ -105,7 +105,7 @@ export default function UserShow() {
                 firstName={user.first_name}
                 lastName={user.last_name}
                 username={username}
-                size={UserAvatarSize.medium}
+                large
               />
               <h2 className="mb-0">{name ?? "Unknown user"}</h2>
             </div>
