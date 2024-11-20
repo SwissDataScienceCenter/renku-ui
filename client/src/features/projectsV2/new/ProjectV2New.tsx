@@ -21,7 +21,18 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, InfoCircle } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
-import { Button, Collapse, Form, FormGroup, FormText, Label } from "reactstrap";
+import {
+  Button,
+  Collapse,
+  Form,
+  FormGroup,
+  FormText,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
@@ -36,29 +47,90 @@ import ProjectSlugFormField from "../fields/ProjectSlugFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 import { NewProjectForm } from "./projectV2New.types";
 
+// // export default function ProjectV2New() {
+// //   const user = useLegacySelector((state) => state.stateModel.user);
+// //   return (
+// //     <div data-cy="create-new-project-page">
+// //       <h2>Create a new project</h2>
+// //       <p>
+// //         A Renku project groups together data, code, and compute resources for
+// //         you and your collaborators.
+// //       </p>
+// //       {user.logged ? (
+// //         <ProjectV2CreationDetails />
+// //       ) : (
+// //         <LoginAlert
+// //           logged={user.logged}
+// //           textIntro="Only authenticated users can create new projects."
+// //           textPost="to create a new project."
+// //         />
+// //       )}
+// //     </div>
+// //   );
+// // }
+
 export default function ProjectV2New() {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const toggleOpen = useCallback(() => {
+    setModalOpen((open) => !open);
+  }, []);
+
   const user = useLegacySelector((state) => state.stateModel.user);
   return (
-    <div data-cy="create-new-project-page">
-      <h2>Create a new project</h2>
-      <p>
-        A Renku project groups together data, code, and compute resources for
-        you and your collaborators.
-      </p>
-      {user.logged ? (
-        <ProjectV2CreationDetails />
-      ) : (
-        <LoginAlert
-          logged={user.logged}
-          textIntro="Only authenticated users can create new projects."
-          textPost="to create a new project."
-        />
-      )}
-    </div>
+    <>
+      <Button
+        color="primary"
+        data-cy="create-new-project-button"
+        onClick={toggleOpen}
+      >
+        Create a new project
+      </Button>
+      <Modal
+        backdrop="static"
+        centered
+        data-cy="new-project-modal"
+        fullscreen="lg"
+        isOpen={isModalOpen}
+        scrollable
+        size="lg"
+        unmountOnClose={true}
+        toggle={toggleOpen}
+      >
+        <ModalHeader
+          data-cy="new-project-modal-header"
+          tag="div"
+          toggle={toggleOpen}
+        >
+          <h2>Create a new project</h2>
+          <p className="mb-0">
+            A Renku project groups together data, code, and compute resources
+            for you and your collaborators.
+          </p>
+        </ModalHeader>
+
+        <div data-cy="create-new-project-content">
+          {user.logged ? (
+            <ProjectV2CreationDetails toggleOpen={toggleOpen} />
+          ) : (
+            <LoginAlert
+              logged={user.logged}
+              textIntro="Only authenticated users can create new projects."
+              textPost="to create a new project."
+            />
+          )}
+        </div>
+      </Modal>
+    </>
   );
 }
 
-function ProjectV2CreationDetails() {
+interface ProjectV2CreationDetailsProps {
+  toggleOpen: () => void;
+}
+
+function ProjectV2CreationDetails({
+  toggleOpen,
+}: ProjectV2CreationDetailsProps) {
   const [isCollapseOpen, setIsCollapseOpen] = useState(false);
   const toggleCollapse = () => setIsCollapseOpen(!isCollapseOpen);
 
@@ -132,109 +204,119 @@ function ProjectV2CreationDetails() {
   return (
     <>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        <FormGroup
-          className={cx("d-flex", "flex-column", "gap-3")}
-          disabled={result.isLoading}
-        >
-          <div>
-            <ProjectNameFormField
-              control={control}
-              errors={errors}
-              name="name"
-            />
-          </div>
-
-          <div>
-            <div>
-              <div className="mb-1">
-                <ProjectNamespaceFormField
+        {/* //? FormGroup hard codes an additional mb-3. Adding "d-inline" makes it ineffective. */}
+        <FormGroup className="d-inline" disabled={result.isLoading}>
+          <ModalBody data-cy="new-project-modal-body">
+            <div className={cx("d-flex", "flex-column", "gap-3")}>
+              <div>
+                <ProjectNameFormField
                   control={control}
-                  entityName="project"
                   errors={errors}
-                  helpText={ownerHelpText}
-                  name="namespace"
+                  name="name"
                 />
               </div>
-              <button
-                className={cx("btn", "btn-link", "p-0", "text-decoration-none")}
-                data-cy="project-slug-toggle"
-                onClick={toggleCollapse}
-                type="button"
-              >
-                Customize project URL <ChevronDown className="bi" />
-              </button>
-              <Collapse isOpen={isCollapseOpen}>
-                <div
-                  className={cx(
-                    "align-items-center",
-                    "d-flex",
-                    "flex-wrap",
-                    "mb-0"
+
+              <div>
+                <div>
+                  <div className="mb-1">
+                    <ProjectNamespaceFormField
+                      control={control}
+                      entityName="project"
+                      errors={errors}
+                      helpText={ownerHelpText}
+                      name="namespace"
+                    />
+                  </div>
+                  <button
+                    className={cx(
+                      "btn",
+                      "btn-link",
+                      "p-0",
+                      "text-decoration-none"
+                    )}
+                    data-cy="project-slug-toggle"
+                    onClick={toggleCollapse}
+                    type="button"
+                  >
+                    Customize project URL <ChevronDown className="bi" />
+                  </button>
+                  <Collapse isOpen={isCollapseOpen}>
+                    <div
+                      className={cx(
+                        "align-items-center",
+                        "d-flex",
+                        "flex-wrap",
+                        "mb-0"
+                      )}
+                    >
+                      <span>
+                        renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
+                      </span>
+                      <ProjectSlugFormField
+                        compact={true}
+                        control={control}
+                        errors={errors}
+                        isDirty={dirtyFields.slug && dirtyFields.name}
+                        name="slug"
+                        resetFunction={resetUrl}
+                      />
+                    </div>
+                  </Collapse>
+
+                  {dirtyFields.slug && !dirtyFields.name ? (
+                    <div className={cx("d-block", "invalid-feedback")}>
+                      <p className="mb-0">
+                        Mind the URL will be updated once you provide a name.
+                      </p>
+                    </div>
+                  ) : (
+                    errors.slug &&
+                    dirtyFields.slug && (
+                      <div className={cx("d-block", "invalid-feedback")}>
+                        <p className="mb-1">
+                          You can customize the slug only with lowercase
+                          letters, numbers, and hyphens.
+                        </p>
+                      </div>
+                    )
                   )}
-                >
-                  <span>
-                    renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
-                  </span>
-                  <ProjectSlugFormField
-                    compact={true}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1">
+                  <ProjectVisibilityFormField
+                    name="visibility"
                     control={control}
                     errors={errors}
-                    isDirty={dirtyFields.slug && dirtyFields.name}
-                    name="slug"
-                    resetFunction={resetUrl}
                   />
                 </div>
-              </Collapse>
+                <Label className="mb-0" for="projectV2NewForm-users">
+                  <InfoCircle className="bi" /> You can add members after
+                  creating the project.
+                </Label>
+              </div>
 
-              {dirtyFields.slug && !dirtyFields.name ? (
-                <div className={cx("d-block", "invalid-feedback")}>
-                  <p className="mb-0">
-                    Mind the URL will be updated once you provide a name.
-                  </p>
+              <div>
+                <ProjectDescriptionFormField
+                  control={control}
+                  errors={errors}
+                  name="description"
+                />
+              </div>
+
+              {result.error && (
+                <div>
+                  <RtkOrNotebooksError error={result.error} />
                 </div>
-              ) : (
-                errors.slug &&
-                dirtyFields.slug && (
-                  <div className={cx("d-block", "invalid-feedback")}>
-                    <p className="mb-1">
-                      You can customize the slug only with lowercase letters,
-                      numbers, and hyphens.
-                    </p>
-                  </div>
-                )
               )}
             </div>
-          </div>
+          </ModalBody>
 
-          <div>
-            <div className="mb-1">
-              <ProjectVisibilityFormField
-                name="visibility"
-                control={control}
-                errors={errors}
-              />
-            </div>
-            <Label className="mb-0" for="projectV2NewForm-users">
-              <InfoCircle className="bi" /> You can add members after creating
-              the project.
-            </Label>
-          </div>
-
-          <div>
-            <ProjectDescriptionFormField
-              control={control}
-              errors={errors}
-              name="description"
-            />
-          </div>
-
-          {result.error && (
-            <div>
-              <RtkOrNotebooksError error={result.error} />
-            </div>
-          )}
-
-          <div>
+          <ModalFooter data-cy="new-project-modal-footer">
+            <Button color="outline-primary" onClick={toggleOpen} type="button">
+              Cancel
+            </Button>
             <Button
               color="primary"
               data-cy="project-create-button"
@@ -242,7 +324,7 @@ function ProjectV2CreationDetails() {
             >
               Create
             </Button>
-          </div>
+          </ModalFooter>
         </FormGroup>
       </Form>
     </>
