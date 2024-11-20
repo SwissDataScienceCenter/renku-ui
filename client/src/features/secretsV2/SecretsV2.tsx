@@ -39,6 +39,7 @@ import {
   useGetUserSecretsQuery,
   usersApi,
 } from "../usersV2/api/users.api";
+import DataConnectorSecretItem from "./DataConnectorSecretItem";
 import GeneralSecretItem from "./GeneralSecretItem";
 
 export default function SecretsV2() {
@@ -214,7 +215,7 @@ function DataConnectorSecretsContent({
   return (
     <ListGroup flush>
       {secrets.map((secret) => (
-        <GeneralSecretItem key={secret.id} secret={secret} />
+        <DataConnectorSecretItem key={secret.id} secret={secret} />
       ))}
     </ListGroup>
   );

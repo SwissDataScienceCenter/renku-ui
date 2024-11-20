@@ -231,6 +231,7 @@ export type SecretWithId = {
   modification_date: ModificationDate;
   kind: SecretKind;
   session_secret_ids: UlidList;
+  data_connector_ids: UlidList;
 };
 export type SecretsList = SecretWithId[];
 export type SecretValue = string;

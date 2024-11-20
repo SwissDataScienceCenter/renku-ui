@@ -610,6 +610,9 @@
           },
           "session_secret_ids": {
             "$ref": "#/components/schemas/UlidList"
+          },
+          "data_connector_ids": {
+            "$ref": "#/components/schemas/UlidList"
           }
         },
         "required": [
@@ -618,7 +621,8 @@
           "default_filename",
           "modification_date",
           "kind",
-          "session_secret_ids"
+          "session_secret_ids",
+          "data_connector_ids"
         ]
       },
       "SecretPost": {
