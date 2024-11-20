@@ -308,9 +308,19 @@ function DataConnectorCreateFooter({
 
   // Visual elements
   const disableContinueButton =
-    cloudStorageState.step === 1 &&
-    (!flatDataConnector.schema ||
-      (schemaRequiresProvider && !flatDataConnector.provider));
+    (cloudStorageState.step === 1 &&
+      (!flatDataConnector.schema ||
+        (schemaRequiresProvider && !flatDataConnector.provider))) ||
+    (cloudStorageState.step === 2 &&
+      flatDataConnector.convenientMode &&
+      !(
+        flatDataConnector.sourcePath &&
+        flatDataConnector.options &&
+        Object.values(flatDataConnector.options).every((v) => v)
+      )) ||
+    false;
+
+  console.log("disableContinueButton", disableContinueButton);
 
   const isAddResultLoading = createResult.isLoading;
   const actionError = createResult.error;

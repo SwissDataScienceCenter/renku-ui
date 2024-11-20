@@ -34,6 +34,7 @@ import KeywordContainer from "~/components/keywords/KeywordContainer";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import { InfoAlert, WarnAlert } from "../../../../components/Alert";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
@@ -514,6 +515,11 @@ export function DataConnectorMount({
                       field.onChange(e);
                       onFieldValueChange("readOnly", !!e.target.value);
                     }}
+                    disabled={
+                      (flatDataConnector.convenientMode &&
+                        flatDataConnector.readOnly) ??
+                      false
+                    }
                   />
                   <Label
                     for="data-connector-readonly-true"
@@ -548,17 +554,26 @@ export function DataConnectorMount({
             )}
             rules={{ required: true }}
           />
-          {!flatDataConnector.readOnly && (
+          {(flatDataConnector.convenientMode && flatDataConnector.readOnly && (
             <div className="mt-1">
-              <WarnAlert dismissible={false}>
+              <InfoAlert dismissible={false}>
                 <p className="mb-0">
-                  You are mounting this storage in read-write mode. If you have
-                  read-only access, please select &quot;Read Only&quot; to
-                  prevent errors with some storage types.
+                  This cloud storage only supports read-only access.
                 </p>
-              </WarnAlert>
+              </InfoAlert>
             </div>
-          )}
+          )) ||
+            (!flatDataConnector.readOnly && (
+              <div className="mt-1">
+                <WarnAlert dismissible={false}>
+                  <p className="mb-0">
+                    You are mounting this storage in read-write mode. If you have
+                    read-only access, please select &quot;Read Only&quot; to
+                    prevent errors with some storage types.
+                  </p>
+                </WarnAlert>
+              </div>
+            ))}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write
             access. You should always select this if you do not have credentials

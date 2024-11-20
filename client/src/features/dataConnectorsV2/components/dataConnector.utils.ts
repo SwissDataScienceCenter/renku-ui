@@ -56,6 +56,7 @@ export type DataConnectorFlat = {
   readOnly?: boolean;
   schema?: string;
   sourcePath?: string;
+  convenientMode?: boolean;
 };
 
 type DataConnectorOptions = Record<
