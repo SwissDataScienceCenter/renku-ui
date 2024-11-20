@@ -37,6 +37,7 @@ import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
   type SecretWithId,
   useGetUserSecretsQuery,
+  usersApi,
 } from "../usersV2/api/users.api";
 import GeneralSecretItem from "./GeneralSecretItem";
 
@@ -112,24 +113,22 @@ function SessionSecrets() {
   );
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <div className={cx("align-items-center", "d-flex")}>
-            <h4 className={cx("m-0", "me-2")}>
-              <ShieldLock className={cx("me-1", "bi")} />
-              Session Secrets
-            </h4>
-            {secretsUsedInSessions && (
-              <Badge>{secretsUsedInSessions.length}</Badge>
-            )}
-          </div>
-        </CardHeader>
-        <CardBody className={cx(secretsUsedInSessions?.length == 0 && "pb-0")}>
-          {content}
-        </CardBody>
-      </Card>
-    </>
+    <Card>
+      <CardHeader>
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("m-0", "me-2")}>
+            <ShieldLock className={cx("me-1", "bi")} />
+            Session Secrets
+          </h4>
+          {secretsUsedInSessions && (
+            <Badge>{secretsUsedInSessions.length}</Badge>
+          )}
+        </div>
+      </CardHeader>
+      <CardBody className={cx(secretsUsedInSessions?.length == 0 && "pb-0")}>
+        {content}
+      </CardBody>
+    </Card>
   );
 }
 
@@ -153,62 +152,109 @@ function SessionSecretsContent({
       {secretsUsedInSessions.map((secret) => (
         <GeneralSecretItem key={secret.id} secret={secret} />
       ))}
-      {/* {sessionSecretSlotsWithSecrets.map((secretSlot) => (
-            <SessionSecretSlotItem
-              key={secretSlot.secretSlot.id}
-              secretSlot={secretSlot}
-            />
-          ))} */}
     </ListGroup>
   );
 }
 
 function DataConnectorSecrets() {
-  return (
+  const {
+    data: secrets,
+    isLoading,
+    error,
+  } = useGetUserSecretsQuery({ userSecretsParams: { kind: "storage" } });
+
+  const content = isLoading ? (
+    <p>
+      <Loader className="me-1" inline size={16} />
+      Loading secrets...
+    </p>
+  ) : error || !secrets ? (
     <>
-      <Card>
-        <CardHeader>
-          <div className={cx("align-items-center", "d-flex")}>
-            <h4 className={cx("m-0", "me-2")}>
-              <Database className={cx("me-1", "bi")} />
-              Data Connector Secrets
-            </h4>
-            {/* {secretsUsedInSessions && (
-                  <Badge>{secretsUsedInSessions.length}</Badge>
-                )} */}
-          </div>
-        </CardHeader>
-        <CardBody
-        //  className={cx(secretsUsedInSessions?.length == 0 && "pb-0")}
-        >
-          TODO: Data Connector Secrets
-        </CardBody>
-      </Card>
+      <p>Error: could not load user secrets.</p>
+      {error && <RtkOrNotebooksError error={error} dismissible={false} />}
     </>
+  ) : (
+    <DataConnectorSecretsContent secrets={secrets} />
+  );
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("m-0", "me-2")}>
+            <Database className={cx("me-1", "bi")} />
+            Data Connector Secrets
+          </h4>
+          {secrets && <Badge>{secrets.length}</Badge>}
+        </div>
+      </CardHeader>
+      <CardBody className={cx(secrets?.length == 0 && "pb-0")}>
+        {content}
+      </CardBody>
+    </Card>
+  );
+}
+
+interface DataConnectorSecretsContentProps {
+  secrets: SecretWithId[];
+}
+
+function DataConnectorSecretsContent({
+  secrets,
+}: DataConnectorSecretsContentProps) {
+  if (!secrets.length) {
+    return (
+      <p className="fst-italic">
+        You do not have data connector credentials saved as secrets at the
+        moment.
+      </p>
+    );
+  }
+
+  return (
+    <ListGroup flush>
+      {secrets.map((secret) => (
+        <GeneralSecretItem key={secret.id} secret={secret} />
+      ))}
+    </ListGroup>
   );
 }
 
 function UnusedSecrets() {
+  const { data: secrets } = usersApi.endpoints.getUserSecrets.useQueryState({
+    userSecretsParams: { kind: "general" },
+  });
+
+  const unusedSecrets = useMemo(
+    () =>
+      secrets?.filter(
+        ({ session_secret_ids }) => session_secret_ids.length == 0
+      ),
+    [secrets]
+  );
+
+  if (!unusedSecrets || unusedSecrets.length == 0) {
+    return null;
+  }
+
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <div className={cx("align-items-center", "d-flex")}>
-            <h4 className={cx("m-0", "me-2")}>
-              <QuestionSquare className={cx("me-1", "bi")} />
-              Unused Secrets
-            </h4>
-            {/* {secretsUsedInSessions && (
-                    <Badge>{secretsUsedInSessions.length}</Badge>
-                  )} */}
-          </div>
-        </CardHeader>
-        <CardBody
-        //  className={cx(secretsUsedInSessions?.length == 0 && "pb-0")}
-        >
-          TODO: Unused Secrets
-        </CardBody>
-      </Card>
-    </>
+    <Card>
+      <CardHeader>
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("m-0", "me-2")}>
+            <QuestionSquare className={cx("me-1", "bi")} />
+            Unused Secrets
+          </h4>
+          <Badge>{unusedSecrets.length}</Badge>
+        </div>
+      </CardHeader>
+      <CardBody>
+        <ListGroup flush>
+          {unusedSecrets.map((secret) => (
+            <GeneralSecretItem key={secret.id} secret={secret} />
+          ))}
+        </ListGroup>
+      </CardBody>
+    </Card>
   );
 }

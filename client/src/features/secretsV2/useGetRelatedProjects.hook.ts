@@ -16,13 +16,14 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo } from "react";
+
 import {
-  useGetSessionSecretSlotsByIdsQuery,
   useGetProjectsByProjectIdsQuery,
+  useGetSessionSecretSlotsByIdsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
 import type { SecretWithId } from "../usersV2/api/users.api";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 interface UseGetRelatedProjectsArgs {
   secret: SecretWithId;
