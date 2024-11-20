@@ -23,7 +23,7 @@ import { Controller, useForm } from "react-hook-form";
 import { ButtonGroup, FormText, Input, Label } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
-import { WarnAlert } from "../../../../components/Alert";
+import { InfoAlert, WarnAlert } from "../../../../components/Alert";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
@@ -117,24 +117,16 @@ function AddOrEditDataConnector({
       : null;
   if (CloudStorageContentByStep)
     return (
-      <>
-        <div className={cx("d-flex", "justify-content-end")}>
-          <AddStorageAdvancedToggle
-            state={cloudStorageState}
-            setState={setState}
-          />
-        </div>
-        <CloudStorageContentByStep
-          schema={schemata}
-          state={cloudStorageState}
-          storage={flatDataConnector}
-          setState={setState}
-          setStorage={setFlatDataConnector}
-          storageSecrets={storageSecrets}
-          validationSucceeded={validationResult?.isSuccess ?? false}
-          isV2={true}
-        />
-      </>
+      <CloudStorageContentByStep
+        schema={schemata}
+        state={cloudStorageState}
+        storage={flatDataConnector}
+        setState={setState}
+        setStorage={setFlatDataConnector}
+        storageSecrets={storageSecrets}
+        validationSucceeded={validationResult?.isSuccess ?? false}
+        isV2={true}
+      />
     );
   const DataConnectorContentByStep =
     cloudStorageState.step >= 0 &&
@@ -507,21 +499,35 @@ export function DataConnectorMount() {
               }}
               value=""
               checked={flatDataConnector.readOnly ?? false}
+              disabled={
+                (flatDataConnector.convenientMode &&
+                  flatDataConnector.readOnly) ??
+                false
+              }
             />
           )}
           rules={{ required: true }}
         />
-        {!flatDataConnector.readOnly && (
+        {(flatDataConnector.convenientMode && flatDataConnector.readOnly && (
           <div className="mt-1">
-            <WarnAlert dismissible={false}>
+            <InfoAlert dismissible={false}>
               <p className="mb-0">
-                You are mounting this storage in read-write mode. If you have
-                read-only access, please check the box to prevent errors with
-                some storage types.
+                This cloud storage only supports read-only access.
               </p>
-            </WarnAlert>
+            </InfoAlert>
           </div>
-        )}
+        )) ||
+          (!flatDataConnector.readOnly && (
+            <div className="mt-1">
+              <WarnAlert dismissible={false}>
+                <p className="mb-0">
+                  You are mounting this storage in read-write mode. If you have
+                  read-only access, please check the box to prevent errors with
+                  some storage types.
+                </p>
+              </WarnAlert>
+            </div>
+          ))}
         <div className={cx("form-text", "text-muted")}>
           Check this box to mount the storage in read-only mode. You should
           always check this if you do not have credentials to write. You can use

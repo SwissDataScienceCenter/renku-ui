@@ -288,9 +288,19 @@ export default function DataConnectorModalFooter({
 
   // Visual elements
   const disableContinueButton =
-    cloudStorageState.step === 1 &&
-    (!flatDataConnector.schema ||
-      (schemaRequiresProvider && !flatDataConnector.provider));
+    (cloudStorageState.step === 1 &&
+      (!flatDataConnector.schema ||
+        (schemaRequiresProvider && !flatDataConnector.provider))) ||
+    (cloudStorageState.step === 2 &&
+      flatDataConnector.convenientMode &&
+      !(
+        flatDataConnector.sourcePath &&
+        flatDataConnector.options &&
+        Object.values(flatDataConnector.options).every((v) => v)
+      )) ||
+    false;
+
+  console.log("disableContinueButton", disableContinueButton);
 
   const isAddResultLoading = createResult.isLoading;
   const isModifyResultLoading = updateResult.isLoading;
@@ -351,15 +361,17 @@ export default function DataConnectorModalFooter({
         <DataConnectorModalBackButton success={success} toggle={toggle} />
       )}
       {!success && (
-        <DataConnectorModalContinueButton
-          addButtonDisableReason={addButtonDisableReason}
-          addOrEditStorage={addOrEditStorage}
-          disableAddButton={disableAddButton}
-          disableContinueButton={disableContinueButton}
-          hasStoredCredentialsInConfig={hasStoredCredentialsInConfig}
-          isResultLoading={isResultLoading}
-          dataConnectorId={dataConnectorId}
-        />
+        <>
+          <DataConnectorModalContinueButton
+            addButtonDisableReason={addButtonDisableReason}
+            addOrEditStorage={addOrEditStorage}
+            disableAddButton={disableAddButton}
+            disableContinueButton={disableContinueButton}
+            hasStoredCredentialsInConfig={hasStoredCredentialsInConfig}
+            isResultLoading={isResultLoading}
+            dataConnectorId={dataConnectorId}
+          />
+        </>
       )}
     </>
   );

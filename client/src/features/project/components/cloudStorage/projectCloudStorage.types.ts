@@ -119,6 +119,8 @@ export interface CloudStorageSchema {
   hide?: boolean;
   prefix: string; // ? weird naming; it's the machine readable name
   position?: number;
+  convenientMode?: boolean; // ? Disables the Rclone full options list, ...
+  readOnly?: boolean; // ? Forces read-only access e.g. for storage that do not support write access
   options: CloudStorageSchemaOptions[];
 }
 
@@ -156,6 +158,7 @@ export type CloudStorageDetails = {
   sourcePath?: string;
   mountPoint?: string;
   readOnly?: boolean;
+  convenientMode?: boolean;
 };
 
 export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";
