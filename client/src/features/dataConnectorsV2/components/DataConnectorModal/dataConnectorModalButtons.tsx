@@ -168,6 +168,7 @@ export function DataConnectorModalContinueButton({
           continueId="add-data-connector-continue"
           step={cloudStorageState.step}
           testId="test-data-connector"
+          disableContinueButton={disableContinueButton}
         />
         {disableContinueButton && (
           <UncontrolledTooltip
@@ -248,11 +249,13 @@ interface TestConnectionAndContinueButtonsProps
   continueId: string;
   step: number;
   testId: string;
+  disableContinueButton: boolean;
 }
 function TestConnectionAndContinueButtons({
   continueId,
   step,
   testId,
+  disableContinueButton,
 }: TestConnectionAndContinueButtonsProps) {
   const dispatch = useAppDispatch();
   const { flatDataConnector, isActionOngoing, validationResultIsCurrent } =
@@ -341,7 +344,7 @@ function TestConnectionAndContinueButtons({
         color={testConnectionColor}
         id={buttonTestId}
         data-cy={buttonTestId}
-        disabled={validationResult.isLoading}
+        disabled={disableContinueButton || validationResult.isLoading}
         onClick={() => validateConnection()}
       >
         {testConnectionContent}
