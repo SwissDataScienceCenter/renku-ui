@@ -76,7 +76,7 @@ export default function RootV2() {
           <Route
             index
             element={
-              <ContainerWrap>
+              <ContainerWrap fullSize={true}>
                 <LazyDashboardV2 />
               </ContainerWrap>
             }

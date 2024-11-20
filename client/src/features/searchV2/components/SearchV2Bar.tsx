@@ -17,8 +17,9 @@
  */
 import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
 import { Button, Form, InputGroup } from "reactstrap";
-
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants.ts";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { setSearchBarQuery } from "../searchV2.slice";
@@ -26,6 +27,9 @@ import { setSearchBarQuery } from "../searchV2.slice";
 export default function SearchV2Bar() {
   const dispatch = useAppDispatch();
   const { searchBarQuery } = useAppSelector(({ searchV2 }) => searchV2);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isSearchPage = location.pathname === ABSOLUTE_ROUTES.v2.search;
 
   const { register, handleSubmit, setFocus, setValue } = useForm<SearchBarForm>(
     {
@@ -40,8 +44,9 @@ export default function SearchV2Bar() {
   const onSubmitInner = useCallback(
     (data: SearchBarForm) => {
       dispatch(setSearchBarQuery(data.searchBarQuery));
+      if (!isSearchPage) navigate(ABSOLUTE_ROUTES.v2.search);
     },
-    [dispatch]
+    [dispatch, isSearchPage, navigate]
   );
   const onSubmit = useMemo(
     () => handleSubmit(onSubmitInner),
@@ -63,7 +68,9 @@ export default function SearchV2Bar() {
           id="search-input"
           placeholder="Search..."
           type="text"
-          {...register("searchBarQuery", { onBlur: onSubmit })}
+          {...register("searchBarQuery", {
+            onBlur: isSearchPage ? onSubmit : undefined,
+          })}
         />
         <Button
           color="primary"

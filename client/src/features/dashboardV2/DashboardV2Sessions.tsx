@@ -25,7 +25,7 @@ import { Col, ListGroup, Row } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../../features/sessionsV2/sessionsV2.api";
+import { useGetProjectSessionLauncherQuery } from "../../features/sessionsV2/sessionsV2.api";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
@@ -41,9 +41,16 @@ import styles from "./DashboardV2Sessions.module.scss";
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
 
-export default function DashboardV2Sessions() {
-  const { data: sessions, error, isLoading } = useGetSessionsQueryV2();
-
+interface DashboardV2SessionsProps {
+  sessions?: SessionList;
+  error: FetchBaseQueryError | SerializedError | undefined;
+  isLoading: boolean;
+}
+export default function DashboardV2Sessions({
+  sessions,
+  error,
+  isLoading,
+}: DashboardV2SessionsProps) {
   if (isLoading) {
     return <LoadingState />;
   }
@@ -75,14 +82,18 @@ function ErrorState({
 }) {
   return (
     <div>
-      <p>Cannot show sessions.</p>
+      <p className="mb-0">Cannot show sessions.</p>
       <RtkErrorAlert error={error} />
     </div>
   );
 }
 
 function NoSessionsState() {
-  return <div>No running sessions.</div>;
+  return (
+    <p className="mb-0">
+      No running sessions. Create a project to launch a session.
+    </p>
+  );
 }
 
 function SessionDashboardList({
@@ -106,9 +117,12 @@ function DashboardSession({ session }: DashboardSessionProps) {
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
   );
-  const { image, project_id: projectId, launcher_id: launcherId } = session;
+  const { project_id: projectId, launcher_id: launcherId } = session;
   const { data: project } = useGetProjectsByProjectIdQuery(
     projectId ? { projectId } : skipToken
+  );
+  const { data: launcher } = useGetProjectSessionLauncherQuery(
+    launcherId ? { id: launcherId } : skipToken
   );
 
   const projectUrl = project
@@ -148,16 +162,33 @@ function DashboardSession({ session }: DashboardSessionProps) {
       >
         <Row className="g-2">
           <Col className="order-1" xs={12} md={9} lg={10}>
-            <div data-cy="list-session-link">
-              <h6 className="fw-bold">
-                {project
-                  ? project.namespace + "/" + project.slug
-                  : projectId ?? "Unknown"}
-              </h6>
-              <p className="mb-0">
-                <b>Container image:</b> {image}
-              </p>
-            </div>
+            <Row className="g-2">
+              <Col
+                xs={12}
+                xl="auto"
+                className={cx(
+                  "cursor-pointer",
+                  "d-inline-block",
+                  "link-primary",
+                  "text-body"
+                )}
+                data-cy="list-session-link"
+              >
+                <h6>
+                  {project && launcher ? (
+                    <>
+                      <span className="fw-bold">{project.name}</span> /{" "}
+                      {launcher?.environment?.name}
+                    </>
+                  ) : (
+                    projectId ?? "Unknown"
+                  )}
+                </h6>
+              </Col>
+              <Col xs={12} xl="auto" className="mt-1">
+                <SessionStatusV2Label session={session} />
+              </Col>
+            </Row>
           </Col>
           <Col className={cx("order-3", "order-md-2")} xs={12} md={3} lg={2}>
             {/* NOTE: This is a placeholder for the session actions button */}
@@ -165,15 +196,8 @@ function DashboardSession({ session }: DashboardSessionProps) {
               <span className="bi" />
             </div>
           </Col>
-          <Col className={cx("order-2", "order-md-3")} xs={12}>
-            <Row className={cx("justify-content-between", "gap-2")}>
-              <Col xs={12} md="auto">
-                <SessionStatusV2Label session={session} />
-              </Col>
-              <Col xs={12} md="auto">
-                <SessionStatusV2Description session={session} />
-              </Col>
-            </Row>
+          <Col className={cx("order-2", "order-md-3", "mt-2")} xs={12}>
+            <SessionStatusV2Description session={session} />
           </Col>
         </Row>
       </Link>

@@ -50,7 +50,7 @@ export default function ProjectShortHandDisplay({
 
       <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
         <p className={cx("fst-italic", "mb-2", "text-truncate")}>
-          @{project.namespace}/{project.slug}
+          {project.description}
         </p>
         {project.updated_at ? (
           <TimeCaption

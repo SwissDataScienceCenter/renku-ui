@@ -20,9 +20,14 @@ import cx from "classnames";
 
 import styles from "./UserAvatar.module.scss";
 
+export enum UserAvatarSize {
+  small = "small",
+  large = "large",
+  extraLarge = "extra-large",
+}
 interface UserAvatarProps {
   firstName?: string;
-  large?: boolean;
+  size?: UserAvatarSize;
   lastName?: string;
   username?: string;
 }
@@ -30,7 +35,7 @@ interface UserAvatarProps {
 export default function UserAvatar({
   firstName,
   lastName,
-  large,
+  size = UserAvatarSize.small,
   username,
 }: UserAvatarProps) {
   const firstLetters =
@@ -40,23 +45,36 @@ export default function UserAvatar({
       ? `${firstName}${lastName}`.slice(0, 2)
       : username?.slice(0, 2) ?? "??";
   const firstLettersUpper = firstLetters.toUpperCase();
+  const randomPastelColor = generatePastelColor(firstLettersUpper);
 
   return (
     <div
+      style={{ backgroundColor: randomPastelColor }}
       className={cx(
         "align-content-center",
-        "bg-info-subtle",
-        "border-info-subtle",
         "border",
         "flex-shrink-0",
-        "fw-bold",
         "rounded-circle",
         "text-center",
         styles.avatar,
-        large && styles.large
+        size === UserAvatarSize.large && styles.large,
+        size === UserAvatarSize.extraLarge && styles.extraLarge
       )}
     >
       {firstLettersUpper}
     </div>
   );
+}
+
+function generatePastelColor(input: string) {
+  const hash = hashStringToNumber(input);
+  const hue = hash % 360; // Map hash to a hue value (0-359)
+  const saturation = 70; // Pastel saturation
+  const lightness = 95; // Pastel lightness
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+function hashStringToNumber(str: string) {
+  return str
+    .split("")
+    .reduce((acc, char, index) => acc + char.charCodeAt(0) * (index + 1), 0);
 }

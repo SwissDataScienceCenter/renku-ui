@@ -1,0 +1,39 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.DashboardHeader {
+  height: auto;
+  position: relative;
+
+  img {
+    object-fit: cover;
+    height: 150px;
+
+    @include media-breakpoint-up(md) {
+      height: 180px;
+    }
+
+    @include media-breakpoint-up(lg) {
+      height: 220px;
+    }
+  }
+}
+
+.AnonymousAvatar {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.DashboardCard {
+  background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+
+  &:hover {
+    background-color: var(--bs-primary-bg-subtle) !important;
+  }
+}
