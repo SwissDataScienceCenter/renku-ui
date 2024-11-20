@@ -190,7 +190,7 @@ interface AddStorageAdvancedForm {
   sourcePath: string;
   configuration: string;
 }
-function AddStorageAdvanced({
+export function AddStorageAdvanced({
   setStorage,
   setState,
   state,
