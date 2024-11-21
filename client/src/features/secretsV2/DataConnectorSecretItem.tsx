@@ -19,8 +19,15 @@
 import cx from "classnames";
 import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
+import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import {
+  useGetDataConnectorsByDataConnectorIdQuery,
+  useGetDataConnectorsByDataConnectorIdSecretsQuery,
+} from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import { type SecretWithId } from "../usersV2/api/users.api";
+import { useMemo } from "react";
 
 interface DataConnectorSecretItemProps {
   secret: SecretWithId;
@@ -30,24 +37,6 @@ export default function DataConnectorSecretItem({
   secret,
 }: DataConnectorSecretItemProps) {
   const { name, modification_date, data_connector_ids } = secret;
-
-  //   const { projects, secretSlots, error, isLoading } = useGetRelatedProjects({
-  //     secret,
-  //   });
-
-  //   const usedInContent = isLoading ? (
-  //     <>
-  //       <Loader className="me-1" inline size={16} />
-  //       Loading related projects...
-  //     </>
-  //   ) : error || !projects || !secretSlots ? (
-  //     <>
-  //       <p>Error: could not load related projects</p>
-  //       {error && <RtkOrNotebooksError error={error} dismissible={false} />}
-  //     </>
-  //   ) : (
-  //     <GeneralSecretUsedIn projects={projects} secretSlots={secretSlots} />
-  //   );
 
   const isOrphanSecret = data_connector_ids.length == 0;
 
@@ -63,13 +52,113 @@ export default function DataConnectorSecretItem({
             Edited{" "}
             <TimeCaption datetime={modification_date} enableTooltip noCaption />
           </div>
-          <div>
-            <pre>{JSON.stringify(data_connector_ids)}</pre>
-          </div>
-          {/* <div>{usedInContent}</div> */}
+          <DataConnectorSecretUsedFor secret={secret} />
         </Col>
         {/* <SessionSecretActions secretSlot={secretSlot} /> */}
       </Row>
     </ListGroupItem>
+  );
+}
+
+interface DataConnectorSecretUsedForProps {
+  secret: SecretWithId;
+}
+
+function DataConnectorSecretUsedFor({
+  secret,
+}: DataConnectorSecretUsedForProps) {
+  const { data_connector_ids: dataConnectorIds } = secret;
+
+  if (dataConnectorIds.length == 0) {
+    return null;
+  }
+
+  return (
+    <div>
+      <p className={cx("mb-0", "fw-medium")}>Used for:</p>
+      <ul>
+        {dataConnectorIds.map((dataConnectorId) => (
+          <DataConnectorSecretUsedForItem
+            key={dataConnectorId}
+            dataConnectorId={dataConnectorId}
+            secret={secret}
+          />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+interface DataConnectorSecretUsedForItemProps {
+  dataConnectorId: string;
+  secret: SecretWithId;
+}
+
+function DataConnectorSecretUsedForItem({
+  dataConnectorId,
+  secret,
+}: DataConnectorSecretUsedForItemProps) {
+  const {
+    data: dataConnector,
+    isLoading: isLoadingDataConnector,
+    error: dataConnectorError,
+  } = useGetDataConnectorsByDataConnectorIdQuery({ dataConnectorId });
+  const {
+    data: dataConnectorSecrets,
+    isLoading: isLoadingSecrets,
+    error: secretsError,
+  } = useGetDataConnectorsByDataConnectorIdSecretsQuery({ dataConnectorId });
+
+  const isLoading = isLoadingDataConnector || isLoadingSecrets;
+  const error = dataConnectorError ?? secretsError;
+
+  const dcSecret = useMemo(
+    () =>
+      dataConnectorSecrets?.find(({ secret_id }) => secret_id === secret.id),
+    [dataConnectorSecrets, secret.id]
+  );
+
+  if (isLoading) {
+    return (
+      <li>
+        <Loader className="me-1" inline size={16} />
+        Loading data connector...
+      </li>
+    );
+  }
+
+  if (error || !dataConnector) {
+    return (
+      <li>
+        <p>
+          Error: could not load data connector <code>{dataConnectorId}</code>.
+        </p>
+        {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+      </li>
+    );
+  }
+
+  return (
+    <li>
+      <div>
+        {dataConnector.name}
+        {" - "}
+        <span className="fst-italic">
+          {"@"}
+          {dataConnector.namespace}/{dataConnector.slug}
+        </span>
+      </div>
+      <div>
+        {dcSecret ? (
+          <>
+            Field: <code>{dcSecret.name}</code>
+          </>
+        ) : (
+          <span className="fst-italic">
+            Error: could not find the corresponding field.
+          </span>
+        )}
+      </div>
+    </li>
   );
 }

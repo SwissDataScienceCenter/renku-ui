@@ -44,15 +44,15 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
   });
 
   const usedInContent = isLoading ? (
-    <>
+    <div>
       <Loader className="me-1" inline size={16} />
       Loading related projects...
-    </>
+    </div>
   ) : error || !projects || !secretSlots ? (
-    <>
+    <div>
       <p>Error: could not load related projects</p>
       {error && <RtkOrNotebooksError error={error} dismissible={false} />}
-    </>
+    </div>
   ) : (
     <GeneralSecretUsedIn projects={projects} secretSlots={secretSlots} />
   );
@@ -68,7 +68,7 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
             Edited{" "}
             <TimeCaption datetime={modification_date} enableTooltip noCaption />
           </div>
-          <div>{usedInContent}</div>
+          {usedInContent}
         </Col>
         {/* <SessionSecretActions secretSlot={secretSlot} /> */}
       </Row>
@@ -85,7 +85,6 @@ function GeneralSecretUsedIn({
   projects,
   secretSlots,
 }: GeneralSecretUsedInProps) {
-  // NOTE: this case should not happen
   if (projects.length == 0) {
     return null;
   }
