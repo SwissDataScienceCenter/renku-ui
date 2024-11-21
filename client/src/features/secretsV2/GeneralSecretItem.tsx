@@ -19,18 +19,19 @@
 import cx from "classnames";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
+import { useMemo } from "react";
+import { generatePath, Link } from "react-router-dom-v5-compat";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import type {
   Project,
   SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
 import { type SecretWithId } from "../usersV2/api/users.api";
+import SecretItemActions from "./SecretItemActions";
 import useGetRelatedProjects from "./useGetRelatedProjects.hook";
-import { useMemo } from "react";
-import { generatePath, Link } from "react-router-dom-v5-compat";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 
 interface GeneralSecretItemProps {
   secret: SecretWithId;
@@ -70,7 +71,7 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
           </div>
           {usedInContent}
         </Col>
-        {/* <SessionSecretActions secretSlot={secretSlot} /> */}
+        <SecretItemActions secret={secret} />
       </Row>
     </ListGroupItem>
   );

@@ -17,21 +17,22 @@
  */
 
 import cx from "classnames";
-import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 import { Fragment, ReactNode, useMemo } from "react";
+import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
+import { skipToken } from "@reduxjs/toolkit/query";
+import { generatePath, Link } from "react-router-dom-v5-compat";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import {
   useGetDataConnectorsByDataConnectorIdQuery,
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
 } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import { useGetNamespacesByNamespaceSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { type SecretWithId } from "../usersV2/api/users.api";
-import { skipToken } from "@reduxjs/toolkit/query";
-import { generatePath, Link } from "react-router-dom-v5-compat";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import SecretItemActions from "./SecretItemActions";
 
 interface DataConnectorSecretItemProps {
   secret: SecretWithId;
@@ -58,7 +59,7 @@ export default function DataConnectorSecretItem({
           </div>
           <DataConnectorSecretUsedFor secret={secret} />
         </Col>
-        {/* <SessionSecretActions secretSlot={secretSlot} /> */}
+        <SecretItemActions secret={secret} />
       </Row>
     </ListGroupItem>
   );
