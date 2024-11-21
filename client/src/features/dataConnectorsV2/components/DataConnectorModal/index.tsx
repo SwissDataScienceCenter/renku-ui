@@ -193,7 +193,7 @@ export default function DataConnectorModal({
           requestedPermission={"write"}
           userPermissions={permissions}
         />
-      ) : (
+      ) : dataConnectorId == null ? (
         <DataConnectorModalBodyAndFooter
           {...{
             dataConnector,
@@ -203,6 +203,8 @@ export default function DataConnectorModal({
             toggle,
           }}
         />
+      ) : (
+        <DataConnectorModalBodyAndFooterUnauthorized />
       )}
     </Modal>
   );

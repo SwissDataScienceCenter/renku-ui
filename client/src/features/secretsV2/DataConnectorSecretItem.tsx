@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { Badge, Col, ListGroupItem, Row } from "reactstrap";
+import { Fragment, ReactNode, useMemo } from "react";
 
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
@@ -26,8 +27,11 @@ import {
   useGetDataConnectorsByDataConnectorIdQuery,
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
 } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
+import { useGetNamespacesByNamespaceSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { type SecretWithId } from "../usersV2/api/users.api";
-import { useMemo } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { generatePath, Link } from "react-router-dom-v5-compat";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 
 interface DataConnectorSecretItemProps {
   secret: SecretWithId;
@@ -108,15 +112,45 @@ function DataConnectorSecretUsedForItem({
     isLoading: isLoadingSecrets,
     error: secretsError,
   } = useGetDataConnectorsByDataConnectorIdSecretsQuery({ dataConnectorId });
+  const {
+    data: namespace,
+    isLoading: isLoadingNamespace,
+    error: namespaceError,
+  } = useGetNamespacesByNamespaceSlugQuery(
+    dataConnector ? { namespaceSlug: dataConnector.namespace } : skipToken
+  );
 
-  const isLoading = isLoadingDataConnector || isLoadingSecrets;
-  const error = dataConnectorError ?? secretsError;
+  const isLoading =
+    isLoadingDataConnector || isLoadingSecrets || isLoadingNamespace;
+  const error = dataConnectorError ?? secretsError ?? namespaceError;
 
   const dcSecret = useMemo(
     () =>
       dataConnectorSecrets?.find(({ secret_id }) => secret_id === secret.id),
     [dataConnectorSecrets, secret.id]
   );
+
+  const namespaceUrl = useMemo(
+    () =>
+      dataConnector && namespace?.namespace_kind === "group"
+        ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+            slug: dataConnector.namespace,
+          })
+        : dataConnector && namespace?.namespace_kind === "user"
+        ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+            username: dataConnector.namespace,
+          })
+        : undefined,
+    [dataConnector, namespace?.namespace_kind]
+  );
+  const dcHash = dataConnector ? `data-connector-${dataConnector.id}` : "";
+
+  const LinkTag =
+    namespaceUrl && dcHash
+      ? ({ children }: { children: ReactNode }) => (
+          <Link to={{ pathname: namespaceUrl, hash: dcHash }}>{children}</Link>
+        )
+      : Fragment;
 
   if (isLoading) {
     return (
@@ -141,12 +175,14 @@ function DataConnectorSecretUsedForItem({
   return (
     <li>
       <div>
-        {dataConnector.name}
-        {" - "}
-        <span className="fst-italic">
-          {"@"}
-          {dataConnector.namespace}/{dataConnector.slug}
-        </span>
+        <LinkTag>
+          {dataConnector.name}
+          {" - "}
+          <span className="fst-italic">
+            {"@"}
+            {dataConnector.namespace}/{dataConnector.slug}
+          </span>
+        </LinkTag>
       </div>
       <div>
         {dcSecret ? (
