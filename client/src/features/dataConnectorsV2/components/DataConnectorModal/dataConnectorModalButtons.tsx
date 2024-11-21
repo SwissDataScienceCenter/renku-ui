@@ -104,7 +104,7 @@ interface DataConnectorModalContinueButtonProps
   hasStoredCredentialsInConfig: boolean;
   isResultLoading: boolean;
   dataConnectorId: string | null;
-  selectedSchemaRequiresAccessLevel: boolean;
+  selectedSchemaHasAccessMode: boolean;
 }
 export function DataConnectorModalContinueButton({
   addButtonDisableReason,
@@ -114,7 +114,7 @@ export function DataConnectorModalContinueButton({
   hasStoredCredentialsInConfig,
   isResultLoading,
   dataConnectorId,
-  selectedSchemaRequiresAccessLevel,
+  selectedSchemaHasAccessMode,
 }: DataConnectorModalContinueButtonProps) {
   const addButtonId = "add-data-connector-continue";
   const continueButtonId = "add-data-connector-next";
@@ -178,7 +178,7 @@ export function DataConnectorModalContinueButton({
           >
             {!flatDataConnector.schema
               ? "Please select a storage type"
-              : selectedSchemaRequiresAccessLevel
+              : selectedSchemaHasAccessMode
               ? "Please select a mode or change storage type"
               : "Please select a provider or change storage type"}
           </UncontrolledTooltip>
@@ -214,7 +214,7 @@ export function DataConnectorModalContinueButton({
         <UncontrolledTooltip placement="top" target={`${continueButtonId}-div`}>
           {!flatDataConnector.schema
             ? "Please select a storage type"
-            : selectedSchemaRequiresAccessLevel
+            : selectedSchemaHasAccessMode
             ? "Please select a mode or change storage type"
             : "Please select a provider or change storage type"}
         </UncontrolledTooltip>
@@ -292,10 +292,6 @@ function TestConnectionAndContinueButtons({
     };
     if (flatDataConnector.provider) {
       validateParameters.configuration.provider = flatDataConnector.provider;
-    }
-    if (flatDataConnector.access_level) {
-      validateParameters.configuration.access_level =
-        flatDataConnector.access_level;
     }
     if (
       flatDataConnector.options &&

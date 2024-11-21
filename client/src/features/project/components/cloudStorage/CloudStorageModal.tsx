@@ -28,7 +28,7 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import {
   findSensitive,
   getCurrentStorageDetails,
-  getSchemaProvidersOrAccessLevel,
+  getSchemaProviders,
   hasProviderShortlist,
 } from "../../utils/projectCloudStorage.utils";
 import {
@@ -138,11 +138,9 @@ export default function CloudStorageModal({
             !schema?.find((s) => s.prefix === storageDetails.schema) ||
             (hasProviderShortlist(storageDetails.schema) &&
               (!storageDetails.provider ||
-                !getSchemaProvidersOrAccessLevel(
-                  schema,
-                  false,
-                  storageDetails.schema
-                )?.find((p) => p.name === storageDetails.provider)))
+                !getSchemaProviders(schema, false, storageDetails.schema)?.find(
+                  (p) => p.name === storageDetails.provider
+                )))
           ) {
             fullNewState.step = 1;
           } else {

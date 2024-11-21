@@ -49,10 +49,9 @@ import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/
 import {
   convertFromAdvancedConfig,
   getSchemaOptions,
-  getSchemaProvidersOrAccessLevel,
+  getSchemaProviders,
   getSchemaStorage,
   getSourcePathHint,
-  hasAccessLevelShortlist,
   hasProviderShortlist,
   parseCloudStorageConfiguration,
 } from "../../utils/projectCloudStorage.utils";
@@ -62,6 +61,7 @@ import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
   CLOUD_STORAGE_TOTAL_STEPS,
+  STORAGES_WITH_ACCESS_MODE,
 } from "./projectCloudStorage.constants";
 import {
   AddCloudStorageState,
@@ -201,11 +201,10 @@ export function AddStorageAdvanced({
   const onConfigurationChange = useCallback(
     (value: string) => {
       const config = parseCloudStorageConfiguration(value);
-      const { type, provider, access_level, ...options } = config;
+      const { type, provider, ...options } = config;
       setStorage({
         schema: type,
         provider,
-        access_level,
         options,
       });
     },
@@ -644,7 +643,8 @@ export function AddStorageType({
   const setFinalSchema = (value: string) => {
     setStorage({ schema: value });
     if (state.showAllSchema) setState({ showAllSchema: false });
-    (hasProviderShortlist(value) || hasAccessLevelShortlist(value)) &&
+    (hasProviderShortlist(value) ||
+      STORAGES_WITH_ACCESS_MODE.includes(value)) &&
       scrollToProvider();
   };
 
@@ -712,18 +712,14 @@ export function AddStorageType({
     </div>
   );
 
-  const setFinalProviderOrAccessLevel = (
-    value: string,
-    isAccessLevel = false
-  ) => {
-    if (isAccessLevel) setStorage({ access_level: value });
-    else setStorage({ provider: value });
+  const setFinalProvider = (value: string) => {
+    setStorage({ provider: value });
     if (state.showAllProviders) setState({ showAllProviders: false });
   };
 
-  const availableProvidersOrAccessLevel = useMemo(
+  const availableProvidersOrAccess = useMemo(
     () =>
-      getSchemaProvidersOrAccessLevel(
+      getSchemaProviders(
         schema,
         !state.showAllProviders,
         storage.schema,
@@ -735,29 +731,26 @@ export function AddStorageType({
     () => hasProviderShortlist(storage.schema),
     [storage.schema]
   );
-  const hasAccessLevel = useMemo(() => {
+  const hasAccessMode = useMemo(() => {
     const selectedSchema = availableSchema.find(
       (s) => s.prefix === storage?.schema
     );
-    const access_levels = selectedSchema?.options?.find(
-      (o) => o.name === "access_level"
+    const access_modes = selectedSchema?.options?.find(
+      (o) => o.name === "access"
     );
-    return !!access_levels;
+    return !!access_modes;
   }, [storage.schema, availableSchema]);
 
-  const providerOrAccessLevelItems = availableProvidersOrAccessLevel
-    ? availableProvidersOrAccessLevel.map((p, index) => {
+  const providerOrAccessItems = availableProvidersOrAccess
+    ? availableProvidersOrAccess.map((p, index) => {
         const topBorder = index === 0 ? "rounded-top-3" : null;
         const bottomBorder =
-          index === availableProvidersOrAccessLevel.length - 1 &&
+          index === availableProvidersOrAccess.length - 1 &&
           !providerHasShortlist
             ? "rounded-bottom-3"
             : null;
         const itemActive =
-          (!hasAccessLevel && p.name === storage.provider) ||
-          (hasAccessLevel && p.name === storage.access_level)
-            ? styles.listGroupItemActive
-            : null;
+          p.name === storage.provider ? styles.listGroupItemActive : null;
         return (
           <ListGroupItem
             action
@@ -771,12 +764,10 @@ export function AddStorageType({
             tag="div"
             value={p.name}
             data-cy={`data-provider-${p.name}`}
-            onClick={() =>
-              setFinalProviderOrAccessLevel(p.name, hasAccessLevel)
-            }
+            onClick={() => setFinalProvider(p.name)}
           >
             <p className="mb-0">
-              <b>{p.name}</b>
+              <b>{p.friendlyName ?? p.name}</b>
               <br />
               <small>{p.description}</small>
             </p>
@@ -784,10 +775,10 @@ export function AddStorageType({
         );
       })
     : null;
-  const finalProviderOraAccessLevelItems =
-    providerOrAccessLevelItems && !hasAccessLevel && providerHasShortlist
+  const finalProviderItems =
+    providerOrAccessItems && !hasAccessMode && providerHasShortlist
       ? [
-          ...providerOrAccessLevelItems,
+          ...providerOrAccessItems,
           <ListGroupItem
             action
             className={cx("cursor-pointer", "rounded-bottom-3")}
@@ -800,22 +791,20 @@ export function AddStorageType({
             <b>Show {state.showAllProviders ? "less" : "more"}</b>
           </ListGroupItem>,
         ]
-      : providerOrAccessLevelItems;
+      : providerOrAccessItems;
 
   const missingProvider =
-    availableProvidersOrAccessLevel &&
+    availableProvidersOrAccess &&
     storage.provider &&
-    !availableProvidersOrAccessLevel.find(
-      (p) => p.name === storage.provider
-    ) ? (
+    !availableProvidersOrAccess.find((p) => p.name === storage.provider) ? (
       <WarnAlert>
         The storage provider <code>{storage.provider}</code> might be invalid.
         You should select a valid provider from the list.
       </WarnAlert>
     ) : null;
 
-  const finalProvidersOrAccessLevel =
-    providerOrAccessLevelItems && !hasAccessLevel ? (
+  const finalProviders =
+    providerOrAccessItems && !hasAccessMode ? (
       <div className="mt-3" data-cy="cloud-storage-edit-providers">
         <h5>Provider</h5>
         <p>
@@ -829,11 +818,11 @@ export function AddStorageType({
           <ListGroup
             className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
           >
-            {finalProviderOraAccessLevelItems}
+            {finalProviderItems}
           </ListGroup>
         </div>
       </div>
-    ) : providerOrAccessLevelItems && hasAccessLevel ? (
+    ) : providerOrAccessItems && hasAccessMode ? (
       <div className="mt-3" data-cy="cloud-storage-edit-providers">
         <h5>Mode</h5>
         <p>We support the following modes for this storage type.</p>
@@ -842,7 +831,7 @@ export function AddStorageType({
           <ListGroup
             className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
           >
-            {finalProviderOraAccessLevelItems}
+            {finalProviderItems}
           </ListGroup>
         </div>
       </div>
@@ -851,7 +840,7 @@ export function AddStorageType({
   return (
     <>
       {finalSchema}
-      {finalProvidersOrAccessLevel}
+      {finalProviders}
     </>
   );
 }
@@ -870,8 +859,7 @@ export function AddStorageOptions({
     schema,
     !state.showAllOptions,
     storage.schema,
-    storage.provider,
-    storage.access_level
+    storage.provider
   );
   const { control, setValue, getValues } = useForm();
 
@@ -975,7 +963,7 @@ export function AddStorageOptions({
   const sourcePath = (
     <div className="mb-3">
       <Label className="form-label" for="sourcePath">
-        Source path
+        {sourcePathHelp.label}
       </Label>
 
       <Controller
@@ -1000,6 +988,10 @@ export function AddStorageOptions({
     </div>
   );
 
+  const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
+    storage.schema ?? ""
+  );
+
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-options">
       <h5>Options</h5>
@@ -1007,8 +999,9 @@ export function AddStorageOptions({
         Please fill in all the options required to connect to your storage. Mind
         that the specific fields required depend on your storage configuration.
       </p>
-      {sourcePath}
+      {!hasAccessMode && sourcePath}
       {optionItems}
+      {hasAccessMode && sourcePath}
       {advancedOptions}
     </form>
   );
@@ -1080,8 +1073,7 @@ export function AddStorageMount({
     schema,
     true,
     storage.schema,
-    storage.provider,
-    storage.access_level
+    storage.provider
   );
   const secretFields =
     options == null

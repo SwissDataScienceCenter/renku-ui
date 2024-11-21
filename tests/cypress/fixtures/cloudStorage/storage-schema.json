@@ -4391,18 +4391,18 @@
     "prefix": "polybox",
     "options": [
       {
-        "name": "access_level",
+        "name": "access",
         "help": "Choose the mode to access the data source.",
         "provider": "",
         "default": "",
         "examples": [
           {
-            "value": "Private",
+            "value": "personal",
             "help": "Use Private to connect a folder that only you use",
             "provider": ""
           },
           {
-            "value": "Public",
+            "value": "shared",
             "help": "To connect a folder you share with others, both privately & publicly shared folders.",
             "provider": ""
           }
@@ -4420,9 +4420,9 @@
         "type": "string"
       },
       {
-        "name": "publicLink",
+        "name": "public_link",
         "help": "shared folder link.\n\nE.g. https://polybox.ethz.ch/index.php/s/8NffJ3rFyHaVjgR",
-        "access_level": "Public",
+        "access_level": "shared",
         "default": "",
         "value": null,
         "examples": null,
@@ -4443,7 +4443,7 @@
         "help": "",
         "provider": "",
         "default": "",
-        "access_level": "Private",
+        "access_level": "personal",
         "value": "https://polybox.ethz.ch/remote.php/webdav/",
         "examples": null,
         "short_opt": "",
@@ -4459,59 +4459,9 @@
         "type": "string"
       },
       {
-        "name": "vendor",
-        "help": "Name of the WebDAV site/service/software you are using.",
-        "provider": "",
-        "default": "",
-        "value": null,
-        "examples": [
-          {
-            "value": "fastmail",
-            "help": "Fastmail Files",
-            "provider": ""
-          },
-          {
-            "value": "nextcloud",
-            "help": "Nextcloud",
-            "provider": ""
-          },
-          {
-            "value": "owncloud",
-            "help": "Owncloud",
-            "provider": ""
-          },
-          {
-            "value": "sharepoint",
-            "help": "Sharepoint Online, authenticated by Microsoft account",
-            "provider": ""
-          },
-          {
-            "value": "sharepoint-ntlm",
-            "help": "Sharepoint with NTLM authentication, usually self-hosted or on-premises",
-            "provider": ""
-          },
-          {
-            "value": "other",
-            "help": "Other site/service or software",
-            "provider": ""
-          }
-        ],
-        "short_opt": "",
-        "hide": 0,
-        "required": false,
-        "is_password": false,
-        "no_prefix": false,
-        "advanced": false,
-        "exclusive": false,
-        "sensitive": false,
-        "default_str": "",
-        "value_str": "",
-        "type": "string"
-      },
-      {
         "name": "user",
         "help": "#id,  where #id is the identifier of your data (e.g. #id = i974KegIjhJJxkK for the last part of the URL of your data)",
-        "access_level": "Private",
+        "access_level": "personal",
         "provider": "",
         "default": "",
         "value": null,
@@ -4538,14 +4488,14 @@
           {
             "value": "",
             "help": "We strongly encourage you to generate a token for accessing your private OwnCloud/Nextcloud WebDAV shares to avoid sharing your account password. To create the token, in your cloud storage application (PolyBox), go to “Settings: Security” and generate a new “Application pass-code” at the bottom of the page.",
-            "access_level": "Private",
+            "access_level": "personal",
             "provider": "",
             "friendlyName": "Token (or password)"
           },
           {
             "value": "",
             "help": "If you set a password for the shared folder, enter that in the password field. Otherwise, leave it blank",
-            "access_level": "Public",
+            "access_level": "shared",
             "provider": "",
             "friendlyName": "Password"
           }
@@ -4566,7 +4516,7 @@
         "name": "bearer_token",
         "help": "Bearer token instead of user/pass (e.g. a Macaroon).",
         "provider": "",
-        "access_level": "Private",
+        "access_level": "personal",
         "default": "",
         "value": null,
         "examples": null,
@@ -4586,7 +4536,7 @@
         "name": "bearer_token_command",
         "help": "Command to run to get a bearer token.",
         "provider": "",
-        "access_level": "Private",
+        "access_level": "personal",
         "default": "",
         "value": null,
         "examples": null,
@@ -4671,18 +4621,18 @@
     "prefix": "switchDrive",
     "options": [
       {
-        "name": "access_level",
+        "name": "access",
         "help": "Choose the visibility.",
         "provider": "",
         "default": "",
         "examples": [
           {
-            "value": "Private",
+            "value": "personal",
             "help": "Use Private to connect a folder that only you use",
             "provider": ""
           },
           {
-            "value": "Public",
+            "value": "shared",
             "help": "To connect a folder you share with others, both privately & publicly shared folders.",
             "provider": ""
           }
@@ -4700,9 +4650,9 @@
         "type": "string"
       },
       {
-        "name": "publicLink",
+        "name": "public_link",
         "help": "shared folder link.\n\nE.g. https://polybox.ethz.ch/index.php/s/8NffJ3rFyHaVjgR",
-        "access_level": "Public",
+        "access_level": "shared",
         "default": "",
         "value": null,
         "examples": null,
@@ -4721,7 +4671,7 @@
       {
         "name": "url",
         "help": "",
-        "access_level": "Private",
+        "access_level": "personal",
         "provider": "",
         "default": "",
         "value": "https://polybox.ethz.ch/remote.php/webdav/",
@@ -4739,59 +4689,9 @@
         "type": "string"
       },
       {
-        "name": "vendor",
-        "help": "Name of the WebDAV site/service/software you are using.",
-        "provider": "",
-        "default": "",
-        "value": null,
-        "examples": [
-          {
-            "value": "fastmail",
-            "help": "Fastmail Files",
-            "provider": ""
-          },
-          {
-            "value": "nextcloud",
-            "help": "Nextcloud",
-            "provider": ""
-          },
-          {
-            "value": "owncloud",
-            "help": "Owncloud",
-            "provider": ""
-          },
-          {
-            "value": "sharepoint",
-            "help": "Sharepoint Online, authenticated by Microsoft account",
-            "provider": ""
-          },
-          {
-            "value": "sharepoint-ntlm",
-            "help": "Sharepoint with NTLM authentication, usually self-hosted or on-premises",
-            "provider": ""
-          },
-          {
-            "value": "other",
-            "help": "Other site/service or software",
-            "provider": ""
-          }
-        ],
-        "short_opt": "",
-        "hide": 0,
-        "required": false,
-        "is_password": false,
-        "no_prefix": false,
-        "advanced": false,
-        "exclusive": false,
-        "sensitive": false,
-        "default_str": "",
-        "value_str": "",
-        "type": "string"
-      },
-      {
         "name": "user",
         "help": "#id,  where #id is the identifier of your data (e.g. #id = i974KegIjhJJxkK for the last part of the URL of your data)",
-        "access_level": "Private",
+        "access_level": "personal",
         "provider": "",
         "default": "",
         "value": null,
@@ -4818,14 +4718,14 @@
           {
             "value": "",
             "help": "We strongly encourage you to generate a token for accessing your private OwnCloud/Nextcloud WebDAV shares to avoid sharing your account password. To create the token, in your cloud storage application (PolyBox), go to “Settings: Security” and generate a new “Application pass-code” at the bottom of the page.",
-            "access_level": "Private",
+            "access_level": "personal",
             "provider": "",
             "friendlyName": "Token (or password)"
           },
           {
             "value": "",
             "help": "If you set a password for the shared folder, enter that in the password field. Otherwise, leave it blank",
-            "access_level": "Public",
+            "access_level": "shared",
             "friendlyName": "Password",
             "provider": ""
           }
@@ -4846,7 +4746,7 @@
         "name": "bearer_token",
         "help": "Bearer token instead of user/pass (e.g. a Macaroon).",
         "provider": "",
-        "access_level": "Private",
+        "access_level": "personal",
         "default": "",
         "value": null,
         "examples": null,
@@ -4866,7 +4766,7 @@
         "name": "bearer_token_command",
         "help": "Command to run to get a bearer token.",
         "provider": "",
-        "access_level": "Private",
+        "access_level": "personal",
         "default": "",
         "value": null,
         "examples": null,

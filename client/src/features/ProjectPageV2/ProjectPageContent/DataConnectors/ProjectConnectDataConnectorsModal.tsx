@@ -130,9 +130,9 @@ function ProjectConnectDataConnectorModalHeader({
 
   const title =
     cloudStorageState?.step > 1
-      ? `${flatDataConnector?.access_level?.toLocaleLowerCase() ?? ""} ${
-          flatDataConnector?.schema ?? ""
-        } ${flatDataConnector?.provider ?? ""}`
+      ? `${flatDataConnector?.schema ?? ""} ${
+          flatDataConnector?.provider ?? ""
+        }`
       : "";
   return (
     <>

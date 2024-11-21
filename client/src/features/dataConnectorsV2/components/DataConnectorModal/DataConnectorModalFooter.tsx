@@ -34,7 +34,6 @@ import {
 
 import {
   findSensitive,
-  hasAccessLevelShortlist,
   hasProviderShortlist,
 } from "../../../project/utils/projectCloudStorage.utils";
 
@@ -54,7 +53,7 @@ import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 import {
   dataConnectorPostFromFlattened,
   dataConnectorToFlattened,
-  hasSchemaAccessLevel,
+  hasSchemaAccessMode,
 } from "../dataConnector.utils";
 import {
   DataConnectorConnectionTestResult,
@@ -150,14 +149,13 @@ function DataConnectorCreateFooter({
     () => schemata?.find((s) => s.prefix === flatDataConnector.schema),
     [schemata, flatDataConnector]
   );
-  const schemaRequiresAccessLevel = currentSchema
-    ? hasSchemaAccessLevel(currentSchema)
+  const schemaHasAccessModes = currentSchema
+    ? hasSchemaAccessMode(currentSchema)
     : false;
   const schemaRequiresProvider = useMemo(
     () =>
-      !schemaRequiresAccessLevel &&
-      hasProviderShortlist(flatDataConnector.schema),
-    [flatDataConnector.schema, schemaRequiresAccessLevel]
+      !schemaHasAccessModes && hasProviderShortlist(flatDataConnector.schema),
+    [flatDataConnector.schema, schemaHasAccessModes]
   );
 
   useEffect(() => {
@@ -314,8 +312,7 @@ function DataConnectorCreateFooter({
   const disableContinueButton =
     cloudStorageState.step === 1 &&
     (!flatDataConnector.schema ||
-      (schemaRequiresProvider && !flatDataConnector.provider) ||
-      (schemaRequiresAccessLevel && !flatDataConnector.access_level));
+      (schemaRequiresProvider && !flatDataConnector.provider));
 
   const isAddResultLoading = createResult.isLoading;
   const actionError = createResult.error;
@@ -326,11 +323,7 @@ function DataConnectorCreateFooter({
     !flatDataConnector.mountPoint ||
     !flatDataConnector.schema ||
     (hasProviderShortlist(flatDataConnector.schema) &&
-      !schemaRequiresAccessLevel &&
-      !flatDataConnector.provider) ||
-    (hasAccessLevelShortlist(flatDataConnector.schema) &&
-      schemaRequiresAccessLevel &&
-      !flatDataConnector.access_level);
+      !flatDataConnector.provider);
   const addButtonDisableReason = isAddResultLoading
     ? "Please wait, the storage is being added"
     : !flatDataConnector.name
@@ -517,7 +510,7 @@ function DataConnectorEditFooter({
     ? "Please provide a mount point"
     : !flatDataConnector.schema
     ? "Please go back and select a storage type"
-    : schemaRequiresAccessLevel
+    : schemaHasAccessModes
     ? "Please go back and select a mode"
     : "Please go back and select a provider";
   const isResultLoading = isModifyResultLoading;
@@ -564,7 +557,7 @@ function DataConnectorEditFooter({
           hasStoredCredentialsInConfig={hasStoredCredentialsInConfig}
           isResultLoading={isResultLoading}
           dataConnectorId={dataConnectorId}
-          selectedSchemaRequiresAccessLevel={schemaRequiresAccessLevel}
+          selectedSchemaHasAccessMode={schemaHasAccessModes}
         />
       )}
     </>

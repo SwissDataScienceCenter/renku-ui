@@ -25,6 +25,7 @@ import {
 
 export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
 export const CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE = "<saved secret>";
+export const STORAGES_WITH_ACCESS_MODE = ["polybox", "switchDrive"];
 
 export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
   "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
@@ -107,10 +108,27 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     },
   },
   polybox: {
+    access: {
+      examples: [
+        {
+          value: "personal",
+          help: "Use Private to connect a folder that only you use",
+          provider: "",
+          friendlyName: "Personal",
+        },
+        {
+          value: "shared",
+          help: "To connect a folder you share with others, both personal & shared folders",
+          provider: "",
+          friendlyName: "Shared",
+        },
+      ],
+    },
     bearer_token: { friendlyName: "Bearer Token", advanced: true },
     url: {
       friendlyName: "URL",
       help: "",
+      advanced: true,
     },
     user: {
       friendlyName: "Username",
@@ -130,15 +148,13 @@ export const CLOUD_OPTIONS_OVERRIDE = {
         {
           value: "",
           help: "For secure access to your Polybox WebDAV shares, we recommend using an application token instead of your account password. To create one, open Polybox, go to Settings > Security, and generate a new Application pass-code.",
-          access_level: "Private",
-          provider: "",
+          provider: "personal",
           friendlyName: "Token (or password)",
         },
         {
           value: "",
           help: "If you set a password for the shared folder, enter that in the password field. Otherwise, leave it blank",
-          access_level: "Public",
-          provider: "",
+          provider: "shared",
           friendlyName: "Password",
         },
       ],
@@ -148,6 +164,7 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     bearer_token: { friendlyName: "Bearer Token", advanced: true },
     url: {
       friendlyName: "URL",
+      advanced: true,
     },
     user: {
       friendlyName: "Username",
@@ -165,15 +182,13 @@ export const CLOUD_OPTIONS_OVERRIDE = {
         {
           value: "",
           help: "For secure access to your SwitchDrive WebDAV shares, we recommend using an application token instead of your account password. To create one, open SwitchDrive, go to Settings > Security, and generate a new Application password",
-          access_level: "Private",
-          provider: "",
+          provider: "personal",
           friendlyName: "Token (or password)",
         },
         {
           value: "",
           help: "If you set a password for the shared folder, enter that in the password field. Otherwise, leave it blank",
-          access_level: "Public",
-          provider: "",
+          provider: "shared",
           friendlyName: "Password",
         },
       ],
@@ -197,14 +212,26 @@ export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
       "For S3, this is usually your remote bucket name as specified in the cloud service you are using. " +
       "You can also mount a sub-folder by appending it to the bucket name with a slash, e.g. `my-bucket/sub-folder`.",
     placeholder: "remote-bucket-name/optional-sub-folder(s)",
+    label: "Source path",
+  },
+  polybox: {
+    help: "You can leave this blank to mount the default root or specify a folder.",
+    placeholder: "'/' or 'optional-sub-folder(s)/'",
+    label: "Sub path (optional)",
+  },
+  switchDrive: {
+    help: "You can leave this blank to mount the default root or specify a folder.",
+    placeholder: "'/' or 'optional-sub-folder(s)/'",
+    label: "Sub path (optional)",
   },
   generic: {
     help:
       "You can leave this blank to mount the default root or specify a folder. Depending on the cloud storage " +
       "provider, you should be able to specify stub-folder if you wish.",
     placeholder: "'/' or 'optional-sub-folder(s)/'",
+    label: "Source path",
   },
-} as Record<string, Record<"help" | "placeholder", string>>;
+} as Record<string, Record<"help" | "placeholder" | "label", string>>;
 
 export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
   "s3",
@@ -217,11 +244,6 @@ export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {
   s3: ["AWS", "GCS", "Switch"],
 } as Record<string, string[]>;
-
-export const CLOUD_STORAGE_ACCESS_LEVEL_SHORTLIST = {} as Record<
-  string,
-  string[]
->;
 
 export const CLOUD_STORAGE_TOTAL_STEPS = 3;
 

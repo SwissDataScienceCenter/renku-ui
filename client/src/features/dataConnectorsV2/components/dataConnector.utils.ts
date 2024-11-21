@@ -46,7 +46,6 @@ export type DataConnectorFlat = {
   mountPoint?: string;
   options?: CloudStorageDetailsOptions;
   provider?: string;
-  access_level?: string;
   readOnly?: boolean;
   schema?: string;
   sourcePath?: string;
@@ -95,16 +94,6 @@ export function dataConnectorPostFromFlattened(
   };
   if (flatDataConnector.provider) {
     storage.configuration.provider = flatDataConnector.provider;
-  }
-  if (flatDataConnector.access_level) {
-    storage.configuration.access_level = flatDataConnector.access_level;
-    const schemaDataConnector = schemata.find(
-      (s) => s.prefix === flatDataConnector.schema
-    );
-    const urlOptionSchemata = schemaDataConnector?.options.find(
-      (o) => o.name === "url"
-    );
-    storage.configuration.url = urlOptionSchemata?.default ?? "";
   }
   // Add options if any
   if (
@@ -160,9 +149,6 @@ export function dataConnectorToFlattened(
     provider: dataConnector.storage.configuration.provider
       ? (dataConnector.storage.configuration.provider as string)
       : undefined,
-    access_level: dataConnector.storage.configuration.access_level
-      ? (dataConnector.storage.configuration.access_level as string)
-      : undefined,
     readOnly: dataConnector.storage.readonly,
     schema: dataConnector.storage.configuration.type as string,
     sourcePath: dataConnector.storage.source_path,
@@ -198,6 +184,6 @@ function _dataConnectorFromConfig(config: DataConnectorConfiguration) {
   return mergedDataConnector;
 }
 
-export function hasSchemaAccessLevel(schema: CloudStorageSchema) {
-  return !!schema?.options.find((o) => o.name === "access_level");
+export function hasSchemaAccessMode(schema: CloudStorageSchema) {
+  return !!schema?.options.find((o) => o.name === "access");
 }

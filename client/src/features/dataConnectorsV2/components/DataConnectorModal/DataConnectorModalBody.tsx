@@ -248,8 +248,7 @@ export function DataConnectorMount() {
     schemata,
     true,
     flatDataConnector.schema,
-    flatDataConnector.provider,
-    flatDataConnector.access_level
+    flatDataConnector.provider
   );
   const secretFields =
     options == null

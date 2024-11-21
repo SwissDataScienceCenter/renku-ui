@@ -24,7 +24,6 @@ import { CloudStorageGetRead } from "../../projectsV2/api/storagesV2.api";
 import { SessionCloudStorageV2 } from "../../sessionsV2/sessionsV2.types.ts";
 import {
   CLOUD_OPTIONS_OVERRIDE,
-  CLOUD_STORAGE_ACCESS_LEVEL_SHORTLIST,
   CLOUD_STORAGE_MOUNT_PATH_HELP,
   CLOUD_STORAGE_OVERRIDE,
   CLOUD_STORAGE_PROVIDERS_SHORTLIST,
@@ -94,7 +93,6 @@ export function convertFromAdvancedConfig(
   const values: string[] = [];
   storage.schema && values.push(`type = ${storage.schema}`);
   storage.provider && values.push(`provider = ${storage.provider}`);
-  storage.access_level && values.push(`access_level = ${storage.access_level}`);
   if (storage.options) {
     Object.entries(storage.options).forEach(([key, value]) => {
       if (value != undefined && value !== "") values.push(`${key} = ${value}`);
@@ -171,10 +169,7 @@ export function getSchemaStorage(
   );
 }
 
-/**
- * get provider or access_level schema
- */
-export function getSchemaProvidersOrAccessLevel(
+export function getSchemaProviders(
   schema: CloudStorageSchema[],
   shortList = false,
   targetSchema?: string,
@@ -183,21 +178,21 @@ export function getSchemaProvidersOrAccessLevel(
   if (!targetSchema) return;
   const storage = schema.find((s) => s.prefix === targetSchema);
   if (!storage) return;
-  const access_levels = storage.options.find((o) => o.name === "access_level");
+  const access_modes = storage.options.find((o) => o.name === "access");
   const providers = storage.options.find((o) => o.name === "provider");
 
   const hasProviders = !!providers?.examples?.length;
-  const hasAccessLevels = !!access_levels?.examples?.length;
-  if (!hasProviders && !hasAccessLevels) return;
+  const hasAccessMode = !!access_modes?.examples?.length;
+  if (!hasProviders && !hasAccessMode) return;
 
-  // get access_level
-  if (hasAccessLevels)
-    return access_levels?.examples.map(
+  if (hasAccessMode)
+    return access_modes?.examples.map(
       (a) =>
         ({
-          name: a.friendlyName ?? a.value,
+          name: a.value,
           description: a.help,
           position: undefined,
+          friendlyName: a.value.charAt(0).toUpperCase() + a.value.slice(1),
         } as CloudStorageProvider)
     );
 
@@ -244,22 +239,12 @@ export function hasProviderShortlist(targetProvider?: string): boolean {
   if (CLOUD_STORAGE_PROVIDERS_SHORTLIST[targetProvider]) return true;
   return false;
 }
-export function hasAccessLevelShortlist(targetAccessLevel?: string): boolean {
-  if (!targetAccessLevel) return false;
-  if (CLOUD_STORAGE_ACCESS_LEVEL_SHORTLIST[targetAccessLevel]) return true;
-  return false;
-}
 
-/**
- * Fetches and processes schema options. Options can be filtered and customized
- * based on specific criteria like provider, access level, or visibility settings.
- */
 export function getSchemaOptions(
   schema: CloudStorageSchema[],
   shortList = false,
   targetSchema?: string,
   targetProvider?: string,
-  targetAccessLevel?: string,
   flags = { override: true, convertType: true, filterHidden: true }
 ): CloudStorageSchemaOptions[] | undefined {
   if (!targetSchema) return;
@@ -271,13 +256,7 @@ export function getSchemaOptions(
     : storage.options;
 
   const optionsFiltered = optionsOverridden.filter((option) =>
-    filterOption(
-      option,
-      shortList,
-      targetProvider,
-      targetAccessLevel,
-      flags.filterHidden
-    )
+    filterOption(option, shortList, targetProvider, flags.filterHidden)
   );
 
   if (!optionsFiltered.length) return;
@@ -285,13 +264,13 @@ export function getSchemaOptions(
   const sortedOptions = sortOptionsByPosition(optionsFiltered);
 
   return flags.convertType
-    ? convertOptions(sortedOptions, targetProvider, targetAccessLevel)
+    ? convertOptions(sortedOptions, targetProvider)
     : sortedOptions;
 }
 
 export function getSourcePathHint(
   targetSchema = ""
-): Record<"help" | "placeholder", string> {
+): Record<"help" | "placeholder" | "label", string> {
   const initialText = "Source path to mount. ";
   const helpData =
     CLOUD_STORAGE_MOUNT_PATH_HELP[targetSchema] ??
@@ -300,6 +279,7 @@ export function getSourcePathHint(
   return {
     help: finalText,
     placeholder: helpData.placeholder,
+    label: helpData.label ?? "Source path",
   };
 }
 
@@ -322,9 +302,6 @@ export function getCurrentStorageDetails(
     readOnly: existingCloudStorage.storage.readonly,
     provider: existingCloudStorage.storage.configuration.provider
       ? (existingCloudStorage.storage.configuration.provider as string)
-      : undefined,
-    access_level: existingCloudStorage.storage.configuration.access_level
-      ? (existingCloudStorage.storage.configuration.access_level as string)
       : undefined,
     options,
   };
@@ -397,20 +374,15 @@ function filterOption(
   option: CloudStorageSchemaOptions,
   shortList: boolean,
   targetProvider?: string,
-  targetAccessLevel?: string,
   filterHidden = true
 ): boolean {
   if (filterHidden && shouldHideOption(option)) return false;
-  if (!option.name || ["provider", "access_level"].includes(option.name))
+  if (!option.name || ["provider", "access"].includes(option.name))
     return false;
   if (option.advanced && shortList) return false;
 
   if (option.provider) {
     if (!filterByProvider(option.provider, targetProvider)) return false;
-  }
-
-  if (option.access_level) {
-    return option.access_level === targetAccessLevel;
   }
 
   return true;
@@ -436,8 +408,7 @@ function filterByProvider(provider: string, targetProvider?: string): boolean {
 
 function convertOptions(
   options: CloudStorageSchemaOptions[],
-  targetProvider?: string,
-  targetAccessLevel?: string
+  targetProvider?: string
 ): CloudStorageSchemaOptions[] {
   return options.map((option) => {
     const convertedOption = { ...option };
@@ -451,10 +422,9 @@ function convertOptions(
       convertedOption.convertedType
     );
 
-    // Filter examples by provider and access_level
     if (option.examples) {
       convertedOption.filteredExamples = option.examples.filter((example) =>
-        filterExample(example, targetProvider, targetAccessLevel)
+        filterExample(example, targetProvider)
       );
     }
 
@@ -496,19 +466,10 @@ function convertDefaultValue(
 }
 
 function filterExample(
-  example: { provider?: string; access_level?: string },
-  targetProvider?: string,
-  targetAccessLevel?: string
+  example: { provider?: string },
+  targetProvider?: string
 ): boolean {
-  if (
-    (!targetProvider && !targetAccessLevel) ||
-    (!example.provider && !example.access_level)
-  )
-    return true;
-
-  if (example.access_level) {
-    return example.access_level === targetAccessLevel;
-  }
+  if (!targetProvider || !example.provider) return true;
 
   if (example.provider) {
     return filterByProvider(example.provider, targetProvider);

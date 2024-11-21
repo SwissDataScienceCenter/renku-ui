@@ -88,7 +88,6 @@ export type CloudStorageSchemaOptionExample = {
   value: string; // ? Potential value for the option
   help: string; // ? Help text for the _value_
   provider: string; // ? empty for "all providers"
-  access_level?: string; // ? empty for "all access_levels"
   friendlyName?: string;
 };
 
@@ -96,7 +95,6 @@ export interface CloudStorageSchemaOptions {
   name: string;
   help: string;
   provider: string;
-  access_level?: string;
   default: number | string | boolean;
   default_str: string;
   value: null | number | string | boolean;
@@ -134,6 +132,7 @@ export interface CloudStorageProvider {
   name: string;
   description: string;
   position?: number;
+  friendlyName?: string;
 }
 
 export type AddCloudStorageState = {
@@ -160,7 +159,6 @@ export type CloudStorageDetails = {
   sourcePath?: string;
   mountPoint?: string;
   readOnly?: boolean;
-  access_level?: string;
 };
 
 export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";
