@@ -60,6 +60,7 @@ interface ProjectDataConnectorArgs extends SimpleFixture {
 
 interface PostDataConnectorProjectLinkArgs extends DataConnectorIdArgs {
   projectId?: string;
+  shouldNotBeCalled?: boolean;
 }
 
 export function DataConnector<T extends FixturesConstructor>(Parent: T) {
@@ -410,13 +411,17 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         name = "postDataConnectorProjectLink",
         dataConnectorId = "ULID-1",
         projectId = "THEPROJECTULID26CHARACTERS",
+        shouldNotBeCalled = false,
       } = args ?? {};
       cy.fixture(fixture).then((dataConnectorProjectLinks) => {
+        const dcId = shouldNotBeCalled ? "*" : dataConnectorId;
         // eslint-disable-next-line max-nested-callbacks
         cy.intercept(
           "POST",
-          `/ui-server/api/data/data_connectors/${dataConnectorId}/project_links`,
+          `/ui-server/api/data/data_connectors/${dcId}/project_links`,
           (req) => {
+            if (shouldNotBeCalled)
+              throw new Error("No call to post project link expected");
             const newLink = req.body;
             expect(newLink.project_id).to.not.be.undefined;
             expect(newLink.project_id).equal(projectId);

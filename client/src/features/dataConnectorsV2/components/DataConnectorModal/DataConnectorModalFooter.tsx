@@ -79,8 +79,11 @@ export default function DataConnectorModalFooter({
     );
   const {
     cloudStorageState,
+    credentialSaveStatus,
+    dataConnectorResultId,
     flatDataConnector,
     isActionOngoing,
+    projectLinkStatus,
     schemata,
     success,
     validationResult,
@@ -111,13 +114,23 @@ export default function DataConnectorModalFooter({
     const resetStatus = dataConnectorToFlattened(dataConnector);
     createResult.reset();
     updateResult.reset();
+    saveCredentialsResult.reset();
+    createProjectLinkResult.reset();
+
     dispatch(
       dataConnectorFormSlice.actions.reset({
         flatDataConnector: resetStatus,
         hasDataConnector: dataConnector != null,
       })
     );
-  }, [createResult, dataConnector, dispatch, updateResult]);
+  }, [
+    createResult,
+    dataConnector,
+    dispatch,
+    saveCredentialsResult,
+    createProjectLinkResult,
+    updateResult,
+  ]);
 
   const addOrEditStorage = useCallback(() => {
     const dataConnectorPost = dataConnectorPostFromFlattened(
@@ -164,9 +177,11 @@ export default function DataConnectorModalFooter({
       dispatch(
         dataConnectorFormSlice.actions.setSuccess({
           success: true,
+          dataConnectorResultId: createResult.data.id,
           dataConnectorResultName,
         })
       );
+      createResult.reset();
     }
   }, [createResult, dispatch]);
 
@@ -182,14 +197,16 @@ export default function DataConnectorModalFooter({
       dispatch(
         dataConnectorFormSlice.actions.setSuccess({
           success: true,
+          dataConnectorResultId: updateResult.data.id,
           dataConnectorResultName,
         })
       );
+      updateResult.reset();
     }
   }, [dispatch, updateResult]);
 
   useEffect(() => {
-    const dataConnectorId = createResult.data?.id;
+    const dataConnectorId = dataConnectorResultId;
     if (dataConnectorId == null) return;
     if (!schemata) return;
     const sensitiveFieldNames = findSensitive(
@@ -207,11 +224,12 @@ export default function DataConnectorModalFooter({
         name: secret.name,
         value: "" + secret.value,
       }));
-    const shouldSaveCredentials = shouldSaveDataConnectorCredentials(
-      dataConnectorSecretPatchList,
-      cloudStorageState.saveCredentials,
-      validationResult?.isSuccess ?? false
-    );
+    const shouldSaveCredentials =
+      shouldSaveDataConnectorCredentials(
+        dataConnectorSecretPatchList,
+        cloudStorageState.saveCredentials,
+        validationResult?.isSuccess ?? false
+      ) && credentialSaveStatus === "none";
     if (!shouldSaveCredentials) return;
 
     saveCredentials({
@@ -219,7 +237,8 @@ export default function DataConnectorModalFooter({
       dataConnectorSecretPatchList,
     });
   }, [
-    createResult.data?.id,
+    credentialSaveStatus,
+    dataConnectorResultId,
     saveCredentials,
     cloudStorageState.saveCredentials,
     schemata,
@@ -229,10 +248,16 @@ export default function DataConnectorModalFooter({
   ]);
 
   useEffect(() => {
+    if (
+      credentialSaveStatus === "success" ||
+      credentialSaveStatus === "failure"
+    ) {
+      return;
+    }
     const status =
       validationResult?.isSuccess != true
         ? "none"
-        : createResult.data?.id == null || saveCredentialsResult.isUninitialized
+        : dataConnectorResultId == null || saveCredentialsResult.isUninitialized
         ? "none"
         : saveCredentialsResult.isLoading
         ? "trying"
@@ -246,12 +271,25 @@ export default function DataConnectorModalFooter({
         credentialSaveStatus: status,
       })
     );
-  }, [createResult, dispatch, saveCredentialsResult, validationResult]);
+    // If the saving attempt has completed, reset the result
+    if (saveCredentialsResult.isSuccess || saveCredentialsResult.isError) {
+      saveCredentialsResult.reset();
+    }
+  }, [
+    credentialSaveStatus,
+    dataConnectorResultId,
+    dispatch,
+    saveCredentialsResult,
+    validationResult,
+  ]);
 
   useEffect(() => {
-    const dataConnectorId = createResult.data?.id;
+    const dataConnectorId = dataConnectorResultId;
     if (dataConnectorId == null) return;
-    const shouldLinkToProject = project?.id != null && dataConnector == null;
+    const shouldLinkToProject =
+      project?.id != null &&
+      dataConnector == null &&
+      projectLinkStatus === "none";
     if (!shouldLinkToProject) return;
 
     createProjectLink({
@@ -260,16 +298,25 @@ export default function DataConnectorModalFooter({
         project_id: project.id,
       },
     });
-  }, [createResult.data?.id, createProjectLink, dataConnector, project?.id]);
+  }, [
+    createProjectLink,
+    dataConnectorResultId,
+    dataConnector,
+    project?.id,
+    projectLinkStatus,
+  ]);
 
   useEffect(() => {
     if (createProjectLinkResult.isSuccess) {
       dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
     }
+    if (projectLinkStatus === "success" || projectLinkStatus === "failure") {
+      return;
+    }
     const status =
       project?.id == null
         ? "none"
-        : createResult.data?.id == null ||
+        : dataConnectorResultId == null ||
           createProjectLinkResult.isUninitialized
         ? "none"
         : createProjectLinkResult.isLoading
@@ -284,7 +331,17 @@ export default function DataConnectorModalFooter({
         projectLinkStatus: status,
       })
     );
-  }, [createResult, createProjectLinkResult, dispatch, project?.id]);
+    // If the linking attempt has completed, reset the result
+    if (createProjectLinkResult.isSuccess || createProjectLinkResult.isError) {
+      createProjectLinkResult.reset();
+    }
+  }, [
+    createProjectLinkResult,
+    dataConnectorResultId,
+    dispatch,
+    projectLinkStatus,
+    project?.id,
+  ]);
 
   // Visual elements
   const disableContinueButton =

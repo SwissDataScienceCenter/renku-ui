@@ -45,6 +45,7 @@ interface BackendResult {
 const initialState = {
   cloudStorageState: EMPTY_CLOUD_STORAGE_STATE,
   credentialSaveStatus: "none" as AuxiliaryCommandStatus,
+  dataConnectorResultId: undefined as string | undefined,
   dataConnectorResultName: undefined as string | undefined,
   flatDataConnector: EMPTY_DATA_CONNECTOR_FLAT,
   isActionOngoing: false,
@@ -197,11 +198,13 @@ const dataConnectorFormSlice = createSlice({
       state,
       action: PayloadAction<{
         success: boolean;
+        dataConnectorResultId: string | undefined;
         dataConnectorResultName: string | undefined;
       }>
     ) => {
       state.success = action.payload.success;
       state.dataConnectorResultName = action.payload.dataConnectorResultName;
+      state.dataConnectorResultId = action.payload.dataConnectorResultId;
     },
     setValidationResult: (
       state,
