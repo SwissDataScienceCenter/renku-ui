@@ -18,11 +18,19 @@
 
 import cx from "classnames";
 import { useEffect, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom-v5-compat";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom-v5-compat";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
-import { RELATIVE_ROUTES } from "../../routing/routes.constants";
+import {
+  ABSOLUTE_ROUTES,
+  RELATIVE_ROUTES,
+} from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
@@ -70,6 +78,7 @@ export default function RootV2() {
   return (
     <div className="w-100">
       <NavbarV2 />
+      <LazyProjectV2New />
 
       <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
@@ -179,9 +188,7 @@ function ProjectsV2Routes() {
       <Route
         path={RELATIVE_ROUTES.v2.projects.new}
         element={
-          <ContainerWrap>
-            <LazyProjectV2New />
-          </ContainerWrap>
+          <Navigate to={`${ABSOLUTE_ROUTES.v2.root}?createProject=1`} replace />
         }
       />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>

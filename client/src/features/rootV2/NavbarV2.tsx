@@ -45,6 +45,7 @@ import AppContext from "../../utils/context/appContext";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
 import StatusBanner from "../platform/components/StatusBanner";
+import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 
 const RENKU_ALPHA_LOGO = "/static/public/img/logo-yellow.svg";
 
@@ -63,14 +64,15 @@ function NavbarItemPlus() {
         end
       >
         <DropdownItem className="p-0">
-          <Link
+          <CreateProjectV2Button
             className="dropdown-item"
             data-cy="navbar-project-new"
-            to="/v2/projects/new"
+            color="link"
           >
             Project
-          </Link>
+          </CreateProjectV2Button>
         </DropdownItem>
+
         <DropdownItem className="p-0">
           <Link
             className="dropdown-item"

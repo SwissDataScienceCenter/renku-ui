@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown, InfoCircle } from "react-bootstrap-icons";
+import { CheckLg, ChevronDown, InfoCircle, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
@@ -48,7 +48,11 @@ import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 import { NewProjectForm } from "./projectV2New.types";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { useDispatch } from "react-redux";
-import { toggleProjectCreationModal } from "./projectV2New.slice";
+import {
+  setProjectCreationModal,
+  toggleProjectCreationModal,
+} from "./projectV2New.slice";
+import { Loader } from "../../../components/Loader";
 
 export default function ProjectV2New() {
   const { showProjectCreationModal } = useAppSelector(
@@ -62,13 +66,6 @@ export default function ProjectV2New() {
   const user = useLegacySelector((state) => state.stateModel.user);
   return (
     <>
-      <Button
-        color="primary"
-        data-cy="create-new-project-button"
-        onClick={toggleModal}
-      >
-        Create a new project
-      </Button>
       <Modal
         backdrop="static"
         centered
@@ -86,7 +83,7 @@ export default function ProjectV2New() {
           toggle={toggleModal}
         >
           <h2>Create a new project</h2>
-          <p className="mb-0">
+          <p className={cx("fs-6", "mb-0")}>
             A Renku project groups together data, code, and compute resources
             for you and your collaborators.
           </p>
@@ -120,6 +117,7 @@ function ProjectV2CreationDetails({
 
   const [createProject, result] = usePostProjectsMutation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Form initialization
   const {
@@ -166,8 +164,9 @@ function ProjectV2CreationDetails({
         slug: currentSlug,
       });
       navigate(projectUrl);
+      dispatch(setProjectCreationModal(false));
     }
-  }, [currentNamespace, currentSlug, result, navigate]);
+  }, [currentNamespace, currentSlug, dispatch, result, navigate]);
 
   const ownerHelpText = (
     <FormText className="input-hint">
@@ -299,6 +298,7 @@ function ProjectV2CreationDetails({
 
           <ModalFooter data-cy="new-project-modal-footer">
             <Button color="outline-primary" onClick={toggleModal} type="button">
+              <XLg className={cx("bi", "me-1")} />
               Cancel
             </Button>
             <Button
@@ -306,6 +306,11 @@ function ProjectV2CreationDetails({
               data-cy="project-create-button"
               type="submit"
             >
+              {result.isLoading ? (
+                <Loader className="me-1" inline size={16} />
+              ) : (
+                <CheckLg className={cx("bi", "me-1")} />
+              )}
               Create
             </Button>
           </ModalFooter>
