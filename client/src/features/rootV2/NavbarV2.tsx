@@ -46,6 +46,7 @@ import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
 import StatusBanner from "../platform/components/StatusBanner";
 import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
+import CreateGroupButton from "../projectsV2/new/CreateGroupButton";
 
 const RENKU_ALPHA_LOGO = "/static/public/img/logo-yellow.svg";
 
@@ -74,13 +75,13 @@ function NavbarItemPlus() {
         </DropdownItem>
 
         <DropdownItem className="p-0">
-          <Link
+          <CreateGroupButton
             className="dropdown-item"
             data-cy="navbar-group-new"
-            to="/v2/groups/new"
+            color="link"
           >
             Group
-          </Link>
+          </CreateGroupButton>
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

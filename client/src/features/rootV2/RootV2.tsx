@@ -79,6 +79,7 @@ export default function RootV2() {
     <div className="w-100">
       <NavbarV2 />
       <LazyProjectV2New />
+      <LazyGroupV2New />
 
       <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
@@ -150,11 +151,10 @@ function GroupsV2Routes() {
       <Route
         path={RELATIVE_ROUTES.v2.groups.new}
         element={
-          <ContainerWrap>
-            <LazyGroupV2New />
-          </ContainerWrap>
+          <Navigate to={`${ABSOLUTE_ROUTES.v2.root}?createGroup=1`} replace />
         }
       />
+
       <Route path={RELATIVE_ROUTES.v2.groups.show.root}>
         <Route index element={<LazyGroupV2Show />} />
         <Route

@@ -18,10 +18,20 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown } from "react-bootstrap-icons";
+import { CheckLg, ChevronDown, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
-import { Button, Collapse, Form, FormGroup, FormText } from "reactstrap";
+import {
+  Button,
+  Collapse,
+  Form,
+  FormGroup,
+  FormText,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
@@ -33,26 +43,62 @@ import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
 import DescriptionFormField from "../fields/DescriptionFormField";
 import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { useDispatch } from "react-redux";
+import {
+  setGroupCreationModal,
+  toggleGroupCreationModal,
+} from "./projectV2New.slice";
+import { Loader } from "../../../components/Loader";
 
 export default function GroupNew() {
   const user = useLegacySelector((state) => state.stateModel.user);
+  const { showGroupCreationModal } = useAppSelector(
+    (state) => state.newProjectV2
+  );
+  const dispatch = useDispatch();
+  const toggleModal = useCallback(() => {
+    dispatch(toggleGroupCreationModal());
+  }, [dispatch]);
+
   return (
-    <div data-cy="create-new-group-page">
-      <h2>Create a new group</h2>
-      <p>
-        Groups let you group together related projects and control who can
-        access them.
-      </p>
-      {user.logged ? (
-        <GroupV2CreationDetails />
-      ) : (
-        <LoginAlert
-          logged={user.logged}
-          textIntro="Only authenticated users can create new groups."
-          textPost="to create a new group."
-        />
-      )}
-    </div>
+    <>
+      <Modal
+        backdrop="static"
+        centered
+        data-cy="new-group-modal"
+        fullscreen="lg"
+        isOpen={showGroupCreationModal}
+        scrollable
+        size="lg"
+        unmountOnClose={true}
+        toggle={toggleModal}
+      >
+        <ModalHeader
+          data-cy="new-group-modal-header"
+          tag="div"
+          toggle={toggleModal}
+        >
+          <h2>Create a new group</h2>
+          <p className={cx("fs-6", "mb-0")}>
+            Groups let you group together related projects and control who can
+            access them.
+          </p>
+        </ModalHeader>
+
+        <div data-cy="create-new-group-content">
+          {user.logged ? (
+            <GroupV2CreationDetails />
+          ) : (
+            <LoginAlert
+              logged={user.logged}
+              textIntro="Only authenticated users can create new groups."
+              textPost="to create a new group."
+            />
+          )}
+        </div>
+      </Modal>
+    </>
   );
 }
 
@@ -62,6 +108,11 @@ function GroupV2CreationDetails() {
 
   const [createGroup, result] = usePostGroupsMutation();
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const toggleModal = useCallback(() => {
+    dispatch(toggleGroupCreationModal());
+  }, [dispatch]);
 
   // Form initialization
   const {
@@ -104,8 +155,9 @@ function GroupV2CreationDetails() {
         slug: currentSlug,
       });
       navigate(groupUrl);
+      dispatch(setGroupCreationModal(false));
     }
-  }, [currentSlug, result, navigate]);
+  }, [currentSlug, result, dispatch, navigate]);
 
   const nameHelpText = (
     <FormText className="input-hint">
@@ -125,90 +177,106 @@ function GroupV2CreationDetails() {
   return (
     <>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        <FormGroup
-          className={cx("d-flex", "flex-column", "gap-3")}
-          disabled={result.isLoading}
-        >
-          <div>
-            <div className="mb-1">
-              <NameFormField
-                control={control}
-                entityName="group"
-                errors={errors}
-                helpText={nameHelpText}
-                name="name"
-              />
-            </div>
-            <div>
-              <button
-                className={cx("btn", "btn-link", "p-0", "text-decoration-none")}
-                data-cy="group-slug-toggle"
-                onClick={toggleCollapse}
-                type="button"
-              >
-                Customize group URL <ChevronDown className="bi" />
-              </button>
-              <Collapse isOpen={isCollapseOpen}>
-                <div
-                  className={cx(
-                    "align-items-center",
-                    "d-flex",
-                    "flex-wrap",
-                    "mb-0"
-                  )}
-                >
-                  <span>renkulab.io/v2/groups/</span>
-                  <SlugFormField
-                    compact={true}
+        <FormGroup className="d-inline" disabled={result.isLoading}>
+          <ModalBody data-cy="new-group-modal-body">
+            <div className={cx("d-flex", "flex-column", "gap-3")}>
+              <div>
+                <div className="mb-1">
+                  <NameFormField
                     control={control}
                     entityName="group"
                     errors={errors}
-                    isDirty={dirtyFields.slug && dirtyFields.name}
-                    name="slug"
-                    resetFunction={resetUrl}
+                    helpText={nameHelpText}
+                    name="name"
                   />
                 </div>
-              </Collapse>
+                <div>
+                  <button
+                    className={cx(
+                      "btn",
+                      "btn-link",
+                      "p-0",
+                      "text-decoration-none"
+                    )}
+                    data-cy="group-slug-toggle"
+                    onClick={toggleCollapse}
+                    type="button"
+                  >
+                    Customize group URL <ChevronDown className="bi" />
+                  </button>
+                  <Collapse isOpen={isCollapseOpen}>
+                    <div
+                      className={cx(
+                        "align-items-center",
+                        "d-flex",
+                        "flex-wrap",
+                        "mb-0"
+                      )}
+                    >
+                      <span>renkulab.io/v2/groups/</span>
+                      <SlugFormField
+                        compact={true}
+                        control={control}
+                        entityName="group"
+                        errors={errors}
+                        isDirty={dirtyFields.slug && dirtyFields.name}
+                        name="slug"
+                        resetFunction={resetUrl}
+                      />
+                    </div>
+                  </Collapse>
 
-              {dirtyFields.slug && !dirtyFields.name ? (
-                <div className={cx("d-block", "invalid-feedback")}>
-                  <p className="mb-0">
-                    Mind the URL will be updated once you provide a name.
-                  </p>
+                  {dirtyFields.slug && !dirtyFields.name ? (
+                    <div className={cx("d-block", "invalid-feedback")}>
+                      <p className="mb-0">
+                        Mind the URL will be updated once you provide a name.
+                      </p>
+                    </div>
+                  ) : (
+                    errors.slug &&
+                    dirtyFields.slug && (
+                      <div className={cx("d-block", "invalid-feedback")}>
+                        <p className="mb-1">
+                          You can customize the slug only with lowercase
+                          letters, numbers, and hyphens.
+                        </p>
+                      </div>
+                    )
+                  )}
                 </div>
-              ) : (
-                errors.slug &&
-                dirtyFields.slug && (
-                  <div className={cx("d-block", "invalid-feedback")}>
-                    <p className="mb-1">
-                      You can customize the slug only with lowercase letters,
-                      numbers, and hyphens.
-                    </p>
-                  </div>
-                )
+              </div>
+
+              <div>
+                <DescriptionFormField
+                  control={control}
+                  entityName="group"
+                  errors={errors}
+                  name="description"
+                />
+              </div>
+
+              {result.error && (
+                <div>
+                  <RtkOrNotebooksError error={result.error} />
+                </div>
               )}
             </div>
-          </div>
+          </ModalBody>
 
-          <div>
-            <DescriptionFormField
-              control={control}
-              entityName="group"
-              errors={errors}
-              name="description"
-            />
-          </div>
-
-          {result.error && (
-            <div>
-              <RtkOrNotebooksError error={result.error} />
-            </div>
-          )}
-          <div>
+          <ModalFooter data-cy="new-project-modal-footer">
+            <Button color="outline-primary" onClick={toggleModal} type="button">
+              <XLg className={cx("bi", "me-1")} />
+              Cancel
+            </Button>
             <Button color="primary" data-cy="group-create-button" type="submit">
+              {result.isLoading ? (
+                <Loader className="me-1" inline size={16} />
+              ) : (
+                <CheckLg className={cx("bi", "me-1")} />
+              )}
               Create
             </Button>
-          </div>
+          </ModalFooter>
         </FormGroup>
       </Form>
     </>

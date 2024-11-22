@@ -55,6 +55,7 @@ import {
 import { Loader } from "../../../components/Loader";
 
 export default function ProjectV2New() {
+  const user = useLegacySelector((state) => state.stateModel.user);
   const { showProjectCreationModal } = useAppSelector(
     (state) => state.newProjectV2
   );
@@ -63,7 +64,6 @@ export default function ProjectV2New() {
     dispatch(toggleProjectCreationModal());
   }, [dispatch]);
 
-  const user = useLegacySelector((state) => state.stateModel.user);
   return (
     <>
       <Modal
@@ -91,7 +91,7 @@ export default function ProjectV2New() {
 
         <div data-cy="create-new-project-content">
           {user.logged ? (
-            <ProjectV2CreationDetails toggleModal={toggleModal} />
+            <ProjectV2CreationDetails />
           ) : (
             <LoginAlert
               logged={user.logged}
@@ -105,19 +105,17 @@ export default function ProjectV2New() {
   );
 }
 
-interface ProjectV2CreationDetailsProps {
-  toggleModal: () => void;
-}
-
-function ProjectV2CreationDetails({
-  toggleModal,
-}: ProjectV2CreationDetailsProps) {
+function ProjectV2CreationDetails() {
   const [isCollapseOpen, setIsCollapseOpen] = useState(false);
   const toggleCollapse = () => setIsCollapseOpen(!isCollapseOpen);
 
   const [createProject, result] = usePostProjectsMutation();
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
+  const toggleModal = useCallback(() => {
+    dispatch(toggleProjectCreationModal());
+  }, [dispatch]);
 
   // Form initialization
   const {
