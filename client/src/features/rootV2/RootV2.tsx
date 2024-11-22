@@ -35,7 +35,6 @@ import LazyGroupV2Show from "../groupsV2/LazyGroupV2Show";
 import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
 import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
 import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
-import LazyProjectSessionSecrets from "../ProjectPageV2/ProjectPageContent/LazyProjectSessionSecrets";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
@@ -184,10 +183,6 @@ function ProjectsV2Routes() {
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
         <Route element={<LazyProjectPageV2Show />}>
           <Route index element={<LazyProjectPageOverview />} />
-          <Route
-            path={RELATIVE_ROUTES.v2.projects.show.sessionSecrets}
-            element={<LazyProjectSessionSecrets />}
-          />
           <Route
             path={RELATIVE_ROUTES.v2.projects.show.settings}
             element={<LazyProjectPageSettings />}

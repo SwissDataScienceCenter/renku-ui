@@ -35,7 +35,6 @@ export const ABSOLUTE_ROUTES = {
       new: "/v2/projects/new",
       show: {
         root: "/v2/projects/:namespace/:slug",
-        sessionSecrets: "/v2/projects/:namespace/:slug/session-secrets",
         settings: "/v2/projects/:namespace/:slug/settings",
         sessions: {
           root: "/v2/projects/:namespace/:slug/sessions",
@@ -79,7 +78,6 @@ export const RELATIVE_ROUTES = {
       new: "new",
       show: {
         root: ":namespace/:slug/*",
-        sessionSecrets: "session-secrets",
         settings: "settings",
         sessions: {
           root: "sessions/*",

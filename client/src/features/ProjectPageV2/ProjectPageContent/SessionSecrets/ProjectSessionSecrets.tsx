@@ -91,7 +91,7 @@ export default function ProjectSessionSecrets() {
   return (
     <>
       {!userLogged && (
-        <InfoAlert dismissible={false} timeout={0}>
+        <InfoAlert className="my-0" dismissible={false} timeout={0}>
           <p className="mb-0">
             As an anonymous user, you cannot mout user secrets inside sessions.
           </p>

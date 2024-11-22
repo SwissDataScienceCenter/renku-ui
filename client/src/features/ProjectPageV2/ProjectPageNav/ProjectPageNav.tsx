@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { Eye, ShieldLock, Sliders } from "react-bootstrap-icons";
+import { Eye, Sliders } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import { Nav, NavItem } from "reactstrap";
 
@@ -30,13 +30,6 @@ export default function ProjectPageNav({ project }: { project: Project }) {
     namespace,
     slug,
   });
-  const projectSessionSecretsUrl = generatePath(
-    ABSOLUTE_ROUTES.v2.projects.show.sessionSecrets,
-    {
-      namespace,
-      slug,
-    }
-  );
   const projectSettingsUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.settings,
     {
@@ -52,16 +45,6 @@ export default function ProjectPageNav({ project }: { project: Project }) {
           <RenkuNavLinkV2 end to={projectUrl} title="Overview">
             <Eye className={cx("bi", "me-1")} />
             Overview
-          </RenkuNavLinkV2>
-        </NavItem>
-        <NavItem>
-          <RenkuNavLinkV2
-            end
-            to={projectSessionSecretsUrl}
-            title="Session Secrets"
-          >
-            <ShieldLock className={cx("bi", "me-1")} />
-            Session Secrets
           </RenkuNavLinkV2>
         </NavItem>
         <NavItem>
