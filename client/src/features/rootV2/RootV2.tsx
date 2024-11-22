@@ -17,12 +17,13 @@
  */
 
 import cx from "classnames";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Navigate,
   Route,
   Routes,
   useNavigate,
+  useSearchParams,
 } from "react-router-dom-v5-compat";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
@@ -52,9 +53,14 @@ import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
 import NavbarV2 from "./NavbarV2";
 import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
+import {
+  setGroupCreationModal,
+  setProjectCreationModal,
+} from "../projectsV2/new/projectV2New.slice";
 
 export default function RootV2() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const { renku10Enabled } = useAppSelector(({ featureFlags }) => featureFlags);
   const dispatch = useAppDispatch();
@@ -74,6 +80,44 @@ export default function RootV2() {
   useEffect(() => {
     setIsFirstRender(false);
   }, []);
+
+  // Deal with V2 platform-wide search params
+  const removeSearchParams = useCallback(
+    (target: string) => {
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.delete(target);
+      navigate(
+        {
+          pathname: location.pathname,
+          search: newSearchParams.toString(),
+        },
+        { replace: true }
+      );
+    },
+    [searchParams, navigate]
+  );
+
+  // Group creation
+  const showGroupModal = useCallback(() => {
+    dispatch(setGroupCreationModal(true));
+  }, [dispatch]);
+  useEffect(() => {
+    if (searchParams.get("createGroup") != null) {
+      showGroupModal();
+      removeSearchParams("createGroup");
+    }
+  }, [removeSearchParams, searchParams, showGroupModal]);
+
+  // Project creation
+  const showProjectModal = useCallback(() => {
+    dispatch(setProjectCreationModal(true));
+  }, [dispatch]);
+  useEffect(() => {
+    if (searchParams.get("createProject") != null) {
+      showProjectModal();
+      removeSearchParams("createProject");
+    }
+  }, [removeSearchParams, searchParams, showProjectModal]);
 
   return (
     <div className="w-100">
