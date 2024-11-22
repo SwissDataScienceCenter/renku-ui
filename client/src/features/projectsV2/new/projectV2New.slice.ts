@@ -18,43 +18,40 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import type { Project } from "../projectV2.types";
-
-type NewProjectV2Step = 0 | 1 | 2 | 3;
-
 export interface NewProjectV2State {
-  project: Project;
-  currentStep: NewProjectV2Step;
+  showProjectCreationModal: boolean;
+  showGroupCreationModal: boolean;
 }
 
 const initialState: NewProjectV2State = {
-  project: {
-    access: {
-      members: [],
-      visibility: "private",
-    },
-    content: {
-      repositories: [],
-    },
-    metadata: {
-      name: "",
-      namespace: "",
-      slug: "",
-      description: "",
-    },
-  },
-  currentStep: 0,
+  showProjectCreationModal: false,
+  showGroupCreationModal: false,
 };
 
 export const projectV2NewSlice = createSlice({
   name: "newProjectV2",
   initialState,
   reducers: {
-    setCurrentStep: (state, action: PayloadAction<NewProjectV2Step>) => {
-      state.currentStep = action.payload;
-    },
     reset: () => initialState,
+    setGroupCreationModal: (state, action: PayloadAction<boolean>) => {
+      state.showGroupCreationModal = action.payload;
+    },
+    setProjectCreationModal: (state, action: PayloadAction<boolean>) => {
+      state.showProjectCreationModal = action.payload;
+    },
+    toggleGroupCreationModal: (state) => {
+      state.showGroupCreationModal = !state.showGroupCreationModal;
+    },
+    toggleProjectCreationModal: (state) => {
+      state.showProjectCreationModal = !state.showProjectCreationModal;
+    },
   },
 });
 
-export const { setCurrentStep, reset } = projectV2NewSlice.actions;
+export const {
+  reset,
+  setGroupCreationModal,
+  setProjectCreationModal,
+  toggleGroupCreationModal,
+  toggleProjectCreationModal,
+} = projectV2NewSlice.actions;

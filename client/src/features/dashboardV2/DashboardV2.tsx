@@ -27,6 +27,8 @@ import {
   useGetGroupsQuery,
   useGetProjectsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
+import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
+import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import DashboardV2Sessions from "./DashboardV2Sessions";
@@ -96,18 +98,14 @@ function ProjectsDashboard() {
           <Folder className={cx("bi", "me-1")} />
           <span>Projects</span>
         </h4>
-        <Link
-          className={cx(
-            "btn",
-            "btn-outline-primary",
-            "btn-sm",
-            "ms-auto",
-            "my-auto"
-          )}
-          to="/v2/projects/new"
+
+        <CreateProjectV2Button
+          className={cx("btn-sm", "ms-auto", "my-auto")}
+          data-cy="dashboard-project-new"
+          color="outline-primary"
         >
           <PlusLg className="bi" id="createPlus" />
-        </Link>
+        </CreateProjectV2Button>
       </CardHeader>
 
       <CardBody>
@@ -179,18 +177,14 @@ function GroupsDashboard() {
           <People className={cx("bi", "me-1")} />
           <span>Groups</span>
         </h4>
-        <Link
-          className={cx(
-            "btn",
-            "btn-outline-primary",
-            "btn-sm",
-            "ms-auto",
-            "my-auto"
-          )}
-          to="/v2/groups/new"
+
+        <CreateGroupButton
+          className={cx("btn-sm", "ms-auto", "my-auto")}
+          data-cy="dashboard-group-new"
+          color="outline-primary"
         >
           <PlusLg className="bi" id="createPlus" />
-        </Link>
+        </CreateGroupButton>
       </CardHeader>
 
       <CardBody>
