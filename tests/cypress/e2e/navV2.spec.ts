@@ -33,13 +33,15 @@ describe("View v2 landing page", () => {
   it("create new group", () => {
     cy.get("#plus-dropdown").click();
     cy.getDataCy("navbar-group-new").click();
-    cy.contains("New Group").should("be.visible");
+    cy.getDataCy("new-group-modal").should("be.visible");
+    cy.contains("Create a new group").should("be.visible");
   });
 
   it("create new project", () => {
     fixtures.listNamespaceV2();
     cy.get("#plus-dropdown").click();
     cy.getDataCy("navbar-project-new").click();
+    cy.getDataCy("new-project-modal").should("be.visible");
     cy.contains("Create a new project").should("be.visible");
   });
 });
