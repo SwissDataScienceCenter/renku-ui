@@ -296,7 +296,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}`,
+        `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}*`,
         response
       ).as(name);
       return this;
@@ -319,7 +319,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         };
         cy.intercept(
           "GET",
-          `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}`,
+          `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}*`,
           response
         ).as(name);
       });
@@ -336,7 +336,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       cy.fixture(fixture).then((project) => {
         cy.intercept(
           "GET",
-          `/ui-server/api/data/projects/${projectId}`,
+          `/ui-server/api/data/projects/${projectId}*`,
           (req) => {
             const response = { ...project, ...overrides, id: projectId };
             req.reply({ body: response, delay: 1000 });
