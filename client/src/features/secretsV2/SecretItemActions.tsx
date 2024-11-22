@@ -31,7 +31,10 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { ButtonWithMenuV2 } from "../../components/buttons/Button";
+import {
+  ButtonWithMenu,
+  ButtonWithMenuV2,
+} from "../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
@@ -42,12 +45,17 @@ import {
 } from "../usersV2/api/users.api";
 import SecretValueField from "./fields/SecretValueField";
 import NameField from "./fields/NameField";
+import FilenameField from "./fields/FilenameField";
 
 interface SecretItemActionsProps {
+  isV2?: boolean;
   secret: SecretWithId;
 }
 
-export default function SecretItemActions({ secret }: SecretItemActionsProps) {
+export default function SecretItemActions({
+  isV2,
+  secret,
+}: SecretItemActionsProps) {
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
@@ -71,13 +79,20 @@ export default function SecretItemActions({ secret }: SecretItemActionsProps) {
     return null;
   }
 
+  const ButtonWithMenuTag = isV2 ? ButtonWithMenuV2 : ButtonWithMenu;
+  const buttonColor = isV2 ? "outline-primary" : "rk-green";
+
   return (
     <>
       <Col xs={12} sm="auto" className="ms-auto">
-        <ButtonWithMenuV2
-          color="outline-primary"
+        <ButtonWithMenuTag
+          color={buttonColor as any} // eslint-disable-line @typescript-eslint/no-explicit-any
           default={
-            <Button color="outline-primary" onClick={toggleReplace} size="sm">
+            <Button
+              color={isV2 ? "outline-primary" : "outline-rk-green"}
+              onClick={toggleReplace}
+              size="sm"
+            >
               <Download className={cx("bi", "me-1")} />
               Replace
             </Button>
@@ -92,15 +107,17 @@ export default function SecretItemActions({ secret }: SecretItemActionsProps) {
             <Trash className={cx("bi", "me-1")} />
             Delete
           </DropdownItem>
-        </ButtonWithMenuV2>
+        </ButtonWithMenuTag>
       </Col>
       <ReplaceSecretValueModal
         isOpen={isReplaceOpen}
+        isV2={isV2}
         secret={secret}
         toggle={toggleReplace}
       />
       <EditSecretModal
         isOpen={isEditOpen}
+        isV2={isV2}
         secret={secret}
         toggle={toggleEdit}
       />
@@ -115,12 +132,14 @@ export default function SecretItemActions({ secret }: SecretItemActionsProps) {
 
 interface ReplaceSecretValueModalProps {
   isOpen: boolean;
+  isV2?: boolean;
   secret: SecretWithId;
   toggle: () => void;
 }
 
 function ReplaceSecretValueModal({
   isOpen,
+  isV2,
   secret,
   toggle,
 }: ReplaceSecretValueModalProps) {
@@ -176,7 +195,11 @@ function ReplaceSecretValueModal({
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <Form noValidate onSubmit={onSubmit}>
+      <Form
+        className={cx(!isV2 && "form-rk-green")}
+        noValidate
+        onSubmit={onSubmit}
+      >
         <ModalHeader toggle={toggle}>Replace secret value</ModalHeader>
         <ModalBody>
           <p>
@@ -192,12 +215,15 @@ function ReplaceSecretValueModal({
           <SecretValueField control={control} errors={errors} name="value" />
         </ModalBody>
         <ModalFooter>
-          <Button color="outline-primary" onClick={toggle}>
+          <Button
+            color={isV2 ? "outline-primary" : "outline-rk-green"}
+            onClick={toggle}
+          >
             <XLg className={cx("bi", "me-1")} />
             Close
           </Button>
           <Button
-            color="primary"
+            color={isV2 ? "primary" : "rk-green"}
             disabled={!isDirty || result.isLoading}
             type="submit"
           >
@@ -220,11 +246,17 @@ interface ReplaceSecretValueForm {
 
 interface EditSecretModalProps {
   isOpen: boolean;
+  isV2?: boolean;
   secret: SecretWithId;
   toggle: () => void;
 }
 
-function EditSecretModal({ isOpen, secret, toggle }: EditSecretModalProps) {
+function EditSecretModal({
+  isOpen,
+  isV2,
+  secret,
+  toggle,
+}: EditSecretModalProps) {
   const { id: secretId } = secret;
 
   const [patchUserSecret, result] = usePatchUserSecretMutation();
@@ -237,6 +269,7 @@ function EditSecretModal({ isOpen, secret, toggle }: EditSecretModalProps) {
   } = useForm<EditSecretForm>({
     defaultValues: {
       name: secret.name,
+      filename: secret.default_filename,
     },
   });
 
@@ -246,10 +279,11 @@ function EditSecretModal({ isOpen, secret, toggle }: EditSecretModalProps) {
         secretId,
         secretPatch: {
           name: data.name,
+          ...(!isV2 ? { default_filename: data.filename } : {}),
         },
       });
     },
-    [patchUserSecret, secretId]
+    [isV2, patchUserSecret, secretId]
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
@@ -259,6 +293,7 @@ function EditSecretModal({ isOpen, secret, toggle }: EditSecretModalProps) {
   useEffect(() => {
     reset({
       name: secret.name,
+      filename: secret.default_filename,
     });
   }, [reset, secret]);
 
@@ -277,7 +312,11 @@ function EditSecretModal({ isOpen, secret, toggle }: EditSecretModalProps) {
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <Form noValidate onSubmit={onSubmit}>
+      <Form
+        className={cx(!isV2 && "form-rk-green")}
+        noValidate
+        onSubmit={onSubmit}
+      >
         <ModalHeader toggle={toggle}>Edit secret</ModalHeader>
         <ModalBody>
           {result.error && (
@@ -285,14 +324,25 @@ function EditSecretModal({ isOpen, secret, toggle }: EditSecretModalProps) {
           )}
 
           <NameField control={control} errors={errors} name="name" />
+          {!isV2 && (
+            <FilenameField
+              control={control}
+              errors={errors}
+              name="filename"
+              rules={{ required: "Please provide a filename" }}
+            />
+          )}
         </ModalBody>
         <ModalFooter>
-          <Button color="outline-primary" onClick={toggle}>
+          <Button
+            color={isV2 ? "outline-primary" : "outline-rk-green"}
+            onClick={toggle}
+          >
             <XLg className={cx("bi", "me-1")} />
             Close
           </Button>
           <Button
-            color="primary"
+            color={isV2 ? "primary" : "rk-green"}
             disabled={!isDirty || result.isLoading}
             type="submit"
           >
@@ -311,6 +361,7 @@ function EditSecretModal({ isOpen, secret, toggle }: EditSecretModalProps) {
 
 interface EditSecretForm {
   name: string;
+  filename: string;
 }
 
 interface DeleteSecretModalProps {

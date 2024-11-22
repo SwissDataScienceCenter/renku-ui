@@ -104,7 +104,19 @@ export default function GeneralSecretNew() {
         onSubmit={handleSubmit(onSubmit)}
       >
         <NameField control={control} errors={errors} name="name" />
-        <FilenameField control={control} errors={errors} name="filename" />
+        <FilenameField
+          control={control}
+          errors={errors}
+          name="filename"
+          rules={{
+            validate: {
+              uniqueFilename: (filename: string) =>
+                secrets.data?.map((s) => s.default_filename).includes(filename)
+                  ? "This filename is already used by another secret"
+                  : undefined,
+            },
+          }}
+        />
         <SecretValueField control={control} errors={errors} name="value" />
       </Form>
     </>

@@ -71,7 +71,7 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
           </div>
           {usedInContent}
         </Col>
-        <SecretItemActions secret={secret} />
+        <SecretItemActions isV2 secret={secret} />
       </Row>
     </ListGroupItem>
   );

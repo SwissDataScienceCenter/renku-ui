@@ -59,7 +59,7 @@ export default function DataConnectorSecretItem({
           </div>
           <DataConnectorSecretUsedFor secret={secret} />
         </Col>
-        <SecretItemActions secret={secret} />
+        <SecretItemActions isV2 secret={secret} />
       </Row>
     </ListGroupItem>
   );
