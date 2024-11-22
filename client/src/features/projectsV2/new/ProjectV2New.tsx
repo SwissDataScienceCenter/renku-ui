@@ -93,11 +93,13 @@ export default function ProjectV2New() {
           {user.logged ? (
             <ProjectV2CreationDetails />
           ) : (
-            <LoginAlert
-              logged={user.logged}
-              textIntro="Only authenticated users can create new projects."
-              textPost="to create a new project."
-            />
+            <ModalBody>
+              <LoginAlert
+                logged={user.logged}
+                textIntro="Only authenticated users can create new projects."
+                textPost="to create a new project."
+              />
+            </ModalBody>
           )}
         </div>
       </Modal>
