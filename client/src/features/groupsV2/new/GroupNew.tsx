@@ -90,11 +90,13 @@ export default function GroupNew() {
           {user.logged ? (
             <GroupV2CreationDetails />
           ) : (
-            <LoginAlert
-              logged={user.logged}
-              textIntro="Only authenticated users can create new groups."
-              textPost="to create a new group."
-            />
+            <ModalBody>
+              <LoginAlert
+                logged={user.logged}
+                textIntro="Only authenticated users can create new groups."
+                textPost="to create a new group."
+              />
+            </ModalBody>
           )}
         </div>
       </Modal>
