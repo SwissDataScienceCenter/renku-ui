@@ -18,59 +18,53 @@
 
 import cx from "classnames";
 import { Controller, type FieldValues } from "react-hook-form";
-import { FormText, Label } from "reactstrap";
+import { Input, Label } from "reactstrap";
+import { UserSecretFormFieldProps } from "./fields.types";
 
-import { SECRETS_VALUE_LENGTH_LIMIT } from "../../secrets/secrets.constants";
-import type { UserSecretFormFieldProps } from "./fields.types";
+type FilenameFieldProps<T extends FieldValues> = UserSecretFormFieldProps<T>;
 
-type SecretValueFieldProps<T extends FieldValues> = UserSecretFormFieldProps<T>;
-
-export default function SecretValueField<T extends FieldValues>({
+export default function FilenameField<T extends FieldValues>({
   control,
   errors,
   formId,
   name,
-}: SecretValueFieldProps<T>) {
+  rules,
+}: FilenameFieldProps<T>) {
   const fieldIdSuffix = `user-secret-${name}`;
   const fieldId = formId ? `${formId}-${fieldIdSuffix}` : fieldIdSuffix;
-  const fieldHelpId = `${fieldId}-help`;
 
   return (
     <div className="mb-3">
-      <Label for={fieldId}>Value</Label>
+      <Label for={fieldId}>Filename</Label>
       <Controller
         name={name}
         control={control}
-        render={({ field }) => (
-          <textarea
+        render={({ field: { ref, ...rest } }) => (
+          <Input
+            className={cx(errors[name] && "is-invalid")}
             id={fieldId}
-            aria-describedby={fieldHelpId}
-            autoComplete="off one-time-code"
-            className={cx("form-control", errors[name] && "is-invalid")}
-            placeholder="A secret value..."
-            rows={6}
-            spellCheck={false}
-            {...field}
+            innerRef={ref}
+            placeholder="api_token"
+            type="text"
+            {...rest}
           />
         )}
         rules={{
-          required: "Please provide a value",
-          maxLength: {
-            value: SECRETS_VALUE_LENGTH_LIMIT,
-            message: `Value cannot exceed ${SECRETS_VALUE_LENGTH_LIMIT} characters`,
+          pattern: {
+            value: /^[a-zA-Z0-9_\-.]+$/,
+            message:
+              'A valid filename must consist of alphanumeric characters, "-", "_" or "."',
           },
+          ...rules,
         }}
       />
       <div className="invalid-feedback">
         {errors[name]?.message ? (
           <>{errors[name]?.message}</>
         ) : (
-          <>Invalid value</>
+          <>Invalid filename</>
         )}
       </div>
-      <FormText id={fieldHelpId} tag="div">
-        Values are limited to 5000 characters.
-      </FormText>
     </div>
   );
 }

@@ -281,10 +281,14 @@ export function RenkuToolbarNotifications({
 }
 
 interface RenkuToolbarItemUserProps {
+  isV2?: boolean;
   params: AppParams;
 }
 
-export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
+export function RenkuToolbarItemUser({
+  isV2,
+  params,
+}: RenkuToolbarItemUserProps) {
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
   const { renku10Enabled } = useAppSelector(({ featureFlags }) => featureFlags);
@@ -304,6 +308,8 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
       </NavLink>
     );
   }
+
+  const userSecretsUrl = isV2 ? ABSOLUTE_ROUTES.v2.secrets : "/secrets";
 
   return (
     <UncontrolledDropdown className="nav-item dropdown">
@@ -333,7 +339,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
           />
         </DropdownItem>
 
-        <Link to="/secrets" className="dropdown-item">
+        <Link to={userSecretsUrl} className="dropdown-item">
           User Secrets
         </Link>
 
@@ -350,9 +356,6 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
               className="dropdown-item"
             >
               Renku 2.0 Settings
-            </Link>
-            <Link to={ABSOLUTE_ROUTES.v2.secrets} className="dropdown-item">
-              Renku 2.0 Secrets (temp)
             </Link>
           </>
         )}
