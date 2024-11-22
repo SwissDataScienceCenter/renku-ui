@@ -148,6 +148,7 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/session_secret_slots/${queryArg.slotId}`,
         method: "PATCH",
         body: queryArg.sessionSecretSlotPatch,
+        headers: { "If-Match": queryArg["If-Match"] },
       }),
     }),
     deleteSessionSecretSlotsBySlotId: build.mutation<
@@ -259,9 +260,11 @@ export type GetSessionSecretSlotsBySlotIdApiArg = {
   slotId: Ulid;
 };
 export type PatchSessionSecretSlotsBySlotIdApiResponse =
-  /** status 200 The patched session secret slot */ object;
+  /** status 200 The patched session secret slot */ SessionSecretSlot;
 export type PatchSessionSecretSlotsBySlotIdApiArg = {
   slotId: Ulid;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
   sessionSecretSlotPatch: SessionSecretSlotPatch;
 };
 export type DeleteSessionSecretSlotsBySlotIdApiResponse =
@@ -373,6 +376,7 @@ export type SessionSecretSlot = {
   name: SecretSlotName;
   description?: Description;
   filename: SecretSlotFileName;
+  etag: ETag;
 };
 export type SessionSecretSlotList = SessionSecretSlot[];
 export type SessionSecret = {

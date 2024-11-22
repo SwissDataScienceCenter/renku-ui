@@ -663,6 +663,11 @@
       },
       "patch": {
         "summary": "Update specific fields of an existing session secret slot",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -679,7 +684,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/SessionSecretSlot"
                 }
               }
             }
@@ -1126,9 +1131,12 @@
           },
           "filename": {
             "$ref": "#/components/schemas/SecretSlotFileName"
+          },
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
           }
         },
-        "required": ["id", "project_id", "name", "filename"]
+        "required": ["id", "project_id", "name", "filename", "etag"]
       },
       "SessionSecretSlotPost": {
         "type": "object",
@@ -1246,6 +1254,7 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 200,
+        "pattern": "^[a-zA-Z0-9_\\-.]+$",
         "example": "api_token"
       },
       "SecretValueNullable": {

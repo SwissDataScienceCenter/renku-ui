@@ -254,6 +254,7 @@ function EditSessionSecretModal({
       const description = description_ ? description_ : "";
       const name = data.name?.trim();
       patchSessionSecretSlot({
+        "If-Match": secretSlot.etag,
         slotId,
         sessionSecretSlotPatch: {
           // Only update edited fields
