@@ -42,11 +42,11 @@ import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
-import BackToV1Button from "../projectsV2/shared/BackToV1Button";
-import WipBadge from "../projectsV2/shared/WipBadge";
+import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
 import StatusBanner from "../platform/components/StatusBanner";
 import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
-import CreateGroupButton from "../projectsV2/new/CreateGroupButton";
+import BackToV1Button from "../projectsV2/shared/BackToV1Button";
+import WipBadge from "../projectsV2/shared/WipBadge";
 
 const RENKU_ALPHA_LOGO = "/static/public/img/logo-yellow.svg";
 

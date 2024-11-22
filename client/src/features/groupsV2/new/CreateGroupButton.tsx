@@ -21,7 +21,7 @@ import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Button } from "reactstrap";
 
-import { setGroupCreationModal } from "./projectV2New.slice";
+import { setGroupCreationModal } from "../../projectsV2/new/projectV2New.slice";
 
 export interface CreateGroupButtonProps {
   children?: JSX.Element | string;

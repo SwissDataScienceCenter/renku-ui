@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, ChevronDown, InfoCircle, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
@@ -35,8 +36,10 @@ import {
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
@@ -45,14 +48,11 @@ import ProjectNameFormField from "../fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectSlugFormField from "../fields/ProjectSlugFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
-import { NewProjectForm } from "./projectV2New.types";
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { useDispatch } from "react-redux";
 import {
   setProjectCreationModal,
   toggleProjectCreationModal,
 } from "./projectV2New.slice";
-import { Loader } from "../../../components/Loader";
+import { NewProjectForm } from "./projectV2New.types";
 
 export default function ProjectV2New() {
   const user = useLegacySelector((state) => state.stateModel.user);

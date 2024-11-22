@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, ChevronDown, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
@@ -34,22 +35,21 @@ import {
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
-import type { GroupPostRequest } from "../api/namespace.api";
-import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
-import DescriptionFormField from "../fields/DescriptionFormField";
-import NameFormField from "../fields/NameFormField";
-import SlugFormField from "../fields/SlugFormField";
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { useDispatch } from "react-redux";
+import type { GroupPostRequest } from "../../projectsV2/api/namespace.api";
+import { usePostGroupsMutation } from "../../projectsV2/api/projectV2.enhanced-api";
+import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
+import NameFormField from "../../projectsV2/fields/NameFormField";
+import SlugFormField from "../../projectsV2/fields/SlugFormField";
 import {
   setGroupCreationModal,
   toggleGroupCreationModal,
-} from "./projectV2New.slice";
-import { Loader } from "../../../components/Loader";
+} from "../../projectsV2/new/projectV2New.slice";
 
 export default function GroupNew() {
   const user = useLegacySelector((state) => state.stateModel.user);
