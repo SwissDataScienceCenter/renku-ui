@@ -67,7 +67,7 @@ function NavbarItemPlus() {
         <DropdownItem className="p-0">
           <CreateProjectV2Button
             className="dropdown-item"
-            data-cy="navbar-project-new"
+            dataCy="navbar-project-new"
             color="link"
           >
             Project
@@ -77,7 +77,7 @@ function NavbarItemPlus() {
         <DropdownItem className="p-0">
           <CreateGroupButton
             className="dropdown-item"
-            data-cy="navbar-group-new"
+            dataCy="navbar-group-new"
             color="link"
           >
             Group

@@ -27,11 +27,13 @@ export interface CreateProjectV2ButtonProps {
   children?: JSX.Element | string;
   className?: string;
   color?: string;
+  dataCy?: string;
 }
 export default function CreateProjectV2Button({
   children,
   className,
   color,
+  dataCy,
 }: CreateProjectV2ButtonProps) {
   const dispatch = useDispatch();
   const toggleModal = useCallback(() => {
@@ -42,6 +44,7 @@ export default function CreateProjectV2Button({
     <Button
       className={cx(className)}
       color={color || "primary"}
+      data-cy={dataCy || "button-project-new"}
       onClick={toggleModal}
     >
       {children || "Create Project"}

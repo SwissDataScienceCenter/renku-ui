@@ -27,11 +27,13 @@ export interface CreateGroupButtonProps {
   children?: JSX.Element | string;
   className?: string;
   color?: string;
+  dataCy?: string;
 }
 export default function CreateGroupButton({
   children,
   className,
   color,
+  dataCy,
 }: CreateGroupButtonProps) {
   const dispatch = useDispatch();
   const toggleModal = useCallback(() => {
@@ -42,6 +44,7 @@ export default function CreateGroupButton({
     <Button
       className={cx(className)}
       color={color || "primary"}
+      data-cy={dataCy || "button-group-new"}
       onClick={toggleModal}
     >
       {children || "Create Group"}
