@@ -53,7 +53,7 @@ import {
 
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 import DataConnectorModal from "./DataConnectorModal";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
+import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.api";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 
 interface DataConnectorRemoveModalProps {
@@ -246,7 +246,7 @@ function DataConnectorRemoveUnlinkModal({
     { isLoading: isLoadingUnlink, isSuccess, error },
   ] = useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation();
   const { data: project, isLoading: isLoadingProject } =
-    useGetProjectsByNamespaceAndSlugQuery({
+    useGetNamespacesByNamespaceProjectsAndSlugQuery({
       namespace: projectNamespace,
       slug: projectSlug,
     });

@@ -26,7 +26,7 @@ import { Col, Row } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import type { Project } from "../../projectsV2/api/projectV2.api";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
+import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.api";
 import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
@@ -37,10 +37,11 @@ export default function ProjectPageContainer() {
     namespace: string | undefined;
     slug: string | undefined;
   }>();
-  const { data, isLoading, error } = useGetProjectsByNamespaceAndSlugQuery({
-    namespace: namespace ?? "",
-    slug: slug ?? "",
-  });
+  const { data, isLoading, error } =
+    useGetNamespacesByNamespaceProjectsAndSlugQuery({
+      namespace: namespace ?? "",
+      slug: slug ?? "",
+    });
 
   if (isLoading) return <Loader className="align-self-center" />;
 
