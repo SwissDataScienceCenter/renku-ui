@@ -98,7 +98,7 @@ export default function ProjectSessionSecrets() {
         </InfoAlert>
       )}
 
-      <Card>
+      <Card data-cy="project-settings-session-secrets">
         <CardHeader>
           <div
             className={cx(
@@ -172,7 +172,7 @@ function SessionSecretSlotItem({ secretSlot }: SessionSecretSlotItemProps) {
   const { filename, name, description } = secretSlot.secretSlot;
 
   return (
-    <ListGroupItem action>
+    <ListGroupItem action data-cy="session-secret-slot-item">
       <Row>
         <Col>
           <div className={cx("align-items-center", "d-flex")}>

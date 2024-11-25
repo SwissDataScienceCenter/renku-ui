@@ -310,5 +310,33 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       ).as(name);
       return this;
     }
+
+    sessionSecretSlots(args?: SimpleFixture) {
+      const {
+        fixture = "projectV2SessionSecrets/secret_slots.json",
+        name = "sessionSecretSlots",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        "/ui-server/api/data/projects/*/secret_slots",
+        response
+      ).as(name);
+      return this;
+    }
+
+    sessionSecrets(args?: SimpleFixture) {
+      const {
+        fixture = "projectV2SessionSecrets/secrets.json",
+        name = "sessionSecrets",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        "/ui-server/api/data/projects/*/secrets",
+        response
+      ).as(name);
+      return this;
+    }
   };
 }
