@@ -28,6 +28,7 @@ interface ProjectOverrides {
   description?: string;
   keywords?: string[];
   template_id?: string;
+  is_template?: boolean;
 }
 
 /**
@@ -60,6 +61,12 @@ interface ProjectV2CopyFixture extends ProjectV2IdArgs {
 
 interface ProjectV2DeleteFixture extends NameOnlyFixture {
   projectId?: string;
+}
+
+interface ProjectV2ListCopiesFixture
+  extends Omit<ProjectV2IdArgs, "overrides"> {
+  writeable?: boolean;
+  count?: 0 | 1 | undefined | null;
 }
 
 interface ProjectV2NameArgs extends SimpleFixture {
@@ -222,6 +229,41 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
           `/ui-server/api/data/projects?namespace=${namespace}*`,
           response
         ).as(name);
+      });
+      return this;
+    }
+
+    listProjectV2Copies(args?: ProjectV2ListCopiesFixture) {
+      const {
+        fixture = "projectV2/list-projectV2.json",
+        name = "listProjectV2Copies",
+        projectId = "THEPROJECTULID26CHARACTERS",
+        writeable = false,
+        count = null,
+      } = args ?? {};
+
+      cy.fixture(fixture).then((projects) => {
+        const url = writeable
+          ? `/ui-server/api/data/projects/${projectId}/copies?writable=true`
+          : `/ui-server/api/data/projects/${projectId}/copies?`;
+        cy.intercept("GET", url, (req) => {
+          if (count === 0) {
+            req.reply({ body: [], statusCode: 200, delay: 1000 });
+            return;
+          }
+          if (count === 1) {
+            const body = [projects[0]];
+            req.reply({ body, statusCode: 200, delay: 1000 });
+            return;
+          }
+          if (count > 2) {
+            const body = generateProjects(count, 0);
+            req.reply({ body, statusCode: 200, delay: 1000 });
+            return;
+          }
+          const body = projects;
+          req.reply({ body, statusCode: 200, delay: 1000 });
+        }).as(name);
       });
       return this;
     }

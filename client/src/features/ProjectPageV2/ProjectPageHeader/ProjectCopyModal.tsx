@@ -17,8 +17,8 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
-import { ArrowRightShort, Diagram3Fill, XLg } from "react-bootstrap-icons";
+import { useCallback, useEffect } from "react";
+import { XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
@@ -32,6 +32,7 @@ import {
 
 import { SuccessAlert } from "../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import BootstrapCopyIcon from "../../../components/icons/BootstrapCopyIcon";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
@@ -46,12 +47,10 @@ import ProjectNamespaceFormField from "../../projectsV2/fields/ProjectNamespaceF
 import ProjectOwnerSlugFormField from "../../projectsV2/fields/ProjectOwnerSlugFormField";
 import ProjectVisibilityFormField from "../../projectsV2/fields/ProjectVisibilityFormField";
 
-import { useProject } from "../ProjectPageContainer/ProjectPageContainer";
-
 interface ProjectCopyModalProps {
   currentUser: ReturnType<typeof useGetUserQuery>["data"];
   isOpen: boolean;
-  project: ReturnType<typeof useProject>["project"];
+  project: Project;
   toggle: () => void;
 }
 
@@ -62,7 +61,7 @@ interface ProjectCopyFormValues {
   visibility: Visibility;
 }
 
-function ProjectCopyModal({
+export default function ProjectCopyModal({
   currentUser,
   isOpen,
   project,
@@ -70,6 +69,10 @@ function ProjectCopyModal({
 }: ProjectCopyModalProps) {
   const [copyProject, copyProjectResult] =
     usePostProjectsByProjectIdCopiesMutation();
+
+  useEffect(() => {
+    if (!isOpen) copyProjectResult.reset();
+  }, [copyProjectResult, isOpen]);
   const {
     control,
     formState: { errors },
@@ -114,10 +117,8 @@ function ProjectCopyModal({
     >
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggle}>
-          Make a copy of{" "}
-          <span className="fst-italic">
-            {project.namespace}/{project.slug}
-          </span>
+          <span className="fw-normal">Make a copy of </span>
+          {project.namespace}/{project.slug}
         </ModalHeader>
         <ModalBody>
           <div
@@ -172,50 +173,17 @@ function ProjectCopyModal({
           </Button>
           <Button
             disabled={
-              copyProjectResult.isLoading ||
-              copyProjectResult.error != null ||
-              copyProjectResult.data != null
+              copyProjectResult.isLoading || copyProjectResult.isSuccess
             }
             color="primary"
             type="submit"
           >
-            <Diagram3Fill className={cx("bi", "me-1")} />
+            <BootstrapCopyIcon className={cx("bi", "me-1")} />
             Copy
           </Button>
         </ModalFooter>
       </Form>
     </Modal>
-  );
-}
-
-export default function ProjectCopyButton() {
-  const { project } = useProject();
-  const { data: currentUser } = useGetUserQuery();
-
-  const [isModalOpen, setModalOpen] = useState(false);
-  const toggleOpen = useCallback(() => {
-    setModalOpen((open) => !open);
-  }, []);
-  return (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <Button
-        color="outline-secondary"
-        className={cx("d-flex", "align-items-center")}
-        data-cy="copy-project-button"
-        onClick={toggleOpen}
-      >
-        <ArrowRightShort className={cx("bi")} />
-        <span className={cx("ms-2")}>Copy this project</span>
-      </Button>
-      {isModalOpen && (
-        <ProjectCopyModal
-          currentUser={currentUser}
-          isOpen={isModalOpen}
-          project={project}
-          toggle={toggleOpen}
-        />
-      )}
-    </div>
   );
 }
 

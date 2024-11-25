@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
 import {
   Bookmarks,
   Clock,
+  Diagram3Fill,
   Eye,
   InfoCircle,
   JournalAlbum,
@@ -28,28 +30,75 @@ import {
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
+
+import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
-import {
-  EditButtonLink,
-  UnderlineArrowLink,
-} from "../../../../components/buttons/Button";
+import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
-import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
   ProjectMemberListResponse,
   ProjectMemberResponse,
 } from "../../../projectsV2/api/projectV2.api";
 import {
   useGetNamespacesByNamespaceSlugQuery,
+  useGetProjectsByProjectIdQuery,
   useGetProjectsByProjectIdMembersQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
+import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+
+import ProjectInformationButton from "./ProjectInformationButton";
 import styles from "./ProjectInformation.module.scss";
 
 const MAX_MEMBERS_DISPLAYED = 5;
+
+function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
+  const { data: templateProject } = useGetProjectsByProjectIdQuery(
+    project.template_id
+      ? {
+          projectId: project.template_id,
+        }
+      : skipToken
+  );
+  const { data: templateProjectNamespace } =
+    useGetNamespacesByNamespaceSlugQuery(
+      templateProject
+        ? {
+            namespaceSlug: templateProject?.namespace ?? "",
+          }
+        : skipToken
+    );
+
+  if (!project.template_id) return null;
+  if (!templateProject || !templateProjectNamespace) return <Loader />;
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace: templateProject.namespace,
+    slug: templateProject.slug,
+  });
+  return (
+    <ProjectInformationBox
+      icon={<Diagram3Fill className="bi" />}
+      title="Copied from:"
+    >
+      <div className="mb-0">
+        <div>
+          <Link
+            color="outline-secondary"
+            className={cx("d-flex", "align-items-center")}
+            data-cy="copy-project-template-link"
+            to={projectUrl}
+          >
+            {templateProjectNamespace.name ?? templateProjectNamespace.slug} /{" "}
+            {templateProject.name}
+          </Link>
+        </div>
+      </div>
+    </ProjectInformationBox>
+  );
+}
 
 interface ProjectInformationProps {
   output?: "plain" | "card";
@@ -140,6 +189,7 @@ export default function ProjectInformation({
           </p>
         ))}
       </ProjectInformationBox>
+      <ProjectCopyTemplateInformationBox project={project} />
     </div>
   );
   return output === "plain" ? (
@@ -160,23 +210,9 @@ export default function ProjectInformation({
           </h4>
 
           <div>
-            <PermissionsGuard
-              disabled={
-                <EditButtonLink
-                  disabled={true}
-                  to={settingsUrl}
-                  tooltip="Your role does not allow modifying project information"
-                />
-              }
-              enabled={
-                <EditButtonLink
-                  data-cy="project-settings-edit"
-                  to={settingsUrl}
-                  tooltip="Modify project information"
-                />
-              }
-              requestedPermission="write"
+            <ProjectInformationButton
               userPermissions={permissions}
+              project={project}
             />
           </div>
         </div>
