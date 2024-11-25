@@ -48,6 +48,7 @@ export default function AddSessionSecretButton() {
     <>
       <Button color="outline-primary" innerRef={ref} onClick={toggle} size="sm">
         <PlusLg className="bi" />
+        <span className="visually-hidden">Add session secret</span>
       </Button>
       <AddSessionSecretModal isOpen={isOpen} toggle={toggle} />
       <UncontrolledTooltip target={ref}>Add session secret</UncontrolledTooltip>

@@ -163,13 +163,23 @@ export default function SessionSecretActions({
 
   const actionsContent =
     actions.length == 1 ? (
-      <Col xs={12} sm="auto" className="ms-auto">
+      <Col
+        data-cy="session-secret-actions"
+        xs={12}
+        sm="auto"
+        className="ms-auto"
+      >
         <Button color="outline-primary" onClick={actions[0].onClick} size="sm">
           {actions[0].content}
         </Button>
       </Col>
     ) : (
-      <Col xs={12} sm="auto" className="ms-auto">
+      <Col
+        data-cy="session-secret-actions"
+        xs={12}
+        sm="auto"
+        className="ms-auto"
+      >
         <ButtonWithMenuV2
           color="outline-primary"
           default={

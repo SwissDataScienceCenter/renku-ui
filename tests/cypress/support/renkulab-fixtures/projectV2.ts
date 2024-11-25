@@ -325,6 +325,34 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    postSessionSecretSlot(args?: SimpleFixture) {
+      const {
+        fixture = "projectV2SessionSecrets/post_secret_slot.json",
+        name = "postSessionSecretSlot",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "POST",
+        "/ui-server/api/data/session_secret_slots",
+        response
+      ).as(name);
+      return this;
+    }
+
+    patchSessionSecretSlot(args?: SimpleFixture) {
+      const {
+        fixture = "projectV2SessionSecrets/post_secret_slot.json",
+        name = "patchSessionSecretSlot",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "PATCH",
+        "/ui-server/api/data/session_secret_slots/*",
+        response
+      ).as(name);
+      return this;
+    }
+
     sessionSecrets(args?: SimpleFixture) {
       const {
         fixture = "projectV2SessionSecrets/secrets.json",
