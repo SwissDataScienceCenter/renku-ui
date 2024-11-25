@@ -24,6 +24,8 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
 
+import ProjectCopyBanner from "./ProjectCopyBanner";
+
 interface ProjectPageHeaderProps {
   project: Project;
 }
@@ -62,6 +64,11 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
               )}
             </div>
           </Col>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          {project.is_template && <ProjectCopyBanner project={project} />}
         </Col>
       </Row>
     </header>
