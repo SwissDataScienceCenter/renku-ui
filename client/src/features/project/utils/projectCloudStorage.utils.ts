@@ -20,6 +20,7 @@ import {
   RCloneConfig,
   RCloneOption,
 } from "../../dataConnectorsV2/api/data-connectors.api";
+import { hasSchemaAccessMode } from "../../dataConnectorsV2/components/dataConnector.utils.ts";
 import { CloudStorageGetRead } from "../../projectsV2/api/storagesV2.api";
 import { SessionCloudStorageV2 } from "../../sessionsV2/sessionsV2.types.ts";
 import {
@@ -178,15 +179,14 @@ export function getSchemaProviders(
   if (!targetSchema) return;
   const storage = schema.find((s) => s.prefix === targetSchema);
   if (!storage) return;
-  const access_modes = storage.options.find((o) => o.name === "access");
   const providers = storage.options.find((o) => o.name === "provider");
 
   const hasProviders = !!providers?.examples?.length;
-  const hasAccessMode = !!access_modes?.examples?.length;
+  const hasAccessMode = hasSchemaAccessMode(storage);
   if (!hasProviders && !hasAccessMode) return;
 
   if (hasAccessMode)
-    return access_modes?.examples.map(
+    return providers?.examples.map(
       (a) =>
         ({
           name: a.value,
@@ -377,8 +377,7 @@ function filterOption(
   filterHidden = true
 ): boolean {
   if (filterHidden && shouldHideOption(option)) return false;
-  if (!option.name || ["provider", "access"].includes(option.name))
-    return false;
+  if (!option.name || option.name == "provider") return false;
   if (option.advanced && shortList) return false;
 
   if (option.provider) {

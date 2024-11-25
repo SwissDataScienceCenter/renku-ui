@@ -307,7 +307,7 @@ function DataConnectorCreateFooter({
   const disableContinueButton =
     cloudStorageState.step === 1 &&
     (!flatDataConnector.schema ||
-      (schemaHasAccessModes && !flatDataConnector.provider));
+      (!!schemaHasAccessModes && !flatDataConnector.provider));
 
   const isAddResultLoading = createResult.isLoading;
   const actionError = createResult.error;
@@ -552,7 +552,7 @@ function DataConnectorEditFooter({
           hasStoredCredentialsInConfig={hasStoredCredentialsInConfig}
           isResultLoading={isResultLoading}
           dataConnectorId={dataConnectorId}
-          selectedSchemaHasAccessMode={schemaHasAccessModes}
+          selectedSchemaHasAccessMode={!!schemaHasAccessModes}
         />
       )}
     </>

@@ -46,6 +46,7 @@ import {
 import { WarnAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
+import { hasSchemaAccessMode } from "../../../dataConnectorsV2/components/dataConnector.utils.ts";
 import {
   convertFromAdvancedConfig,
   getSchemaOptions,
@@ -735,10 +736,7 @@ export function AddStorageType({
     const selectedSchema = availableSchema.find(
       (s) => s.prefix === storage?.schema
     );
-    const access_modes = selectedSchema?.options?.find(
-      (o) => o.name === "access"
-    );
-    return !!access_modes;
+    return selectedSchema ? hasSchemaAccessMode(selectedSchema) : false;
   }, [storage.schema, availableSchema]);
 
   const providerOrAccessItems = availableProvidersOrAccess
