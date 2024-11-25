@@ -79,8 +79,13 @@ const dataConnectorFormSlice = createSlice({
       }>
     ) => {
       // flatDataConnector is the same as the one in the initial state in this case
-      if (!action.payload.hasDataConnector)
-        return { ...initialState, schemata: state.schemata };
+      if (!action.payload.hasDataConnector) {
+        const flatDataConnector = {
+          ...initialState.flatDataConnector,
+          namespace: state.flatDataConnector.namespace,
+        };
+        return { ...initialState, schemata: state.schemata, flatDataConnector };
+      }
       state.cloudStorageState = {
         ...initialState.cloudStorageState,
         step: state.cloudStorageState.step,

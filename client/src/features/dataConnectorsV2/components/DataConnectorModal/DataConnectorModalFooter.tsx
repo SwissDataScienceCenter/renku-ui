@@ -152,11 +152,6 @@ function DataConnectorCreateFooter({
   const schemaHasAccessModes = currentSchema
     ? hasSchemaAccessMode(currentSchema)
     : false;
-  const schemaRequiresProvider = useMemo(
-    () =>
-      !schemaHasAccessModes && hasProviderShortlist(flatDataConnector.schema),
-    [flatDataConnector.schema, schemaHasAccessModes]
-  );
 
   useEffect(() => {
     if (
@@ -312,7 +307,7 @@ function DataConnectorCreateFooter({
   const disableContinueButton =
     cloudStorageState.step === 1 &&
     (!flatDataConnector.schema ||
-      (schemaRequiresProvider && !flatDataConnector.provider));
+      (schemaHasAccessModes && !flatDataConnector.provider));
 
   const isAddResultLoading = createResult.isLoading;
   const actionError = createResult.error;
