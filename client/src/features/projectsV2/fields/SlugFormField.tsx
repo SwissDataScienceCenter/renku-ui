@@ -64,7 +64,11 @@ export default function SlugFormField<T extends FieldValues>({
       rules={{
         required: true,
         maxLength: 99,
-        pattern: /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
+        pattern: {
+          message:
+            "You can customize the slug only with lowercase letters, numbers, and hyphens.",
+          value: /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
+        },
       }}
     />
   );

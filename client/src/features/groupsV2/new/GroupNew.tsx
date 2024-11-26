@@ -240,10 +240,7 @@ function GroupV2CreationDetails() {
                     errors.slug &&
                     dirtyFields.slug && (
                       <div className={cx("d-block", "invalid-feedback")}>
-                        <p className="mb-1">
-                          You can customize the slug only with lowercase
-                          letters, numbers, and hyphens.
-                        </p>
+                        <p className="mb-1">{errors.slug.message}</p>
                       </div>
                     )
                   )}
