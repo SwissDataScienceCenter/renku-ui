@@ -202,67 +202,65 @@ function ProjectV2CreationDetails() {
               </div>
 
               <div>
-                <div>
-                  <div className="mb-1">
-                    <ProjectNamespaceFormField
+                <div className="mb-1">
+                  <ProjectNamespaceFormField
+                    control={control}
+                    entityName="project"
+                    errors={errors}
+                    helpText={ownerHelpText}
+                    name="namespace"
+                  />
+                </div>
+                <button
+                  className={cx(
+                    "btn",
+                    "btn-link",
+                    "p-0",
+                    "text-decoration-none"
+                  )}
+                  data-cy="project-slug-toggle"
+                  onClick={toggleCollapse}
+                  type="button"
+                >
+                  Customize project URL <ChevronDown className="bi" />
+                </button>
+                <Collapse isOpen={isCollapseOpen}>
+                  <div
+                    className={cx(
+                      "align-items-center",
+                      "d-flex",
+                      "flex-wrap",
+                      "mb-0"
+                    )}
+                  >
+                    <span>
+                      renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
+                    </span>
+                    <ProjectSlugFormField
+                      compact={true}
                       control={control}
-                      entityName="project"
                       errors={errors}
-                      helpText={ownerHelpText}
-                      name="namespace"
+                      isDirty={dirtyFields.slug && dirtyFields.name}
+                      name="slug"
+                      resetFunction={resetUrl}
                     />
                   </div>
-                  <button
-                    className={cx(
-                      "btn",
-                      "btn-link",
-                      "p-0",
-                      "text-decoration-none"
-                    )}
-                    data-cy="project-slug-toggle"
-                    onClick={toggleCollapse}
-                    type="button"
-                  >
-                    Customize project URL <ChevronDown className="bi" />
-                  </button>
-                  <Collapse isOpen={isCollapseOpen}>
-                    <div
-                      className={cx(
-                        "align-items-center",
-                        "d-flex",
-                        "flex-wrap",
-                        "mb-0"
-                      )}
-                    >
-                      <span>
-                        renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
-                      </span>
-                      <ProjectSlugFormField
-                        compact={true}
-                        control={control}
-                        errors={errors}
-                        isDirty={dirtyFields.slug && dirtyFields.name}
-                        name="slug"
-                        resetFunction={resetUrl}
-                      />
-                    </div>
-                  </Collapse>
+                </Collapse>
 
-                  {dirtyFields.slug && !dirtyFields.name ? (
+                {dirtyFields.slug && !dirtyFields.name ? (
+                  <div className={cx("d-block", "invalid-feedback")}>
+                    <p className="mb-0">
+                      Mind the URL will be updated once you provide a name.
+                    </p>
+                  </div>
+                ) : (
+                  errors.slug &&
+                  dirtyFields.slug && (
                     <div className={cx("d-block", "invalid-feedback")}>
-                      <p className="mb-0">
-                        Mind the URL will be updated once you provide a name.
-                      </p>
+                      <p className="mb-1">{errors.slug.message}</p>
                     </div>
-                  ) : (
-                    errors.slug &&
-                    dirtyFields.slug && (
-                      <div className={cx("d-block", "invalid-feedback")}>
-                        <p className="mb-1">{errors.slug.message}</p>
-                      </div>
-                    )
-                  )}
-                </div>
+                  )
+                )}
               </div>
 
               <div>
@@ -279,19 +277,13 @@ function ProjectV2CreationDetails() {
                 </Label>
               </div>
 
-              <div>
-                <ProjectDescriptionFormField
-                  control={control}
-                  errors={errors}
-                  name="description"
-                />
-              </div>
+              <ProjectDescriptionFormField
+                control={control}
+                errors={errors}
+                name="description"
+              />
 
-              {result.error && (
-                <div>
-                  <RtkOrNotebooksError error={result.error} />
-                </div>
-              )}
+              {result.error && <RtkOrNotebooksError error={result.error} />}
             </div>
           </ModalBody>
 

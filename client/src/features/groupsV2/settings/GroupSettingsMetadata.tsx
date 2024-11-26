@@ -166,32 +166,26 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
       <GroupDeleteConfirmation isOpen={isOpen} group={group} toggle={toggle} />
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <div className={cx("d-flex", "flex-column", "gap-3")}>
-          <div>
-            <NameFormField
-              control={control}
-              entityName="group"
-              errors={errors}
-              name="name"
-            />
-          </div>
+          <NameFormField
+            control={control}
+            entityName="group"
+            errors={errors}
+            name="name"
+          />
 
-          <div>
-            <SlugFormField
-              control={control}
-              entityName="group"
-              errors={errors}
-              name="slug"
-            />
-          </div>
+          <SlugFormField
+            control={control}
+            entityName="group"
+            errors={errors}
+            name="slug"
+          />
 
-          <div>
-            <DescriptionFormField
-              control={control}
-              entityName="group"
-              errors={errors}
-              name="description"
-            />
-          </div>
+          <DescriptionFormField
+            control={control}
+            entityName="group"
+            errors={errors}
+            name="description"
+          />
 
           <div className={cx("d-flex", "gap-2")}>
             <Button className="ms-auto" color="outline-danger" onClick={toggle}>
