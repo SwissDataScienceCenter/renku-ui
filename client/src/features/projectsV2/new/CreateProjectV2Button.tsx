@@ -18,10 +18,9 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
-import { useDispatch } from "react-redux";
 import { Button } from "reactstrap";
 
-import { setProjectCreationModal } from "./projectV2New.slice";
+import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 
 export interface CreateProjectV2ButtonProps {
   children?: React.ReactNode;
@@ -35,17 +34,18 @@ export default function CreateProjectV2Button({
   color,
   dataCy,
 }: CreateProjectV2ButtonProps) {
-  const dispatch = useDispatch();
-  const toggleModal = useCallback(() => {
-    dispatch(setProjectCreationModal(true));
-  }, [dispatch]);
+  const [, setHash] = useLocationHash();
+  const projectCreationHash = "createProject";
+  const openModal = useCallback(() => {
+    setHash(projectCreationHash);
+  }, [setHash]);
 
   return (
     <Button
       className={cx(className)}
       color={color || "primary"}
       data-cy={dataCy || "button-project-new"}
-      onClick={toggleModal}
+      onClick={openModal}
     >
       {children || "Create Project"}
     </Button>

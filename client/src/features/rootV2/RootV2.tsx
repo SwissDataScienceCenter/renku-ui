@@ -17,13 +17,12 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Navigate,
   Route,
   Routes,
   useNavigate,
-  useSearchParams,
 } from "react-router-dom-v5-compat";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
@@ -46,10 +45,6 @@ import LazyGroupV2Show from "../groupsV2/LazyGroupV2Show";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
-import {
-  setGroupCreationModal,
-  setProjectCreationModal,
-} from "../projectsV2/new/projectV2New.slice";
 import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
@@ -59,7 +54,6 @@ import NavbarV2 from "./NavbarV2";
 
 export default function RootV2() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
   const { renku10Enabled } = useAppSelector(({ featureFlags }) => featureFlags);
   const dispatch = useAppDispatch();
@@ -79,44 +73,6 @@ export default function RootV2() {
   useEffect(() => {
     setIsFirstRender(false);
   }, []);
-
-  // Deal with V2 platform-wide search params
-  const removeSearchParams = useCallback(
-    (target: string) => {
-      const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.delete(target);
-      navigate(
-        {
-          pathname: location.pathname,
-          search: newSearchParams.toString(),
-        },
-        { replace: true }
-      );
-    },
-    [searchParams, navigate]
-  );
-
-  // Group creation
-  const showGroupModal = useCallback(() => {
-    dispatch(setGroupCreationModal(true));
-  }, [dispatch]);
-  useEffect(() => {
-    if (searchParams.get("createGroup") != null) {
-      showGroupModal();
-      removeSearchParams("createGroup");
-    }
-  }, [removeSearchParams, searchParams, showGroupModal]);
-
-  // Project creation
-  const showProjectModal = useCallback(() => {
-    dispatch(setProjectCreationModal(true));
-  }, [dispatch]);
-  useEffect(() => {
-    if (searchParams.get("createProject") != null) {
-      showProjectModal();
-      removeSearchParams("createProject");
-    }
-  }, [removeSearchParams, searchParams, showProjectModal]);
 
   return (
     <div className="w-100">
@@ -194,7 +150,7 @@ function GroupsV2Routes() {
       <Route
         path={RELATIVE_ROUTES.v2.groups.new}
         element={
-          <Navigate to={`${ABSOLUTE_ROUTES.v2.root}?createGroup=1`} replace />
+          <Navigate to={`${ABSOLUTE_ROUTES.v2.root}#createGroup`} replace />
         }
       />
 
@@ -231,7 +187,7 @@ function ProjectsV2Routes() {
       <Route
         path={RELATIVE_ROUTES.v2.projects.new}
         element={
-          <Navigate to={`${ABSOLUTE_ROUTES.v2.root}?createProject=1`} replace />
+          <Navigate to={`${ABSOLUTE_ROUTES.v2.root}#createProject`} replace />
         }
       />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>

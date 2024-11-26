@@ -18,10 +18,9 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
-import { useDispatch } from "react-redux";
 import { Button } from "reactstrap";
 
-import { setGroupCreationModal } from "../../projectsV2/new/projectV2New.slice";
+import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 
 export interface CreateGroupButtonProps {
   children?: React.ReactNode;
@@ -35,17 +34,18 @@ export default function CreateGroupButton({
   color,
   dataCy,
 }: CreateGroupButtonProps) {
-  const dispatch = useDispatch();
-  const toggleModal = useCallback(() => {
-    dispatch(setGroupCreationModal(true));
-  }, [dispatch]);
+  const [, setHash] = useLocationHash();
+  const groupCreationHash = "createGroup";
+  const openModal = useCallback(() => {
+    setHash(groupCreationHash);
+  }, [setHash]);
 
   return (
     <Button
       className={cx(className)}
       color={color || "primary"}
       data-cy={dataCy || "button-group-new"}
-      onClick={toggleModal}
+      onClick={openModal}
     >
       {children || "Create Group"}
     </Button>
