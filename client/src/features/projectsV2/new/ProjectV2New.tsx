@@ -240,7 +240,7 @@ function ProjectV2CreationDetails() {
                       compact={true}
                       control={control}
                       errors={errors}
-                      isDirty={dirtyFields.slug && dirtyFields.name}
+                      countAsDirty={dirtyFields.slug && dirtyFields.name}
                       name="slug"
                       resetFunction={resetUrl}
                     />

@@ -22,17 +22,17 @@ import type { FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { Button, FormText, Input, InputGroup, Label } from "reactstrap";
 
-import type { GenericFormFieldPropsWithReset } from "./formField.types";
+import type { SlugFormFieldProps } from "./formField.types";
 
 export default function SlugFormField<T extends FieldValues>({
   compact,
   control,
   entityName,
   errors,
-  isDirty,
+  countAsDirty,
   resetFunction,
   name,
-}: GenericFormFieldPropsWithReset<T>) {
+}: SlugFormFieldProps<T>) {
   const content = (
     <Controller
       control={control}
@@ -44,7 +44,7 @@ export default function SlugFormField<T extends FieldValues>({
               aria-describedby={`${entityName}SlugHelp`}
               className={cx(
                 "form-control",
-                errors.slug && isDirty && "is-invalid",
+                errors.slug && countAsDirty && "is-invalid",
                 compact && "p-1"
               )}
               data-cy={`${entityName}-slug-input`}
@@ -53,7 +53,7 @@ export default function SlugFormField<T extends FieldValues>({
               {...field}
             />
 
-            {errors.slug && isDirty && resetFunction && (
+            {errors.slug && countAsDirty && resetFunction && (
               <Button className="py-1" color="danger" onClick={resetFunction}>
                 <ArrowCounterclockwise className="bi" />
               </Button>
