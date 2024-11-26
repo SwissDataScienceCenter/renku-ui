@@ -182,8 +182,8 @@ function ProjectV2CreationDetails() {
     <FormText className="input-hint">
       The URL for this project will be{" "}
       <span className="fw-bold">
-        renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
-        {currentSlug || "<Name>"}
+        renkulab.io/v2/projects/{currentNamespace || "<owner>"}/
+        {currentSlug || "<name>"}
       </span>
     </FormText>
   );
