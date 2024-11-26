@@ -171,7 +171,7 @@ function GroupV2CreationDetails() {
     <FormText className="input-hint">
       The URL for this group will be{" "}
       <span className="fw-bold">
-        renkulab.io/v2/groups/{currentSlug || "<Name>"}
+        renkulab.io/v2/groups/{currentSlug || "<name>"}
       </span>
     </FormText>
   );
