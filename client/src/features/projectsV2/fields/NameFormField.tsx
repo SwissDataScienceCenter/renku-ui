@@ -32,7 +32,7 @@ export default function NameFormField<T extends FieldValues>({
   name,
 }: GenericFormFieldProps<T>) {
   return (
-    <>
+    <div>
       <Label className="form-label" for={`${entityName}-name`}>
         Name
       </Label>
@@ -58,6 +58,6 @@ export default function NameFormField<T extends FieldValues>({
         </FormText>
       )}
       {helpText && typeof helpText !== "string" && <>{helpText}</>}
-    </>
+    </div>
   );
 }

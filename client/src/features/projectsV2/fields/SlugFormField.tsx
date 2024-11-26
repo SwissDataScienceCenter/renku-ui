@@ -75,7 +75,7 @@ export default function SlugFormField<T extends FieldValues>({
 
   if (compact) return content;
   return (
-    <>
+    <div>
       <Label className="form-label" for={`${entityName}-slug`}>
         Slug
       </Label>
@@ -91,6 +91,6 @@ export default function SlugFormField<T extends FieldValues>({
           <b>Cannot be changed after project creation.</b>
         )}
       </FormText>
-    </>
+    </div>
   );
 }

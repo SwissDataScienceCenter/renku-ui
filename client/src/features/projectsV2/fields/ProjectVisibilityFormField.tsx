@@ -30,7 +30,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
   name,
 }: GenericProjectFormFieldProps<T>) {
   return (
-    <>
+    <div>
       <Label className="form-label" for="project-visibility">
         Visibility
       </Label>
@@ -93,6 +93,6 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
         />
       </div>
       <div className="invalid-feedback">Please select a visibility</div>
-    </>
+    </div>
   );
 }

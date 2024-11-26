@@ -198,58 +198,52 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div>
-          <ProjectNameFormField name="name" control={control} errors={errors} />
-        </div>
+        <ProjectNameFormField name="name" control={control} errors={errors} />
 
-        <div>
-          <PermissionsGuard
-            disabled={
-              <ProjectReadOnlyNamespaceField namespace={project.namespace} />
-            }
-            enabled={
-              <ProjectNamespaceFormField
-                name="namespace"
-                control={control}
-                entityName="project"
-                ensureNamespace={project.namespace}
-                errors={errors}
-              />
-            }
-            requestedPermission="delete"
-            userPermissions={permissions}
-          />
-          {currentNamespace !== project.namespace && (
-            <div className="mt-1">
-              <RenkuAlert
-                className="mb-0"
-                color="warning"
-                dismissible={false}
-                timeout={0}
-              >
-                Modifying the owner also change the project&apos;s URL. Once the
-                change is saved, it will redirect to the updated project URL.
-              </RenkuAlert>
-            </div>
-          )}
-        </div>
+        <PermissionsGuard
+          disabled={
+            <ProjectReadOnlyNamespaceField namespace={project.namespace} />
+          }
+          enabled={
+            <ProjectNamespaceFormField
+              name="namespace"
+              control={control}
+              entityName="project"
+              ensureNamespace={project.namespace}
+              errors={errors}
+            />
+          }
+          requestedPermission="delete"
+          userPermissions={permissions}
+        />
+        {currentNamespace !== project.namespace && (
+          <div className="mt-1">
+            <RenkuAlert
+              className="mb-0"
+              color="warning"
+              dismissible={false}
+              timeout={0}
+            >
+              Modifying the owner also change the project&apos;s URL. Once the
+              change is saved, it will redirect to the updated project URL.
+            </RenkuAlert>
+          </div>
+        )}
 
-        <div>
-          <PermissionsGuard
-            disabled={
-              <ProjectReadOnlyVisibilityField visibility={project.visibility} />
-            }
-            enabled={
-              <ProjectVisibilityFormField
-                name="visibility"
-                control={control}
-                errors={errors}
-              />
-            }
-            requestedPermission="delete"
-            userPermissions={permissions}
-          />
-        </div>
+        <PermissionsGuard
+          disabled={
+            <ProjectReadOnlyVisibilityField visibility={project.visibility} />
+          }
+          enabled={
+            <ProjectVisibilityFormField
+              name="visibility"
+              control={control}
+              errors={errors}
+            />
+          }
+          requestedPermission="delete"
+          userPermissions={permissions}
+        />
 
         <div>
           <ProjectDescriptionFormField

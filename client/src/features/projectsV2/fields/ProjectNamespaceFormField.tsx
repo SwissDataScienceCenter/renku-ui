@@ -229,7 +229,7 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
   name,
 }: ProjectNamespaceFormFieldProps<T>) {
   return (
-    <>
+    <div>
       <Label className="form-label" for={`${entityName}-namespace-input`}>
         Owner
       </Label>
@@ -265,7 +265,7 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
         </FormText>
       )}
       {helpText && typeof helpText !== "string" && <>{helpText}</>}
-    </>
+    </div>
   );
 }
 
