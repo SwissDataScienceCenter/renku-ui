@@ -65,13 +65,13 @@ export const CLOUD_STORAGE_OVERRIDE = {
       position: 5,
     },
     polybox: {
-      name: "polyBox",
+      name: "PolyBox",
       description: "Online data storage service exclusively for ETH members",
       position: 3,
     },
     switchDrive: {
-      name: "switchDrive",
-      description: "Cloud storage platform for ETH members",
+      name: "SwitchDrive",
+      description: "Cloud storage service for the Swiss university community",
       position: 4,
     },
   } as Record<string, Partial<CloudStorageOverride>>,
@@ -153,7 +153,7 @@ export const CLOUD_OPTIONS_OVERRIDE = {
         },
         {
           value: "",
-          help: "If you set a password for the shared folder, enter that in the password field. Otherwise, leave it blank",
+          help: "If there is a password for the folder, enter that in the password field. Otherwise, leave it blank",
           provider: "shared",
           friendlyName: "Password",
         },
@@ -187,7 +187,7 @@ export const CLOUD_OPTIONS_OVERRIDE = {
         },
         {
           value: "",
-          help: "If you set a password for the shared folder, enter that in the password field. Otherwise, leave it blank",
+          help: "If there is a password for the folder, enter that in the password field. Otherwise, leave it blank",
           provider: "shared",
           friendlyName: "Password",
         },
@@ -215,12 +215,12 @@ export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
     label: "Source path",
   },
   polybox: {
-    help: "You can leave this blank to mount the default root or specify a folder.",
+    help: "Specify a path to a sub folder to connect to. When left blank, the connection will be made to the default (root) folder.",
     placeholder: "'/' or 'optional-sub-folder(s)/'",
     label: "Sub path (optional)",
   },
   switchDrive: {
-    help: "You can leave this blank to mount the default root or specify a folder.",
+    help: "Specify a path to a sub folder to connect to. When left blank, the connection will be made to the default (root) folder.",
     placeholder: "'/' or 'optional-sub-folder(s)/'",
     label: "Sub path (optional)",
   },

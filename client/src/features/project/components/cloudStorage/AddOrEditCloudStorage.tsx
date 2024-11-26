@@ -718,7 +718,7 @@ export function AddStorageType({
     if (state.showAllProviders) setState({ showAllProviders: false });
   };
 
-  const availableProvidersOrAccess = useMemo(
+  const availableProviders = useMemo(
     () =>
       getSchemaProviders(
         schema,
@@ -739,12 +739,11 @@ export function AddStorageType({
     return selectedSchema ? hasSchemaAccessMode(selectedSchema) : false;
   }, [storage.schema, availableSchema]);
 
-  const providerOrAccessItems = availableProvidersOrAccess
-    ? availableProvidersOrAccess.map((p, index) => {
+  const providerOrAccessItems = availableProviders
+    ? availableProviders.map((p, index) => {
         const topBorder = index === 0 ? "rounded-top-3" : null;
         const bottomBorder =
-          index === availableProvidersOrAccess.length - 1 &&
-          !providerHasShortlist
+          index === availableProviders.length - 1 && !providerHasShortlist
             ? "rounded-bottom-3"
             : null;
         const itemActive =
@@ -792,9 +791,9 @@ export function AddStorageType({
       : providerOrAccessItems;
 
   const missingProvider =
-    availableProvidersOrAccess &&
+    availableProviders &&
     storage.provider &&
-    !availableProvidersOrAccess.find((p) => p.name === storage.provider) ? (
+    !availableProviders.find((p) => p.name === storage.provider) ? (
       <WarnAlert>
         The storage provider <code>{storage.provider}</code> might be invalid.
         You should select a valid provider from the list.

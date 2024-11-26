@@ -31,6 +31,7 @@ import {
   CLOUD_STORAGE_SCHEMA_SHORTLIST,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   EMPTY_CLOUD_STORAGE_DETAILS,
+  STORAGES_WITH_ACCESS_MODE,
 } from "../components/cloudStorage/projectCloudStorage.constants";
 import {
   CloudStorage,
@@ -271,7 +272,9 @@ export function getSchemaOptions(
 export function getSourcePathHint(
   targetSchema = ""
 ): Record<"help" | "placeholder" | "label", string> {
-  const initialText = "Source path to mount. ";
+  const initialText = STORAGES_WITH_ACCESS_MODE.includes(targetSchema)
+    ? ""
+    : "Source path to mount. ";
   const helpData =
     CLOUD_STORAGE_MOUNT_PATH_HELP[targetSchema] ??
     CLOUD_STORAGE_MOUNT_PATH_HELP["generic"];

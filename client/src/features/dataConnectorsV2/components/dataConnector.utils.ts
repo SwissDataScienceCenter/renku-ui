@@ -189,5 +189,7 @@ function _dataConnectorFromConfig(config: DataConnectorConfiguration) {
 
 export function hasSchemaAccessMode(schema: CloudStorageSchema) {
   const providers = schema?.options.find((o) => o.name === "provider");
-  return providers?.examples && STORAGES_WITH_ACCESS_MODE.includes(schema.name);
+  return (
+    providers?.examples && STORAGES_WITH_ACCESS_MODE.includes(schema.prefix)
+  );
 }

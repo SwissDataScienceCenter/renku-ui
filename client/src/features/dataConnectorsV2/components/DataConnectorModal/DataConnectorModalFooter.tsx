@@ -306,8 +306,7 @@ function DataConnectorCreateFooter({
   // Visual elements
   const disableContinueButton =
     cloudStorageState.step === 1 &&
-    (!flatDataConnector.schema ||
-      (!!schemaHasAccessModes && !flatDataConnector.provider));
+    (!flatDataConnector.schema || !flatDataConnector.provider);
 
   const isAddResultLoading = createResult.isLoading;
   const actionError = createResult.error;
