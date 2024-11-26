@@ -7,14 +7,14 @@ import type {
 export interface GenericProjectFormFieldProps<T extends FieldValues>
   extends UseControllerProps<T> {
   errors: FieldErrors<T>;
-  helpText?: string | JSX.Element;
+  helpText?: React.ReactNode;
 }
 
 export interface GenericFormFieldProps<T extends FieldValues>
   extends UseControllerProps<T> {
   entityName: string;
   errors: FieldErrors<T>;
-  helpText?: string | JSX.Element;
+  helpText?: React.ReactNode;
 }
 
 export interface SlugFormFieldProps<T extends FieldValues>
