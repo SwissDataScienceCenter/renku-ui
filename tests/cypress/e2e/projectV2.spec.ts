@@ -25,7 +25,13 @@ describe("Add new v2 project", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects();
-    fixtures.createProjectV2().listNamespaceV2().readProjectV2();
+    fixtures
+      .createProjectV2({
+        slug,
+        namespace: "user1-uuid",
+      })
+      .listNamespaceV2()
+      .readProjectV2();
     cy.visit("/v2/projects/new");
   });
 
