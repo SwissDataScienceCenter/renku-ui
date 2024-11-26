@@ -24,7 +24,7 @@ import { Button } from "reactstrap";
 import { setProjectCreationModal } from "./projectV2New.slice";
 
 export interface CreateProjectV2ButtonProps {
-  children?: JSX.Element | string;
+  children?: React.ReactNode;
   className?: string;
   color?: string;
   dataCy?: string;

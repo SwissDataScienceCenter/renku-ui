@@ -24,7 +24,7 @@ import { Button } from "reactstrap";
 import { setGroupCreationModal } from "../../projectsV2/new/projectV2New.slice";
 
 export interface CreateGroupButtonProps {
-  children?: JSX.Element | string;
+  children?: React.ReactNode;
   className?: string;
   color?: string;
   dataCy?: string;
