@@ -48,10 +48,12 @@ export default function AddSessionSecretButton() {
     <>
       <Button color="outline-primary" innerRef={ref} onClick={toggle} size="sm">
         <PlusLg className="bi" />
-        <span className="visually-hidden">Add session secret</span>
+        <span className="visually-hidden">Add session secret slot</span>
       </Button>
       <AddSessionSecretModal isOpen={isOpen} toggle={toggle} />
-      <UncontrolledTooltip target={ref}>Add session secret</UncontrolledTooltip>
+      <UncontrolledTooltip target={ref}>
+        Add session secret slot
+      </UncontrolledTooltip>
     </>
   );
 }
@@ -116,7 +118,7 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <Form noValidate onSubmit={onSubmit}>
-        <ModalHeader toggle={toggle}>Add session secret</ModalHeader>
+        <ModalHeader toggle={toggle}>Add session secret slot</ModalHeader>
         <ModalBody>
           <p>Add a new slot for a secret to be mounted in sessions.</p>
 
@@ -125,12 +127,12 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
           )}
 
           <NameField control={control} errors={errors} name="name" />
-          <FilenameField control={control} errors={errors} name="filename" />
           <DescriptionField
             control={control}
             errors={errors}
             name="description"
           />
+          <FilenameField control={control} errors={errors} name="filename" />
         </ModalBody>
         <ModalFooter>
           <Button color="outline-primary" onClick={toggle}>
@@ -143,7 +145,7 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
             ) : (
               <PlusLg className={cx("bi", "me-1")} />
             )}
-            Add session secret
+            Add session secret slot
           </Button>
         </ModalFooter>
       </Form>

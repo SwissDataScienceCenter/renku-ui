@@ -89,47 +89,54 @@ export default function ProjectSessionSecrets() {
   );
 
   return (
-    <>
-      {!userLogged && (
-        <InfoAlert className="my-0" dismissible={false} timeout={0}>
-          <p className="mb-0">
-            As an anonymous user, you cannot mount user secrets inside sessions.
-          </p>
-        </InfoAlert>
-      )}
-
-      <Card data-cy="project-settings-session-secrets">
-        <CardHeader>
-          <div
-            className={cx(
-              "align-items-center",
-              "d-flex",
-              "justify-content-between"
-            )}
-          >
-            <div className={cx("align-items-center", "d-flex")}>
-              <h4 className={cx("m-0", "me-2")}>
-                <ShieldLock className={cx("me-1", "bi")} />
-                Session Secrets
-              </h4>
-              {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
-            </div>
-
-            <div className="my-auto">
-              <PermissionsGuard
-                disabled={null}
-                enabled={<AddSessionSecretButton />}
-                requestedPermission="write"
-                userPermissions={permissions}
-              />
-            </div>
+    <Card data-cy="project-settings-session-secrets">
+      <CardHeader>
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "justify-content-between"
+          )}
+        >
+          <div className={cx("align-items-center", "d-flex")}>
+            <h4 className={cx("m-0", "me-2")}>
+              <ShieldLock className={cx("me-1", "bi")} />
+              Session Secrets
+            </h4>
+            {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
           </div>
-        </CardHeader>
-        <CardBody className={cx(sessionSecretSlots?.length == 0 && "pb-0")}>
-          {content}
-        </CardBody>
-      </Card>
-    </>
+
+          <div className="my-auto">
+            <PermissionsGuard
+              disabled={null}
+              enabled={<AddSessionSecretButton />}
+              requestedPermission="write"
+              userPermissions={permissions}
+            />
+          </div>
+        </div>
+
+        <p className="mb-0">
+          Use session secrets to connect to resources from inside a session that
+          require a password or credential.
+        </p>
+
+        {!userLogged && (
+          <InfoAlert
+            className={cx("mt-3", "mb-0")}
+            dismissible={false}
+            timeout={0}
+          >
+            <p className="mb-0">
+              As an anonymous user, you cannot use session secrets.
+            </p>
+          </InfoAlert>
+        )}
+      </CardHeader>
+      <CardBody className={cx(sessionSecretSlots?.length == 0 && "pb-0")}>
+        {content}
+      </CardBody>
+    </Card>
   );
 }
 

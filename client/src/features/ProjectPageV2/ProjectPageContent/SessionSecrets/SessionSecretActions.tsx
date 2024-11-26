@@ -309,19 +309,19 @@ function EditSessionSecretModal({
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <Form noValidate onSubmit={onSubmit}>
-        <ModalHeader toggle={toggle}>Edit session secret</ModalHeader>
+        <ModalHeader toggle={toggle}>Edit session secret slot</ModalHeader>
         <ModalBody>
           {result.error && (
             <RtkOrNotebooksError error={result.error} dismissible={false} />
           )}
 
           <NameField control={control} errors={errors} name="name" />
-          <FilenameField control={control} errors={errors} name="filename" />
           <DescriptionField
             control={control}
             errors={errors}
             name="description"
           />
+          <FilenameField control={control} errors={errors} name="filename" />
         </ModalBody>
         <ModalFooter>
           <Button color="outline-primary" onClick={toggle}>
@@ -338,7 +338,7 @@ function EditSessionSecretModal({
             ) : (
               <Pencil className={cx("bi", "me-1")} />
             )}
-            Edit session secret
+            Edit session secret slot
           </Button>
         </ModalFooter>
       </Form>
@@ -381,7 +381,7 @@ function RemoveSessionSecretModal({
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader className="text-danger" toggle={toggle}>
-        Remove session secret
+        Remove session secret slot
       </ModalHeader>
       <ModalBody>
         {result.error && (
@@ -413,7 +413,7 @@ function RemoveSessionSecretModal({
           ) : (
             <Trash className={cx("bi", "me-1")} />
           )}
-          Remove session secret
+          Remove session secret slot
         </Button>
       </ModalFooter>
     </Modal>
@@ -472,7 +472,7 @@ function ProvideSessionSecretModal({
             className={cx("btn", "btn-outline-primary")}
           >
             <BoxArrowInLeft className={cx("bi", "me-1")} />
-            Provide an existing secret value
+            Use an existing secret value
           </Label>
         </ButtonGroup>
       </ModalBody>

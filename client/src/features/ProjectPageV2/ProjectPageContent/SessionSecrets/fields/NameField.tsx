@@ -32,7 +32,7 @@ export default function NameField<T extends FieldValues>({
   const fieldId = `session-secret-${name}`;
   return (
     <div className="mb-3">
-      <Label for={fieldId}>Name</Label>
+      <Label for={fieldId}>Slot name</Label>
       <Controller
         name={name}
         control={control}

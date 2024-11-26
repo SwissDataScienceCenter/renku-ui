@@ -84,12 +84,15 @@ describe("Project Session Secrets", () => {
     cy.contains(".modal-content", "Add session secret")
       .should("be.visible")
       .as("modal");
-    cy.get("@modal").contains("label", "Name").click().type("A new secret");
-    cy.get("@modal").contains("label", "Filename").click().type("a_new_secret");
+    cy.get("@modal")
+      .contains("label", "Slot name")
+      .click()
+      .type("A new secret");
     cy.get("@modal")
       .contains("label", "Description")
       .click()
       .type("This is a new secret.");
+    cy.get("@modal").contains("label", "Filename").click().type("a_new_secret");
 
     fixtures.postSessionSecretSlot().sessionSecretSlots({
       fixture: "projectV2SessionSecrets/secret_slots_with_new_slot.json",
@@ -97,7 +100,7 @@ describe("Project Session Secrets", () => {
     });
 
     cy.get("@modal")
-      .contains("button", "Add session secret")
+      .contains("button", "Add session secret slot")
       .should("be.visible")
       .click();
     cy.wait("@postSessionSecretSlot").wait("@updatedSessionSecretSlots");
@@ -137,7 +140,7 @@ describe("Project Session Secrets", () => {
       .contains("button", "Edit")
       .click();
 
-    cy.contains(".modal-content", "Edit session secret")
+    cy.contains(".modal-content", "Edit session secret slot")
       .should("be.visible")
       .as("modal");
     cy.get("@modal")
@@ -152,7 +155,7 @@ describe("Project Session Secrets", () => {
     });
 
     cy.get("@modal")
-      .contains("button", "Edit session secret")
+      .contains("button", "Edit session secret slot")
       .should("be.visible")
       .click();
     cy.wait("@patchSessionSecretSlot").wait("@updatedSessionSecretSlots");
@@ -189,7 +192,7 @@ describe("Project Session Secrets", () => {
       .contains("button", "Remove")
       .click();
 
-    cy.contains(".modal-content", "Remove session secret")
+    cy.contains(".modal-content", "Remove session secret slot")
       .should("be.visible")
       .as("modal");
 
@@ -199,7 +202,7 @@ describe("Project Session Secrets", () => {
     });
 
     cy.get("@modal")
-      .contains("button", "Remove session secret")
+      .contains("button", "Remove session secret slot")
       .should("be.visible")
       .click();
     cy.wait("@deleteSessionSecretSlot").wait("@updatedSessionSecretSlots");
@@ -300,11 +303,9 @@ describe("Project Session Secrets", () => {
     cy.contains(".modal-content", "Provide session secret")
       .should("be.visible")
       .as("modal");
-    cy.get("@modal")
-      .contains("label", "Provide an existing secret value")
-      .click();
+    cy.get("@modal").contains("label", "Use an existing secret value").click();
     cy.wait("@listSecrets");
-    cy.get("@modal").contains("label", "User secret").click();
+    cy.get("@modal").contains("label", "User secret").should("be.visible");
     cy.findReactSelectOptions(
       "session-secret-select-user-secret",
       "session-secret-select-user-secret"

@@ -63,7 +63,7 @@ export default function SelectUserSecretField<T extends FieldValues>({
     </>
   ) : userSecrets.length < 1 ? (
     <p className="fst-italic">
-      You do not have any user secret saved at the moment.
+      You do not have any user secrets saved at the moment.
     </p>
   ) : (
     <UserSecretSelector
