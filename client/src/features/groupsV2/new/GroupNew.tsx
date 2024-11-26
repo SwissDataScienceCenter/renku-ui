@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, ChevronDown, XLg } from "react-bootstrap-icons";
+import { CheckLg, ChevronDown, People, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
@@ -79,8 +79,10 @@ export default function GroupNew() {
           tag="div"
           toggle={toggleModal}
         >
-          <h2>Create a new group</h2>
-          <p className={cx("fs-6", "mb-0")}>
+          <h2>
+            <People className="bi" /> Create a new group
+          </h2>
+          <p className={cx("fs-6", "fw-normal", "mb-0")}>
             Groups let you group together related projects and control who can
             access them.
           </p>
@@ -88,7 +90,9 @@ export default function GroupNew() {
 
         <div data-cy="create-new-group-content">
           {userLoading ? (
-            <Loader />
+            <ModalBody>
+              <Loader />
+            </ModalBody>
           ) : userInfo?.isLoggedIn ? (
             <GroupV2CreationDetails />
           ) : (
@@ -180,9 +184,9 @@ function GroupV2CreationDetails() {
 
   return (
     <>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <FormGroup className="d-inline" disabled={result.isLoading}>
-          <ModalBody data-cy="new-group-modal-body">
+      <ModalBody data-cy="new-group-modal-body">
+        <Form id="group-creation-form" onSubmit={handleSubmit(onSubmit)}>
+          <FormGroup className="d-inline" disabled={result.isLoading}>
             <div className={cx("d-flex", "flex-column", "gap-3")}>
               <div>
                 <div className="mb-1">
@@ -256,24 +260,29 @@ function GroupV2CreationDetails() {
 
               {result.error && <RtkOrNotebooksError error={result.error} />}
             </div>
-          </ModalBody>
+          </FormGroup>
+        </Form>
+      </ModalBody>
 
-          <ModalFooter data-cy="new-project-modal-footer">
-            <Button color="outline-primary" onClick={toggleModal} type="button">
-              <XLg className={cx("bi", "me-1")} />
-              Cancel
-            </Button>
-            <Button color="primary" data-cy="group-create-button" type="submit">
-              {result.isLoading ? (
-                <Loader className="me-1" inline size={16} />
-              ) : (
-                <CheckLg className={cx("bi", "me-1")} />
-              )}
-              Create
-            </Button>
-          </ModalFooter>
-        </FormGroup>
-      </Form>
+      <ModalFooter data-cy="new-project-modal-footer">
+        <Button color="outline-primary" onClick={toggleModal} type="button">
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="primary"
+          data-cy="group-create-button"
+          form="group-creation-form"
+          type="submit"
+        >
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <CheckLg className={cx("bi", "me-1")} />
+          )}
+          Create
+        </Button>
+      </ModalFooter>
     </>
   );
 }

@@ -18,7 +18,13 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, ChevronDown, InfoCircle, XLg } from "react-bootstrap-icons";
+import {
+  CheckLg,
+  ChevronDown,
+  Folder,
+  InfoCircle,
+  XLg,
+} from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
@@ -82,28 +88,30 @@ export default function ProjectV2New() {
           tag="div"
           toggle={toggleModal}
         >
-          <h2>Create a new project</h2>
-          <p className={cx("fs-6", "mb-0")}>
+          <h2>
+            <Folder className="bi" /> Create a new project
+          </h2>
+          <p className={cx("fs-6", "fw-normal", "mb-0")}>
             A Renku project groups together data, code, and compute resources
             for you and your collaborators.
           </p>
         </ModalHeader>
 
-        <div data-cy="create-new-project-content">
-          {userLoading ? (
+        {userLoading ? (
+          <ModalBody>
             <Loader />
-          ) : userInfo?.isLoggedIn ? (
-            <ProjectV2CreationDetails />
-          ) : (
-            <ModalBody>
-              <LoginAlert
-                logged={userInfo?.isLoggedIn ?? false}
-                textIntro="Only authenticated users can create new projects."
-                textPost="to create a new project."
-              />
-            </ModalBody>
-          )}
-        </div>
+          </ModalBody>
+        ) : userInfo?.isLoggedIn ? (
+          <ProjectV2CreationDetails />
+        ) : (
+          <ModalBody>
+            <LoginAlert
+              logged={userInfo?.isLoggedIn ?? false}
+              textIntro="Only authenticated users can create new projects."
+              textPost="to create a new project."
+            />
+          </ModalBody>
+        )}
       </Modal>
     </>
   );
@@ -188,10 +196,10 @@ function ProjectV2CreationDetails() {
 
   return (
     <>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        {/* //? FormGroup hard codes an additional mb-3. Adding "d-inline" makes it ineffective. */}
-        <FormGroup className="d-inline" disabled={result.isLoading}>
-          <ModalBody data-cy="new-project-modal-body">
+      <ModalBody data-cy="new-project-modal-body">
+        <Form id="project-creation-form" onSubmit={handleSubmit(onSubmit)}>
+          <FormGroup className="d-inline" disabled={result.isLoading}>
+            {/* //? FormGroup hard codes an additional mb-3. Adding "d-inline" makes it ineffective. */}
             <div className={cx("d-flex", "flex-column", "gap-3")}>
               <div>
                 <ProjectNameFormField
@@ -285,28 +293,29 @@ function ProjectV2CreationDetails() {
 
               {result.error && <RtkOrNotebooksError error={result.error} />}
             </div>
-          </ModalBody>
+          </FormGroup>
+        </Form>
+      </ModalBody>
 
-          <ModalFooter data-cy="new-project-modal-footer">
-            <Button color="outline-primary" onClick={toggleModal} type="button">
-              <XLg className={cx("bi", "me-1")} />
-              Cancel
-            </Button>
-            <Button
-              color="primary"
-              data-cy="project-create-button"
-              type="submit"
-            >
-              {result.isLoading ? (
-                <Loader className="me-1" inline size={16} />
-              ) : (
-                <CheckLg className={cx("bi", "me-1")} />
-              )}
-              Create
-            </Button>
-          </ModalFooter>
-        </FormGroup>
-      </Form>
+      <ModalFooter data-cy="new-project-modal-footer">
+        <Button color="outline-primary" onClick={toggleModal} type="button">
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="primary"
+          data-cy="project-create-button"
+          form="project-creation-form"
+          type="submit"
+        >
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <CheckLg className={cx("bi", "me-1")} />
+          )}
+          Create
+        </Button>
+      </ModalFooter>
     </>
   );
 }
