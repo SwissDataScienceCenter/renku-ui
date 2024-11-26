@@ -37,14 +37,16 @@ export default function SlugFormField<T extends FieldValues>({
     <Controller
       control={control}
       name={name}
-      render={({ field }) => {
+      render={({ field, fieldState: { isDirty } }) => {
+        const isDirtyOrCountAsDirty =
+          countAsDirty == undefined ? isDirty : countAsDirty;
         return (
           <InputGroup className={cx(compact && "w-auto")}>
             <Input
               aria-describedby={`${entityName}SlugHelp`}
               className={cx(
                 "form-control",
-                errors.slug && countAsDirty && "is-invalid",
+                errors.slug && isDirtyOrCountAsDirty && "is-invalid",
                 compact && "p-1"
               )}
               data-cy={`${entityName}-slug-input`}
@@ -53,7 +55,7 @@ export default function SlugFormField<T extends FieldValues>({
               {...field}
             />
 
-            {errors.slug && countAsDirty && resetFunction && (
+            {errors.slug && isDirtyOrCountAsDirty && resetFunction && (
               <Button className="py-1" color="danger" onClick={resetFunction}>
                 <ArrowCounterclockwise className="bi" />
               </Button>
