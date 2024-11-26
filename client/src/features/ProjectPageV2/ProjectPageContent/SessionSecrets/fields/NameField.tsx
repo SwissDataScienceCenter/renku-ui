@@ -41,7 +41,7 @@ export default function NameField<T extends FieldValues>({
             className={cx(errors.name && "is-invalid")}
             id={fieldId}
             innerRef={ref}
-            placeholder="API Token"
+            placeholder="Secret name, e.g., API Token"
             type="text"
             {...rest}
           />

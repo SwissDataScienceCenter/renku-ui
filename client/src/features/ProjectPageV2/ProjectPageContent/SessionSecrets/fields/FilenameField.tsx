@@ -42,7 +42,7 @@ export default function FilenameField<T extends FieldValues>({
             className={cx(errors.filename && "is-invalid")}
             id={fieldId}
             innerRef={ref}
-            placeholder="api_token"
+            placeholder="Name of the file, e.g., api_token.txt"
             type="text"
             {...rest}
           />
