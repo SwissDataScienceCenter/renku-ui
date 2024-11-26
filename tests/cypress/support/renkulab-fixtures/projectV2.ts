@@ -353,6 +353,14 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    deleteSessionSecretSlot(args?: NameOnlyFixture) {
+      const { name = "deleteSessionSecretSlot" } = args ?? {};
+      cy.intercept("DELETE", "/ui-server/api/data/session_secret_slots/*", {
+        statusCode: 204,
+      }).as(name);
+      return this;
+    }
+
     sessionSecrets(args?: SimpleFixture) {
       const {
         fixture = "projectV2SessionSecrets/secrets.json",
@@ -361,6 +369,20 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "GET",
+        "/ui-server/api/data/projects/*/secrets",
+        response
+      ).as(name);
+      return this;
+    }
+
+    patchSessionSecrets(args?: SimpleFixture) {
+      const {
+        fixture = "projectV2SessionSecrets/secrets.json",
+        name = "patchSessionSecrets",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "PATCH",
         "/ui-server/api/data/projects/*/secrets",
         response
       ).as(name);

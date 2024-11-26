@@ -120,21 +120,24 @@ function UserSecretSelector<T extends FieldValues>({
         name={name}
         control={control}
         render={({ field: { onChange, value, ...rest } }) => (
-          <Select
-            classNames={selectClassNames}
-            components={selectComponents}
-            getOptionValue={(option) => option.id}
-            getOptionLabel={(option) => option.name}
-            inputId="session-secret-select-user-secret"
-            isClearable={false}
-            options={userSecrets}
-            onChange={(newValue) => {
-              onChange(newValue?.id);
-            }}
-            unstyled
-            value={userSecrets.find(({ id }) => id === value)}
-            {...rest}
-          />
+          <div data-cy="session-secret-select-user-secret">
+            <Select
+              classNames={selectClassNames}
+              classNamePrefix="session-secret-select-user-secret"
+              components={selectComponents}
+              getOptionValue={(option) => option.id}
+              getOptionLabel={(option) => option.name}
+              inputId="session-secret-select-user-secret"
+              isClearable={false}
+              options={userSecrets}
+              onChange={(newValue) => {
+                onChange(newValue?.id);
+              }}
+              unstyled
+              value={userSecrets.find(({ id }) => id === value)}
+              {...rest}
+            />
+          </div>
         )}
       />
     </>
