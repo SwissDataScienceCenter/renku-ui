@@ -223,7 +223,7 @@ function GroupV2CreationDetails() {
                         control={control}
                         entityName="group"
                         errors={errors}
-                        isDirty={dirtyFields.slug && dirtyFields.name}
+                        countAsDirty={dirtyFields.slug && dirtyFields.name}
                         name="slug"
                         resetFunction={resetUrl}
                       />

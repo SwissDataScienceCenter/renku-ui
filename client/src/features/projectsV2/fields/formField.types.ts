@@ -6,27 +6,27 @@ import type {
 
 export interface GenericProjectFormFieldProps<T extends FieldValues>
   extends UseControllerProps<T> {
-  compact?: boolean;
   errors: FieldErrors<T>;
-  isDirty?: boolean;
   helpText?: string | JSX.Element;
 }
 
 export interface GenericFormFieldProps<T extends FieldValues>
   extends UseControllerProps<T> {
-  compact?: boolean;
   entityName: string;
   errors: FieldErrors<T>;
-  isDirty?: boolean;
   helpText?: string | JSX.Element;
 }
 
-export interface GenericFormFieldPropsWithReset<T extends FieldValues>
+export interface SlugFormFieldProps<T extends FieldValues>
   extends GenericFormFieldProps<T> {
+  compact?: boolean;
+  countAsDirty?: boolean;
   resetFunction?: () => void;
 }
 
-export interface GenericProjectFormFieldPropsWithReset<T extends FieldValues>
+export interface SlugProjectFormFieldProps<T extends FieldValues>
   extends GenericProjectFormFieldProps<T> {
+  compact?: boolean;
+  countAsDirty?: boolean;
   resetFunction?: () => void;
 }
