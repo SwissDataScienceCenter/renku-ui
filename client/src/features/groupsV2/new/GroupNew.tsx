@@ -39,7 +39,6 @@ import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 import type { GroupPostRequest } from "../../projectsV2/api/namespace.api";
 import { usePostGroupsMutation } from "../../projectsV2/api/projectV2.enhanced-api";
@@ -50,9 +49,10 @@ import {
   setGroupCreationModal,
   toggleGroupCreationModal,
 } from "../../projectsV2/new/projectV2New.slice";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 export default function GroupNew() {
-  const user = useLegacySelector((state) => state.stateModel.user);
+  const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
   const { showGroupCreationModal } = useAppSelector(
     (state) => state.newProjectV2
   );
@@ -87,12 +87,14 @@ export default function GroupNew() {
         </ModalHeader>
 
         <div data-cy="create-new-group-content">
-          {user.logged ? (
+          {userLoading ? (
+            <Loader />
+          ) : userInfo?.isLoggedIn ? (
             <GroupV2CreationDetails />
           ) : (
             <ModalBody>
               <LoginAlert
-                logged={user.logged}
+                logged={userInfo?.isLoggedIn ?? false}
                 textIntro="Only authenticated users can create new groups."
                 textPost="to create a new group."
               />
@@ -248,20 +250,14 @@ function GroupV2CreationDetails() {
                 </div>
               </div>
 
-              <div>
-                <DescriptionFormField
-                  control={control}
-                  entityName="group"
-                  errors={errors}
-                  name="description"
-                />
-              </div>
+              <DescriptionFormField
+                control={control}
+                entityName="group"
+                errors={errors}
+                name="description"
+              />
 
-              {result.error && (
-                <div>
-                  <RtkOrNotebooksError error={result.error} />
-                </div>
-              )}
+              {result.error && <RtkOrNotebooksError error={result.error} />}
             </div>
           </ModalBody>
 

@@ -40,7 +40,6 @@ import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
@@ -53,9 +52,10 @@ import {
   toggleProjectCreationModal,
 } from "./projectV2New.slice";
 import { NewProjectForm } from "./projectV2New.types";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 export default function ProjectV2New() {
-  const user = useLegacySelector((state) => state.stateModel.user);
+  const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
   const { showProjectCreationModal } = useAppSelector(
     (state) => state.newProjectV2
   );
@@ -90,12 +90,14 @@ export default function ProjectV2New() {
         </ModalHeader>
 
         <div data-cy="create-new-project-content">
-          {user.logged ? (
+          {userLoading ? (
+            <Loader />
+          ) : userInfo?.isLoggedIn ? (
             <ProjectV2CreationDetails />
           ) : (
             <ModalBody>
               <LoginAlert
-                logged={user.logged}
+                logged={userInfo?.isLoggedIn ?? false}
                 textIntro="Only authenticated users can create new projects."
                 textPost="to create a new project."
               />
