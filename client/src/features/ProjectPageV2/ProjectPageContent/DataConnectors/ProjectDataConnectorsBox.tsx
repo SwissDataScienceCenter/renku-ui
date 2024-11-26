@@ -101,12 +101,14 @@ function ProjectDataConnectorBoxContent({
           )}
         </CardBody>
       </Card>
-      <ProjectConnectDataConnectorsModal
-        isOpen={isModalOpen}
-        namespace={project.namespace}
-        project={project}
-        toggle={toggleOpen}
-      />
+      {isModalOpen && (
+        <ProjectConnectDataConnectorsModal
+          isOpen={isModalOpen}
+          namespace={project.namespace}
+          project={project}
+          toggle={toggleOpen}
+        />
+      )}
     </div>
   );
 }

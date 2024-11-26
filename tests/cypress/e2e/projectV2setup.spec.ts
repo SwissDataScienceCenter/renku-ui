@@ -183,6 +183,7 @@ describe("Set up data connectors", () => {
           email: "user1@email.com",
         },
       })
+      .getGroupV2Permissions()
       .getProjectV2Permissions()
       .listProjectV2Members();
     fixtures.projects().landingUserProjects().readProjectV2();
@@ -195,6 +196,7 @@ describe("Set up data connectors", () => {
       .getDataConnector()
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .testCloudStorage({ success: false })
+      .getDataConnectorPermissions()
       .postDataConnector({ namespace: "user1-uuid", visibility: "public" })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");

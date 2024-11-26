@@ -62,12 +62,14 @@ import {
 
 interface DataConnectorModalFooterProps {
   dataConnector?: DataConnectorRead | null;
+  isOpen: boolean;
   project?: Project;
   toggle: () => void;
 }
 
 export default function DataConnectorModalFooter({
   dataConnector = null,
+  isOpen,
   project,
   toggle,
 }: DataConnectorModalFooterProps) {
@@ -131,6 +133,13 @@ export default function DataConnectorModalFooter({
     createProjectLinkResult,
     updateResult,
   ]);
+
+  // Reset the state when the modal is closed
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+    }
+  }, [isOpen, reset]);
 
   const addOrEditStorage = useCallback(() => {
     const dataConnectorPost = dataConnectorPostFromFlattened(
@@ -271,10 +280,6 @@ export default function DataConnectorModalFooter({
         credentialSaveStatus: status,
       })
     );
-    // If the saving attempt has completed, reset the result
-    if (saveCredentialsResult.isSuccess || saveCredentialsResult.isError) {
-      saveCredentialsResult.reset();
-    }
   }, [
     credentialSaveStatus,
     dataConnectorResultId,
@@ -331,10 +336,6 @@ export default function DataConnectorModalFooter({
         projectLinkStatus: status,
       })
     );
-    // If the linking attempt has completed, reset the result
-    if (createProjectLinkResult.isSuccess || createProjectLinkResult.isError) {
-      createProjectLinkResult.reset();
-    }
   }, [
     createProjectLinkResult,
     dataConnectorResultId,
