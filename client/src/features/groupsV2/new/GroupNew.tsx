@@ -20,7 +20,6 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, ChevronDown, People, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
@@ -38,28 +37,27 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 import type { GroupPostRequest } from "../../projectsV2/api/namespace.api";
 import { usePostGroupsMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
 import NameFormField from "../../projectsV2/fields/NameFormField";
 import SlugFormField from "../../projectsV2/fields/SlugFormField";
-import {
-  setGroupCreationModal,
-  toggleGroupCreationModal,
-} from "../../projectsV2/new/projectV2New.slice";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 export default function GroupNew() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
-  const { showGroupCreationModal } = useAppSelector(
-    (state) => state.newProjectV2
-  );
-  const dispatch = useDispatch();
+
+  const [hash, setHash] = useLocationHash();
+  const groupCreationHash = "createGroup";
+  const showGroupCreationModal = hash === groupCreationHash;
   const toggleModal = useCallback(() => {
-    dispatch(toggleGroupCreationModal());
-  }, [dispatch]);
+    setHash((prev) => {
+      const isOpen = prev === groupCreationHash;
+      return isOpen ? "" : groupCreationHash;
+    });
+  }, [setHash]);
 
   return (
     <>
@@ -117,10 +115,10 @@ function GroupV2CreationDetails() {
   const [createGroup, result] = usePostGroupsMutation();
   const navigate = useNavigate();
 
-  const dispatch = useDispatch();
-  const toggleModal = useCallback(() => {
-    dispatch(toggleGroupCreationModal());
-  }, [dispatch]);
+  const [, setHash] = useLocationHash();
+  const closeModal = useCallback(() => {
+    setHash();
+  }, [setHash]);
 
   // Form initialization
   const {
@@ -163,9 +161,8 @@ function GroupV2CreationDetails() {
         slug: result.data.slug,
       });
       navigate(groupUrl);
-      dispatch(setGroupCreationModal(false));
     }
-  }, [result, dispatch, navigate]);
+  }, [result, navigate]);
 
   const nameHelpText = (
     <FormText className="input-hint">
@@ -265,7 +262,7 @@ function GroupV2CreationDetails() {
       </ModalBody>
 
       <ModalFooter data-cy="new-project-modal-footer">
-        <Button color="outline-primary" onClick={toggleModal} type="button">
+        <Button color="outline-primary" onClick={closeModal} type="button">
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>

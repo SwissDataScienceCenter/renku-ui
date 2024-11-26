@@ -26,7 +26,6 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
@@ -45,30 +44,29 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
 import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectSlugFormField from "../fields/ProjectSlugFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
-import {
-  setProjectCreationModal,
-  toggleProjectCreationModal,
-} from "./projectV2New.slice";
 import { NewProjectForm } from "./projectV2New.types";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 export default function ProjectV2New() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
-  const { showProjectCreationModal } = useAppSelector(
-    (state) => state.newProjectV2
-  );
-  const dispatch = useDispatch();
+
+  const [hash, setHash] = useLocationHash();
+  const projectCreationHash = "createProject";
+  const showProjectCreationModal = hash === projectCreationHash;
   const toggleModal = useCallback(() => {
-    dispatch(toggleProjectCreationModal());
-  }, [dispatch]);
+    setHash((prev) => {
+      const isOpen = prev === projectCreationHash;
+      return isOpen ? "" : projectCreationHash;
+    });
+  }, [setHash]);
 
   return (
     <>
@@ -124,10 +122,10 @@ function ProjectV2CreationDetails() {
   const [createProject, result] = usePostProjectsMutation();
   const navigate = useNavigate();
 
-  const dispatch = useDispatch();
-  const toggleModal = useCallback(() => {
-    dispatch(toggleProjectCreationModal());
-  }, [dispatch]);
+  const [, setHash] = useLocationHash();
+  const closeModal = useCallback(() => {
+    setHash();
+  }, [setHash]);
 
   // Form initialization
   const {
@@ -174,9 +172,8 @@ function ProjectV2CreationDetails() {
         slug: result.data.slug,
       });
       navigate(projectUrl);
-      dispatch(setProjectCreationModal(false));
     }
-  }, [dispatch, result, navigate]);
+  }, [result, navigate]);
 
   const ownerHelpText = (
     <FormText className="input-hint">
@@ -298,7 +295,7 @@ function ProjectV2CreationDetails() {
       </ModalBody>
 
       <ModalFooter data-cy="new-project-modal-footer">
-        <Button color="outline-primary" onClick={toggleModal} type="button">
+        <Button color="outline-primary" onClick={closeModal} type="button">
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
