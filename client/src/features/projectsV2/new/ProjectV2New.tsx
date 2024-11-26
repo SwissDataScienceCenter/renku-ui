@@ -162,13 +162,13 @@ function ProjectV2CreationDetails() {
   useEffect(() => {
     if (result.isSuccess) {
       const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace: currentNamespace,
-        slug: currentSlug,
+        namespace: result.data.namespace,
+        slug: result.data.slug,
       });
       navigate(projectUrl);
       dispatch(setProjectCreationModal(false));
     }
-  }, [currentNamespace, currentSlug, dispatch, result, navigate]);
+  }, [dispatch, result, navigate]);
 
   const ownerHelpText = (
     <FormText className="input-hint">

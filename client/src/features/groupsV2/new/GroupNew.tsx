@@ -156,12 +156,12 @@ function GroupV2CreationDetails() {
   useEffect(() => {
     if (result.isSuccess) {
       const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-        slug: currentSlug,
+        slug: result.data.slug,
       });
       navigate(groupUrl);
       dispatch(setGroupCreationModal(false));
     }
-  }, [currentSlug, result, dispatch, navigate]);
+  }, [result, dispatch, navigate]);
 
   const nameHelpText = (
     <FormText className="input-hint">
