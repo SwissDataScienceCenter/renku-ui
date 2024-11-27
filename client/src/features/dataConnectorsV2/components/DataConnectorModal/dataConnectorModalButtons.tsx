@@ -218,11 +218,12 @@ export function DataConnectorModalContinueButton({
 }
 
 export function DataConnectorConnectionTestResult() {
-  const { cloudStorageState, isActionOngoing, validationResult } =
+  const { cloudStorageState, isActionOngoing, success, validationResult } =
     useAppSelector((state) => state.dataConnectorFormSlice);
   if (
     cloudStorageState.step !== 2 ||
     cloudStorageState.completedSteps < 2 ||
+    success ||
     validationResult == null ||
     isActionOngoing
   )
