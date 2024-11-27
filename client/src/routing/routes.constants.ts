@@ -78,8 +78,7 @@ export const RELATIVE_ROUTES = {
       new: "new",
       show: {
         root: ":namespace/:slug/*",
-        info: "info",
-        settings: "settings/*",
+        settings: "settings",
         sessions: {
           root: "sessions/*",
           show: "show/:session",

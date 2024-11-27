@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 
+import { useEffect } from "react";
+
 import { DEFAULT_PERMISSIONS } from "../../permissionsV2/permissions.constants";
 import type { Permissions } from "../../permissionsV2/permissions.types";
-import { useGetProjectsByProjectIdPermissionsQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 
 interface UseProjectPermissionsArgs {
   projectId: string;
@@ -27,16 +29,26 @@ interface UseProjectPermissionsArgs {
 export default function useProjectPermissions({
   projectId,
 }: UseProjectPermissionsArgs): Permissions {
-  const { data, isLoading, isError } =
-    useGetProjectsByProjectIdPermissionsQuery({ projectId });
+  const { currentData, isLoading, isError, isUninitialized } =
+    projectV2Api.endpoints.getProjectsByProjectIdPermissions.useQueryState({
+      projectId,
+    });
+  const [fetchPermissions] =
+    projectV2Api.endpoints.getProjectsByProjectIdPermissions.useLazyQuery();
 
-  if (isLoading || isError || !data) {
+  useEffect(() => {
+    if (isUninitialized) {
+      fetchPermissions({ projectId });
+    }
+  }, [fetchPermissions, isUninitialized, projectId]);
+
+  if (isLoading || isError || !currentData) {
     return DEFAULT_PERMISSIONS;
   }
 
   const permissions: Permissions = {
     ...DEFAULT_PERMISSIONS,
-    ...data,
+    ...currentData,
   };
   return permissions;
 }
