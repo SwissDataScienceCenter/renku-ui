@@ -192,7 +192,7 @@ interface UnreadySessionSecretItemProps {
 function UnreadySessionSecretItem({
   secretSlot,
 }: UnreadySessionSecretItemProps) {
-  const { id: slotId, name, filename } = secretSlot;
+  const { id: slotId, name, description, filename } = secretSlot;
 
   const [mode, setMode] = useState<"new-value" | "existing">("new-value");
 
@@ -209,6 +209,7 @@ function UnreadySessionSecretItem({
             <code>{filename}</code>
             {")"}
           </div>
+          {description && <p className="mb-0">{description}</p>}
         </CardBody>
         <CardBody>
           <ButtonGroup>
@@ -240,7 +241,7 @@ function UnreadySessionSecretItem({
               className={cx("btn", "btn-outline-primary")}
             >
               <BoxArrowInLeft className={cx("bi", "me-1")} />
-              Provide an existing secret value
+              Use an existing secret value
             </Label>
           </ButtonGroup>
         </CardBody>
