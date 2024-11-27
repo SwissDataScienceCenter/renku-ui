@@ -18,7 +18,7 @@
 import { Suspense, lazy } from "react";
 import PageLoader from "../../components/PageLoader";
 
-const NamespaceNew = lazy(() => import("./new/GroupNew"));
+const NamespaceNew = lazy(() => import("../groupsV2/new/GroupNew"));
 
 export default function LazyGroupNew() {
   return (

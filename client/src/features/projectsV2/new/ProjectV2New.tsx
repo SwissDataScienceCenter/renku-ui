@@ -18,43 +18,99 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown, InfoCircle } from "react-bootstrap-icons";
+import {
+  CheckLg,
+  ChevronDown,
+  Folder,
+  InfoCircle,
+  XLg,
+} from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
-import { Button, Collapse, Form, FormGroup, FormText, Label } from "reactstrap";
+import {
+  Button,
+  Collapse,
+  Form,
+  FormGroup,
+  FormText,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
 import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectSlugFormField from "../fields/ProjectSlugFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
-import { INITIAL_PROJECT_STATE } from "./projectV2New.constants";
 import { NewProjectForm } from "./projectV2New.types";
 
 export default function ProjectV2New() {
-  const user = useLegacySelector((state) => state.stateModel.user);
+  const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
+
+  const [hash, setHash] = useLocationHash();
+  const projectCreationHash = "createProject";
+  const showProjectCreationModal = hash === projectCreationHash;
+  const toggleModal = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = prev === projectCreationHash;
+      return isOpen ? "" : projectCreationHash;
+    });
+  }, [setHash]);
+
   return (
     <>
-      <h2>Create a new project</h2>
-      <p>
-        A Renku project groups together data, code, and compute resources for
-        you and your collaborators.
-      </p>
-      {user.logged ? (
-        <ProjectV2CreationDetails />
-      ) : (
-        <LoginAlert
-          logged={user.logged}
-          textIntro="Only authenticated users can create new projects."
-          textPost="to create a new project."
-        />
-      )}
+      <Modal
+        backdrop="static"
+        centered
+        data-cy="new-project-modal"
+        fullscreen="lg"
+        isOpen={showProjectCreationModal}
+        scrollable
+        size="lg"
+        unmountOnClose={true}
+        toggle={toggleModal}
+      >
+        <ModalHeader
+          data-cy="new-project-modal-header"
+          tag="div"
+          toggle={toggleModal}
+        >
+          <h2>
+            <Folder className="bi" /> Create a new project
+          </h2>
+          <p className={cx("fs-6", "fw-normal", "mb-0")}>
+            A Renku project groups together data, code, and compute resources
+            for you and your collaborators.
+          </p>
+        </ModalHeader>
+
+        {userLoading ? (
+          <ModalBody>
+            <Loader />
+          </ModalBody>
+        ) : userInfo?.isLoggedIn ? (
+          <ProjectV2CreationDetails />
+        ) : (
+          <ModalBody>
+            <LoginAlert
+              logged={userInfo?.isLoggedIn ?? false}
+              textIntro="Only authenticated users can create new projects."
+              textPost="to create a new project."
+            />
+          </ModalBody>
+        )}
+      </Modal>
     </>
   );
 }
@@ -66,16 +122,27 @@ function ProjectV2CreationDetails() {
   const [createProject, result] = usePostProjectsMutation();
   const navigate = useNavigate();
 
+  const [, setHash] = useLocationHash();
+  const closeModal = useCallback(() => {
+    setHash();
+  }, [setHash]);
+
   // Form initialization
   const {
     control,
-    formState: { errors, touchedFields },
+    formState: { dirtyFields, errors },
     handleSubmit,
     setValue,
     watch,
   } = useForm<NewProjectForm>({
     mode: "onChange",
-    defaultValues: INITIAL_PROJECT_STATE,
+    defaultValues: {
+      description: "",
+      name: "",
+      namespace: "",
+      slug: "",
+      visibility: "private",
+    },
   });
 
   // We watch for changes in the name and derive the slug from it
@@ -101,19 +168,19 @@ function ProjectV2CreationDetails() {
   useEffect(() => {
     if (result.isSuccess) {
       const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace: currentNamespace,
-        slug: currentSlug,
+        namespace: result.data.namespace,
+        slug: result.data.slug,
       });
       navigate(projectUrl);
     }
-  }, [currentNamespace, currentSlug, result, navigate]);
+  }, [result, navigate]);
 
   const ownerHelpText = (
     <FormText className="input-hint">
       The URL for this project will be{" "}
       <span className="fw-bold">
-        renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
-        {currentSlug || "<Name>"}
+        renkulab.io/v2/projects/{currentNamespace || "<owner>"}/
+        {currentSlug || "<name>"}
       </span>
     </FormText>
   );
@@ -126,108 +193,126 @@ function ProjectV2CreationDetails() {
 
   return (
     <>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <FormGroup disabled={result.isLoading}>
-          <div className="mb-3">
-            <ProjectNameFormField
-              control={control}
-              errors={errors}
-              name="name"
-            />
-          </div>
-
-          <div className="mb-1">
-            <ProjectNamespaceFormField
-              control={control}
-              entityName="project"
-              errors={errors}
-              helpText={ownerHelpText}
-              name="namespace"
-            />
-          </div>
-
-          <div className="mb-3">
-            <button
-              className={cx("btn", "btn-link", "p-0", "text-decoration-none")}
-              onClick={toggleCollapse}
-              type="button"
-            >
-              Customize project URL <ChevronDown className="bi" />
-            </button>
-            <Collapse isOpen={isCollapseOpen}>
-              <div
-                className={cx(
-                  "align-items-center",
-                  "d-flex",
-                  "flex-wrap",
-                  "mb-0"
-                )}
-              >
-                <span>
-                  renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
-                </span>
-                <ProjectSlugFormField
-                  compact={true}
+      <ModalBody data-cy="new-project-modal-body">
+        <Form id="project-creation-form" onSubmit={handleSubmit(onSubmit)}>
+          <FormGroup className="d-inline" disabled={result.isLoading}>
+            {/* //? FormGroup hard codes an additional mb-3. Adding "d-inline" makes it ineffective. */}
+            <div className={cx("d-flex", "flex-column", "gap-3")}>
+              <div>
+                <ProjectNameFormField
                   control={control}
                   errors={errors}
-                  name="slug"
+                  name="name"
                 />
               </div>
-            </Collapse>
 
-            {errors.slug && touchedFields.slug && (
-              <div className={cx("d-block", "invalid-feedback")}>
-                <p className="mb-1">
-                  You can customize the slug only with lowercase letters,
-                  numbers, and hyphens.
-                </p>
+              <div>
+                <div className="mb-1">
+                  <ProjectNamespaceFormField
+                    control={control}
+                    entityName="project"
+                    errors={errors}
+                    helpText={ownerHelpText}
+                    name="namespace"
+                  />
+                </div>
+                <button
+                  className={cx(
+                    "btn",
+                    "btn-link",
+                    "p-0",
+                    "text-decoration-none"
+                  )}
+                  data-cy="project-slug-toggle"
+                  onClick={toggleCollapse}
+                  type="button"
+                >
+                  Customize project URL <ChevronDown className="bi" />
+                </button>
+                <Collapse isOpen={isCollapseOpen}>
+                  <div
+                    className={cx(
+                      "align-items-center",
+                      "d-flex",
+                      "flex-wrap",
+                      "mb-0"
+                    )}
+                  >
+                    <span>
+                      renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
+                    </span>
+                    <ProjectSlugFormField
+                      compact={true}
+                      control={control}
+                      errors={errors}
+                      countAsDirty={dirtyFields.slug && dirtyFields.name}
+                      name="slug"
+                      resetFunction={resetUrl}
+                    />
+                  </div>
+                </Collapse>
 
-                {currentName ? (
-                  <Button color="danger" size="sm" onClick={resetUrl}>
-                    Reset URL
-                  </Button>
+                {dirtyFields.slug && !dirtyFields.name ? (
+                  <div className={cx("d-block", "invalid-feedback")}>
+                    <p className="mb-0">
+                      Mind the URL will be updated once you provide a name.
+                    </p>
+                  </div>
                 ) : (
-                  <p className="mb-0">
-                    Mind the URL will be updated once you provide a name.
-                  </p>
+                  errors.slug &&
+                  dirtyFields.slug && (
+                    <div className={cx("d-block", "invalid-feedback")}>
+                      <p className="mb-1">{errors.slug.message}</p>
+                    </div>
+                  )
                 )}
               </div>
-            )}
-          </div>
 
-          <div className="mb-3">
-            <div className="mb-1">
-              <ProjectVisibilityFormField
-                name="visibility"
+              <div>
+                <div className="mb-1">
+                  <ProjectVisibilityFormField
+                    name="visibility"
+                    control={control}
+                    errors={errors}
+                  />
+                </div>
+                <Label className="mb-0" for="projectV2NewForm-users">
+                  <InfoCircle className="bi" /> You can add members after
+                  creating the project.
+                </Label>
+              </div>
+
+              <ProjectDescriptionFormField
                 control={control}
                 errors={errors}
+                name="description"
               />
-            </div>
-            <Label className="mb-0" for="projectV2NewForm-users">
-              <InfoCircle className="bi" /> You can add members after creating
-              the project.
-            </Label>
-          </div>
 
-          <div className="mb-3">
-            <ProjectDescriptionFormField
-              control={control}
-              errors={errors}
-              name="description"
-            />
-          </div>
-
-          {result.error && (
-            <div className="mb-3">
-              <RtkOrNotebooksError error={result.error} />
+              {result.error && <RtkOrNotebooksError error={result.error} />}
             </div>
+          </FormGroup>
+        </Form>
+      </ModalBody>
+
+      <ModalFooter data-cy="new-project-modal-footer">
+        <Button color="outline-primary" onClick={closeModal} type="button">
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="primary"
+          data-cy="project-create-button"
+          form="project-creation-form"
+          type="submit"
+        >
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <CheckLg className={cx("bi", "me-1")} />
           )}
-
-          <Button color="primary" type="submit">
-            Create
-          </Button>
-        </FormGroup>
-      </Form>
+          Create
+        </Button>
+      </ModalFooter>
     </>
   );
 }
