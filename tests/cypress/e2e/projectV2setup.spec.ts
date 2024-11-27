@@ -196,7 +196,6 @@ describe("Set up data connectors", () => {
       .getDataConnector()
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .testCloudStorage({ success: false })
-      .getDataConnectorPermissions()
       .postDataConnector({ namespace: "user1-uuid", visibility: "public" })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
@@ -400,5 +399,28 @@ describe("Set up data connectors", () => {
     cy.getDataCy("project-data-connector-connect-header")
       .find("button.btn-close[aria-label='Close']")
       .click();
+
+    // Now edit a data connector
+    fixtures
+      .testCloudStorage({ success: true })
+      .getDataConnectorPermissions()
+      .patchDataConnector({ namespace: "user1-uuid" })
+      .patchDataConnectorSecrets({
+        shouldNotBeCalled: true,
+      });
+
+    cy.contains("example storage").should("be.visible").click();
+    cy.getDataCy("data-connector-edit").should("be.visible").click();
+    // Fill out the details
+    cy.getDataCy("test-data-connector-button").click();
+    cy.getDataCy("add-data-connector-continue-button")
+      .contains("Continue")
+      .click();
+    cy.getDataCy("data-connector-edit-update-button").click();
+    cy.wait("@patchDataConnector");
+    cy.getDataCy("data-connector-edit-body").should(
+      "contain.text",
+      "The data connector user1-uuid/example-storage has been successfully updated."
+    );
   });
 });
