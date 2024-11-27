@@ -114,6 +114,14 @@
             "schema": {
               "$ref": "#/components/schemas/Ulid"
             }
+          },
+          {
+            "in": "query",
+            "name": "with_documentation",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WithDocumentation"
+            }
           }
         ],
         "responses": {
@@ -237,6 +245,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "with_documentation",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WithDocumentation"
+            }
           }
         ],
         "responses": {
@@ -246,6 +262,116 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
+    },
+    "/projects/{project_id}/copies": {
+      "get": {
+        "summary": "Get list of all copies of this project",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          },
+          {
+            "in": "query",
+            "description": "When true, only return projects that the user has write access to",
+            "name": "writable",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectsList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      },
+      "post": {
+        "summary": "Create a new copy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The project was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The project was copied but at least one data connector cannot be copied due to lack of permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -466,7 +592,7 @@
         "tags": ["projects"]
       }
     },
-    "/projects/{project_id}/secret_slots": {
+    "/projects/{project_id}/session_secret_slots": {
       "parameters": [
         {
           "in": "path",
@@ -507,7 +633,7 @@
         "tags": ["projects"]
       }
     },
-    "/projects/{project_id}/secrets": {
+    "/projects/{project_id}/session_secrets": {
       "parameters": [
         {
           "in": "path",
@@ -768,6 +894,16 @@
           },
           "keywords": {
             "$ref": "#/components/schemas/KeywordsList"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/ProjectDocumentation"
+          },
+          "template_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "is_template": {
+            "$ref": "#/components/schemas/IsTemplate",
+            "default": false
           }
         },
         "required": [
@@ -796,7 +932,8 @@
               "url": "git@github.com:SwissDataScienceCenter/project-2.git"
             }
           ],
-          "keywords": ["keyword 1", "keyword 2"]
+          "keywords": ["keyword 1", "keyword 2"],
+          "template_id": "01JC3CB5426KC7P5STS5X3KSS8"
         }
       },
       "ProjectPost": {
@@ -817,14 +954,16 @@
             "$ref": "#/components/schemas/RepositoriesList"
           },
           "visibility": {
-            "$ref": "#/components/schemas/Visibility",
-            "default": "private"
+            "$ref": "#/components/schemas/Visibility"
           },
           "description": {
             "$ref": "#/components/schemas/Description"
           },
           "keywords": {
             "$ref": "#/components/schemas/KeywordsList"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/ProjectDocumentation"
           }
         },
         "required": ["name", "namespace"]
@@ -851,6 +990,18 @@
           },
           "keywords": {
             "$ref": "#/components/schemas/KeywordsList"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/ProjectDocumentation"
+          },
+          "template_id": {
+            "description": "template_id is set when copying a project from a template project and it cannot be modified. This field can be either null or an empty string; a null value won't change it while an empty string value will delete it, meaning that the project is unlinked from its template",
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 0
+          },
+          "is_template": {
+            "$ref": "#/components/schemas/IsTemplate"
           }
         }
       },
@@ -860,6 +1011,10 @@
         "minLength": 26,
         "maxLength": 26,
         "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      },
+      "WithDocumentation": {
+        "description": "Projects with or without possibly extensive documentation?",
+        "type": "boolean"
       },
       "ProjectName": {
         "description": "Renku project name",
@@ -901,6 +1056,13 @@
         "type": "string",
         "maxLength": 500
       },
+      "Keyword": {
+        "description": "A single keyword",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "pattern": "^[A-Za-z0-9\\s\\-_.]*$"
+      },
       "KeywordsList": {
         "description": "Project keywords",
         "type": "array",
@@ -910,12 +1072,12 @@
         "minItems": 0,
         "example": ["project", "keywords"]
       },
-      "Keyword": {
-        "description": "A single keyword",
+      "ProjectDocumentation": {
+        "description": "Renku project documentation",
         "type": "string",
-        "minLength": 1,
-        "maxLength": 99,
-        "pattern": "^[A-Za-z0-9\\s\\-_.]*$"
+        "minLength": 0,
+        "maxLength": 5000,
+        "example": "My Renku Project Documentation :)"
       },
       "RepositoriesList": {
         "description": "A list of repositories",
@@ -938,6 +1100,10 @@
         "description": "Project's visibility levels",
         "type": "string",
         "enum": ["private", "public"]
+      },
+      "IsTemplate": {
+        "description": "Shows if a project is a template or not",
+        "type": "boolean"
       },
       "ProjectMemberListPatchRequest": {
         "description": "List of members and their access level to the project",

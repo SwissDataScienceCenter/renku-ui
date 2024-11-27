@@ -222,7 +222,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjects: {
       invalidatesTags: ["Project"],
     },
-    getProjectsByProjectIdSecretSlots: {
+    getProjectsByProjectIdSessionSecretSlots: {
       providesTags: (result, _, { projectId }) =>
         result
           ? [
@@ -253,13 +253,13 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     deleteSessionSecretSlotsBySlotId: {
       invalidatesTags: ["SessionSecretSlot"],
     },
-    getProjectsByProjectIdSecrets: {
+    getProjectsByProjectIdSessionSecrets: {
       providesTags: (result, _, { projectId }) =>
         result
           ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
           : ["SessionSecret"],
     },
-    patchProjectsByProjectIdSecrets: {
+    patchProjectsByProjectIdSessionSecrets: {
       invalidatesTags: (result, _, { projectId }) =>
         result
           ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
@@ -294,12 +294,12 @@ export const {
   useGetProjectsByProjectIdPermissionsQuery,
 
   // project session secret hooks
-  useGetProjectsByProjectIdSecretSlotsQuery,
+  useGetProjectsByProjectIdSessionSecretSlotsQuery,
   usePostSessionSecretSlotsMutation,
   usePatchSessionSecretSlotsBySlotIdMutation,
   useDeleteSessionSecretSlotsBySlotIdMutation,
-  useGetProjectsByProjectIdSecretsQuery,
-  usePatchProjectsByProjectIdSecretsMutation,
+  useGetProjectsByProjectIdSessionSecretsQuery,
+  usePatchProjectsByProjectIdSessionSecretsMutation,
 
   // data connector hooks
   useGetProjectsByProjectIdDataConnectorLinksQuery,

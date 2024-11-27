@@ -22,8 +22,8 @@ import { useEffect, useMemo } from "react";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { getSessionSecretSlotsWithSecrets } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.utils";
 import {
-  useGetProjectsByProjectIdSecretSlotsQuery,
-  useGetProjectsByProjectIdSecretsQuery,
+  useGetProjectsByProjectIdSessionSecretSlotsQuery,
+  useGetProjectsByProjectIdSessionSecretsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
@@ -43,12 +43,12 @@ export default function useSessionSecrets({
     currentData: sessionSecretSlots,
     isFetching: isFetchingSessionSecretSlots,
     error: sessionSecretSlotsError,
-  } = useGetProjectsByProjectIdSecretSlotsQuery({ projectId });
+  } = useGetProjectsByProjectIdSessionSecretSlotsQuery({ projectId });
   const {
     currentData: sessionSecrets,
     isFetching: isFetchingSessionSecrets,
     error: sessionSecretsError,
-  } = useGetProjectsByProjectIdSecretsQuery(
+  } = useGetProjectsByProjectIdSessionSecretsQuery(
     userLogged ? { projectId } : skipToken
   );
 

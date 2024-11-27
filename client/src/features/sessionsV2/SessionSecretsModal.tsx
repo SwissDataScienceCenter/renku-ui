@@ -50,7 +50,7 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import SelectUserSecretField from "../ProjectPageV2/ProjectPageContent/SessionSecrets/fields/SelectUserSecretField";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import {
-  usePatchProjectsByProjectIdSecretsMutation,
+  usePatchProjectsByProjectIdSessionSecretsMutation,
   type Project,
   type SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
@@ -261,7 +261,7 @@ function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
   const { id: slotId, project_id: projectId } = secretSlot;
 
   const [patchSessionSecrets, result] =
-    usePatchProjectsByProjectIdSecretsMutation();
+    usePatchProjectsByProjectIdSessionSecretsMutation();
 
   const {
     control,
@@ -354,7 +354,7 @@ function ProvideExistingContent({ secretSlot }: ProvideExistingContentProps) {
   const { id: slotId, project_id: projectId } = secretSlot;
 
   const [patchSessionSecrets, result] =
-    usePatchProjectsByProjectIdSecretsMutation();
+    usePatchProjectsByProjectIdSessionSecretsMutation();
 
   const {
     control,
