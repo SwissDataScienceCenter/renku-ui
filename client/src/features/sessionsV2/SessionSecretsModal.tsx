@@ -83,7 +83,12 @@ export default function SessionSecretsModal({
   }, [dispatch]);
 
   return (
-    <ScrollableModal centered isOpen={isOpen} size="lg">
+    <ScrollableModal
+      centered
+      data-cy="session-secrets-modal"
+      isOpen={isOpen}
+      size="lg"
+    >
       <ModalHeader>Session secrets</ModalHeader>
       <ModalBody>
         <ReadySessionSecrets
@@ -125,7 +130,7 @@ function ReadySessionSecrets({
   return (
     <>
       <p className={cx("h5")}>Ready</p>
-      <div className="mb-3">
+      <div className="mb-3" data-cy="session-secrets-ready">
         {readySessionSecrets.map(({ secretSlot }) => (
           <ReadySessionSecretItem key={secretSlot.id} secretSlot={secretSlot} />
         ))}
@@ -201,7 +206,7 @@ function UnreadySessionSecretItem({
 
   return (
     <Col xs={12}>
-      <Card>
+      <Card data-cy="session-secrets-unready-item">
         <CardBody className="pb-0">
           <div className="fw-bold">
             {name}
