@@ -196,6 +196,13 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       providesTags: ["Project"],
     },
     getProjectsByProjectId: {
+      // Forces the requested URL to not contain "?" when not requesting documentation.
+      query: ({ projectId, withDocumentation }) => ({
+        url: `/projects/${projectId}`,
+        params: withDocumentation
+          ? { with_documentation: withDocumentation }
+          : undefined,
+      }),
       providesTags: ["Project"],
     },
     getProjectsByProjectIdDataConnectorLinks: {
