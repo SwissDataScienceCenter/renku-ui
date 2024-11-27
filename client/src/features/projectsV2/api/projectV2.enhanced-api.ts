@@ -147,6 +147,8 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "Namespace",
     "Project",
     "ProjectMembers",
+    "SessionSecretSlot",
+    "SessionSecret",
   ],
   endpoints: {
     deleteGroupsByGroupSlug: {
@@ -189,7 +191,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsByProjectIds: {
       providesTags: ["Project"],
     },
-    getProjectsByNamespaceAndSlug: {
+    getNamespacesByNamespaceProjectsAndSlug: {
       providesTags: ["Project"],
     },
     getProjectsByProjectId: {
@@ -219,6 +221,49 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjects: {
       invalidatesTags: ["Project"],
     },
+    getProjectsByProjectIdSecretSlots: {
+      providesTags: (result, _, { projectId }) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                type: "SessionSecretSlot" as const,
+                id,
+              })),
+              { type: "SessionSecretSlot", id: `LIST-${projectId}` },
+            ]
+          : ["SessionSecretSlot"],
+    },
+    postSessionSecretSlots: {
+      invalidatesTags: (
+        result,
+        _,
+        { sessionSecretSlotPost: { project_id: projectId } }
+      ) =>
+        result
+          ? [{ type: "SessionSecretSlot", id: `LIST-${projectId}` }]
+          : ["SessionSecretSlot"],
+    },
+    patchSessionSecretSlotsBySlotId: {
+      invalidatesTags: (result, _, { slotId }) =>
+        result
+          ? [{ type: "SessionSecretSlot", id: slotId }]
+          : ["SessionSecretSlot"],
+    },
+    deleteSessionSecretSlotsBySlotId: {
+      invalidatesTags: ["SessionSecretSlot"],
+    },
+    getProjectsByProjectIdSecrets: {
+      providesTags: (result, _, { projectId }) =>
+        result
+          ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
+          : ["SessionSecret"],
+    },
+    patchProjectsByProjectIdSecrets: {
+      invalidatesTags: (result, _, { projectId }) =>
+        result
+          ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
+          : ["SessionSecret"],
+    },
   },
 });
 
@@ -227,7 +272,7 @@ export const {
   // project hooks
   useGetProjectsPagedQuery: useGetProjectsQuery,
   usePostProjectsMutation,
-  useGetProjectsByNamespaceAndSlugQuery,
+  useGetNamespacesByNamespaceProjectsAndSlugQuery,
   useGetProjectsByProjectIdQuery,
   useGetProjectsByProjectIdsQuery,
   usePatchProjectsByProjectIdMutation,
@@ -236,6 +281,14 @@ export const {
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsByProjectIdPermissionsQuery,
+
+  // project session secret hooks
+  useGetProjectsByProjectIdSecretSlotsQuery,
+  usePostSessionSecretSlotsMutation,
+  usePatchSessionSecretSlotsBySlotIdMutation,
+  useDeleteSessionSecretSlotsBySlotIdMutation,
+  useGetProjectsByProjectIdSecretsQuery,
+  usePatchProjectsByProjectIdSecretsMutation,
 
   // data connector hooks
   useGetProjectsByProjectIdDataConnectorLinksQuery,
