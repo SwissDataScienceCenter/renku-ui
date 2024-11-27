@@ -42,17 +42,17 @@ import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 import LazyGroupV2Show from "../groupsV2/LazyGroupV2Show";
+import { groupCreationHash } from "../groupsV2/new/createGroup.constants";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
+import { projectCreationHash } from "../projectsV2/new/createProjectV2.constants";
 import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
 import NavbarV2 from "./NavbarV2";
-import { groupCreationHash } from "../groupsV2/new/createGroup.constants";
-import { projectCreationHash } from "../projectsV2/new/createProjectV2.constants";
 
 export default function RootV2() {
   const navigate = useNavigate();

@@ -54,6 +54,7 @@ import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import type { ProjectV2Metadata } from "../../settings/projectSettings.types";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
+import ProjectSessionSecrets from "../SessionSecrets/ProjectSessionSecrets";
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
 
@@ -391,6 +392,7 @@ export default function ProjectPageSettings() {
     <div className={cx("d-flex", "flex-column", "gap-4")}>
       <ProjectSettingsMetadata project={project} />
       <ProjectPageSettingsMembers project={project} />
+      <ProjectSessionSecrets />
       <PermissionsGuard
         disabled={null}
         enabled={<ProjectPageDelete project={project} />}
