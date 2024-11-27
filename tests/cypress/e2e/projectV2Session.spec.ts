@@ -44,7 +44,13 @@ describe("launch sessions with data connectors", () => {
       .sessionServersEmptyV2()
       .sessionImage()
       .newLauncher()
-      .environments();
+      .environments()
+      .sessionSecretSlots({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      })
+      .sessionSecrets({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
   });
