@@ -193,6 +193,13 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       providesTags: ["Project"],
     },
     getNamespacesByNamespaceProjectsAndSlug: {
+      // Forces the requested URL to not contain "?" when not requesting documentation.
+      query: ({ namespace, slug, withDocumentation }) => ({
+        url: `/namespaces/${namespace}/projects/${slug}`,
+        params: withDocumentation
+          ? { with_documentation: withDocumentation }
+          : undefined,
+      }),
       providesTags: ["Project"],
     },
     getProjectsByProjectId: {
