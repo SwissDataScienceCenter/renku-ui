@@ -24,6 +24,7 @@ import {
   QuestionCircle,
   Search,
 } from "react-bootstrap-icons";
+import { useLocation } from "react-router";
 import { Link, useMatch } from "react-router-dom-v5-compat";
 import {
   Collapse,
@@ -54,6 +55,10 @@ function NavbarItemPlus() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
+  // ? Temporary workaround for the search page
+  const location = useLocation();
+  const searchPage = location.pathname.startsWith(ABSOLUTE_ROUTES.v2.search);
+
   return (
     <Dropdown isOpen={isOpen} toggle={toggleOpen} className="nav-item">
       <DropdownToggle nav className={cx("nav-link", "fs-5")} id="plus-dropdown">
@@ -65,23 +70,43 @@ function NavbarItemPlus() {
         end
       >
         <DropdownItem className="p-0">
-          <CreateProjectV2Button
-            className="dropdown-item"
-            dataCy="navbar-project-new"
-            color="link"
-          >
-            Project
-          </CreateProjectV2Button>
+          {searchPage ? (
+            <Link
+              className="dropdown-item"
+              data-cy="navbar-project-new"
+              to={ABSOLUTE_ROUTES.v2.projects.new}
+            >
+              Project
+            </Link>
+          ) : (
+            <CreateProjectV2Button
+              className="dropdown-item"
+              dataCy="navbar-project-new"
+              color="link"
+            >
+              Project
+            </CreateProjectV2Button>
+          )}
         </DropdownItem>
 
         <DropdownItem className="p-0">
-          <CreateGroupButton
-            className="dropdown-item"
-            dataCy="navbar-group-new"
-            color="link"
-          >
-            Group
-          </CreateGroupButton>
+          {searchPage ? (
+            <Link
+              className="dropdown-item"
+              data-cy="navbar-group-new"
+              to={ABSOLUTE_ROUTES.v2.groups.new}
+            >
+              Group
+            </Link>
+          ) : (
+            <CreateGroupButton
+              className="dropdown-item"
+              dataCy="navbar-group-new"
+              color="link"
+            >
+              Group
+            </CreateGroupButton>
+          )}
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
