@@ -217,17 +217,15 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           userPermissions={permissions}
         />
         {currentNamespace !== project.namespace && (
-          <div className="mt-1">
-            <RenkuAlert
-              className="mb-0"
-              color="warning"
-              dismissible={false}
-              timeout={0}
-            >
-              Modifying the owner also change the project&apos;s URL. Once the
-              change is saved, it will redirect to the updated project URL.
-            </RenkuAlert>
-          </div>
+          <RenkuAlert
+            className={cx("mb-0", "mt-1")}
+            color="warning"
+            dismissible={false}
+            timeout={0}
+          >
+            Modifying the owner also change the project&apos;s URL. Once the
+            change is saved, it will redirect to the updated project URL.
+          </RenkuAlert>
         )}
 
         <PermissionsGuard
@@ -245,27 +243,23 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           userPermissions={permissions}
         />
 
-        <div>
-          <ProjectDescriptionFormField
-            name="description"
-            control={control}
-            errors={errors}
-          />
-        </div>
+        <ProjectDescriptionFormField
+          name="description"
+          control={control}
+          errors={errors}
+        />
 
-        <div>
-          <KeywordsInput
-            hasError={errors.keywords != null}
-            help="Keywords are used to describe the project. To add one, type a keyword and press enter."
-            label="Keywords"
-            name="keywords"
-            register={register("keywords", {
-              validate: () => !areKeywordsDirty,
-            })}
-            setDirty={setKeywordsDirty}
-            value={project.keywords as string[]}
-          />
-        </div>
+        <KeywordsInput
+          hasError={errors.keywords != null}
+          help="Keywords are used to describe the project. To add one, type a keyword and press enter."
+          label="Keywords"
+          name="keywords"
+          register={register("keywords", {
+            validate: () => !areKeywordsDirty,
+          })}
+          setDirty={setKeywordsDirty}
+          value={project.keywords as string[]}
+        />
 
         <div className={cx("d-flex", "justify-content-end")}>
           <Button
