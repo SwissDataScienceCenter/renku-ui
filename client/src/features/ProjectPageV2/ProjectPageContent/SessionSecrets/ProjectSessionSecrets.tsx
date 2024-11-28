@@ -22,6 +22,7 @@ import { useMemo } from "react";
 import { Key, Lock, ShieldLock } from "react-bootstrap-icons";
 import {
   Badge,
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -99,7 +100,7 @@ export default function ProjectSessionSecrets() {
           )}
         >
           <div className={cx("align-items-center", "d-flex")}>
-            <h4 className={cx("m-0", "me-2")}>
+            <h4 className="me-2">
               <ShieldLock className={cx("me-1", "bi")} />
               Session Secrets
             </h4>
@@ -116,10 +117,18 @@ export default function ProjectSessionSecrets() {
           </div>
         </div>
 
-        <p className="mb-0">
+        <p className="mb-1">
           Use session secrets to connect to resources from inside a session that
           require a password or credential.
         </p>
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          <p className="mb-0">
+            Session secrets will be mounted at <code>{"/secrets"}</code>.
+          </p>
+          <Button color="outline-primary" size="sm">
+            Update the secrets mount location
+          </Button>
+        </div>
 
         {!userLogged && (
           <InfoAlert
