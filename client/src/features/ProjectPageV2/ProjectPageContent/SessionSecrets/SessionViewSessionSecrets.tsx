@@ -18,16 +18,14 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect, useMemo, useRef } from "react";
 import { ShieldLock } from "react-bootstrap-icons";
-import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
+import { useMemo } from "react";
+import { Badge, ListGroup } from "reactstrap";
 import { InfoAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import useLocationHash from "../../../../utils/customHooks/useLocationHash.hook";
-import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
   SessionSecret,
   SessionSecretSlot,
@@ -37,14 +35,10 @@ import {
   useGetProjectsByProjectIdSessionSecretsQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
-import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-import AddSessionSecretButton from "./AddSessionSecretButton";
-import { SESSION_SECRETS_CARD_ID } from "./sessionSecrets.constants";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 import SessionSecretSlotItem from "./SessionSecretSlotItem";
-import UpdateSecretsMountDirectoryButton from "./UpdateSecretsMountDirectoryButton";
 
-export default function ProjectSessionSecrets() {
+export default function SessionViewSessionSecrets() {
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
@@ -52,7 +46,6 @@ export default function ProjectSessionSecrets() {
   const { project } = useProject();
   const { id: projectId, secrets_mount_directory: secretsMountDirectory } =
     project;
-  const permissions = useProjectPermissions({ projectId });
   const {
     data: sessionSecretSlots,
     isLoading: isLoadingSessionSecretSlots,
@@ -76,101 +69,47 @@ export default function ProjectSessionSecrets() {
       {error && <RtkOrNotebooksError error={error} dismissible={false} />}
     </>
   ) : (
-    <ProjectSessionSecretsContent
+    <SessionViewSessionSecretsContent
       secretsMountDirectory={secretsMountDirectory}
       sessionSecretSlots={sessionSecretSlots}
       sessionSecrets={sessionSecrets ?? []}
     />
   );
 
-  const ref = useRef<HTMLDivElement>(null);
-  const [hash] = useLocationHash();
-  useEffect(() => {
-    if (hash === SESSION_SECRETS_CARD_ID && !isLoading) {
-      ref.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [hash, isLoading]);
-
   return (
-    <Card
-      id={SESSION_SECRETS_CARD_ID}
-      data-cy="project-settings-session-secrets"
-      innerRef={ref}
-    >
-      <CardHeader>
-        <div
-          className={cx(
-            "align-items-center",
-            "d-flex",
-            "justify-content-between",
-            "mb-2"
-          )}
-        >
-          <div className={cx("align-items-center", "d-flex")}>
-            <h4 className={cx("m-0", "me-2")}>
-              <ShieldLock className={cx("me-1", "bi")} />
-              Session Secrets
-            </h4>
-            {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
-          </div>
+    <div>
+      <div className={cx("align-items-center", "d-flex", "mb-2")}>
+        <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
+          <ShieldLock className={cx("me-1", "bi")} />
+          Session Secrets
+        </h4>
+        {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
+      </div>
 
-          <div className="my-auto">
-            <PermissionsGuard
-              disabled={null}
-              enabled={<AddSessionSecretButton />}
-              requestedPermission="write"
-              userPermissions={permissions}
-            />
-          </div>
-        </div>
-
-        <p className="mb-1">
-          Use session secrets to connect to resources from inside a session that
-          require a password or credential.
-        </p>
-        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+      {!userLogged && sessionSecretSlots && sessionSecretSlots.length > 0 && (
+        <InfoAlert className="mb-2" dismissible={false} timeout={0}>
           <p className="mb-0">
-            Session secrets will be mounted at{" "}
-            <code>{secretsMountDirectory}</code>.
+            As an anonymous user, you cannot use session secrets.
           </p>
-          <PermissionsGuard
-            disabled={null}
-            enabled={<UpdateSecretsMountDirectoryButton />}
-            requestedPermission="write"
-            userPermissions={permissions}
-          />
-        </div>
+        </InfoAlert>
+      )}
 
-        {!userLogged && (
-          <InfoAlert
-            className={cx("mt-3", "mb-0")}
-            dismissible={false}
-            timeout={0}
-          >
-            <p className="mb-0">
-              As an anonymous user, you cannot use session secrets.
-            </p>
-          </InfoAlert>
-        )}
-      </CardHeader>
-      <CardBody className={cx(sessionSecretSlots?.length == 0 && "pb-0")}>
-        {content}
-      </CardBody>
-    </Card>
+      {content}
+    </div>
   );
 }
 
-interface ProjectSessionSecretsContentProps {
+interface SessionViewSessionSecretsContentProps {
   secretsMountDirectory: string;
   sessionSecretSlots: SessionSecretSlot[];
   sessionSecrets: SessionSecret[];
 }
 
-function ProjectSessionSecretsContent({
+function SessionViewSessionSecretsContent({
   secretsMountDirectory,
   sessionSecretSlots,
   sessionSecrets,
-}: ProjectSessionSecretsContentProps) {
+}: SessionViewSessionSecretsContentProps) {
   const sessionSecretSlotsWithSecrets = useMemo(
     () =>
       getSessionSecretSlotsWithSecrets({ sessionSecretSlots, sessionSecrets }),
@@ -178,16 +117,17 @@ function ProjectSessionSecretsContent({
   );
 
   if (!sessionSecretSlots.length) {
-    return null;
+    return <p className="fst-italic">No session secrets included</p>;
   }
 
   return (
-    <ListGroup flush>
+    <ListGroup>
       {sessionSecretSlotsWithSecrets.map((secretSlot) => (
         <SessionSecretSlotItem
           key={secretSlot.secretSlot.id}
           secretsMountDirectory={secretsMountDirectory}
           secretSlot={secretSlot}
+          noActions
         />
       ))}
     </ListGroup>
