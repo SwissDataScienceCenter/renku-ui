@@ -69,7 +69,7 @@ export default function useSessionSecrets({
 
   useEffect(() => {
     if (
-      !userLogged ||
+      // !userLogged ||
       sessionSecretSlotsWithSecrets?.every(({ secretId }) => secretId)
     ) {
       dispatch(startSessionOptionsV2Slice.actions.setUserSecretsReady(true));
