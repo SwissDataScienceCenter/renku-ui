@@ -51,6 +51,8 @@ import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
 import NavbarV2 from "./NavbarV2";
+import { groupCreationHash } from "../groupsV2/new/createGroup.constants";
+import { projectCreationHash } from "../projectsV2/new/createProjectV2.constants";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -150,7 +152,10 @@ function GroupsV2Routes() {
       <Route
         path={RELATIVE_ROUTES.v2.groups.new}
         element={
-          <Navigate to={`${ABSOLUTE_ROUTES.v2.root}#createGroup`} replace />
+          <Navigate
+            to={{ pathname: ABSOLUTE_ROUTES.v2.root, hash: groupCreationHash }}
+            replace
+          />
         }
       />
 
@@ -187,7 +192,13 @@ function ProjectsV2Routes() {
       <Route
         path={RELATIVE_ROUTES.v2.projects.new}
         element={
-          <Navigate to={`${ABSOLUTE_ROUTES.v2.root}#createProject`} replace />
+          <Navigate
+            to={{
+              pathname: ABSOLUTE_ROUTES.v2.root,
+              hash: projectCreationHash,
+            }}
+            replace
+          />
         }
       />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>

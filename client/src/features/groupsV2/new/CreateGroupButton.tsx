@@ -21,6 +21,7 @@ import { useCallback } from "react";
 import { Button } from "reactstrap";
 
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
+import { groupCreationHash } from "./createGroup.constants";
 
 export interface CreateGroupButtonProps {
   children?: React.ReactNode;
@@ -35,7 +36,6 @@ export default function CreateGroupButton({
   dataCy,
 }: CreateGroupButtonProps) {
   const [, setHash] = useLocationHash();
-  const groupCreationHash = "createGroup";
   const openModal = useCallback(() => {
     setHash(groupCreationHash);
   }, [setHash]);
