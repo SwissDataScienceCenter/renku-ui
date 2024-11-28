@@ -65,7 +65,8 @@ interface AddSessionSecretModalProps {
 
 function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
   const { project } = useProject();
-  const { id: projectId } = project;
+  const { id: projectId, secrets_mount_directory: secretsMountDirectory } =
+    project;
 
   const [postSessionSecretSlot, result] = usePostSessionSecretSlotsMutation();
 
@@ -132,7 +133,12 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
             errors={errors}
             name="description"
           />
-          <FilenameField control={control} errors={errors} name="filename" />
+          <FilenameField
+            control={control}
+            errors={errors}
+            name="filename"
+            secretsMountDirectory={secretsMountDirectory}
+          />
         </ModalBody>
         <ModalFooter>
           <Button color="outline-primary" onClick={toggle}>
