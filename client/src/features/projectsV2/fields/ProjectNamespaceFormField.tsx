@@ -32,7 +32,7 @@ import Select, {
   SingleValueProps,
   components,
 } from "react-select";
-import { Button, FormText, Label } from "reactstrap";
+import { Button, Label } from "reactstrap";
 
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
@@ -259,13 +259,8 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
             /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-zA-Z0-9][a-zA-Z0-9\-_.]*$/,
         }}
       />
-      <div className="invalid-feedback">A project must belong to a owner.</div>
-      {helpText && typeof helpText === "string" && (
-        <FormText id={`${entityName}-help`} className="input-hint">
-          {helpText}
-        </FormText>
-      )}
-      {helpText && typeof helpText !== "string" && <>{helpText}</>}
+      <div className="invalid-feedback">A project must belong to an owner.</div>
+      {helpText}
     </div>
   );
 }

@@ -36,13 +36,13 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
       </Label>
       <div data-cy="project-visibility-controller">
         <Controller
-          aria-describedby="projectVisibilityHelp"
           control={control}
           name={name}
           render={({ field }) => (
             <>
               <ButtonGroup id="project-visibility">
                 <Input
+                  aria-describedby="projectVisibilityHelp"
                   type="radio"
                   className="btn-check"
                   id="project-visibility-public"
@@ -61,6 +61,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                   Public
                 </Label>
                 <Input
+                  aria-describedby="projectVisibilityHelp"
                   type="radio"
                   className="btn-check"
                   id="project-visibility-private"
