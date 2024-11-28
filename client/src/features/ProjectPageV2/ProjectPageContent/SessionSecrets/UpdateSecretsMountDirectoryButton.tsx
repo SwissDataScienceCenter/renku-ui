@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Pencil, XLg } from "react-bootstrap-icons";
+import { ArrowCounterclockwise, Pencil, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
@@ -85,6 +85,16 @@ function UpdateSecretsMountDirectoryModal({
     [handleSubmit, submitHandler]
   );
 
+  const onReset = useCallback(() => {
+    patchProject({
+      "If-Match": project.etag ?? "",
+      projectId,
+      projectPatch: {
+        secrets_mount_directory: "",
+      },
+    });
+  }, [patchProject, project.etag, projectId]);
+
   useEffect(() => {
     reset({
       secretsMountDirectory: project.secrets_mount_directory,
@@ -134,6 +144,10 @@ function UpdateSecretsMountDirectoryModal({
           <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Close
+          </Button>
+          <Button color="outline-primary" onClick={onReset}>
+            <ArrowCounterclockwise className={cx("bi", "me-1")} />
+            Reset to default value
           </Button>
           <Button
             color="primary"
