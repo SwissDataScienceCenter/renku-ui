@@ -36,6 +36,7 @@ import {
   Form,
   Input,
   Label,
+  ListGroup,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -47,6 +48,7 @@ import { Loader } from "../../components/Loader";
 import ScrollableModal from "../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import SelectUserSecretField from "../ProjectPageV2/ProjectPageContent/SessionSecrets/fields/SelectUserSecretField";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import {
@@ -55,6 +57,8 @@ import {
   type SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
+import { WarnAlert } from "../../components/Alert";
+import SessionSecretSlotItem from "../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionSecretSlotItem";
 
 interface SessionSecretsModalProps {
   isOpen: boolean;
@@ -67,6 +71,10 @@ export default function SessionSecretsModal({
   project,
   sessionSecretSlotsWithSecrets,
 }: SessionSecretsModalProps) {
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
+  );
+
   const navigate = useNavigate();
   const onCancel = useCallback(() => {
     const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
@@ -82,6 +90,38 @@ export default function SessionSecretsModal({
     dispatch(startSessionOptionsV2Slice.actions.setUserSecretsReady(true));
   }, [dispatch]);
 
+  const content = userLogged ? (
+    <>
+      <ReadySessionSecrets
+        sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
+      />
+      <UnreadySessionSecrets
+        sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
+      />
+    </>
+  ) : (
+    <>
+      <WarnAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          This session is expecting some secrets but as an anonymous user, you
+          cannot use session secrets.
+        </p>
+      </WarnAlert>
+
+      <p className={cx("h5")}>Required secrets</p>
+      <ListGroup>
+        {sessionSecretSlotsWithSecrets.map((secretSlot) => (
+          <SessionSecretSlotItem
+            key={secretSlot.secretSlot.id}
+            secretsMountDirectory={project.secrets_mount_directory}
+            secretSlot={secretSlot}
+            noActions
+          />
+        ))}
+      </ListGroup>
+    </>
+  );
+
   return (
     <ScrollableModal
       centered
@@ -90,14 +130,7 @@ export default function SessionSecretsModal({
       size="lg"
     >
       <ModalHeader>Session secrets</ModalHeader>
-      <ModalBody>
-        <ReadySessionSecrets
-          sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
-        />
-        <UnreadySessionSecrets
-          sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
-        />
-      </ModalBody>
+      <ModalBody>{content}</ModalBody>
       <ModalFooter>
         <Button color="outline-danger" onClick={onCancel}>
           <XLg className={cx("bi", "me-1")} />
