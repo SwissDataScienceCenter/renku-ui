@@ -18,13 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import {
-  CheckLg,
-  ChevronDown,
-  Folder,
-  InfoCircle,
-  XLg,
-} from "react-bootstrap-icons";
+import { CheckLg, Folder, InfoCircle, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
@@ -54,12 +48,13 @@ import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectSlugFormField from "../fields/ProjectSlugFormField";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 import { NewProjectForm } from "./projectV2New.types";
+import { projectCreationHash } from "./createProjectV2.constants";
+import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 
 export default function ProjectV2New() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
 
   const [hash, setHash] = useLocationHash();
-  const projectCreationHash = "createProject";
   const showProjectCreationModal = hash === projectCreationHash;
   const toggleModal = useCallback(() => {
     setHash((prev) => {
@@ -176,7 +171,7 @@ function ProjectV2CreationDetails() {
   }, [result, navigate]);
 
   const ownerHelpText = (
-    <FormText className="input-hint">
+    <FormText className="d-block">
       The URL for this project will be{" "}
       <span className="fw-bold">
         renkulab.io/v2/projects/{currentNamespace || "<owner>"}/
@@ -227,7 +222,8 @@ function ProjectV2CreationDetails() {
                   onClick={toggleCollapse}
                   type="button"
                 >
-                  Customize project URL <ChevronDown className="bi" />
+                  Customize project URL{" "}
+                  <ChevronFlippedIcon flipped={isCollapseOpen} className="bi" />
                 </button>
                 <Collapse isOpen={isCollapseOpen}>
                   <div
@@ -245,7 +241,9 @@ function ProjectV2CreationDetails() {
                       compact={true}
                       control={control}
                       errors={errors}
-                      countAsDirty={dirtyFields.slug && dirtyFields.name}
+                      countAsDirty={
+                        !!(dirtyFields.slug && dirtyFields.name && currentName)
+                      }
                       name="slug"
                       resetFunction={resetUrl}
                     />

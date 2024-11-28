@@ -21,7 +21,7 @@ import cx from "classnames";
 import { Controller } from "react-hook-form";
 import type { FieldValues } from "react-hook-form";
 
-import { FormText, Input, Label } from "reactstrap";
+import { Input, Label } from "reactstrap";
 import type { GenericFormFieldProps } from "./formField.types";
 
 export default function NameFormField<T extends FieldValues>({
@@ -52,12 +52,7 @@ export default function NameFormField<T extends FieldValues>({
         rules={{ required: true, maxLength: 99 }}
       />
       <div className="invalid-feedback">Please provide a name</div>
-      {helpText && typeof helpText === "string" && (
-        <FormText id={`${entityName}-help`} className="input-hint">
-          {helpText}
-        </FormText>
-      )}
-      {helpText && typeof helpText !== "string" && <>{helpText}</>}
+      {helpText}
     </div>
   );
 }

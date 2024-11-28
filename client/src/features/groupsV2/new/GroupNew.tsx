@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, ChevronDown, People, XLg } from "react-bootstrap-icons";
+import { CheckLg, People, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
@@ -45,12 +45,13 @@ import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
 import NameFormField from "../../projectsV2/fields/NameFormField";
 import SlugFormField from "../../projectsV2/fields/SlugFormField";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
+import { groupCreationHash } from "./createGroup.constants";
+import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 
 export default function GroupNew() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
 
   const [hash, setHash] = useLocationHash();
-  const groupCreationHash = "createGroup";
   const showGroupCreationModal = hash === groupCreationHash;
   const toggleModal = useCallback(() => {
     setHash((prev) => {
@@ -165,7 +166,7 @@ function GroupV2CreationDetails() {
   }, [result, navigate]);
 
   const nameHelpText = (
-    <FormText className="input-hint">
+    <FormText className="d-block">
       The URL for this group will be{" "}
       <span className="fw-bold">
         renkulab.io/v2/groups/{currentSlug || "<name>"}
@@ -207,7 +208,11 @@ function GroupV2CreationDetails() {
                     onClick={toggleCollapse}
                     type="button"
                   >
-                    Customize group URL <ChevronDown className="bi" />
+                    Customize group URL{" "}
+                    <ChevronFlippedIcon
+                      flipped={isCollapseOpen}
+                      className="bi"
+                    />
                   </button>
                   <Collapse isOpen={isCollapseOpen}>
                     <div
@@ -224,7 +229,13 @@ function GroupV2CreationDetails() {
                         control={control}
                         entityName="group"
                         errors={errors}
-                        countAsDirty={dirtyFields.slug && dirtyFields.name}
+                        countAsDirty={
+                          !!(
+                            dirtyFields.slug &&
+                            dirtyFields.name &&
+                            currentName
+                          )
+                        }
                         name="slug"
                         resetFunction={resetUrl}
                       />
