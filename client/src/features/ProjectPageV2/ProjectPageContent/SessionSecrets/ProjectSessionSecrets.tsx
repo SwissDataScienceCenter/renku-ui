@@ -22,7 +22,6 @@ import { useMemo } from "react";
 import { Key, Lock, ShieldLock } from "react-bootstrap-icons";
 import {
   Badge,
-  Button,
   Card,
   CardBody,
   CardHeader,
@@ -33,8 +32,8 @@ import {
 } from "reactstrap";
 
 import { InfoAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
@@ -51,6 +50,7 @@ import AddSessionSecretButton from "./AddSessionSecretButton";
 import SessionSecretActions from "./SessionSecretActions";
 import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
+import UpdateSecretsMountDirectoryButton from "./UpdateSecretsMountDirectoryButton";
 
 export default function ProjectSessionSecrets() {
   const userLogged = useLegacySelector<boolean>(
@@ -58,7 +58,8 @@ export default function ProjectSessionSecrets() {
   );
 
   const { project } = useProject();
-  const { id: projectId } = project;
+  const { id: projectId, secrets_mount_directory: secretsMountDirectory } =
+    project;
   const permissions = useProjectPermissions({ projectId });
   const {
     data: sessionSecretSlots,
@@ -84,6 +85,7 @@ export default function ProjectSessionSecrets() {
     </>
   ) : (
     <ProjectSessionSecretsContent
+      secretsMountDirectory={secretsMountDirectory}
       sessionSecretSlots={sessionSecretSlots}
       sessionSecrets={sessionSecrets ?? []}
     />
@@ -96,11 +98,12 @@ export default function ProjectSessionSecrets() {
           className={cx(
             "align-items-center",
             "d-flex",
-            "justify-content-between"
+            "justify-content-between",
+            "mb-2"
           )}
         >
           <div className={cx("align-items-center", "d-flex")}>
-            <h4 className="me-2">
+            <h4 className={cx("m-0", "me-2")}>
               <ShieldLock className={cx("me-1", "bi")} />
               Session Secrets
             </h4>
@@ -123,11 +126,15 @@ export default function ProjectSessionSecrets() {
         </p>
         <div className={cx("align-items-center", "d-flex", "gap-2")}>
           <p className="mb-0">
-            Session secrets will be mounted at <code>{"/secrets"}</code>.
+            Session secrets will be mounted at{" "}
+            <code>{secretsMountDirectory}</code>.
           </p>
-          <Button color="outline-primary" size="sm">
-            Update the secrets mount location
-          </Button>
+          <PermissionsGuard
+            disabled={null}
+            enabled={<UpdateSecretsMountDirectoryButton />}
+            requestedPermission="write"
+            userPermissions={permissions}
+          />
         </div>
 
         {!userLogged && (
@@ -150,11 +157,13 @@ export default function ProjectSessionSecrets() {
 }
 
 interface ProjectSessionSecretsContentProps {
+  secretsMountDirectory: string;
   sessionSecretSlots: SessionSecretSlot[];
   sessionSecrets: SessionSecret[];
 }
 
 function ProjectSessionSecretsContent({
+  secretsMountDirectory,
   sessionSecretSlots,
   sessionSecrets,
 }: ProjectSessionSecretsContentProps) {
@@ -173,6 +182,7 @@ function ProjectSessionSecretsContent({
       {sessionSecretSlotsWithSecrets.map((secretSlot) => (
         <SessionSecretSlotItem
           key={secretSlot.secretSlot.id}
+          secretsMountDirectory={secretsMountDirectory}
           secretSlot={secretSlot}
         />
       ))}
@@ -181,11 +191,16 @@ function ProjectSessionSecretsContent({
 }
 
 interface SessionSecretSlotItemProps {
+  secretsMountDirectory: string;
   secretSlot: SessionSecretSlotWithSecret;
 }
 
-function SessionSecretSlotItem({ secretSlot }: SessionSecretSlotItemProps) {
+function SessionSecretSlotItem({
+  secretsMountDirectory,
+  secretSlot,
+}: SessionSecretSlotItemProps) {
   const { filename, name, description } = secretSlot.secretSlot;
+  const fullPath = `${secretsMountDirectory}/${filename}`;
 
   return (
     <ListGroupItem action data-cy="session-secret-slot-item">
@@ -222,7 +237,7 @@ function SessionSecretSlotItem({ secretSlot }: SessionSecretSlotItemProps) {
             )}
           </div>
           <div>
-            filename: <code>{filename}</code>
+            Location in sessions: <code>{fullPath}</code>
           </div>
           {description && <p className="mb-0">{description}</p>}
         </Col>

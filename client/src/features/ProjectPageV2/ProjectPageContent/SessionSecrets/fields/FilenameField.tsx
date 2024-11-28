@@ -17,20 +17,29 @@
  */
 
 import cx from "classnames";
-import { Controller, type FieldValues } from "react-hook-form";
+import { Controller, useWatch, type FieldValues } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
 
 import type { SessionSecretFormFieldProps } from "./fields.types";
 
-type FilenameFieldProps<T extends FieldValues> = SessionSecretFormFieldProps<T>;
+interface FilenameFieldProps<T extends FieldValues>
+  extends SessionSecretFormFieldProps<T> {
+  secretsMountDirectory: string;
+}
 
 export default function FilenameField<T extends FieldValues>({
   control,
   errors,
   name,
+  secretsMountDirectory,
 }: FilenameFieldProps<T>) {
   const fieldId = `session-secret-${name}`;
   const fieldHelpId = `${fieldId}-help`;
+
+  const watch = useWatch({ control, name });
+  const fullPath = watch
+    ? `${secretsMountDirectory}/${watch}`
+    : `${secretsMountDirectory}/<filename>`;
 
   return (
     <div className="mb-3">
@@ -66,8 +75,14 @@ export default function FilenameField<T extends FieldValues>({
         )}
       </div>
       <FormText id={fieldHelpId} tag="div">
-        This is the filename which will be used when mounting the secret inside
-        sessions.
+        <p className="mb-0">
+          This is the filename which will be used when mounting the secret
+          inside sessions.
+        </p>
+        <p className="mb-0">
+          The secret will be populated at:{" "}
+          <code className={cx("bg-secondary-subtle", "p-1")}>{fullPath}</code>.
+        </p>
       </FormText>
     </div>
   );
