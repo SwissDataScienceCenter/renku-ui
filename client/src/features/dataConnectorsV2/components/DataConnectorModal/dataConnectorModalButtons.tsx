@@ -222,7 +222,7 @@ export function DataConnectorConnectionTestResult() {
     useAppSelector((state) => state.dataConnectorFormSlice);
   if (
     cloudStorageState.step !== 2 ||
-    cloudStorageState.completedSteps < 2 ||
+    cloudStorageState.completedSteps < 1 ||
     success ||
     validationResult == null ||
     isActionOngoing
