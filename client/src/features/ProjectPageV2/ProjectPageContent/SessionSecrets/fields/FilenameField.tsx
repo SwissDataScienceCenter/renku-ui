@@ -30,6 +30,8 @@ export default function FilenameField<T extends FieldValues>({
   name,
 }: FilenameFieldProps<T>) {
   const fieldId = `session-secret-${name}`;
+  const fieldHelpId = `${fieldId}-help`;
+
   return (
     <div className="mb-3">
       <Label for={fieldId}>Filename</Label>
@@ -38,7 +40,7 @@ export default function FilenameField<T extends FieldValues>({
         control={control}
         render={({ field: { ref, ...rest } }) => (
           <Input
-            aria-describedby="add-session-secret-filename-help"
+            aria-describedby={fieldHelpId}
             className={cx(errors.filename && "is-invalid")}
             id={fieldId}
             innerRef={ref}
@@ -63,7 +65,7 @@ export default function FilenameField<T extends FieldValues>({
           <>Invalid filename</>
         )}
       </div>
-      <FormText id="add-session-secret-filename-help" tag="div">
+      <FormText id={fieldHelpId} tag="div">
         This is the filename which will be used when mounting the secret inside
         sessions.
       </FormText>

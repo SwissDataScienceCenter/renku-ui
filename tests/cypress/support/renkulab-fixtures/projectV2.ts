@@ -326,7 +326,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "GET",
-        "/ui-server/api/data/projects/*/secret_slots",
+        "/ui-server/api/data/projects/*/session_secret_slots",
         response
       ).as(name);
       return this;
@@ -376,7 +376,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "GET",
-        "/ui-server/api/data/projects/*/secrets",
+        "/ui-server/api/data/projects/*/session_secrets",
         response
       ).as(name);
       return this;
@@ -390,7 +390,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "PATCH",
-        "/ui-server/api/data/projects/*/secrets",
+        "/ui-server/api/data/projects/*/session_secrets",
         response
       ).as(name);
       return this;

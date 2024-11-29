@@ -34,6 +34,7 @@ const initialState: StartSessionOptionsV2 = {
   repositories: [],
   sessionClass: 0,
   storage: MIN_SESSION_STORAGE_GB,
+  userSecretsReady: false,
 };
 
 const startSessionOptionsV2Slice = createSlice({
@@ -81,6 +82,9 @@ const startSessionOptionsV2Slice = createSlice({
     },
     setStorage: (state, action: PayloadAction<number>) => {
       state.storage = action.payload;
+    },
+    setUserSecretsReady: (state, action: PayloadAction<boolean>) => {
+      state.userSecretsReady = action.payload;
     },
     updateCloudStorageItem: (
       state,
