@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowInLeft,
+  Download,
   Pencil,
   PlusLg,
   ShieldMinus,
@@ -27,6 +29,7 @@ import {
   Trash,
   XLg,
 } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   ButtonGroup,
@@ -41,7 +44,6 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { Controller, useForm } from "react-hook-form";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -52,6 +54,8 @@ import {
   usePatchProjectsByProjectIdSessionSecretsMutation,
   usePatchSessionSecretSlotsBySlotIdMutation,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
+import ReplaceSecretValueModal from "../../../secretsV2/ReplaceSecretValueModal";
+import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import DescriptionField from "./fields/DescriptionField";
@@ -95,6 +99,12 @@ export default function SessionSecretActions({
     []
   );
 
+  const [isReplaceOpen, setIsReplaceOpen] = useState(false);
+  const toggleReplace = useCallback(
+    () => setIsReplaceOpen((isOpen) => !isOpen),
+    []
+  );
+
   if (!userLogged) {
     return null;
   }
@@ -130,6 +140,16 @@ export default function SessionSecretActions({
       : []),
     ...(secretSlot.secretId != null
       ? [
+          {
+            key: "replace-secret-value",
+            onClick: toggleReplace,
+            content: (
+              <>
+                <Download className={cx("bi", "me-1")} />
+                Replace secret value
+              </>
+            ),
+          },
           {
             key: "clear-secret",
             onClick: toggleClear,
@@ -225,6 +245,11 @@ export default function SessionSecretActions({
         isOpen={isClearOpen}
         secretSlotWithSecret={secretSlot}
         toggle={toggleClear}
+      />
+      <ReplaceSecretValueModalWrapped
+        isOpen={isReplaceOpen}
+        secretSlotWithSecret={secretSlot}
+        toggle={toggleReplace}
       />
     </>
   );
@@ -763,5 +788,39 @@ function ClearSessionSecretModal({
         </Button>
       </ModalFooter>
     </Modal>
+  );
+}
+
+interface ReplaceSecretValueModalWrappedProps {
+  isOpen: boolean;
+  secretSlotWithSecret: SessionSecretSlotWithSecret;
+  toggle: () => void;
+}
+
+function ReplaceSecretValueModalWrapped({
+  isOpen,
+  secretSlotWithSecret,
+  toggle,
+}: ReplaceSecretValueModalWrappedProps) {
+  const { secretId } = secretSlotWithSecret;
+  const { data: userSecret, error } = useGetUserSecretByIdQuery(
+    secretId
+      ? {
+          secretId,
+        }
+      : skipToken
+  );
+
+  if (error || !userSecret) {
+    return null;
+  }
+
+  return (
+    <ReplaceSecretValueModal
+      isOpen={isOpen}
+      secret={userSecret}
+      toggle={toggle}
+      isV2
+    />
   );
 }
