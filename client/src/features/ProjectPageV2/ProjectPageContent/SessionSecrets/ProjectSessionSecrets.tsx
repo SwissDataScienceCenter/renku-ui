@@ -41,8 +41,8 @@ import type {
   SessionSecretSlot,
 } from "../../../projectsV2/api/projectV2.api";
 import {
-  useGetProjectsByProjectIdSecretSlotsQuery,
-  useGetProjectsByProjectIdSecretsQuery,
+  useGetProjectsByProjectIdSessionSecretSlotsQuery,
+  useGetProjectsByProjectIdSessionSecretsQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
@@ -63,12 +63,12 @@ export default function ProjectSessionSecrets() {
     data: sessionSecretSlots,
     isLoading: isLoadingSessionSecretSlots,
     error: sessionSecretSlotsError,
-  } = useGetProjectsByProjectIdSecretSlotsQuery({ projectId });
+  } = useGetProjectsByProjectIdSessionSecretSlotsQuery({ projectId });
   const {
     data: sessionSecrets,
     isLoading: isLoadingSessionSecrets,
     error: sessionSecretsError,
-  } = useGetProjectsByProjectIdSecretsQuery(
+  } = useGetProjectsByProjectIdSessionSecretsQuery(
     userLogged ? { projectId } : skipToken
   );
   const isLoading = isLoadingSessionSecretSlots || isLoadingSessionSecrets;

@@ -81,10 +81,10 @@ function DataConnectorResultAlertContent({
       </li>
     ) : null;
   return (
-    <p className="mb-0">
+    <div className="mb-0">
       {dataConnectorFragment}
       {credentialSaveFragment && <ul>{credentialSaveFragment}</ul>}
       {projectLinkFragment && <ul>{projectLinkFragment}</ul>}
-    </p>
+    </div>
   );
 }

@@ -18,7 +18,10 @@ const injectedRtkApi = api.injectEndpoints({
       GetProjectsByProjectIdApiResponse,
       GetProjectsByProjectIdApiArg
     >({
-      query: (queryArg) => ({ url: `/projects/${queryArg.projectId}` }),
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}`,
+        params: { with_documentation: queryArg.withDocumentation },
+      }),
     }),
     patchProjectsByProjectId: build.mutation<
       PatchProjectsByProjectIdApiResponse,
@@ -46,6 +49,26 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.slug}`,
+        params: { with_documentation: queryArg.withDocumentation },
+      }),
+    }),
+    getProjectsByProjectIdCopies: build.query<
+      GetProjectsByProjectIdCopiesApiResponse,
+      GetProjectsByProjectIdCopiesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/copies`,
+        params: { writable: queryArg.writable },
+      }),
+    }),
+    postProjectsByProjectIdCopies: build.mutation<
+      PostProjectsByProjectIdCopiesApiResponse,
+      PostProjectsByProjectIdCopiesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/copies`,
+        method: "POST",
+        body: queryArg.projectPost,
       }),
     }),
     getProjectsByProjectIdMembers: build.query<
@@ -89,36 +112,38 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/projects/${queryArg.projectId}/data_connector_links`,
       }),
     }),
-    getProjectsByProjectIdSecretSlots: build.query<
-      GetProjectsByProjectIdSecretSlotsApiResponse,
-      GetProjectsByProjectIdSecretSlotsApiArg
+    getProjectsByProjectIdSessionSecretSlots: build.query<
+      GetProjectsByProjectIdSessionSecretSlotsApiResponse,
+      GetProjectsByProjectIdSessionSecretSlotsApiArg
     >({
       query: (queryArg) => ({
-        url: `/projects/${queryArg.projectId}/secret_slots`,
+        url: `/projects/${queryArg.projectId}/session_secret_slots`,
       }),
     }),
-    getProjectsByProjectIdSecrets: build.query<
-      GetProjectsByProjectIdSecretsApiResponse,
-      GetProjectsByProjectIdSecretsApiArg
-    >({
-      query: (queryArg) => ({ url: `/projects/${queryArg.projectId}/secrets` }),
-    }),
-    patchProjectsByProjectIdSecrets: build.mutation<
-      PatchProjectsByProjectIdSecretsApiResponse,
-      PatchProjectsByProjectIdSecretsApiArg
+    getProjectsByProjectIdSessionSecrets: build.query<
+      GetProjectsByProjectIdSessionSecretsApiResponse,
+      GetProjectsByProjectIdSessionSecretsApiArg
     >({
       query: (queryArg) => ({
-        url: `/projects/${queryArg.projectId}/secrets`,
+        url: `/projects/${queryArg.projectId}/session_secrets`,
+      }),
+    }),
+    patchProjectsByProjectIdSessionSecrets: build.mutation<
+      PatchProjectsByProjectIdSessionSecretsApiResponse,
+      PatchProjectsByProjectIdSessionSecretsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/session_secrets`,
         method: "PATCH",
         body: queryArg.sessionSecretPatchList,
       }),
     }),
-    deleteProjectsByProjectIdSecrets: build.mutation<
-      DeleteProjectsByProjectIdSecretsApiResponse,
-      DeleteProjectsByProjectIdSecretsApiArg
+    deleteProjectsByProjectIdSessionSecrets: build.mutation<
+      DeleteProjectsByProjectIdSessionSecretsApiResponse,
+      DeleteProjectsByProjectIdSessionSecretsApiArg
     >({
       query: (queryArg) => ({
-        url: `/projects/${queryArg.projectId}/secrets`,
+        url: `/projects/${queryArg.projectId}/session_secrets`,
         method: "DELETE",
       }),
     }),
@@ -179,6 +204,7 @@ export type GetProjectsByProjectIdApiResponse =
   /** status 200 The project */ Project;
 export type GetProjectsByProjectIdApiArg = {
   projectId: Ulid;
+  withDocumentation?: WithDocumentation;
 };
 export type PatchProjectsByProjectIdApiResponse =
   /** status 200 The patched project */ Project;
@@ -198,6 +224,20 @@ export type GetNamespacesByNamespaceProjectsAndSlugApiResponse =
 export type GetNamespacesByNamespaceProjectsAndSlugApiArg = {
   namespace: string;
   slug: string;
+  withDocumentation?: WithDocumentation;
+};
+export type GetProjectsByProjectIdCopiesApiResponse =
+  /** status 200 The list of projects */ ProjectsList;
+export type GetProjectsByProjectIdCopiesApiArg = {
+  projectId: Ulid;
+  /** When true, only return projects that the user has write access to */
+  writable?: boolean;
+};
+export type PostProjectsByProjectIdCopiesApiResponse =
+  /** status 201 The project was created */ Project;
+export type PostProjectsByProjectIdCopiesApiArg = {
+  projectId: Ulid;
+  projectPost: ProjectPost;
 };
 export type GetProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members */ ProjectMemberListResponse;
@@ -228,25 +268,25 @@ export type GetProjectsByProjectIdDataConnectorLinksApiArg = {
   /** the ID of the project */
   projectId: Ulid;
 };
-export type GetProjectsByProjectIdSecretSlotsApiResponse =
+export type GetProjectsByProjectIdSessionSecretSlotsApiResponse =
   /** status 200 The list of session secret slots */ SessionSecretSlotList;
-export type GetProjectsByProjectIdSecretSlotsApiArg = {
+export type GetProjectsByProjectIdSessionSecretSlotsApiArg = {
   projectId: Ulid;
 };
-export type GetProjectsByProjectIdSecretsApiResponse =
+export type GetProjectsByProjectIdSessionSecretsApiResponse =
   /** status 200 The list of secrets */ SessionSecretList;
-export type GetProjectsByProjectIdSecretsApiArg = {
+export type GetProjectsByProjectIdSessionSecretsApiArg = {
   projectId: Ulid;
 };
-export type PatchProjectsByProjectIdSecretsApiResponse =
+export type PatchProjectsByProjectIdSessionSecretsApiResponse =
   /** status 201 The secrets for the project were saved */ SessionSecretList;
-export type PatchProjectsByProjectIdSecretsApiArg = {
+export type PatchProjectsByProjectIdSessionSecretsApiArg = {
   projectId: Ulid;
   sessionSecretPatchList: SessionSecretPatchList;
 };
-export type DeleteProjectsByProjectIdSecretsApiResponse =
+export type DeleteProjectsByProjectIdSessionSecretsApiResponse =
   /** status 204 The secrets were removed or did not exist in the first place or the project doesn't exist */ void;
-export type DeleteProjectsByProjectIdSecretsApiArg = {
+export type DeleteProjectsByProjectIdSessionSecretsApiArg = {
   projectId: Ulid;
 };
 export type PostSessionSecretSlotsApiResponse =
@@ -286,6 +326,8 @@ export type Description = string;
 export type ETag = string;
 export type Keyword = string;
 export type KeywordsList = Keyword[];
+export type ProjectDocumentation = string;
+export type IsTemplate = boolean;
 export type Project = {
   id: Ulid;
   name: ProjectName;
@@ -299,6 +341,9 @@ export type Project = {
   description?: Description;
   etag?: ETag;
   keywords?: KeywordsList;
+  documentation?: ProjectDocumentation;
+  template_id?: Ulid;
+  is_template?: IsTemplate;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {
@@ -328,7 +373,9 @@ export type ProjectPost = {
   visibility?: Visibility;
   description?: Description;
   keywords?: KeywordsList;
+  documentation?: ProjectDocumentation;
 };
+export type WithDocumentation = boolean;
 export type ProjectPatch = {
   name?: ProjectName;
   namespace?: Slug;
@@ -336,6 +383,10 @@ export type ProjectPatch = {
   visibility?: Visibility;
   description?: Description;
   keywords?: KeywordsList;
+  documentation?: ProjectDocumentation;
+  /** template_id is set when copying a project from a template project and it cannot be modified. This field can be either null or an empty string; a null value won't change it while an empty string value will delete it, meaning that the project is unlinked from its template */
+  template_id?: string;
+  is_template?: IsTemplate;
 };
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
@@ -413,15 +464,17 @@ export const {
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
   useGetNamespacesByNamespaceProjectsAndSlugQuery,
+  useGetProjectsByProjectIdCopiesQuery,
+  usePostProjectsByProjectIdCopiesMutation,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsByProjectIdPermissionsQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
-  useGetProjectsByProjectIdSecretSlotsQuery,
-  useGetProjectsByProjectIdSecretsQuery,
-  usePatchProjectsByProjectIdSecretsMutation,
-  useDeleteProjectsByProjectIdSecretsMutation,
+  useGetProjectsByProjectIdSessionSecretSlotsQuery,
+  useGetProjectsByProjectIdSessionSecretsQuery,
+  usePatchProjectsByProjectIdSessionSecretsMutation,
+  useDeleteProjectsByProjectIdSessionSecretsMutation,
   usePostSessionSecretSlotsMutation,
   useGetSessionSecretSlotsBySlotIdQuery,
   usePatchSessionSecretSlotsBySlotIdMutation,
