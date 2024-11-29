@@ -461,7 +461,7 @@ export function SessionView({
                 <Badge>{project?.repositories?.length}</Badge>
               )}
             </div>
-            {project?.repositories && project?.repositories.length > 0 ? (
+            {project?.repositories && project.repositories.length > 0 ? (
               <ListGroup>
                 {project.repositories.map((repositoryUrl, index) => (
                   <RepositoryItem
