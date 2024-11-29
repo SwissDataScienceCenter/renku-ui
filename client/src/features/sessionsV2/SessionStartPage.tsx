@@ -554,7 +554,6 @@ function StartSessionFromLauncher({
   if (sessionStarted)
     return <SessionStarting launcher={launcher} project={project} />;
 
-  // TODO
   if (
     sessionSecretSlotsWithSecrets &&
     !startSessionOptionsV2.userSecretsReady
