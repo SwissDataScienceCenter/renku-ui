@@ -49,7 +49,7 @@ import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.h
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import {
   useDeleteSessionSecretSlotsBySlotIdMutation,
-  usePatchProjectsByProjectIdSecretsMutation,
+  usePatchProjectsByProjectIdSessionSecretsMutation,
   usePatchSessionSecretSlotsBySlotIdMutation,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
@@ -507,7 +507,7 @@ function ProvideSessionSecretModalNewValueContent({
   const { id: slotId, project_id: projectId } = secretSlot;
 
   const [patchSessionSecrets, result] =
-    usePatchProjectsByProjectIdSecretsMutation();
+    usePatchProjectsByProjectIdSessionSecretsMutation();
 
   const {
     control,
@@ -617,7 +617,7 @@ function ProvideSessionSecretModalExistingContent({
   const { id: slotId, project_id: projectId } = secretSlot;
 
   const [patchSessionSecrets, result] =
-    usePatchProjectsByProjectIdSecretsMutation();
+    usePatchProjectsByProjectIdSessionSecretsMutation();
 
   const {
     control,
@@ -714,7 +714,7 @@ function ClearSessionSecretModal({
   } = secretSlotWithSecret.secretSlot;
 
   const [patchSessionSecrets, result] =
-    usePatchProjectsByProjectIdSecretsMutation();
+    usePatchProjectsByProjectIdSessionSecretsMutation();
 
   const onClear = useCallback(() => {
     patchSessionSecrets({
