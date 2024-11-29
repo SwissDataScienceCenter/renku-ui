@@ -433,9 +433,9 @@ export function SessionView({
               </h4>
               <Badge>{dataConnectors?.length || 0}</Badge>
             </div>
-            {dataConnectors && dataConnectors?.length > 0 ? (
+            {dataConnectors && dataConnectors.length > 0 ? (
               <ListGroup>
-                {dataConnectors?.map((storage, index) => (
+                {dataConnectors.map((storage, index) => (
                   <ListGroupItem key={`storage-${index}`}>
                     <div>Name: {storage.name}</div>
                     <div>Type: {storage.storage.storage_type}</div>
@@ -443,7 +443,9 @@ export function SessionView({
                 ))}
               </ListGroup>
             ) : (
-              <p className="fst-italic">No data connectors included</p>
+              <p className={cx("mb-0", "fst-italic")}>
+                No data connectors included
+              </p>
             )}
           </div>
 
@@ -459,9 +461,9 @@ export function SessionView({
                 <Badge>{project?.repositories?.length}</Badge>
               )}
             </div>
-            {dataConnectors && dataConnectors?.length > 0 ? (
+            {project?.repositories && project?.repositories.length > 0 ? (
               <ListGroup>
-                {project?.repositories?.map((repositoryUrl, index) => (
+                {project.repositories.map((repositoryUrl, index) => (
                   <RepositoryItem
                     key={`storage-${index}`}
                     project={project}
@@ -471,7 +473,9 @@ export function SessionView({
                 ))}
               </ListGroup>
             ) : (
-              <p className="fst-italic">No repositories included</p>
+              <p className={cx("mb-0", "fst-italic")}>
+                No repositories included
+              </p>
             )}
           </div>
         </div>
