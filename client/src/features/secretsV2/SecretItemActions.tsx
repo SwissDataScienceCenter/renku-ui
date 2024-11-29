@@ -39,13 +39,13 @@ import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
-  usePatchUserSecretMutation,
   useDeleteUserSecretMutation,
+  usePatchUserSecretMutation,
   type SecretWithId,
 } from "../usersV2/api/users.api";
-import SecretValueField from "./fields/SecretValueField";
-import NameField from "./fields/NameField";
 import FilenameField from "./fields/FilenameField";
+import NameField from "./fields/NameField";
+import ReplaceSecretValueModal from "./ReplaceSecretValueModal";
 
 interface SecretItemActionsProps {
   isV2?: boolean;
@@ -128,121 +128,6 @@ export default function SecretItemActions({
       />
     </>
   );
-}
-
-interface ReplaceSecretValueModalProps {
-  isOpen: boolean;
-  isV2?: boolean;
-  secret: SecretWithId;
-  toggle: () => void;
-}
-
-function ReplaceSecretValueModal({
-  isOpen,
-  isV2,
-  secret,
-  toggle,
-}: ReplaceSecretValueModalProps) {
-  const { id: secretId } = secret;
-
-  const [patchUserSecret, result] = usePatchUserSecretMutation();
-
-  const {
-    control,
-    formState: { errors, isDirty },
-    handleSubmit,
-    reset,
-  } = useForm<ReplaceSecretValueForm>({
-    defaultValues: {
-      value: "",
-    },
-  });
-
-  const submitHandler = useCallback(
-    (data: ReplaceSecretValueForm) => {
-      patchUserSecret({
-        secretId,
-        secretPatch: {
-          value: data.value,
-        },
-      });
-    },
-    [patchUserSecret, secretId]
-  );
-  const onSubmit = useMemo(
-    () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
-  );
-
-  useEffect(() => {
-    reset({
-      value: "",
-    });
-  }, [reset, secret]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      reset();
-      result.reset();
-    }
-  }, [isOpen, reset, result]);
-
-  useEffect(() => {
-    if (result.isSuccess) {
-      toggle();
-    }
-  }, [result.isSuccess, toggle]);
-
-  return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <Form
-        className={cx(!isV2 && "form-rk-green")}
-        data-cy="replace-secret-value-form"
-        noValidate
-        onSubmit={onSubmit}
-      >
-        <ModalHeader toggle={toggle}>Replace secret value</ModalHeader>
-        <ModalBody>
-          <p>
-            Here you can replace the value of the secret named{" "}
-            <span className="fw-bold">{secret.name}</span>. The change will
-            apply only to new sessions.
-          </p>
-
-          {result.error && (
-            <RtkOrNotebooksError error={result.error} dismissible={false} />
-          )}
-
-          <SecretValueField control={control} errors={errors} name="value" />
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            color={isV2 ? "outline-primary" : "outline-rk-green"}
-            onClick={toggle}
-          >
-            <XLg className={cx("bi", "me-1")} />
-            Close
-          </Button>
-          <Button
-            color={isV2 ? "primary" : "rk-green"}
-            disabled={!isDirty || result.isLoading}
-            type="submit"
-          >
-            {result.isLoading ? (
-              <Loader className="me-1" inline size={16} />
-            ) : (
-              <Pencil className={cx("bi", "me-1")} />
-            )}
-            Replace value
-          </Button>
-        </ModalFooter>
-      </Form>
-    </Modal>
-  );
-}
-
-interface ReplaceSecretValueForm {
-  value: string;
 }
 
 interface EditSecretModalProps {
