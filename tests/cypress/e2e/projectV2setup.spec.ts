@@ -183,6 +183,7 @@ describe("Set up data connectors", () => {
           email: "user1@email.com",
         },
       })
+      .getGroupV2Permissions()
       .getProjectV2Permissions()
       .listProjectV2Members();
     fixtures.projects().landingUserProjects().readProjectV2();
@@ -322,5 +323,104 @@ describe("Set up data connectors", () => {
       "You do not have the required permissions to unlink this data connector."
     ).should("be.visible");
     cy.getDataCy("delete-data-connector-modal-button").should("not.exist");
+  });
+
+  it("should clear state after a data connector has been created", () => {
+    fixtures
+      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .listProjectDataConnectors()
+      .getDataConnector()
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .testCloudStorage({ success: false })
+      .postDataConnector({ namespace: "user1-uuid", visibility: "public" })
+      .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@listProjectDataConnectors");
+
+    // add data connector
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.getDataCy("project-data-controller-mode-create").click();
+    // Pick a provider
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
+    cy.getDataCy("data-connector-edit-next-button").click();
+
+    // Fill out the details
+    cy.get("#sourcePath").type("bucket/my-source");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("test-data-connector-button").click();
+    cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
+    cy.getDataCy("data-connector-edit-mount").within(() => {
+      cy.get("#name").type("example storage without credentials");
+      cy.get("#visibility")
+        .children()
+        .first()
+        .should("have.value", "public")
+        .should("be.checked");
+    });
+
+    cy.getDataCy("data-connector-edit-update-button").click();
+    cy.wait("@postDataConnector");
+    cy.getDataCy("data-connector-edit-body").should(
+      "contain.text",
+      "The data connector user1-uuid/example-storage-without-credentials has been successfully added"
+    );
+    cy.getDataCy("data-connector-edit-body").should(
+      "contain.text",
+      "project was linked"
+    );
+    cy.getDataCy("data-connector-edit-close-button").click();
+    cy.wait("@listProjectDataConnectors");
+
+    // Start adding a second data connector, but cancel
+    fixtures.postDataConnectorProjectLink({ shouldNotBeCalled: true });
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.getDataCy("project-data-controller-mode-create").click();
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
+    cy.getDataCy("data-connector-edit-next-button").click();
+
+    // Fill out the details
+    cy.get("#sourcePath").type("bucket/my-source");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("test-data-connector-button").click();
+    cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
+    cy.getDataCy("data-connector-edit-mount").within(() => {
+      cy.get("#name").type("example storage 2");
+      cy.get("#visibility")
+        .children()
+        .first()
+        .should("have.value", "public")
+        .should("be.checked");
+    });
+    cy.getDataCy("project-data-connector-connect-header")
+      .find("button.btn-close[aria-label='Close']")
+      .click();
+
+    // Now edit a data connector
+    fixtures
+      .testCloudStorage({ success: true })
+      .getDataConnectorPermissions()
+      .patchDataConnector({ namespace: "user1-uuid" })
+      .patchDataConnectorSecrets({
+        shouldNotBeCalled: true,
+      });
+
+    cy.contains("example storage").should("be.visible").click();
+    cy.getDataCy("data-connector-edit").should("be.visible").click();
+    // Fill out the details
+    cy.getDataCy("test-data-connector-button").click();
+    cy.getDataCy("add-data-connector-continue-button")
+      .contains("Continue")
+      .click();
+    cy.getDataCy("data-connector-edit-update-button").click();
+    cy.wait("@patchDataConnector");
+    cy.getDataCy("data-connector-edit-body").should(
+      "contain.text",
+      "The data connector user1-uuid/example-storage has been successfully updated."
+    );
   });
 });

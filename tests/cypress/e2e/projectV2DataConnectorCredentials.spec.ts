@@ -74,6 +74,7 @@ describe("Set up data connectors with credentials", () => {
     cy.get("#access_key_id").type("access key");
     cy.get("#secret_access_key").type("secret key");
     cy.getDataCy("test-data-connector-button").click();
+    cy.contains("Error 1422").should("be.visible");
     cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
     cy.getDataCy("data-connector-edit-mount").within(() => {
       cy.get("#name").type("example storage without credentials");
@@ -144,6 +145,9 @@ describe("Set up data connectors with credentials", () => {
     cy.get("#secret_access_key").type("secret key");
     cy.getDataCy("test-data-connector-button").click();
     cy.wait("@testCloudStorage");
+    cy.contains("The connection to the storage works correctly.").should(
+      "be.visible"
+    );
     cy.getDataCy("add-data-connector-continue-button")
       .contains("Continue")
       .click();
@@ -184,6 +188,7 @@ describe("Set up data connectors with credentials", () => {
 
     // Check that the state was reset
     cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.getDataCy("project-data-controller-mode-create").click();
     cy.getDataCy("data-storage-s3").click();
     cy.getDataCy("data-provider-AWS").click();
   });
