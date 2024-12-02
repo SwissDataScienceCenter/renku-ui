@@ -17,12 +17,13 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { Globe2, Lock } from "react-bootstrap-icons";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { TimeCaption } from "../../../components/TimeCaption";
+import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import type {
   DataConnector,
   DataConnectorToProjectLink,
@@ -45,10 +46,18 @@ export default function DataConnectorBoxListDisplay({
     creation_date: creationDate,
   } = dataConnector;
 
-  const [showDetails, setShowDetails] = useState(false);
+  const [hash, setHash] = useLocationHash();
+  const dcHash = useMemo(
+    () => `data-connector-${dataConnector.id}`,
+    [dataConnector.id]
+  );
+  const showDetails = useMemo(() => hash === dcHash, [dcHash, hash]);
   const toggleDetails = useCallback(() => {
-    setShowDetails((open) => !open);
-  }, []);
+    setHash((prev) => {
+      const isOpen = prev === dcHash;
+      return isOpen ? "" : dcHash;
+    });
+  }, [dcHash, setHash]);
 
   return (
     <>

@@ -102,10 +102,7 @@ export function Secrets<T extends FixturesConstructor>(Parent: T) {
           kind: secretsKind,
         },
       };
-      cy.intercept("POST", "/api/data/user/secrets", (req) => {
-        expect(req.body).to.have.property("kind");
-        req.reply(response);
-      }).as(name);
+      cy.intercept("POST", "/api/data/user/secrets", response).as(name);
       return this;
     }
 

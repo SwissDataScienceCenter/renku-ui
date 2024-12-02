@@ -10,6 +10,7 @@ import type {
   GetProjectsByProjectIdApiArg,
   GetProjectsByProjectIdApiResponse,
   ProjectsList,
+  SessionSecretSlot,
 } from "./projectV2.api";
 
 import type {
@@ -33,6 +34,12 @@ type GetProjectsByProjectIdsApiResponse = Record<
   string,
   GetProjectsByProjectIdApiResponse
 >;
+
+interface GetSessionSecretSlotsByIdsApiArg {
+  sessionSecretSlotIds: string[];
+}
+
+type GetSessionSecretSlotsByIdsApiResponse = SessionSecretSlot[];
 
 export interface GetNamespacesApiResponse extends AbstractKgPaginatedResponse {
   namespaces: GetNamespacesApiResponseOrig;
@@ -133,6 +140,29 @@ const injectedApi = api.injectEndpoints({
           if (response.error) return response;
           result[projectId] =
             response.data as GetProjectsByProjectIdApiResponse;
+        }
+        return { data: result };
+      },
+    }),
+    getSessionSecretSlotsByIds: builder.query<
+      GetSessionSecretSlotsByIdsApiResponse,
+      GetSessionSecretSlotsByIdsApiArg
+    >({
+      queryFn: async (
+        { sessionSecretSlotIds },
+        _api,
+        _options,
+        fetchWithBQ
+      ) => {
+        const result: GetSessionSecretSlotsByIdsApiResponse = [];
+        const promises = sessionSecretSlotIds.map((slotId) =>
+          fetchWithBQ(`/session_secret_slots/${slotId}`)
+        );
+        const responses = await Promise.all(promises);
+        for (let i = 0; i < sessionSecretSlotIds.length; i++) {
+          const response = responses[i];
+          if (response.error) return response;
+          result.push(response.data as SessionSecretSlot);
         }
         return { data: result };
       },
@@ -289,6 +319,17 @@ const enhancedApi = injectedApi.enhanceEndpoints({
         });
       },
     },
+    getSessionSecretSlotsByIds: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                type: "SessionSecretSlot" as const,
+                id,
+              })),
+            ]
+          : ["SessionSecretSlot"],
+    },
   },
 });
 
@@ -328,6 +369,7 @@ export const {
   usePatchGroupsByGroupSlugMembersMutation,
   useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
   useGetGroupsByGroupSlugPermissionsQuery,
+  useGetSessionSecretSlotsByIdsQuery,
 
   //namespace hooks
   useGetNamespacesPagedQuery: useGetNamespacesQuery,

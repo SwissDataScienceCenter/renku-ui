@@ -19,12 +19,10 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Input,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
@@ -33,9 +31,10 @@ import {
 
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
+import FilenameField from "../secretsV2/fields/FilenameField";
+import NameField from "../secretsV2/fields/NameField";
+import SecretValueField from "../secretsV2/fields/SecretValueField";
 import { usePostUserSecretMutation, usersApi } from "../usersV2/api/users.api";
-import { AddSecretForm } from "./secrets.types";
-import { SECRETS_VALUE_LENGTH_LIMIT } from "./secrets.utils";
 
 export default function GeneralSecretNew() {
   // Set up the modal
@@ -53,8 +52,8 @@ export default function GeneralSecretNew() {
   } = useForm<AddSecretForm>({
     defaultValues: {
       name: "",
+      filename: "",
       value: "",
-      kind: "general",
     },
   });
 
@@ -62,8 +61,15 @@ export default function GeneralSecretNew() {
   const [getSecrets, secrets] = usersApi.useLazyGetUserSecretsQuery();
   const [addSecretMutation, result] = usePostUserSecretMutation();
   const onSubmit = useCallback(
-    (newSecret: AddSecretForm) => {
-      addSecretMutation({ secretPost: newSecret });
+    (data: AddSecretForm) => {
+      const filename = data.filename.trim();
+      addSecretMutation({
+        secretPost: {
+          name: data.name,
+          value: data.value,
+          ...(filename ? { default_filename: filename } : {}),
+        },
+      });
     },
     [addSecretMutation]
   );
@@ -97,74 +103,21 @@ export default function GeneralSecretNew() {
         data-cy="secrets-new-form"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="mb-3">
-          <Label className="form-label" for="new-secret-name">
-            Name
-          </Label>
-          <Controller
-            control={control}
-            name="name"
-            render={({ field }) => (
-              <Input
-                autoComplete="off"
-                className={cx(errors.name && "is-invalid")}
-                id="new-secret-name"
-                placeholder="Unique name"
-                type="text"
-                {...field}
-              />
-            )}
-            rules={{
-              required: "Please provide a name.",
-              validate: (value) =>
-                secrets.data?.map((s) => s.name).includes(value)
-                  ? "This name is already used by another secret."
-                  : value && value.startsWith(".")
-                  ? "Name cannot start with a dot."
-                  : !/^[a-zA-Z0-9_.-]+$/.test(value)
-                  ? "Only letters, numbers, dots (.), underscores (_), and dashes (-)."
+        <NameField control={control} errors={errors} name="name" />
+        <FilenameField
+          control={control}
+          errors={errors}
+          name="filename"
+          rules={{
+            validate: {
+              uniqueFilename: (filename: string) =>
+                secrets.data?.map((s) => s.default_filename).includes(filename)
+                  ? "This filename is already used by another secret"
                   : undefined,
-            }}
-          />
-          {errors.name && (
-            <div className="invalid-feedback">{errors.name.message}</div>
-          )}
-        </div>
-
-        <div className="mb-3">
-          <Label className="form-label" for="new-secret-value">
-            Value
-          </Label>
-          <Controller
-            control={control}
-            name="value"
-            render={({ field }) => (
-              <Input
-                id="new-secret-value"
-                type="textarea"
-                {...field}
-                autoComplete="off one-time-code"
-                className={cx(
-                  "rounded-0",
-                  "rounded-start",
-                  errors.value && "is-invalid"
-                )}
-                spellCheck="false"
-                rows={6}
-              />
-            )}
-            rules={{
-              required: "Please provide a value.",
-              validate: (value) =>
-                value.length > SECRETS_VALUE_LENGTH_LIMIT
-                  ? `Value cannot exceed ${SECRETS_VALUE_LENGTH_LIMIT} characters.`
-                  : undefined,
-            }}
-          />
-          {errors.value && (
-            <div className="invalid-feedback">{errors.value.message}</div>
-          )}
-        </div>
+            },
+          }}
+        />
+        <SecretValueField control={control} errors={errors} name="value" />
       </Form>
     </>
   );
@@ -201,7 +154,11 @@ export default function GeneralSecretNew() {
             onClick={handleSubmit(onSubmit)}
             type="submit"
           >
-            <PlusLg className={cx("bi", "me-1")} />
+            {result.isLoading ? (
+              <Loader inline className="me-1" size={16} />
+            ) : (
+              <PlusLg className={cx("bi", "me-1")} />
+            )}
             Add
           </Button>
         </ModalFooter>
@@ -218,4 +175,10 @@ export default function GeneralSecretNew() {
       </div>
     </>
   );
+}
+
+interface AddSecretForm {
+  name: string;
+  filename: string;
+  value: string;
 }

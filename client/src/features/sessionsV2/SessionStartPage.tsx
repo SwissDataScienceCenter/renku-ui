@@ -54,7 +54,7 @@ import {
 } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
+import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SessionSecretsModal from "./SessionSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
