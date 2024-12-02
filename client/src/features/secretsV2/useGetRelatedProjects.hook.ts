@@ -32,15 +32,13 @@ interface UseGetRelatedProjectsArgs {
 export default function useGetRelatedProjects({
   secret,
 }: UseGetRelatedProjectsArgs) {
-  const { session_secret_ids } = secret;
+  const { session_secret_slot_ids: sessionSecretSlotIds } = secret;
 
   const {
     data: secretSlots,
     isLoading: isLoadingSecretSlots,
     error: secretSlotsError,
-  } = useGetSessionSecretSlotsByIdsQuery({
-    sessionSecretSlotIds: session_secret_ids,
-  });
+  } = useGetSessionSecretSlotsByIdsQuery({ sessionSecretSlotIds });
 
   const projectIds = useMemo(() => {
     const rawProjectIds = secretSlots?.map(({ project_id }) => project_id);

@@ -94,7 +94,7 @@ function SessionSecrets() {
   const secretsUsedInSessions = useMemo(
     () =>
       secrets?.filter(
-        ({ session_secret_ids }) => session_secret_ids.length > 0
+        ({ session_secret_slot_ids }) => session_secret_slot_ids.length > 0
       ),
     [secrets]
   );
@@ -229,7 +229,7 @@ function UnusedSecrets() {
   const unusedSecrets = useMemo(
     () =>
       secrets?.filter(
-        ({ session_secret_ids }) => session_secret_ids.length == 0
+        ({ session_secret_slot_ids }) => session_secret_slot_ids.length == 0
       ),
     [secrets]
   );

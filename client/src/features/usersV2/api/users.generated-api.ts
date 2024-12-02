@@ -230,7 +230,7 @@ export type SecretWithId = {
   default_filename: SecretDefaultFilename;
   modification_date: ModificationDate;
   kind: SecretKind;
-  session_secret_ids: UlidList;
+  session_secret_slot_ids: UlidList;
   data_connector_ids: UlidList;
 };
 export type SecretsList = SecretWithId[];
