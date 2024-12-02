@@ -109,6 +109,7 @@ export function DataConnectorModalBodyAndFooter({
       <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
         <DataConnectorModalFooter
           dataConnector={dataConnector}
+          isOpen={isOpen}
           project={project}
           toggle={toggle}
         />

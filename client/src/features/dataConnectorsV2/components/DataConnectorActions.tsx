@@ -462,18 +462,21 @@ export default function DataConnectorActions({
           )}
         </DropdownItem>
       </ButtonWithMenuV2>
+      {/* This component needs to be always be in the DOM for some reason... */}
       <DataConnectorCredentialsModal
         dataConnector={dataConnector}
         setOpen={setCredentialsOpen}
         isOpen={isCredentialsOpen}
       />
-      {removeModal}
-      <DataConnectorModal
-        dataConnector={dataConnector}
-        isOpen={isEditOpen}
-        namespace={dataConnector.namespace}
-        toggle={toggleEdit}
-      />
+      {isDeleteOpen && removeModal}
+      {isEditOpen && (
+        <DataConnectorModal
+          dataConnector={dataConnector}
+          isOpen={isEditOpen}
+          namespace={dataConnector.namespace}
+          toggle={toggleEdit}
+        />
+      )}
     </>
   );
 }
