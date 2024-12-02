@@ -393,7 +393,7 @@ function UserDashboard() {
       >
         <Link
           to={userPageUrl}
-          className={cx("link-primary", "text-decoration-none")}
+          className={cx("link-primary", "text-body", "text-decoration-none")}
         >
           <UserAvatar
             firstName={userInfo.first_name}
