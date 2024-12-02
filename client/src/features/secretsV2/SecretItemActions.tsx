@@ -84,7 +84,7 @@ export default function SecretItemActions({
 
   return (
     <>
-      <Col xs={12} sm="auto" className="ms-auto">
+      <Col xs={12} sm="auto" className="ms-auto" data-cy="user-secret-actions">
         <ButtonWithMenuTag
           color={buttonColor as any} // eslint-disable-line @typescript-eslint/no-explicit-any
           default={
@@ -197,6 +197,7 @@ function ReplaceSecretValueModal({
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <Form
         className={cx(!isV2 && "form-rk-green")}
+        data-cy="replace-secret-value-form"
         noValidate
         onSubmit={onSubmit}
       >
