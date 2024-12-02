@@ -15,9 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import {
   Calendar3Week,
+  Eye,
   FileEarmarkText,
   Folder,
   Megaphone,
@@ -25,6 +28,7 @@ import {
   PersonFillExclamation,
   PlayCircle,
   PlusLg,
+  PlusSquare,
   Send,
 } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router-dom-v5-compat";
@@ -43,8 +47,10 @@ import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook.ts";
 import {
-  useGetGroupsQuery,
+  GetGroupsApiResponse,
+  GetProjectsApiResponse,
   useGetProjectsQuery,
+  useGetGroupsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
@@ -257,35 +263,6 @@ function DashboardSearch() {
 }
 
 function ProjectsDashboard() {
-  return (
-    <Card data-cy="projects-container">
-      <CardHeader className={cx("d-flex", "gap-2")}>
-        <h4 className="m-0">
-          <Folder className={cx("bi", "me-1")} />
-          <span>Projects</span>
-        </h4>
-        <Link
-          className={cx(
-            "btn",
-            "btn-outline-primary",
-            "btn-sm",
-            "ms-auto",
-            "my-auto"
-          )}
-          to="/v2/projects/new"
-        >
-          <PlusLg className="bi" id="createPlus" />
-        </Link>
-      </CardHeader>
-
-      <CardBody>
-        <ProjectList />
-      </CardBody>
-    </Card>
-  );
-}
-
-function ProjectList() {
   const { data, error, isLoading } = useGetProjectsQuery({
     params: {
       page: 1,
@@ -293,7 +270,47 @@ function ProjectList() {
       direct_member: true,
     },
   });
+  const hasProjects = data && data?.projects?.length > 0;
+  return (
+    <Card data-cy="projects-container">
+      <CardHeader className={cx("d-flex", "gap-2")}>
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("mb-0", "me-2")}>
+            <Folder className={cx("bi", "me-1")} />
+            My projects
+          </h4>
+          <Badge>{data?.total ?? 0}</Badge>
+        </div>
+        {hasProjects && (
+          <Link
+            className={cx(
+              "btn",
+              "btn-outline-primary",
+              "btn-sm",
+              "ms-auto",
+              "my-auto"
+            )}
+            to="/v2/projects/new"
+          >
+            <PlusLg className="bi" id="createPlus" />
+          </Link>
+        )}
+      </CardHeader>
 
+      <CardBody>
+        <ProjectList data={data} isLoading={isLoading} error={error} />
+      </CardBody>
+    </Card>
+  );
+}
+
+interface ProjectListProps {
+  data: GetProjectsApiResponse | undefined;
+  error: FetchBaseQueryError | SerializedError | undefined;
+  isLoading: boolean;
+}
+function ProjectList({ data, error, isLoading }: ProjectListProps) {
+  const hasProjects = data && data?.projects?.length > 0;
   const noProjects = isLoading ? (
     <div className={cx("d-flex", "flex-column", "mx-auto")}>
       <Loader />
@@ -304,22 +321,28 @@ function ProjectList() {
       <p>Cannot show projects.</p>
       <RtkOrNotebooksError error={error} />
     </div>
-  ) : !data || data?.projects?.length === 0 ? (
-    <div>No 2.0 projects.</div>
+  ) : !hasProjects ? (
+    <div>
+      Renku 2.0 Projects let you group together related resources and control
+      who can access them.
+    </div>
   ) : null;
 
-  const viewLink = (
+  const projectFooter = hasProjects ? (
     <ViewAllLink
-      noItems={!data || data?.projects?.length === 0}
+      noItems={!hasProjects}
       type="project"
+      total={data?.total ?? 0}
     />
+  ) : (
+    <EmptyProjectsButtons />
   );
 
   if (noProjects)
     return (
       <div className={cx("d-flex", "flex-column", "gap-3")}>
         {noProjects}
-        {viewLink}
+        {projectFooter}
       </div>
     );
 
@@ -334,35 +357,48 @@ function ProjectList() {
           />
         ))}
       </ListGroup>
-      {viewLink}
+      {projectFooter}
     </div>
   );
 }
 
 function GroupsDashboard() {
+  const { data, error, isLoading } = useGetGroupsQuery({
+    params: {
+      page: 1,
+      per_page: 5,
+      direct_member: true,
+    },
+  });
+  const hasGroups = data && data?.groups?.length > 0;
   return (
     <Card data-cy="groups-container">
       <CardHeader className={cx("d-flex", "gap-2")}>
-        <h4 className="m-0">
-          <People className={cx("bi", "me-1")} />
-          <span>My Groups</span>
-        </h4>
-        <Link
-          className={cx(
-            "btn",
-            "btn-outline-primary",
-            "btn-sm",
-            "ms-auto",
-            "my-auto"
-          )}
-          to="/v2/groups/new"
-        >
-          <PlusLg className="bi" id="createPlus" />
-        </Link>
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("mb-0", "me-2")}>
+            <People className={cx("bi", "me-1")} />
+            My groups
+          </h4>
+          <Badge>{data?.total ?? 0}</Badge>
+        </div>
+        {hasGroups && (
+          <Link
+            className={cx(
+              "btn",
+              "btn-outline-primary",
+              "btn-sm",
+              "ms-auto",
+              "my-auto"
+            )}
+            to="/v2/groups/new"
+          >
+            <PlusLg className="bi" id="createPlus" />
+          </Link>
+        )}
       </CardHeader>
 
       <CardBody>
-        <GroupsList />
+        <GroupsList data={data} isLoading={isLoading} error={error} />
       </CardBody>
     </Card>
   );
@@ -404,14 +440,14 @@ function UserDashboard() {
         </Link>
         <Link
           to={userPageUrl}
-          className={cx("link-primary", "text-decoration-none")}
+          className={cx("link-primary", "text-body", "text-decoration-none")}
         >
           <h3 className={cx("text-center", "mb-0")}>
             {userInfo.first_name} {userInfo.last_name}
           </h3>
         </Link>
         <p className="mb-0">
-          <Link to={userPageUrl} className="link-primary">
+          <Link to={userPageUrl} className={cx("link-primary", "text-body")}>
             @{userInfo.username ?? "unknown"}
           </Link>
         </p>
@@ -518,15 +554,13 @@ function LoginCard() {
   );
 }
 
-function GroupsList() {
-  const { data, error, isLoading } = useGetGroupsQuery({
-    params: {
-      page: 1,
-      per_page: 5,
-      direct_member: true,
-    },
-  });
-
+interface GroupListProps {
+  data: GetGroupsApiResponse | undefined;
+  error: FetchBaseQueryError | SerializedError | undefined;
+  isLoading: boolean;
+}
+function GroupsList({ data, error, isLoading }: GroupListProps) {
+  const hasGroups = data && data?.groups?.length > 0;
   const noGroups = isLoading ? (
     <div className={cx("d-flex", "flex-column", "mx-auto")}>
       <Loader />
@@ -537,19 +571,29 @@ function GroupsList() {
       <p>Cannot show groups.</p>
       <RtkOrNotebooksError error={error} />
     </div>
-  ) : !data || data == null || data?.groups?.length === 0 ? (
-    <div>No 2.0 groups.</div>
+  ) : !hasGroups ? (
+    <div>
+      Renku 2.0 Groups let you group together related projects and control who
+      can access them.
+    </div>
   ) : null;
 
-  const viewLink = (
-    <ViewAllLink noItems={!data || data?.groups?.length === 0} type="group" />
+  const groupFooter = hasGroups ? (
+    <ViewAllLink noItems={!hasGroups} type="group" total={data?.total ?? 0} />
+  ) : (
+    <div className="d-flex">
+      <Link to={"/v2/groups/new"} className={cx("btn", "btn-outline-primary")}>
+        <PlusSquare className={cx("bi", "me-1")} />
+        Create my first group
+      </Link>
+    </div>
   );
 
   if (noGroups)
     return (
       <div className={cx("d-flex", "flex-column", "gap-3")}>
         {noGroups}
-        {viewLink}
+        {groupFooter}
       </div>
     );
 
@@ -564,7 +608,7 @@ function GroupsList() {
           />
         ))}
       </ListGroup>
-      {viewLink}
+      {groupFooter}
     </div>
   );
 }
@@ -604,9 +648,11 @@ function SessionsDashboard() {
 function ViewAllLink({
   type,
   noItems,
+  total,
 }: {
   type: "project" | "group";
   noItems: boolean;
+  total: number;
 }) {
   return noItems ? (
     <Link
@@ -620,7 +666,26 @@ function ViewAllLink({
       to={`/v2/search?page=1&perPage=12&q=role:owner,editor,viewer+type:${type}+sort:created-desc`}
       data-cy={`view-my-${type}s-btn`}
     >
-      View all my {type === "project" ? "projects" : "groups"}
+      View all my {total > 5 ? total : ""}{" "}
+      {type === "project" ? "projects" : "groups"}
     </Link>
+  );
+}
+
+function EmptyProjectsButtons() {
+  return (
+    <div className={cx("d-flex", "gap-3")}>
+      <Link to={"/v2/projects/new"} className={cx("btn", "btn-primary")}>
+        <PlusSquare className={cx("bi", "me-1")} />
+        Create my first project
+      </Link>
+      <Link
+        to={"/v2/search?page=1&perPage=12&q=type:projects"}
+        className={cx("btn", "btn-outline-primary")}
+      >
+        <Eye className={cx("bi", "me-1")} />
+        View existing projects
+      </Link>
+    </div>
   );
 }
