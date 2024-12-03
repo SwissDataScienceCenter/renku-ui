@@ -53,6 +53,12 @@ export default function DataConnectorSecretItem({
             <span className={cx("fw-bold", "me-2")}>{name}</span>
             {isOrphanSecret && <Badge color="danger">Orphan Secret</Badge>}
           </div>
+          {isOrphanSecret && (
+            <p className={cx("mb-0", "fst-italic")}>
+              This secret was used as a credential for a data connector which
+              has been deleted.
+            </p>
+          )}
           <div className={cx("text-light-emphasis", "small")}>
             Edited{" "}
             <TimeCaption datetime={modification_date} enableTooltip noCaption />
