@@ -134,7 +134,7 @@ function HeaderDashboard() {
         <img
           src="/dashboardHeader640x200.png"
           alt="Dashboard Header"
-          className="img-fluid w-100"
+          className={cx("img-fluid", "w-100")}
         />
       </picture>
     </div>
@@ -146,7 +146,7 @@ function FooterDashboard() {
     <Row className="g-3">
       <Col xs={12} lg={6} xl={3}>
         <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
-          <CardBody>
+          <CardBody className={DashboardStyles.FooterCard}>
             <a
               target="_blank"
               className={cx(
@@ -169,7 +169,7 @@ function FooterDashboard() {
       </Col>
       <Col xs={12} lg={6} xl={3}>
         <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
-          <CardBody>
+          <CardBody className={DashboardStyles.FooterCard}>
             <a
               target="_blank"
               className={cx(
@@ -192,7 +192,7 @@ function FooterDashboard() {
       </Col>
       <Col xs={12} lg={6} xl={3}>
         <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
-          <CardBody>
+          <CardBody className={DashboardStyles.FooterCard}>
             <a
               target="_blank"
               className={cx(
@@ -215,7 +215,7 @@ function FooterDashboard() {
       </Col>
       <Col xs={12} lg={6} xl={3}>
         <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
-          <CardBody>
+          <CardBody className={DashboardStyles.FooterCard}>
             <a
               target="_blank"
               className={cx(
@@ -429,7 +429,7 @@ function UserDashboard() {
       >
         <Link
           to={userPageUrl}
-          className={cx("link-primary", "text-decoration-none")}
+          className={cx("link-primary", "text-body", "text-decoration-none")}
         >
           <UserAvatar
             firstName={userInfo.first_name}

@@ -17,7 +17,7 @@
     }
 
     @include media-breakpoint-up(lg) {
-      height: 220px;
+      height: 130px;
     }
   }
 }
@@ -35,5 +35,14 @@
 
   &:hover {
     background-color: var(--bs-primary-bg-subtle) !important;
+  }
+}
+
+.FooterCard {
+  a svg {
+    transition: all 0.3s linear;
+  }
+  a:hover svg {
+    transform: scale(1.3);
   }
 }
