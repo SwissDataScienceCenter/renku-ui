@@ -22,7 +22,6 @@ import { Download, Pencil, Trash, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Button,
-  Col,
   DropdownItem,
   Form,
   Modal,
@@ -84,31 +83,29 @@ export default function SecretItemActions({
 
   return (
     <>
-      <Col xs={12} sm="auto" className="ms-auto" data-cy="user-secret-actions">
-        <ButtonWithMenuTag
-          color={buttonColor as any} // eslint-disable-line @typescript-eslint/no-explicit-any
-          default={
-            <Button
-              color={isV2 ? "outline-primary" : "outline-rk-green"}
-              onClick={toggleReplace}
-              size="sm"
-            >
-              <Download className={cx("bi", "me-1")} />
-              Replace
-            </Button>
-          }
-          size="sm"
-        >
-          <DropdownItem onClick={toggleEdit}>
-            <Pencil className={cx("bi", "me-1")} />
-            Edit
-          </DropdownItem>
-          <DropdownItem onClick={toggleDelete}>
-            <Trash className={cx("bi", "me-1")} />
-            Delete
-          </DropdownItem>
-        </ButtonWithMenuTag>
-      </Col>
+      <ButtonWithMenuTag
+        color={buttonColor as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+        default={
+          <Button
+            color={isV2 ? "outline-primary" : "outline-rk-green"}
+            onClick={toggleReplace}
+            size="sm"
+          >
+            <Download className={cx("bi", "me-1")} />
+            Replace
+          </Button>
+        }
+        size="sm"
+      >
+        <DropdownItem onClick={toggleEdit}>
+          <Pencil className={cx("bi", "me-1")} />
+          Edit
+        </DropdownItem>
+        <DropdownItem onClick={toggleDelete}>
+          <Trash className={cx("bi", "me-1")} />
+          Delete
+        </DropdownItem>
+      </ButtonWithMenuTag>
       <ReplaceSecretValueModal
         isOpen={isReplaceOpen}
         isV2={isV2}

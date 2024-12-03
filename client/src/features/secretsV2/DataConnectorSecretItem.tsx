@@ -59,13 +59,25 @@ export default function DataConnectorSecretItem({
               has been deleted.
             </p>
           )}
+          <DataConnectorSecretUsedFor secret={secret} />
+        </Col>
+        <Col
+          xs={12}
+          sm="auto"
+          className={cx(
+            "ms-auto",
+            "d-flex",
+            "flex-column",
+            "align-items-end",
+            "gap-1"
+          )}
+        >
           <div className={cx("text-light-emphasis", "small")}>
             Edited{" "}
             <TimeCaption datetime={modification_date} enableTooltip noCaption />
           </div>
-          <DataConnectorSecretUsedFor secret={secret} />
+          <SecretItemActions isV2 secret={secret} />
         </Col>
-        <SecretItemActions isV2 secret={secret} />
       </Row>
     </ListGroupItem>
   );
@@ -86,7 +98,7 @@ function DataConnectorSecretUsedFor({
 
   return (
     <div>
-      <p className={cx("mb-0", "fw-medium")}>Used for:</p>
+      <p className={cx("mb-0", "fw-medium")}>This secret is used in:</p>
       <ul>
         {dataConnectorIds.map((dataConnectorId) => (
           <DataConnectorSecretUsedForItem
