@@ -21,6 +21,8 @@ import { useMemo } from "react";
 import { generatePath, Link } from "react-router-dom-v5-compat";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
+import { skipToken } from "@reduxjs/toolkit/query";
+import { Folder } from "react-bootstrap-icons";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
@@ -30,7 +32,12 @@ import type {
   Project,
   SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
-import { type SecretWithId } from "../usersV2/api/users.api";
+import { useGetNamespacesByNamespaceSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import {
+  useGetUserByIdQuery,
+  type SecretWithId,
+} from "../usersV2/api/users.api";
+import UserAvatar from "../usersV2/show/UserAvatar";
 import SecretItemActions from "./SecretItemActions";
 import useGetRelatedProjects from "./useGetRelatedProjects.hook";
 
@@ -66,13 +73,25 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
           <div className={cx("align-items-center", "d-flex")}>
             <span className={cx("fw-bold", "me-2")}>{name}</span>
           </div>
+          {usedInContent}
+        </Col>
+        <Col
+          xs={12}
+          sm="auto"
+          className={cx(
+            "ms-auto",
+            "d-flex",
+            "flex-column",
+            "align-items-end",
+            "gap-1"
+          )}
+        >
           <div className={cx("text-light-emphasis", "small")}>
             Edited{" "}
             <TimeCaption datetime={modification_date} enableTooltip noCaption />
           </div>
-          {usedInContent}
+          <SecretItemActions isV2 secret={secret} />
         </Col>
-        <SecretItemActions isV2 secret={secret} />
       </Row>
     </ListGroupItem>
   );
@@ -93,8 +112,8 @@ function GeneralSecretUsedIn({
 
   return (
     <div>
-      <p className={cx("mb-0", "fw-medium")}>Used in:</p>
-      <ul>
+      <p className={cx("mb-0", "fw-medium")}>This secret is used in:</p>
+      <ul className="list-unstyled">
         {projects.map((project) => (
           <GeneralSecretUsedInProject
             key={project.id}
@@ -121,6 +140,19 @@ function GeneralSecretUsedInProject({
     [project.id, secretSlots]
   );
 
+  const { data: namespace } = useGetNamespacesByNamespaceSlugQuery({
+    namespaceSlug: project.namespace,
+  });
+  const { data: user } = useGetUserByIdQuery(
+    namespace?.namespace_kind === "user" && namespace.created_by
+      ? { userId: namespace.created_by }
+      : skipToken
+  );
+  const namespaceName = useMemo(
+    () => namespace?.name ?? project.namespace,
+    [namespace?.name, project.namespace]
+  );
+
   // NOTE: this case should not happen
   if (secretSlotsForThisProject.length == 0) {
     return null;
@@ -132,26 +164,36 @@ function GeneralSecretUsedInProject({
   });
 
   return (
-    <li>
+    <li className={cx("d-flex", "flex-row")}>
       <div>
-        <Link to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}>
-          {project.name}
-          {" - "}
-          <span className="fst-italic">
-            {"@"}
-            {project.namespace}/{project.slug}
-          </span>
-        </Link>
+        <Folder className={cx("bi", "me-1")} />
       </div>
       <div>
-        <ul>
-          {secretSlotsForThisProject.map((secretSlot) => (
-            <GeneralSecretUsedInProjectSecretSlot
-              key={secretSlot.id}
-              secretSlot={secretSlot}
+        <div className={cx("d-flex", "flex-row", "gap-4")}>
+          <Link
+            className={cx("fw-semibold")}
+            to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}
+          >
+            {project.name}
+          </Link>
+          <div
+            className={cx("d-flex", "flex-row", "align-items-center", "gap-1")}
+          >
+            <UserAvatar
+              firstName={user?.first_name}
+              lastName={user?.last_name}
+              username={namespaceName}
             />
-          ))}
-        </ul>
+            <span>{namespaceName}</span>
+          </div>
+        </div>
+        <div>Secret slot: xxx</div>
+        {secretSlotsForThisProject.map((secretSlot) => (
+          <GeneralSecretUsedInProjectSecretSlot
+            key={secretSlot.id}
+            secretSlot={secretSlot}
+          />
+        ))}
       </div>
     </li>
   );
