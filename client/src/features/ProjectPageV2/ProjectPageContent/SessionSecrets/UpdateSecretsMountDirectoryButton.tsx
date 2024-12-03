@@ -17,16 +17,68 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowCounterclockwise, Pencil, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import {
+  Button,
+  Form,
+  Input,
+  InputGroup,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  UncontrolledTooltip,
+} from "reactstrap";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import SecretsMountDirectoryField from "../../../projectsV2/fields/SecretsMountDirectoryField";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
+
+export function SecretsMountDirectoryComponent() {
+  const { project } = useProject();
+  const { id: projectId, secrets_mount_directory: secretsMountDirectory } =
+    project;
+  const permissions = useProjectPermissions({ projectId });
+
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
+
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const mountDir = secretsMountDirectory.startsWith("/")
+    ? secretsMountDirectory
+    : `<work-dir>/${secretsMountDirectory}`;
+
+  return (
+    <>
+      <InputGroup>
+        <Input type="text" value={mountDir} readOnly />
+        <PermissionsGuard
+          disabled={null}
+          enabled={
+            <>
+              <Button color="outline-primary" innerRef={ref} onClick={toggle}>
+                <Pencil className="bi" />
+                <span className="visually-hidden">Edit</span>
+              </Button>
+              <UncontrolledTooltip target={ref}>
+                Edit the secrets mount location
+              </UncontrolledTooltip>
+            </>
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
+      </InputGroup>
+      <UpdateSecretsMountDirectoryModal isOpen={isOpen} toggle={toggle} />
+    </>
+  );
+}
 
 export default function UpdateSecretsMountDirectoryButton() {
   const [isOpen, setIsOpen] = useState(false);
