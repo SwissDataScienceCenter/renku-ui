@@ -60,7 +60,7 @@ export const CLOUD_STORAGE_OVERRIDE = {
       },
     },
     webdav: {
-      name: "webDav",
+      name: "WebDAV",
       description: "WebDAV compatible services",
       position: 5,
     },
@@ -239,6 +239,7 @@ export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
   "switchDrive",
   "webdav",
   "azureblob",
+  "sftp",
 ];
 
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {
