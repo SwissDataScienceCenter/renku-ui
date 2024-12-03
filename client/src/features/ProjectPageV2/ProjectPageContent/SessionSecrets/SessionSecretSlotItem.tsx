@@ -80,10 +80,10 @@ export default function SessionSecretSlotItem({
               </Badge>
             )}
           </div>
+          {description && <p className="mb-0">{description}</p>}
           <div>
             Location in sessions: <code>{fullPath}</code>
           </div>
-          {description && <p className="mb-0">{description}</p>}
         </Col>
         {!noActions && <SessionSecretActions secretSlot={secretSlot} />}
       </Row>

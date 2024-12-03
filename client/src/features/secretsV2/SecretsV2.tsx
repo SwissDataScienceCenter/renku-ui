@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useMemo } from "react";
-import { Database, QuestionSquare, ShieldLock } from "react-bootstrap-icons";
+import { DatabaseLock, ShieldLock, ShieldX } from "react-bootstrap-icons";
 import {
   Badge,
   Card,
@@ -183,7 +183,7 @@ function DataConnectorSecrets() {
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("m-0", "me-2")}>
-            <Database className={cx("me-1", "bi")} />
+            <DatabaseLock className={cx("me-1", "bi")} />
             Data Connector Secrets
           </h4>
           {secrets && <Badge>{secrets.length}</Badge>}
@@ -243,7 +243,7 @@ function UnusedSecrets() {
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("m-0", "me-2")}>
-            <QuestionSquare className={cx("me-1", "bi")} />
+            <ShieldX className={cx("me-1", "bi")} />
             Unused Secrets
           </h4>
           <Badge>{unusedSecrets.length}</Badge>

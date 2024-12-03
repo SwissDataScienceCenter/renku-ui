@@ -54,7 +54,7 @@ export default function ReplaceSecretValueModal({
   const {
     id: secretId,
     data_connector_ids: dataConnectorIds,
-    session_secret_ids: sessionSecretIds,
+    session_secret_slot_ids: sessionSecretSlotIds,
   } = secret;
 
   const [patchUserSecret, result] = usePatchUserSecretMutation();
@@ -106,15 +106,15 @@ export default function ReplaceSecretValueModal({
   }, [result.isSuccess, toggle]);
 
   const usageAlert =
-    (sessionSecretIds.length > 0 || dataConnectorIds.length > 0) && isV2 ? (
+    (sessionSecretSlotIds.length > 0 || dataConnectorIds.length > 0) && isV2 ? (
       <InfoAlert dismissible={false} timeout={0}>
         This secret is used for{" "}
-        {sessionSecretIds.length > 1 ? (
-          <>{sessionSecretIds.length} session secrets</>
-        ) : sessionSecretIds.length == 1 ? (
+        {sessionSecretSlotIds.length > 1 ? (
+          <>{sessionSecretSlotIds.length} session secrets</>
+        ) : sessionSecretSlotIds.length == 1 ? (
           <>1 session secret</>
         ) : null}
-        {sessionSecretIds.length > 0 && dataConnectorIds.length > 0 ? (
+        {sessionSecretSlotIds.length > 0 && dataConnectorIds.length > 0 ? (
           <> and </>
         ) : null}
         {dataConnectorIds.length > 1 ? (
@@ -124,7 +124,7 @@ export default function ReplaceSecretValueModal({
         ) : null}
         .
       </InfoAlert>
-    ) : sessionSecretIds.length > 0 || dataConnectorIds.length > 0 ? (
+    ) : sessionSecretSlotIds.length > 0 || dataConnectorIds.length > 0 ? (
       <InfoAlert dismissible={false} timeout={0}>
         This secret is in use in Renku 2.0.
       </InfoAlert>
