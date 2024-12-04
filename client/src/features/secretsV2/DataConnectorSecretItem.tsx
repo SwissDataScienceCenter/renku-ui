@@ -111,7 +111,7 @@ function DataConnectorSecretUsedFor({
         This secret is used in <Badge>{dataConnectorIds.length}</Badge>{" "}
         {dataConnectorsStr}
       </p>
-      <ul className={cx("list-unstyled", "d-flex", "flex-column", "gap-1")}>
+      <ul className={cx("list-unstyled", "d-flex", "flex-column", "gap-2")}>
         {dataConnectorIds.map((dataConnectorId) => (
           <DataConnectorSecretUsedForItem
             key={dataConnectorId}

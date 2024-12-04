@@ -79,7 +79,6 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
       <Row>
         <Col>
           <div className={cx("align-items-center", "d-flex", "mb-2")}>
-            {/* <span className={cx("fw-bold", "me-2")}>{name}</span> */}
             {projects && projects.length > 0 ? (
               <button
                 className={cx("fw-bold", "me-2", "bg-transparent", "border-0")}
@@ -143,7 +142,7 @@ function GeneralSecretUsedIn({
         This secret is used in <Badge>{projects.length}</Badge> {projectStr}
       </p>
       <Collapse isOpen={isOpen}>
-        <ul className={cx("list-unstyled", "d-flex", "flex-column", "gap-1")}>
+        <ul className={cx("list-unstyled", "d-flex", "flex-column", "gap-2")}>
           {projects.map((project) => (
             <GeneralSecretUsedInProject
               key={project.id}
