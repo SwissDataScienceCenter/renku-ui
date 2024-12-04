@@ -556,13 +556,14 @@ describe("Project copies", () => {
     );
     cy.wait("@listNamespaceV2");
     cy.getDataCy("project-name-input").clear().type("copy project name");
-    cy.get("button").contains("Copy project").click();
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
     fixtures.readProjectV2({
       namespace: "e2e",
       projectSlug: "copy-project-name",
       name: "readProjectCopy",
     });
     cy.wait("@copyProjectV2");
+    cy.contains("Go to new project").should("be.visible").click();
     cy.wait("@readProjectCopy");
     cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
   });
@@ -580,13 +581,14 @@ describe("Project copies", () => {
     cy.getDataCy("project-name-input").clear().type("copy project name");
     cy.get("button").contains("Configure").click();
     cy.getDataCy("project-slug-input").clear().type("copy-of-test2");
-    cy.get("button").contains("Copy project").click();
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
     fixtures.readProjectV2({
       namespace: "e2e",
       projectSlug: "copy-of-test2",
       name: "readProjectCopy",
     });
     cy.wait("@copyProjectV2");
+    cy.contains("Go to new project").should("be.visible").click();
     cy.wait("@readProjectCopy");
     cy.location("pathname").should("eq", "/v2/projects/e2e/copy-of-test2");
   });

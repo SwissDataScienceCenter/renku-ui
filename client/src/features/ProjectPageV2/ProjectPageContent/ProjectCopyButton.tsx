@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
+import { ArrowRightShort, Diagram3Fill, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
@@ -28,13 +29,16 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { ArrowRightShort } from "react-bootstrap-icons";
 
+import { SuccessAlert } from "../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
-import { type Visibility } from "../../projectsV2/api/projectV2.api";
+import {
+  type Project,
+  type Visibility,
+} from "../../projectsV2/api/projectV2.api";
 import { usePostProjectsByProjectIdCopiesMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
 import ProjectNameFormField from "../../projectsV2/fields/ProjectNameFormField";
@@ -64,7 +68,6 @@ function ProjectCopyModal({
   project,
   toggle,
 }: ProjectCopyModalProps) {
-  const navigate = useNavigate();
   const [copyProject, copyProjectResult] =
     usePostProjectsByProjectIdCopiesMutation();
   const {
@@ -100,20 +103,15 @@ function ProjectCopyModal({
     },
     [copyProject, project.id]
   );
-  useEffect(() => {
-    const namespace = copyProjectResult.data?.namespace;
-    const slug = copyProjectResult.data?.slug;
-    if (copyProjectResult.isSuccess && namespace && slug) {
-      toggle();
-      const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace,
-        slug,
-      });
-      navigate(projectUrl);
-    }
-  }, [copyProjectResult, navigate, toggle]);
   return (
-    <Modal backdrop="static" isOpen={isOpen} toggle={toggle} size="lg" centered>
+    <Modal
+      data-cy="copy-modal"
+      backdrop="static"
+      isOpen={isOpen}
+      toggle={toggle}
+      size="lg"
+      centered
+    >
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggle}>
           Make a copy of{" "}
@@ -122,6 +120,17 @@ function ProjectCopyModal({
           </span>
         </ModalHeader>
         <ModalBody>
+          <div
+            className={cx("fs-6", "fst-italic", "text-body-secondary", "mb-4")}
+          >
+            Copying a project will create a new project with the same data
+            connectors, repositories, and launchers as the original.
+          </div>
+          {copyProjectResult.error != null && (
+            <div className="w-100">
+              <RtkOrNotebooksError error={copyProjectResult.error} />
+            </div>
+          )}
           <ProjectNameFormField control={control} errors={errors} name="name" />
           <ProjectNamespaceFormField
             control={control}
@@ -142,28 +151,36 @@ function ProjectCopyModal({
             control={control}
             errors={errors}
           />
-        </ModalBody>
-        <ModalFooter>
-          {copyProjectResult.error != null && (
-            <div className="w-100">
-              <RtkOrNotebooksError error={copyProjectResult.error} />
+          {copyProjectResult.data != null && (
+            <div>
+              <ProjectCopySuccessAlert
+                project={copyProjectResult.data}
+                hasError={copyProjectResult.error != null}
+                toggle={toggle}
+              />
             </div>
           )}
+        </ModalBody>
+        <ModalFooter>
           <Button
             disabled={copyProjectResult.isLoading}
-            color="outline-secondary"
+            color="outline-primary"
             onClick={toggle}
           >
-            Cancel
+            <XLg className={cx("bi", "me-1")} />
+            Close
           </Button>
           <Button
             disabled={
-              copyProjectResult.isLoading || copyProjectResult.error != null
+              copyProjectResult.isLoading ||
+              copyProjectResult.error != null ||
+              copyProjectResult.data != null
             }
             color="primary"
             type="submit"
           >
-            Copy project
+            <Diagram3Fill className={cx("bi", "me-1")} />
+            Copy
           </Button>
         </ModalFooter>
       </Form>
@@ -197,5 +214,50 @@ export default function ProjectCopyButton() {
         toggle={toggleOpen}
       />
     </div>
+  );
+}
+
+interface ProjectCopySuccessAlertProps
+  extends Pick<ProjectCopyModalProps, "toggle"> {
+  project: Project;
+  hasError: boolean;
+}
+
+function ProjectCopySuccessAlert({
+  hasError,
+  project,
+  toggle,
+}: ProjectCopySuccessAlertProps) {
+  const navigate = useNavigate();
+  const namespace = project.namespace;
+  const slug = project.slug;
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace,
+    slug,
+  });
+  return (
+    <SuccessAlert dismissible={false} timeout={0}>
+      <div className="d-flex align-items-baseline justify-content-between">
+        <div>
+          Your project has been copied.
+          {hasError && (
+            <span className={cx("fw-bold")}>
+              Check the error message for limitations on the new project.
+            </span>
+          )}
+        </div>
+        <div>
+          <Button
+            color="outline-primary"
+            onClick={() => {
+              toggle();
+              navigate(projectUrl);
+            }}
+          >
+            Go to new project
+          </Button>
+        </div>
+      </div>
+    </SuccessAlert>
   );
 }
