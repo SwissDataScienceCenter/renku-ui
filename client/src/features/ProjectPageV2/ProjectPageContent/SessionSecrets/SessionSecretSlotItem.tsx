@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { ArrowRight, Key, Lock } from "react-bootstrap-icons";
+import { Key, Lock, NodePlus } from "react-bootstrap-icons";
 import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
 import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
@@ -49,22 +49,29 @@ export default function SessionSecretSlotItem({
           <div className={cx("align-items-center", "d-flex")}>
             <span className={cx("fw-bold", "me-2")}>{name}</span>
             {secretSlot.secretId ? (
-              <Badge
-                className={cx(
-                  "border",
-                  "border-success",
-                  "bg-success-subtle",
-                  "text-success-emphasis"
-                )}
-                pill
-              >
-                <Key className={cx("bi", "me-1")} />
-                Secret saved
-                <ArrowRight className={cx("bi", "mx-1")} />
-                <SessionSecretSlotItemSecretReference
-                  userSecretId={secretSlot.secretId}
-                />
-              </Badge>
+              <>
+                <Badge
+                  className={cx(
+                    "border",
+                    "border-success",
+                    "bg-success-subtle",
+                    "text-success-emphasis"
+                  )}
+                  pill
+                >
+                  <Key className={cx("bi", "me-1")} />
+                  Secret saved
+                </Badge>
+                <NodePlus className={cx("bi", "ms-2", "me-1")} />
+                <span>
+                  Secret name:{" "}
+                  <span className="fw-semibold">
+                    <SessionSecretSlotItemSecretReference
+                      userSecretId={secretSlot.secretId}
+                    />
+                  </span>
+                </span>
+              </>
             ) : (
               <Badge
                 className={cx(
