@@ -22,7 +22,6 @@ import { Download, Pencil, Trash, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Button,
-  Col,
   DropdownItem,
   Form,
   Modal,

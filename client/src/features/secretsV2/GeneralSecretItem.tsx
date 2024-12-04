@@ -17,12 +17,12 @@
  */
 
 import cx from "classnames";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { generatePath, Link } from "react-router-dom-v5-compat";
-import { Col, ListGroupItem, Row } from "reactstrap";
+import { Badge, Col, Collapse, ListGroupItem, Row } from "reactstrap";
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Folder } from "react-bootstrap-icons";
+import { Folder, NodePlus } from "react-bootstrap-icons";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
@@ -40,6 +40,7 @@ import {
 import UserAvatar from "../usersV2/show/UserAvatar";
 import SecretItemActions from "./SecretItemActions";
 import useGetRelatedProjects from "./useGetRelatedProjects.hook";
+import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 
 interface GeneralSecretItemProps {
   secret: SecretWithId;
@@ -52,6 +53,9 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
     secret,
   });
 
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
+
   const usedInContent = isLoading ? (
     <div>
       <Loader className="me-1" inline size={16} />
@@ -63,15 +67,33 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
       {error && <RtkOrNotebooksError error={error} dismissible={false} />}
     </div>
   ) : (
-    <GeneralSecretUsedIn projects={projects} secretSlots={secretSlots} />
+    <GeneralSecretUsedIn
+      isOpen={isOpen}
+      projects={projects}
+      secretSlots={secretSlots}
+    />
   );
 
   return (
     <ListGroupItem action>
       <Row>
         <Col>
-          <div className={cx("align-items-center", "d-flex")}>
-            <span className={cx("fw-bold", "me-2")}>{name}</span>
+          <div className={cx("align-items-center", "d-flex", "mb-2")}>
+            {/* <span className={cx("fw-bold", "me-2")}>{name}</span> */}
+            {projects && projects.length > 0 ? (
+              <button
+                className={cx("fw-bold", "me-2", "bg-transparent", "border-0")}
+                onClick={toggle}
+              >
+                {name}
+                <ChevronFlippedIcon
+                  className={cx("bi", "ms-1")}
+                  flipped={isOpen}
+                />
+              </button>
+            ) : (
+              <span className={cx("fw-bold", "me-2")}>{name}</span>
+            )}
           </div>
           {usedInContent}
         </Col>
@@ -86,11 +108,11 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
             "gap-1"
           )}
         >
+          <SecretItemActions isV2 secret={secret} />
           <div className={cx("text-light-emphasis", "small")}>
             Edited{" "}
             <TimeCaption datetime={modification_date} enableTooltip noCaption />
           </div>
-          <SecretItemActions isV2 secret={secret} />
         </Col>
       </Row>
     </ListGroupItem>
@@ -98,11 +120,13 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
 }
 
 interface GeneralSecretUsedInProps {
+  isOpen: boolean;
   projects: Project[];
   secretSlots: SessionSecretSlot[];
 }
 
 function GeneralSecretUsedIn({
+  isOpen,
   projects,
   secretSlots,
 }: GeneralSecretUsedInProps) {
@@ -110,18 +134,25 @@ function GeneralSecretUsedIn({
     return null;
   }
 
+  const projectStr = projects.length > 1 ? "projects" : "project";
+
   return (
     <div>
-      <p className={cx("mb-0", "fw-medium")}>This secret is used in:</p>
-      <ul className="list-unstyled">
-        {projects.map((project) => (
-          <GeneralSecretUsedInProject
-            key={project.id}
-            project={project}
-            secretSlots={secretSlots}
-          />
-        ))}
-      </ul>
+      <p className={cx("mb-1", "fw-medium")}>
+        <NodePlus className={cx("bi", "me-1")} />
+        This secret is used in <Badge>{projects.length}</Badge> {projectStr}
+      </p>
+      <Collapse isOpen={isOpen}>
+        <ul className={cx("list-unstyled", "d-flex", "flex-column", "gap-1")}>
+          {projects.map((project) => (
+            <GeneralSecretUsedInProject
+              key={project.id}
+              project={project}
+              secretSlots={secretSlots}
+            />
+          ))}
+        </ul>
+      </Collapse>
     </div>
   );
 }
@@ -163,56 +194,45 @@ function GeneralSecretUsedInProject({
     slug: project.slug,
   });
 
+  // ? Note: we repeat the entry for each secret slot in a project
   return (
-    <li className={cx("d-flex", "flex-row")}>
-      <div>
-        <Folder className={cx("bi", "me-1")} />
-      </div>
-      <div>
-        <div className={cx("d-flex", "flex-row", "gap-4")}>
-          <Link
-            className={cx("fw-semibold")}
-            to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}
-          >
-            {project.name}
-          </Link>
-          <div
-            className={cx("d-flex", "flex-row", "align-items-center", "gap-1")}
-          >
-            <UserAvatar
-              firstName={user?.first_name}
-              lastName={user?.last_name}
-              username={namespaceName}
-            />
-            <span>{namespaceName}</span>
+    <>
+      {secretSlotsForThisProject.map((secretSlot) => (
+        <li key={secretSlot.id} className={cx("d-flex", "flex-row")}>
+          <div>
+            <Folder className={cx("bi", "me-1")} />
           </div>
-        </div>
-        <div>Secret slot: xxx</div>
-        {secretSlotsForThisProject.map((secretSlot) => (
-          <GeneralSecretUsedInProjectSecretSlot
-            key={secretSlot.id}
-            secretSlot={secretSlot}
-          />
-        ))}
-      </div>
-    </li>
-  );
-}
-
-interface GeneralSecretUsedInProjectSecretSlotProps {
-  secretSlot: SessionSecretSlot;
-}
-
-function GeneralSecretUsedInProjectSecretSlot({
-  secretSlot,
-}: GeneralSecretUsedInProjectSecretSlotProps) {
-  const { filename } = secretSlot;
-
-  return (
-    <li>
-      <span>
-        Mounted in sessions as: <code>{filename}</code>
-      </span>
-    </li>
+          <div>
+            <div className={cx("d-flex", "flex-row", "gap-4")}>
+              <Link
+                className={cx("fw-semibold")}
+                to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}
+              >
+                {project.name}
+              </Link>
+              <div
+                className={cx(
+                  "d-flex",
+                  "flex-row",
+                  "align-items-center",
+                  "gap-1"
+                )}
+              >
+                <UserAvatar
+                  firstName={user?.first_name}
+                  lastName={user?.last_name}
+                  username={namespaceName}
+                />
+                <span>{namespaceName}</span>
+              </div>
+            </div>
+            <div>
+              Secret slot:{" "}
+              <span className="fw-semibold">{secretSlot.name}</span>
+            </div>
+          </div>
+        </li>
+      ))}
+    </>
   );
 }
