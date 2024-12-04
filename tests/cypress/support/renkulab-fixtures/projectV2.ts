@@ -54,6 +54,10 @@ interface ProjectV2IdArgs extends SimpleFixture {
   overrides?: Partial<ProjectOverrides>;
 }
 
+interface ProjectV2CopyFixture extends ProjectV2IdArgs {
+  dataConnectorError?: boolean;
+}
+
 interface ProjectV2DeleteFixture extends NameOnlyFixture {
   projectId?: string;
 }
@@ -93,11 +97,12 @@ export function generateProjects(numberOfProjects: number, start: number) {
 
 export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
   return class ProjectV2Fixtures extends Parent {
-    copyProjectV2(args?: ProjectV2IdArgs) {
+    copyProjectV2(args?: ProjectV2CopyFixture) {
       const {
         fixture = "projectV2/create-projectV2.json",
         projectId = "THEPROJECTULID26CHARACTERS",
         name = "copyProjectV2",
+        dataConnectorError = false,
       } = args ?? {};
       cy.fixture(fixture).then((project) => {
         cy.intercept(
@@ -109,6 +114,16 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
             expect(newProject.namespace).to.not.be.undefined;
             expect(newProject.slug).to.not.be.undefined;
             expect(newProject.visibility).to.not.be.undefined;
+            if (dataConnectorError) {
+              const body = {
+                error: {
+                  code: 1404,
+                  message: `The project was copied to ${newProject.namespace}/${newProject.slug}, but not all data connectors were included.`,
+                },
+              };
+              req.reply({ body, statusCode: 403, delay: 1000 });
+              return;
+            }
             const body = { ...project, ...newProject };
             req.reply({ body, statusCode: 201, delay: 1000 });
           }

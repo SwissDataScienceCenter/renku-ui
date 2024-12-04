@@ -568,6 +568,28 @@ describe("Project copies", () => {
     cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
   });
 
+  it("copy a regular project with data-connector-error", () => {
+    fixtures.listNamespaceV2().copyProjectV2({ dataConnectorError: true });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.getDataCy("copy-project-button").click();
+    cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
+      "be.visible"
+    );
+    cy.wait("@listNamespaceV2");
+    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
+    fixtures.readProjectV2({
+      namespace: "e2e",
+      projectSlug: "copy-project-name",
+      name: "readProjectCopy",
+    });
+    cy.wait("@copyProjectV2");
+    cy.contains("not all data connectors were included")
+      .should("be.visible")
+      .click();
+  });
+
   it("copy a project, overriding the slug", () => {
     fixtures.listNamespaceV2();
     fixtures.copyProjectV2();
