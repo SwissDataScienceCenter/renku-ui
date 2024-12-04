@@ -43,6 +43,8 @@ import {
   Row,
 } from "reactstrap";
 
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
+import { WarnAlert } from "../../components/Alert";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import ScrollableModal from "../../components/modal/ScrollableModal";
@@ -51,14 +53,13 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import SelectUserSecretField from "../ProjectPageV2/ProjectPageContent/SessionSecrets/fields/SelectUserSecretField";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
+import SessionSecretSlotItem from "../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionSecretSlotItem";
 import {
   usePatchProjectsByProjectIdSessionSecretsMutation,
   type Project,
   type SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-import { WarnAlert } from "../../components/Alert";
-import SessionSecretSlotItem from "../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionSecretSlotItem";
 
 interface SessionSecretsModalProps {
   isOpen: boolean;
@@ -90,6 +91,7 @@ export default function SessionSecretsModal({
     dispatch(startSessionOptionsV2Slice.actions.setUserSecretsReady(true));
   }, [dispatch]);
 
+  const loginUrl = useLoginUrl();
   const content = userLogged ? (
     <>
       <ReadySessionSecrets
@@ -103,8 +105,14 @@ export default function SessionSecretsModal({
     <>
       <WarnAlert dismissible={false} timeout={0}>
         <p className="mb-0">
-          This session is expecting some secrets but as an anonymous user, you
-          cannot use session secrets.
+          This session is expecting some secrets.{" "}
+          <a
+            className={cx("btn", "btn-primary", "btn-sm")}
+            href={loginUrl.href}
+          >
+            Log in
+          </a>{" "}
+          to provide a value for these secrets.
         </p>
       </WarnAlert>
 
