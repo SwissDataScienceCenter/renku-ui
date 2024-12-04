@@ -113,7 +113,7 @@ function ProjectCopyModal({
     }
   }, [copyProjectResult, navigate, toggle]);
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg">
+    <Modal backdrop="static" isOpen={isOpen} toggle={toggle} size="lg" centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggle}>
           Make a copy of{" "}
