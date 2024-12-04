@@ -17,10 +17,11 @@
  */
 
 import cx from "classnames";
-import { Fragment, ReactNode, useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { Database, NodePlus } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router-dom-v5-compat";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
@@ -31,7 +32,11 @@ import {
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
 } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import { useGetNamespacesByNamespaceSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { type SecretWithId } from "../usersV2/api/users.api";
+import {
+  useGetUserByIdQuery,
+  type SecretWithId,
+} from "../usersV2/api/users.api";
+import UserAvatar from "../usersV2/show/UserAvatar";
 import SecretItemActions from "./SecretItemActions";
 
 interface DataConnectorSecretItemProps {
@@ -49,7 +54,7 @@ export default function DataConnectorSecretItem({
     <ListGroupItem action>
       <Row>
         <Col>
-          <div className={cx("align-items-center", "d-flex")}>
+          <div className={cx("align-items-center", "d-flex", "mb-2")}>
             <span className={cx("fw-bold", "me-2")}>{name}</span>
             {isOrphanSecret && <Badge color="danger">Orphan Secret</Badge>}
           </div>
@@ -72,11 +77,11 @@ export default function DataConnectorSecretItem({
             "gap-1"
           )}
         >
+          <SecretItemActions isV2 secret={secret} />
           <div className={cx("text-light-emphasis", "small")}>
             Edited{" "}
             <TimeCaption datetime={modification_date} enableTooltip noCaption />
           </div>
-          <SecretItemActions isV2 secret={secret} />
         </Col>
       </Row>
     </ListGroupItem>
@@ -96,10 +101,17 @@ function DataConnectorSecretUsedFor({
     return null;
   }
 
+  const dataConnectorsStr =
+    dataConnectorIds.length > 1 ? "data connectors" : "data connector";
+
   return (
     <div>
-      <p className={cx("mb-0", "fw-medium")}>This secret is used in:</p>
-      <ul>
+      <p className={cx("mb-1", "fw-medium")}>
+        <NodePlus className={cx("bi", "me-1")} />
+        This secret is used in <Badge>{dataConnectorIds.length}</Badge>{" "}
+        {dataConnectorsStr}
+      </p>
+      <ul className={cx("list-unstyled", "d-flex", "flex-column", "gap-1")}>
         {dataConnectorIds.map((dataConnectorId) => (
           <DataConnectorSecretUsedForItem
             key={dataConnectorId}
@@ -138,6 +150,11 @@ function DataConnectorSecretUsedForItem({
   } = useGetNamespacesByNamespaceSlugQuery(
     dataConnector ? { namespaceSlug: dataConnector.namespace } : skipToken
   );
+  const { data: user } = useGetUserByIdQuery(
+    namespace?.namespace_kind === "user" && namespace.created_by
+      ? { userId: namespace.created_by }
+      : skipToken
+  );
 
   const isLoading =
     isLoadingDataConnector || isLoadingSecrets || isLoadingNamespace;
@@ -147,6 +164,11 @@ function DataConnectorSecretUsedForItem({
     () =>
       dataConnectorSecrets?.find(({ secret_id }) => secret_id === secret.id),
     [dataConnectorSecrets, secret.id]
+  );
+
+  const namespaceName = useMemo(
+    () => namespace?.name ?? dataConnector?.namespace,
+    [dataConnector?.namespace, namespace?.name]
   );
 
   const namespaceUrl = useMemo(
@@ -166,10 +188,21 @@ function DataConnectorSecretUsedForItem({
 
   const LinkTag =
     namespaceUrl && dcHash
-      ? ({ children }: { children: ReactNode }) => (
-          <Link to={{ pathname: namespaceUrl, hash: dcHash }}>{children}</Link>
+      ? ({
+          className,
+          children,
+        }: {
+          className?: string;
+          children: ReactNode;
+        }) => (
+          <Link
+            className={className}
+            to={{ pathname: namespaceUrl, hash: dcHash }}
+          >
+            {children}
+          </Link>
         )
-      : Fragment;
+      : "span";
 
   if (isLoading) {
     return (
@@ -192,27 +225,35 @@ function DataConnectorSecretUsedForItem({
   }
 
   return (
-    <li>
+    <li className={cx("d-flex", "flex-row")}>
       <div>
-        <LinkTag>
-          {dataConnector.name}
-          {" - "}
-          <span className="fst-italic">
-            {"@"}
-            {dataConnector.namespace}/{dataConnector.slug}
-          </span>
-        </LinkTag>
+        <Database className={cx("bi", "me-1")} />
       </div>
       <div>
-        {dcSecret ? (
-          <>
-            Field: <code>{dcSecret.name}</code>
-          </>
-        ) : (
-          <span className="fst-italic">
-            Error: could not find the corresponding field.
-          </span>
-        )}
+        <div className={cx("d-flex", "flex-row", "gap-4")}>
+          <LinkTag className={cx("fw-semibold")}>{dataConnector.name}</LinkTag>
+          <div
+            className={cx("d-flex", "flex-row", "align-items-center", "gap-1")}
+          >
+            <UserAvatar
+              firstName={user?.first_name}
+              lastName={user?.last_name}
+              username={namespaceName}
+            />
+            <span>{namespaceName}</span>
+          </div>
+        </div>
+        <div>
+          {dcSecret ? (
+            <>
+              Field: <span className="fw-semibold">{dcSecret.name}</span>
+            </>
+          ) : (
+            <span className="fst-italic">
+              Error: could not find the corresponding field.
+            </span>
+          )}
+        </div>
       </div>
     </li>
   );

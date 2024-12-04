@@ -56,11 +56,17 @@ export default function SecretsV2() {
         </Col>
       </Row>
       {user.logged && (
-        <div className={cx("d-flex", "flex-column", "gap-4")}>
-          <SessionSecrets />
-          <DataConnectorSecrets />
-          <UnusedSecrets />
-        </div>
+        <Row className={cx("g-4", "row-cols-1", "row-cols-lg-2")}>
+          <Col>
+            <SessionSecrets />
+          </Col>
+          <Col>
+            <DataConnectorSecrets />
+          </Col>
+          <Col>
+            <UnusedSecrets />
+          </Col>
+        </Row>
       )}
     </>
   );
@@ -114,7 +120,7 @@ function SessionSecrets() {
   );
 
   return (
-    <Card>
+    <Card className="h-100">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("m-0", "me-2")}>
@@ -179,7 +185,7 @@ function DataConnectorSecrets() {
   );
 
   return (
-    <Card>
+    <Card className="h-100">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("m-0", "me-2")}>
@@ -239,7 +245,7 @@ function UnusedSecrets() {
   }
 
   return (
-    <Card>
+    <Card className="h-100">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("m-0", "me-2")}>
