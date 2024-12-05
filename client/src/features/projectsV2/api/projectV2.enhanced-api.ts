@@ -242,6 +242,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       }),
       providesTags: ["Project"],
     },
+    getProjectsByProjectIdCopies: {
+      providesTags: ["Project"],
+    },
     getProjectsByProjectIdDataConnectorLinks: {
       providesTags: ["DataConnectors"],
     },
@@ -330,6 +333,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
             ]
           : ["SessionSecretSlot"],
     },
+    postProjectsByProjectIdCopies: {
+      invalidatesTags: ["Project"],
+    },
   },
 });
 
@@ -346,17 +352,19 @@ const withInvalidation = enhancedApi.injectEndpoints({
 export { withInvalidation as projectV2Api };
 export const {
   // project hooks
+  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsPagedQuery: useGetProjectsQuery,
-  usePostProjectsMutation,
   useGetNamespacesByNamespaceProjectsAndSlugQuery,
+  useGetProjectsByProjectIdCopiesQuery,
+  useGetProjectsByProjectIdPermissionsQuery,
   useGetProjectsByProjectIdQuery,
   useGetProjectsByProjectIdsQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
-  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
-  useGetProjectsByProjectIdPermissionsQuery,
+  usePostProjectsMutation,
+  usePostProjectsByProjectIdCopiesMutation,
 
   // project session secret hooks
   useGetProjectsByProjectIdSessionSecretSlotsQuery,
