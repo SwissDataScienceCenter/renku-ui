@@ -102,3 +102,26 @@ export function AvatarTypeWrap({ type, children }: AvatarType) {
     </div>
   );
 }
+
+interface AvatarType {
+  type: "User" | "Group";
+  children: ReactNode;
+}
+export function AvatarTypeWrap({ type, children }: AvatarType) {
+  const styles: CSSProperties = {
+    width: "75px",
+    height: "65px",
+  };
+
+  return (
+    <div
+      style={styles}
+      className={cx("d-flex", "align-items-end", "position-relative")}
+    >
+      {children}
+      <div style={{ right: "0" }} className={cx("position-absolute", "top-0")}>
+        <EntityPill entityType={type} size="sm" />
+      </div>
+    </div>
+  );
+}
