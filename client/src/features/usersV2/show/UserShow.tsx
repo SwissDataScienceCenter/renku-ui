@@ -128,9 +128,7 @@ export default function UserShow() {
         <ProjectV2ListDisplay
           namespace={username}
           pageParam="projects_page"
-          emptyListElement={
-            <p>{name ?? username} has no visible personal projects.</p>
-          }
+          namespaceKind="user"
         />
       </section>
       <section className="mt-3">
