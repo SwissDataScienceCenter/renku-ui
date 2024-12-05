@@ -231,7 +231,7 @@ function DataConnectorSecretUsedForItem({
       </div>
       <div>
         <div className={cx("d-flex", "flex-row", "gap-4")}>
-          <LinkTag className={cx("fw-semibold")}>{dataConnector.name}</LinkTag>
+          <LinkTag className={cx("fw-bold")}>{dataConnector.name}</LinkTag>
           <div
             className={cx("d-flex", "flex-row", "align-items-center", "gap-1")}
           >
@@ -246,7 +246,7 @@ function DataConnectorSecretUsedForItem({
         <div>
           {dcSecret ? (
             <>
-              Field: <span className="fw-semibold">{dcSecret.name}</span>
+              Field: <span className="fw-bold">{dcSecret.name}</span>
             </>
           ) : (
             <span className="fst-italic">
