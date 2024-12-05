@@ -82,7 +82,7 @@ export default function SessionHibernated({
 
   return (
     <div className={cx("p-2", "p-lg-3", "text-nowrap", "container-lg")}>
-      <p className="mt-2">This session is currently stopped.</p>
+      <p className="mt-2">This session is currently paused.</p>
       <Alert color="primary">
         <p className="mb-0">
           {isResuming ? (
@@ -97,7 +97,6 @@ export default function SessionHibernated({
               <Button
                 className={cx("btn", "btn-primary", "btn-sm")}
                 onClick={onResumeSession}
-                disabled={isResuming}
               >
                 resume the session
               </Button>{" "}

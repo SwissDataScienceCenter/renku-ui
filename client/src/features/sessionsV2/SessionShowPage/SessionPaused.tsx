@@ -16,92 +16,108 @@
  * limitations under the License.
  */
 
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { QuestionCircle } from "react-bootstrap-icons";
-import { Alert } from "reactstrap";
+import { generatePath, Link, useParams } from "react-router-dom-v5-compat";
+import { Alert, Button } from "reactstrap";
+
+import { Loader } from "../../../components/Loader";
+import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
+import type { NotificationsManager } from "../../../notifications/notifications.types";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import AppContext from "../../../utils/context/appContext";
+import { usePatchSessionMutation } from "../sessionsV2.api";
 import type { SessionV2 } from "../sessionsV2.types";
 
 interface SessionPausedProps {
-  session?: SessionV2;
+  session: SessionV2;
 }
 
 export default function SessionPaused({ session }: SessionPausedProps) {
-  //   const location = useLocation<{ filePath?: string } | undefined>();
-  //   const locationFilePath = location.state?.filePath;
+  const { name: sessionName } = session;
 
-  //   const pathWithNamespace = useLegacySelector<string>(
-  //     (state) => state.stateModel.project.metadata.pathWithNamespace
-  //   );
+  const { namespace, slug } = useParams<"namespace" | "slug">();
 
-  //   const projectUrlData = {
-  //     namespace: "",
-  //     path: pathWithNamespace,
-  //   };
-  //   const sessionsListUrl = Url.get(Url.pages.project.session, projectUrlData);
+  const [patchSession, { error }] = usePatchSessionMutation();
 
-  //   const [patchSession, { error }] = usePatchSessionMutation();
+  const [isResuming, setIsResuming] = useState(false);
 
-  //   const [isResuming, setIsResuming] = useState(false);
+  const onResumeSession = useCallback(() => {
+    patchSession({ session_id: sessionName, state: "running" });
+    setIsResuming(true);
+  }, [patchSession, sessionName]);
 
-  //   const onResumeSession = useCallback(() => {
-  //     patchSession({ sessionName: sessionName, state: "running" });
-  //     setIsResuming(true);
-  //   }, [patchSession, sessionName]);
+  const { notifications } = useContext(AppContext);
 
-  //   const { notifications } = useContext(AppContext);
+  useEffect(() => {
+    if (error != null) {
+      addErrorNotification({
+        error,
+        notifications: notifications as NotificationsManager,
+      });
+    }
+  }, [error, notifications]);
 
-  //   useEffect(() => {
-  //     if (error != null) {
-  //       addErrorNotification({
-  //         error,
-  //         notifications: notifications as NotificationsManager,
-  //       });
-  //     }
-  //   }, [error, notifications]);
-
-  //   // Resume session if opening a notebook from the file explorer
-  //   useEffect(() => {
-  //     if (locationFilePath) {
-  //       onResumeSession();
-  //     }
-  //   }, [locationFilePath, onResumeSession]);
+  const backUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace: namespace ?? "",
+    slug: slug ?? "",
+  });
 
   return (
     <div className={cx("p-2", "p-lg-3", "text-nowrap", "container-lg")}>
-      <p className="mt-2">This session is currently stopped.</p>
+      <p className="mt-2">This session is currently paused.</p>
       <Alert color="primary">
         <p className="mb-0">
-          {/* {isResuming ? (
+          {isResuming ? (
             <>
               <Loader className="me-1" inline size={16} />
               Resuming session...
             </>
           ) : (
             <>
-              <FontAwesomeIcon size="lg" icon={faQuestionCircle} /> You should
-              either{" "}
-              <Button
-                className={cx("btn", "btn-primary", "btn-sm")}
-                onClick={onResumeSession}
-                disabled={isResuming}
-              >
+              <QuestionCircle className={cx("bi", "me-2", "fs-5")} />
+              You should either{" "}
+              <Button color="primary" onClick={onResumeSession} size="sm">
                 resume the session
               </Button>{" "}
               or{" "}
               <Link
-                className={cx("btn", "btn-primary", "btn-sm")}
-                to={sessionsListUrl}
+                className={cx("btn", "btn-secondary", "btn-sm")}
+                to={backUrl}
               >
-                go to the sessions list
+                go back to the project page
               </Link>
+              .
             </>
-          )} */}
-          <QuestionCircle className={cx("bi", "me-1")} />
-          You should either {"["}resume the session{"]"} or {"["}go to the
-          sessions list{"]"}.
+          )}
         </p>
-        <pre>{session?.name}</pre>
       </Alert>
     </div>
+  );
+}
+
+function addErrorNotification({
+  error,
+  notifications,
+}: {
+  error: FetchBaseQueryError | SerializedError;
+  notifications: NotificationsManager;
+}) {
+  const message =
+    "message" in error && error.message != null
+      ? error.message
+      : "error" in error && error.error != null
+      ? error.error
+      : "Unknown error";
+  notifications.addError(
+    NOTIFICATION_TOPICS.SESSION_START,
+    "Unable to delete the current session",
+    undefined,
+    undefined,
+    undefined,
+    `Error message: "${message}"`
   );
 }
