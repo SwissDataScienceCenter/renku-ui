@@ -145,8 +145,7 @@ describe("Edit v2 group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.wait("@getGroupV2Permissions");
-    cy.contains("Edit settings").should("be.visible").click();
+    cy.getDataCy("nav-link-settings").should("be.visible").click();
     cy.getDataCy("group-name-input").clear().type("new name");
     cy.getDataCy("group-slug-input").clear().type("new-slug");
     cy.getDataCy("group-description-input").clear().type("new description");
@@ -182,8 +181,7 @@ describe("Edit v2 group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.wait("@getGroupV2Permissions");
-    cy.contains("Edit settings").should("be.visible").click();
+    cy.getDataCy("nav-link-settings").should("be.visible").click();
     cy.contains("@user1").should("be.visible");
     cy.contains("user3-uuid").should("be.visible");
     fixtures
@@ -229,8 +227,7 @@ describe("Edit v2 group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.wait("@getGroupV2Permissions");
-    cy.contains("Edit settings").should("be.visible").click();
+    cy.getDataCy("nav-link-settings").should("be.visible").click();
     cy.getDataCy("group-description-input").clear().type("new description");
     cy.get("button").contains("Delete").should("be.visible").click();
     cy.get("button")
@@ -248,7 +245,9 @@ describe("Edit v2 group", () => {
       fixture: "groupV2/list-groupV2-post-delete.json",
       name: "listGroupV2PostDelete",
     });
-    cy.contains("Group with slug test-2-group-v2 does not exist");
+    cy.contains("Group test 2 group-v2 has been successfully deleted.").should(
+      "be.visible"
+    );
   });
 });
 

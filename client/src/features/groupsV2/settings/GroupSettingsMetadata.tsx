@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { CheckLg, Pencil, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
@@ -34,6 +34,8 @@ import {
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import AppContext from "../../../utils/context/appContext.ts";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard.tsx";
 import type {
   GroupPatchRequest,
   GroupResponse,
@@ -44,7 +46,8 @@ import {
 } from "../../projectsV2/api/projectV2.enhanced-api";
 import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
 import NameFormField from "../../projectsV2/fields/NameFormField";
-import SlugFormField from "../../projectsV2/fields/SlugFormField.tsx";
+import SlugFormField from "../../projectsV2/fields/SlugFormField";
+import useGroupPermissions from "../utils/useGroupPermissions.hook.ts";
 
 type GroupMetadata = Omit<GroupPatchRequest, "repositories">;
 
@@ -59,7 +62,9 @@ function GroupDeleteConfirmation({
   toggle,
   group,
 }: GroupDeleteConfirmationProps) {
+  const navigate = useNavigate();
   const [deleteGroup, result] = useDeleteGroupsByGroupSlugMutation();
+  const { notifications } = useContext(AppContext);
   const onDelete = useCallback(() => {
     deleteGroup({ groupSlug: group.slug });
   }, [deleteGroup, group.slug]);
@@ -72,10 +77,15 @@ function GroupDeleteConfirmation({
   );
 
   useEffect(() => {
-    if (result.isSuccess || result.isError) {
-      toggle();
+    if (result.isError)
+      notifications?.addError(`Error deleting the group ${group.name}`);
+    if (result.isSuccess) {
+      notifications?.addSuccess(
+        `Group ${group.name} has been successfully deleted.`
+      );
+      navigate(generatePath(ABSOLUTE_ROUTES.v2.root));
     }
-  }, [result.isError, result.isSuccess, toggle]);
+  }, [result.isError, result.isSuccess, notifications, group.name, navigate]);
 
   return (
     <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
@@ -133,6 +143,7 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
       slug: group.slug ?? "",
     },
   });
+  const permissions = useGroupPermissions({ groupSlug: group.slug });
 
   const [updateGroup, updateGroupResult] = usePatchGroupsByGroupSlugMutation();
 
@@ -173,62 +184,128 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
       )}
       <GroupDeleteConfirmation isOpen={isOpen} group={group} toggle={toggle} />
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <div className={cx("d-flex", "flex-column", "gap-3")}>
-          <NameFormField
-            control={control}
-            entityName="group"
-            errors={errors}
-            name="name"
-          />
-
-          <div>
-            <Label className="form-label" for="group-slug">
-              Slug
-            </Label>
-            <SlugFormField
-              compact={true}
+        <PermissionsGuard
+          disabled={<GroupReadOnlyField title="Name" value={group.name} />}
+          enabled={
+            <NameFormField
               control={control}
-              entityName={"group"}
+              entityName="group"
               errors={errors}
-              name={"slug"}
-              resetFunction={resetUrl}
-              url="renkulab.io/v2/groups/"
+              name="name"
             />
-            {errors.slug && dirtyFields.slug && (
-              <div className={cx("d-block", "invalid-feedback")}>
-                <p className="mb-1">
-                  {errors?.slug?.message?.toString() ?? ""}
-                </p>
-              </div>
-            )}
-          </div>
+          }
+          requestedPermission="write"
+          userPermissions={permissions.permissions}
+        />
 
-          <DescriptionFormField
-            control={control}
-            entityName="group"
-            errors={errors}
-            name="description"
+        <PermissionsGuard
+          disabled={<GroupReadOnlyField title="Slug" value={group.slug} />}
+          enabled={
+            <div>
+              <Label className="form-label" for="group-slug">
+                Slug
+              </Label>
+              <SlugFormField
+                compact={true}
+                control={control}
+                entityName={"group"}
+                errors={errors}
+                name={"slug"}
+                resetFunction={resetUrl}
+                url="renkulab.io/v2/groups/"
+              />
+              {errors.slug && dirtyFields.slug && (
+                <div className={cx("d-block", "invalid-feedback")}>
+                  <p className="mb-1">
+                    {errors?.slug?.message?.toString() ?? ""}
+                  </p>
+                </div>
+              )}
+            </div>
+          }
+          requestedPermission="write"
+          userPermissions={permissions.permissions}
+        />
+
+        <PermissionsGuard
+          disabled={
+            <GroupReadOnlyField
+              title="Description"
+              value={group.description ?? ""}
+            />
+          }
+          enabled={
+            <DescriptionFormField
+              control={control}
+              entityName="group"
+              errors={errors}
+              name="description"
+            />
+          }
+          requestedPermission="write"
+          userPermissions={permissions.permissions}
+        />
+
+        <div className={cx("d-flex", "gap-2")}>
+          <PermissionsGuard
+            disabled={null}
+            enabled={
+              <Button
+                className="ms-auto"
+                color="outline-danger"
+                onClick={toggle}
+              >
+                Delete
+              </Button>
+            }
+            requestedPermission="delete"
+            userPermissions={permissions.permissions}
           />
 
-          <div className={cx("d-flex", "gap-2")}>
-            <Button className="ms-auto" color="outline-danger" onClick={toggle}>
-              Delete
-            </Button>
-            <Button
-              color="primary"
-              disabled={isUpdating || !isDirty}
-              type="submit"
-            >
-              {isUpdating ? (
-                <Loader inline size={16} />
-              ) : (
-                <Pencil className={cx("bi", "me-1")} />
-              )}
-              Update
-            </Button>
-          </div>
+          <PermissionsGuard
+            disabled={null}
+            enabled={
+              <Button
+                color="primary"
+                disabled={isUpdating || !isDirty}
+                type="submit"
+              >
+                {isUpdating ? (
+                  <Loader inline size={16} />
+                ) : (
+                  <Pencil className={cx("bi", "me-1")} />
+                )}
+                Update
+              </Button>
+            }
+            requestedPermission="write"
+            userPermissions={permissions.permissions}
+          />
         </div>
       </Form>
+    </div>
+  );
+}
+function GroupReadOnlyField({
+  title,
+  value,
+}: {
+  title: string;
+  value: string;
+}) {
+  return (
+    <div className="mb-3">
+      <Label className="form-label" for={`group-${title}`}>
+        {title}
+      </Label>
+      <Input
+        className="form-control"
+        id={`group-${title}`}
+        type="text"
+        value={value}
+        disabled={true}
+        readOnly
+      />
     </div>
   );
 }
