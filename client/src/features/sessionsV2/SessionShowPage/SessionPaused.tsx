@@ -100,6 +100,7 @@ export default function SessionPaused({ session }: SessionPausedProps) {
           You should either {"["}resume the session{"]"} or {"["}go to the
           sessions list{"]"}.
         </p>
+        <pre>{session?.name}</pre>
       </Alert>
     </div>
   );
