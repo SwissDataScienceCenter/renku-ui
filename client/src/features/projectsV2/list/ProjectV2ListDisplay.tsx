@@ -18,25 +18,15 @@
 
 import cx from "classnames";
 import { ReactNode, useCallback, useEffect, useMemo } from "react";
-import { Globe2, Lock } from "react-bootstrap-icons";
-import {
-  Link,
-  generatePath,
-  useSearchParams,
-} from "react-router-dom-v5-compat";
-import { Card, CardBody, Col, Row } from "reactstrap";
+import { Folder, PlusLg } from "react-bootstrap-icons";
+import { Link, useSearchParams } from "react-router-dom-v5-compat";
+import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
-import { TimeCaption } from "../../../components/TimeCaption";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import type { Project } from "../api/projectV2.api";
-import {
-  useGetNamespacesByNamespaceSlugQuery,
-  useGetProjectsQuery,
-} from "../api/projectV2.enhanced-api";
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
+import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
+import ProjectShortHandDisplay from "../show/ProjectShortHandDisplay.tsx";
 
 const DEFAULT_PER_PAGE = 12;
 const DEFAULT_PAGE_PARAM = "page";
@@ -115,120 +105,91 @@ export default function ProjectListDisplay({
     }
   }, [data?.totalPages, page, pageParam, setSearchParams]);
 
-  if (isLoading)
-    return (
-      <div className={cx("d-flex", "justify-content-center", "w-100")}>
-        <div className={cx("d-flex", "flex-column")}>
-          <Loader />
-          <div>Retrieving projects...</div>
-        </div>
-      </div>
-    );
-
   if (error || data == null) {
     return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
-  if (!data.total) {
-    return emptyListElement ?? <p>The project list is empty.</p>;
-  }
-
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <Row
-        className={cx("row-cols-1", "row-cols-md-2", "row-cols-xxl-3", "g-3")}
-      >
-        {data.projects?.map((project) => (
-          <ProjectV2ListProject key={project.id} project={project} />
-        ))}
-      </Row>
-      <Pagination
-        currentPage={data.page}
-        perPage={perPage}
-        totalItems={data.total}
-        onPageChange={onPageChange}
-        className={cx(
-          "d-flex",
-          "justify-content-center",
-          "rk-search-pagination"
-        )}
-      />
+      <Card className="h-100" data-cy="project-box">
+        <ProjectBoxHeader totalProjects={data.total ?? 0} />
+        <CardBody>
+          {isLoading && (
+            <div className={cx("d-flex", "justify-content-center", "w-100")}>
+              <div className={cx("d-flex", "flex-column")}>
+                <Loader />
+                <div>Retrieving projects...</div>
+              </div>
+            </div>
+          )}
+          {!data.total && emptyListElement && (
+            <p>This group doesnt has projects yet.</p>
+          )}
+          {data.projects.length > 0 && (
+            <>
+              <div className={cx("d-flex", "flex-column", "gap-3")}>
+                <ListGroup flush data-cy="dashboard-project-list">
+                  {data?.projects?.map((project) => (
+                    <ProjectShortHandDisplay
+                      element="list-item"
+                      key={project.id}
+                      project={project}
+                    />
+                  ))}
+                </ListGroup>
+              </div>
+              <Pagination
+                currentPage={data.page}
+                perPage={perPage}
+                totalItems={data.total}
+                onPageChange={onPageChange}
+                className={cx(
+                  "d-flex",
+                  "justify-content-center",
+                  "rk-search-pagination"
+                )}
+              />
+            </>
+          )}
+        </CardBody>
+      </Card>
     </div>
   );
 }
 
-interface ProjectV2ListProjectProps {
-  project: Project;
+interface ProjectBoxHeaderProps {
+  totalProjects: number;
 }
-function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
-  const { data: namespaceData } = useGetNamespacesByNamespaceSlugQuery({
-    namespaceSlug: project.namespace,
-  });
-
-  const {
-    name,
-    namespace,
-    description,
-    visibility,
-    creation_date: creationDate,
-  } = project;
-
-  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-    namespace: project.namespace,
-    slug: project.slug,
-  });
-  const namespaceUrl =
-    namespaceData && namespaceData.namespace_kind === "group"
-      ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, { slug: namespace })
-      : generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-          username: project.namespace,
-        });
-
+function ProjectBoxHeader({ totalProjects }: ProjectBoxHeaderProps) {
   return (
-    <Col>
-      <Card className="h-100" data-cy="project-card">
-        <CardBody className={cx("d-flex", "flex-column")}>
-          <h5>
-            <Link to={projectUrl}>{name}</Link>
-          </h5>
-          <p>
-            <Link to={namespaceUrl}>
-              {"@"}
-              {namespace}
-            </Link>
-          </p>
-          {description && <ClampedParagraph>{description}</ClampedParagraph>}
-          <div
-            className={cx(
-              "align-items-center",
-              "d-flex",
-              "flex-wrap",
-              "gap-2",
-              "justify-content-between",
-              "mt-auto"
-            )}
-          >
-            <div>
-              {visibility.toLowerCase() === "private" ? (
-                <>
-                  <Lock className={cx("bi", "me-1")} />
-                  Private
-                </>
-              ) : (
-                <>
-                  <Globe2 className={cx("bi", "me-1")} />
-                  Public
-                </>
-              )}
-            </div>
-            <TimeCaption
-              datetime={creationDate}
-              prefix="Created"
-              enableTooltip
-            />
-          </div>
-        </CardBody>
-      </Card>
-    </Col>
+    <CardHeader>
+      <div
+        className={cx(
+          "align-items-center",
+          "d-flex",
+          "justify-content-between"
+        )}
+      >
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("mb-0", "me-2")}>
+            <Folder className={cx("me-1", "bi")} />
+            Projects
+          </h4>
+          <Badge>{totalProjects}</Badge>
+        </div>
+        <Link
+          className={cx(
+            "btn",
+            "btn-outline-primary",
+            "btn-sm",
+            "ms-auto",
+            "my-auto"
+          )}
+          to="/v2/projects/new"
+        >
+          <PlusLg className="bi" id="createPlus" />
+        </Link>
+      </div>
+    </CardHeader>
   );
 }
