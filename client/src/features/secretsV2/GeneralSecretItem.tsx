@@ -24,6 +24,7 @@ import { Badge, Col, Collapse, ListGroupItem, Row } from "reactstrap";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Folder, NodePlus } from "react-bootstrap-icons";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -40,7 +41,6 @@ import {
 import UserAvatar from "../usersV2/show/UserAvatar";
 import SecretItemActions from "./SecretItemActions";
 import useGetRelatedProjects from "./useGetRelatedProjects.hook";
-import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 
 interface GeneralSecretItemProps {
   secret: SecretWithId;
@@ -53,9 +53,6 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
     secret,
   });
 
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
-
   const usedInContent = isLoading ? (
     <div>
       <Loader className="me-1" inline size={16} />
@@ -67,11 +64,7 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
       {error && <RtkOrNotebooksError error={error} dismissible={false} />}
     </div>
   ) : (
-    <GeneralSecretUsedIn
-      isOpen={isOpen}
-      projects={projects}
-      secretSlots={secretSlots}
-    />
+    <GeneralSecretUsedIn projects={projects} secretSlots={secretSlots} />
   );
 
   return (
@@ -79,20 +72,7 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
       <Row>
         <Col>
           <div className={cx("align-items-center", "d-flex", "mb-2")}>
-            {projects && projects.length > 0 ? (
-              <button
-                className={cx("fw-bold", "me-2", "bg-transparent", "border-0")}
-                onClick={toggle}
-              >
-                {name}
-                <ChevronFlippedIcon
-                  className={cx("bi", "ms-1")}
-                  flipped={isOpen}
-                />
-              </button>
-            ) : (
-              <span className={cx("fw-bold", "me-2")}>{name}</span>
-            )}
+            <span className={cx("fw-bold", "me-2")}>{name}</span>
           </div>
           {usedInContent}
         </Col>
@@ -119,16 +99,17 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
 }
 
 interface GeneralSecretUsedInProps {
-  isOpen: boolean;
   projects: Project[];
   secretSlots: SessionSecretSlot[];
 }
 
 function GeneralSecretUsedIn({
-  isOpen,
   projects,
   secretSlots,
 }: GeneralSecretUsedInProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
+
   if (projects.length == 0) {
     return null;
   }
@@ -137,10 +118,14 @@ function GeneralSecretUsedIn({
 
   return (
     <div>
-      <p className={cx("mb-1", "fw-medium")}>
+      <button
+        className={cx("me-2", "bg-transparent", "border-0", "fw-medium")}
+        onClick={toggle}
+      >
         <NodePlus className={cx("bi", "me-1")} />
         This secret is used in <Badge>{projects.length}</Badge> {projectStr}
-      </p>
+        <ChevronFlippedIcon className={cx("bi", "ms-1")} flipped={isOpen} />
+      </button>
       <Collapse isOpen={isOpen}>
         <ul className={cx("list-unstyled", "d-flex", "flex-column", "gap-2")}>
           {projects.map((project) => (
