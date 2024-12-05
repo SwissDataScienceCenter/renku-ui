@@ -21,6 +21,8 @@ import { Col, Row } from "reactstrap";
 import SessionsV2 from "../../sessionsV2/SessionsV2";
 import { useProject } from "../ProjectPageContainer/ProjectPageContainer";
 import { CodeRepositoriesDisplay } from "./CodeRepositories/RepositoriesBox";
+import ProjectCopyButton from "./ProjectCopyButton";
+import ProjectCopyTemplateInfo from "./ProjectCopyTemplateInfo";
 import ProjectDataConnectorsBox from "./DataConnectors/ProjectDataConnectorsBox";
 import ProjectInformation from "./ProjectInformation/ProjectInformation";
 
@@ -43,7 +45,14 @@ export default function ProjectOverviewPage() {
         </Row>
       </Col>
       <Col xs={12} md={4} xl={3}>
-        <ProjectInformation output="card" />
+        <div className="mb-3">
+          <ProjectInformation output="card" />
+        </div>
+        {project.template_id ? (
+          <ProjectCopyTemplateInfo />
+        ) : (
+          <ProjectCopyButton />
+        )}
       </Col>
     </Row>
   );
