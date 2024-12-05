@@ -221,7 +221,11 @@ function DataConnectorBoxContent({
           {data.total > 0 && (
             <ListGroup flush>
               {data.dataConnectors?.map((dc) => (
-                <DataConnectorBoxListDisplay key={dc.id} dataConnector={dc} />
+                <DataConnectorBoxListDisplay
+                  key={dc.id}
+                  dataConnector={dc}
+                  extendedPreview={true}
+                />
               ))}
             </ListGroup>
           )}
