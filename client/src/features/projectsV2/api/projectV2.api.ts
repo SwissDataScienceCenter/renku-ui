@@ -48,6 +48,22 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.slug}`,
       }),
     }),
+    getProjectsByProjectIdCopies: build.query<
+      GetProjectsByProjectIdCopiesApiResponse,
+      GetProjectsByProjectIdCopiesApiArg
+    >({
+      query: (queryArg) => ({ url: `/projects/${queryArg.projectId}/copies` }),
+    }),
+    postProjectsByProjectIdCopies: build.mutation<
+      PostProjectsByProjectIdCopiesApiResponse,
+      PostProjectsByProjectIdCopiesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/copies`,
+        method: "POST",
+        body: queryArg.projectPost,
+      }),
+    }),
     getProjectsByProjectIdMembers: build.query<
       GetProjectsByProjectIdMembersApiResponse,
       GetProjectsByProjectIdMembersApiArg
@@ -128,6 +144,17 @@ export type GetProjectsByNamespaceAndSlugApiArg = {
   namespace: string;
   slug: string;
 };
+export type GetProjectsByProjectIdCopiesApiResponse =
+  /** status 200 The list of projects */ ProjectsList;
+export type GetProjectsByProjectIdCopiesApiArg = {
+  projectId: Ulid;
+};
+export type PostProjectsByProjectIdCopiesApiResponse =
+  /** status 201 The project was created */ Project;
+export type PostProjectsByProjectIdCopiesApiArg = {
+  projectId: Ulid;
+  projectPost: ProjectPost;
+};
 export type GetProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members */ ProjectMemberListResponse;
 export type GetProjectsByProjectIdMembersApiArg = {
@@ -160,6 +187,7 @@ export type GetProjectsByProjectIdDataConnectorLinksApiArg = {
 export type Ulid = string;
 export type ProjectName = string;
 export type Slug = string;
+export type LegacySlug = string;
 export type CreationDate = string;
 export type UserId = string;
 export type UpdatedAt = string;
@@ -174,7 +202,7 @@ export type Project = {
   id: Ulid;
   name: ProjectName;
   namespace: Slug;
-  slug: Slug;
+  slug: LegacySlug;
   creation_date: CreationDate;
   created_by: UserId;
   updated_at?: UpdatedAt;
@@ -183,6 +211,7 @@ export type Project = {
   description?: Description;
   etag?: ETag;
   keywords?: KeywordsList;
+  template_id?: Ulid;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {
@@ -225,7 +254,7 @@ export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
   id: UserId;
-  namespace?: Slug;
+  namespace?: LegacySlug;
   first_name?: UserFirstLastName;
   last_name?: UserFirstLastName;
   role: Role;
@@ -259,6 +288,8 @@ export const {
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
   useGetProjectsByNamespaceAndSlugQuery,
+  useGetProjectsByProjectIdCopiesQuery,
+  usePostProjectsByProjectIdCopiesMutation,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
