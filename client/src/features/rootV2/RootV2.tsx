@@ -34,6 +34,8 @@ import {
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
+import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
+
 import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
 import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
 import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
@@ -41,7 +43,7 @@ import LazyConnectedServicesPage from "../connectedServices/LazyConnectedService
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
-import LazyGroupV2Show from "../groupsV2/LazyGroupV2Show";
+import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
 import { groupCreationHash } from "../groupsV2/new/createGroup.constants";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
@@ -169,11 +171,13 @@ function GroupsV2Routes() {
       />
 
       <Route path={RELATIVE_ROUTES.v2.groups.show.root}>
-        <Route index element={<LazyGroupV2Show />} />
-        <Route
-          path={RELATIVE_ROUTES.v2.groups.show.settings}
-          element={<LazyGroupV2Settings />}
-        />
+        <Route element={<LazyGroupContainer />}>
+          <Route index element={<LazyGroupV2Overview />} />
+          <Route
+            path={RELATIVE_ROUTES.v2.groups.show.settings}
+            element={<LazyGroupV2Settings />}
+          />
+        </Route>
       </Route>
       <Route
         path="*"
