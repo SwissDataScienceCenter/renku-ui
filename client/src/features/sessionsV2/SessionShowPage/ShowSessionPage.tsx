@@ -68,6 +68,7 @@ import {
 } from "../sessionsV2.api";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionIframe from "./SessionIframe";
+import SessionPaused from "./SessionPaused";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
@@ -178,7 +179,7 @@ export default function ShowSessionPage() {
     !isLoading && !isFetching && !thisSession ? (
       <SessionUnavailable />
     ) : thisSession?.status.state === "hibernated" ? (
-      <SessionHibernated sessionName={thisSession.name} />
+      <SessionPaused session={thisSession} />
     ) : thisSession != null ? (
       <>
         {!isTheSessionReady && (
