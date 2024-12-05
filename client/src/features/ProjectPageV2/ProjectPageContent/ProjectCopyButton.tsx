@@ -207,12 +207,14 @@ export default function ProjectCopyButton() {
         <ArrowRightShort className={cx("bi")} />
         <span className={cx("ms-2")}>Copy this project</span>
       </Button>
-      <ProjectCopyModal
-        currentUser={currentUser}
-        isOpen={isModalOpen}
-        project={project}
-        toggle={toggleOpen}
-      />
+      {isModalOpen && (
+        <ProjectCopyModal
+          currentUser={currentUser}
+          isOpen={isModalOpen}
+          project={project}
+          toggle={toggleOpen}
+        />
+      )}
     </div>
   );
 }

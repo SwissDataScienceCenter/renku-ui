@@ -588,6 +588,12 @@ describe("Project copies", () => {
     cy.contains("not all data connectors were included")
       .should("be.visible")
       .click();
+    cy.contains("Close").should("be.visible").click();
+    cy.getDataCy("copy-project-button").click();
+    cy.getDataCy("copy-modal")
+      .find("button")
+      .contains("Copy")
+      .should("be.enabled");
   });
 
   it("copy a project, overriding the slug", () => {
