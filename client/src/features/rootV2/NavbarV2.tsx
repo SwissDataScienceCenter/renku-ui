@@ -42,9 +42,11 @@ import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
+import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
+import StatusBanner from "../platform/components/StatusBanner";
+import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
-import StatusBanner from "../platform/components/StatusBanner";
 
 const RENKU_ALPHA_LOGO = "/static/public/img/logo-yellow.svg";
 
@@ -63,22 +65,23 @@ function NavbarItemPlus() {
         end
       >
         <DropdownItem className="p-0">
-          <Link
+          <CreateProjectV2Button
             className="dropdown-item"
-            data-cy="navbar-project-new"
-            to="/v2/projects/new"
+            dataCy="navbar-project-new"
+            color="link"
           >
             Project
-          </Link>
+          </CreateProjectV2Button>
         </DropdownItem>
+
         <DropdownItem className="p-0">
-          <Link
+          <CreateGroupButton
             className="dropdown-item"
-            data-cy="navbar-group-new"
-            to="/v2/groups/new"
+            dataCy="navbar-group-new"
+            color="link"
           >
             Group
-          </Link>
+          </CreateGroupButton>
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

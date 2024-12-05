@@ -165,40 +165,45 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
       )}
       <GroupDeleteConfirmation isOpen={isOpen} group={group} toggle={toggle} />
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <NameFormField
-          control={control}
-          entityName="group"
-          errors={errors}
-          name="name"
-        />
-        <SlugFormField
-          control={control}
-          entityName="group"
-          errors={errors}
-          name="slug"
-        />
-        <DescriptionFormField
-          control={control}
-          entityName="group"
-          errors={errors}
-          name="description"
-        />
-        <div className={cx("d-flex", "gap-2")}>
-          <Button className="ms-auto" color="outline-danger" onClick={toggle}>
-            Delete
-          </Button>
-          <Button
-            color="primary"
-            disabled={isUpdating || !isDirty}
-            type="submit"
-          >
-            {isUpdating ? (
-              <Loader inline size={16} />
-            ) : (
-              <Pencil className={cx("bi", "me-1")} />
-            )}
-            Update
-          </Button>
+        <div className={cx("d-flex", "flex-column", "gap-3")}>
+          <NameFormField
+            control={control}
+            entityName="group"
+            errors={errors}
+            name="name"
+          />
+
+          <SlugFormField
+            control={control}
+            entityName="group"
+            errors={errors}
+            name="slug"
+          />
+
+          <DescriptionFormField
+            control={control}
+            entityName="group"
+            errors={errors}
+            name="description"
+          />
+
+          <div className={cx("d-flex", "gap-2")}>
+            <Button className="ms-auto" color="outline-danger" onClick={toggle}>
+              Delete
+            </Button>
+            <Button
+              color="primary"
+              disabled={isUpdating || !isDirty}
+              type="submit"
+            >
+              {isUpdating ? (
+                <Loader inline size={16} />
+              ) : (
+                <Pencil className={cx("bi", "me-1")} />
+              )}
+              Update
+            </Button>
+          </div>
         </div>
       </Form>
     </div>
