@@ -204,7 +204,7 @@ function GeneralSecretUsedInProject({
           <div>
             <div className={cx("d-flex", "flex-row", "gap-4")}>
               <Link
-                className={cx("fw-semibold")}
+                className={cx("fw-bold")}
                 to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}
               >
                 {project.name}
@@ -226,8 +226,7 @@ function GeneralSecretUsedInProject({
               </div>
             </div>
             <div>
-              Secret slot:{" "}
-              <span className="fw-semibold">{secretSlot.name}</span>
+              Secret slot: <span className="fw-bold">{secretSlot.name}</span>
             </div>
           </div>
         </li>

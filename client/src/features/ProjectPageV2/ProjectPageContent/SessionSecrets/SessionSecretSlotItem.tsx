@@ -65,7 +65,7 @@ export default function SessionSecretSlotItem({
                 <NodePlus className={cx("bi", "ms-2", "me-1")} />
                 <span>
                   Secret name:{" "}
-                  <span className="fw-semibold">
+                  <span className="fw-bold">
                     <SessionSecretSlotItemSecretReference
                       userSecretId={secretSlot.secretId}
                     />
