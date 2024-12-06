@@ -42,6 +42,7 @@ import {
 import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
+import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
 import {
@@ -459,7 +460,7 @@ export function SessionView({
                 <Badge>{project?.repositories?.length}</Badge>
               )}
             </div>
-            {dataConnectors && dataConnectors?.length > 0 ? (
+            {project.repositories && project.repositories.length > 0 ? (
               <ListGroup>
                 {project?.repositories?.map((repositoryUrl, index) => (
                   <RepositoryItem
@@ -474,6 +475,8 @@ export function SessionView({
               <p className="fst-italic">No repositories included</p>
             )}
           </div>
+
+          <SessionViewSessionSecrets />
         </div>
       </OffcanvasBody>
     </Offcanvas>

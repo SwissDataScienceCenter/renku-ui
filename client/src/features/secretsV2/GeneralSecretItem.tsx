@@ -17,14 +17,15 @@
  */
 
 import cx from "classnames";
-import { Col, ListGroupItem, Row } from "reactstrap";
-
 import { useMemo } from "react";
 import { generatePath, Link } from "react-router-dom-v5-compat";
+import { Col, ListGroupItem, Row } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import { SESSION_SECRETS_CARD_ID } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.constants";
 import type {
   Project,
   SessionSecretSlot,
@@ -125,7 +126,7 @@ function GeneralSecretUsedInProject({
     return null;
   }
 
-  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
     namespace: project.namespace,
     slug: project.slug,
   });
@@ -133,7 +134,7 @@ function GeneralSecretUsedInProject({
   return (
     <li>
       <div>
-        <Link to={projectUrl}>
+        <Link to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}>
           {project.name}
           {" - "}
           <span className="fst-italic">

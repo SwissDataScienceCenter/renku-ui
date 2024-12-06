@@ -904,6 +904,9 @@
           "is_template": {
             "$ref": "#/components/schemas/IsTemplate",
             "default": false
+          },
+          "secrets_mount_directory": {
+            "$ref": "#/components/schemas/SecretsMountDirectory"
           }
         },
         "required": [
@@ -913,7 +916,8 @@
           "slug",
           "created_by",
           "creation_date",
-          "visibility"
+          "visibility",
+          "secrets_mount_directory"
         ],
         "example": {
           "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
@@ -933,7 +937,8 @@
             }
           ],
           "keywords": ["keyword 1", "keyword 2"],
-          "template_id": "01JC3CB5426KC7P5STS5X3KSS8"
+          "template_id": "01JC3CB5426KC7P5STS5X3KSS8",
+          "secrets_mount_directory": "/secrets"
         }
       },
       "ProjectPost": {
@@ -964,6 +969,9 @@
           },
           "documentation": {
             "$ref": "#/components/schemas/ProjectDocumentation"
+          },
+          "secrets_mount_directory": {
+            "$ref": "#/components/schemas/SecretsMountDirectory"
           }
         },
         "required": ["name", "namespace"]
@@ -1002,6 +1010,9 @@
           },
           "is_template": {
             "$ref": "#/components/schemas/IsTemplate"
+          },
+          "secrets_mount_directory": {
+            "$ref": "#/components/schemas/SecretsMountDirectoryPatch"
           }
         }
       },
@@ -1104,6 +1115,17 @@
       "IsTemplate": {
         "description": "Shows if a project is a template or not",
         "type": "boolean"
+      },
+      "SecretsMountDirectory": {
+        "description": "The location where the secrets will be provided inside sessions, if left unset it will default to `/secrets`.",
+        "type": "string",
+        "minLength": 1,
+        "default": "/secrets",
+        "example": "/secrets"
+      },
+      "SecretsMountDirectoryPatch": {
+        "type": "string",
+        "example": "/secrets"
       },
       "ProjectMemberListPatchRequest": {
         "description": "List of members and their access level to the project",

@@ -328,6 +328,7 @@ export type Keyword = string;
 export type KeywordsList = Keyword[];
 export type ProjectDocumentation = string;
 export type IsTemplate = boolean;
+export type SecretsMountDirectory = string;
 export type Project = {
   id: Ulid;
   name: ProjectName;
@@ -344,6 +345,7 @@ export type Project = {
   documentation?: ProjectDocumentation;
   template_id?: Ulid;
   is_template?: IsTemplate;
+  secrets_mount_directory: SecretsMountDirectory;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {
@@ -374,8 +376,10 @@ export type ProjectPost = {
   description?: Description;
   keywords?: KeywordsList;
   documentation?: ProjectDocumentation;
+  secrets_mount_directory?: SecretsMountDirectory;
 };
 export type WithDocumentation = boolean;
+export type SecretsMountDirectoryPatch = string;
 export type ProjectPatch = {
   name?: ProjectName;
   namespace?: Slug;
@@ -387,6 +391,7 @@ export type ProjectPatch = {
   /** template_id is set when copying a project from a template project and it cannot be modified. This field can be either null or an empty string; a null value won't change it while an empty string value will delete it, meaning that the project is unlinked from its template */
   template_id?: string;
   is_template?: IsTemplate;
+  secrets_mount_directory?: SecretsMountDirectoryPatch;
 };
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
