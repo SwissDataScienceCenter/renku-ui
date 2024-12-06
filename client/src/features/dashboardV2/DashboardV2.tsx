@@ -248,10 +248,7 @@ function DashboardSearch() {
         <Card className="bg-white">
           <CardHeader>
             <h3>Explore Renkulab</h3>
-            <p>
-              Discover and collaborate on innovative data science projects by
-              exploring Renkulab.io{" "}
-            </p>
+            <p>Explore projects on RenkuLab.</p>
           </CardHeader>
           <CardBody>
             <SearchV2Bar />
@@ -323,8 +320,8 @@ function ProjectList({ data, error, isLoading }: ProjectListProps) {
     </div>
   ) : !hasProjects ? (
     <div>
-      Renku 2.0 Projects let you group together related resources and control
-      who can access them.
+      Collaborate on projects with anyone, with data, code, and compute together
+      in one place.
     </div>
   ) : null;
 
@@ -447,7 +444,7 @@ function UserDashboard() {
           </h3>
         </Link>
         <p className="mb-0">
-          <Link to={userPageUrl} className={cx("link-primary", "text-body")}>
+          <Link to={userPageUrl} className="link-primary">
             @{userInfo.username ?? "unknown"}
           </Link>
         </p>
@@ -572,10 +569,7 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
       <RtkOrNotebooksError error={error} />
     </div>
   ) : !hasGroups ? (
-    <div>
-      Renku 2.0 Groups let you group together related projects and control who
-      can access them.
-    </div>
+    <div>Share and organize projects & data with your team.</div>
   ) : null;
 
   const groupFooter = hasGroups ? (

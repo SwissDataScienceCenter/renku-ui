@@ -22,6 +22,7 @@ import styles from "./UserAvatar.module.scss";
 
 export enum UserAvatarSize {
   small = "small",
+  medium = "medium",
   large = "large",
   extraLarge = "extra-large",
 }

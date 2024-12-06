@@ -12,9 +12,14 @@
   width: var(--size);
   font-size: var(--font-size);
 
-  &.large {
+  &.medium {
     --size: 32px;
     --font-size: 16px;
+  }
+
+  &.large {
+    --size: 43px;
+    --font-size: 20px;
   }
 
   &.extraLarge {

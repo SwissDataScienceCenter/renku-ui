@@ -91,7 +91,7 @@ function ErrorState({
 function NoSessionsState() {
   return (
     <p className="mb-0">
-      No running sessions. Create a project to launch a session.
+      No running sessions. Create or explore projects to launch a session.
     </p>
   );
 }

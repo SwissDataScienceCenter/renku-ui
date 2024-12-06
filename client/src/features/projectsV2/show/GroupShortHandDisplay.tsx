@@ -41,7 +41,7 @@ export default function GroupShortHandDisplay({
       data-cy="group-item"
     >
       <div className={cx("d-flex", "gap-2")}>
-        <UserAvatar username={group.name} size={UserAvatarSize.extraLarge} />
+        <UserAvatar username={group.name} size={UserAvatarSize.large} />
         <div
           className={cx(
             "d-flex",
