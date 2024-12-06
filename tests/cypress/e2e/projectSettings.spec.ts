@@ -406,15 +406,15 @@ describe("Cloud storage settings page", () => {
       .should("be.visible");
     cy.wait("@getStorageSchema");
     cy.getDataCy("data-storage-polybox")
-      .contains("polyBox")
+      .contains("PolyBox")
       .should("be.visible");
 
     cy.getDataCy("data-storage-switchDrive")
-      .contains("switchDrive")
+      .contains("SwitchDrive")
       .should("be.visible");
 
     cy.getDataCy("cloud-storage-edit-schema")
-      .contains("webDav")
+      .contains("WebDAV")
       .should("be.visible")
       .click();
     cy.getDataCy("cloud-storage-edit-next-button").should("be.visible").click();
