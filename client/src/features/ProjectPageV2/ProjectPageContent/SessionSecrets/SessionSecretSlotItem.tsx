@@ -36,7 +36,11 @@ export default function SessionSecretSlotItem({
   noActions,
 }: SessionSecretSlotItemProps) {
   const { filename, name, description } = secretSlot.secretSlot;
-  const fullPath = `${secretsMountDirectory}/${filename}`;
+
+  const mountDir = secretsMountDirectory.startsWith("/")
+    ? secretsMountDirectory
+    : `<work-dir>/${secretsMountDirectory}`;
+  const fullPath = `${mountDir}/${filename}`;
 
   return (
     <ListGroupItem action={!noActions} data-cy="session-secret-slot-item">
