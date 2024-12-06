@@ -382,7 +382,7 @@ function ProjectSettingsCopy({ project }: { project: Project }) {
       <CardBody>
         <div className="d-flex">
           <div className="me-2">
-            <ProjectCopyButton project={project} />
+            <ProjectCopyButton color="secondary" project={project} />
           </div>
           <div className="flex-grow-1"></div>
         </div>

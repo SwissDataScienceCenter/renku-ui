@@ -61,7 +61,7 @@ interface ProjectCopyFormValues {
   visibility: Visibility;
 }
 
-function ProjectCopyModal({
+export function ProjectCopyModal({
   currentUser,
   isOpen,
   project,
