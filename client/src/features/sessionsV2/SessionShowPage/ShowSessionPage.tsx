@@ -55,8 +55,6 @@ import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { displaySlice, resetFavicon, setFavicon } from "../../display";
 import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import SessionHibernated from "../../session/components/SessionHibernated";
-import SessionUnavailable from "../../session/components/SessionUnavailable";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import styles from "../../session/components/ShowSession.module.scss";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
@@ -68,6 +66,8 @@ import {
 } from "../sessionsV2.api";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionIframe from "./SessionIframe";
+import SessionPaused from "./SessionPaused";
+import SessionUnavailable from "./SessionUnavailable";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
@@ -178,7 +178,7 @@ export default function ShowSessionPage() {
     !isLoading && !isFetching && !thisSession ? (
       <SessionUnavailable />
     ) : thisSession?.status.state === "hibernated" ? (
-      <SessionHibernated sessionName={thisSession.name} />
+      <SessionPaused session={thisSession} />
     ) : thisSession != null ? (
       <>
         {!isTheSessionReady && (
