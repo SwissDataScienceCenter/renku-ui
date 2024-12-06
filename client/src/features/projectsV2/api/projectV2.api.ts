@@ -44,9 +44,13 @@ const injectedRtkApi = api.injectEndpoints({
       GetProjectsByNamespaceAndSlugApiResponse,
       GetProjectsByNamespaceAndSlugApiArg
     >({
-      query: (queryArg) => ({
-        url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.slug}`,
-      }),
+      query: (queryArg) => {
+        let url = `/namespaces/${queryArg["namespace"]}/projects/${queryArg.slug}`;
+        if ("with_documentation" in queryArg) {
+          url += `?with_documentation=${queryArg.with_documentation}`;
+        }
+        return { url: url };
+      },
     }),
     getProjectsByProjectIdMembers: build.query<
       GetProjectsByProjectIdMembersApiResponse,
@@ -127,6 +131,7 @@ export type GetProjectsByNamespaceAndSlugApiResponse =
 export type GetProjectsByNamespaceAndSlugApiArg = {
   namespace: string;
   slug: string;
+  with_documentation?: boolean;
 };
 export type GetProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members */ ProjectMemberListResponse;
@@ -170,6 +175,7 @@ export type Description = string;
 export type ETag = string;
 export type Keyword = string;
 export type KeywordsList = Keyword[];
+export type ProjectDocumentation = string;
 export type Project = {
   id: Ulid;
   name: ProjectName;
@@ -183,6 +189,7 @@ export type Project = {
   description?: Description;
   etag?: ETag;
   keywords?: KeywordsList;
+  documentation?: ProjectDocumentation;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {
@@ -220,6 +227,7 @@ export type ProjectPatch = {
   visibility?: Visibility;
   description?: Description;
   keywords?: KeywordsList;
+  documentation?: ProjectDocumentation;
 };
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
