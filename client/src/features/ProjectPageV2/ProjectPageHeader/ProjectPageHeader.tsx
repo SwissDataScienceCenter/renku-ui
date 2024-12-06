@@ -25,6 +25,7 @@ import { Project } from "../../projectsV2/api/projectV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
 
 import ProjectCopyBanner from "./ProjectCopyBanner";
+import ProjectTemplateInfoBanner from "./ProjectTemplateInfoBanner";
 
 interface ProjectPageHeaderProps {
   project: Project;
@@ -61,6 +62,9 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
                     to={settingsUrl}
                   />
                 </p>
+              )}
+              {project.is_template && (
+                <ProjectTemplateInfoBanner project={project} />
               )}
             </div>
           </Col>

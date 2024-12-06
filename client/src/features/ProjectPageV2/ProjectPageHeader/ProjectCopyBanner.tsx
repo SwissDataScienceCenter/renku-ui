@@ -16,25 +16,42 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { Col, Row } from "reactstrap";
-import { BoxArrowInRight, Diagram3Fill } from "react-bootstrap-icons";
+import { useCallback, useState } from "react";
+import { Button, Col, Row } from "reactstrap";
+import {
+  ArrowRight,
+  BoxArrowInRight,
+  Diagram3Fill,
+} from "react-bootstrap-icons";
+import { Link, generatePath } from "react-router-dom-v5-compat";
 
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
+import { Loader } from "../../../components/Loader";
 import SuggestionBanner from "../../../components/SuggestionBanner";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";
+import { useGetProjectsByProjectIdCopiesQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
 
-import ProjectCopyButton from "./ProjectCopyButton";
+import useProjectPermissions from "../utils/useProjectPermissions.hook";
 
-export default function ProjectCopyBanner({ project }: { project: Project }) {
-  const { data: currentUser } = useGetUserQuery();
+import ProjectCopyButton from "./ProjectCopyButton";
+import { ProjectCopyListModal } from "./ProjectTemplateInfoBanner";
+
+interface ProjectCopyBannerComponentProps {
+  currentUser: ReturnType<typeof useGetUserQuery>["data"];
+  project: Project;
+}
+function ProjectViewerMakeCopyBanner({
+  project,
+}: Omit<ProjectCopyBannerComponentProps, "currentUser">) {
   const isUserLoggedIn = useLegacySelector(
     (state) => state.stateModel.user.logged
   );
   const loginUrl = useLoginUrl();
-  if (currentUser == null) return null;
-  if (project.template_id === null) return null;
   return (
     <SuggestionBanner icon={<Diagram3Fill className="bi" />}>
       <Row className="align-items-center">
@@ -63,5 +80,142 @@ export default function ProjectCopyBanner({ project }: { project: Project }) {
         </Col>
       </Row>
     </SuggestionBanner>
+  );
+}
+
+interface ProjectGoToCopyBannerProps
+  extends Omit<ProjectCopyBannerComponentProps, "currentUser"> {
+  writableCopies: ReturnType<
+    typeof useGetProjectsByProjectIdCopiesQuery
+  >["data"];
+}
+
+function ProjectViewerGoToCopyBanner({
+  project,
+  writableCopies,
+}: ProjectGoToCopyBannerProps) {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const toggleOpen = useCallback(() => {
+    setModalOpen((open) => !open);
+  }, []);
+  const firstCopy: Project = writableCopies[0];
+  const firstUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace: firstCopy.namespace,
+    slug: firstCopy.slug,
+  });
+  return (
+    <>
+      <SuggestionBanner icon={<Diagram3Fill className="bi" />}>
+        <Row className="align-items-center">
+          <Col xs={10}>
+            <div>This project is a template</div>
+            <div>
+              {writableCopies.length > 1 ? (
+                <span>
+                  You have{" "}
+                  <span className={cx("badge", "text-bg-secondary")}>
+                    {writableCopies.length}
+                  </span>{" "}
+                  copies of this project.
+                </span>
+              ) : (
+                <b>You already have a project created from this template.</b>
+              )}
+            </div>
+          </Col>
+          <Col xs={2}>
+            <div>
+              {writableCopies.length > 1 ? (
+                <Button
+                  color="primary"
+                  className={cx("d-flex", "align-items-center")}
+                  data-cy="list-copies-button"
+                  outline={true}
+                  onClick={toggleOpen}
+                >
+                  <ArrowRight className={cx("bi", "me-1")} />
+                  View my copies
+                </Button>
+              ) : (
+                <Link
+                  to={firstUrl}
+                  className={cx("btn", "btn-outline-primary")}
+                >
+                  <ArrowRight className={cx("bi", "me-1")} />
+                  Go to my copy
+                </Link>
+              )}
+            </div>
+          </Col>
+        </Row>
+      </SuggestionBanner>
+      {isModalOpen && (
+        <ProjectCopyListModal
+          copies={writableCopies}
+          isOpen={isModalOpen}
+          project={project}
+          title="My copies of project"
+          toggle={toggleOpen}
+        />
+      )}
+    </>
+  );
+}
+
+function ProjectViewerCopyBanner({
+  currentUser,
+  project,
+}: ProjectCopyBannerComponentProps) {
+  const { data: writableCopies } = useGetProjectsByProjectIdCopiesQuery({
+    projectId: project.id,
+    writable: true,
+  });
+  const isUserLoggedIn = useLegacySelector(
+    (state) => state.stateModel.user.logged
+  );
+  if (currentUser == null) return null;
+  if (project.template_id === null) return null;
+  if (!isUserLoggedIn) return <ProjectViewerMakeCopyBanner project={project} />;
+  if (writableCopies == null)
+    return (
+      <SuggestionBanner icon={<Diagram3Fill className="bi" />}>
+        <Row className="align-items-center">
+          <Col xs={10}>
+            <div>
+              <b>This project is a template</b>
+            </div>
+          </Col>
+          <Col xs={2}>
+            <Loader inline size={16} />
+          </Col>
+        </Row>
+      </SuggestionBanner>
+    );
+
+  if (writableCopies.length > 0)
+    return (
+      <ProjectViewerGoToCopyBanner
+        project={project}
+        writableCopies={writableCopies}
+      />
+    );
+
+  return <ProjectViewerMakeCopyBanner project={project} />;
+}
+
+export default function ProjectCopyBanner({ project }: { project: Project }) {
+  const { data: currentUser } = useGetUserQuery();
+  const userPermissions = useProjectPermissions({ projectId: project.id });
+  if (currentUser == null) return null;
+  if (project.template_id === null) return null;
+  return (
+    <PermissionsGuard
+      disabled={
+        <ProjectViewerCopyBanner currentUser={currentUser} project={project} />
+      }
+      enabled={null}
+      requestedPermission="write"
+      userPermissions={userPermissions}
+    />
   );
 }
