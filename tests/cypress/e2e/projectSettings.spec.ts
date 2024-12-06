@@ -382,7 +382,7 @@ describe("Cloud storage settings page", () => {
     cy.wait("@deleteCloudStorage");
   });
 
-  it("can add new storage (simple)", () => {
+  it.only("can add new storage (simple)", () => {
     fixtures.getStorageSchema();
     fixtures
       .versions({
