@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Card, CardBody } from "reactstrap";
+import { Card, CardBody, Col } from "reactstrap";
 
 import { TimeCaption } from "../../components/TimeCaption";
 import SecretItemActions from "../secretsV2/SecretItemActions";
@@ -54,7 +54,9 @@ export default function SecretsListItem({ secret }: SecretsListItemProps) {
               prefix=""
             />
           </span>
-          <SecretItemActions secret={secret} />
+          <Col xs={12} sm="auto" className="ms-auto">
+            <SecretItemActions secret={secret} />
+          </Col>
         </div>
         <div>
           Filename: <code>{secret.default_filename}</code>
