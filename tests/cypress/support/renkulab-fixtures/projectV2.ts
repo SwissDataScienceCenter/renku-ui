@@ -85,8 +85,15 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         fixture = "projectV2/create-projectV2.json",
         name = "createProjectV2",
       } = args ?? {};
-      const response = { fixture, statusCode: 201 };
-      cy.intercept("POST", "/ui-server/api/data/projects", response).as(name);
+      cy.fixture(fixture).then((values) => {
+        cy.intercept("POST", "/ui-server/api/data/projects", {
+          body: {
+            values,
+            ...args,
+          },
+          statusCode: 201,
+        }).as(name);
+      });
       return this;
     }
 

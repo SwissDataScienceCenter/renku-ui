@@ -49,7 +49,6 @@ import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
-import { projectV2NewSlice } from "../../features/projectsV2/new/projectV2New.slice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import repositoriesApi from "../../features/repositories/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
@@ -85,7 +84,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [startSessionSlice.name]: startSessionSlice.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
-    [projectV2NewSlice.name]: projectV2NewSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
