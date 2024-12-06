@@ -1,0 +1,7 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+
+.suggestionBanner {
+  --bs-primary-bg-subtle: rgb(from var(--bs-primary) r g b / 0.1);
+}

@@ -213,6 +213,7 @@ describe("Edit v2 project", () => {
     cy.getDataCy("project-settings-edit").should("be.visible").click();
     cy.getDataCy("project-name-input").clear().type("new name");
     cy.getDataCy("project-description-input").clear().type("new description");
+    cy.getDataCy("project-template").click();
     fixtures.readProjectV2({
       fixture: "projectV2/update-projectV2-metadata.json",
       name: "readPostUpdate",
@@ -540,14 +541,76 @@ describe("Viewer cannot edit project", () => {
   });
 });
 
-describe("Project copies", () => {
+describe("Project templates and copies", () => {
   beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects().readProjectV2();
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .namespaces()
+      .projects()
+      .landingUserProjects()
+      .readProjectV2();
   });
 
-  it("copy a regular project", () => {
+  it("copy a regular project with edit access", () => {
+    fixtures.getProjectV2Permissions().listNamespaceV2().copyProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+
+    cy.get("a[title='Settings']").should("be.visible").click();
+    cy.getDataCy("copy-project-button").click();
+    cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
+      "be.visible"
+    );
+    cy.wait("@listNamespaceV2");
+    cy.getDataCy("copy-modal")
+      .find("[data-cy=project-name-input]")
+      .clear()
+      .type("copy project name");
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
+    fixtures.readProjectV2({
+      namespace: "e2e",
+      projectSlug: "copy-project-name",
+      name: "readProjectCopy",
+    });
+    cy.wait("@copyProjectV2");
+    cy.contains("Go to new project").should("be.visible").click();
+    cy.wait("@readProjectCopy");
+    cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
+  });
+
+  it("copy a regular project without edit access", () => {
     fixtures.listNamespaceV2().copyProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+
+    cy.getDataCy("project-info-card")
+      .find("[data-cy=button-with-menu-dropdown]")
+      .click();
+    cy.getDataCy("project-copy-menu-item").click();
+    cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
+      "be.visible"
+    );
+    cy.wait("@listNamespaceV2");
+    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
+    fixtures.readProjectV2({
+      namespace: "e2e",
+      projectSlug: "copy-project-name",
+      name: "readProjectCopy",
+    });
+    cy.wait("@copyProjectV2");
+    cy.contains("Go to new project").should("be.visible").click();
+    cy.wait("@readProjectCopy");
+    cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
+  });
+
+  it("copy a template project", () => {
+    fixtures
+      .readProjectV2({ overrides: { is_template: true } })
+      .listNamespaceV2()
+      .copyProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.getDataCy("copy-project-button").click();
@@ -568,8 +631,11 @@ describe("Project copies", () => {
     cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
   });
 
-  it("copy a regular project with data-connector-error", () => {
-    fixtures.listNamespaceV2().copyProjectV2({ dataConnectorError: true });
+  it("copy a project with data-connector-error", () => {
+    fixtures
+      .readProjectV2({ overrides: { is_template: true } })
+      .listNamespaceV2()
+      .copyProjectV2({ dataConnectorError: true });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.getDataCy("copy-project-button").click();
@@ -597,8 +663,10 @@ describe("Project copies", () => {
   });
 
   it("copy a project, overriding the slug", () => {
-    fixtures.listNamespaceV2();
-    fixtures.copyProjectV2();
+    fixtures
+      .readProjectV2({ overrides: { is_template: true } })
+      .listNamespaceV2()
+      .copyProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.getDataCy("copy-project-button").click();
@@ -621,23 +689,59 @@ describe("Project copies", () => {
     cy.location("pathname").should("eq", "/v2/projects/e2e/copy-of-test2");
   });
 
+  it("show a template project as editor", () => {
+    fixtures
+      .readProjectV2({ overrides: { is_template: true } })
+      .getProjectV2Permissions()
+      .listNamespaceV2()
+      .listProjectV2Copies();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getProjectV2Permissions");
+    cy.wait("@listProjectV2Copies");
+    cy.getDataCy("copy-project-button").should("not.exist");
+    cy.contains("copies visible to you").should("be.visible");
+  });
+
   it("show a copied project", () => {
-    fixtures.readProjectV2({
-      overrides: {
-        template_id: "TEMPLATE-ULID",
-      },
-    });
-    fixtures.readProjectV2ById({
-      projectId: "TEMPLATE-ULID",
-      overrides: {
-        name: "template project",
-        namespace: "user1-uuid",
-        slug: "template-project",
-      },
-    });
+    fixtures
+      .readProjectV2({
+        overrides: {
+          template_id: "TEMPLATE-ULID",
+        },
+      })
+      .readProjectV2ById({
+        projectId: "TEMPLATE-ULID",
+        overrides: {
+          name: "template project",
+          namespace: "user1-uuid",
+          slug: "template-project",
+        },
+      })
+      .readUserV2Namespace();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@readProjectV2ById");
-    cy.contains("This project was copied from:").should("be.visible");
+    cy.contains("Copied from:").should("be.visible");
+  });
+});
+
+describe("Anonymous project copy experience", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userNone()
+      .namespaces()
+      .projects()
+      .landingUserProjects()
+      .readProjectV2();
+  });
+
+  it("copy as an anonymous user", () => {
+    fixtures.readProjectV2({ overrides: { is_template: true } });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.contains("To make a copy, you must first log in.").should("be.visible");
   });
 });
