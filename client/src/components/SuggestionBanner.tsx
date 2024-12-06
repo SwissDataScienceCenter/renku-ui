@@ -24,6 +24,7 @@ interface SuggestionBannerProps {
   children: React.ReactNode;
   "data-cy"?: string;
   icon?: React.ReactNode;
+  className?: string;
 }
 export default function SuggestionBanner({
   children,
@@ -36,7 +37,10 @@ export default function SuggestionBanner({
       isOpen={true}
       toggle={undefined}
       data-cy={props["data-cy"]}
-      className={cx(styles.suggestionBanner)}
+      className={cx(
+        styles.suggestionBanner,
+        props.className ? props.className : ""
+      )}
     >
       <div className={cx("d-flex", "gap-3")}>
         <div>{icon}</div>

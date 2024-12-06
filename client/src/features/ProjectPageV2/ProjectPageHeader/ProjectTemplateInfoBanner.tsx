@@ -17,52 +17,42 @@
  */
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
-import { BoxArrowInRight, Diagram3Fill } from "react-bootstrap-icons";
+import { InfoCircle } from "react-bootstrap-icons";
 
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import SuggestionBanner from "../../../components/SuggestionBanner";
 
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";
+import { useGetProjectsByProjectIdCopiesQuery } from "../../projectsV2/api/projectV2.api";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 import useProjectPermissions from "../utils/useProjectPermissions.hook";
 
-import ProjectCopyButton from "./ProjectCopyButton";
-
-function ProjectViewerCopyBanner({ project }: { project: Project }) {
+function ProjectTemplateEditorBanner({ project }: { project: Project }) {
   const { data: currentUser } = useGetUserQuery();
-  const isUserLoggedIn = useLegacySelector(
-    (state) => state.stateModel.user.logged
-  );
-  const loginUrl = useLoginUrl();
+  const { data: copies } = useGetProjectsByProjectIdCopiesQuery({
+    projectId: project.id,
+  });
   if (currentUser == null) return null;
   if (project.template_id === null) return null;
   return (
-    <SuggestionBanner icon={<Diagram3Fill className="bi" />}>
+    <SuggestionBanner className="p-2" icon={<InfoCircle className="bi" />}>
       <Row className="align-items-center">
-        <Col xs={10}>
-          <div>
-            <b>This project is a template</b>
-          </div>
-          <div>
-            To work with this template, first make a copy.
-            {!isUserLoggedIn && (
-              <span> To make a copy, you must first log in.</span>
-            )}
-          </div>
-        </Col>
-        <Col xs={2}>
-          {isUserLoggedIn ? (
-            <ProjectCopyButton color="primary" project={project} />
-          ) : (
-            <div>
-              <a className={cx("btn", "btn-primary")} href={loginUrl.href}>
-                <BoxArrowInRight className={cx("bi", "me-1")} />
-                Log in
-              </a>
-            </div>
+        <Col>
+          This project is a template.
+          {copies != null && (
+            <span>
+              There are{" "}
+              <span
+                className={cx(
+                  "badge",
+                  copies.length > 0 ? "text-bg-primary" : "text-bg-secondary"
+                )}
+              >
+                {copies.length}
+              </span>{" "}
+              copies visible to you.
+            </span>
           )}
         </Col>
       </Row>
@@ -70,15 +60,19 @@ function ProjectViewerCopyBanner({ project }: { project: Project }) {
   );
 }
 
-export default function ProjectCopyBanner({ project }: { project: Project }) {
+export default function ProjectTemplateInfoBanner({
+  project,
+}: {
+  project: Project;
+}) {
   const { data: currentUser } = useGetUserQuery();
   const userPermissions = useProjectPermissions({ projectId: project.id });
   if (currentUser == null) return null;
   if (project.template_id === null) return null;
   return (
     <PermissionsGuard
-      disabled={<ProjectViewerCopyBanner project={project} />}
-      enabled={null}
+      disabled={null}
+      enabled={<ProjectTemplateEditorBanner project={project} />}
       requestedPermission="write"
       userPermissions={userPermissions}
     />

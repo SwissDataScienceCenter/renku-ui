@@ -631,7 +631,7 @@ describe("Project templates and copies", () => {
     cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
   });
 
-  it("copy a regular project with data-connector-error", () => {
+  it("copy a project with data-connector-error", () => {
     fixtures
       .readProjectV2({ overrides: { is_template: true } })
       .listNamespaceV2()
@@ -687,6 +687,20 @@ describe("Project templates and copies", () => {
     cy.contains("Go to new project").should("be.visible").click();
     cy.wait("@readProjectCopy");
     cy.location("pathname").should("eq", "/v2/projects/e2e/copy-of-test2");
+  });
+
+  it("show a template project as editor", () => {
+    fixtures
+      .readProjectV2({ overrides: { is_template: true } })
+      .getProjectV2Permissions()
+      .listNamespaceV2()
+      .listProjectV2Copies();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getProjectV2Permissions");
+    cy.wait("@listProjectV2Copies");
+    cy.getDataCy("copy-project-button").should("not.exist");
+    cy.contains("copies visible to you").should("be.visible");
   });
 
   it("show a copied project", () => {
