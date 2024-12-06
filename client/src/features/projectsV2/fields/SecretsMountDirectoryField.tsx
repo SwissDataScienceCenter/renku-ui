@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Controller, type FieldValues } from "react-hook-form";
+import { Controller, useWatch, type FieldValues } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
 
 import { GenericProjectFormFieldProps } from "./formField.types";
@@ -32,6 +32,8 @@ export default function SecretsMountDirectoryField<T extends FieldValues>({
 }: SecretsMountDirectoryFieldProps<T>) {
   const fieldId = `project-${name}`;
   const fieldHelpId = `${fieldId}-help`;
+
+  const watch = useWatch({ control, name });
 
   return (
     <div className="mb-3">
@@ -61,8 +63,16 @@ export default function SecretsMountDirectoryField<T extends FieldValues>({
         )}
       </div>
       <FormText id={fieldHelpId} tag="div">
-        This is the location which will be used when mounting secrets inside
-        sessions.
+        <p className="mb-0">
+          This is the location which will be used when mounting secrets inside
+          sessions.
+        </p>
+        {!watch.startsWith("/") && (
+          <p>
+            Note that this location will be relative to the &quot;working
+            directory&quot;.
+          </p>
+        )}
       </FormText>
     </div>
   );

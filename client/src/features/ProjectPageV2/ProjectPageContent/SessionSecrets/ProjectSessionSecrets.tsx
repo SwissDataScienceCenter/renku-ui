@@ -131,7 +131,12 @@ export default function ProjectSessionSecrets() {
         <div className={cx("align-items-center", "d-flex", "gap-2")}>
           <p className="mb-0">
             Session secrets will be mounted at{" "}
-            <code>{secretsMountDirectory}</code>.
+            <code>
+              {secretsMountDirectory.startsWith("/")
+                ? secretsMountDirectory
+                : `<work-dir>/${secretsMountDirectory}`}
+            </code>
+            .
           </p>
           <PermissionsGuard
             disabled={null}
