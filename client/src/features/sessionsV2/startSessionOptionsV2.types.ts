@@ -40,6 +40,7 @@ export interface StartSessionOptionsV2 {
   repositories: SessionRepository[];
   sessionClass: number;
   storage: number;
+  userSecretsReady: boolean;
 }
 
 export interface SessionRepository {

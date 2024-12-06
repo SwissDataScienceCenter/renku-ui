@@ -29,6 +29,7 @@ import { Datasets } from "./datasets";
 import BaseFixtures from "./fixtures";
 import { Global } from "./global";
 import { KgSearch } from "./kgSearch";
+import { NamespaceV2 } from "./namespaceV2";
 import { NewProject } from "./newProject";
 import { NewSession } from "./newSession";
 import { Projects } from "./projects";
@@ -39,7 +40,6 @@ import { Sessions } from "./sessions";
 import { Terms } from "./terms";
 import { User } from "./user";
 import { UserPreferences } from "./user-preferences";
-import { NamespaceV2 } from "./namespaceV2";
 import { Workflows } from "./workflows";
 
 const V1Fixtures = NewProject(
@@ -52,16 +52,12 @@ const V1Fixtures = NewProject(
               CloudStorage(
                 Datasets(
                   Projects(
-                    ProjectV2(
-                      SearchV2(
-                        Secrets(
-                          Terms(
-                            User(
-                              ConnectedServices(
-                                UserPreferences(
-                                  Workflows(KgSearch(Global(BaseFixtures)))
-                                )
-                              )
+                    Secrets(
+                      Terms(
+                        User(
+                          ConnectedServices(
+                            UserPreferences(
+                              Workflows(KgSearch(Global(BaseFixtures)))
                             )
                           )
                         )
@@ -78,7 +74,7 @@ const V1Fixtures = NewProject(
   )
 );
 
-const Fixtures = ProjectV2(NamespaceV2(V1Fixtures));
+const Fixtures = SearchV2(ProjectV2(NamespaceV2(V1Fixtures)));
 
 const fixtures = new Fixtures();
 export default fixtures;

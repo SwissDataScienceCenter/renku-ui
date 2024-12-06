@@ -29,6 +29,7 @@ import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { DEFAULT_URL } from "./session.constants";
+import useSessionSecrets from "./useSessionSecrets.hook";
 
 interface StartSessionFromLauncherProps {
   launcher: SessionLauncher;
@@ -67,6 +68,10 @@ export default function useSessionLauncherState({
     isCustomLaunch,
     resourcePools,
   });
+  const {
+    isFetching: isFetchingSessionSecrets,
+    sessionSecretSlotsWithSecrets,
+  } = useSessionSecrets({ projectId: project.id });
 
   const containerImage = launcher.environment?.container_image ?? "";
 
@@ -136,8 +141,9 @@ export default function useSessionLauncherState({
       isFetchingDataConnectors ||
       !isReadyDataConnectorConfigs,
     resourcePools,
-    startSessionOptionsV2,
     isPendingResourceClass,
     setResourceClass,
+    isFetchingSessionSecrets,
+    sessionSecretSlotsWithSecrets,
   };
 }

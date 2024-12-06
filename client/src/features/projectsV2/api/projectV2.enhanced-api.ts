@@ -1,5 +1,6 @@
-import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
+import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
+import { usersApi } from "../../usersV2/api/users.api";
 
 import { projectAndNamespaceApi as api } from "./namespace.api";
 
@@ -14,9 +15,9 @@ import type {
 import type {
   GetGroupsApiArg,
   GetGroupsApiResponse as GetGroupsApiResponseOrig,
-  GroupResponseList,
   GetNamespacesApiArg,
   GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
+  GroupResponseList,
   NamespaceResponseList,
 } from "./namespace.api";
 
@@ -147,6 +148,8 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "Namespace",
     "Project",
     "ProjectMembers",
+    "SessionSecretSlot",
+    "SessionSecret",
   ],
   endpoints: {
     deleteGroupsByGroupSlug: {
@@ -189,10 +192,24 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsByProjectIds: {
       providesTags: ["Project"],
     },
-    getProjectsByNamespaceAndSlug: {
+    getNamespacesByNamespaceProjectsAndSlug: {
+      // Forces the requested URL to not contain "?" when not requesting documentation.
+      query: ({ namespace, slug, withDocumentation }) => ({
+        url: `/namespaces/${namespace}/projects/${slug}`,
+        params: withDocumentation
+          ? { with_documentation: withDocumentation }
+          : undefined,
+      }),
       providesTags: ["Project"],
     },
     getProjectsByProjectId: {
+      // Forces the requested URL to not contain "?" when not requesting documentation.
+      query: ({ projectId, withDocumentation }) => ({
+        url: `/projects/${projectId}`,
+        params: withDocumentation
+          ? { with_documentation: withDocumentation }
+          : undefined,
+      }),
       providesTags: ["Project"],
     },
     getProjectsByProjectIdDataConnectorLinks: {
@@ -219,6 +236,59 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjects: {
       invalidatesTags: ["Project"],
     },
+    getProjectsByProjectIdSessionSecretSlots: {
+      providesTags: (result, _, { projectId }) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                type: "SessionSecretSlot" as const,
+                id,
+              })),
+              { type: "SessionSecretSlot", id: `LIST-${projectId}` },
+            ]
+          : ["SessionSecretSlot"],
+    },
+    postSessionSecretSlots: {
+      invalidatesTags: (
+        result,
+        _,
+        { sessionSecretSlotPost: { project_id: projectId } }
+      ) =>
+        result
+          ? [{ type: "SessionSecretSlot", id: `LIST-${projectId}` }]
+          : ["SessionSecretSlot"],
+    },
+    patchSessionSecretSlotsBySlotId: {
+      invalidatesTags: (result, _, { slotId }) =>
+        result
+          ? [{ type: "SessionSecretSlot", id: slotId }]
+          : ["SessionSecretSlot"],
+    },
+    deleteSessionSecretSlotsBySlotId: {
+      invalidatesTags: ["SessionSecretSlot"],
+    },
+    getProjectsByProjectIdSessionSecrets: {
+      providesTags: (result, _, { projectId }) =>
+        result
+          ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
+          : ["SessionSecret"],
+    },
+    patchProjectsByProjectIdSessionSecrets: {
+      invalidatesTags: (result, _, { projectId }) =>
+        result
+          ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
+          : ["SessionSecret"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(
+            usersApi.endpoints.getUserSecrets.initiate(
+              { userSecretsParams: { kind: "general" } },
+              { forceRefetch: true }
+            )
+          );
+        });
+      },
+    },
   },
 });
 
@@ -227,7 +297,7 @@ export const {
   // project hooks
   useGetProjectsPagedQuery: useGetProjectsQuery,
   usePostProjectsMutation,
-  useGetProjectsByNamespaceAndSlugQuery,
+  useGetNamespacesByNamespaceProjectsAndSlugQuery,
   useGetProjectsByProjectIdQuery,
   useGetProjectsByProjectIdsQuery,
   usePatchProjectsByProjectIdMutation,
@@ -236,6 +306,14 @@ export const {
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsByProjectIdPermissionsQuery,
+
+  // project session secret hooks
+  useGetProjectsByProjectIdSessionSecretSlotsQuery,
+  usePostSessionSecretSlotsMutation,
+  usePatchSessionSecretSlotsBySlotIdMutation,
+  useDeleteSessionSecretSlotsBySlotIdMutation,
+  useGetProjectsByProjectIdSessionSecretsQuery,
+  usePatchProjectsByProjectIdSessionSecretsMutation,
 
   // data connector hooks
   useGetProjectsByProjectIdDataConnectorLinksQuery,
