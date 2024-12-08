@@ -19,12 +19,12 @@
 import { Suspense, lazy } from "react";
 import PageLoader from "../../components/PageLoader";
 
-const GroupV2Show = lazy(() => import("./show/GroupV2Show"));
+const GroupV2Overview = lazy(() => import("./show/GroupV2Show"));
 
-export default function LazyGroupV2Show() {
+export default function LazyGroupV2Overview() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <GroupV2Show />
+      <GroupV2Overview />
     </Suspense>
   );
 }

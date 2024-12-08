@@ -18,14 +18,13 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ArrowLeft, Sliders } from "react-bootstrap-icons";
-import { Link, generatePath, useParams } from "react-router-dom-v5-compat";
+import { Sliders } from "react-bootstrap-icons";
+import { useParams } from "react-router-dom-v5-compat";
 import { Card, CardBody, CardHeader } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import LazyNotFound from "../../../not-found/LazyNotFound";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { useGetGroupsByGroupSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
 import GroupSettingsMembers from "./GroupSettingsMembers";
@@ -55,20 +54,6 @@ export default function GroupV2Settings() {
   return (
     <ContainerWrap>
       <div className={cx("d-flex", "flex-column", "gap-3")}>
-        <div>
-          <h2>{group.name ?? "Unknown group"}</h2>
-          <div>
-            <Link
-              to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-                slug: group.slug,
-              })}
-            >
-              <ArrowLeft className={cx("bi", "me-1")} />
-              Back to group
-            </Link>
-          </div>
-        </div>
-
         <section>
           <Card data-cy="group-general-settings">
             <CardHeader>
