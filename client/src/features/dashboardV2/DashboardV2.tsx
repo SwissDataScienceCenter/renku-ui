@@ -616,7 +616,7 @@ function SessionsDashboard() {
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("mb-0", "me-2")}>
             <PlayCircle className={cx("me-1", "bi")} />
-            My Sessions
+            My sessions
           </h4>
           <Badge>{totalSessions}</Badge>
         </div>
@@ -674,7 +674,7 @@ function EmptyProjectsButtons() {
         Create my first project
       </Link>
       <Link
-        to={"/v2/search?page=1&perPage=12&q=type:projects"}
+        to={"/v2/search?page=1&perPage=12&q=type:project"}
         className={cx("btn", "btn-outline-primary")}
       >
         <Eye className={cx("bi", "me-1")} />
