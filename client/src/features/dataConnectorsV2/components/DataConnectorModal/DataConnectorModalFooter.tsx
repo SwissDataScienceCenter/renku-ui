@@ -40,6 +40,7 @@ import {
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
 
+import type { DataConnectorRead } from "../../api/data-connectors.api";
 import {
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
@@ -47,18 +48,18 @@ import {
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsMutation,
 } from "../../api/data-connectors.enhanced-api";
-import type { DataConnectorRead } from "../../api/data-connectors.api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
 import {
-  DataConnectorModalBackButton,
-  DataConnectorModalContinueButton,
-  DataConnectorConnectionTestResult,
-} from "./dataConnectorModalButtons";
-import {
   dataConnectorPostFromFlattened,
   dataConnectorToFlattened,
+  hasSchemaAccessMode,
 } from "../dataConnector.utils";
+import {
+  DataConnectorConnectionTestResult,
+  DataConnectorModalBackButton,
+  DataConnectorModalContinueButton,
+} from "./dataConnectorModalButtons";
 
 interface DataConnectorModalFooterProps {
   dataConnector?: DataConnectorRead | null;
@@ -144,10 +145,13 @@ function DataConnectorCreateFooter({
     });
   }, [createDataConnector, dataConnector, schemata, flatDataConnector]);
 
-  const schemaRequiresProvider = useMemo(
-    () => hasProviderShortlist(flatDataConnector.schema),
-    [flatDataConnector.schema]
+  const currentSchema = useMemo(
+    () => schemata?.find((s) => s.prefix === flatDataConnector.schema),
+    [schemata, flatDataConnector]
   );
+  const schemaHasAccessModes = currentSchema
+    ? hasSchemaAccessMode(currentSchema)
+    : false;
 
   useEffect(() => {
     if (
@@ -302,8 +306,7 @@ function DataConnectorCreateFooter({
   // Visual elements
   const disableContinueButton =
     cloudStorageState.step === 1 &&
-    (!flatDataConnector.schema ||
-      (schemaRequiresProvider && !flatDataConnector.provider));
+    (!flatDataConnector.schema || !flatDataConnector.provider);
 
   const isAddResultLoading = createResult.isLoading;
   const actionError = createResult.error;
@@ -323,6 +326,8 @@ function DataConnectorCreateFooter({
     ? "Please provide a mount point"
     : !flatDataConnector.schema
     ? "Please go back and select a storage type"
+    : schemaHasAccessModes
+    ? "Please go back and select a mode"
     : "Please go back and select a provider";
   const isResultLoading = isAddResultLoading;
 
@@ -365,6 +370,7 @@ function DataConnectorCreateFooter({
           hasStoredCredentialsInConfig={false}
           isResultLoading={isResultLoading}
           dataConnectorId={null}
+          selectedSchemaHasAccessMode={!!schemaHasAccessModes}
         />
       )}
     </>
@@ -457,6 +463,14 @@ function DataConnectorEditFooter({
     [flatDataConnector.schema]
   );
 
+  const currentSchema = useMemo(
+    () => schemata?.find((s) => s.prefix === flatDataConnector.schema),
+    [schemata, flatDataConnector]
+  );
+  const schemaHasAccessModes = currentSchema
+    ? hasSchemaAccessMode(currentSchema)
+    : false;
+
   useEffect(() => {
     if (
       "data" in updateResult &&
@@ -501,6 +515,8 @@ function DataConnectorEditFooter({
     ? "Please provide a mount point"
     : !flatDataConnector.schema
     ? "Please go back and select a storage type"
+    : schemaHasAccessModes
+    ? "Please go back and select a mode"
     : "Please go back and select a provider";
   const isResultLoading = isModifyResultLoading;
 
@@ -546,6 +562,7 @@ function DataConnectorEditFooter({
           hasStoredCredentialsInConfig={hasStoredCredentialsInConfig}
           isResultLoading={isResultLoading}
           dataConnectorId={dataConnectorId}
+          selectedSchemaHasAccessMode={!!schemaHasAccessModes}
         />
       )}
     </>
