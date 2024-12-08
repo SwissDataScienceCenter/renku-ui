@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,49 +16,37 @@
  * limitations under the License.
  */
 
-import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { QuestionCircle } from "react-bootstrap-icons";
+import { generatePath, Link, useParams } from "react-router-dom-v5-compat";
 import { Alert, Button } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
-import { NotificationsManager } from "../../../notifications/notifications.types";
+import type { NotificationsManager } from "../../../notifications/notifications.types";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { Url } from "../../../utils/helpers/url";
-import { usePatchSessionMutation } from "../sessions.api";
+import { usePatchSessionMutation } from "../sessionsV2.api";
+import type { SessionV2 } from "../sessionsV2.types";
 
-interface SessionHibernatedProps {
-  sessionName: string;
+interface SessionPausedProps {
+  session: SessionV2;
 }
 
-export default function SessionHibernated({
-  sessionName,
-}: SessionHibernatedProps) {
-  const location = useLocation<{ filePath?: string } | undefined>();
-  const locationFilePath = location.state?.filePath;
+export default function SessionPaused({ session }: SessionPausedProps) {
+  const { name: sessionName } = session;
 
-  const pathWithNamespace = useLegacySelector<string>(
-    (state) => state.stateModel.project.metadata.pathWithNamespace
-  );
-
-  const projectUrlData = {
-    namespace: "",
-    path: pathWithNamespace,
-  };
-  const sessionsListUrl = Url.get(Url.pages.project.session, projectUrlData);
+  const { namespace, slug } = useParams<"namespace" | "slug">();
 
   const [patchSession, { error }] = usePatchSessionMutation();
 
   const [isResuming, setIsResuming] = useState(false);
 
   const onResumeSession = useCallback(() => {
-    patchSession({ sessionName: sessionName, state: "running" });
+    patchSession({ session_id: sessionName, state: "running" });
     setIsResuming(true);
   }, [patchSession, sessionName]);
 
@@ -73,12 +61,10 @@ export default function SessionHibernated({
     }
   }, [error, notifications]);
 
-  // Resume session if opening a notebook from the file explorer
-  useEffect(() => {
-    if (locationFilePath) {
-      onResumeSession();
-    }
-  }, [locationFilePath, onResumeSession]);
+  const backUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace: namespace ?? "",
+    slug: slug ?? "",
+  });
 
   return (
     <div className={cx("p-2", "p-lg-3", "text-nowrap", "container-lg")}>
@@ -92,21 +78,19 @@ export default function SessionHibernated({
             </>
           ) : (
             <>
-              <FontAwesomeIcon size="lg" icon={faQuestionCircle} /> You should
-              either{" "}
-              <Button
-                className={cx("btn", "btn-primary", "btn-sm")}
-                onClick={onResumeSession}
-              >
+              <QuestionCircle className={cx("bi", "me-2", "fs-5")} />
+              You should either{" "}
+              <Button color="primary" onClick={onResumeSession} size="sm">
                 resume the session
               </Button>{" "}
               or{" "}
               <Link
-                className={cx("btn", "btn-primary", "btn-sm")}
-                to={sessionsListUrl}
+                className={cx("btn", "btn-secondary", "btn-sm")}
+                to={backUrl}
               >
-                go to the sessions list
+                go back to the project page
               </Link>
+              .
             </>
           )}
         </p>
@@ -130,7 +114,7 @@ function addErrorNotification({
       : "Unknown error";
   notifications.addError(
     NOTIFICATION_TOPICS.SESSION_START,
-    "Unable to resume the current session",
+    "Unable to delete the current session",
     undefined,
     undefined,
     undefined,
