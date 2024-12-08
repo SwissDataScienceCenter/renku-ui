@@ -616,7 +616,7 @@ function SessionsDashboard() {
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("mb-0", "me-2")}>
             <PlayCircle className={cx("me-1", "bi")} />
-            My Sessions
+            My sessions
           </h4>
           <Badge>{totalSessions}</Badge>
         </div>

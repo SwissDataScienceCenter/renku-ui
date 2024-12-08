@@ -41,20 +41,34 @@ export default function ProjectShortHandDisplay({
       )}
       data-cy="project-item"
     >
-      <div className={cx("d-flex", "justify-content-between")}>
+      <div
+        className={cx(
+          "d-flex",
+          "justify-content-between",
+          "flex-column",
+          "flex-md-row"
+        )}
+      >
         <p className={cx("m-0", "fw-bold", "text-truncate", "me-2")}>
           {project.name}
         </p>
         <VisibilityIcon visibility={project.visibility} />
       </div>
 
-      <div className={cx("d-flex", element === "card-body" && "mt-auto")}>
+      <div
+        className={cx(
+          "d-flex",
+          element === "card-body" && "mt-auto",
+          "flex-column",
+          "flex-md-row"
+        )}
+      >
         <p className={cx("mb-2", "text-truncate", "text-muted")}>
           {project.description}
         </p>
         {project.updated_at ? (
           <TimeCaption
-            className={cx("ms-auto", "my-auto", "text-truncate")}
+            className={cx("ms-0", "ms-md-auto", "my-auto", "text-truncate")}
             datetime={project.updated_at}
             enableTooltip
             prefix="Updated"
