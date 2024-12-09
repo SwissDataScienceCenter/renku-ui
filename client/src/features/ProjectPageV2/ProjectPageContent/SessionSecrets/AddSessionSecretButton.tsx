@@ -77,6 +77,12 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
     []
   );
 
+  useEffect(() => {
+    if (!isOpen) {
+      setState({ step: "add-secret-slot" });
+    }
+  }, [isOpen]);
+
   const slotSavedAlert = step === "provide-secret" && (
     <SuccessAlert timeout={0} dismissible={false}>
       The session secret slot{" "}
