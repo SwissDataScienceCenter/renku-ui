@@ -102,44 +102,6 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
           toggle={toggle}
         />
       )}
-
-      {/* <Form noValidate onSubmit={onSubmit}>
-        <ModalHeader toggle={toggle}>Add session secret slot</ModalHeader>
-        <ModalBody>
-          <p>Add a new slot for a secret to be mounted in sessions.</p>
-
-          {result.error && (
-            <RtkOrNotebooksError error={result.error} dismissible={false} />
-          )}
-
-          <NameField control={control} errors={errors} name="name" />
-          <DescriptionField
-            control={control}
-            errors={errors}
-            name="description"
-          />
-          <FilenameField
-            control={control}
-            errors={errors}
-            name="filename"
-            secretsMountDirectory={secretsMountDirectory}
-          />
-        </ModalBody>
-        <ModalFooter>
-          <Button color="outline-primary" onClick={toggle}>
-            <XLg className={cx("bi", "me-1")} />
-            Close
-          </Button>
-          <Button color="primary" disabled={result.isLoading} type="submit">
-            {result.isLoading ? (
-              <Loader className="me-1" inline size={16} />
-            ) : (
-              <PlusLg className={cx("bi", "me-1")} />
-            )}
-            Add session secret slot
-          </Button>
-        </ModalFooter>
-      </Form> */}
     </Modal>
   );
 }
@@ -256,48 +218,3 @@ interface AddSessionSecretForm {
   description: string | undefined;
   filename: string;
 }
-
-// function AddSessionSecretModalContentStep2({
-//   isOpen,
-//   toggle,
-// }: AddSessionSecretModalProps) {
-//   return (
-//     <Form noValidate onSubmit={onSubmit}>
-//       <ModalHeader toggle={toggle}>Add session secret slot</ModalHeader>
-//       <ModalBody>
-//         <p>Add a new slot for a secret to be mounted in sessions.</p>
-
-//         {result.error && (
-//           <RtkOrNotebooksError error={result.error} dismissible={false} />
-//         )}
-
-//         <NameField control={control} errors={errors} name="name" />
-//         <DescriptionField
-//           control={control}
-//           errors={errors}
-//           name="description"
-//         />
-//         <FilenameField
-//           control={control}
-//           errors={errors}
-//           name="filename"
-//           secretsMountDirectory={secretsMountDirectory}
-//         />
-//       </ModalBody>
-//       <ModalFooter>
-//         <Button color="outline-primary" onClick={toggle}>
-//           <XLg className={cx("bi", "me-1")} />
-//           Close
-//         </Button>
-//         <Button color="primary" disabled={result.isLoading} type="submit">
-//           {result.isLoading ? (
-//             <Loader className="me-1" inline size={16} />
-//           ) : (
-//             <PlusLg className={cx("bi", "me-1")} />
-//           )}
-//           Add session secret slot
-//         </Button>
-//       </ModalFooter>
-//     </Form>
-//   );
-// }
