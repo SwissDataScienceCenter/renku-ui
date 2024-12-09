@@ -18,10 +18,10 @@
 
 import cx from "classnames";
 import { CSSProperties } from "react";
-import { Folder, People, Person } from "react-bootstrap-icons";
+import { People, Person } from "react-bootstrap-icons";
 
 interface EntityWatermarkProps {
-  type: "project" | "user" | "group";
+  type: "user" | "group";
 }
 export function EntityWatermark({ type }: EntityWatermarkProps) {
   const watermarkStyles: CSSProperties = {
@@ -37,7 +37,6 @@ export function EntityWatermark({ type }: EntityWatermarkProps) {
     >
       {type === "group" && <People />}
       {type === "user" && <Person />}
-      {type === "project" && <Folder />}
     </div>
   );
 }

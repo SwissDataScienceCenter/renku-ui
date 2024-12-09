@@ -22,7 +22,7 @@ import RenkuNavLinkV2 from "./RenkuNavLinkV2";
 
 export interface PageNavOptions {
   overviewUrl: string;
-  settingsUrl: string;
+  settingsUrl?: string;
 }
 export default function PageNav({ options }: { options: PageNavOptions }) {
   return (
@@ -39,17 +39,19 @@ export default function PageNav({ options }: { options: PageNavOptions }) {
             Overview
           </RenkuNavLinkV2>
         </NavItem>
-        <NavItem>
-          <RenkuNavLinkV2
-            end
-            to={options.settingsUrl}
-            title="Settings"
-            data-cy="nav-link-settings"
-          >
-            <Sliders className={cx("bi", "me-1")} />
-            Settings
-          </RenkuNavLinkV2>
-        </NavItem>
+        {options.settingsUrl && (
+          <NavItem>
+            <RenkuNavLinkV2
+              end
+              to={options.settingsUrl}
+              title="Settings"
+              data-cy="nav-link-settings"
+            >
+              <Sliders className={cx("bi", "me-1")} />
+              Settings
+            </RenkuNavLinkV2>
+          </NavItem>
+        )}
       </Nav>
     </>
   );
