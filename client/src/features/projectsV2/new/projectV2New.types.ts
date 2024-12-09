@@ -13,17 +13,15 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
-import { Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
 
-const NamespaceNew = lazy(() => import("../groupsV2/new/GroupNew"));
+import { Visibility } from "../api/projectV2.api";
 
-export default function LazyGroupNew() {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <NamespaceNew />
-    </Suspense>
-  );
+export interface NewProjectForm {
+  description: string;
+  name: string;
+  namespace: string;
+  slug: string;
+  visibility: Visibility;
 }

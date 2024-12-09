@@ -24,6 +24,7 @@ import {
   QuestionCircle,
   Search,
 } from "react-bootstrap-icons";
+import { useLocation } from "react-router";
 import { Link, useMatch } from "react-router-dom-v5-compat";
 import {
   Collapse,
@@ -42,15 +43,21 @@ import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
+import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
+import StatusBanner from "../platform/components/StatusBanner";
+import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
-import StatusBanner from "../platform/components/StatusBanner";
 
 const RENKU_ALPHA_LOGO = "/static/public/img/logo-yellow.svg";
 
 function NavbarItemPlus() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
+
+  // ? Temporary workaround for the search page
+  const location = useLocation();
+  const searchPage = location.pathname.startsWith(ABSOLUTE_ROUTES.v2.search);
 
   return (
     <Dropdown isOpen={isOpen} toggle={toggleOpen} className="nav-item">
@@ -63,22 +70,43 @@ function NavbarItemPlus() {
         end
       >
         <DropdownItem className="p-0">
-          <Link
-            className="dropdown-item"
-            data-cy="navbar-project-new"
-            to="/v2/projects/new"
-          >
-            Project
-          </Link>
+          {searchPage ? (
+            <Link
+              className="dropdown-item"
+              data-cy="navbar-project-new"
+              to={ABSOLUTE_ROUTES.v2.projects.new}
+            >
+              Project
+            </Link>
+          ) : (
+            <CreateProjectV2Button
+              className="dropdown-item"
+              dataCy="navbar-project-new"
+              color="link"
+            >
+              Project
+            </CreateProjectV2Button>
+          )}
         </DropdownItem>
+
         <DropdownItem className="p-0">
-          <Link
-            className="dropdown-item"
-            data-cy="navbar-group-new"
-            to="/v2/groups/new"
-          >
-            Group
-          </Link>
+          {searchPage ? (
+            <Link
+              className="dropdown-item"
+              data-cy="navbar-group-new"
+              to={ABSOLUTE_ROUTES.v2.groups.new}
+            >
+              Group
+            </Link>
+          ) : (
+            <CreateGroupButton
+              className="dropdown-item"
+              dataCy="navbar-group-new"
+              color="link"
+            >
+              Group
+            </CreateGroupButton>
+          )}
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

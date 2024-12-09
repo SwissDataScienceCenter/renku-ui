@@ -25,81 +25,51 @@ describe("Add new v2 project", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects();
-    fixtures.createProjectV2().listNamespaceV2().readProjectV2();
+    fixtures
+      .createProjectV2({
+        slug,
+        namespace: "user1-uuid",
+      })
+      .listNamespaceV2()
+      .readProjectV2();
     cy.visit("/v2/projects/new");
   });
 
   it("create a new project", () => {
-    cy.contains("New Project").should("be.visible");
+    cy.contains("Create a new project").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").should("have.value", slug);
     cy.wait("@listNamespaceV2");
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
-      .click(); // click on first option
-    cy.contains("Set visibility").click();
-    cy.contains("Add repositories").click();
-    cy.getDataCy("project-add-repository").click();
-    cy.getDataCy("project-repository-input-0")
-      .clear()
-      .type("https://domain.name/repo1.git");
-    cy.contains("button", "Review").click();
+      .click();
+    cy.contains("Visibility").click();
     cy.contains("button", "Create").click();
 
     cy.wait("@createProjectV2");
     cy.location("pathname").should("eq", `/v2/projects/user1-uuid/${slug}`);
   });
 
-  it("keeps namespace set after going back", () => {
-    cy.contains("New Project").should("be.visible");
-    cy.getDataCy("project-name-input").clear().type(newProjectTitle);
-    cy.getDataCy("project-slug-input").should("have.value", slug);
-    cy.wait("@listNamespaceV2");
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
-      .first()
-      .click();
-    cy.contains("user1-uuid").should("exist");
-    cy.contains("Set visibility").click();
-    cy.get("button").contains("Back").click();
-    cy.contains("user1-uuid").should("exist");
-  });
-
   it("prevents invalid input", () => {
-    cy.contains("button", "Set visibility").click();
-    cy.contains("Please provide a name").should("be.visible");
+    cy.contains("Name").should("be.visible");
+    cy.contains("Owner").should("be.visible");
+    cy.contains("Visibility").should("be.visible");
+    cy.contains("Description").should("be.visible");
+
+    cy.getDataCy("project-slug-toggle").click();
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").clear().type(newProjectTitle);
-    cy.contains("button", "Set visibility").click();
+    cy.getDataCy("project-create-button").click();
     cy.contains(
-      "Please provide a slug consisting of lowercase letters, numbers, and hyphens."
+      "You can customize the slug only with lowercase letters, numbers, and hyphens."
     ).should("be.visible");
+
     cy.getDataCy("project-slug-input").clear().type(slug);
     cy.wait("@listNamespaceV2");
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click();
-    cy.contains("Set visibility").click();
-
-    cy.contains("Define access").should("be.visible");
     cy.getDataCy("project-visibility-public").click();
-    cy.contains("button", "Add repositories").click();
-
-    cy.contains("button", "Review").click();
-    cy.contains("button", "Back").click();
-    cy.getDataCy("project-add-repository").click();
-    cy.contains("button", "Review").click();
-    cy.contains("Please provide a valid URL or remove the repository").should(
-      "be.visible"
-    );
-    cy.getDataCy("project-repository-input-0")
-      .clear()
-      .type("https://domain.name/repo1.git");
-
-    cy.contains("button", "Review").click();
-    cy.contains(newProjectTitle).should("be.visible");
-    cy.contains(slug).should("be.visible");
-    cy.contains("public").should("be.visible");
-    cy.contains("https://domain.name/repo1.git").should("be.visible");
 
     cy.contains("button", "Create").click();
     cy.wait("@createProjectV2");
