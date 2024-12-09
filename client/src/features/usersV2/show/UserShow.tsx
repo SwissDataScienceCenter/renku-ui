@@ -19,12 +19,14 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
+import { InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import {
   generatePath,
   useNavigate,
   useParams,
 } from "react-router-dom-v5-compat";
-import { Badge, Col, Row } from "reactstrap";
+import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import { EntityWatermark } from "../../../components/EntityWatermark.tsx";
 
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
@@ -34,13 +36,15 @@ import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsB
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
-import { EntityPill } from "../../searchV2/components/SearchV2Results";
-import { useGetUserByIdQuery, useGetUserQuery } from "../api/users.api";
-import UserAvatar, { UserAvatarSize } from "./UserAvatar";
+import {
+  useGetUserByIdQuery,
+  useGetUserQuery,
+  UserWithId,
+} from "../api/users.api";
+import UserAvatar, { AvatarTypeWrap, UserAvatarSize } from "./UserAvatar";
 
 export default function UserShow() {
   const { username } = useParams<{ username: string }>();
-
   const navigate = useNavigate();
 
   const {
@@ -50,6 +54,7 @@ export default function UserShow() {
   } = useGetNamespacesByNamespaceSlugQuery(
     username ? { namespaceSlug: username } : skipToken
   );
+
   const {
     data: user,
     isLoading: isLoadingUser,
@@ -59,6 +64,11 @@ export default function UserShow() {
       ? { userId: namespace.created_by }
       : skipToken
   );
+
+  const name =
+    user?.first_name && user?.last_name
+      ? `${user.first_name} ${user.last_name}`
+      : user?.first_name || user?.last_name;
 
   const isLoading = isLoadingNamespace || isLoadingUser;
   const error = namespaceError ?? userError;
@@ -82,66 +92,67 @@ export default function UserShow() {
     return <UserNotFound error={error} />;
   }
 
-  const name =
-    user.first_name && user.last_name
-      ? `${user.first_name} ${user.last_name}`
-      : user.first_name || user.last_name;
+  const information = (
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <div>
+        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+          <JournalAlbum className="bi" />
+          Identifier:
+        </p>
+        <div className="ms-4">@{username}</div>
+      </div>
+    </div>
+  );
 
   return (
-    <ContainerWrap>
-      <div className={cx("d-flex", "flex-column", "flex-sm-row", "gap-2")}>
-        <div>
-          <div
-            className={cx(
-              "d-flex",
-              "flex-row",
-              "flex-wrap",
-              "flex-sm-nowrap",
-              "gap-2"
-            )}
-          >
-            <div className={cx("align-items-center", "d-flex", "gap-2")}>
-              <UserAvatar
-                firstName={user.first_name}
-                lastName={user.last_name}
-                username={username}
-                size={UserAvatarSize.medium}
-              />
-              <h2 className="mb-0">{name ?? "Unknown user"}</h2>
-            </div>
-
-            <div className={cx("align-items-center", "d-flex", "gap-2")}>
-              <EntityPill
-                entityType="User"
-                size="sm"
-                tooltipPlacement="bottom"
-              />
-              <ItsYouBadge username={username} />
-            </div>
-          </div>
-          <p className="fst-italic">{`@${username}`}</p>
-        </div>
-      </div>
-
-      <section>
-        <h4>Personal Projects</h4>
-        <ProjectV2ListDisplay
-          namespace={username}
-          pageParam="projects_page"
-          namespaceKind="user"
-        />
-      </section>
-      <section className="mt-3">
-        <Row>
-          <Col className="order-3" xs={12} xl={8}>
-            <DataConnectorsBox
-              namespace={username}
-              namespaceKind="user"
-              pageParam="data_connectors_page"
-            />
-          </Col>
-        </Row>
-      </section>
+    <ContainerWrap className="position-relative">
+      <EntityWatermark type="user" />
+      <Row>
+        <Col xs={12} className={cx("mb-3", "pt-2", "pb-5")}>
+          <UserHeader user={user} username={username} name={name ?? ""} />
+        </Col>
+        <Col xs={12}>
+          <Row className="g-4">
+            <Col xs={12} md={8} xl={9}>
+              <Row className="g-4">
+                <Col xs={12}>
+                  <ProjectV2ListDisplay
+                    namespace={username}
+                    pageParam="projects_page"
+                    namespaceKind="user"
+                  />
+                </Col>
+                <Col className="order-3" xs={12}>
+                  <DataConnectorsBox
+                    namespace={username}
+                    namespaceKind="user"
+                    pageParam="data_connectors_page"
+                  />
+                </Col>
+              </Row>
+            </Col>
+            <Col xs={12} md={4} xl={3}>
+              <Card data-cy="project-info-card">
+                <CardHeader>
+                  <div
+                    className={cx(
+                      "align-items-center",
+                      "d-flex",
+                      "justify-content-between"
+                    )}
+                  >
+                    <h4 className="m-0">
+                      <InfoCircle className={cx("me-1", "bi")} />
+                      Info
+                    </h4>
+                  </div>
+                </CardHeader>
+                <CardBody>{information}</CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
     </ContainerWrap>
   );
 }
@@ -170,4 +181,29 @@ function ItsYouBadge({ username }: ItsYouBadgeProps) {
   }
 
   return null;
+}
+
+function UserHeader({
+  username,
+  name,
+}: {
+  user: UserWithId;
+  username: string;
+  name: string;
+}) {
+  return (
+    <div className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
+      <div className={cx("d-flex", "gap-2")}>
+        <AvatarTypeWrap type={"User"}>
+          <UserAvatar username={username} size={UserAvatarSize.large} />
+        </AvatarTypeWrap>
+        <div className="d-flex gap-2">
+          <h2 className="mb-0">{name}</h2>
+          <div>
+            <ItsYouBadge username={username} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
