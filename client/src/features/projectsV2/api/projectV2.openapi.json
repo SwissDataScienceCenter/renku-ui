@@ -519,6 +519,9 @@
           },
           "keywords": {
             "$ref": "#/components/schemas/KeywordsList"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/ProjectDocumentation"
           }
         },
         "required": [
@@ -644,6 +647,13 @@
         "type": "string",
         "maxLength": 500
       },
+      "Keyword": {
+        "description": "A single keyword",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "pattern": "^[A-Za-z0-9\\s\\-_.]*$"
+      },
       "KeywordsList": {
         "description": "Project keywords",
         "type": "array",
@@ -653,12 +663,12 @@
         "minItems": 0,
         "example": ["project", "keywords"]
       },
-      "Keyword": {
-        "description": "A single keyword",
+      "ProjectDocumentation": {
+        "description": "Renku project documentation",
         "type": "string",
         "minLength": 1,
-        "maxLength": 99,
-        "pattern": "^[A-Za-z0-9\\s\\-_.]*$"
+        "maxLength": 5000,
+        "example": "$\\sqrt(1)$"
       },
       "RepositoriesList": {
         "description": "A list of repositories",

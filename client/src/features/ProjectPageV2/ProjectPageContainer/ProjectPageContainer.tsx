@@ -40,6 +40,7 @@ export default function ProjectPageContainer() {
   const { data, isLoading, error } = useGetProjectsByNamespaceAndSlugQuery({
     namespace: namespace ?? "",
     slug: slug ?? "",
+    with_documentation: true,
   });
 
   if (isLoading) return <Loader className="align-self-center" />;
