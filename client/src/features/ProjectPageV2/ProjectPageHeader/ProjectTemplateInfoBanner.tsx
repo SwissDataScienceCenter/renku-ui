@@ -16,47 +16,125 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { Col, Row } from "reactstrap";
+import { useCallback, useState } from "react";
+import {
+  Button,
+  Col,
+  ListGroup,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Row,
+} from "reactstrap";
 import { InfoCircle } from "react-bootstrap-icons";
 
 import SuggestionBanner from "../../../components/SuggestionBanner";
 
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";
+import ProjectShortHandDisplay from "../../projectsV2/show/ProjectShortHandDisplay";
 import { useGetProjectsByProjectIdCopiesQuery } from "../../projectsV2/api/projectV2.api";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 import useProjectPermissions from "../utils/useProjectPermissions.hook";
+
+interface ProjectCopyListModalProps {
+  copies: Project[];
+  isOpen: boolean;
+  project: Project;
+  title: string;
+  toggle: () => void;
+}
+
+export function ProjectCopyListModal({
+  copies,
+  isOpen,
+  project,
+  title,
+  toggle,
+}: ProjectCopyListModalProps) {
+  return (
+    <Modal
+      data-cy="copy-list-modal"
+      backdrop="static"
+      isOpen={isOpen}
+      toggle={toggle}
+      size="lg"
+      centered
+    >
+      <ModalHeader toggle={toggle}>
+        <span className="fw-normal">{title} </span>
+        {project.namespace}/{project.slug}
+      </ModalHeader>
+      <ModalBody>
+        <ListGroup flush data-cy="dashboard-project-list">
+          {copies.map((project) => (
+            <ProjectShortHandDisplay
+              element="list-item"
+              key={project.id}
+              project={project}
+            />
+          ))}
+        </ListGroup>
+      </ModalBody>
+    </Modal>
+  );
+}
 
 function ProjectTemplateEditorBanner({ project }: { project: Project }) {
   const { data: currentUser } = useGetUserQuery();
   const { data: copies } = useGetProjectsByProjectIdCopiesQuery({
     projectId: project.id,
   });
+  const [isModalOpen, setModalOpen] = useState(false);
+  const toggleOpen = useCallback(() => {
+    setModalOpen((open) => !open);
+  }, []);
   if (currentUser == null) return null;
   if (project.template_id === null) return null;
   return (
-    <SuggestionBanner className="p-2" icon={<InfoCircle className="bi" />}>
-      <Row className="align-items-center">
-        <Col>
-          This project is a template.
-          {copies != null && (
-            <span>
-              There are{" "}
-              <span
-                className={cx(
-                  "badge",
-                  copies.length > 0 ? "text-bg-primary" : "text-bg-secondary"
-                )}
-              >
-                {copies.length}
-              </span>{" "}
-              copies visible to you.
-            </span>
-          )}
-        </Col>
-      </Row>
-    </SuggestionBanner>
+    <>
+      <SuggestionBanner className="p-2" icon={<InfoCircle className="bi" />}>
+        <Row className="align-items-center">
+          <Col>
+            This project is a template.{" "}
+            {copies != null &&
+              (copies.length > 1 ? (
+                <span>
+                  There are{" "}
+                  <Button
+                    className={cx("px-0", "mb-1")}
+                    color="link"
+                    data-cy="list-copies-link"
+                    onClick={toggleOpen}
+                  >
+                    <span className={cx("badge", "text-bg-primary")}>
+                      {copies.length}
+                    </span>{" "}
+                    copies
+                  </Button>{" "}
+                  visible to you.
+                </span>
+              ) : (
+                <span>
+                  There are{" "}
+                  <span className={cx("badge", "text-bg-secondary")}>0</span>{" "}
+                  copies visible to you.
+                </span>
+              ))}
+          </Col>
+        </Row>
+      </SuggestionBanner>
+      {isModalOpen && (
+        <ProjectCopyListModal
+          copies={copies ?? []}
+          isOpen={isModalOpen}
+          project={project}
+          title="Projects copied from"
+          toggle={toggleOpen}
+        />
+      )}
+    </>
   );
 }
 

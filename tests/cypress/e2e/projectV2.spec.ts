@@ -610,7 +610,8 @@ describe("Project templates and copies", () => {
     fixtures
       .readProjectV2({ overrides: { is_template: true } })
       .listNamespaceV2()
-      .copyProjectV2();
+      .copyProjectV2()
+      .listProjectV2Copies({ count: 0, writeable: true });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.getDataCy("copy-project-button").click();
@@ -629,6 +630,51 @@ describe("Project templates and copies", () => {
     cy.contains("Go to new project").should("be.visible").click();
     cy.wait("@readProjectCopy");
     cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
+  });
+
+  it("navigate to a template project copy", () => {
+    fixtures
+      .readProjectV2({
+        projectSlug: "test-2-v2-template",
+        overrides: { is_template: true },
+      })
+      .listNamespaceV2()
+      .copyProjectV2()
+      .listProjectV2Copies({ count: 1, writeable: true });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-template");
+    cy.wait("@readProjectV2");
+    cy.wait("@listProjectV2Copies");
+    cy.getDataCy("copy-project-button").should("not.exist");
+    cy.contains(
+      "You already have a project created from this template."
+    ).should("be.visible");
+    fixtures.readProjectV2({
+      projectSlug: "test-2-v2-project",
+      name: "readProjectCopy",
+    });
+    cy.contains("Go to my copy").should("be.visible").click();
+    cy.wait("@readProjectCopy");
+    cy.location("pathname").should(
+      "eq",
+      "/v2/projects/user1-uuid/test-2-v2-project"
+    );
+  });
+
+  it("list template project copies", () => {
+    fixtures
+      .readProjectV2({
+        projectSlug: "test-2-v2-template",
+        overrides: { is_template: true },
+      })
+      .listNamespaceV2()
+      .copyProjectV2()
+      .listProjectV2Copies({ writeable: true });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-template");
+    cy.wait("@readProjectV2");
+    cy.wait("@listProjectV2Copies");
+    cy.getDataCy("copy-project-button").should("not.exist");
+    cy.contains("copies of this project.").should("be.visible");
+    cy.contains("View my copies").should("be.visible").click();
   });
 
   it("copy a project with data-connector-error", () => {

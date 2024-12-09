@@ -113,10 +113,8 @@ export function ProjectCopyModal({
     >
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggle}>
-          Make a copy of{" "}
-          <span className="fst-italic">
-            {project.namespace}/{project.slug}
-          </span>
+          <span className="fw-normal">Make a copy of </span>
+          {project.namespace}/{project.slug}
         </ModalHeader>
         <ModalBody>
           <div
