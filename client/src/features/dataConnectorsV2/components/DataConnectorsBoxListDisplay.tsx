@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { Globe2, Lock } from "react-bootstrap-icons";
+import { EyeFill, Globe2, Lock, Pencil } from "react-bootstrap-icons";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
@@ -33,22 +33,40 @@ import DataConnectorView from "./DataConnectorView";
 interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;
   dataConnectorLink?: DataConnectorToProjectLink;
+  extendedPreview?: boolean;
 }
 export default function DataConnectorBoxListDisplay({
   dataConnector,
   dataConnectorLink,
+  extendedPreview,
 }: DataConnectorBoxListDisplayProps) {
   const {
     name,
     description,
     visibility,
     creation_date: creationDate,
+    storage,
   } = dataConnector;
 
   const [showDetails, setShowDetails] = useState(false);
   const toggleDetails = useCallback(() => {
     setShowDetails((open) => !open);
   }, []);
+
+  const type = `${storage?.configuration?.type?.toString() ?? ""} ${
+    storage?.configuration?.provider?.toString() ?? ""
+  }`;
+  const readOnly = storage?.readonly ? (
+    <div>
+      <EyeFill className={cx("bi", "me-1")} />
+      Read only
+    </div>
+  ) : (
+    <div>
+      <Pencil className={cx("bi", "me-1")} />
+      Allow Read-write
+    </div>
+  );
 
   return (
     <>
@@ -63,6 +81,7 @@ export default function DataConnectorBoxListDisplay({
               {name}
             </span>
             {description && <ClampedParagraph>{description}</ClampedParagraph>}
+            {extendedPreview && <div className="text-muted">{type}</div>}
             <div
               className={cx(
                 "align-items-center",
@@ -73,18 +92,27 @@ export default function DataConnectorBoxListDisplay({
                 "mt-auto"
               )}
             >
-              <div>
+              <div
+                className={cx(
+                  "align-items-center",
+                  "d-flex",
+                  "flex-wrap",
+                  "gap-3",
+                  "mt-auto"
+                )}
+              >
                 {visibility.toLowerCase() === "private" ? (
-                  <>
+                  <div>
                     <Lock className={cx("bi", "me-1")} />
                     Private
-                  </>
+                  </div>
                 ) : (
-                  <>
+                  <div>
                     <Globe2 className={cx("bi", "me-1")} />
                     Public
-                  </>
+                  </div>
                 )}
+                {extendedPreview && readOnly}
               </div>
               <TimeCaption
                 datetime={creationDate}
