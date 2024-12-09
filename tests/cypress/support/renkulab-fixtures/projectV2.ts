@@ -19,6 +19,17 @@
 import { FixturesConstructor } from "./fixtures";
 import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
+interface ProjectOverrides {
+  id: string;
+  name: string;
+  namespace: string;
+  slug: string;
+  visibility: string;
+  description?: string;
+  keywords?: string[];
+  template_id?: string;
+}
+
 /**
  * Fixtures for New Project
  */
@@ -40,6 +51,11 @@ interface ListProjectV2MembersFixture extends ProjectV2IdArgs {
 
 interface ProjectV2IdArgs extends SimpleFixture {
   projectId?: string;
+  overrides?: Partial<ProjectOverrides>;
+}
+
+interface ProjectV2CopyFixture extends ProjectV2IdArgs {
+  dataConnectorError?: boolean;
 }
 
 interface ProjectV2DeleteFixture extends NameOnlyFixture {
@@ -49,6 +65,7 @@ interface ProjectV2DeleteFixture extends NameOnlyFixture {
 interface ProjectV2NameArgs extends SimpleFixture {
   namespace?: string;
   projectSlug?: string;
+  overrides?: Partial<ProjectOverrides>;
 }
 
 interface ProjectV2PatchOrDeleteMemberFixture extends ProjectV2IdArgs {
@@ -80,6 +97,41 @@ export function generateProjects(numberOfProjects: number, start: number) {
 
 export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
   return class ProjectV2Fixtures extends Parent {
+    copyProjectV2(args?: ProjectV2CopyFixture) {
+      const {
+        fixture = "projectV2/create-projectV2.json",
+        projectId = "THEPROJECTULID26CHARACTERS",
+        name = "copyProjectV2",
+        dataConnectorError = false,
+      } = args ?? {};
+      cy.fixture(fixture).then((project) => {
+        cy.intercept(
+          "POST",
+          `/ui-server/api/data/projects/${projectId}/copies`,
+          (req) => {
+            const newProject = req.body;
+            expect(newProject.name).to.not.be.undefined;
+            expect(newProject.namespace).to.not.be.undefined;
+            expect(newProject.slug).to.not.be.undefined;
+            expect(newProject.visibility).to.not.be.undefined;
+            if (dataConnectorError) {
+              const body = {
+                error: {
+                  code: 1404,
+                  message: `The project was copied to ${newProject.namespace}/${newProject.slug}, but not all data connectors were included.`,
+                },
+              };
+              req.reply({ body, statusCode: 403, delay: 1000 });
+              return;
+            }
+            const body = { ...project, ...newProject };
+            req.reply({ body, statusCode: 201, delay: 1000 });
+          }
+        ).as(name);
+      });
+      return this;
+    }
+
     createProjectV2(args?: SimpleFixture) {
       const {
         fixture = "projectV2/create-projectV2.json",
@@ -256,13 +308,21 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         name = "readProjectV2",
         namespace = "user1-uuid",
         projectSlug = "test-2-v2-project",
+        overrides = {},
       } = args ?? {};
-      const response = { fixture };
-      cy.intercept(
-        "GET",
-        `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}`,
-        response
-      ).as(name);
+      cy.fixture(fixture).then((project) => {
+        const response = {
+          ...project,
+          namespace,
+          slug: projectSlug,
+          ...overrides,
+        };
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}`,
+          response
+        ).as(name);
+      });
       return this;
     }
 
@@ -271,13 +331,14 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         fixture = "projectV2/read-projectV2.json",
         name = "readProjectV2ById",
         projectId = "THEPROJECTULID26CHARACTERS",
+        overrides = {},
       } = args ?? {};
       cy.fixture(fixture).then((project) => {
         cy.intercept(
           "GET",
           `/ui-server/api/data/projects/${projectId}`,
           (req) => {
-            const response = { ...project, id: projectId };
+            const response = { ...project, ...overrides, id: projectId };
             req.reply({ body: response, delay: 1000 });
           }
         ).as(name);
