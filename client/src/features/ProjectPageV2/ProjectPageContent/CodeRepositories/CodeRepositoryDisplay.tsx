@@ -597,9 +597,7 @@ function RepositoryView({
 
         <div>
           <div className="mb-4">
-            <div
-            // className={cx("d-flex", "justify-content-between")}
-            >
+            <div>
               <div className={cx("float-end", "mt-1", "ms-1")}>
                 <CodeRepositoryActions project={project} url={repositoryUrl} />
               </div>
