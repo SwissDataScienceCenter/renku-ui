@@ -20,7 +20,7 @@ import type {
   NamespaceResponseList,
 } from "./namespace.api";
 
-interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
+export interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;
 }
 
@@ -37,7 +37,7 @@ export interface GetNamespacesApiResponse extends AbstractKgPaginatedResponse {
   namespaces: GetNamespacesApiResponseOrig;
 }
 
-interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
+export interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
   projects: GetProjectsApiResponseOrig;
 }
 

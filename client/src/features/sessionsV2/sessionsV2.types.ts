@@ -86,7 +86,9 @@ export type SessionLauncherEnvironmentParams =
     };
 
 export type SessionLauncherList = SessionLauncher[];
-
+export interface GetProjectSessionLauncherParams {
+  id: string;
+}
 export interface GetProjectSessionLaunchersParams {
   projectId: string;
 }

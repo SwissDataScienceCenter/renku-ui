@@ -23,6 +23,7 @@ import {
   DeleteSessionLauncherParams,
   DockerImage,
   GetLogsParams,
+  GetProjectSessionLauncherParams,
   GetProjectSessionLaunchersParams,
   LaunchSessionParams,
   PatchSessionParams,
@@ -80,6 +81,18 @@ const sessionsV2Api = createApi({
               "Launcher",
             ]
           : ["Launcher"],
+    }),
+    getProjectSessionLauncher: builder.query<
+      SessionLauncher,
+      GetProjectSessionLauncherParams
+    >({
+      query: ({ id }) => {
+        return {
+          url: `/session_launchers/${id}`,
+        };
+      },
+      providesTags: (result) =>
+        result ? [{ type: "Launcher" as const, id: result.id }] : ["Launcher"],
     }),
     addSessionLauncher: builder.mutation<
       SessionLauncher,
@@ -206,6 +219,7 @@ export const {
   useGetSessionsQuery,
   useGetSessionEnvironmentsQuery,
   useGetSessionLaunchersQuery,
+  useGetProjectSessionLauncherQuery,
   useGetProjectSessionLaunchersQuery,
   useAddSessionLauncherMutation,
   useUpdateSessionLauncherMutation,

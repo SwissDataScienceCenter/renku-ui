@@ -43,7 +43,7 @@ import {
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
 import { EntityPill } from "../../searchV2/components/SearchV2Results";
-import UserAvatar from "../../usersV2/show/UserAvatar";
+import UserAvatar, { UserAvatarSize } from "../../usersV2/show/UserAvatar";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
 import useGroupPermissions from "../utils/useGroupPermissions.hook";
 
@@ -99,7 +99,10 @@ export default function GroupV2Show() {
         <div>
           <div className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
             <div className={cx("align-items-center", "d-flex", "gap-2")}>
-              <UserAvatar username={group.name || slug} large />
+              <UserAvatar
+                username={group.name || slug}
+                size={UserAvatarSize.large}
+              />
               <h2 className="mb-0">{group.name ?? "Unknown group"}</h2>
             </div>
             <div className={cx("align-items-center", "d-flex")}>
