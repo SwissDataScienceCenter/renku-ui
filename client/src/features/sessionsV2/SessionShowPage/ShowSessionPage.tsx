@@ -54,7 +54,7 @@ import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { displaySlice, resetFavicon, setFavicon } from "../../display";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import SessionHibernated from "../../session/components/SessionHibernated";
 import SessionUnavailable from "../../session/components/SessionUnavailable";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
@@ -399,7 +399,7 @@ function SessionDetails({
     error: launchersError,
   } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
   const { data: project, isLoading: isLoadingProject } =
-    useGetProjectsByNamespaceAndSlugQuery(
+    useGetNamespacesByNamespaceProjectsAndSlugQuery(
       namespace && slug ? { namespace, slug } : skipToken
     );
 

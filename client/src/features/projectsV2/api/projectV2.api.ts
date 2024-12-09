@@ -18,7 +18,10 @@ const injectedRtkApi = api.injectEndpoints({
       GetProjectsByProjectIdApiResponse,
       GetProjectsByProjectIdApiArg
     >({
-      query: (queryArg) => ({ url: `/projects/${queryArg.projectId}` }),
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}`,
+        params: { with_documentation: queryArg.withDocumentation },
+      }),
     }),
     patchProjectsByProjectId: build.mutation<
       PatchProjectsByProjectIdApiResponse,
@@ -40,19 +43,23 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
-    getProjectsByNamespaceAndSlug: build.query<
-      GetProjectsByNamespaceAndSlugApiResponse,
-      GetProjectsByNamespaceAndSlugApiArg
+    getNamespacesByNamespaceProjectsAndSlug: build.query<
+      GetNamespacesByNamespaceProjectsAndSlugApiResponse,
+      GetNamespacesByNamespaceProjectsAndSlugApiArg
     >({
       query: (queryArg) => ({
         url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.slug}`,
+        params: { with_documentation: queryArg.withDocumentation },
       }),
     }),
     getProjectsByProjectIdCopies: build.query<
       GetProjectsByProjectIdCopiesApiResponse,
       GetProjectsByProjectIdCopiesApiArg
     >({
-      query: (queryArg) => ({ url: `/projects/${queryArg.projectId}/copies` }),
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/copies`,
+        params: { writable: queryArg.writable },
+      }),
     }),
     postProjectsByProjectIdCopies: build.mutation<
       PostProjectsByProjectIdCopiesApiResponse,
@@ -124,6 +131,7 @@ export type GetProjectsByProjectIdApiResponse =
   /** status 200 The project */ Project;
 export type GetProjectsByProjectIdApiArg = {
   projectId: Ulid;
+  withDocumentation?: WithDocumentation;
 };
 export type PatchProjectsByProjectIdApiResponse =
   /** status 200 The patched project */ Project;
@@ -138,16 +146,19 @@ export type DeleteProjectsByProjectIdApiResponse =
 export type DeleteProjectsByProjectIdApiArg = {
   projectId: Ulid;
 };
-export type GetProjectsByNamespaceAndSlugApiResponse =
+export type GetNamespacesByNamespaceProjectsAndSlugApiResponse =
   /** status 200 The project */ Project;
-export type GetProjectsByNamespaceAndSlugApiArg = {
+export type GetNamespacesByNamespaceProjectsAndSlugApiArg = {
   namespace: string;
   slug: string;
+  withDocumentation?: WithDocumentation;
 };
 export type GetProjectsByProjectIdCopiesApiResponse =
   /** status 200 The list of projects */ ProjectsList;
 export type GetProjectsByProjectIdCopiesApiArg = {
   projectId: Ulid;
+  /** When true, only return projects that the user has write access to */
+  writable?: boolean;
 };
 export type PostProjectsByProjectIdCopiesApiResponse =
   /** status 201 The project was created */ Project;
@@ -198,6 +209,8 @@ export type Description = string;
 export type ETag = string;
 export type Keyword = string;
 export type KeywordsList = Keyword[];
+export type ProjectDocumentation = string;
+export type IsTemplate = boolean;
 export type Project = {
   id: Ulid;
   name: ProjectName;
@@ -211,7 +224,9 @@ export type Project = {
   description?: Description;
   etag?: ETag;
   keywords?: KeywordsList;
+  documentation?: ProjectDocumentation;
   template_id?: Ulid;
+  is_template?: IsTemplate;
 };
 export type ProjectsList = Project[];
 export type ErrorResponse = {
@@ -241,7 +256,9 @@ export type ProjectPost = {
   visibility?: Visibility;
   description?: Description;
   keywords?: KeywordsList;
+  documentation?: ProjectDocumentation;
 };
+export type WithDocumentation = boolean;
 export type ProjectPatch = {
   name?: ProjectName;
   namespace?: Slug;
@@ -249,6 +266,10 @@ export type ProjectPatch = {
   visibility?: Visibility;
   description?: Description;
   keywords?: KeywordsList;
+  documentation?: ProjectDocumentation;
+  /** template_id is set when copying a project from a template project and it cannot be modified. This field can be either null or an empty string; a null value won't change it while an empty string value will delete it, meaning that the project is unlinked from its template */
+  template_id?: string;
+  is_template?: IsTemplate;
 };
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
@@ -287,7 +308,7 @@ export const {
   useGetProjectsByProjectIdQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
-  useGetProjectsByNamespaceAndSlugQuery,
+  useGetNamespacesByNamespaceProjectsAndSlugQuery,
   useGetProjectsByProjectIdCopiesQuery,
   usePostProjectsByProjectIdCopiesMutation,
   useGetProjectsByProjectIdMembersQuery,

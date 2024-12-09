@@ -33,7 +33,7 @@ import {
 import { SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { DEFAULT_PORT, DEFAULT_URL } from "../../session.constants";
 import { getFormattedEnvironmentValues } from "../../session.utils";
 import {
@@ -61,7 +61,7 @@ export default function NewSessionLauncherModal({
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
   const { data: environments } = useGetSessionEnvironmentsQuery();
   const [addSessionLauncher, result] = useAddSessionLauncherMutation();
-  const { data: project } = useGetProjectsByNamespaceAndSlugQuery(
+  const { data: project } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
     namespace && slug ? { namespace, slug } : skipToken
   );
   const projectId = project?.id;
