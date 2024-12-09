@@ -39,10 +39,10 @@ import {
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import AddSessionSecretButton from "./AddSessionSecretButton";
+import SecretsMountDirectoryComponent from "./SecretsMountDirectoryComponent";
 import { SESSION_SECRETS_CARD_ID } from "./sessionSecrets.constants";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 import SessionSecretSlotItem from "./SessionSecretSlotItem";
-import { SecretsMountDirectoryComponent } from "./UpdateSecretsMountDirectoryButton";
 
 export default function ProjectSessionSecrets() {
   const userLogged = useLegacySelector<boolean>(

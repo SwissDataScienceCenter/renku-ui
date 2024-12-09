@@ -39,7 +39,7 @@ import SecretsMountDirectoryField from "../../../projectsV2/fields/SecretsMountD
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 
-export function SecretsMountDirectoryComponent() {
+export default function SecretsMountDirectoryComponent() {
   const { project } = useProject();
   const { id: projectId, secrets_mount_directory: secretsMountDirectory } =
     project;
@@ -75,21 +75,6 @@ export function SecretsMountDirectoryComponent() {
           userPermissions={permissions}
         />
       </InputGroup>
-      <UpdateSecretsMountDirectoryModal isOpen={isOpen} toggle={toggle} />
-    </>
-  );
-}
-
-export default function UpdateSecretsMountDirectoryButton() {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
-
-  return (
-    <>
-      <Button color="outline-primary" onClick={toggle} size="sm">
-        <Pencil className={cx("bi", "me-1")} />
-        Update the secrets mount location
-      </Button>
       <UpdateSecretsMountDirectoryModal isOpen={isOpen} toggle={toggle} />
     </>
   );
