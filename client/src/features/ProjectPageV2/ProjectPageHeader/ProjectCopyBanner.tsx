@@ -170,8 +170,12 @@ function ProjectViewerCopyBanner({
     projectId: project.id,
     writable: true,
   });
+  const isUserLoggedIn = useLegacySelector(
+    (state) => state.stateModel.user.logged
+  );
   if (currentUser == null) return null;
   if (project.template_id === null) return null;
+  if (!isUserLoggedIn) return <ProjectViewerMakeCopyBanner project={project} />;
   if (writableCopies == null)
     return (
       <SuggestionBanner icon={<Diagram3Fill className="bi" />}>

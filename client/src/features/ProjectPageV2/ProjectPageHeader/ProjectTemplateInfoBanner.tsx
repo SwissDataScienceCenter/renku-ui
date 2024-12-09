@@ -115,7 +115,7 @@ function ProjectTemplateEditorBanner({ project }: { project: Project }) {
                   </Button>{" "}
                   visible to you.
                 </span>
-              ) : copies.length == 1 ? (
+              ) : copies.length === 1 ? (
                 <span>
                   There is{" "}
                   <Button
