@@ -113,7 +113,7 @@ function ProjectViewerGoToCopyBanner({
               {writableCopies.length > 1 ? (
                 <span>
                   You have{" "}
-                  <span className={cx("badge", "text-bg-primary")}>
+                  <span className={cx("badge", "text-bg-secondary")}>
                     {writableCopies.length}
                   </span>{" "}
                   copies of this project.

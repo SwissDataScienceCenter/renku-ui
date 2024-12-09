@@ -115,6 +115,20 @@ function ProjectTemplateEditorBanner({ project }: { project: Project }) {
                   </Button>{" "}
                   visible to you.
                 </span>
+              ) : copies.length == 1 ? (
+                <span>
+                  There is{" "}
+                  <Button
+                    className={cx("px-0", "mb-1")}
+                    color="link"
+                    data-cy="list-copies-link"
+                    onClick={toggleOpen}
+                  >
+                    <span className={cx("badge", "text-bg-primary")}>1</span>{" "}
+                    copy
+                  </Button>{" "}
+                  visible to you.
+                </span>
               ) : (
                 <span>
                   There are{" "}
