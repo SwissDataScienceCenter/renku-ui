@@ -48,6 +48,7 @@ import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
 import { projectCreationHash } from "../projectsV2/new/createProjectV2.constants";
 import LazySearchV2 from "../searchV2/LazySearchV2";
+import LazySecretsV2 from "../secretsV2/LazySecretsV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
@@ -125,10 +126,18 @@ export default function RootV2() {
             }
           />
           <Route
-            path="connected-services"
+            path={RELATIVE_ROUTES.v2.connectedServices}
             element={
               <ContainerWrap>
                 <LazyConnectedServicesPage />
+              </ContainerWrap>
+            }
+          />
+          <Route
+            path={RELATIVE_ROUTES.v2.secrets}
+            element={
+              <ContainerWrap>
+                <LazySecretsV2 />
               </ContainerWrap>
             }
           />

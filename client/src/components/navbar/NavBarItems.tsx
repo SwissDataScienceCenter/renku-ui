@@ -50,6 +50,7 @@ import { Loader } from "../Loader";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
 
 import styles from "./NavBarItem.module.scss";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 
 export function RenkuToolbarItemPlus() {
   const location = useLocation();
@@ -280,10 +281,14 @@ export function RenkuToolbarNotifications({
 }
 
 interface RenkuToolbarItemUserProps {
+  isV2?: boolean;
   params: AppParams;
 }
 
-export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
+export function RenkuToolbarItemUser({
+  isV2,
+  params,
+}: RenkuToolbarItemUserProps) {
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
   const { renku10Enabled } = useAppSelector(({ featureFlags }) => featureFlags);
@@ -303,6 +308,8 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
       </NavLink>
     );
   }
+
+  const userSecretsUrl = isV2 ? ABSOLUTE_ROUTES.v2.secrets : "/secrets";
 
   return (
     <UncontrolledDropdown className="nav-item dropdown">
@@ -332,7 +339,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
           />
         </DropdownItem>
 
-        <Link to="/secrets" className="dropdown-item">
+        <Link to={userSecretsUrl} className="dropdown-item">
           User Secrets
         </Link>
 
@@ -340,10 +347,14 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
 
         {renku10Enabled && (
           <>
-            <Link to="/v2/" className="dropdown-item">
+            <DropdownItem divider />
+            <Link to={ABSOLUTE_ROUTES.v2.root} className="dropdown-item">
               Renku 2.0
             </Link>
-            <Link to="/v2/connected-services" className="dropdown-item">
+            <Link
+              to={ABSOLUTE_ROUTES.v2.connectedServices}
+              className="dropdown-item"
+            >
               Renku 2.0 Settings
             </Link>
           </>
