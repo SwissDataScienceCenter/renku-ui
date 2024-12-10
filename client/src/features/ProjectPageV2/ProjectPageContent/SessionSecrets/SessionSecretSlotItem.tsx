@@ -62,7 +62,8 @@ export default function SessionSecretSlotItem({
                   <Key className={cx("bi", "me-1")} />
                   Secret saved
                 </Badge>
-                <NodePlus className={cx("bi", "ms-2", "me-1")} />
+                {/* <NodePlus className={cx("bi", "ms-2", "me-1")} /> */}
+                <Key className={cx("bi", "ms-2", "me-1")} />
                 <span>
                   Secret name:{" "}
                   <span className="fw-bold">

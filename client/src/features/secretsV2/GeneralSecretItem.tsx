@@ -22,7 +22,7 @@ import { generatePath, Link } from "react-router-dom-v5-compat";
 import { Badge, Col, Collapse, ListGroupItem, Row } from "reactstrap";
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Folder, NodePlus } from "react-bootstrap-icons";
+import { Folder, NodePlus, ShieldLock } from "react-bootstrap-icons";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
@@ -122,7 +122,8 @@ function GeneralSecretUsedIn({
         className={cx("me-2", "bg-transparent", "border-0", "fw-medium")}
         onClick={toggle}
       >
-        <NodePlus className={cx("bi", "me-1")} />
+        {/* <NodePlus className={cx("bi", "me-1")} /> */}
+        <ShieldLock className={cx("bi", "me-1")} />
         This secret is used in <Badge>{projects.length}</Badge> {projectStr}
         <ChevronFlippedIcon className={cx("bi", "ms-1")} flipped={isOpen} />
       </button>

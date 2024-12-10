@@ -108,8 +108,10 @@ export default function ProjectSessionSecrets() {
         >
           <div className={cx("align-items-center", "d-flex")}>
             <h4 className={cx("m-0", "me-2")}>
+              {/* <ShieldLock className={cx("me-1", "bi")} />
+              Session Secrets */}
               <ShieldLock className={cx("me-1", "bi")} />
-              Session Secrets
+              Session secret slots
             </h4>
             {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
           </div>
