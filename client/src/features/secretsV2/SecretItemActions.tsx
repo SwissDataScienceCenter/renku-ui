@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Download, Pencil, Trash, XLg } from "react-bootstrap-icons";
+import { Pencil, Save, Trash, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Button,
@@ -91,7 +91,7 @@ export default function SecretItemActions({
             onClick={toggleReplace}
             size="sm"
           >
-            <Download className={cx("bi", "me-1")} />
+            <Save className={cx("bi", "me-1")} />
             Replace
           </Button>
         }

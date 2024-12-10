@@ -20,8 +20,8 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Download,
   Pencil,
+  Save,
   ShieldMinus,
   ShieldPlus,
   Trash,
@@ -140,7 +140,7 @@ export default function SessionSecretActions({
             onClick: toggleReplace,
             content: (
               <>
-                <Download className={cx("bi", "me-1")} />
+                <Save className={cx("bi", "me-1")} />
                 Replace secret value
               </>
             ),
