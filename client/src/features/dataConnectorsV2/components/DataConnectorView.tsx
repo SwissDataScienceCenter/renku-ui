@@ -270,17 +270,17 @@ function DataConnectorViewHeader({
 }: Omit<DataConnectorViewProps, "showView">) {
   return (
     <div className="mb-4">
-      <div className={cx("d-flex", "justify-content-between")}>
-        <h2 className="m-0" data-cy="data-connector-title">
-          {dataConnector.name}
-        </h2>
-        <div className="my-auto">
+      <div>
+        <div className={cx("float-end", "mt-1", "ms-1")}>
           <DataConnectorActions
             dataConnector={dataConnector}
             dataConnectorLink={dataConnectorLink}
             toggleView={toggleView}
           />
         </div>
+        <h2 className={cx("m-0", "text-break")} data-cy="data-connector-title">
+          {dataConnector.name}
+        </h2>
       </div>
     </div>
   );

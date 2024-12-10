@@ -597,13 +597,16 @@ function RepositoryView({
 
         <div>
           <div className="mb-4">
-            <div className={cx("d-flex", "justify-content-between")}>
-              <h2 className="m-0" data-cy="data-source-title">
-                {title}
-              </h2>
-              <div className="my-auto">
+            <div>
+              <div className={cx("float-end", "mt-1", "ms-1")}>
                 <CodeRepositoryActions project={project} url={repositoryUrl} />
               </div>
+              <h2
+                className={cx("m-0", "text-break")}
+                data-cy="data-source-title"
+              >
+                {title}
+              </h2>
             </div>
             <p className={cx("fst-italic", "m-0")}>Code repository</p>
           </div>
