@@ -20,43 +20,54 @@ import cx from "classnames";
 import { ErrorAlert } from "../../../components/Alert";
 import { ensureHTTPS } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
+import { useEffect, useRef } from "react";
 
-const getIframeStyle = (isSessionReady: boolean): React.CSSProperties => {
-  return !isSessionReady
-    ? {
-        position: "absolute",
-        top: 0,
-        visibility: "hidden",
-      }
-    : {};
-};
+// const getIframeStyle = (isSessionReady: boolean): React.CSSProperties => {
+//   return !isSessionReady
+//     ? {
+//         position: "absolute",
+//         top: 0,
+//         visibility: "hidden",
+//       }
+//     : {};
+// };
 
 interface SessionIframeProps {
   height: string;
-  isSessionReady: boolean;
+  // isSessionReady: boolean;
   session: SessionV2;
 }
 
 export default function SessionIframe({
   height,
-  isSessionReady,
+  // isSessionReady,
   session: { status, url },
 }: SessionIframeProps) {
-  if (status.state !== "running") return null;
+  const ref = useRef<HTMLIFrameElement>(null);
 
-  const style = getIframeStyle(isSessionReady);
+  useEffect(() => {
+    //eslint-disable-next-line no-console
+    console.log({ iframe: ref.current });
+  }, []);
+
+  if (status.state !== "running") {
+    return null;
+  }
+
+  // const style = getIframeStyle(isSessionReady);
 
   try {
     const secureUrl = ensureHTTPS(url);
     return (
       <iframe
+        ref={ref}
         className={cx("d-block", "w-100")}
         height={height}
         id="session-iframe"
         referrerPolicy="origin"
         sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
         src={secureUrl}
-        style={style}
+        // style={style}
         title="session iframe"
       />
     );

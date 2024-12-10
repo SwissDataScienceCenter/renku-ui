@@ -110,7 +110,11 @@ export default function ShowSessionPage() {
     };
   }, [thisSession?.status?.state, isLoading, isFetching, dispatch]);
 
-  const [isTheSessionReady, setIsTheSessionReady] = useState(false);
+  const [
+    ,
+    // isTheSessionReady
+    setIsTheSessionReady,
+  ] = useState(false);
 
   const toggleModalLogs = useCallback(() => {
     dispatch(
@@ -180,19 +184,24 @@ export default function ShowSessionPage() {
     ) : thisSession?.status.state === "hibernated" ? (
       <SessionPaused session={thisSession} />
     ) : thisSession != null ? (
-      <>
-        {!isTheSessionReady && (
-          <StartSessionProgressBarV2
-            session={thisSession}
-            toggleLogs={toggleModalLogs}
-          />
-        )}
-        <SessionIframe
-          height={`${iframeHeight}px`}
-          isSessionReady={isTheSessionReady}
-          session={thisSession}
-        />
-      </>
+      // <>
+      //   {!isTheSessionReady && (
+      //     <StartSessionProgressBarV2
+      //       session={thisSession}
+      //       toggleLogs={toggleModalLogs}
+      //     />
+      //   )}
+      //   <SessionIframe
+      //     height={`${iframeHeight}px`}
+      //     isSessionReady={isTheSessionReady}
+      //     session={thisSession}
+      //   />
+      // </>
+      <SessionIframe
+        height={`${iframeHeight}px`}
+        //  isSessionReady={isTheSessionReady}
+        session={thisSession}
+      />
     ) : (
       <StartSessionProgressBarV2 toggleLogs={toggleModalLogs} />
     );
