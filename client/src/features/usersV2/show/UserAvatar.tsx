@@ -46,7 +46,7 @@ export default function UserAvatar({
       ? `${firstName}${lastName}`.slice(0, 2)
       : username?.slice(0, 2) ?? "??";
   const firstLettersUpper = firstLetters.toUpperCase();
-  const randomPastelColor = generatePastelColor(firstLettersUpper);
+  const randomPastelColor = generatePastelColor(username ?? firstLettersUpper);
 
   return (
     <div
@@ -59,6 +59,7 @@ export default function UserAvatar({
         "text-center",
         styles.avatar,
         size === UserAvatarSize.large && styles.large,
+        size === UserAvatarSize.medium && styles.medium,
         size === UserAvatarSize.extraLarge && styles.extraLarge
       )}
     >
@@ -71,11 +72,9 @@ function generatePastelColor(input: string) {
   const hash = hashStringToNumber(input);
   const hue = hash % 360; // Map hash to a hue value (0-359)
   const saturation = 70; // Pastel saturation
-  const lightness = 95; // Pastel lightness
+  const lightness = 97; // Pastel lightness
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 function hashStringToNumber(str: string) {
-  return str
-    .split("")
-    .reduce((acc, char, index) => acc + char.charCodeAt(0) * (index + 1), 0);
+  return str.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
 }

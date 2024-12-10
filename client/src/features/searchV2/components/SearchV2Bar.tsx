@@ -43,8 +43,17 @@ export default function SearchV2Bar() {
 
   const onSubmitInner = useCallback(
     (data: SearchBarForm) => {
-      dispatch(setSearchBarQuery(data.searchBarQuery));
-      if (!isSearchPage) navigate(ABSOLUTE_ROUTES.v2.search);
+      if (isSearchPage) {
+        dispatch(setSearchBarQuery(data.searchBarQuery));
+      } else {
+        const search = new URLSearchParams({
+          q: `type:project ${data.searchBarQuery}`,
+        });
+        navigate({
+          pathname: ABSOLUTE_ROUTES.v2.search,
+          search: search.toString(),
+        });
+      }
     },
     [dispatch, isSearchPage, navigate]
   );

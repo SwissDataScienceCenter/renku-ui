@@ -145,7 +145,13 @@ function FooterDashboard() {
   return (
     <Row className="g-3">
       <Col xs={12} lg={6} xl={3}>
-        <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
+        <Card
+          className={cx(
+            DashboardStyles.DashboardCard,
+            "border-0",
+            "position-relative"
+          )}
+        >
           <CardBody className={DashboardStyles.FooterCard}>
             <a
               target="_blank"
@@ -156,7 +162,8 @@ function FooterDashboard() {
                 "gap-4",
                 "align-items-center",
                 "py-4",
-                "link-primary"
+                "link-primary",
+                "stretched-link"
               )}
               rel="noreferrer noopener"
               href="https://blog.renkulab.io/"
@@ -413,7 +420,7 @@ function UserDashboard() {
   });
 
   return (
-    <Card data-cy="user-container">
+    <Card data-cy="user-container" className="position-relative">
       <CardBody
         className={cx(
           "d-flex",
@@ -424,27 +431,20 @@ function UserDashboard() {
           "my-md-4"
         )}
       >
-        <Link
-          to={userPageUrl}
-          className={cx("link-primary", "text-body", "text-decoration-none")}
-        >
-          <UserAvatar
-            firstName={userInfo.first_name}
-            lastName={userInfo.last_name}
-            username={userInfo.username}
-            size={UserAvatarSize.extraLarge}
-          />
-        </Link>
-        <Link
-          to={userPageUrl}
-          className={cx("link-primary", "text-body", "text-decoration-none")}
-        >
-          <h3 className={cx("text-center", "mb-0")}>
-            {userInfo.first_name} {userInfo.last_name}
-          </h3>
-        </Link>
+        <UserAvatar
+          firstName={userInfo.first_name}
+          lastName={userInfo.last_name}
+          username={userInfo.username}
+          size={UserAvatarSize.extraLarge}
+        />
+        <h3 className={cx("text-center", "mb-0")}>
+          {userInfo.first_name} {userInfo.last_name}
+        </h3>
         <p className="mb-0">
-          <Link to={userPageUrl} className="link-primary">
+          <Link
+            to={userPageUrl}
+            className={cx("link-primary", "stretched-link")}
+          >
             @{userInfo.username ?? "unknown"}
           </Link>
         </p>
