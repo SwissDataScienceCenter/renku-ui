@@ -17,55 +17,58 @@
  */
 
 import cx from "classnames";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+import { generatePath, Link } from "react-router-dom-v5-compat";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import UserAvatar, { UserAvatarSize } from "../../usersV2/show/UserAvatar.tsx";
 import { Project } from "../api/projectV2.api";
 
 interface ProjectShortHandDisplayProps {
   className?: string | string[];
-  element: "card-body" | "list-item" | "plain";
   project: Project;
 }
 
 export default function ProjectShortHandDisplay({
   className,
-  element,
   project,
 }: ProjectShortHandDisplayProps) {
   const content = (
     <div
-      className={cx(
-        element === "card-body" && cx("d-flex", "flex-column", "flex-grow-1")
-      )}
+      className={cx("d-flex", "flex-column", "flex-grow-1", "gap-1")}
       data-cy="project-item"
     >
-      <div
-        className={cx(
-          "d-flex",
-          "justify-content-between",
-          "flex-column",
-          "flex-md-row"
-        )}
-      >
+      <div className={cx("d-flex", "flex-column", "flex-md-row")}>
         <p className={cx("m-0", "fw-bold", "text-truncate", "me-2")}>
           {project.name}
         </p>
-        <VisibilityIcon visibility={project.visibility} />
       </div>
 
       <div
         className={cx(
           "d-flex",
-          element === "card-body" && "mt-auto",
-          "flex-column",
-          "flex-md-row"
+          "flex-row",
+          "text-truncate",
+          "gap-2",
+          "align-items-center"
         )}
       >
-        <p className={cx("mb-2", "text-truncate", "text-muted")}>
-          {project.description}
+        <UserAvatar username={project.namespace} size={UserAvatarSize.small} />
+        <p className={cx("mb-0", "text-truncate", "text-muted")}>
+          {project.namespace}
         </p>
+      </div>
+
+      {project.description && (
+        <div className={cx("d-flex", "flex-column", "flex-md-row")}>
+          <p className={cx("mb-0", "text-truncate", "text-muted")}>
+            {project.description}
+          </p>
+        </div>
+      )}
+
+      <div className={cx("d-flex", "flex-column", "flex-md-row")}>
+        <VisibilityIcon visibility={project.visibility} />
         {project.updated_at ? (
           <TimeCaption
             className={cx("ms-0", "ms-md-auto", "my-auto", "text-truncate")}
@@ -85,13 +88,6 @@ export default function ProjectShortHandDisplay({
     </div>
   );
 
-  const elementClasses =
-    element === "card-body"
-      ? cx("card-body", "d-flex")
-      : element === "list-item"
-      ? cx("list-group-item", "list-group-item-action")
-      : "";
-
   return (
     <Link
       className={cx(
@@ -99,7 +95,8 @@ export default function ProjectShortHandDisplay({
         "text-body",
         "text-decoration-none",
         className,
-        elementClasses
+        "list-group-item",
+        "list-group-item-action"
       )}
       to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: project.namespace,

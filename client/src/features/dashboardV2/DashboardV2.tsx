@@ -215,7 +215,7 @@ function FooterDashboard() {
               href="https://www.notion.so/renku/f9caf41b579f474b8007803b007e3999?v=807326f870984774900fd87095225d7a"
             >
               <Calendar3Week size={27} />
-              Community event
+              Community events
             </a>
           </CardBody>
         </Card>
@@ -354,11 +354,7 @@ function ProjectList({ data, error, isLoading }: ProjectListProps) {
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <ListGroup flush data-cy="dashboard-project-list">
         {data?.projects?.map((project) => (
-          <ProjectShortHandDisplay
-            element="list-item"
-            key={project.id}
-            project={project}
-          />
+          <ProjectShortHandDisplay key={project.id} project={project} />
         ))}
       </ListGroup>
       {projectFooter}
@@ -431,12 +427,7 @@ function UserDashboard() {
           "my-md-4"
         )}
       >
-        <UserAvatar
-          firstName={userInfo.first_name}
-          lastName={userInfo.last_name}
-          username={userInfo.username}
-          size={UserAvatarSize.extraLarge}
-        />
+        <UserAvatar username={userInfo.username} size={UserAvatarSize.large} />
         <h3 className={cx("text-center", "mb-0")}>
           {userInfo.first_name} {userInfo.last_name}
         </h3>

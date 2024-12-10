@@ -24,7 +24,6 @@ export enum UserAvatarSize {
   small = "small",
   medium = "medium",
   large = "large",
-  extraLarge = "extra-large",
 }
 interface UserAvatarProps {
   firstName?: string;
@@ -59,8 +58,7 @@ export default function UserAvatar({
         "text-center",
         styles.avatar,
         size === UserAvatarSize.large && styles.large,
-        size === UserAvatarSize.medium && styles.medium,
-        size === UserAvatarSize.extraLarge && styles.extraLarge
+        size === UserAvatarSize.medium && styles.medium
       )}
     >
       {firstLettersUpper}
