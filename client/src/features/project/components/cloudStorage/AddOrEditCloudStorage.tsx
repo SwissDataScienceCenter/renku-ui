@@ -46,6 +46,7 @@ import {
 import { WarnAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
+import { hasSchemaAccessMode } from "../../../dataConnectorsV2/components/dataConnector.utils.ts";
 import {
   convertFromAdvancedConfig,
   getSchemaOptions,
@@ -61,6 +62,7 @@ import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
   CLOUD_STORAGE_TOTAL_STEPS,
+  STORAGES_WITH_ACCESS_MODE,
 } from "./projectCloudStorage.constants";
 import {
   AddCloudStorageState,
@@ -423,11 +425,15 @@ function PasswordOptionItem({
     );
   }
 
+  const inputName =
+    option.filteredExamples?.length > 0
+      ? option.filteredExamples[0]?.friendlyName
+      : option.friendlyName ?? option.name;
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
     <>
       <label htmlFor={option.name}>
-        {option.friendlyName ?? option.name}{" "}
+        {inputName}{" "}
         <div id={tooltipContainerId} className="d-inline">
           <KeyFill className={cx("bi", "ms-1")} />
           <ExclamationTriangleFill
@@ -554,9 +560,16 @@ function InputOptionItem({
   const additionalProps: Record<string, string> = {
     ...(inputType === "dropdown" ? { list: `${option.name}__list` } : {}),
   };
+
+  const inputName =
+    inputType !== "dropdown" &&
+    option.filteredExamples?.length > 0 &&
+    option.filteredExamples[0]?.friendlyName
+      ? option.filteredExamples[0]?.friendlyName
+      : option.friendlyName ?? option.name;
   return (
     <>
-      <label htmlFor={option.name}>{option.friendlyName ?? option.name}</label>
+      <label htmlFor={option.name}>{inputName}</label>
 
       <Controller
         name={option.name}
@@ -631,7 +644,9 @@ export function AddStorageType({
   const setFinalSchema = (value: string) => {
     setStorage({ schema: value });
     if (state.showAllSchema) setState({ showAllSchema: false });
-    hasProviderShortlist(value) && scrollToProvider();
+    (hasProviderShortlist(value) ||
+      STORAGES_WITH_ACCESS_MODE.includes(value)) &&
+      scrollToProvider();
   };
 
   const schemaItems = availableSchema.map((s, index) => {
@@ -717,7 +732,14 @@ export function AddStorageType({
     () => hasProviderShortlist(storage.schema),
     [storage.schema]
   );
-  const providerItems = availableProviders
+  const hasAccessMode = useMemo(() => {
+    const selectedSchema = availableSchema.find(
+      (s) => s.prefix === storage?.schema
+    );
+    return selectedSchema ? hasSchemaAccessMode(selectedSchema) : false;
+  }, [storage.schema, availableSchema]);
+
+  const providerOrAccessItems = availableProviders
     ? availableProviders.map((p, index) => {
         const topBorder = index === 0 ? "rounded-top-3" : null;
         const bottomBorder =
@@ -742,7 +764,7 @@ export function AddStorageType({
             onClick={() => setFinalProvider(p.name)}
           >
             <p className="mb-0">
-              <b>{p.name}</b>
+              <b>{p.friendlyName ?? p.name}</b>
               <br />
               <small>{p.description}</small>
             </p>
@@ -751,9 +773,9 @@ export function AddStorageType({
       })
     : null;
   const finalProviderItems =
-    providerItems && providerHasShortlist
+    providerOrAccessItems && !hasAccessMode && providerHasShortlist
       ? [
-          ...providerItems,
+          ...providerOrAccessItems,
           <ListGroupItem
             action
             className={cx("cursor-pointer", "rounded-bottom-3")}
@@ -766,7 +788,7 @@ export function AddStorageType({
             <b>Show {state.showAllProviders ? "less" : "more"}</b>
           </ListGroupItem>,
         ]
-      : providerItems;
+      : providerOrAccessItems;
 
   const missingProvider =
     availableProviders &&
@@ -778,25 +800,39 @@ export function AddStorageType({
       </WarnAlert>
     ) : null;
 
-  const finalProviders = providerItems ? (
-    <div className="mt-3" data-cy="cloud-storage-edit-providers">
-      <h5>Provider</h5>
-      <p>
-        We support the following providers for this storage type. If you do not
-        find yours, you can select Others to manually specify the required
-        options, or switch to the Advanced mode to manually configure the
-        storage using an rclone configuration.
-      </p>
-      {missingProvider}
-      <div ref={providerRef}>
-        <ListGroup
-          className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
-        >
-          {finalProviderItems}
-        </ListGroup>
+  const finalProviders =
+    providerOrAccessItems && !hasAccessMode ? (
+      <div className="mt-3" data-cy="cloud-storage-edit-providers">
+        <h5>Provider</h5>
+        <p>
+          We support the following providers for this storage type. If you do
+          not find yours, you can select Others to manually specify the required
+          options, or switch to the Advanced mode to manually configure the
+          storage using an rclone configuration.
+        </p>
+        {missingProvider}
+        <div ref={providerRef}>
+          <ListGroup
+            className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
+          >
+            {finalProviderItems}
+          </ListGroup>
+        </div>
       </div>
-    </div>
-  ) : null;
+    ) : providerOrAccessItems && hasAccessMode ? (
+      <div className="mt-3" data-cy="cloud-storage-edit-providers">
+        <h5>Mode</h5>
+        <p>We support the following modes for this storage type.</p>
+        {missingProvider}
+        <div ref={providerRef}>
+          <ListGroup
+            className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
+          >
+            {finalProviderItems}
+          </ListGroup>
+        </div>
+      </div>
+    ) : null;
 
   return (
     <>
@@ -845,31 +881,25 @@ export function AddStorageOptions({
         ? "checkbox"
         : o.convertedType === "number"
         ? "number"
-        : o.filteredExamples?.length
+        : o.filteredExamples?.length > 1
         ? "dropdown"
         : "text";
 
+      const defaultValue =
+        storage?.options?.[o.name as string] ?? o.default ?? "";
       return (
         <div className="mb-3" key={o.name}>
           {inputType === "checkbox" ? (
             <CheckboxOptionItem
               control={control}
-              defaultValue={
-                storage.options && storage.options[o.name]
-                  ? (storage.options[o.name] as boolean)
-                  : (o.convertedDefault as boolean) ?? undefined
-              }
+              defaultValue={defaultValue as boolean}
               onFieldValueChange={onFieldValueChange}
               option={o}
             />
           ) : inputType === "password" ? (
             <PasswordOptionItem
               control={control}
-              defaultValue={
-                storage.options && storage.options[o.name]
-                  ? (storage.options[o.name] as string)
-                  : ""
-              }
+              defaultValue={defaultValue as string}
               isV2={isV2}
               onFieldValueChange={onFieldValueChange}
               option={o}
@@ -878,18 +908,20 @@ export function AddStorageOptions({
           ) : (
             <InputOptionItem
               control={control}
-              defaultValue={
-                storage.options && storage.options[o.name]
-                  ? (storage.options[o.name] as string | number | undefined)
-                  : ""
-              }
+              defaultValue={defaultValue as string | number | undefined}
               inputType={inputType}
               onFieldValueChange={onFieldValueChange}
               option={o}
             />
           )}
           <div className={cx("form-text", "text-muted")}>
-            <OptionTruncatedText text={o.help} />
+            <OptionTruncatedText
+              text={
+                inputType !== "dropdown" && o.filteredExamples?.length > 0
+                  ? o.filteredExamples[0]?.help
+                  : o.help
+              }
+            />
           </div>
         </div>
       );
@@ -928,7 +960,7 @@ export function AddStorageOptions({
   const sourcePath = (
     <div className="mb-3">
       <Label className="form-label" for="sourcePath">
-        Source path
+        {sourcePathHelp.label}
       </Label>
 
       <Controller
@@ -953,6 +985,10 @@ export function AddStorageOptions({
     </div>
   );
 
+  const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
+    storage.schema ?? ""
+  );
+
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-options">
       <h5>Options</h5>
@@ -960,8 +996,9 @@ export function AddStorageOptions({
         Please fill in all the options required to connect to your storage. Mind
         that the specific fields required depend on your storage configuration.
       </p>
-      {sourcePath}
+      {!hasAccessMode && sourcePath}
       {optionItems}
+      {hasAccessMode && sourcePath}
       {advancedOptions}
     </form>
   );

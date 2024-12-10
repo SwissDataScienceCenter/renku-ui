@@ -46,19 +46,19 @@ import {
 import {
   AddCloudStorageForProjectParams,
   AddCloudStorageState,
+  AuxiliaryCommandStatus,
   CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
-  AuxiliaryCommandStatus,
   TestCloudStorageConnectionParams,
   UpdateCloudStorageParams,
 } from "./projectCloudStorage.types";
 
 import {
-  AddCloudStorageContinueButton,
   AddCloudStorageBackButton,
   AddCloudStorageBodyContent,
   AddCloudStorageConnectionTestResult,
+  AddCloudStorageContinueButton,
   AddCloudStorageHeaderContent,
 } from "./cloudStorageModalComponents.tsx";
 
