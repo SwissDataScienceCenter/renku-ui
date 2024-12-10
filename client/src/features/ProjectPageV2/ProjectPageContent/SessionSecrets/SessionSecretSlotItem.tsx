@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Key, Lock, NodePlus } from "react-bootstrap-icons";
+import { Key, Lock } from "react-bootstrap-icons";
 import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
 import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
@@ -62,7 +62,6 @@ export default function SessionSecretSlotItem({
                   <Key className={cx("bi", "me-1")} />
                   Secret saved
                 </Badge>
-                {/* <NodePlus className={cx("bi", "ms-2", "me-1")} /> */}
                 <Key className={cx("bi", "ms-2", "me-1")} />
                 <span>
                   Secret name:{" "}

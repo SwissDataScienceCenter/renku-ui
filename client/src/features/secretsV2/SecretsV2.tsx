@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useMemo } from "react";
-import { DatabaseLock, Key, ShieldLock, ShieldX } from "react-bootstrap-icons";
+import { DatabaseLock, Key, ShieldX } from "react-bootstrap-icons";
 import {
   Badge,
   Card,
@@ -87,7 +87,7 @@ function SecretsPageInfo() {
     );
   }
 
-  return <p>Here you can store secrets to use in your sessions.</p>;
+  return <p>Here you can manage data connector and session secrets.</p>;
 }
 
 function SessionSecrets() {
@@ -124,8 +124,6 @@ function SessionSecrets() {
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("m-0", "me-2")}>
-            {/* <ShieldLock className={cx("me-1", "bi")} />
-             */}
             <Key className={cx("me-1", "bi")} />
             Session Secrets
           </h4>
