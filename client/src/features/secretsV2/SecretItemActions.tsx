@@ -83,29 +83,31 @@ export default function SecretItemActions({
 
   return (
     <>
-      <ButtonWithMenuTag
-        color={buttonColor as any} // eslint-disable-line @typescript-eslint/no-explicit-any
-        default={
-          <Button
-            color={isV2 ? "outline-primary" : "outline-rk-green"}
-            onClick={toggleReplace}
-            size="sm"
-          >
-            <Save className={cx("bi", "me-1")} />
-            Replace
-          </Button>
-        }
-        size="sm"
-      >
-        <DropdownItem onClick={toggleEdit}>
-          <Pencil className={cx("bi", "me-1")} />
-          Edit
-        </DropdownItem>
-        <DropdownItem onClick={toggleDelete}>
-          <Trash className={cx("bi", "me-1")} />
-          Delete
-        </DropdownItem>
-      </ButtonWithMenuTag>
+      <div data-cy="user-secret-actions">
+        <ButtonWithMenuTag
+          color={buttonColor as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+          default={
+            <Button
+              color={isV2 ? "outline-primary" : "outline-rk-green"}
+              onClick={toggleReplace}
+              size="sm"
+            >
+              <Save className={cx("bi", "me-1")} />
+              Replace
+            </Button>
+          }
+          size="sm"
+        >
+          <DropdownItem onClick={toggleEdit}>
+            <Pencil className={cx("bi", "me-1")} />
+            Edit
+          </DropdownItem>
+          <DropdownItem onClick={toggleDelete}>
+            <Trash className={cx("bi", "me-1")} />
+            Delete
+          </DropdownItem>
+        </ButtonWithMenuTag>
+      </div>
       <ReplaceSecretValueModal
         isOpen={isReplaceOpen}
         isV2={isV2}

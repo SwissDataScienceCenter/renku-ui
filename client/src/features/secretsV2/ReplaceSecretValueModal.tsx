@@ -134,6 +134,7 @@ export default function ReplaceSecretValueModal({
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <Form
         className={cx(!isV2 && "form-rk-green")}
+        data-cy="replace-secret-value-form"
         noValidate
         onSubmit={onSubmit}
       >
