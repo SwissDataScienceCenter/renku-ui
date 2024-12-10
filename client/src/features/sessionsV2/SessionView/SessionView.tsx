@@ -295,11 +295,16 @@ export function SessionView({
 
         <div className={cx("d-flex", "flex-column", "gap-4")}>
           <div>
-            <div className={cx("d-flex", "justify-content-between")}>
-              <h2 className="m-0" data-cy="session-view-title">
+            <div>
+              <div className={cx("float-end", "mt-1", "ms-1")}>
+                {launcherMenu}
+              </div>
+              <h2
+                className={cx("m-0", "text-break")}
+                data-cy="session-view-title"
+              >
                 {title}
               </h2>
-              <div className="my-auto">{launcherMenu}</div>
             </div>
             <p className={cx("fst-italic", "m-0")}>
               {launcher ? "Session launcher" : "Session without launcher"}
