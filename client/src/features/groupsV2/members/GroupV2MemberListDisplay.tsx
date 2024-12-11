@@ -112,9 +112,10 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
           >
             <div className={cx("align-items-center", "d-flex", "gap-2")}>
               <UserAvatar
-                firstName={firstName}
-                lastName={lastName}
-                username={username}
+                // firstName={firstName}
+                // lastName={lastName}
+                // username={username}
+                user={member}
               />
               <span className={cx("fw-bold")}>{name ?? "Unknown user"}</span>{" "}
             </div>

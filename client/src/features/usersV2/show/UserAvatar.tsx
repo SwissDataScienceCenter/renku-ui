@@ -17,29 +17,43 @@
  */
 
 import cx from "classnames";
+import { useMemo } from "react";
 
+import type { GroupResponse } from "../../projectsV2/api/namespace.api";
+import type { UserWithId } from "../api/users.api";
 import styles from "./UserAvatar.module.scss";
 
-interface UserAvatarProps {
-  firstName?: string;
-  large?: boolean;
-  lastName?: string;
-  username?: string;
-}
+type UserOrGroupArg =
+  | {
+      user: UserWithId;
+    }
+  | {
+      group: GroupResponse;
+    };
 
-export default function UserAvatar({
-  firstName,
-  lastName,
-  large,
-  username,
-}: UserAvatarProps) {
-  const firstLetters =
-    firstName && lastName
-      ? `${firstName.slice(0, 1)}${lastName.slice(0, 1)}`
-      : firstName || lastName
-      ? `${firstName}${lastName}`.slice(0, 2)
-      : username?.slice(0, 2) ?? "??";
-  const firstLettersUpper = firstLetters.toUpperCase();
+type UserAvatarProps = UserOrGroupArg & {
+  large?: boolean;
+};
+
+export default function UserAvatar({ large, ...userOrGroup }: UserAvatarProps) {
+  const initials = useMemo(() => {
+    if ("user" in userOrGroup) {
+      const {
+        username,
+        first_name: firstName,
+        last_name: lastName,
+      } = userOrGroup.user;
+      return firstName && lastName
+        ? `${firstName.slice(0, 1)}${lastName.slice(0, 1)}`
+        : firstName || lastName
+        ? `${firstName}${lastName}`.slice(0, 2)
+        : username.slice(0, 2) || "??";
+    } else {
+      const { name, slug } = userOrGroup.group;
+      return (name || slug).slice(0, 2) || "??";
+    }
+  }, []);
+  const initialsUpper = useMemo(() => initials.toUpperCase(), []);
 
   return (
     <div
@@ -56,7 +70,7 @@ export default function UserAvatar({
         large && styles.large
       )}
     >
-      {firstLettersUpper}
+      {initialsUpper}
     </div>
   );
 }
