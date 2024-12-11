@@ -52,6 +52,7 @@ import {
   usePatchProjectsByProjectIdSessionSecretsMutation,
   usePatchSessionSecretSlotsBySlotIdMutation,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
+import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import DescriptionField from "./fields/DescriptionField";
 import FilenameField from "./fields/FilenameField";
@@ -242,6 +243,9 @@ function EditSessionSecretModal({
 }: EditSessionSecretModalProps) {
   const { id: slotId } = secretSlot;
 
+  const { project } = useProject();
+  const { secrets_mount_directory: secretsMountDirectory } = project;
+
   const [patchSessionSecretSlot, result] =
     usePatchSessionSecretSlotsBySlotIdMutation();
 
@@ -321,7 +325,12 @@ function EditSessionSecretModal({
             errors={errors}
             name="description"
           />
-          <FilenameField control={control} errors={errors} name="filename" />
+          <FilenameField
+            control={control}
+            errors={errors}
+            name="filename"
+            secretsMountDirectory={secretsMountDirectory}
+          />
         </ModalBody>
         <ModalFooter>
           <Button color="outline-primary" onClick={toggle}>
