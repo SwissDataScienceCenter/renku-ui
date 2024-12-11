@@ -8,9 +8,6 @@
   "servers": [
     {
       "url": "/api/data"
-    },
-    {
-      "url": "/ui-server/api/data"
     }
   ],
   "paths": {
@@ -602,20 +599,31 @@
           "name": {
             "$ref": "#/components/schemas/SecretName"
           },
+          "default_filename": {
+            "$ref": "#/components/schemas/SecretDefaultFilename"
+          },
           "modification_date": {
             "$ref": "#/components/schemas/ModificationDate"
           },
           "kind": {
             "$ref": "#/components/schemas/SecretKind"
+          },
+          "session_secret_slot_ids": {
+            "$ref": "#/components/schemas/UlidList"
+          },
+          "data_connector_ids": {
+            "$ref": "#/components/schemas/UlidList"
           }
         },
-        "required": ["id", "name", "modification_date", "kind"],
-        "example": {
-          "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
-          "name": "S3-Credentials",
-          "modification_date": "2024-01-16T11:42:05Z",
-          "kind": "general"
-        }
+        "required": [
+          "id",
+          "name",
+          "default_filename",
+          "modification_date",
+          "kind",
+          "session_secret_slot_ids",
+          "data_connector_ids"
+        ]
       },
       "SecretPost": {
         "description": "Secret metadata to be created",
@@ -624,6 +632,9 @@
         "properties": {
           "name": {
             "$ref": "#/components/schemas/SecretName"
+          },
+          "default_filename": {
+            "$ref": "#/components/schemas/SecretDefaultFilename"
           },
           "value": {
             "$ref": "#/components/schemas/SecretValue"
@@ -647,14 +658,26 @@
         "description": "Secret metadata to be modified",
         "additionalProperties": false,
         "properties": {
+          "name": {
+            "$ref": "#/components/schemas/SecretName"
+          },
+          "default_filename": {
+            "$ref": "#/components/schemas/SecretDefaultFilename"
+          },
           "value": {
             "$ref": "#/components/schemas/SecretValue"
           }
-        },
-        "required": ["value"]
+        }
       },
       "SecretName": {
-        "description": "Secret name",
+        "description": "The name of a user secret",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "example": "API Token"
+      },
+      "SecretDefaultFilename": {
+        "description": "Filename to give to this secret when mounted in Renku 1.0 sessions\n",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
@@ -667,6 +690,12 @@
         "minLength": 26,
         "maxLength": 26,
         "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      },
+      "UlidList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Ulid"
+        }
       },
       "ModificationDate": {
         "description": "The date and time the secret was created or modified (this is always in UTC)",

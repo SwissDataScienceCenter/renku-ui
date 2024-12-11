@@ -22,15 +22,12 @@ import { Col, Container, Row } from "reactstrap";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { useGetUserSecretsQuery } from "../usersV2/api/users.api";
-import type { SecretKind } from "./secrets.types";
 import SecretsListItem from "./SecretsListItem";
 
-interface SecretsListParams {
-  kind: SecretKind;
-}
-
-export default function SecretsList({ kind }: SecretsListParams) {
-  const secrets = useGetUserSecretsQuery({ userSecretsParams: { kind } });
+export default function SecretsList() {
+  const secrets = useGetUserSecretsQuery({
+    userSecretsParams: { kind: "general" },
+  });
 
   if (secrets.isLoading) return <Loader />;
 
@@ -39,17 +36,14 @@ export default function SecretsList({ kind }: SecretsListParams) {
 
   if (secrets.data?.length === 0) return null;
 
-  const secretsList = secrets.data?.map((secret) => {
-    return (
-      <Col key={secret.id}>
-        <SecretsListItem kind={kind} secret={secret} />
-      </Col>
-    );
-  });
   return (
     <Container className={cx("p-0", "mt-2")} data-cy="secrets-list" fluid>
       <Row className={cx("g-2", "row-cols-1", "row-cols-xl-2")}>
-        {secretsList}
+        {secrets.data?.map((secret) => (
+          <Col key={secret.id}>
+            <SecretsListItem secret={secret} />
+          </Col>
+        ))}
       </Row>
     </Container>
   );

@@ -16,32 +16,8 @@
  * limitations under the License.
  */
 
-export interface SecretDetails {
-  id: string;
-  modification_date: string;
-  name: string;
-  kind: SecretKind;
-}
+import { Docs } from "../../utils/constants/Docs";
 
-export interface AddSecretParams {
-  name: string;
-  value: string;
-  kind: SecretKind;
-}
+export const SECRETS_DOCS_URL = Docs.rtdTopicGuide("secrets/secrets.html");
 
-export type AddSecretForm = AddSecretParams;
-
-export interface EditSecretForm {
-  value: string;
-}
-
-export interface EditSecretParams {
-  id: string;
-  value: string;
-}
-
-export interface GetSecretsParams {
-  kind: SecretKind;
-}
-
-export type SecretKind = "general" | "storage";
+export const SECRETS_VALUE_LENGTH_LIMIT = 5_000;

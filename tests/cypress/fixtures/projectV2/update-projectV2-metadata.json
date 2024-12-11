@@ -10,5 +10,6 @@
     "https://domain.name/repo2.git"
   ],
   "visibility": "public",
-  "description": "new description"
+  "description": "new description",
+  "secrets_mount_directory": "/secrets"
 }

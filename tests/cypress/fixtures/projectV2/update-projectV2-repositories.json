@@ -11,5 +11,6 @@
     "https://domain.name/repo3.git"
   ],
   "visibility": "public",
-  "description": "Project 2 description"
+  "description": "Project 2 description",
+  "secrets_mount_directory": "/secrets"
 }

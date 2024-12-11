@@ -30,7 +30,10 @@ import {
 } from "react-router-dom-v5-compat";
 import { ErrorAlert } from "../../components/Alert";
 import PageLoader from "../../components/PageLoader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import {
+  RtkErrorAlert,
+  RtkOrNotebooksError,
+} from "../../components/errors/RtkErrorAlert";
 import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
@@ -41,6 +44,7 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
+import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { resetFavicon, setFavicon } from "../display";
@@ -49,9 +53,10 @@ import {
   storageDefinitionFromConfig,
 } from "../project/utils/projectCloudStorage.utils";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { storageSecretNameToFieldName } from "../secrets/secrets.utils";
+import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
+import SessionSecretsModal from "./SessionSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import {
   useGetDockerImageQuery,
@@ -205,9 +210,9 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       launcher_id: launcher.id,
       disk_storage: startSessionOptionsV2.storage,
       resource_class_id: startSessionOptionsV2.sessionClass,
-      cloudstorage: startSessionOptionsV2.cloudStorage?.map((cs) =>
-        storageDefinitionFromConfig(cs)
-      ),
+      cloudstorage: startSessionOptionsV2.cloudStorage
+        ?.filter(({ active }) => active)
+        .map((cs) => storageDefinitionFromConfig(cs)),
     };
   }, [
     launcher.id,
@@ -434,6 +439,8 @@ function StartSessionFromLauncher({
     isFetchingOrLoadingStorages,
     isPendingResourceClass,
     setResourceClass,
+    isFetchingSessionSecrets,
+    sessionSecretSlotsWithSecrets,
   } = useSessionLaunchState({
     launcher,
     project,
@@ -446,8 +453,7 @@ function StartSessionFromLauncher({
     isError: isErrorDockerImageStatus,
     error: errorDockerImageStatus,
   } = useGetDockerImageQuery(
-    { image_url: containerImage },
-    { skip: !containerImage }
+    containerImage ? { image_url: containerImage } : skipToken
   );
 
   const needsCredentials = startSessionOptionsV2.cloudStorage?.some(
@@ -464,7 +470,8 @@ function StartSessionFromLauncher({
     !isErrorDockerImageStatus &&
     containerImage &&
     startSessionOptionsV2.sessionClass !== 0 &&
-    !isFetchingOrLoadingStorages;
+    !isFetchingOrLoadingStorages &&
+    !isFetchingSessionSecrets;
 
   // set favicon during session launch
   useEffect(() => {
@@ -493,6 +500,7 @@ function StartSessionFromLauncher({
       !needsCredentials &&
       startSessionOptionsV2.cloudStorage &&
       !shouldSaveCredentials &&
+      startSessionOptionsV2.userSecretsReady &&
       !sessionStarted
     )
       setSessionStarted(true);
@@ -500,6 +508,7 @@ function StartSessionFromLauncher({
     allDataFetched,
     needsCredentials,
     startSessionOptionsV2.cloudStorage,
+    startSessionOptionsV2.userSecretsReady,
     shouldSaveCredentials,
     sessionStarted,
   ]);
@@ -545,6 +554,19 @@ function StartSessionFromLauncher({
   if (sessionStarted)
     return <SessionStarting launcher={launcher} project={project} />;
 
+  if (
+    sessionSecretSlotsWithSecrets &&
+    !startSessionOptionsV2.userSecretsReady
+  ) {
+    return (
+      <StartSessionWithSessionSecretsModal
+        launcher={launcher}
+        project={project}
+        sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
+      />
+    );
+  }
+
   // Handle all data fetched and credentials needed
   if (
     allDataFetched &&
@@ -588,7 +610,7 @@ export default function SessionStartPage() {
     data: project,
     isLoading: isLoadingProject,
     error: projectError,
-  } = useGetProjectsByNamespaceAndSlugQuery(
+  } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
     namespace && slug ? { namespace, slug } : skipToken
   );
   const projectId = project?.id ?? "";
@@ -597,10 +619,10 @@ export default function SessionStartPage() {
     data: launchers,
     isLoading: isLoadingLaunchers,
     error: launchersError,
-  } = useGetProjectSessionLaunchersQuery({ projectId: projectId ?? "" });
+  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
 
   const isLoading = isLoadingProject || isLoadingLaunchers;
-  const error = projectError || launchersError;
+  const error = projectError ?? launchersError;
 
   const launcher = useMemo(
     () => launchers?.find(({ id }) => id === launcherId),
@@ -611,19 +633,11 @@ export default function SessionStartPage() {
     return <PageLoader />;
   }
 
-  if (error) {
+  if (error || launcher == null || project == null) {
     return (
       <div>
-        <RtkErrorAlert error={error} dismissible={false} />
-      </div>
-    );
-  }
-
-  if (launcher == null || project == null) {
-    return (
-      <div>
-        <h1 className="fs-5">Error: session not found</h1>
-        <p>This sessions configuration does not seem to exist.</p>
+        <h1 className="fs-5">Error: could not load session</h1>
+        {error && <RtkOrNotebooksError error={error} dismissible={false} />}
       </div>
     );
   }
@@ -670,6 +684,55 @@ function ShowContainerImageError({
         <ArrowLeft className={cx("me-2", "text-icon")} />
         Return to project page
       </Link>
+    </div>
+  );
+}
+
+interface StartSessionWithSessionSecretsModalProps
+  extends StartSessionFromLauncherProps {
+  sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[];
+}
+
+function StartSessionWithSessionSecretsModal({
+  launcher,
+  project,
+  sessionSecretSlotsWithSecrets,
+}: StartSessionWithSessionSecretsModalProps) {
+  const startSessionOptionsV2 = useAppSelector(
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+  );
+
+  const showModal = !startSessionOptionsV2.userSecretsReady;
+
+  const steps = [
+    {
+      id: 0,
+      status: StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  return (
+    <div>
+      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Starting session ${launcher.name}`}
+          status={steps}
+        />
+        <SessionSecretsModal
+          isOpen={showModal}
+          project={project}
+          sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
+        />
+      </div>
     </div>
   );
 }

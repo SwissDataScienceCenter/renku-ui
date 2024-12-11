@@ -65,6 +65,7 @@ export interface SessionEnvironmentVariable {
 }
 
 export interface SessionSecrets {
-  name: string;
   id: string;
+  name: string;
+  default_filename: string;
 }

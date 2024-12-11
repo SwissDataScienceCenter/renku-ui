@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
+
 import { DEFAULT_PERMISSIONS } from "../../permissionsV2/permissions.constants";
 import type { Permissions } from "../../permissionsV2/permissions.types";
 import { useGetDataConnectorsByDataConnectorIdPermissionsQuery } from "../api/data-connectors.enhanced-api";
@@ -31,7 +33,9 @@ export default function useDataConnectorPermissions({
   isLoading: boolean;
 } {
   const { data, isLoading, isError } =
-    useGetDataConnectorsByDataConnectorIdPermissionsQuery({ dataConnectorId });
+    useGetDataConnectorsByDataConnectorIdPermissionsQuery(
+      dataConnectorId ? { dataConnectorId } : skipToken
+    );
 
   if (isLoading || isError || !data) {
     return { permissions: DEFAULT_PERMISSIONS, isLoading };

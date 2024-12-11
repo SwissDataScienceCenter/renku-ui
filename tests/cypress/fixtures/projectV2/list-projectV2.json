@@ -11,7 +11,8 @@
       "https://domain.name/repo2.git"
     ],
     "visibility": "public",
-    "description": "Project 2 description"
+    "description": "Project 2 description",
+    "secrets_mount_directory": "/secrets"
   },
   {
     "id": "01HF96BXZ3JF9DX88B7XB405S5",
@@ -22,6 +23,7 @@
     "created_by": { "id": "user1-uuid" },
     "repositories": [],
     "visibility": "private",
-    "description": "Project 1 description"
+    "description": "Project 1 description",
+    "secrets_mount_directory": "/secrets"
   }
 ]

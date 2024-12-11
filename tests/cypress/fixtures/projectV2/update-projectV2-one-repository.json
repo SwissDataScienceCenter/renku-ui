@@ -7,5 +7,6 @@
   "created_by": "user1-uuid",
   "repositories": ["https://gitlab.dev.renku.ch/url-repo.git"],
   "visibility": "public",
-  "description": "Project 2 description"
+  "description": "Project 2 description",
+  "secrets_mount_directory": "/secrets"
 }
