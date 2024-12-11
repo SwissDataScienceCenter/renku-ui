@@ -18,13 +18,15 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ShieldLock } from "react-bootstrap-icons";
-
 import { useMemo } from "react";
+import { ShieldLock } from "react-bootstrap-icons";
+import { generatePath, Link } from "react-router-dom-v5-compat";
 import { Badge, ListGroup } from "reactstrap";
+
 import { InfoAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import type {
   SessionSecret,
@@ -35,6 +37,7 @@ import {
   useGetProjectsByProjectIdSessionSecretsQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
+import { SESSION_SECRETS_CARD_ID } from "./sessionSecrets.constants";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 import SessionSecretSlotItem from "./SessionSecretSlotItem";
 
@@ -60,6 +63,11 @@ export default function SessionViewSessionSecrets() {
   );
   const isLoading = isLoadingSessionSecretSlots || isLoadingSessionSecrets;
   const error = sessionSecretSlotsError ?? sessionSecretsError;
+
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
+    namespace: project.namespace,
+    slug: project.slug,
+  });
 
   const content = isLoading ? (
     <Loader />
@@ -93,6 +101,14 @@ export default function SessionViewSessionSecrets() {
           </p>
         </InfoAlert>
       )}
+
+      <p className="mb-2">
+        To modify session secrets, go to{" "}
+        <Link to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}>
+          the project&apos;s settings
+        </Link>
+        .
+      </p>
 
       {content}
     </div>

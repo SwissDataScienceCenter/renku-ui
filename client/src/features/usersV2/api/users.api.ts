@@ -17,6 +17,7 @@
  */
 
 import type { DataServicesError } from "../../dataServices/dataServices.types";
+import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 import {
   type DeleteUserPreferencesPinnedProjectsApiArg,
   type DeleteUserPreferencesPinnedProjectsApiResponse,
@@ -101,7 +102,8 @@ const withFixedEndpoints = usersGeneratedApi.injectEndpoints({
   }),
 });
 
-export const usersApi = withFixedEndpoints.enhanceEndpoints({
+// Adds tag handling for cache management
+const withTagHandling = withFixedEndpoints.enhanceEndpoints({
   addTagTypes: ["SelfUser", "User", "UserSecret", "UserPreferences"],
   endpoints: {
     getUser: {
@@ -144,6 +146,11 @@ export const usersApi = withFixedEndpoints.enhanceEndpoints({
     },
     deleteUserSecretsBySecretId: {
       invalidatesTags: ["UserSecret"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(projectV2Api.endpoints.invalidateSessionSecrets.initiate());
+        });
+      },
     },
     getUserPreferences: {
       providesTags: ["UserPreferences"],
@@ -155,6 +162,16 @@ export const usersApi = withFixedEndpoints.enhanceEndpoints({
       invalidatesTags: ["UserPreferences"],
     },
   },
+});
+
+// Adds tag invalidation endpoints
+export const usersApi = withTagHandling.injectEndpoints({
+  endpoints: (build) => ({
+    invalidateUserSecrets: build.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["UserSecret"],
+    }),
+  }),
 });
 
 export const {

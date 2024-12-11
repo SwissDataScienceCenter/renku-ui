@@ -17,11 +17,14 @@
  */
 
 import cx from "classnames";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { generatePath, Link } from "react-router-dom-v5-compat";
-import { Col, ListGroupItem, Row } from "reactstrap";
+import { Badge, Col, Collapse, ListGroupItem, Row } from "reactstrap";
 
+import { skipToken } from "@reduxjs/toolkit/query";
+import { Folder, ShieldLock } from "react-bootstrap-icons";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -30,7 +33,12 @@ import type {
   Project,
   SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
-import { type SecretWithId } from "../usersV2/api/users.api";
+import { useGetNamespacesByNamespaceSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import {
+  useGetUserByIdQuery,
+  type SecretWithId,
+} from "../usersV2/api/users.api";
+import UserAvatar from "../usersV2/show/UserAvatar";
 import SecretItemActions from "./SecretItemActions";
 import useGetRelatedProjects from "./useGetRelatedProjects.hook";
 
@@ -63,16 +71,28 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
     <ListGroupItem action>
       <Row>
         <Col>
-          <div className={cx("align-items-center", "d-flex")}>
+          <div className={cx("align-items-center", "d-flex", "mb-2")}>
             <span className={cx("fw-bold", "me-2")}>{name}</span>
           </div>
+          {usedInContent}
+        </Col>
+        <Col
+          xs={12}
+          sm="auto"
+          className={cx(
+            "ms-auto",
+            "d-flex",
+            "flex-column",
+            "align-items-end",
+            "gap-1"
+          )}
+        >
+          <SecretItemActions isV2 secret={secret} />
           <div className={cx("text-light-emphasis", "small")}>
             Edited{" "}
             <TimeCaption datetime={modification_date} enableTooltip noCaption />
           </div>
-          {usedInContent}
         </Col>
-        <SecretItemActions isV2 secret={secret} />
       </Row>
     </ListGroupItem>
   );
@@ -87,22 +107,42 @@ function GeneralSecretUsedIn({
   projects,
   secretSlots,
 }: GeneralSecretUsedInProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
+
   if (projects.length == 0) {
     return null;
   }
 
+  const projectStr = projects.length > 1 ? "projects" : "project";
+
   return (
     <div>
-      <p className={cx("mb-0", "fw-medium")}>Used in:</p>
-      <ul>
-        {projects.map((project) => (
-          <GeneralSecretUsedInProject
-            key={project.id}
-            project={project}
-            secretSlots={secretSlots}
-          />
-        ))}
-      </ul>
+      <button
+        className={cx(
+          "px-0",
+          "mb-1",
+          "bg-transparent",
+          "border-0",
+          "fw-medium"
+        )}
+        onClick={toggle}
+      >
+        <ShieldLock className={cx("bi", "me-1")} />
+        This secret is used in <Badge>{projects.length}</Badge> {projectStr}
+        <ChevronFlippedIcon className={cx("bi", "ms-1")} flipped={isOpen} />
+      </button>
+      <Collapse isOpen={isOpen}>
+        <ul className={cx("list-unstyled", "d-flex", "flex-column", "gap-2")}>
+          {projects.map((project) => (
+            <GeneralSecretUsedInProject
+              key={project.id}
+              project={project}
+              secretSlots={secretSlots}
+            />
+          ))}
+        </ul>
+      </Collapse>
     </div>
   );
 }
@@ -121,6 +161,19 @@ function GeneralSecretUsedInProject({
     [project.id, secretSlots]
   );
 
+  const { data: namespace } = useGetNamespacesByNamespaceSlugQuery({
+    namespaceSlug: project.namespace,
+  });
+  const { data: user } = useGetUserByIdQuery(
+    namespace?.namespace_kind === "user" && namespace.created_by
+      ? { userId: namespace.created_by }
+      : skipToken
+  );
+  const namespaceName = useMemo(
+    () => namespace?.name ?? project.namespace,
+    [namespace?.name, project.namespace]
+  );
+
   // NOTE: this case should not happen
   if (secretSlotsForThisProject.length == 0) {
     return null;
@@ -131,46 +184,44 @@ function GeneralSecretUsedInProject({
     slug: project.slug,
   });
 
+  // ? Note: we repeat the entry for each secret slot in a project
   return (
-    <li>
-      <div>
-        <Link to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}>
-          {project.name}
-          {" - "}
-          <span className="fst-italic">
-            {"@"}
-            {project.namespace}/{project.slug}
-          </span>
-        </Link>
-      </div>
-      <div>
-        <ul>
-          {secretSlotsForThisProject.map((secretSlot) => (
-            <GeneralSecretUsedInProjectSecretSlot
-              key={secretSlot.id}
-              secretSlot={secretSlot}
-            />
-          ))}
-        </ul>
-      </div>
-    </li>
-  );
-}
-
-interface GeneralSecretUsedInProjectSecretSlotProps {
-  secretSlot: SessionSecretSlot;
-}
-
-function GeneralSecretUsedInProjectSecretSlot({
-  secretSlot,
-}: GeneralSecretUsedInProjectSecretSlotProps) {
-  const { filename } = secretSlot;
-
-  return (
-    <li>
-      <span>
-        Mounted in sessions as: <code>{filename}</code>
-      </span>
-    </li>
+    <>
+      {secretSlotsForThisProject.map((secretSlot) => (
+        <li key={secretSlot.id} className={cx("d-flex", "flex-row")}>
+          <div>
+            <Folder className={cx("bi", "me-1")} />
+          </div>
+          <div>
+            <div className={cx("d-flex", "flex-row", "gap-4")}>
+              <Link
+                className={cx("fw-bold")}
+                to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}
+              >
+                {project.name}
+              </Link>
+              <div
+                className={cx(
+                  "d-flex",
+                  "flex-row",
+                  "align-items-center",
+                  "gap-1"
+                )}
+              >
+                <UserAvatar
+                  firstName={user?.first_name}
+                  lastName={user?.last_name}
+                  username={namespaceName}
+                />
+                <span>{namespaceName}</span>
+              </div>
+            </div>
+            <div>
+              Secret slot: <span className="fw-bold">{secretSlot.name}</span>
+            </div>
+          </div>
+        </li>
+      ))}
+    </>
   );
 }

@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useMemo } from "react";
-import { Database, QuestionSquare, ShieldLock } from "react-bootstrap-icons";
+import { DatabaseLock, Key, ShieldX } from "react-bootstrap-icons";
 import {
   Badge,
   Card,
@@ -56,11 +56,17 @@ export default function SecretsV2() {
         </Col>
       </Row>
       {user.logged && (
-        <div className={cx("d-flex", "flex-column", "gap-4")}>
-          <SessionSecrets />
-          <DataConnectorSecrets />
-          <UnusedSecrets />
-        </div>
+        <Row className={cx("g-4", "row-cols-1", "row-cols-lg-2")}>
+          <Col>
+            <SessionSecrets />
+          </Col>
+          <Col>
+            <DataConnectorSecrets />
+          </Col>
+          <Col>
+            <UnusedSecrets />
+          </Col>
+        </Row>
       )}
     </>
   );
@@ -81,7 +87,7 @@ function SecretsPageInfo() {
     );
   }
 
-  return <p>Here you can store secrets to use in your sessions.</p>;
+  return <p>Here you can manage data connector and session secrets.</p>;
 }
 
 function SessionSecrets() {
@@ -114,11 +120,11 @@ function SessionSecrets() {
   );
 
   return (
-    <Card>
+    <Card className="h-100">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("m-0", "me-2")}>
-            <ShieldLock className={cx("me-1", "bi")} />
+            <Key className={cx("me-1", "bi")} />
             Session Secrets
           </h4>
           {secretsUsedInSessions && (
@@ -179,11 +185,11 @@ function DataConnectorSecrets() {
   );
 
   return (
-    <Card>
+    <Card className="h-100">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("m-0", "me-2")}>
-            <Database className={cx("me-1", "bi")} />
+            <DatabaseLock className={cx("me-1", "bi")} />
             Data Connector Secrets
           </h4>
           {secrets && <Badge>{secrets.length}</Badge>}
@@ -239,11 +245,11 @@ function UnusedSecrets() {
   }
 
   return (
-    <Card>
+    <Card className="h-100">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("m-0", "me-2")}>
-            <QuestionSquare className={cx("me-1", "bi")} />
+            <ShieldX className={cx("me-1", "bi")} />
             Unused Secrets
           </h4>
           <Badge>{unusedSecrets.length}</Badge>

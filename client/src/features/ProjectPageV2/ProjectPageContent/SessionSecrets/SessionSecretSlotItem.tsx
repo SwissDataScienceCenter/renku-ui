@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { ArrowRight, Key, Lock } from "react-bootstrap-icons";
+import { Key, Lock } from "react-bootstrap-icons";
 import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
 import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
@@ -49,22 +49,29 @@ export default function SessionSecretSlotItem({
           <div className={cx("align-items-center", "d-flex")}>
             <span className={cx("fw-bold", "me-2")}>{name}</span>
             {secretSlot.secretId ? (
-              <Badge
-                className={cx(
-                  "border",
-                  "border-success",
-                  "bg-success-subtle",
-                  "text-success-emphasis"
-                )}
-                pill
-              >
-                <Key className={cx("bi", "me-1")} />
-                Secret saved
-                <ArrowRight className={cx("bi", "mx-1")} />
-                <SessionSecretSlotItemSecretReference
-                  userSecretId={secretSlot.secretId}
-                />
-              </Badge>
+              <>
+                <Badge
+                  className={cx(
+                    "border",
+                    "border-success",
+                    "bg-success-subtle",
+                    "text-success-emphasis"
+                  )}
+                  pill
+                >
+                  <Key className={cx("bi", "me-1")} />
+                  Secret saved
+                </Badge>
+                <Key className={cx("bi", "ms-2", "me-1")} />
+                <span>
+                  Secret name:{" "}
+                  <span className="fw-bold">
+                    <SessionSecretSlotItemSecretReference
+                      userSecretId={secretSlot.secretId}
+                    />
+                  </span>
+                </span>
+              </>
             ) : (
               <Badge
                 className={cx(
@@ -80,10 +87,10 @@ export default function SessionSecretSlotItem({
               </Badge>
             )}
           </div>
+          {description && <p className="mb-0">{description}</p>}
           <div>
             Location in sessions: <code>{fullPath}</code>
           </div>
-          {description && <p className="mb-0">{description}</p>}
         </Col>
         {!noActions && <SessionSecretActions secretSlot={secretSlot} />}
       </Row>
