@@ -17,16 +17,14 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { CheckLg, People, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
-  Collapse,
   Form,
   FormGroup,
-  FormText,
   Modal,
   ModalBody,
   ModalFooter,
@@ -43,10 +41,9 @@ import type { GroupPostRequest } from "../../projectsV2/api/namespace.api";
 import { usePostGroupsMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
 import NameFormField from "../../projectsV2/fields/NameFormField";
-import SlugFormField from "../../projectsV2/fields/SlugFormField";
+import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField.tsx";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
 import { groupCreationHash } from "./createGroup.constants";
-import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 
 export default function GroupNew() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
@@ -110,9 +107,6 @@ export default function GroupNew() {
 }
 
 function GroupV2CreationDetails() {
-  const [isCollapseOpen, setIsCollapseOpen] = useState(false);
-  const toggleCollapse = () => setIsCollapseOpen(!isCollapseOpen);
-
   const [createGroup, result] = usePostGroupsMutation();
   const navigate = useNavigate();
 
@@ -165,14 +159,7 @@ function GroupV2CreationDetails() {
     }
   }, [result, navigate]);
 
-  const nameHelpText = (
-    <FormText className="d-block">
-      The URL for this group will be{" "}
-      <span className="fw-bold">
-        renkulab.io/v2/groups/{currentSlug || "<name>"}
-      </span>
-    </FormText>
-  );
+  const url = "renkulab.io/v2/groups/";
 
   const resetUrl = useCallback(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
@@ -186,78 +173,27 @@ function GroupV2CreationDetails() {
         <Form id="group-creation-form" onSubmit={handleSubmit(onSubmit)}>
           <FormGroup className="d-inline" disabled={result.isLoading}>
             <div className={cx("d-flex", "flex-column", "gap-3")}>
-              <div>
-                <div className="mb-1">
-                  <NameFormField
-                    control={control}
-                    entityName="group"
-                    errors={errors}
-                    helpText={nameHelpText}
-                    name="name"
-                  />
-                </div>
-                <div>
-                  <button
-                    className={cx(
-                      "btn",
-                      "btn-link",
-                      "p-0",
-                      "text-decoration-none"
-                    )}
-                    data-cy="group-slug-toggle"
-                    onClick={toggleCollapse}
-                    type="button"
-                  >
-                    Customize group URL{" "}
-                    <ChevronFlippedIcon
-                      flipped={isCollapseOpen}
-                      className="bi"
-                    />
-                  </button>
-                  <Collapse isOpen={isCollapseOpen}>
-                    <div
-                      className={cx(
-                        "align-items-center",
-                        "d-flex",
-                        "flex-wrap",
-                        "mb-0"
-                      )}
-                    >
-                      <span>renkulab.io/v2/groups/</span>
-                      <SlugFormField
-                        compact={true}
-                        control={control}
-                        entityName="group"
-                        errors={errors}
-                        countAsDirty={
-                          !!(
-                            dirtyFields.slug &&
-                            dirtyFields.name &&
-                            currentName
-                          )
-                        }
-                        name="slug"
-                        resetFunction={resetUrl}
-                      />
-                    </div>
-                  </Collapse>
-
-                  {dirtyFields.slug && !dirtyFields.name ? (
-                    <div className={cx("d-block", "invalid-feedback")}>
-                      <p className="mb-0">
-                        Mind the URL will be updated once you provide a name.
-                      </p>
-                    </div>
-                  ) : (
-                    errors.slug &&
-                    dirtyFields.slug && (
-                      <div className={cx("d-block", "invalid-feedback")}>
-                        <p className="mb-1">{errors.slug.message}</p>
-                      </div>
-                    )
-                  )}
-                </div>
+              <div className="mb-1">
+                <NameFormField
+                  control={control}
+                  entityName="group"
+                  errors={errors}
+                  name="name"
+                />
               </div>
+
+              <SlugPreviewFormField
+                compact={true}
+                control={control}
+                errors={errors}
+                name="slug"
+                resetFunction={resetUrl}
+                url={url}
+                slug={currentSlug}
+                dirtyFields={dirtyFields}
+                label="Group URL"
+                entityName="group"
+              />
 
               <DescriptionFormField
                 control={control}

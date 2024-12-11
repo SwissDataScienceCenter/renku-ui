@@ -25,6 +25,7 @@ import {
   Button,
   Form,
   Input,
+  Label,
   Modal,
   ModalBody,
   ModalFooter,
@@ -43,7 +44,7 @@ import {
 } from "../../projectsV2/api/projectV2.enhanced-api";
 import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
 import NameFormField from "../../projectsV2/fields/NameFormField";
-import SlugFormField from "../../projectsV2/fields/SlugFormField";
+import SlugFormField from "../../projectsV2/fields/SlugFormField.tsx";
 
 type GroupMetadata = Omit<GroupPatchRequest, "repositories">;
 
@@ -122,8 +123,9 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
 
   const {
     control,
-    formState: { errors, isDirty },
+    formState: { dirtyFields, errors, isDirty },
     handleSubmit,
+    setValue,
   } = useForm<GroupMetadata>({
     defaultValues: {
       description: group.description,
@@ -158,6 +160,12 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
     setIsOpen((open) => !open);
   }, []);
 
+  const resetUrl = useCallback(() => {
+    setValue("slug", group.slug, {
+      shouldValidate: true,
+    });
+  }, [setValue, group.slug]);
+
   return (
     <div>
       {updateGroupResult.error && (
@@ -173,12 +181,27 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
             name="name"
           />
 
-          <SlugFormField
-            control={control}
-            entityName="group"
-            errors={errors}
-            name="slug"
-          />
+          <div>
+            <Label className="form-label" for="group-slug">
+              Slug
+            </Label>
+            <SlugFormField
+              compact={true}
+              control={control}
+              entityName={"group"}
+              errors={errors}
+              name={"slug"}
+              resetFunction={resetUrl}
+              url="renkulab.io/v2/groups/"
+            />
+            {errors.slug && dirtyFields.slug && (
+              <div className={cx("d-block", "invalid-feedback")}>
+                <p className="mb-1">
+                  {errors?.slug?.message?.toString() ?? ""}
+                </p>
+              </div>
+            )}
+          </div>
 
           <DescriptionFormField
             control={control}

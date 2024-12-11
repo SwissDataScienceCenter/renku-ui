@@ -33,7 +33,7 @@ export default function DescriptionFormField<T extends FieldValues>({
   return (
     <div>
       <Label className="form-label" for={`${entityName}-description`}>
-        Description
+        Description (Optional)
       </Label>
       <Controller
         control={control}

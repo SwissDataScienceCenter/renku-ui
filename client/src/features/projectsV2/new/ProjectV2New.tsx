@@ -17,16 +17,14 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { CheckLg, Folder, InfoCircle, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
-  Collapse,
   Form,
   FormGroup,
-  FormText,
   Label,
   Modal,
   ModalBody,
@@ -45,11 +43,10 @@ import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
-import ProjectSlugFormField from "../fields/ProjectSlugFormField";
+import SlugPreviewFormField from "../fields/SlugPreviewFormField.tsx";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 import { NewProjectForm } from "./projectV2New.types";
 import { projectCreationHash } from "./createProjectV2.constants";
-import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 
 export default function ProjectV2New() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
@@ -111,9 +108,6 @@ export default function ProjectV2New() {
 }
 
 function ProjectV2CreationDetails() {
-  const [isCollapseOpen, setIsCollapseOpen] = useState(false);
-  const toggleCollapse = () => setIsCollapseOpen(!isCollapseOpen);
-
   const [createProject, result] = usePostProjectsMutation();
   const navigate = useNavigate();
 
@@ -170,21 +164,13 @@ function ProjectV2CreationDetails() {
     }
   }, [result, navigate]);
 
-  const ownerHelpText = (
-    <FormText className="d-block">
-      The URL for this project will be{" "}
-      <span className="fw-bold">
-        renkulab.io/v2/projects/{currentNamespace || "<owner>"}/
-        {currentSlug || "<name>"}
-      </span>
-    </FormText>
-  );
-
   const resetUrl = useCallback(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
       shouldValidate: true,
     });
   }, [setValue, currentName]);
+
+  const url = `renkulab.io/v2/projects/${currentNamespace ?? "<Owner>"}/`;
 
   return (
     <>
@@ -193,91 +179,40 @@ function ProjectV2CreationDetails() {
           <FormGroup className="d-inline" disabled={result.isLoading}>
             {/* //? FormGroup hard codes an additional mb-3. Adding "d-inline" makes it ineffective. */}
             <div className={cx("d-flex", "flex-column", "gap-3")}>
-              <div>
-                <ProjectNameFormField
+              <ProjectNameFormField
+                control={control}
+                errors={errors}
+                name="name"
+              />
+
+              <div className="mb-1">
+                <ProjectNamespaceFormField
                   control={control}
+                  entityName="project"
                   errors={errors}
-                  name="name"
+                  name="namespace"
                 />
               </div>
 
-              <div>
-                <div className="mb-1">
-                  <ProjectNamespaceFormField
-                    control={control}
-                    entityName="project"
-                    errors={errors}
-                    helpText={ownerHelpText}
-                    name="namespace"
-                  />
-                </div>
-                <button
-                  className={cx(
-                    "btn",
-                    "btn-link",
-                    "p-0",
-                    "text-decoration-none"
-                  )}
-                  data-cy="project-slug-toggle"
-                  onClick={toggleCollapse}
-                  type="button"
-                >
-                  Customize project URL{" "}
-                  <ChevronFlippedIcon flipped={isCollapseOpen} className="bi" />
-                </button>
-                <Collapse isOpen={isCollapseOpen}>
-                  <div
-                    className={cx(
-                      "align-items-center",
-                      "d-flex",
-                      "flex-wrap",
-                      "mb-0"
-                    )}
-                  >
-                    <span>
-                      renkulab.io/v2/projects/{currentNamespace || "<Owner>"}/
-                    </span>
-                    <ProjectSlugFormField
-                      compact={true}
-                      control={control}
-                      errors={errors}
-                      countAsDirty={
-                        !!(dirtyFields.slug && dirtyFields.name && currentName)
-                      }
-                      name="slug"
-                      resetFunction={resetUrl}
-                    />
-                  </div>
-                </Collapse>
+              <SlugPreviewFormField
+                compact={true}
+                control={control}
+                errors={errors}
+                name="slug"
+                resetFunction={resetUrl}
+                url={url}
+                slug={currentSlug}
+                dirtyFields={dirtyFields}
+                label="Project URL"
+                entityName="project"
+              />
 
-                {dirtyFields.slug && !dirtyFields.name ? (
-                  <div className={cx("d-block", "invalid-feedback")}>
-                    <p className="mb-0">
-                      Mind the URL will be updated once you provide a name.
-                    </p>
-                  </div>
-                ) : (
-                  errors.slug &&
-                  dirtyFields.slug && (
-                    <div className={cx("d-block", "invalid-feedback")}>
-                      <p className="mb-1">{errors.slug.message}</p>
-                    </div>
-                  )
-                )}
-              </div>
-
-              <div>
-                <div className="mb-1">
-                  <ProjectVisibilityFormField
-                    name="visibility"
-                    control={control}
-                    errors={errors}
-                  />
-                </div>
-                <Label className="mb-0" for="projectV2NewForm-users">
-                  <InfoCircle className="bi" /> You can add members after
-                  creating the project.
-                </Label>
+              <div className="mb-1">
+                <ProjectVisibilityFormField
+                  name="visibility"
+                  control={control}
+                  errors={errors}
+                />
               </div>
 
               <ProjectDescriptionFormField
@@ -285,6 +220,13 @@ function ProjectV2CreationDetails() {
                 errors={errors}
                 name="description"
               />
+
+              <div>
+                <Label className="mb-0" for="projectV2NewForm-users">
+                  <InfoCircle className="bi" /> You can add members after
+                  creating the project.
+                </Label>
+              </div>
 
               {result.error && <RtkOrNotebooksError error={result.error} />}
             </div>
