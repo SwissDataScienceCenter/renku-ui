@@ -20,69 +20,59 @@ import cx from "classnames";
 import { Controller, useWatch, type FieldValues } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
 
-import type { SessionSecretFormFieldProps } from "./fields.types";
+import { GenericProjectFormFieldProps } from "./formField.types";
 
-interface FilenameFieldProps<T extends FieldValues>
-  extends SessionSecretFormFieldProps<T> {
-  secretsMountDirectory: string;
-}
+type SecretsMountDirectoryFieldProps<T extends FieldValues> =
+  GenericProjectFormFieldProps<T>;
 
-export default function FilenameField<T extends FieldValues>({
+export default function SecretsMountDirectoryField<T extends FieldValues>({
   control,
   errors,
   name,
-  secretsMountDirectory,
-}: FilenameFieldProps<T>) {
-  const fieldId = `session-secret-${name}`;
+}: SecretsMountDirectoryFieldProps<T>) {
+  const fieldId = `project-${name}`;
   const fieldHelpId = `${fieldId}-help`;
 
   const watch = useWatch({ control, name });
-  const fullPath = watch
-    ? `${secretsMountDirectory}/${watch}`
-    : `${secretsMountDirectory}/<filename>`;
 
   return (
     <div className="mb-3">
-      <Label for={fieldId}>Filename</Label>
+      <Label for={fieldId}>Secrets mount location</Label>
       <Controller
         name={name}
         control={control}
         render={({ field: { ref, ...rest } }) => (
           <Input
-            aria-describedby={fieldHelpId}
-            className={cx(errors.filename && "is-invalid")}
+            className={cx(errors.name && "is-invalid")}
             id={fieldId}
             innerRef={ref}
-            placeholder="Name of the file, e.g., api_token.txt"
+            placeholder="Secret name, e.g., API Token"
             type="text"
             {...rest}
           />
         )}
         rules={{
-          required: "Please provide a filename",
-          pattern: {
-            value: /^[a-zA-Z0-9_\-.]+$/,
-            message:
-              'A valid filename must consist of alphanumeric characters, "-", "_" or "."',
-          },
+          required: "Please provide a location for the secrets",
         }}
       />
       <div className="invalid-feedback">
-        {errors.filename?.message ? (
-          <>{errors.filename?.message}</>
+        {errors[name]?.message ? (
+          <>{errors[name]?.message}</>
         ) : (
-          <>Invalid filename</>
+          <>Invalid location</>
         )}
       </div>
       <FormText id={fieldHelpId} tag="div">
         <p className="mb-0">
-          This is the filename which will be used when mounting the secret
-          inside sessions.
+          This is the location which will be used when mounting secrets inside
+          sessions.
         </p>
-        <p className="mb-0">
-          The secret will be populated at:{" "}
-          <code className={cx("bg-secondary-subtle", "p-1")}>{fullPath}</code>.
-        </p>
+        {!watch.startsWith("/") && (
+          <p>
+            Note that this location will be relative to the &quot;working
+            directory&quot;.
+          </p>
+        )}
       </FormText>
     </div>
   );
