@@ -270,6 +270,96 @@
         "tags": ["projects"]
       }
     },
+    "/projects/{project_id}/copies": {
+      "get": {
+        "summary": "Get list of all copied projects",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectsList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      },
+      "post": {
+        "summary": "Create a new copy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The project was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
+    },
     "/projects/{project_id}/members": {
       "get": {
         "summary": "Get all members of a project",
@@ -494,7 +584,7 @@
             "$ref": "#/components/schemas/Slug"
           },
           "slug": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/LegacySlug"
           },
           "creation_date": {
             "$ref": "#/components/schemas/CreationDate"
@@ -519,6 +609,9 @@
           },
           "keywords": {
             "$ref": "#/components/schemas/KeywordsList"
+          },
+          "template_id": {
+            "$ref": "#/components/schemas/Ulid"
           }
         },
         "required": [
@@ -547,7 +640,8 @@
               "url": "git@github.com:SwissDataScienceCenter/project-2.git"
             }
           ],
-          "keywords": ["keyword 1", "keyword 2"]
+          "keywords": ["keyword 1", "keyword 2"],
+          "template_id": "01JC3CB5426KC7P5STS5X3KSS8"
         }
       },
       "ProjectPost": {
@@ -568,8 +662,7 @@
             "$ref": "#/components/schemas/RepositoriesList"
           },
           "visibility": {
-            "$ref": "#/components/schemas/Visibility",
-            "default": "private"
+            "$ref": "#/components/schemas/Visibility"
           },
           "description": {
             "$ref": "#/components/schemas/Description"
@@ -619,12 +712,20 @@
         "maxLength": 99,
         "example": "My Renku Project :)"
       },
-      "Slug": {
+      "LegacySlug": {
         "description": "A command-line/url friendly name for a namespace",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
         "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-zA-Z0-9][a-zA-Z0-9\\-_.]*$",
+        "example": "a-slug-example"
+      },
+      "Slug": {
+        "description": "A command-line/url friendly name for a namespace",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*$",
         "example": "a-slug-example"
       },
       "CreationDate": {
@@ -735,7 +836,7 @@
             "$ref": "#/components/schemas/UserId"
           },
           "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/LegacySlug"
           },
           "first_name": {
             "$ref": "#/components/schemas/UserFirstLastName"
