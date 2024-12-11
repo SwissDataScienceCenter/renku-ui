@@ -256,6 +256,11 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
             req.reply({ body, statusCode: 200, delay: 1000 });
             return;
           }
+          if (count > 2) {
+            const body = generateProjects(count, 0);
+            req.reply({ body, statusCode: 200, delay: 1000 });
+            return;
+          }
           const body = projects;
           req.reply({ body, statusCode: 200, delay: 1000 });
         }).as(name);

@@ -43,7 +43,7 @@ export default function SuggestionBanner({
       )}
     >
       <div className={cx("d-flex", "gap-3")}>
-        <div>{icon}</div>
+        {icon && <div>{icon}</div>}
         <div className={cx("my-auto", "overflow-auto", "w-100")}>
           {children}
         </div>

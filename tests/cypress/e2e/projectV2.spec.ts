@@ -675,6 +675,7 @@ describe("Project templates and copies", () => {
     cy.getDataCy("copy-project-button").should("not.exist");
     cy.contains("copies of this project.").should("be.visible");
     cy.contains("View my copies").should("be.visible").click();
+    cy.contains("My copies of").should("be.visible");
   });
 
   it("copy a project with data-connector-error", () => {
@@ -742,13 +743,15 @@ describe("Project templates and copies", () => {
       .readProjectV2({ overrides: { is_template: true } })
       .getProjectV2Permissions()
       .listNamespaceV2()
-      .listProjectV2Copies();
+      .listProjectV2Copies({ count: 15 });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getProjectV2Permissions");
     cy.wait("@listProjectV2Copies");
     cy.getDataCy("copy-project-button").should("not.exist");
     cy.contains("copies visible to you").should("be.visible");
+    cy.getDataCy("list-copies-link").click();
+    cy.contains("Projects copied from").should("be.visible");
   });
 
   it("show a copied project", () => {

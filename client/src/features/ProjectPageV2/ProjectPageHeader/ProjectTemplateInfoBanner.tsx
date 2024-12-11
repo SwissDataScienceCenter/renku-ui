@@ -17,16 +17,8 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import {
-  Button,
-  Col,
-  ListGroup,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Row,
-} from "reactstrap";
-import { InfoCircle } from "react-bootstrap-icons";
+import { Button, ListGroup, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Diagram3Fill } from "react-bootstrap-icons";
 
 import SuggestionBanner from "../../../components/SuggestionBanner";
 
@@ -37,6 +29,7 @@ import { useGetProjectsByProjectIdCopiesQuery } from "../../projectsV2/api/proje
 import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 import useProjectPermissions from "../utils/useProjectPermissions.hook";
+import styles from "./ProjectTemplateInfoBanner.module.css";
 
 interface ProjectCopyListModalProps {
   copies: Project[];
@@ -66,7 +59,7 @@ export function ProjectCopyListModal({
         <span className="fw-normal">{title} </span>
         {project.namespace}/{project.slug}
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={cx("overflow-y-scroll", styles.modalBody)}>
         <ListGroup flush data-cy="dashboard-project-list">
           {copies.map((project) => (
             <ProjectShortHandDisplay
@@ -94,50 +87,48 @@ function ProjectTemplateEditorBanner({ project }: { project: Project }) {
   if (project.template_id === null) return null;
   return (
     <>
-      <SuggestionBanner className="p-2" icon={<InfoCircle className="bi" />}>
-        <Row className="align-items-center">
-          <Col>
-            This project is a template.{" "}
-            {copies != null &&
-              (copies.length > 1 ? (
-                <span>
-                  There are{" "}
-                  <Button
-                    className={cx("px-0", "mb-1")}
-                    color="link"
-                    data-cy="list-copies-link"
-                    onClick={toggleOpen}
-                  >
-                    <span className={cx("badge", "text-bg-primary")}>
-                      {copies.length}
-                    </span>{" "}
-                    copies
-                  </Button>{" "}
-                  visible to you.
-                </span>
-              ) : copies.length === 1 ? (
-                <span>
-                  There is{" "}
-                  <Button
-                    className={cx("px-0", "mb-1")}
-                    color="link"
-                    data-cy="list-copies-link"
-                    onClick={toggleOpen}
-                  >
-                    <span className={cx("badge", "text-bg-primary")}>1</span>{" "}
-                    copy
-                  </Button>{" "}
-                  visible to you.
-                </span>
-              ) : (
-                <span>
-                  There are{" "}
-                  <span className={cx("badge", "text-bg-secondary")}>0</span>{" "}
-                  copies visible to you.
-                </span>
-              ))}
-          </Col>
-        </Row>
+      <SuggestionBanner className="p-2" icon={null}>
+        <div className="py-0">
+          <Diagram3Fill className={cx("bi", "me-1")} />
+          This project is a template.{" "}
+          {copies != null &&
+            (copies.length > 1 ? (
+              <span>
+                There are{" "}
+                <Button
+                  className={cx("p-0", styles.projectCopiesButton)}
+                  color="link"
+                  data-cy="list-copies-link"
+                  onClick={toggleOpen}
+                >
+                  <span className={cx("badge", "text-bg-primary")}>
+                    {copies.length}
+                  </span>{" "}
+                  copies
+                </Button>{" "}
+                visible to you.
+              </span>
+            ) : copies.length === 1 ? (
+              <span>
+                There is{" "}
+                <Button
+                  className={cx("p-0", styles.projectCopiesButton)}
+                  color="link"
+                  data-cy="list-copies-link"
+                  onClick={toggleOpen}
+                >
+                  <span className={cx("badge", "text-bg-primary")}>1</span> copy
+                </Button>{" "}
+                visible to you.
+              </span>
+            ) : (
+              <span>
+                There are{" "}
+                <span className={cx("badge", "text-bg-secondary")}>0</span>{" "}
+                copies visible to you.
+              </span>
+            ))}
+        </div>
       </SuggestionBanner>
       {isModalOpen && (
         <ProjectCopyListModal
