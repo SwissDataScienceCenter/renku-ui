@@ -278,7 +278,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
                       check
                     >
                       <Diagram3Fill className={cx("bi", "me-1")} />
-                      Show template banner
+                      Mark this project as a template
                     </Label>
                   </FormGroup>
                 </div>

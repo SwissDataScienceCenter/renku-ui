@@ -62,7 +62,7 @@ function ProjectNoPermissionsButton({ project }: { project: Project }) {
           onClick={toggleCopyModal}
         >
           <BootstrapCopyIcon className={cx("bi")} />
-          <span className={cx("ms-2")}>Copy</span>
+          <span className={cx("ms-2")}>Copy project</span>
         </DropdownItem>
       </ButtonWithMenuV2>
       {isCopyModalOpen && (

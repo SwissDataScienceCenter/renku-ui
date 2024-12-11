@@ -60,7 +60,7 @@ function ProjectViewerMakeCopyBanner({
             <b>This project is a template</b>
           </div>
           <div>
-            To work with this template, first make a copy.
+            To work with this project, first make a copy.
             {!isUserLoggedIn && (
               <span> To make a copy, you must first log in.</span>
             )}

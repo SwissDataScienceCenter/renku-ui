@@ -208,7 +208,7 @@ export default function ProjectCopyButton({
         onClick={toggleOpen}
       >
         <BootstrapCopyIcon className={cx("bi")} />
-        <span className={cx("ms-2")}>Copy this project</span>
+        <span className={cx("ms-2")}>Copy project</span>
       </Button>
       {isModalOpen && (
         <ProjectCopyModal

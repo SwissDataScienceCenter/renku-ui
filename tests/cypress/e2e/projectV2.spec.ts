@@ -667,8 +667,8 @@ describe("Project templates and copies", () => {
         overrides: { is_template: true },
       })
       .listNamespaceV2()
-      .copyProjectV2()
-      .listProjectV2Copies({ writeable: true });
+      .listProjectV2Copies({ writeable: true })
+      .copyProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-template");
     cy.wait("@readProjectV2");
     cy.wait("@listProjectV2Copies");
@@ -681,6 +681,7 @@ describe("Project templates and copies", () => {
     fixtures
       .readProjectV2({ overrides: { is_template: true } })
       .listNamespaceV2()
+      .listProjectV2Copies({ count: 0, writeable: true })
       .copyProjectV2({ dataConnectorError: true });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
@@ -712,6 +713,7 @@ describe("Project templates and copies", () => {
     fixtures
       .readProjectV2({ overrides: { is_template: true } })
       .listNamespaceV2()
+      .listProjectV2Copies({ count: 0, writeable: true })
       .copyProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
