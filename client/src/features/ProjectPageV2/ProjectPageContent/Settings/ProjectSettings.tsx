@@ -55,7 +55,6 @@ import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibi
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import type { ProjectV2Metadata } from "../../settings/projectSettings.types";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-import ProjectCopyButton from "../../ProjectPageHeader/ProjectCopyButton";
 
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
@@ -370,20 +369,23 @@ function ProjectSettingsDisplay({ project }: ProjectPageSettingsProps) {
   );
 }
 
-function ProjectSettingsCopy({ project }: { project: Project }) {
+function ProjectSettingsTemplateLink({ project }: { project: Project }) {
+  if (project.template_id === null) return null;
   return (
     <Card id="copy">
       <CardHeader>
-        <h4>Copy project</h4>
+        <h4>
+          <Diagram3Fill className={cx("bi", "me-1")} />
+          Break template link
+        </h4>
         <p className="m-0">
-          This will create a new project with the same content as this one.
+          This will break the link between this project and the template it was
+          created from.
         </p>
       </CardHeader>
       <CardBody>
         <div className="d-flex">
-          <div className="me-2">
-            <ProjectCopyButton color="secondary" project={project} />
-          </div>
+          <div className="me-2">Not yet implemented</div>
           <div className="flex-grow-1"></div>
         </div>
       </CardBody>
@@ -463,7 +465,12 @@ export default function ProjectPageSettings() {
     <div className={cx("d-flex", "flex-column", "gap-4")}>
       <ProjectSettingsMetadata project={project} />
       <ProjectPageSettingsMembers project={project} />
-      <ProjectSettingsCopy project={project} />
+      <PermissionsGuard
+        disabled={null}
+        enabled={<ProjectSettingsTemplateLink project={project} />}
+        requestedPermission="write"
+        userPermissions={permissions}
+      />
       <PermissionsGuard
         disabled={null}
         enabled={<ProjectPageDelete project={project} />}

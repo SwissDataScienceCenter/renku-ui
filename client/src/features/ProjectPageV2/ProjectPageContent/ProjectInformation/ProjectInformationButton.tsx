@@ -18,54 +18,47 @@
 
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { generatePath } from "react-router-dom-v5-compat";
 
-import { ThreeDotsVertical } from "react-bootstrap-icons";
-import { Button, DropdownItem } from "reactstrap";
+import { DropdownItem } from "reactstrap";
 
-import {
-  ButtonWithMenuV2,
-  EditButtonLink,
-} from "../../../../components/buttons/Button";
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import BootstrapCopyIcon from "../../../../components/icons/BootstrapCopyIcon";
-import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 
-import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { useGetUserQuery } from "../../../usersV2/api/users.api";
 
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-
 import { ProjectCopyModal } from "../../ProjectPageHeader/ProjectCopyButton";
 
-function ProjectNoPermissionsButton({ project }: { project: Project }) {
+export default function ProjectInformationButton({
+  project,
+}: {
+  userPermissions: ReturnType<typeof useProjectPermissions>;
+  project: Project;
+}) {
   const { data: currentUser } = useGetUserQuery();
   const [isCopyModalOpen, setCopyModalOpen] = useState(false);
   const toggleCopyModal = useCallback(() => {
     setCopyModalOpen((open) => !open);
   }, []);
-  const defaultAction = (
-    <Button color="primary" disabled={true} outline={true}>
-      <ThreeDotsVertical />
-    </Button>
-  );
   return (
     <>
       <ButtonWithMenuV2
         color="outline-primary"
-        default={defaultAction}
+        default={null}
         preventPropagation
         size="sm"
       >
         <DropdownItem
           data-cy="project-copy-menu-item"
           onClick={toggleCopyModal}
+          disabled={!currentUser?.isLoggedIn}
         >
           <BootstrapCopyIcon className={cx("bi")} />
           <span className={cx("ms-2")}>Copy project</span>
         </DropdownItem>
       </ButtonWithMenuV2>
-      {isCopyModalOpen && (
+      {isCopyModalOpen && currentUser != null && currentUser.isLoggedIn && (
         <ProjectCopyModal
           currentUser={currentUser}
           isOpen={isCopyModalOpen}
@@ -74,32 +67,5 @@ function ProjectNoPermissionsButton({ project }: { project: Project }) {
         />
       )}
     </>
-  );
-}
-
-export default function ProjectInformationButton({
-  userPermissions,
-  project,
-}: {
-  userPermissions: ReturnType<typeof useProjectPermissions>;
-  project: Project;
-}) {
-  const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
-    namespace: project.namespace ?? "",
-    slug: project.slug ?? "",
-  });
-  return (
-    <PermissionsGuard
-      disabled={<ProjectNoPermissionsButton project={project} />}
-      enabled={
-        <EditButtonLink
-          data-cy="project-settings-edit"
-          to={settingsUrl}
-          tooltip="Modify project information"
-        />
-      }
-      requestedPermission="write"
-      userPermissions={userPermissions}
-    />
   );
 }

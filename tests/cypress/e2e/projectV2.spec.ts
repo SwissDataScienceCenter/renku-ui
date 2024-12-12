@@ -210,7 +210,7 @@ describe("Edit v2 project", () => {
       .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").should("be.visible").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
     cy.getDataCy("project-name-input").clear().type("new name");
     cy.getDataCy("project-description-input").clear().type("new description");
     cy.getDataCy("project-template").click();
@@ -239,7 +239,7 @@ describe("Edit v2 project", () => {
       .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").should("be.visible").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
     // Fetch the second page of namespaces
     cy.wait("@listNamespaceV2");
     cy.wait("@readUserV2Namespace");
@@ -473,7 +473,7 @@ describe("Editor cannot maintain members", () => {
 
   it("can change project metadata", () => {
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").should("be.visible").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
     cy.contains("a", "Overview").click();
   });
 
@@ -558,8 +558,10 @@ describe("Project templates and copies", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
 
-    cy.get("a[title='Settings']").should("be.visible").click();
-    cy.getDataCy("copy-project-button").click();
+    cy.getDataCy("project-info-card")
+      .find("[data-cy=button-with-menu-dropdown]")
+      .click();
+    cy.getDataCy("project-copy-menu-item").click();
     cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
       "be.visible"
     );
@@ -776,6 +778,15 @@ describe("Project templates and copies", () => {
     cy.wait("@readProjectV2");
     cy.wait("@readProjectV2ById");
     cy.contains("Copied from:").should("be.visible");
+  });
+
+  it("break the template link", () => {
+    fixtures.getProjectV2Permissions().listNamespaceV2().copyProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+
+    cy.get("a[title='Settings']").should("be.visible").click();
+    cy.contains("Break template link").should("be.visible").click();
   });
 });
 
