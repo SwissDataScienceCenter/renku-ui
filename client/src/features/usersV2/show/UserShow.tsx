@@ -102,10 +102,11 @@ export default function UserShow() {
           >
             <div className={cx("align-items-center", "d-flex", "gap-2")}>
               <UserAvatar
-                firstName={user.first_name}
-                lastName={user.last_name}
-                username={username}
-                large
+                // firstName={user.first_name}
+                // lastName={user.last_name}
+                // username={username}
+                namespace={username}
+                size="lg"
               />
               <h2 className="mb-0">{name ?? "Unknown user"}</h2>
             </div>
