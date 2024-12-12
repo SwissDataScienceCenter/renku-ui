@@ -46,7 +46,7 @@ export default function UserAvatar({
     if (namespaceSlug && isNamespaceUninitialized) {
       fetchNamespace({ namespaceSlug });
     }
-  }, []);
+  }, [fetchNamespace, isNamespaceUninitialized, namespaceSlug]);
 
   const { data: user, isUninitialized: isUserUninitialized } =
     usersApi.endpoints.getUsersByUserId.useQueryState(
@@ -63,7 +63,12 @@ export default function UserAvatar({
     ) {
       fetchUser({ userId: namespace.created_by });
     }
-  }, []);
+  }, [
+    fetchUser,
+    isUserUninitialized,
+    namespace?.created_by,
+    namespace?.namespace_kind,
+  ]);
 
   const { data: group, isUninitialized: isGroupUninitialized } =
     projectV2Api.endpoints.getGroupsByGroupSlug.useQueryState(
@@ -77,7 +82,12 @@ export default function UserAvatar({
     if (namespace?.namespace_kind === "group" && isGroupUninitialized) {
       fetchGroup({ groupSlug: namespace.slug });
     }
-  }, []);
+  }, [
+    fetchGroup,
+    isGroupUninitialized,
+    namespace?.namespace_kind,
+    namespace?.slug,
+  ]);
 
   const initials = useMemo(() => {
     if (user) {
@@ -90,11 +100,14 @@ export default function UserAvatar({
     }
     if (group) {
       const { name, slug } = group;
-      return (name || slug).slice(0, 2) || "??";
+      const [first, second] = name.split(" ");
+      return first && second
+        ? `${first.slice(0, 1)}${second.slice(0, 1)}`
+        : (name || slug).slice(0, 2) || "??";
     }
-    return "??";
-  }, []);
-  const initialsUpper = useMemo(() => initials.toUpperCase(), []);
+    return namespaceSlug.slice(0, 2) || "??";
+  }, [group, namespaceSlug, user]);
+  const initialsUpper = useMemo(() => initials.toUpperCase(), [initials]);
 
   const randomPastelColor = generatePastelColor(namespaceSlug);
 
