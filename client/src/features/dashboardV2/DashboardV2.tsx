@@ -134,7 +134,7 @@ function HeaderDashboard() {
         <img
           src="/dashboardHeader640x200.png"
           alt="Dashboard Header"
-          className={cx("img-fluid", "w-100")}
+          className={cx("img-fluid", "w-100", "object-fit-cover")}
         />
       </picture>
     </div>
@@ -175,7 +175,13 @@ function FooterDashboard() {
         </Card>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
+        <Card
+          className={cx(
+            DashboardStyles.DashboardCard,
+            "border-0",
+            "position-relative"
+          )}
+        >
           <CardBody className={DashboardStyles.FooterCard}>
             <a
               target="_blank"
@@ -186,7 +192,8 @@ function FooterDashboard() {
                 "gap-4",
                 "align-items-center",
                 "py-4",
-                "link-primary"
+                "link-primary",
+                "stretched-link"
               )}
               rel="noreferrer noopener"
               href="https://www.notion.so/renku/Documentation-db396cfc9a664cd2b161e4c6068a5ec9"
@@ -198,7 +205,13 @@ function FooterDashboard() {
         </Card>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
+        <Card
+          className={cx(
+            DashboardStyles.DashboardCard,
+            "border-0",
+            "position-relative"
+          )}
+        >
           <CardBody className={DashboardStyles.FooterCard}>
             <a
               target="_blank"
@@ -209,7 +222,8 @@ function FooterDashboard() {
                 "gap-4",
                 "align-items-center",
                 "py-4",
-                "link-primary"
+                "link-primary",
+                "stretched-link"
               )}
               rel="noreferrer noopener"
               href="https://www.notion.so/renku/f9caf41b579f474b8007803b007e3999?v=807326f870984774900fd87095225d7a"
@@ -221,7 +235,13 @@ function FooterDashboard() {
         </Card>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
+        <Card
+          className={cx(
+            DashboardStyles.DashboardCard,
+            "border-0",
+            "position-relative"
+          )}
+        >
           <CardBody className={DashboardStyles.FooterCard}>
             <a
               target="_blank"
@@ -233,7 +253,8 @@ function FooterDashboard() {
                 "align-items-center",
                 "py-4",
                 "text-center",
-                "link-primary"
+                "link-primary",
+                "stretched-link"
               )}
               rel="noreferrer noopener"
               href="mailto:hello@renku.io"
@@ -510,7 +531,10 @@ function LoginCard() {
               "rounded-pill",
               "bg-white",
               "text-primary",
-              DashboardStyles.AnonymousAvatar
+              DashboardStyles.AnonymousAvatar,
+              "d-flex",
+              "justify-content-center",
+              "align-items-center"
             )}
           >
             <PersonFillExclamation size={48} />

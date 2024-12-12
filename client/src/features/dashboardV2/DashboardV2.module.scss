@@ -6,10 +6,8 @@
 
 .DashboardHeader {
   height: auto;
-  position: relative;
 
   img {
-    object-fit: cover;
     height: 150px;
 
     @include media-breakpoint-up(md) {
@@ -25,9 +23,6 @@
 .AnonymousAvatar {
   width: 64px;
   height: 64px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .DashboardCard {
