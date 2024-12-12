@@ -169,9 +169,7 @@ export function ProjectCopyModal({
           </Button>
           <Button
             disabled={
-              copyProjectResult.isLoading ||
-              copyProjectResult.error != null ||
-              copyProjectResult.data != null
+              copyProjectResult.isLoading || copyProjectResult.isSuccess
             }
             color="primary"
             type="submit"

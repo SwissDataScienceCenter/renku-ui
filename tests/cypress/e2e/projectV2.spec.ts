@@ -715,7 +715,7 @@ describe("Project templates and copies", () => {
       .readProjectV2({ overrides: { is_template: true } })
       .listNamespaceV2()
       .listProjectV2Copies({ count: 0, writeable: true })
-      .copyProjectV2();
+      .copyProjectV2({ dataConnectorError: true, name: "copyProjectV2Fail" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.getDataCy("copy-project-button").click();
@@ -724,14 +724,16 @@ describe("Project templates and copies", () => {
     );
     cy.wait("@listNamespaceV2");
     cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
+    cy.wait("@copyProjectV2Fail");
     cy.get("button").contains("Configure").click();
     cy.getDataCy("project-slug-input").clear().type("copy-of-test2");
-    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
-    fixtures.readProjectV2({
+    fixtures.copyProjectV2().readProjectV2({
       namespace: "e2e",
       projectSlug: "copy-of-test2",
       name: "readProjectCopy",
     });
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
     cy.wait("@copyProjectV2");
     cy.contains("Go to new project").should("be.visible").click();
     cy.wait("@readProjectCopy");
