@@ -212,16 +212,20 @@ function DataConnectorBoxContent({
           totalConnectors={data.total}
         />
         <CardBody>
-          {data.total === 0 && (
-            <p className="m-0">
-              Add published datasets from data repositories, and connect to
-              cloud storage to read and write custom data.
-            </p>
+          {data.total === 0 && namespaceKind === "group" && (
+            <AddEmptyListForGroupNamespace namespace={namespace} />
+          )}
+          {data.total === 0 && namespaceKind === "user" && (
+            <AddEmptyListForUserNamespace namespace={namespace} />
           )}
           {data.total > 0 && (
             <ListGroup flush>
               {data.dataConnectors?.map((dc) => (
-                <DataConnectorBoxListDisplay key={dc.id} dataConnector={dc} />
+                <DataConnectorBoxListDisplay
+                  key={dc.id}
+                  dataConnector={dc}
+                  extendedPreview={true}
+                />
               ))}
             </ListGroup>
           )}
@@ -319,4 +323,36 @@ function DataConnectorLoadingBoxContent() {
       </CardBody>
     </Card>
   );
+}
+
+function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
+  const { permissions } = useGroupPermissions({ groupSlug: namespace });
+
+  return (
+    <PermissionsGuard
+      disabled={<p>This group has no visible data connectors.</p>}
+      enabled={
+        <p>
+          Add published datasets from data repositories, and connect to cloud
+          storage to read and write custom data.
+        </p>
+      }
+      requestedPermission="write"
+      userPermissions={permissions}
+    />
+  );
+}
+
+function AddEmptyListForUserNamespace({ namespace }: { namespace: string }) {
+  const { data: currentUser } = useGetUserQuery();
+
+  if (currentUser?.isLoggedIn && currentUser.username === namespace) {
+    return (
+      <p>
+        Add published datasets from data repositories, and connect to cloud
+        storage to read and write custom data.
+      </p>
+    );
+  }
+  return <p>This user has no visible data connectors.</p>;
 }
