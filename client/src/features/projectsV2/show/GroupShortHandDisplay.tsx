@@ -20,6 +20,7 @@ import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import UserAvatar, { UserAvatarSize } from "../../usersV2/show/UserAvatar.tsx";
 import { GroupResponse } from "../api/namespace.api";
 
 interface GroupShortHandDisplayProps {
@@ -39,14 +40,24 @@ export default function GroupShortHandDisplay({
       )}
       data-cy="group-item"
     >
-      <div className={cx("d-flex", "justify-content-between", "gap-2")}>
-        <p className={cx("m-0", "fw-bold", "text-truncate")}>{group.name}</p>
-        <TimeCaption
-          className={cx("ms-auto", "my-auto", "text-truncate")}
-          datetime={group.creation_date}
-          enableTooltip
-          prefix="Created"
-        />
+      <div className={cx("d-flex", "gap-2")}>
+        <UserAvatar username={group.slug} size={UserAvatarSize.medium} />
+        <div
+          className={cx(
+            "d-flex",
+            "flex-column",
+            "justify-content-center",
+            "text-truncate"
+          )}
+        >
+          <p className={cx("m-0", "fw-bold", "text-truncate")}>{group.name}</p>
+          <TimeCaption
+            className={cx("text-truncate")}
+            datetime={group.creation_date}
+            enableTooltip
+            prefix="Created"
+          />
+        </div>
       </div>
     </div>
   );

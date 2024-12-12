@@ -66,7 +66,7 @@ describe("List v2 groups", () => {
   });
 
   it("list groups", () => {
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 1 group-v2").should("exist");
     cy.getDataCy("dashboard-group-list")
       .find("a")
@@ -76,7 +76,7 @@ describe("List v2 groups", () => {
 
   it("shows groups", () => {
     fixtures.readGroupV2().readGroupV2Namespace();
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -104,7 +104,7 @@ describe("Edit v2 group", () => {
       .listGroupV2Members()
       .listProjectV2ByNamespace()
       .listDataConnectors({ namespace: "test-2-group-v2" });
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -118,7 +118,7 @@ describe("Edit v2 group", () => {
       .getGroupV2Permissions()
       .listGroupV2Members()
       .updateGroupV2();
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -155,7 +155,7 @@ describe("Edit v2 group", () => {
       .readGroupV2()
       .readGroupV2Namespace();
 
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -202,7 +202,7 @@ describe("Edit v2 group", () => {
       .getGroupV2Permissions()
       .listGroupV2Members()
       .deleteGroupV2();
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -266,7 +266,7 @@ describe("Work with group data connectors", () => {
       .readProjectV2ById({ projectId: "PROJECT-ULID-1", name: "readProject1" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-3", name: "readProject2" });
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -406,7 +406,7 @@ describe("Work with group data connectors, missing permissions", () => {
       .readProjectV2ById({ projectId: "PROJECT-ULID-1", name: "readProject1" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-3", name: "readProject2" });
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
