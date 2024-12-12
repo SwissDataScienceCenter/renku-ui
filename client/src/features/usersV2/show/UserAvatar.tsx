@@ -16,61 +16,114 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
-import type { GroupResponse } from "../../projectsV2/api/namespace.api";
-import type { UserWithId } from "../api/users.api";
+import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
+import { usersApi } from "../api/users.api";
+
 import styles from "./UserAvatar.module.scss";
 
-type UserOrGroupArg =
-  | {
-      user: UserWithId;
+type AvatarSize = "sm" | "md" | "lg";
+
+interface UserAvatarProps {
+  namespace: string;
+  size?: AvatarSize;
+}
+
+export default function UserAvatar({
+  namespace: namespaceSlug,
+  size = "sm",
+}: UserAvatarProps) {
+  const { data: namespace, isUninitialized: isNamespaceUninitialized } =
+    projectV2Api.endpoints.getNamespacesByNamespaceSlug.useQueryState(
+      namespaceSlug ? { namespaceSlug } : skipToken
+    );
+  const [fetchNamespace] =
+    projectV2Api.endpoints.getNamespacesByNamespaceSlug.useLazyQuery();
+  useEffect(() => {
+    if (namespaceSlug && isNamespaceUninitialized) {
+      fetchNamespace({ namespaceSlug });
     }
-  | {
-      group: GroupResponse;
-    };
+  }, []);
 
-type UserAvatarProps = UserOrGroupArg & {
-  large?: boolean;
-};
+  const { data: user, isUninitialized: isUserUninitialized } =
+    usersApi.endpoints.getUsersByUserId.useQueryState(
+      namespace?.namespace_kind === "user" && namespace.created_by
+        ? { userId: namespace.created_by }
+        : skipToken
+    );
+  const [fetchUser] = usersApi.endpoints.getUsersByUserId.useLazyQuery();
+  useEffect(() => {
+    if (
+      namespace?.namespace_kind === "user" &&
+      namespace.created_by &&
+      isUserUninitialized
+    ) {
+      fetchUser({ userId: namespace.created_by });
+    }
+  }, []);
 
-export default function UserAvatar({ large, ...userOrGroup }: UserAvatarProps) {
+  const { data: group, isUninitialized: isGroupUninitialized } =
+    projectV2Api.endpoints.getGroupsByGroupSlug.useQueryState(
+      namespace?.namespace_kind === "group"
+        ? { groupSlug: namespace.slug }
+        : skipToken
+    );
+  const [fetchGroup] =
+    projectV2Api.endpoints.getGroupsByGroupSlug.useLazyQuery();
+  useEffect(() => {
+    if (namespace?.namespace_kind === "group" && isGroupUninitialized) {
+      fetchGroup({ groupSlug: namespace.slug });
+    }
+  }, []);
+
   const initials = useMemo(() => {
-    if ("user" in userOrGroup) {
-      const {
-        username,
-        first_name: firstName,
-        last_name: lastName,
-      } = userOrGroup.user;
+    if (user) {
+      const { username, first_name: firstName, last_name: lastName } = user;
       return firstName && lastName
         ? `${firstName.slice(0, 1)}${lastName.slice(0, 1)}`
         : firstName || lastName
         ? `${firstName}${lastName}`.slice(0, 2)
         : username.slice(0, 2) || "??";
-    } else {
-      const { name, slug } = userOrGroup.group;
+    }
+    if (group) {
+      const { name, slug } = group;
       return (name || slug).slice(0, 2) || "??";
     }
+    return "??";
   }, []);
   const initialsUpper = useMemo(() => initials.toUpperCase(), []);
+
+  const randomPastelColor = generatePastelColor(namespaceSlug);
 
   return (
     <div
       className={cx(
         "align-content-center",
-        "bg-info-subtle",
-        "border-info-subtle",
         "border",
         "flex-shrink-0",
-        "fw-bold",
         "rounded-circle",
         "text-center",
         styles.avatar,
-        large && styles.large
+        size === "lg" && styles.large,
+        size === "md" && styles.medium
       )}
+      style={{ backgroundColor: randomPastelColor }}
     >
       {initialsUpper}
     </div>
   );
+}
+
+function generatePastelColor(input: string) {
+  const hash = hashStringToNumber(input);
+  const hue = hash % 360; // Map hash to a hue value (0-359)
+  const saturation = 70; // Pastel saturation
+  const lightness = 97; // Pastel lightness
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+function hashStringToNumber(str: string) {
+  return str.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
 }

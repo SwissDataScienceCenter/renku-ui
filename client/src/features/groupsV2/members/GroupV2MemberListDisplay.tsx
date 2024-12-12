@@ -115,7 +115,7 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
                 // firstName={firstName}
                 // lastName={lastName}
                 // username={username}
-                user={member}
+                namespace={member.namespace ?? ""}
               />
               <span className={cx("fw-bold")}>{name ?? "Unknown user"}</span>{" "}
             </div>

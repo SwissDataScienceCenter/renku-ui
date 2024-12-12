@@ -101,8 +101,9 @@ export default function GroupV2Show() {
             <div className={cx("align-items-center", "d-flex", "gap-2")}>
               <UserAvatar
                 // username={group.name || slug}
-                group={group}
-                large
+                // group={group}
+                namespace={slug}
+                size="lg"
               />
               <h2 className="mb-0">{group.name ?? "Unknown group"}</h2>
             </div>
