@@ -23,6 +23,7 @@ import { DropdownItem } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import BootstrapCopyIcon from "../../../../components/icons/BootstrapCopyIcon";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { useGetUserQuery } from "../../../usersV2/api/users.api";
@@ -41,6 +42,9 @@ export default function ProjectInformationButton({
   const toggleCopyModal = useCallback(() => {
     setCopyModalOpen((open) => !open);
   }, []);
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
+  );
   return (
     <>
       <ButtonWithMenuV2
@@ -52,13 +56,13 @@ export default function ProjectInformationButton({
         <DropdownItem
           data-cy="project-copy-menu-item"
           onClick={toggleCopyModal}
-          disabled={!currentUser?.isLoggedIn}
+          disabled={!userLogged}
         >
           <BootstrapCopyIcon className={cx("bi")} />
           <span className={cx("ms-2")}>Copy project</span>
         </DropdownItem>
       </ButtonWithMenuV2>
-      {isCopyModalOpen && currentUser != null && currentUser.isLoggedIn && (
+      {isCopyModalOpen && userLogged && (
         <ProjectCopyModal
           currentUser={currentUser}
           isOpen={isCopyModalOpen}

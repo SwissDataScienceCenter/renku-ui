@@ -201,7 +201,6 @@ export default function ProjectCopyButton({
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Button
         color={buttonColor}
-        className={cx("d-flex", "align-items-center")}
         data-cy="copy-project-button"
         onClick={toggleOpen}
       >
