@@ -21,7 +21,7 @@ import { useCallback, useState } from "react";
 
 import { DropdownItem } from "reactstrap";
 
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
+import { SingleButtonWithMenu } from "../../../../components/buttons/Button";
 import BootstrapCopyIcon from "../../../../components/icons/BootstrapCopyIcon";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 
@@ -47,9 +47,8 @@ export default function ProjectInformationButton({
   );
   return (
     <>
-      <ButtonWithMenuV2
+      <SingleButtonWithMenu
         color="outline-primary"
-        default={null}
         preventPropagation
         size="sm"
       >
@@ -61,7 +60,7 @@ export default function ProjectInformationButton({
           <BootstrapCopyIcon className={cx("bi")} />
           <span className={cx("ms-2")}>Copy project</span>
         </DropdownItem>
-      </ButtonWithMenuV2>
+      </SingleButtonWithMenu>
       {userLogged && (
         <ProjectCopyModal
           currentUser={currentUser}

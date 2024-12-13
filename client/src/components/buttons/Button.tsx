@@ -132,14 +132,10 @@ interface ButtonWithMenuV2Props {
   size?: string;
 }
 export function ButtonWithMenuV2(props: ButtonWithMenuV2Props) {
-  const { default: defaultButton } = props;
-  if (defaultButton === null) {
-    return <ButtonWithMenuV2WithoutDefault {...props} />;
-  }
-  return <ButtonWithMenuV2WithDefault {...props} />;
+  return <SplitButtonWithMenu {...props} />;
 }
 
-function ButtonWithMenuV2WithDefault({
+export function SplitButtonWithMenu({
   children,
   className,
   color,
@@ -178,7 +174,8 @@ function ButtonWithMenuV2WithDefault({
     </UncontrolledDropdown>
   );
 }
-function ButtonWithMenuV2WithoutDefault({
+
+export function SingleButtonWithMenu({
   children,
   className,
   color,
@@ -187,7 +184,7 @@ function ButtonWithMenuV2WithoutDefault({
   id,
   preventPropagation,
   size,
-}: ButtonWithMenuV2Props) {
+}: Omit<ButtonWithMenuV2Props, "default">) {
   // ! Temporary workaround to quickly implement a design solution -- to be removed ASAP #3250
   const additionalProps = preventPropagation
     ? { onClick: (e: React.MouseEvent) => e.stopPropagation() }
