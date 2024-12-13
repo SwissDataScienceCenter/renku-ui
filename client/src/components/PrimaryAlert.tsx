@@ -18,19 +18,19 @@
 
 import cx from "classnames";
 import { Alert } from "reactstrap";
-import styles from "./SuggestionBanner.module.scss";
+import styles from "./PrimaryAlert.module.scss";
 
-interface SuggestionBannerProps {
+interface PrimaryAlertProps {
   children: React.ReactNode;
   "data-cy"?: string;
   icon?: React.ReactNode;
   className?: string;
 }
-export default function SuggestionBanner({
+export default function PrimaryAlert({
   children,
   icon,
   ...props
-}: SuggestionBannerProps) {
+}: PrimaryAlertProps) {
   return (
     <Alert
       color="primary"
@@ -38,7 +38,7 @@ export default function SuggestionBanner({
       toggle={undefined}
       data-cy={props["data-cy"]}
       className={cx(
-        styles.suggestionBanner,
+        styles.primaryAlert,
         props.className ? props.className : ""
       )}
     >

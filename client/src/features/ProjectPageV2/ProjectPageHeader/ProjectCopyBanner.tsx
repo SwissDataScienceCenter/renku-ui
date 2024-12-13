@@ -28,7 +28,7 @@ import { Link, generatePath } from "react-router-dom-v5-compat";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { Loader } from "../../../components/Loader";
-import SuggestionBanner from "../../../components/SuggestionBanner";
+import PrimaryAlert from "../../../components/PrimaryAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -79,7 +79,7 @@ function ProjectViewerMakeCopyBanner({
   );
   const loginUrl = useLoginUrl();
   return (
-    <SuggestionBanner icon={<Diagram3Fill className="bi" />}>
+    <PrimaryAlert icon={<Diagram3Fill className="bi" />}>
       <div
         className={cx(
           "d-flex",
@@ -116,7 +116,7 @@ function ProjectViewerMakeCopyBanner({
           )}
         </div>
       </div>
-    </SuggestionBanner>
+    </PrimaryAlert>
   );
 }
 
@@ -145,7 +145,7 @@ function ProjectViewerGoToCopyBanner({
   });
   return (
     <>
-      <SuggestionBanner icon={<Diagram3Fill className="bi" />}>
+      <PrimaryAlert icon={<Diagram3Fill className="bi" />}>
         <Row className="align-items-center">
           <Col xs={10}>
             <div>This project is a template</div>
@@ -188,7 +188,7 @@ function ProjectViewerGoToCopyBanner({
             </div>
           </Col>
         </Row>
-      </SuggestionBanner>
+      </PrimaryAlert>
       {isModalOpen && (
         <ProjectCopyListModal
           copies={writableCopies}
@@ -225,7 +225,7 @@ function ProjectViewerCopyBanner({
     );
   if (writableCopies == null)
     return (
-      <SuggestionBanner icon={<Diagram3Fill className="bi" />}>
+      <PrimaryAlert icon={<Diagram3Fill className="bi" />}>
         <Row className="align-items-center">
           <Col xs={10}>
             <div>
@@ -236,7 +236,7 @@ function ProjectViewerCopyBanner({
             <Loader inline size={16} />
           </Col>
         </Row>
-      </SuggestionBanner>
+      </PrimaryAlert>
     );
 
   if (writableCopies.length > 0)

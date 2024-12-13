@@ -541,7 +541,7 @@ describe("Viewer cannot edit project", () => {
   });
 });
 
-describe("Project templates and copies", () => {
+describe.only("Project templates and copies", () => {
   beforeEach(() => {
     fixtures
       .config()

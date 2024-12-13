@@ -20,7 +20,7 @@ import { useCallback, useState } from "react";
 import { Button, ListGroup, Modal, ModalBody, ModalHeader } from "reactstrap";
 import { Diagram3Fill } from "react-bootstrap-icons";
 
-import SuggestionBanner from "../../../components/SuggestionBanner";
+import PrimaryAlert from "../../../components/PrimaryAlert";
 
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";
@@ -87,7 +87,7 @@ function ProjectTemplateEditorBanner({ project }: { project: Project }) {
   if (project.template_id === null) return null;
   return (
     <>
-      <SuggestionBanner className="p-2" icon={null}>
+      <PrimaryAlert className="p-2" icon={null}>
         <div className="py-0">
           <Diagram3Fill className={cx("bi", "me-1")} />
           This project is a template.{" "}
@@ -129,7 +129,7 @@ function ProjectTemplateEditorBanner({ project }: { project: Project }) {
               </span>
             ))}
         </div>
-      </SuggestionBanner>
+      </PrimaryAlert>
       {isModalOpen && (
         <ProjectCopyListModal
           copies={copies ?? []}
