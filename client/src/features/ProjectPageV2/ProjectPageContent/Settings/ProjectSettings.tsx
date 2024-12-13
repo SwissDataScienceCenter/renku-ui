@@ -250,9 +250,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           value={project.keywords as string[]}
         />
         <div className="mb-3">
-          <Label className="form-label" for="project-is_template">
-            Template
-          </Label>
+          <div className="form-label">Template</div>
           <Controller
             aria-describedby="projectTemplateHelp"
             control={control}
@@ -344,9 +342,7 @@ function ProjectSettingsDisplay({ project }: ProjectPageSettingsProps) {
         </div>
         <ProjectReadOnlyVisibilityField visibility={project.visibility} />
         <div className="mb-3">
-          <Label className="form-label" for="project-is_template">
-            Template
-          </Label>
+          <div className="form-label">Template</div>
           <div className={cx("d-flex", "flex-row gap-4")}>
             <FormGroup switch>
               <Input
