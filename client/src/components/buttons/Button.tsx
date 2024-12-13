@@ -199,7 +199,6 @@ function ButtonWithMenuV2WithoutDefault({
       color={color ?? "primary"}
       direction={direction ?? "down"}
       disabled={disabled}
-      group
       id={id}
       size={size ?? "md"}
     >

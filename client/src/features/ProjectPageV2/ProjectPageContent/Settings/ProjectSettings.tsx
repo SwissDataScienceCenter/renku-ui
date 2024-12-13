@@ -385,7 +385,7 @@ function ProjectSettingsTemplateLink({ project }: { project: Project }) {
       </CardHeader>
       <CardBody>
         <div className="d-flex">
-          <div className="me-2">Not yet implemented</div>
+          <div className="fst-italic me-2">(Not yet implemented)</div>
           <div className="flex-grow-1"></div>
         </div>
       </CardBody>
