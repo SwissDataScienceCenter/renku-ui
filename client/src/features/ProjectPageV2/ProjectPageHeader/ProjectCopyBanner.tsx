@@ -17,7 +17,7 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { Button, Col, Row } from "reactstrap";
+import { Button } from "reactstrap";
 import {
   ArrowRight,
   BoxArrowInRight,
@@ -85,6 +85,7 @@ function ProjectViewerMakeCopyBanner({
           "d-flex",
           "align-items-center",
           "justify-content-between",
+          "flex-wrap",
           "w-100"
         )}
       >
@@ -146,8 +147,16 @@ function ProjectViewerGoToCopyBanner({
   return (
     <>
       <PrimaryAlert icon={<Diagram3Fill className="bi" />}>
-        <Row className="align-items-center">
-          <Col xs={10}>
+        <div
+          className={cx(
+            "d-flex",
+            "align-items-center",
+            "justify-content-between",
+            "flex-wrap",
+            "w-100"
+          )}
+        >
+          <div>
             <div>This project is a template</div>
             <div>
               {writableCopies.length > 1 ? (
@@ -162,8 +171,8 @@ function ProjectViewerGoToCopyBanner({
                 <b>You already have a project created from this template.</b>
               )}
             </div>
-          </Col>
-          <Col xs={2}>
+          </div>
+          <div>
             <div>
               {writableCopies.length > 1 ? (
                 <Button
@@ -186,8 +195,8 @@ function ProjectViewerGoToCopyBanner({
                 </Link>
               )}
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
       </PrimaryAlert>
       {isModalOpen && (
         <ProjectCopyListModal
@@ -226,16 +235,24 @@ function ProjectViewerCopyBanner({
   if (writableCopies == null)
     return (
       <PrimaryAlert icon={<Diagram3Fill className="bi" />}>
-        <Row className="align-items-center">
-          <Col xs={10}>
+        <div
+          className={cx(
+            "d-flex",
+            "align-items-center",
+            "justify-content-between",
+            "flex-wrap",
+            "w-100"
+          )}
+        >
+          <div>
             <div>
               <b>This project is a template</b>
             </div>
-          </Col>
-          <Col xs={2}>
+          </div>
+          <div>
             <Loader inline size={16} />
-          </Col>
-        </Row>
+          </div>
+        </div>
       </PrimaryAlert>
     );
 
