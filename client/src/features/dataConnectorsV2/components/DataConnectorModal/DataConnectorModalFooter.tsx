@@ -153,6 +153,12 @@ function DataConnectorCreateFooter({
     ? hasSchemaAccessMode(currentSchema)
     : false;
 
+  const schemaRequiresProvider = useMemo(
+    () =>
+      hasProviderShortlist(flatDataConnector.schema) || schemaHasAccessModes,
+    [flatDataConnector.schema, schemaHasAccessModes]
+  );
+
   useEffect(() => {
     if (
       "data" in createResult &&
@@ -306,7 +312,8 @@ function DataConnectorCreateFooter({
   // Visual elements
   const disableContinueButton =
     cloudStorageState.step === 1 &&
-    (!flatDataConnector.schema || !flatDataConnector.provider);
+    (!flatDataConnector.schema ||
+      (schemaRequiresProvider && !flatDataConnector.provider));
 
   const isAddResultLoading = createResult.isLoading;
   const actionError = createResult.error;
@@ -328,7 +335,9 @@ function DataConnectorCreateFooter({
     ? "Please go back and select a storage type"
     : schemaHasAccessModes
     ? "Please go back and select a mode"
-    : "Please go back and select a provider";
+    : disableContinueButton
+    ? "Please go back and select a provider"
+    : "";
   const isResultLoading = isAddResultLoading;
 
   return (
@@ -366,7 +375,7 @@ function DataConnectorCreateFooter({
           addButtonDisableReason={addButtonDisableReason}
           addOrEditStorage={addStorage}
           disableAddButton={disableAddButton}
-          disableContinueButton={disableContinueButton}
+          disableContinueButton={!!disableContinueButton}
           hasStoredCredentialsInConfig={false}
           isResultLoading={isResultLoading}
           dataConnectorId={null}
@@ -458,11 +467,6 @@ function DataConnectorEditFooter({
     flatDataConnector,
   ]);
 
-  const schemaRequiresProvider = useMemo(
-    () => hasProviderShortlist(flatDataConnector.schema),
-    [flatDataConnector.schema]
-  );
-
   const currentSchema = useMemo(
     () => schemata?.find((s) => s.prefix === flatDataConnector.schema),
     [schemata, flatDataConnector]
@@ -470,6 +474,12 @@ function DataConnectorEditFooter({
   const schemaHasAccessModes = currentSchema
     ? hasSchemaAccessMode(currentSchema)
     : false;
+
+  const schemaRequiresProvider = useMemo(
+    () =>
+      hasProviderShortlist(flatDataConnector.schema) || schemaHasAccessModes,
+    [flatDataConnector.schema, schemaHasAccessModes]
+  );
 
   useEffect(() => {
     if (
@@ -558,7 +568,7 @@ function DataConnectorEditFooter({
           addButtonDisableReason={addButtonDisableReason}
           addOrEditStorage={editStorage}
           disableAddButton={disableAddButton}
-          disableContinueButton={disableContinueButton}
+          disableContinueButton={!!disableContinueButton}
           hasStoredCredentialsInConfig={hasStoredCredentialsInConfig}
           isResultLoading={isResultLoading}
           dataConnectorId={dataConnectorId}
