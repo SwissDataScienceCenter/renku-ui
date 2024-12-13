@@ -34,9 +34,10 @@ import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import type { GroupPostRequest } from "../api/namespace.api";
 import { usePostGroupsMutation } from "../api/projectV2.enhanced-api";
 import DescriptionFormField from "../fields/DescriptionFormField";
-import NameFormField from "../fields/NameFormField";
+// import NameFormField from "../fields/NameFormField";
 import SlugFormField from "../fields/SlugFormField";
 import WipBadge from "../shared/WipBadge";
+import NameFormField from "../../entitiesV2/fields/NameFormField";
 
 function GroupNewHeader() {
   return (
@@ -128,9 +129,9 @@ function GroupMetadataForm() {
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <NameFormField
           control={control}
-          entityName="group"
-          errors={errors}
+          entityType="group"
           name="name"
+          className="mb-3"
         />
         <SlugFormField
           control={control}
