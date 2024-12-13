@@ -26,8 +26,6 @@ import {
   useParams,
 } from "react-router-dom-v5-compat";
 import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
-import { EntityWatermark } from "../../../components/EntityWatermark.tsx";
-
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
@@ -42,6 +40,7 @@ import {
   UserWithId,
 } from "../api/users.api";
 import UserAvatar, { AvatarTypeWrap, UserAvatarSize } from "./UserAvatar";
+import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 
 export default function UserShow() {
   const { username } = useParams<{ username: string }>();
@@ -93,21 +92,19 @@ export default function UserShow() {
   }
 
   const information = (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <div>
-        <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
-          <JournalAlbum className="bi" />
-          Identifier:
-        </p>
-        <div className="ms-4">@{username}</div>
+    <div className={cx("d-flex", "flex-column")}>
+      <div className="mb-0">
+        <JournalAlbum className={cx("bi", "me-2")} />
+        <span>Identifier:</span>
       </div>
+      <div className={cx("ms-4", "mb-0")}>@{username}</div>
     </div>
   );
 
   return (
-    <ContainerWrap className="position-relative">
+    <ContainerWrap className="py-0">
       <EntityWatermark type="user" />
-      <Row>
+      <Row className="py-3">
         <Col xs={12} className={cx("mb-3", "pt-2", "pb-5")}>
           <UserHeader user={user} username={username} name={name ?? ""} />
         </Col>
