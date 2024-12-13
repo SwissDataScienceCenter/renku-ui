@@ -223,7 +223,7 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
               )}
             </div>
           }
-          requestedPermission="write"
+          requestedPermission="delete"
           userPermissions={permissions.permissions}
         />
 
