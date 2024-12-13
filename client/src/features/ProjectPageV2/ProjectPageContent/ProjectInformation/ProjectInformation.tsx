@@ -68,7 +68,7 @@ function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
     useGetNamespacesByNamespaceSlugQuery(
       templateProject
         ? {
-            namespaceSlug: templateProject?.namespace ?? "",
+            namespaceSlug: templateProject.namespace,
           }
         : skipToken
     );
