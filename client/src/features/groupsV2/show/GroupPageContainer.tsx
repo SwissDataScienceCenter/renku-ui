@@ -28,7 +28,7 @@ import {
 } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 import ContainerWrap from "../../../components/container/ContainerWrap.tsx";
-import { EntityWatermark } from "../../../components/EntityWatermark.tsx";
+import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark.tsx";
 import { Loader } from "../../../components/Loader.tsx";
 import PageNav, { PageNavOptions } from "../../../components/PageNav.tsx";
 import LazyNotFound from "../../../not-found/LazyNotFound.tsx";
@@ -97,9 +97,9 @@ export default function GroupPageContainer() {
     }),
   };
   return (
-    <ContainerWrap className="position-relative">
+    <ContainerWrap className="py-0">
       <EntityWatermark type="group" />
-      <Row>
+      <Row className="py-3">
         <Col xs={12}>
           <GroupHeader group={group} slug={slug} />
         </Col>

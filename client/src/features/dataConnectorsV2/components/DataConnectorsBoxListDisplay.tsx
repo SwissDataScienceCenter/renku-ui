@@ -67,17 +67,19 @@ export default function DataConnectorBoxListDisplay({
   const type = `${storage?.configuration?.type?.toString() ?? ""} ${
     storage?.configuration?.provider?.toString() ?? ""
   }`;
-  const readOnly = storage?.readonly ? (
-    <div>
-      <EyeFill className={cx("bi", "me-1")} />
-      Read only
-    </div>
-  ) : (
-    <div>
-      <Pencil className={cx("bi", "me-1")} />
-      Allow Read-write
-    </div>
-  );
+  const readOnly =
+    extendedPreview &&
+    (storage?.readonly ? (
+      <div>
+        <EyeFill className={cx("bi", "me-1")} />
+        Read only
+      </div>
+    ) : (
+      <div>
+        <Pencil className={cx("bi", "me-1")} />
+        Allow Read-write
+      </div>
+    ));
 
   return (
     <>
@@ -87,7 +89,7 @@ export default function DataConnectorBoxListDisplay({
         onClick={toggleDetails}
       >
         <Row className={cx("align-items-center", "g-2")}>
-          <Col className={cx("d-flex", "flex-column", "gap-1")}>
+          <Col className={cx("d-flex", "flex-column")}>
             <span className="fw-bold" data-cy="data-connector-name">
               {name}
             </span>

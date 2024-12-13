@@ -58,6 +58,7 @@ export default function UserAvatar({
         "flex-shrink-0",
         "rounded-circle",
         "text-center",
+        "text-black",
         styles.avatar,
         size === UserAvatarSize.large && styles.large,
         size === UserAvatarSize.medium && styles.medium
