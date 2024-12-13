@@ -18,6 +18,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { ReactNode } from "react";
 import {
   Calendar3Week,
   Eye,
@@ -145,130 +146,68 @@ function FooterDashboard() {
   return (
     <Row className="g-3">
       <Col xs={12} lg={6} xl={3}>
-        <Card
-          className={cx(
-            DashboardStyles.DashboardCard,
-            "border-0",
-            "position-relative"
-          )}
-        >
-          <CardBody className={DashboardStyles.FooterCard}>
-            <a
-              target="_blank"
-              className={cx(
-                "text-primary",
-                "d-flex",
-                "flex-column",
-                "gap-4",
-                "align-items-center",
-                "py-4",
-                "link-primary",
-                "stretched-link"
-              )}
-              rel="noreferrer noopener"
-              href="https://blog.renkulab.io/"
-            >
-              <Megaphone size={27} />
-              Renku updates
-            </a>
-          </CardBody>
-        </Card>
+        <FooterDashboardCard url="https://blog.renkulab.io/">
+          <Megaphone size={27} />
+          Renku updates
+        </FooterDashboardCard>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <Card
-          className={cx(
-            DashboardStyles.DashboardCard,
-            "border-0",
-            "position-relative"
-          )}
-        >
-          <CardBody className={DashboardStyles.FooterCard}>
-            <a
-              target="_blank"
-              className={cx(
-                "text-primary",
-                "d-flex",
-                "flex-column",
-                "gap-4",
-                "align-items-center",
-                "py-4",
-                "link-primary",
-                "stretched-link"
-              )}
-              rel="noreferrer noopener"
-              href="https://www.notion.so/renku/Documentation-db396cfc9a664cd2b161e4c6068a5ec9"
-            >
-              <FileEarmarkText size={27} />
-              Documentation
-            </a>
-          </CardBody>
-        </Card>
+        <FooterDashboardCard url="https://www.notion.so/renku/Documentation-db396cfc9a664cd2b161e4c6068a5ec9">
+          <FileEarmarkText size={27} />
+          Documentation
+        </FooterDashboardCard>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <Card
-          className={cx(
-            DashboardStyles.DashboardCard,
-            "border-0",
-            "position-relative"
-          )}
-        >
-          <CardBody className={DashboardStyles.FooterCard}>
-            <a
-              target="_blank"
-              className={cx(
-                "text-primary",
-                "d-flex",
-                "flex-column",
-                "gap-4",
-                "align-items-center",
-                "py-4",
-                "link-primary",
-                "stretched-link"
-              )}
-              rel="noreferrer noopener"
-              href="https://www.notion.so/renku/f9caf41b579f474b8007803b007e3999?v=807326f870984774900fd87095225d7a"
-            >
-              <Calendar3Week size={27} />
-              Community events
-            </a>
-          </CardBody>
-        </Card>
+        <FooterDashboardCard url="https://www.notion.so/renku/f9caf41b579f474b8007803b007e3999?v=807326f870984774900fd87095225d7a">
+          <Calendar3Week size={27} />
+          Community events
+        </FooterDashboardCard>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <Card
-          className={cx(
-            DashboardStyles.DashboardCard,
-            "border-0",
-            "position-relative"
-          )}
-        >
-          <CardBody className={DashboardStyles.FooterCard}>
-            <a
-              target="_blank"
-              className={cx(
-                "text-primary",
-                "d-flex",
-                "flex-column",
-                "gap-4",
-                "align-items-center",
-                "py-4",
-                "text-center",
-                "link-primary",
-                "stretched-link"
-              )}
-              rel="noreferrer noopener"
-              href="mailto:hello@renku.io"
-            >
-              <Send size={27} />
-              Contact us
-            </a>
-          </CardBody>
-        </Card>
+        <FooterDashboardCard url="mailto:hello@renku.io">
+          <Send size={27} />
+          Contact us
+        </FooterDashboardCard>
       </Col>
     </Row>
   );
 }
 
+interface FooterDashboardCardProps {
+  children: ReactNode;
+  url: string;
+}
+function FooterDashboardCard({ children, url }: FooterDashboardCardProps) {
+  return (
+    <Card
+      className={cx(
+        DashboardStyles.DashboardCard,
+        "border-0",
+        "position-relative"
+      )}
+    >
+      <CardBody className={DashboardStyles.FooterCard}>
+        <a
+          target="_blank"
+          className={cx(
+            "text-primary",
+            "d-flex",
+            "flex-column",
+            "gap-4",
+            "align-items-center",
+            "py-4",
+            "link-primary",
+            "stretched-link"
+          )}
+          rel="noreferrer noopener"
+          href={url}
+        >
+          {children}
+        </a>
+      </CardBody>
+    </Card>
+  );
+}
 function DashboardSearch() {
   return (
     <Row>
