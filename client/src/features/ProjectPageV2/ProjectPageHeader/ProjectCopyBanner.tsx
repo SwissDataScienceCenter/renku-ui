@@ -80,8 +80,15 @@ function ProjectViewerMakeCopyBanner({
   const loginUrl = useLoginUrl();
   return (
     <SuggestionBanner icon={<Diagram3Fill className="bi" />}>
-      <Row className="align-items-center">
-        <Col xs={10}>
+      <div
+        className={cx(
+          "d-flex",
+          "align-items-center",
+          "justify-content-between",
+          "w-100"
+        )}
+      >
+        <div>
           <div>
             <b>This project is a template</b>
           </div>
@@ -91,8 +98,8 @@ function ProjectViewerMakeCopyBanner({
               <span> To make a copy, you must first log in.</span>
             )}
           </div>
-        </Col>
-        <Col xs={2}>
+        </div>
+        <div>
           {isUserLoggedIn ? (
             <ProjectCopyButton
               color="primary"
@@ -107,8 +114,8 @@ function ProjectViewerMakeCopyBanner({
               </a>
             </div>
           )}
-        </Col>
-      </Row>
+        </div>
+      </div>
     </SuggestionBanner>
   );
 }
