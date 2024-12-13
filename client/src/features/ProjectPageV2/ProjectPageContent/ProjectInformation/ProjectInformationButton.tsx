@@ -62,7 +62,7 @@ export default function ProjectInformationButton({
           <span className={cx("ms-2")}>Copy project</span>
         </DropdownItem>
       </ButtonWithMenuV2>
-      {isCopyModalOpen && userLogged && (
+      {userLogged && (
         <ProjectCopyModal
           currentUser={currentUser}
           isOpen={isCopyModalOpen}
