@@ -45,6 +45,7 @@ export default function ProjectInformationButton({
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
+  if (!userLogged) return null;
   return (
     <>
       <SingleButtonWithMenu
@@ -55,20 +56,19 @@ export default function ProjectInformationButton({
         <DropdownItem
           data-cy="project-copy-menu-item"
           onClick={toggleCopyModal}
-          disabled={!userLogged}
         >
           <BootstrapCopyIcon className={cx("bi")} />
           <span className={cx("ms-2")}>Copy project</span>
         </DropdownItem>
       </SingleButtonWithMenu>
-      {userLogged && (
+      {
         <ProjectCopyModal
           currentUser={currentUser}
           isOpen={isCopyModalOpen}
           project={project}
           toggle={toggleCopyModal}
         />
-      )}
+      }
     </>
   );
 }
