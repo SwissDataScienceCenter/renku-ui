@@ -42,8 +42,9 @@ import {
   usePatchGroupsByGroupSlugMutation,
 } from "../../projectsV2/api/projectV2.enhanced-api";
 import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
-import NameFormField from "../../projectsV2/fields/NameFormField";
+// import NameFormField from "../../projectsV2/fields/NameFormField";
 import SlugFormField from "../../projectsV2/fields/SlugFormField";
+import NameFormField from "../../entitiesV2/fields/NameFormField";
 
 type GroupMetadata = Omit<GroupPatchRequest, "repositories">;
 
@@ -166,9 +167,13 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
       <GroupDeleteConfirmation isOpen={isOpen} group={group} toggle={toggle} />
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <NameFormField
+          // control={control}
+          // entityName="group"
+          // errors={errors}
+          // name="name"
+          className="mb-3"
           control={control}
-          entityName="group"
-          errors={errors}
+          entityType="group"
           name="name"
         />
         <SlugFormField

@@ -27,7 +27,7 @@ import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
-import ProjectNameFormField from "../fields/ProjectNameFormField";
+// import ProjectNameFormField from "../fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import ProjectRepositoryFormField from "../fields/ProjectRepositoryFormField";
 import ProjectSlugFormField from "../fields/ProjectSlugFormField";
@@ -42,6 +42,7 @@ import {
   setMetadata,
 } from "./projectV2New.slice";
 import { PlusLg } from "react-bootstrap-icons";
+import NameFormField from "../../entitiesV2/fields/NameFormField";
 
 interface ProjectV2NewFormProps {
   currentStep: NewProjectV2State["currentStep"];
@@ -136,7 +137,13 @@ function ProjectV2NewMetadataStepForm({ currentStep }: ProjectV2NewFormProps) {
     <>
       <h4 className={cx("d-none", "d-md-block")}>Describe the project</h4>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ProjectNameFormField control={control} errors={errors} name="name" />
+        {/* <ProjectNameFormField control={control} errors={errors} name="name" /> */}
+        <NameFormField
+          className="mb-3"
+          control={control}
+          entityType="project"
+          name="name"
+        />
         <ProjectSlugFormField control={control} errors={errors} name="slug" />
         <ProjectNamespaceFormField
           control={control}

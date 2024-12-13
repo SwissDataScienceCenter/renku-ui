@@ -46,7 +46,7 @@ import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField";
-import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField";
+// import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
 
@@ -56,6 +56,7 @@ import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
+import NameFormField from "../../../entitiesV2/fields/NameFormField";
 
 function notificationProjectUpdated(
   notifications: NotificationsManager,
@@ -194,7 +195,13 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
       )}
 
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ProjectNameFormField name="name" control={control} errors={errors} />
+        {/* <ProjectNameFormField name="name" control={control} errors={errors} /> */}
+        <NameFormField
+          className="mb-3"
+          control={control}
+          entityType="project"
+          name="name"
+        />
         <PermissionsGuard
           disabled={
             <ProjectReadOnlyNamespaceField namespace={project.namespace} />
