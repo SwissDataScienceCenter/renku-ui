@@ -16,32 +16,29 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  BoxArrowInLeft,
   Pencil,
-  PlusLg,
+  Save,
   ShieldMinus,
   ShieldPlus,
   Trash,
   XLg,
 } from "react-bootstrap-icons";
+import { useForm } from "react-hook-form";
 import {
   Button,
-  ButtonGroup,
   Col,
   DropdownItem,
   Form,
-  Input,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
 
-import { Controller, useForm } from "react-hook-form";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -52,12 +49,14 @@ import {
   usePatchProjectsByProjectIdSessionSecretsMutation,
   usePatchSessionSecretSlotsBySlotIdMutation,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
+import ReplaceSecretValueModal from "../../../secretsV2/ReplaceSecretValueModal";
+import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import DescriptionField from "./fields/DescriptionField";
 import FilenameField from "./fields/FilenameField";
 import NameField from "./fields/NameField";
-import SelectUserSecretField from "./fields/SelectUserSecretField";
+import ProvideSessionSecretModalContent from "./ProvideSessionSecretModalContent";
 import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
 
 interface SessionSecretActionsProps {
@@ -92,6 +91,12 @@ export default function SessionSecretActions({
   const [isClearOpen, setIsClearOpen] = useState(false);
   const toggleClear = useCallback(
     () => setIsClearOpen((isOpen) => !isOpen),
+    []
+  );
+
+  const [isReplaceOpen, setIsReplaceOpen] = useState(false);
+  const toggleReplace = useCallback(
+    () => setIsReplaceOpen((isOpen) => !isOpen),
     []
   );
 
@@ -130,6 +135,16 @@ export default function SessionSecretActions({
       : []),
     ...(secretSlot.secretId != null
       ? [
+          {
+            key: "replace-secret-value",
+            onClick: toggleReplace,
+            content: (
+              <>
+                <Save className={cx("bi", "me-1")} />
+                Replace secret value
+              </>
+            ),
+          },
           {
             key: "clear-secret",
             onClick: toggleClear,
@@ -225,6 +240,11 @@ export default function SessionSecretActions({
         isOpen={isClearOpen}
         secretSlotWithSecret={secretSlot}
         toggle={toggleClear}
+      />
+      <ReplaceSecretValueModalWrapped
+        isOpen={isReplaceOpen}
+        secretSlotWithSecret={secretSlot}
+        toggle={toggleReplace}
       />
     </>
   );
@@ -440,269 +460,15 @@ function ProvideSessionSecretModal({
   secretSlot,
   toggle,
 }: ProvideSessionSecretModalProps) {
-  const [mode, setMode] = useState<"new-value" | "existing">("new-value");
-
-  useEffect(() => {
-    if (!isOpen) {
-      setMode("new-value");
-    }
-  }, [isOpen]);
-
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader toggle={toggle}>Provide session secret</ModalHeader>
-      <ModalBody className="pb-0">
-        <ButtonGroup>
-          <Input
-            type="radio"
-            className="btn-check"
-            id="provide-session-secret-mode-new-value"
-            value="new-value"
-            checked={mode == "new-value"}
-            onChange={() => setMode("new-value")}
-          />
-          <Label
-            for="provide-session-secret-mode-new-value"
-            className={cx("btn", "btn-outline-primary")}
-          >
-            <PlusLg className={cx("bi", "me-1")} />
-            Provide a new secret value
-          </Label>
-          <Input
-            type="radio"
-            className="btn-check"
-            id="provide-session-secret-mode-existing"
-            value="existing"
-            checked={mode == "existing"}
-            onChange={() => setMode("existing")}
-          />
-          <Label
-            for="provide-session-secret-mode-existing"
-            className={cx("btn", "btn-outline-primary")}
-          >
-            <BoxArrowInLeft className={cx("bi", "me-1")} />
-            Use an existing secret value
-          </Label>
-        </ButtonGroup>
-      </ModalBody>
-      {mode === "new-value" ? (
-        <ProvideSessionSecretModalNewValueContent
-          isOpen={isOpen}
-          secretSlot={secretSlot}
-          toggle={toggle}
-        />
-      ) : (
-        <ProvideSessionSecretModalExistingContent
-          isOpen={isOpen}
-          secretSlot={secretSlot}
-          toggle={toggle}
-        />
-      )}
+      <ProvideSessionSecretModalContent
+        isOpen={isOpen}
+        secretSlot={secretSlot}
+        toggle={toggle}
+      />
     </Modal>
   );
-}
-
-interface ProvideSessionSecretModalNewValueContentProps {
-  isOpen: boolean;
-  secretSlot: SessionSecretSlot;
-  toggle: () => void;
-}
-
-function ProvideSessionSecretModalNewValueContent({
-  isOpen,
-  secretSlot,
-  toggle,
-}: ProvideSessionSecretModalNewValueContentProps) {
-  const { id: slotId, project_id: projectId } = secretSlot;
-
-  const [patchSessionSecrets, result] =
-    usePatchProjectsByProjectIdSessionSecretsMutation();
-
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm<ProvideNewSecretValueForm>({
-    defaultValues: { value: "" },
-  });
-
-  const submitHandler = useCallback(
-    (data: ProvideNewSecretValueForm) => {
-      patchSessionSecrets({
-        projectId,
-        sessionSecretPatchList: [{ secret_slot_id: slotId, value: data.value }],
-      });
-    },
-    [patchSessionSecrets, projectId, slotId]
-  );
-  const onSubmit = useMemo(
-    () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
-  );
-
-  useEffect(() => {
-    reset({ value: "" });
-  }, [reset, secretSlot]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      reset();
-      result.reset();
-    }
-  }, [isOpen, reset, result]);
-
-  useEffect(() => {
-    if (result.isSuccess) {
-      toggle();
-    }
-  }, [result.isSuccess, toggle]);
-
-  return (
-    <Form noValidate onSubmit={onSubmit}>
-      <ModalBody>
-        {result.error && (
-          <RtkOrNotebooksError error={result.error} dismissible={false} />
-        )}
-
-        <div className="mb-3">
-          <Label for="provide-session-secret-new-value">Secret value</Label>
-          <Controller
-            name="value"
-            control={control}
-            render={({ field }) => (
-              <textarea
-                id="provide-session-secret-new-value"
-                className={cx("form-control", errors.value && "is-invalid")}
-                placeholder="Your secret value..."
-                rows={6}
-                {...field}
-              />
-            )}
-            rules={{ required: "Please provide a value" }}
-          />
-          <div className="invalid-feedback">
-            {errors.value?.message ? (
-              <>{errors.value?.message}</>
-            ) : (
-              <>Invalid secret value</>
-            )}
-          </div>
-        </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="outline-primary" onClick={toggle}>
-          <XLg className={cx("bi", "me-1")} />
-          Close
-        </Button>
-        <Button color="primary" disabled={result.isLoading} type="submit">
-          {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
-          ) : (
-            <PlusLg className={cx("bi", "me-1")} />
-          )}
-          Save new secret
-        </Button>
-      </ModalFooter>
-    </Form>
-  );
-}
-
-interface ProvideNewSecretValueForm {
-  value: string;
-}
-
-interface ProvideSessionSecretModalExistingContentProps {
-  isOpen: boolean;
-  secretSlot: SessionSecretSlot;
-  toggle: () => void;
-}
-
-function ProvideSessionSecretModalExistingContent({
-  isOpen,
-  secretSlot,
-  toggle,
-}: ProvideSessionSecretModalExistingContentProps) {
-  const { id: slotId, project_id: projectId } = secretSlot;
-
-  const [patchSessionSecrets, result] =
-    usePatchProjectsByProjectIdSessionSecretsMutation();
-
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm<ProvideExistingSecretForm>({
-    defaultValues: { secretId: "" },
-  });
-
-  const submitHandler = useCallback(
-    (data: ProvideExistingSecretForm) => {
-      patchSessionSecrets({
-        projectId,
-        sessionSecretPatchList: [
-          { secret_slot_id: slotId, secret_id: data.secretId },
-        ],
-      });
-    },
-    [patchSessionSecrets, projectId, slotId]
-  );
-  const onSubmit = useMemo(
-    () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
-  );
-
-  useEffect(() => {
-    reset({ secretId: "" });
-  }, [reset, secretSlot]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      reset();
-      result.reset();
-    }
-  }, [isOpen, reset, result]);
-
-  useEffect(() => {
-    if (result.isSuccess) {
-      toggle();
-    }
-  }, [result.isSuccess, toggle]);
-
-  return (
-    <Form noValidate onSubmit={onSubmit}>
-      <ModalBody>
-        {result.error && (
-          <RtkOrNotebooksError error={result.error} dismissible={false} />
-        )}
-
-        <SelectUserSecretField
-          control={control}
-          errors={errors}
-          name="secretId"
-        />
-      </ModalBody>
-      <ModalFooter>
-        <Button color="outline-primary" onClick={toggle}>
-          <XLg className={cx("bi", "me-1")} />
-          Close
-        </Button>
-        <Button color="primary" disabled={result.isLoading} type="submit">
-          {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
-          ) : (
-            <BoxArrowInLeft className={cx("bi", "me-1")} />
-          )}
-          Use secret
-        </Button>
-      </ModalFooter>
-    </Form>
-  );
-}
-
-interface ProvideExistingSecretForm {
-  secretId: string;
 }
 
 interface ClearSessionSecretModalProps {
@@ -763,5 +529,39 @@ function ClearSessionSecretModal({
         </Button>
       </ModalFooter>
     </Modal>
+  );
+}
+
+interface ReplaceSecretValueModalWrappedProps {
+  isOpen: boolean;
+  secretSlotWithSecret: SessionSecretSlotWithSecret;
+  toggle: () => void;
+}
+
+function ReplaceSecretValueModalWrapped({
+  isOpen,
+  secretSlotWithSecret,
+  toggle,
+}: ReplaceSecretValueModalWrappedProps) {
+  const { secretId } = secretSlotWithSecret;
+  const { data: userSecret, error } = useGetUserSecretByIdQuery(
+    secretId
+      ? {
+          secretId,
+        }
+      : skipToken
+  );
+
+  if (error || !userSecret) {
+    return null;
+  }
+
+  return (
+    <ReplaceSecretValueModal
+      isOpen={isOpen}
+      secret={userSecret}
+      toggle={toggle}
+      isV2
+    />
   );
 }

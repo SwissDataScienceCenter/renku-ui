@@ -36,6 +36,8 @@ function generateFakeSecretsGeneral(num: number) {
       modification_date: new Date(),
       name: secretName,
       kind: "general",
+      session_secret_slot_ids: [],
+      data_connector_ids: [],
     });
   }
   return secrets;
@@ -55,6 +57,8 @@ function generateFakeSecretsStorage(num: number) {
         modification_date: new Date(),
         name: secretName,
         kind: "storage",
+        session_secret_slot_ids: [],
+        data_connector_ids: [dataSourceId],
       });
     }
   }

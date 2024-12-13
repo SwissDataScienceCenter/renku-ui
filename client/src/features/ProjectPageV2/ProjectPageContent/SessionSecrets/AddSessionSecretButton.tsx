@@ -35,8 +35,11 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { usePostSessionSecretSlotsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import DescriptionField from "./fields/DescriptionField";
+import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import FilenameField from "./fields/FilenameField";
 import NameField from "./fields/NameField";
+import ProvideSessionSecretModalContent from "./ProvideSessionSecretModalContent";
+import { SuccessAlert } from "../../../../components/Alert";
 
 export default function AddSessionSecretButton() {
   const ref = useRef<HTMLButtonElement>(null);
@@ -64,6 +67,65 @@ interface AddSessionSecretModalProps {
 }
 
 function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
+  const [state, setState] = useState<AddSessionSecretModalState>({
+    step: "add-secret-slot",
+  });
+  const { step } = state;
+  const onFirstStepSuccess = useCallback(
+    (secretSlot: SessionSecretSlot) =>
+      setState({ step: "provide-secret", secretSlot }),
+    []
+  );
+
+  useEffect(() => {
+    if (!isOpen) {
+      setState({ step: "add-secret-slot" });
+    }
+  }, [isOpen]);
+
+  const slotSavedAlert = step === "provide-secret" && (
+    <SuccessAlert timeout={0} dismissible={false}>
+      The session secret slot{" "}
+      <span className="fw-bold">{state.secretSlot.name}</span> has been
+      successfully added. You can now provide a value for it.
+    </SuccessAlert>
+  );
+
+  return (
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+      {step === "add-secret-slot" && (
+        <AddSessionSecretModalContentStep1
+          isOpen={isOpen}
+          onSuccess={onFirstStepSuccess}
+          toggle={toggle}
+        />
+      )}
+      {step === "provide-secret" && (
+        <ProvideSessionSecretModalContent
+          isOpen={isOpen}
+          previousStepAlert={slotSavedAlert}
+          secretSlot={state.secretSlot}
+          toggle={toggle}
+        />
+      )}
+    </Modal>
+  );
+}
+
+type AddSessionSecretModalState =
+  | { step: "add-secret-slot" }
+  | { step: "provide-secret"; secretSlot: SessionSecretSlot };
+
+interface AddSessionSecretModalContentStep1Props
+  extends AddSessionSecretModalProps {
+  onSuccess: (secretSlot: SessionSecretSlot) => void;
+}
+
+function AddSessionSecretModalContentStep1({
+  isOpen,
+  onSuccess,
+  toggle,
+}: AddSessionSecretModalContentStep1Props) {
   const { project } = useProject();
   const { id: projectId, secrets_mount_directory: secretsMountDirectory } =
     project;
@@ -112,50 +174,48 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
 
   useEffect(() => {
     if (result.isSuccess) {
-      toggle();
+      onSuccess(result.data);
     }
-  }, [result.isSuccess, toggle]);
+  }, [onSuccess, result.data, result.isSuccess]);
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <Form noValidate onSubmit={onSubmit}>
-        <ModalHeader toggle={toggle}>Add session secret slot</ModalHeader>
-        <ModalBody>
-          <p>Add a new slot for a secret to be mounted in sessions.</p>
+    <Form noValidate onSubmit={onSubmit}>
+      <ModalHeader toggle={toggle}>Add session secret slot</ModalHeader>
+      <ModalBody>
+        <p>Add a new slot for a secret to be mounted in sessions.</p>
 
-          {result.error && (
-            <RtkOrNotebooksError error={result.error} dismissible={false} />
+        {result.error && (
+          <RtkOrNotebooksError error={result.error} dismissible={false} />
+        )}
+
+        <NameField control={control} errors={errors} name="name" />
+        <DescriptionField
+          control={control}
+          errors={errors}
+          name="description"
+        />
+        <FilenameField
+          control={control}
+          errors={errors}
+          name="filename"
+          secretsMountDirectory={secretsMountDirectory}
+        />
+      </ModalBody>
+      <ModalFooter>
+        <Button color="outline-primary" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Close
+        </Button>
+        <Button color="primary" disabled={result.isLoading} type="submit">
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <PlusLg className={cx("bi", "me-1")} />
           )}
-
-          <NameField control={control} errors={errors} name="name" />
-          <DescriptionField
-            control={control}
-            errors={errors}
-            name="description"
-          />
-          <FilenameField
-            control={control}
-            errors={errors}
-            name="filename"
-            secretsMountDirectory={secretsMountDirectory}
-          />
-        </ModalBody>
-        <ModalFooter>
-          <Button color="outline-primary" onClick={toggle}>
-            <XLg className={cx("bi", "me-1")} />
-            Close
-          </Button>
-          <Button color="primary" disabled={result.isLoading} type="submit">
-            {result.isLoading ? (
-              <Loader className="me-1" inline size={16} />
-            ) : (
-              <PlusLg className={cx("bi", "me-1")} />
-            )}
-            Add session secret slot
-          </Button>
-        </ModalFooter>
-      </Form>
-    </Modal>
+          Add session secret slot
+        </Button>
+      </ModalFooter>
+    </Form>
   );
 }
 

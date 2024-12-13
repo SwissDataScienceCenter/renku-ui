@@ -18,7 +18,7 @@
 
 import fixtures from "../support/renkulab-fixtures";
 
-describe("Project Session Secrets", () => {
+describe("Project Session secret slots", () => {
   beforeEach(() => {
     fixtures
       .config()
@@ -34,7 +34,7 @@ describe("Project Session Secrets", () => {
     cy.getDataCy("project-settings-edit").click();
 
     cy.getDataCy("project-settings-session-secrets")
-      .contains("Session Secrets")
+      .contains("Session secret slots")
       .should("be.visible");
   });
 
@@ -46,7 +46,7 @@ describe("Project Session Secrets", () => {
     cy.getDataCy("project-settings-edit").click();
 
     cy.getDataCy("project-settings-session-secrets")
-      .contains("Session Secrets")
+      .contains("Session secret slots")
       .should("be.visible");
     cy.wait("@sessionSecretSlots").wait("@sessionSecrets");
     cy.contains(`[data-cy=session-secret-slot-item]`, "A Secret")
@@ -73,7 +73,7 @@ describe("Project Session Secrets", () => {
     cy.getDataCy("project-settings-edit").click();
 
     cy.getDataCy("project-settings-session-secrets")
-      .contains("Session Secrets")
+      .contains("Session secret slots")
       .should("be.visible");
     cy.wait("@sessionSecretSlots").wait("@sessionSecrets");
     cy.getDataCy("project-settings-session-secrets")
@@ -106,7 +106,7 @@ describe("Project Session Secrets", () => {
     cy.wait("@postSessionSecretSlot").wait("@updatedSessionSecretSlots");
 
     cy.getDataCy("project-settings-session-secrets")
-      .contains("Session Secrets")
+      .contains("Session secret slots")
       .should("be.visible");
     cy.contains(`[data-cy=session-secret-slot-item]`, "A new secret")
       .should("be.visible")
@@ -128,7 +128,7 @@ describe("Project Session Secrets", () => {
     cy.getDataCy("project-settings-edit").click();
 
     cy.getDataCy("project-settings-session-secrets")
-      .contains("Session Secrets")
+      .contains("Session secret slots")
       .should("be.visible");
     cy.wait("@sessionSecretSlots").wait("@sessionSecrets");
     cy.contains(`[data-cy=session-secret-slot-item]`, "A Secret")
@@ -177,7 +177,7 @@ describe("Project Session Secrets", () => {
     cy.getDataCy("project-settings-edit").click();
 
     cy.getDataCy("project-settings-session-secrets")
-      .contains("Session Secrets")
+      .contains("Session secret slots")
       .should("be.visible");
     cy.wait("@sessionSecretSlots").wait("@sessionSecrets");
     cy.contains(`[data-cy=session-secret-slot-item]`, "A Secret")
@@ -227,7 +227,7 @@ describe("Project Session Secrets", () => {
     cy.getDataCy("project-settings-edit").click();
 
     cy.getDataCy("project-settings-session-secrets")
-      .contains("Session Secrets")
+      .contains("Session secret slots")
       .should("be.visible");
     cy.wait("@sessionSecretSlots").wait("@sessionSecrets");
     cy.contains(`[data-cy=session-secret-slot-item]`, "Another Secret")
@@ -284,7 +284,7 @@ describe("Project Session Secrets", () => {
     cy.getDataCy("project-settings-edit").click();
 
     cy.getDataCy("project-settings-session-secrets")
-      .contains("Session Secrets")
+      .contains("Session secret slots")
       .should("be.visible");
     cy.wait("@sessionSecretSlots").wait("@sessionSecrets");
     cy.contains(`[data-cy=session-secret-slot-item]`, "Another Secret")
@@ -347,7 +347,7 @@ describe("Project Session Secrets", () => {
     cy.getDataCy("project-settings-edit").click();
 
     cy.getDataCy("project-settings-session-secrets")
-      .contains("Session Secrets")
+      .contains("Session secret slots")
       .should("be.visible");
     cy.wait("@sessionSecretSlots").wait("@sessionSecrets");
     cy.contains(`[data-cy=session-secret-slot-item]`, "A Secret")

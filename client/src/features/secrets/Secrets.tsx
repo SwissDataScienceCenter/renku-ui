@@ -45,7 +45,7 @@ function GeneralSecretSection() {
             the User Secrets section and select the secrets you would like to
             include in the session. The secrets you select will be mounted in
             the session as files in a directory of your choice as{" "}
-            <code>secret-name</code>.
+            <code>secret-filename</code>.
           </p>
         </Col>
       </Row>

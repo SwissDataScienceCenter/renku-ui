@@ -296,6 +296,11 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     deleteSessionSecretSlotsBySlotId: {
       invalidatesTags: ["SessionSecretSlot"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(usersApi.endpoints.invalidateUserSecrets.initiate());
+        });
+      },
     },
     getProjectsByProjectIdSessionSecrets: {
       providesTags: (result, _, { projectId }) =>
@@ -310,12 +315,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
           : ["SessionSecret"],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         queryFulfilled.finally(() => {
-          dispatch(
-            usersApi.endpoints.getUserSecrets.initiate(
-              { userSecretsParams: { kind: "general" } },
-              { forceRefetch: true }
-            )
-          );
+          dispatch(usersApi.endpoints.invalidateUserSecrets.initiate());
         });
       },
     },
@@ -333,7 +333,17 @@ const enhancedApi = injectedApi.enhanceEndpoints({
   },
 });
 
-export { enhancedApi as projectV2Api };
+// Adds tag invalidation endpoints
+const withInvalidation = enhancedApi.injectEndpoints({
+  endpoints: (build) => ({
+    invalidateSessionSecrets: build.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["SessionSecret", "SessionSecretSlot"],
+    }),
+  }),
+});
+
+export { withInvalidation as projectV2Api };
 export const {
   // project hooks
   useGetProjectsPagedQuery: useGetProjectsQuery,
@@ -375,4 +385,4 @@ export const {
   useGetNamespacesPagedQuery: useGetNamespacesQuery,
   useLazyGetNamespacesPagedQuery: useLazyGetNamespacesQuery,
   useGetNamespacesByNamespaceSlugQuery,
-} = enhancedApi;
+} = withInvalidation;

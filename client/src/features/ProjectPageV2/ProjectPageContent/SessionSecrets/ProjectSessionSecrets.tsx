@@ -39,10 +39,10 @@ import {
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import AddSessionSecretButton from "./AddSessionSecretButton";
+import SecretsMountDirectoryComponent from "./SecretsMountDirectoryComponent";
 import { SESSION_SECRETS_CARD_ID } from "./sessionSecrets.constants";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 import SessionSecretSlotItem from "./SessionSecretSlotItem";
-import UpdateSecretsMountDirectoryButton from "./UpdateSecretsMountDirectoryButton";
 
 export default function ProjectSessionSecrets() {
   const userLogged = useLegacySelector<boolean>(
@@ -109,7 +109,7 @@ export default function ProjectSessionSecrets() {
           <div className={cx("align-items-center", "d-flex")}>
             <h4 className={cx("m-0", "me-2")}>
               <ShieldLock className={cx("me-1", "bi")} />
-              Session Secrets
+              Session secret slots
             </h4>
             {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
           </div>
@@ -123,28 +123,14 @@ export default function ProjectSessionSecrets() {
             />
           </div>
         </div>
-
         <p className="mb-1">
           Use session secrets to connect to resources from inside a session that
           require a password or credential.
         </p>
-        <div className={cx("align-items-center", "d-flex", "gap-2")}>
-          <p className="mb-0">
-            Session secrets will be mounted at{" "}
-            <code>
-              {secretsMountDirectory.startsWith("/")
-                ? secretsMountDirectory
-                : `<work-dir>/${secretsMountDirectory}`}
-            </code>
-            .
-          </p>
-          <PermissionsGuard
-            disabled={null}
-            enabled={<UpdateSecretsMountDirectoryButton />}
-            requestedPermission="write"
-            userPermissions={permissions}
-          />
-        </div>
+        <p className="mb-0">
+          Session secrets will be mounted at the following location:
+        </p>
+        <SecretsMountDirectoryComponent />
 
         {!userLogged && (
           <InfoAlert
