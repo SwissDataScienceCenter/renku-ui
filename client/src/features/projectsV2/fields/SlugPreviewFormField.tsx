@@ -40,7 +40,7 @@ export default function SlugPreviewFormField<T extends FieldValues>({
 
   const slugPreview = (
     <div>
-      <FormText>
+      <FormText className="me-2">
         The URL for this {entityName} will be{" "}
         <span className="fw-bold">
           {url}
@@ -48,8 +48,8 @@ export default function SlugPreviewFormField<T extends FieldValues>({
         </span>
       </FormText>
       <button
-        className={cx("btn", "btn-link", "p-0", "text-decoration-none", "ms-2")}
-        data-cy="project-slug-toggle"
+        className={cx("btn", "btn-link", "p-0", "text-decoration-none")}
+        data-cy={`${entityName}-slug-toggle`}
         onClick={toggleCollapse}
         type="button"
       >

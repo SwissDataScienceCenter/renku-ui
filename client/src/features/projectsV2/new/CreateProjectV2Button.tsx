@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import { useCallback } from "react";
 import { Button } from "reactstrap";
 
@@ -42,7 +41,7 @@ export default function CreateProjectV2Button({
 
   return (
     <Button
-      className={cx(className)}
+      className={className}
       color={color || "primary"}
       data-cy={dataCy || "button-project-new"}
       onClick={openModal}

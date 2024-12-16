@@ -35,6 +35,7 @@ describe("Add new v2 group", () => {
   it("create a new group", () => {
     cy.contains("Create a new group").should("be.visible");
     cy.getDataCy("group-name-input").clear().type(newGroupName);
+    cy.getDataCy("group-slug-toggle").click();
     cy.getDataCy("group-slug-input").should("have.value", slug);
     cy.getDataCy("group-create-button").click();
 
@@ -48,13 +49,13 @@ describe("Add new v2 group", () => {
   it("cannot create a new group with invalid slug", () => {
     cy.contains("Create a new group").should("be.visible");
     cy.getDataCy("group-name-input").clear().type(newGroupName);
+    cy.getDataCy("group-slug-toggle").click();
     cy.getDataCy("group-slug-input").should("have.value", slug);
 
-    cy.getDataCy("group-slug-toggle").click();
     cy.getDataCy("group-slug-input").clear().type(newGroupName);
     cy.getDataCy("group-create-button").click();
     cy.contains(
-      "You can customize the slug only with lowercase letters, numbers, and hyphens."
+      "Slug can include lowercase letters, numbers, dots ('.'), and hyphens, but must start with a letter or number and cannot end with '.git' or '.atom' or start with a hyphen."
     ).should("be.visible");
 
     cy.getDataCy("group-slug-input").clear().type(slug);

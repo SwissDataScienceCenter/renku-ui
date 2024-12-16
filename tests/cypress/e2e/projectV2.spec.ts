@@ -38,6 +38,7 @@ describe("Add new v2 project", () => {
   it("create a new project", () => {
     cy.contains("Create a new project").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
+    cy.getDataCy("project-slug-toggle").click();
     cy.getDataCy("project-slug-input").should("have.value", slug);
     cy.wait("@listNamespaceV2");
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
@@ -61,7 +62,7 @@ describe("Add new v2 project", () => {
     cy.getDataCy("project-slug-input").clear().type(newProjectTitle);
     cy.getDataCy("project-create-button").click();
     cy.contains(
-      "You can customize the slug only with lowercase letters, numbers, and hyphens."
+      "Slug can include lowercase letters, numbers, dots ('.'), and hyphens, but must start with a letter or number and cannot end with '.git' or '.atom' or start with a hyphen."
     ).should("be.visible");
 
     cy.getDataCy("project-slug-input").clear().type(slug);

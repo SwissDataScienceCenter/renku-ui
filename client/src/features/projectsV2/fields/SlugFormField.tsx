@@ -41,13 +41,13 @@ export default function SlugFormField<T extends FieldValues>({
         return (
           <InputGroup>
             <div className="input-group-text">
-              <small>{url}</small>
+              <small>{url ?? ""}</small>
             </div>
             <Input
               aria-describedby={`${entityName}SlugHelp`}
               className={cx(
                 "form-control",
-                errors.slug && isDirty && "is-invalid",
+                errors.slug && "is-invalid",
                 compact && "p-1"
               )}
               data-cy={`${entityName}-slug-input`}
@@ -70,10 +70,13 @@ export default function SlugFormField<T extends FieldValues>({
       }}
       rules={{
         required: true,
-        maxLength: 99,
+        maxLength: {
+          value: 99,
+          message: "This slug exceed maxLength.",
+        },
         pattern: {
           message:
-            "You can customize the slug only with lowercase letters, numbers, and hyphens.",
+            "Slug can include lowercase letters, numbers, dots ('.'), and hyphens, but must start with a letter or number and cannot end with '.git' or '.atom' or start with a hyphen.",
           value: /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
         },
       }}

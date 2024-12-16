@@ -20,7 +20,7 @@ export interface GenericFormFieldProps<T extends FieldValues>
 export interface SlugFormFieldProps<T extends FieldValues>
   extends GenericFormFieldProps<T> {
   compact?: boolean;
-  url: string;
+  url?: string;
   resetFunction?: () => void;
 }
 
