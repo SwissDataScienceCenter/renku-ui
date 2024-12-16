@@ -34,19 +34,13 @@ export default function PrimaryAlert({
   return (
     <Alert
       color="primary"
-      isOpen={true}
-      toggle={undefined}
+      isOpen
       data-cy={props["data-cy"]}
-      className={cx(
-        styles.primaryAlert,
-        props.className ? props.className : ""
-      )}
+      className={cx(styles.primaryAlert, props.className, "overflow-y-auto")}
     >
       <div className={cx("d-flex", "gap-3")}>
         {icon && <div>{icon}</div>}
-        <div className={cx("my-auto", "overflow-auto", "w-100")}>
-          {children}
-        </div>
+        <div className={cx("my-auto", "w-100")}>{children}</div>
       </div>
     </Alert>
   );
