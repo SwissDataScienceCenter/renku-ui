@@ -53,6 +53,8 @@ import {
   useGetProjectsQuery,
   useGetGroupsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
+import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
+import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import SearchV2Bar from "../searchV2/components/SearchV2Bar.tsx";
@@ -240,18 +242,13 @@ function ProjectsDashboard() {
           <Badge>{data?.total ?? 0}</Badge>
         </div>
         {hasProjects && (
-          <Link
-            className={cx(
-              "btn",
-              "btn-outline-primary",
-              "btn-sm",
-              "ms-auto",
-              "my-auto"
-            )}
-            to="/v2/projects/new"
+          <CreateProjectV2Button
+            className={cx("btn-sm", "ms-auto", "my-auto")}
+            data-cy="dashboard-project-new"
+            color="outline-primary"
           >
             <PlusLg className="bi" id="createPlus" />
-          </Link>
+          </CreateProjectV2Button>
         )}
       </CardHeader>
 
@@ -336,18 +333,13 @@ function GroupsDashboard() {
           <Badge>{data?.total ?? 0}</Badge>
         </div>
         {hasGroups && (
-          <Link
-            className={cx(
-              "btn",
-              "btn-outline-primary",
-              "btn-sm",
-              "ms-auto",
-              "my-auto"
-            )}
-            to="/v2/groups/new"
+          <CreateGroupButton
+            className={cx("btn-sm", "ms-auto", "my-auto")}
+            data-cy="dashboard-group-new"
+            color="outline-primary"
           >
             <PlusLg className="bi" id="createPlus" />
-          </Link>
+          </CreateGroupButton>
         )}
       </CardHeader>
 

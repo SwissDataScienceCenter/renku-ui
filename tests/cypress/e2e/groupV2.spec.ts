@@ -23,20 +23,43 @@ describe("Add new v2 group", () => {
   const slug = "new-group";
 
   beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects();
+    fixtures.config().versions().userTest();
     fixtures
       .createGroupV2()
+      .listNamespaceV2()
       .readGroupV2({ groupSlug: slug })
       .readGroupV2Namespace({ groupSlug: slug });
     cy.visit("/v2/groups/new");
   });
 
   it("create a new group", () => {
-    cy.contains("New Group").should("be.visible");
+    cy.contains("Create a new group").should("be.visible");
     cy.getDataCy("group-name-input").clear().type(newGroupName);
+    cy.getDataCy("group-slug-toggle").click();
     cy.getDataCy("group-slug-input").should("have.value", slug);
-    cy.contains("Create").click();
+    cy.getDataCy("group-create-button").click();
+
+    cy.wait("@createGroupV2");
+    cy.wait("@readGroupV2");
+    cy.wait("@readGroupV2Namespace");
+    cy.url().should("contain", `v2/groups/${slug}`);
+    cy.contains("test 2 group-v2").should("be.visible");
+  });
+
+  it("cannot create a new group with invalid slug", () => {
+    cy.contains("Create a new group").should("be.visible");
+    cy.getDataCy("group-name-input").clear().type(newGroupName);
+    cy.getDataCy("group-slug-toggle").click();
+    cy.getDataCy("group-slug-input").should("have.value", slug);
+
+    cy.getDataCy("group-slug-input").clear().type(newGroupName);
+    cy.getDataCy("group-create-button").click();
+    cy.contains(
+      "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'."
+    ).should("be.visible");
+
+    cy.getDataCy("group-slug-input").clear().type(slug);
+    cy.getDataCy("group-create-button").click();
     cy.wait("@createGroupV2");
     cy.wait("@readGroupV2");
     cy.wait("@readGroupV2Namespace");

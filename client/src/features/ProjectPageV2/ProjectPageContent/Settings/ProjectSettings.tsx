@@ -71,7 +71,7 @@ function notificationProjectUpdated(
 
 function ProjectReadOnlyNamespaceField({ namespace }: { namespace: string }) {
   return (
-    <div className="mb-3">
+    <div>
       <Label className="form-label" for="project-namespace">
         Namespace
       </Label>
@@ -93,7 +93,7 @@ function ProjectReadOnlyVisibilityField({
   visibility: string;
 }) {
   return (
-    <div className="mb-3">
+    <div>
       <Label className="form-label" for="project-visibility">
         Visibility
       </Label>
@@ -193,8 +193,13 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
         </SuccessAlert>
       )}
 
-      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+      <Form
+        className={cx("d-flex", "flex-column", "gap-3")}
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <ProjectNameFormField name="name" control={control} errors={errors} />
+
         <PermissionsGuard
           disabled={
             <ProjectReadOnlyNamespaceField namespace={project.namespace} />
@@ -212,11 +217,17 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           userPermissions={permissions}
         />
         {currentNamespace !== project.namespace && (
-          <RenkuAlert color={"warning"} dismissible={false} timeout={0}>
-            Modifying the namespace also change the project&apos;s URL. Once the
+          <RenkuAlert
+            className={cx("mb-0", "mt-1")}
+            color="warning"
+            dismissible={false}
+            timeout={0}
+          >
+            Modifying the owner also change the project&apos;s URL. Once the
             change is saved, it will redirect to the updated project URL.
           </RenkuAlert>
         )}
+
         <PermissionsGuard
           disabled={
             <ProjectReadOnlyVisibilityField visibility={project.visibility} />
@@ -231,20 +242,25 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           requestedPermission="delete"
           userPermissions={permissions}
         />
+
         <ProjectDescriptionFormField
           name="description"
           control={control}
           errors={errors}
         />
+
         <KeywordsInput
           hasError={errors.keywords != null}
           help="Keywords are used to describe the project. To add one, type a keyword and press enter."
           label="Keywords"
           name="keywords"
-          register={register("keywords", { validate: () => !areKeywordsDirty })}
+          register={register("keywords", {
+            validate: () => !areKeywordsDirty,
+          })}
           setDirty={setKeywordsDirty}
           value={project.keywords as string[]}
         />
+
         <div className={cx("d-flex", "justify-content-end")}>
           <Button
             color="primary"

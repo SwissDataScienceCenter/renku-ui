@@ -31,9 +31,9 @@ export default function DescriptionFormField<T extends FieldValues>({
   name,
 }: GenericFormFieldProps<T>) {
   return (
-    <div className="mb-3">
+    <div>
       <Label className="form-label" for={`${entityName}-description`}>
-        Description
+        Description (Optional)
       </Label>
       <Controller
         control={control}
