@@ -84,3 +84,6 @@ Default: \`1000\`.`,
   command: `The command that will be run i.e. will overwrite the image Dockerfile \`ENTRYPOINT\`.`,
   args: `The arguments that will follow the command, i.e. will overwrite the image Dockerfile \`CMD\`.`,
 };
+
+export const CONTAINER_IMAGE_PATTERN =
+  /^[a-z0-9]+((\.|_|__|-+)[a-z0-9]+)*(\/[a-z0-9]+((\.|_|__|-+)[a-z0-9]+)*)*(:[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}|@sha256:[a-fA-F0-9]{64}){0,1}$/;

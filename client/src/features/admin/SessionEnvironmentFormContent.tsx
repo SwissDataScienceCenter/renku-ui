@@ -19,6 +19,8 @@
 import cx from "classnames";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { Input, Label } from "reactstrap";
+
+import { CONTAINER_IMAGE_PATTERN } from "../sessionsV2/session.constants";
 import SessionEnvironmentAdvancedFields from "./SessionEnvironmentAdvancedFields";
 
 export interface SessionEnvironmentForm {
@@ -105,9 +107,18 @@ export default function SessionEnvironmentFormContent({
               {...field}
             />
           )}
-          rules={{ required: true }}
+          rules={{
+            required: "Please provide a container image.",
+            pattern: {
+              value: CONTAINER_IMAGE_PATTERN,
+              message: "Please provide a valid container image.",
+            },
+          }}
         />
-        <div className="invalid-feedback">Please provide a container image</div>
+        <div className="invalid-feedback">
+          {errors.container_image?.message ??
+            "Please provide a valid container image."}
+        </div>
       </div>
       <SessionEnvironmentAdvancedFields control={control} errors={errors} />
     </>
