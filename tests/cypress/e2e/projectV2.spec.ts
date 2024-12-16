@@ -203,7 +203,7 @@ describe("Edit v2 project", () => {
 
   it("changes project metadata", () => {
     fixtures.readProjectV2().updateProjectV2().listNamespaceV2();
-    cy.contains("Projects").should("be.visible");
+    cy.contains("My projects").should("be.visible");
     cy.getDataCy("dashboard-project-list")
       .contains("a", "test 2 v2-project")
       .should("be.visible")
@@ -438,7 +438,7 @@ describe("Edit v2 project", () => {
       fixture: "projectV2/list-projectV2-post-delete.json",
       name: "listProjectV2PostDelete",
     });
-    cy.contains("Projects");
+    cy.contains("My projects");
     cy.contains("Project deleted").should("be.visible");
   });
 });

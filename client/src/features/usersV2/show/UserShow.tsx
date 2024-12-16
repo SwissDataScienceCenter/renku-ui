@@ -36,7 +36,7 @@ import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import { EntityPill } from "../../searchV2/components/SearchV2Results";
 import { useGetUserByIdQuery, useGetUserQuery } from "../api/users.api";
-import UserAvatar from "./UserAvatar";
+import UserAvatar, { UserAvatarSize } from "./UserAvatar";
 
 export default function UserShow() {
   const { username } = useParams<{ username: string }>();
@@ -105,7 +105,7 @@ export default function UserShow() {
                 firstName={user.first_name}
                 lastName={user.last_name}
                 username={username}
-                large
+                size={UserAvatarSize.medium}
               />
               <h2 className="mb-0">{name ?? "Unknown user"}</h2>
             </div>
