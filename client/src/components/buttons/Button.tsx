@@ -131,9 +131,7 @@ interface ButtonWithMenuV2Props {
   preventPropagation?: boolean;
   size?: string;
 }
-export function ButtonWithMenuV2(props: ButtonWithMenuV2Props) {
-  return <SplitButtonWithMenu {...props} />;
-}
+export const ButtonWithMenuV2 = SplitButtonWithMenu;
 
 export function SplitButtonWithMenu({
   children,
@@ -153,7 +151,7 @@ export function SplitButtonWithMenu({
   return (
     <UncontrolledDropdown
       {...additionalProps}
-      className={cx(className)}
+      className={className}
       color={color ?? "primary"}
       direction={direction ?? "down"}
       disabled={disabled}
@@ -192,7 +190,7 @@ export function SingleButtonWithMenu({
   return (
     <UncontrolledDropdown
       {...additionalProps}
-      className={cx(className)}
+      className={className}
       color={color ?? "primary"}
       direction={direction ?? "down"}
       disabled={disabled}
