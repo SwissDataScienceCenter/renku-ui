@@ -40,6 +40,7 @@ import {
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
 
+import type { DataConnectorRead } from "../../api/data-connectors.api";
 import {
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
@@ -47,18 +48,18 @@ import {
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsMutation,
 } from "../../api/data-connectors.enhanced-api";
-import type { DataConnectorRead } from "../../api/data-connectors.api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
 import {
-  DataConnectorModalBackButton,
-  DataConnectorModalContinueButton,
-  DataConnectorConnectionTestResult,
-} from "./dataConnectorModalButtons";
-import {
   dataConnectorPostFromFlattened,
   dataConnectorToFlattened,
+  hasSchemaAccessMode,
 } from "../dataConnector.utils";
+import {
+  DataConnectorConnectionTestResult,
+  DataConnectorModalBackButton,
+  DataConnectorModalContinueButton,
+} from "./dataConnectorModalButtons";
 
 interface DataConnectorModalFooterProps {
   dataConnector?: DataConnectorRead | null;
@@ -144,9 +145,18 @@ function DataConnectorCreateFooter({
     });
   }, [createDataConnector, dataConnector, schemata, flatDataConnector]);
 
+  const currentSchema = useMemo(
+    () => schemata?.find((s) => s.prefix === flatDataConnector.schema),
+    [schemata, flatDataConnector]
+  );
+  const schemaHasAccessModes = currentSchema
+    ? hasSchemaAccessMode(currentSchema)
+    : false;
+
   const schemaRequiresProvider = useMemo(
-    () => hasProviderShortlist(flatDataConnector.schema),
-    [flatDataConnector.schema]
+    () =>
+      hasProviderShortlist(flatDataConnector.schema) || schemaHasAccessModes,
+    [flatDataConnector.schema, schemaHasAccessModes]
   );
 
   useEffect(() => {
@@ -323,7 +333,11 @@ function DataConnectorCreateFooter({
     ? "Please provide a mount point"
     : !flatDataConnector.schema
     ? "Please go back and select a storage type"
-    : "Please go back and select a provider";
+    : schemaHasAccessModes
+    ? "Please go back and select a mode"
+    : disableContinueButton
+    ? "Please go back and select a provider"
+    : "";
   const isResultLoading = isAddResultLoading;
 
   return (
@@ -361,10 +375,11 @@ function DataConnectorCreateFooter({
           addButtonDisableReason={addButtonDisableReason}
           addOrEditStorage={addStorage}
           disableAddButton={disableAddButton}
-          disableContinueButton={disableContinueButton}
+          disableContinueButton={!!disableContinueButton}
           hasStoredCredentialsInConfig={false}
           isResultLoading={isResultLoading}
           dataConnectorId={null}
+          selectedSchemaHasAccessMode={!!schemaHasAccessModes}
         />
       )}
     </>
@@ -452,9 +467,18 @@ function DataConnectorEditFooter({
     flatDataConnector,
   ]);
 
+  const currentSchema = useMemo(
+    () => schemata?.find((s) => s.prefix === flatDataConnector.schema),
+    [schemata, flatDataConnector]
+  );
+  const schemaHasAccessModes = currentSchema
+    ? hasSchemaAccessMode(currentSchema)
+    : false;
+
   const schemaRequiresProvider = useMemo(
-    () => hasProviderShortlist(flatDataConnector.schema),
-    [flatDataConnector.schema]
+    () =>
+      hasProviderShortlist(flatDataConnector.schema) || schemaHasAccessModes,
+    [flatDataConnector.schema, schemaHasAccessModes]
   );
 
   useEffect(() => {
@@ -501,6 +525,8 @@ function DataConnectorEditFooter({
     ? "Please provide a mount point"
     : !flatDataConnector.schema
     ? "Please go back and select a storage type"
+    : schemaHasAccessModes
+    ? "Please go back and select a mode"
     : "Please go back and select a provider";
   const isResultLoading = isModifyResultLoading;
 
@@ -542,10 +568,11 @@ function DataConnectorEditFooter({
           addButtonDisableReason={addButtonDisableReason}
           addOrEditStorage={editStorage}
           disableAddButton={disableAddButton}
-          disableContinueButton={disableContinueButton}
+          disableContinueButton={!!disableContinueButton}
           hasStoredCredentialsInConfig={hasStoredCredentialsInConfig}
           isResultLoading={isResultLoading}
           dataConnectorId={dataConnectorId}
+          selectedSchemaHasAccessMode={!!schemaHasAccessModes}
         />
       )}
     </>
