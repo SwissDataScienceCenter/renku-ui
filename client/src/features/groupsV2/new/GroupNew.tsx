@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -18,14 +18,13 @@
 
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
-import { CheckLg, Folder, InfoCircle, XLg } from "react-bootstrap-icons";
+import { CheckLg, People, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
   Form,
   FormGroup,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
@@ -38,25 +37,23 @@ import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
+import type { GroupPostRequest } from "../../projectsV2/api/namespace.api";
+import { usePostGroupsMutation } from "../../projectsV2/api/projectV2.enhanced-api";
+import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
+import NameFormField from "../../projectsV2/fields/NameFormField";
+import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField.tsx";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
-import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
-import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
-import ProjectNameFormField from "../fields/ProjectNameFormField";
-import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
-import SlugPreviewFormField from "../fields/SlugPreviewFormField.tsx";
-import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
-import { NewProjectForm } from "./projectV2New.types";
-import { projectCreationHash } from "./createProjectV2.constants";
+import { groupCreationHash } from "./createGroup.constants";
 
-export default function ProjectV2New() {
+export default function GroupNew() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
 
   const [hash, setHash] = useLocationHash();
-  const showProjectCreationModal = hash === projectCreationHash;
+  const showGroupCreationModal = hash === groupCreationHash;
   const toggleModal = useCallback(() => {
     setHash((prev) => {
-      const isOpen = prev === projectCreationHash;
-      return isOpen ? "" : projectCreationHash;
+      const isOpen = prev === groupCreationHash;
+      return isOpen ? "" : groupCreationHash;
     });
   }, [setHash]);
 
@@ -65,50 +62,52 @@ export default function ProjectV2New() {
       <Modal
         backdrop="static"
         centered
-        data-cy="new-project-modal"
+        data-cy="new-group-modal"
         fullscreen="lg"
-        isOpen={showProjectCreationModal}
+        isOpen={showGroupCreationModal}
         scrollable
         size="lg"
         unmountOnClose={true}
         toggle={toggleModal}
       >
         <ModalHeader
-          data-cy="new-project-modal-header"
+          data-cy="new-group-modal-header"
           tag="div"
           toggle={toggleModal}
         >
           <h2>
-            <Folder className="bi" /> Create a new project
+            <People className="bi" /> Create a new group
           </h2>
           <p className={cx("fs-6", "fw-normal", "mb-0")}>
-            A Renku project groups together data, code, and compute resources
-            for you and your collaborators.
+            Groups let you group together related projects and control who can
+            access them.
           </p>
         </ModalHeader>
 
-        {userLoading ? (
-          <ModalBody>
-            <Loader />
-          </ModalBody>
-        ) : userInfo?.isLoggedIn ? (
-          <ProjectV2CreationDetails />
-        ) : (
-          <ModalBody>
-            <LoginAlert
-              logged={userInfo?.isLoggedIn ?? false}
-              textIntro="Only authenticated users can create new projects."
-              textPost="to create a new project."
-            />
-          </ModalBody>
-        )}
+        <div data-cy="create-new-group-content">
+          {userLoading ? (
+            <ModalBody>
+              <Loader />
+            </ModalBody>
+          ) : userInfo?.isLoggedIn ? (
+            <GroupV2CreationDetails />
+          ) : (
+            <ModalBody>
+              <LoginAlert
+                logged={userInfo?.isLoggedIn ?? false}
+                textIntro="Only authenticated users can create new groups."
+                textPost="to create a new group."
+              />
+            </ModalBody>
+          )}
+        </div>
       </Modal>
     </>
   );
 }
 
-function ProjectV2CreationDetails() {
-  const [createProject, result] = usePostProjectsMutation();
+function GroupV2CreationDetails() {
+  const [createGroup, result] = usePostGroupsMutation();
   const navigate = useNavigate();
 
   const [, setHash] = useLocationHash();
@@ -123,14 +122,12 @@ function ProjectV2CreationDetails() {
     handleSubmit,
     setValue,
     watch,
-  } = useForm<NewProjectForm>({
+  } = useForm<GroupPostRequest>({
     mode: "onChange",
     defaultValues: {
       description: "",
       name: "",
-      namespace: "",
       slug: "",
-      visibility: "private",
     },
   });
 
@@ -142,27 +139,27 @@ function ProjectV2CreationDetails() {
     });
   }, [currentName, setValue]);
 
-  // Slug and namespace are use to show the projected URL
-  const currentNamespace = watch("namespace");
+  // Slug is use to show the projected URL
   const currentSlug = watch("slug");
 
-  // Project creation utilities
+  // Group creation utilities
   const onSubmit = useCallback(
-    (data: NewProjectForm) => {
-      createProject({ projectPost: data });
+    (groupPostRequest: GroupPostRequest) => {
+      createGroup({ groupPostRequest });
     },
-    [createProject]
+    [createGroup]
   );
 
   useEffect(() => {
     if (result.isSuccess) {
-      const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace: result.data.namespace,
+      const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
         slug: result.data.slug,
       });
-      navigate(projectUrl);
+      navigate(groupUrl);
     }
   }, [result, navigate]);
+
+  const url = "renkulab.io/v2/groups/";
 
   const resetUrl = useCallback(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
@@ -170,27 +167,18 @@ function ProjectV2CreationDetails() {
     });
   }, [setValue, currentName]);
 
-  const url = `renkulab.io/v2/projects/${currentNamespace ?? "<Owner>"}/`;
-
   return (
     <>
-      <ModalBody data-cy="new-project-modal-body">
-        <Form id="project-creation-form" onSubmit={handleSubmit(onSubmit)}>
+      <ModalBody data-cy="new-group-modal-body">
+        <Form id="group-creation-form" onSubmit={handleSubmit(onSubmit)}>
           <FormGroup className="d-inline" disabled={result.isLoading}>
-            {/* //? FormGroup hard codes an additional mb-3. Adding "d-inline" makes it ineffective. */}
             <div className={cx("d-flex", "flex-column", "gap-3")}>
-              <ProjectNameFormField
-                control={control}
-                errors={errors}
-                name="name"
-              />
-
               <div className="mb-1">
-                <ProjectNamespaceFormField
+                <NameFormField
                   control={control}
-                  entityName="project"
+                  entityName="group"
                   errors={errors}
-                  name="namespace"
+                  name="name"
                 />
               </div>
 
@@ -203,30 +191,16 @@ function ProjectV2CreationDetails() {
                 url={url}
                 slug={currentSlug}
                 dirtyFields={dirtyFields}
-                label="Project URL"
-                entityName="project"
+                label="Group URL"
+                entityName="group"
               />
 
-              <div className="mb-1">
-                <ProjectVisibilityFormField
-                  name="visibility"
-                  control={control}
-                  errors={errors}
-                />
-              </div>
-
-              <ProjectDescriptionFormField
+              <DescriptionFormField
                 control={control}
+                entityName="group"
                 errors={errors}
                 name="description"
               />
-
-              <div>
-                <Label className="mb-0" for="projectV2NewForm-users">
-                  <InfoCircle className="bi" /> You can add members after
-                  creating the project.
-                </Label>
-              </div>
 
               {result.error && <RtkOrNotebooksError error={result.error} />}
             </div>
@@ -241,8 +215,8 @@ function ProjectV2CreationDetails() {
         </Button>
         <Button
           color="primary"
-          data-cy="project-create-button"
-          form="project-creation-form"
+          data-cy="group-create-button"
+          form="group-creation-form"
           type="submit"
         >
           {result.isLoading ? (
