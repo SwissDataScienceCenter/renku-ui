@@ -17,11 +17,12 @@
  */
 
 import cx from "classnames";
+import { useEffect, useRef, useState } from "react";
+
 import { ErrorAlert } from "../../../components/Alert";
+import { Loader } from "../../../components/Loader";
 import { ensureHTTPS } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
-import { useEffect, useRef, useState } from "react";
-import { Loader } from "../../../components/Loader";
 
 interface SessionIframeProps {
   height: string;
