@@ -179,13 +179,7 @@ interface FooterDashboardCardProps {
 }
 function FooterDashboardCard({ children, url }: FooterDashboardCardProps) {
   return (
-    <Card
-      className={cx(
-        DashboardStyles.DashboardCard,
-        "border-0",
-        "position-relative"
-      )}
-    >
+    <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
       <CardBody className={DashboardStyles.FooterCard}>
         <a
           target="_blank"
@@ -574,12 +568,6 @@ function SessionsDashboard() {
           </h4>
           <Badge>{totalSessions}</Badge>
         </div>
-        {totalSessions > 0 && (
-          <p className={cx("mb-0", "mt-2")}>
-            Session launchers are available to everyone who can see the project.
-            Running sessions are only accessible to you.
-          </p>
-        )}
       </CardHeader>
 
       <CardBody>

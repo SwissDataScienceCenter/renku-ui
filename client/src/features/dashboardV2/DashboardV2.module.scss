@@ -37,7 +37,8 @@
   a svg {
     transition: all 0.3s linear;
   }
-  a:hover svg {
+  a:hover svg,
+  a:focus svg {
     transform: scale(1.3);
   }
 }
