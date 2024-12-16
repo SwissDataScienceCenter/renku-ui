@@ -62,7 +62,7 @@ describe("Add new v2 project", () => {
     cy.getDataCy("project-slug-input").clear().type(newProjectTitle);
     cy.getDataCy("project-create-button").click();
     cy.contains(
-      "Slug can include lowercase letters, numbers, dots ('.'), and hyphens, but must start with a letter or number and cannot end with '.git' or '.atom' or start with a hyphen."
+      "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'."
     ).should("be.visible");
 
     cy.getDataCy("project-slug-input").clear().type(slug);

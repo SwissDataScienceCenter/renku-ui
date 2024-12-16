@@ -55,7 +55,7 @@ describe("Add new v2 group", () => {
     cy.getDataCy("group-slug-input").clear().type(newGroupName);
     cy.getDataCy("group-create-button").click();
     cy.contains(
-      "Slug can include lowercase letters, numbers, dots ('.'), and hyphens, but must start with a letter or number and cannot end with '.git' or '.atom' or start with a hyphen."
+      "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'."
     ).should("be.visible");
 
     cy.getDataCy("group-slug-input").clear().type(slug);

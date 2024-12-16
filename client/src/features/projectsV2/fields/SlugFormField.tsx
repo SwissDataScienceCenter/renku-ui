@@ -72,11 +72,11 @@ export default function SlugFormField<T extends FieldValues>({
         required: true,
         maxLength: {
           value: 99,
-          message: "This slug exceed maxLength.",
+          message: "The slug must not exceed 99 characters.",
         },
         pattern: {
           message:
-            "Slug can include lowercase letters, numbers, dots ('.'), and hyphens, but must start with a letter or number and cannot end with '.git' or '.atom' or start with a hyphen.",
+            "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'.",
           value: /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
         },
       }}
