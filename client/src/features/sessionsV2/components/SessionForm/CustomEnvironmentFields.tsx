@@ -17,13 +17,15 @@
  */
 
 import cx from "classnames";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Controller } from "react-hook-form";
-import { Label, Input, Collapse } from "reactstrap";
+import { Collapse, Input, Label } from "reactstrap";
+
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import { EnvironmentFieldsProps } from "./EnvironmentField";
-import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
+import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
+import { EnvironmentFieldsProps } from "./EnvironmentField";
 
 export function CustomEnvironmentFields({
   watch,
@@ -65,9 +67,21 @@ export function CustomEnvironmentFields({
               {...field}
             />
           )}
-          rules={{ required: watchEnvironmentKind === "CUSTOM" }}
+          rules={{
+            required: {
+              value: watchEnvironmentKind === "CUSTOM",
+              message: "Please provide a container image.",
+            },
+            pattern: {
+              value: CONTAINER_IMAGE_PATTERN,
+              message: "Please provide a valid container image.",
+            },
+          }}
         />
-        <div className="invalid-feedback">Please provide a container image</div>
+        <div className="invalid-feedback">
+          {errors.container_image?.message ??
+            "Please provide a valid container image."}
+        </div>
       </div>
       <div>
         <span

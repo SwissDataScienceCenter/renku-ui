@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../project/components/cloudStorage/projectCloudStorage.constants";
+import {
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+  STORAGES_WITH_ACCESS_MODE,
+} from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import type {
   CloudStorageDetailsOptions,
   CloudStorageSchema,
@@ -182,4 +185,11 @@ function _dataConnectorFromConfig(config: DataConnectorConfiguration) {
     }
   });
   return mergedDataConnector;
+}
+
+export function hasSchemaAccessMode(schema: CloudStorageSchema) {
+  const providers = schema?.options.find((o) => o.name === "provider");
+  return (
+    providers?.examples && STORAGES_WITH_ACCESS_MODE.includes(schema.prefix)
+  );
 }
