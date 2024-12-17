@@ -36,6 +36,7 @@ describe("Set up project components", () => {
       .dataServicesUser({
         response: {
           id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
           email: "user1@email.com",
         },
       })
@@ -180,6 +181,7 @@ describe("Set up data connectors", () => {
       .dataServicesUser({
         response: {
           id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
           email: "user1@email.com",
         },
       })

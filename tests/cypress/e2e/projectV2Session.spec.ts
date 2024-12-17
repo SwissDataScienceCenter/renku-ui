@@ -27,6 +27,7 @@ describe("launch sessions with data connectors", () => {
       .dataServicesUser({
         response: {
           id: "user1-uuid",
+          username: "user-1",
           email: "user1@email.com",
         },
       })
@@ -770,6 +771,7 @@ describe("launch sessions with secrets", () => {
       .dataServicesUser({
         response: {
           id: "user1-uuid",
+          username: "user-1",
           email: "user1@email.com",
         },
       })
