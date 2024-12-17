@@ -34,25 +34,25 @@ import {
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
-import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
-import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
-import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 import LazyGroupV2Show from "../groupsV2/LazyGroupV2Show";
-import LazyGroupV2New from "../projectsV2/LazyGroupNew";
-import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
+import { groupCreationHash } from "../groupsV2/new/createGroup.constants";
+import GroupNew from "../groupsV2/new/GroupNew";
+import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
+import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
+import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
+import { projectCreationHash } from "../projectsV2/new/createProjectV2.constants";
+import ProjectV2New from "../projectsV2/new/ProjectV2New";
 import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
 import NavbarV2 from "./NavbarV2";
-import { groupCreationHash } from "../groupsV2/new/createGroup.constants";
-import { projectCreationHash } from "../projectsV2/new/createProjectV2.constants";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -79,8 +79,8 @@ export default function RootV2() {
   return (
     <div className="w-100">
       <NavbarV2 />
-      <LazyProjectV2New />
-      <LazyGroupV2New />
+      <ProjectV2New />
+      <GroupNew />
 
       <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
