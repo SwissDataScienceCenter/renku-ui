@@ -26,10 +26,11 @@ import {
   useParams,
 } from "react-router-dom-v5-compat";
 import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
+import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
@@ -39,8 +40,7 @@ import {
   useGetUserQuery,
   UserWithId,
 } from "../api/users.api";
-import UserAvatar, { AvatarTypeWrap, UserAvatarSize } from "./UserAvatar";
-import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
+import UserAvatar, { AvatarTypeWrap } from "./UserAvatar";
 
 export default function UserShow() {
   const { username } = useParams<{ username: string }>();
@@ -192,7 +192,7 @@ function UserHeader({
     <div className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
       <div className={cx("d-flex", "gap-2")}>
         <AvatarTypeWrap type={"User"}>
-          <UserAvatar username={username} size={UserAvatarSize.large} />
+          <UserAvatar namespace={username} size="lg" />
         </AvatarTypeWrap>
         <div className="d-flex gap-2">
           <h2 className="mb-0">{name}</h2>

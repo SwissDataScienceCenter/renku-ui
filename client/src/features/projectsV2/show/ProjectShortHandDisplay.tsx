@@ -21,7 +21,7 @@ import { generatePath, Link } from "react-router-dom-v5-compat";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import UserAvatar, { UserAvatarSize } from "../../usersV2/show/UserAvatar.tsx";
+import UserAvatar from "../../usersV2/show/UserAvatar";
 import { Project } from "../api/projectV2.api";
 
 interface ProjectShortHandDisplayProps {
@@ -53,7 +53,7 @@ export default function ProjectShortHandDisplay({
           "align-items-center"
         )}
       >
-        <UserAvatar username={project.namespace} size={UserAvatarSize.small} />
+        <UserAvatar namespace={project.namespace} size="sm" />
         <p className={cx("mb-0", "text-truncate", "text-muted")}>
           {project.namespace}
         </p>

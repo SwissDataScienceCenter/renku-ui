@@ -393,10 +393,7 @@ function DataConnectorViewMetadata({
       <DataConnectorPropertyValue title="Owner">
         <div className={cx("d-flex", "align-items-center")}>
           <div className="me-1">
-            <UserAvatar
-              // username={dataConnector.namespace}
-              namespace={dataConnector.namespace}
-            />{" "}
+            <UserAvatar namespace={dataConnector.namespace} />{" "}
           </div>
           {namespaceUrl == null ? (
             <div className="me-1">@{dataConnector.namespace}</div>

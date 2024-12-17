@@ -18,12 +18,15 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect, useMemo } from "react";
+import { ReactNode, useEffect, useMemo } from "react";
 
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
+import type { SearchEntity } from "../../searchV2/api/searchV2Api.api";
+import { EntityPill } from "../../searchV2/components/SearchV2Results";
 import { usersApi } from "../api/users.api";
 
 import styles from "./UserAvatar.module.scss";
+
 type AvatarSize = "sm" | "md" | "lg";
 
 interface UserAvatarProps {
@@ -140,23 +143,24 @@ function hashStringToNumber(str: string) {
   return str.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
 }
 
-interface AvatarType {
-  type: "User" | "Group";
-  children: ReactNode;
-}
-export function AvatarTypeWrap({ type, children }: AvatarType) {
-  const styles: CSSProperties = {
-    width: "75px",
-    height: "65px",
-  };
+type EntityType = Extract<SearchEntity["type"], "User" | "Group">;
 
+interface AvatarTypeWrapProps {
+  type: EntityType;
+  children?: ReactNode;
+}
+export function AvatarTypeWrap({ type, children }: AvatarTypeWrapProps) {
   return (
     <div
-      style={styles}
-      className={cx("d-flex", "align-items-end", "position-relative")}
+      className={cx(
+        styles.typeBadge,
+        "d-flex",
+        "align-items-end",
+        "position-relative"
+      )}
     >
       {children}
-      <div style={{ right: "0" }} className={cx("position-absolute", "top-0")}>
+      <div className={cx("position-absolute", "top-0", "end-0")}>
         <EntityPill entityType={type} size="sm" />
       </div>
     </div>
