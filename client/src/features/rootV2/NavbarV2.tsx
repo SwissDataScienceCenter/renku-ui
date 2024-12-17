@@ -69,8 +69,12 @@ function NavbarItemPlus() {
         <PlusCircle className="bi" id="createPlus" />
       </DropdownToggle>
       <DropdownMenu end>
-        <DropdownItem onClick={toggleNewProject}>Project</DropdownItem>
-        <DropdownItem onClick={toggleNewGroup}>Group</DropdownItem>
+        <DropdownItem data-cy="navbar-project-new" onClick={toggleNewProject}>
+          Project
+        </DropdownItem>
+        <DropdownItem data-cy="navbar-group-new" onClick={toggleNewGroup}>
+          Group
+        </DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );
