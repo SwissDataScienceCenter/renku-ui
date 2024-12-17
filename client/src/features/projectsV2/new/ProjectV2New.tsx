@@ -46,17 +46,17 @@ import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
 import SlugPreviewFormField from "../fields/SlugPreviewFormField.tsx";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
 import { NewProjectForm } from "./projectV2New.types";
-import { projectCreationHash } from "./createProjectV2.constants";
+import { PROJECT_CREATION_HASH } from "./createProjectV2.constants";
 
 export default function ProjectV2New() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
 
   const [hash, setHash] = useLocationHash();
-  const showProjectCreationModal = hash === projectCreationHash;
+  const showProjectCreationModal = hash === PROJECT_CREATION_HASH;
   const toggleModal = useCallback(() => {
     setHash((prev) => {
-      const isOpen = prev === projectCreationHash;
-      return isOpen ? "" : projectCreationHash;
+      const isOpen = prev === PROJECT_CREATION_HASH;
+      return isOpen ? "" : PROJECT_CREATION_HASH;
     });
   }, [setHash]);
 

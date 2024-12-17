@@ -39,13 +39,13 @@ import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 import LazyGroupV2Show from "../groupsV2/LazyGroupV2Show";
-import { groupCreationHash } from "../groupsV2/new/createGroup.constants";
+import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import GroupNew from "../groupsV2/new/GroupNew";
 import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
 import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
 import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
-import { projectCreationHash } from "../projectsV2/new/createProjectV2.constants";
+import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 import ProjectV2New from "../projectsV2/new/ProjectV2New";
 import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
@@ -153,7 +153,10 @@ function GroupsV2Routes() {
         path={RELATIVE_ROUTES.v2.groups.new}
         element={
           <Navigate
-            to={{ pathname: ABSOLUTE_ROUTES.v2.root, hash: groupCreationHash }}
+            to={{
+              pathname: ABSOLUTE_ROUTES.v2.root,
+              hash: GROUP_CREATION_HASH,
+            }}
             replace
           />
         }
@@ -195,7 +198,7 @@ function ProjectsV2Routes() {
           <Navigate
             to={{
               pathname: ABSOLUTE_ROUTES.v2.root,
-              hash: projectCreationHash,
+              hash: PROJECT_CREATION_HASH,
             }}
             replace
           />

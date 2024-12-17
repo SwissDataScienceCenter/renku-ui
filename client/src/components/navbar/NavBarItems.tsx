@@ -305,7 +305,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
   }
 
   return (
-    <UncontrolledDropdown className="nav-item dropdown">
+    <UncontrolledDropdown className={cx("nav-item", "dropdown")}>
       <DropdownToggle
         nav
         className={cx("nav-link", "fs-5")}
@@ -323,14 +323,12 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
         key="user-bar"
         aria-labelledby="user-menu"
       >
-        <DropdownItem className="p-0">
-          <ExternalLink
-            url={`${gatewayURL}/auth/user-profile`}
-            title="Account"
-            className="dropdown-item"
-            role="link"
-          />
-        </DropdownItem>
+        <ExternalLink
+          url={`${gatewayURL}/auth/user-profile`}
+          title="Account"
+          className="dropdown-item"
+          role="link"
+        />
 
         <Link to="/secrets" className="dropdown-item">
           User Secrets

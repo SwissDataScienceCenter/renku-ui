@@ -43,17 +43,17 @@ import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
 import NameFormField from "../../projectsV2/fields/NameFormField";
 import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField.tsx";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
-import { groupCreationHash } from "./createGroup.constants";
+import { GROUP_CREATION_HASH } from "./createGroup.constants";
 
 export default function GroupNew() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
 
   const [hash, setHash] = useLocationHash();
-  const showGroupCreationModal = hash === groupCreationHash;
+  const showGroupCreationModal = hash === GROUP_CREATION_HASH;
   const toggleModal = useCallback(() => {
     setHash((prev) => {
-      const isOpen = prev === groupCreationHash;
-      return isOpen ? "" : groupCreationHash;
+      const isOpen = prev === GROUP_CREATION_HASH;
+      return isOpen ? "" : GROUP_CREATION_HASH;
     });
   }, [setHash]);
 

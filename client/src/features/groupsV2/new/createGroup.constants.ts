@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export const groupCreationHash = "create-group";
+export const GROUP_CREATION_HASH = "create-group";
