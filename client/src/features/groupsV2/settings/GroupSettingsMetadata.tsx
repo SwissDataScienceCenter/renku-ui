@@ -34,8 +34,8 @@ import {
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import AppContext from "../../../utils/context/appContext.ts";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard.tsx";
+import AppContext from "../../../utils/context/appContext";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type {
   GroupPatchRequest,
   GroupResponse,
@@ -47,7 +47,7 @@ import {
 import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
 import NameFormField from "../../projectsV2/fields/NameFormField";
 import SlugFormField from "../../projectsV2/fields/SlugFormField";
-import useGroupPermissions from "../utils/useGroupPermissions.hook.ts";
+import useGroupPermissions from "../utils/useGroupPermissions.hook";
 
 type GroupMetadata = Omit<GroupPatchRequest, "repositories">;
 

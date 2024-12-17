@@ -27,22 +27,22 @@ import {
   useParams,
 } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
-import ContainerWrap from "../../../components/container/ContainerWrap.tsx";
-import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark.tsx";
-import { Loader } from "../../../components/Loader.tsx";
-import PageNav, { PageNavOptions } from "../../../components/PageNav.tsx";
-import LazyNotFound from "../../../not-found/LazyNotFound.tsx";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants.ts";
-import { GroupResponse } from "../../projectsV2/api/namespace.api.ts";
+import ContainerWrap from "../../../components/container/ContainerWrap";
+import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
+import { Loader } from "../../../components/Loader";
+import PageNav, { PageNavOptions } from "../../../components/PageNav";
+import LazyNotFound from "../../../not-found/LazyNotFound";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import { GroupResponse } from "../../projectsV2/api/namespace.api";
 import {
   useGetGroupsByGroupSlugQuery,
   useGetNamespacesByNamespaceSlugQuery,
-} from "../../projectsV2/api/projectV2.enhanced-api.ts";
-import GroupNotFound from "../../projectsV2/notFound/GroupNotFound.tsx";
+} from "../../projectsV2/api/projectV2.enhanced-api";
+import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
 import UserAvatar, {
   AvatarTypeWrap,
   UserAvatarSize,
-} from "../../usersV2/show/UserAvatar.tsx";
+} from "../../usersV2/show/UserAvatar";
 
 export default function GroupPageContainer() {
   const { slug } = useParams<{ slug: string }>();

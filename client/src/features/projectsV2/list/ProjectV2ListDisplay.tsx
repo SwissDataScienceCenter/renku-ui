@@ -25,12 +25,12 @@ import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook.ts";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard.tsx";
-import { useGetUserQuery } from "../../usersV2/api/users.api.ts";
-import { NamespaceKind } from "../api/namespace.api.ts";
+import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
+import { NamespaceKind } from "../api/namespace.api";
 import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
-import ProjectShortHandDisplay from "../show/ProjectShortHandDisplay.tsx";
+import ProjectShortHandDisplay from "../show/ProjectShortHandDisplay";
 
 const DEFAULT_PER_PAGE = 5;
 const DEFAULT_PAGE_PARAM = "page";

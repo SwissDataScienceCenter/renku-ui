@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { CSSProperties, ReactNode } from "react";
-import { EntityPill } from "../../searchV2/components/SearchV2Results.tsx";
+import { EntityPill } from "../../searchV2/components/SearchV2Results";
 
 import styles from "./UserAvatar.module.scss";
 

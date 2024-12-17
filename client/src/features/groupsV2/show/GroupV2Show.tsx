@@ -19,8 +19,8 @@
 import { Col, Row } from "reactstrap";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
-import { useGroup } from "./GroupPageContainer.tsx";
-import GroupInformation from "./GroupV2Information.tsx";
+import { useGroup } from "./GroupPageContainer";
+import GroupInformation from "./GroupV2Information";
 
 export default function GroupV2Show() {
   const { group } = useGroup();
