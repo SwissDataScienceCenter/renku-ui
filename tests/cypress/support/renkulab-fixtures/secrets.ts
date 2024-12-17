@@ -36,6 +36,8 @@ function generateFakeSecretsGeneral(num: number) {
       modification_date: new Date(),
       name: secretName,
       kind: "general",
+      session_secret_slot_ids: [],
+      data_connector_ids: [],
     });
   }
   return secrets;
@@ -55,6 +57,8 @@ function generateFakeSecretsStorage(num: number) {
         modification_date: new Date(),
         name: secretName,
         kind: "storage",
+        session_secret_slot_ids: [],
+        data_connector_ids: [dataSourceId],
       });
     }
   }
@@ -102,10 +106,7 @@ export function Secrets<T extends FixturesConstructor>(Parent: T) {
           kind: secretsKind,
         },
       };
-      cy.intercept("POST", "/api/data/user/secrets", (req) => {
-        expect(req.body).to.have.property("kind");
-        req.reply(response);
-      }).as(name);
+      cy.intercept("POST", "/api/data/user/secrets", response).as(name);
       return this;
     }
 

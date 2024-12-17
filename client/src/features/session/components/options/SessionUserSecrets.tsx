@@ -218,7 +218,7 @@ function SecretsCheckboxList({
             className={cx("form-check-label", "my-auto")}
             for={`secrets-session-${secret.name}`}
           >
-            {secret.name}
+            {secret.name} - filename: <code>{secret.default_filename}</code>
           </Label>
         </div>
       ))}

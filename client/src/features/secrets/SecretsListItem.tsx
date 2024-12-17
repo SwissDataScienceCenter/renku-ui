@@ -17,24 +17,17 @@
  */
 
 import cx from "classnames";
-import { Card, CardBody } from "reactstrap";
+import { Card, CardBody, Col } from "reactstrap";
 
 import { TimeCaption } from "../../components/TimeCaption";
-import SecretEdit from "./SecretEdit";
-import SecretDelete from "./SecretDelete";
-import { SecretDetails, SecretKind } from "./secrets.types";
-import { storageSecretNameToFieldName } from "./secrets.utils";
+import SecretItemActions from "../secretsV2/SecretItemActions";
+import type { SecretWithId } from "../usersV2/api/users.api";
 
 interface SecretsListItemProps {
-  kind: SecretKind;
-  secret: SecretDetails;
+  secret: SecretWithId;
 }
-export default function SecretsListItem({
-  kind,
-  secret,
-}: SecretsListItemProps) {
-  const secretDisplayName =
-    kind === "storage" ? storageSecretNameToFieldName(secret) : secret.name;
+
+export default function SecretsListItem({ secret }: SecretsListItemProps) {
   return (
     <Card
       className="border"
@@ -51,7 +44,7 @@ export default function SecretsListItem({
             "w-100"
           )}
         >
-          <span className="fw-bold">{secretDisplayName}</span>
+          <span className="fw-bold">{secret.name}</span>
           <span className={cx("text-rk-text-light", "my-auto small")}>
             Edited{" "}
             <TimeCaption
@@ -61,10 +54,12 @@ export default function SecretsListItem({
               prefix=""
             />
           </span>
-          <div className={cx("ms-auto", "d-flex", "gap-2")}>
-            <SecretEdit secret={secret} />
-            <SecretDelete secret={secret} />
-          </div>
+          <Col xs={12} sm="auto" className="ms-auto">
+            <SecretItemActions secret={secret} />
+          </Col>
+        </div>
+        <div>
+          Filename: <code>{secret.default_filename}</code>
         </div>
       </CardBody>
     </Card>
