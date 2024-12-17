@@ -17,48 +17,78 @@
  */
 
 import cx from "classnames";
+import { useEffect, useRef, useState } from "react";
+
 import { ErrorAlert } from "../../../components/Alert";
+import { Loader } from "../../../components/Loader";
 import { ensureHTTPS } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 
-const getIframeStyle = (isSessionReady: boolean): React.CSSProperties => {
-  return !isSessionReady
-    ? {
-        position: "absolute",
-        top: 0,
-        visibility: "hidden",
-      }
-    : {};
-};
-
 interface SessionIframeProps {
   height: string;
-  isSessionReady: boolean;
   session: SessionV2;
 }
 
 export default function SessionIframe({
   height,
-  isSessionReady,
   session: { status, url },
 }: SessionIframeProps) {
-  if (status.state !== "running") return null;
+  const ref = useRef<HTMLIFrameElement>(null);
 
-  const style = getIframeStyle(isSessionReady);
+  const [{ isError, hasLoaded }, setState] = useState<SessionIframeState>({
+    isError: false,
+    hasLoaded: false,
+  });
+
+  // ? This effect will reload the iframe if it detects a 503 error.
+  useEffect(() => {
+    if (hasLoaded) {
+      return;
+    }
+    const checkIframe = window.setInterval(() => {
+      if (ref.current == null) {
+        return;
+      }
+      const headText =
+        ref.current.contentDocument?.head.querySelector("title")?.textContent ??
+        "";
+      if (headText.includes("503 Service Temporarily Unavailable")) {
+        setState({ isError: true, hasLoaded: false });
+        ref.current?.contentDocument?.location.reload();
+      } else {
+        setState({ isError: false, hasLoaded: true });
+      }
+    }, 1_000);
+    return () => {
+      window.clearInterval(checkIframe);
+    };
+  }, [hasLoaded]);
+
+  if (status.state !== "running") {
+    return null;
+  }
 
   try {
     const secureUrl = ensureHTTPS(url);
     return (
-      <iframe
-        className={cx("d-block", "w-100")}
-        height={height}
-        id="session-iframe"
-        referrerPolicy="origin"
-        sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
-        src={secureUrl}
-        style={style}
-        title="session iframe"
-      />
+      <>
+        {isError && (
+          <p className={cx("mx-3", "my-1")}>
+            <Loader className="me-1" inline size={16} />
+            Reloading window...
+          </p>
+        )}
+        <iframe
+          ref={ref}
+          className={cx("d-block", "w-100")}
+          height={height}
+          id="session-iframe"
+          referrerPolicy="origin"
+          sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
+          src={secureUrl}
+          title="session iframe"
+        />
+      </>
     );
   } catch (error) {
     return (
@@ -70,3 +100,8 @@ export default function SessionIframe({
     );
   }
 }
+
+type SessionIframeState = {
+  isError: boolean;
+  hasLoaded: boolean;
+};
