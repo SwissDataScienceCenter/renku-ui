@@ -17,182 +17,242 @@
  */
 
 import cx from "classnames";
-import { FormEvent, useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useCallback, useEffect } from "react";
+import { CheckLg, Folder, InfoCircle, XLg } from "react-bootstrap-icons";
+import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
-import { Form, Label } from "reactstrap";
+import {
+  Button,
+  Form,
+  FormGroup,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
 
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import FormSchema from "../../../components/formschema/FormSchema";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-
-import type { ProjectPost } from "../api/projectV2.api";
-import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
-
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
-import WipBadge from "../shared/WipBadge";
-import { ProjectV2DescriptionAndRepositories } from "../show/ProjectV2DescriptionAndRepositories";
-import ProjectFormSubmitGroup from "./ProjectV2FormSubmitGroup";
-import ProjectV2NewForm from "./ProjectV2NewForm";
-import type { NewProjectV2State } from "./projectV2New.slice";
-import { setCurrentStep } from "./projectV2New.slice";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
+import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
+import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
+import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
+import ProjectNameFormField from "../fields/ProjectNameFormField";
+import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
+import SlugPreviewFormField from "../fields/SlugPreviewFormField.tsx";
+import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
+import { NewProjectForm } from "./projectV2New.types";
+import { projectCreationHash } from "./createProjectV2.constants";
 
-function projectToProjectPost(
-  project: NewProjectV2State["project"]
-): ProjectPost {
-  return {
-    name: project.metadata.name,
-    namespace: project.metadata.namespace,
-    slug: project.metadata.slug,
-    description: project.metadata.description,
-    visibility: project.access.visibility,
-    repositories: project.content.repositories
-      .map((r) => r.url.trim())
-      .filter((r) => r.length > 0),
-  };
-}
+export default function ProjectV2New() {
+  const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
 
-function ProjectV2NewAccessStepHeader() {
+  const [hash, setHash] = useLocationHash();
+  const showProjectCreationModal = hash === projectCreationHash;
+  const toggleModal = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = prev === projectCreationHash;
+      return isOpen ? "" : projectCreationHash;
+    });
+  }, [setHash]);
+
   return (
     <>
-      <b>Set up visibility and access</b>
-      <p>Decide who can see your project and who is allowed to work in it.</p>
+      <Modal
+        backdrop="static"
+        centered
+        data-cy="new-project-modal"
+        fullscreen="lg"
+        isOpen={showProjectCreationModal}
+        scrollable
+        size="lg"
+        unmountOnClose={true}
+        toggle={toggleModal}
+      >
+        <ModalHeader
+          data-cy="new-project-modal-header"
+          tag="div"
+          toggle={toggleModal}
+        >
+          <h2>
+            <Folder className="bi" /> Create a new project
+          </h2>
+          <p className={cx("fs-6", "fw-normal", "mb-0")}>
+            A Renku project groups together data, code, and compute resources
+            for you and your collaborators.
+          </p>
+        </ModalHeader>
+
+        {userLoading ? (
+          <ModalBody>
+            <Loader />
+          </ModalBody>
+        ) : userInfo?.isLoggedIn ? (
+          <ProjectV2CreationDetails />
+        ) : (
+          <ModalBody>
+            <LoginAlert
+              logged={userInfo?.isLoggedIn ?? false}
+              textIntro="Only authenticated users can create new projects."
+              textPost="to create a new project."
+            />
+          </ModalBody>
+        )}
+      </Modal>
     </>
   );
 }
 
-function ProjectV2NewHeader({
-  currentStep,
-}: Pick<NewProjectV2State, "currentStep">) {
-  return (
-    <>
-      <p>
-        V2 Projects let you group together related resources and control who can
-        access them.
-        <WipBadge className="ms-1" />
-      </p>
-      {currentStep === 0 && <ProjectV2NewMetadataStepHeader />}
-      {currentStep === 1 && <ProjectV2NewAccessStepHeader />}
-      {currentStep === 2 && <ProjectV2NewRepositoryStepHeader />}
-      {currentStep === 3 && <ProjectV2NewProjectCreatingStepHeader />}
-    </>
-  );
-}
-
-function ProjectV2NewMetadataStepHeader() {
-  return (
-    <>
-      <h4>Describe your project</h4>
-      <p>Provide some information to explain what your project is about.</p>
-    </>
-  );
-}
-
-function ProjectV2NewProjectCreatingStepHeader() {
-  return (
-    <>
-      <h4>Review and create</h4>
-      <p>Review what has been entered and, if ready, create the project.</p>
-    </>
-  );
-}
-
-function ProjectV2NewRepositoryStepHeader() {
-  return (
-    <>
-      <h4>Associate some repositories (optional)</h4>
-      <p>
-        You can associate one or more repositories with the project now if you
-        want. This can also be done later at any time.
-      </p>
-    </>
-  );
-}
-
-function ProjectV2NewReviewCreateStep({
-  currentStep,
-}: Pick<NewProjectV2State, "currentStep">) {
-  const { project } = useAppSelector((state) => state.newProjectV2);
+function ProjectV2CreationDetails() {
   const [createProject, result] = usePostProjectsMutation();
-  const newProject = projectToProjectPost(project);
   const navigate = useNavigate();
-  const onSubmit = useCallback(
-    (e: FormEvent<HTMLElement>) => {
-      e.preventDefault();
-      createProject({ projectPost: newProject });
+
+  const [, setHash] = useLocationHash();
+  const closeModal = useCallback(() => {
+    setHash();
+  }, [setHash]);
+
+  // Form initialization
+  const {
+    control,
+    formState: { dirtyFields, errors },
+    handleSubmit,
+    setValue,
+    watch,
+  } = useForm<NewProjectForm>({
+    mode: "onChange",
+    defaultValues: {
+      description: "",
+      name: "",
+      namespace: "",
+      slug: "",
+      visibility: "private",
     },
-    [createProject, newProject]
+  });
+
+  // We watch for changes in the name and derive the slug from it
+  const currentName = watch("name");
+  useEffect(() => {
+    setValue("slug", slugFromTitle(currentName, true, true), {
+      shouldValidate: true,
+    });
+  }, [currentName, setValue]);
+
+  // Slug and namespace are use to show the projected URL
+  const currentNamespace = watch("namespace");
+  const currentSlug = watch("slug");
+
+  // Project creation utilities
+  const onSubmit = useCallback(
+    (data: NewProjectForm) => {
+      createProject({ projectPost: data });
+    },
+    [createProject]
   );
 
   useEffect(() => {
-    if (
-      result.isSuccess &&
-      project.metadata.namespace &&
-      project.metadata.slug
-    ) {
+    if (result.isSuccess) {
       const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace: project.metadata.namespace,
-        slug: project.metadata.slug,
+        namespace: result.data.namespace,
+        slug: result.data.slug,
       });
       navigate(projectUrl);
     }
-  }, [result, project, navigate]);
+  }, [result, navigate]);
 
-  const errorAlert = result.error && <RtkErrorAlert error={result.error} />;
+  const resetUrl = useCallback(() => {
+    setValue("slug", slugFromTitle(currentName, true, true), {
+      shouldValidate: true,
+    });
+  }, [setValue, currentName]);
+
+  const url = `renkulab.io/v2/projects/${currentNamespace ?? "<Owner>"}/`;
 
   return (
-    <Form noValidate onSubmit={onSubmit}>
-      {errorAlert}
-      <h4>Review</h4>
-      <div>
-        <Label>Name</Label>
-        <p className="fw-bold">{newProject.name}</p>
-        <Label>Namespace</Label>
-        <p className="fw-bold">{newProject.namespace}</p>
-        <Label>Slug</Label>
-        <p className="fw-bold">{newProject.slug}</p>
-        <Label>Visibility</Label>
-        <p className="fw-bold">{newProject.visibility}</p>
-      </div>
-      <ProjectV2DescriptionAndRepositories project={newProject} />
-      <ProjectFormSubmitGroup currentStep={currentStep} />
-    </Form>
-  );
-}
+    <>
+      <ModalBody data-cy="new-project-modal-body">
+        <Form id="project-creation-form" onSubmit={handleSubmit(onSubmit)}>
+          <FormGroup className="d-inline" disabled={result.isLoading}>
+            {/* //? FormGroup hard codes an additional mb-3. Adding "d-inline" makes it ineffective. */}
+            <div className={cx("d-flex", "flex-column", "gap-3")}>
+              <ProjectNameFormField
+                control={control}
+                errors={errors}
+                name="name"
+              />
 
-export default function ProjectV2New() {
-  const user = useLegacySelector((state) => state.stateModel.user);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(setCurrentStep(0));
-  }, [dispatch]);
-  const { currentStep } = useAppSelector((state) => state.newProjectV2);
-  if (!user.logged) {
-    const textIntro = "Only authenticated users can create new projects.";
-    const textPost = "to create a new project.";
-    return (
-      <div className={cx("d-flex", "flex-column")}>
-        <h2 className={cx("mb-0", "me-2")}>New project</h2>
-        <LoginAlert
-          logged={user.logged}
-          textIntro={textIntro}
-          textPost={textPost}
-        />
-      </div>
-    );
-  }
-  return (
-    <FormSchema
-      showHeader={true}
-      title="New Project"
-      description={<ProjectV2NewHeader currentStep={currentStep} />}
-    >
-      {currentStep < 3 && <ProjectV2NewForm currentStep={currentStep} />}
-      {currentStep == 3 && (
-        <ProjectV2NewReviewCreateStep currentStep={currentStep} />
-      )}
-    </FormSchema>
+              <div className="mb-1">
+                <ProjectNamespaceFormField
+                  control={control}
+                  entityName="project"
+                  errors={errors}
+                  name="namespace"
+                />
+              </div>
+
+              <SlugPreviewFormField
+                compact={true}
+                control={control}
+                errors={errors}
+                name="slug"
+                resetFunction={resetUrl}
+                url={url}
+                slug={currentSlug}
+                dirtyFields={dirtyFields}
+                label="Project URL"
+                entityName="project"
+              />
+
+              <div className="mb-1">
+                <ProjectVisibilityFormField
+                  name="visibility"
+                  control={control}
+                  errors={errors}
+                />
+              </div>
+
+              <ProjectDescriptionFormField
+                control={control}
+                errors={errors}
+                name="description"
+              />
+
+              <div>
+                <Label className="mb-0" for="projectV2NewForm-users">
+                  <InfoCircle className="bi" /> You can add members after
+                  creating the project.
+                </Label>
+              </div>
+
+              {result.error && <RtkOrNotebooksError error={result.error} />}
+            </div>
+          </FormGroup>
+        </Form>
+      </ModalBody>
+
+      <ModalFooter data-cy="new-project-modal-footer">
+        <Button color="outline-primary" onClick={closeModal} type="button">
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="primary"
+          data-cy="project-create-button"
+          form="project-creation-form"
+          type="submit"
+        >
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <CheckLg className={cx("bi", "me-1")} />
+          )}
+          Create
+        </Button>
+      </ModalFooter>
+    </>
   );
 }

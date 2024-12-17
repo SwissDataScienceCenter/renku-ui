@@ -17,44 +17,79 @@
  */
 
 import cx from "classnames";
-
-import { Controller } from "react-hook-form";
+import { ArrowCounterclockwise } from "react-bootstrap-icons";
 import type { FieldValues } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import { Button, FormText, Input, InputGroup, Label } from "reactstrap";
 
-import { FormText, Input, Label } from "reactstrap";
-import type { GenericFormFieldProps } from "./formField.types";
+import type { SlugFormFieldProps } from "./formField.types";
 
 export default function SlugFormField<T extends FieldValues>({
+  compact,
   control,
   entityName,
   errors,
+  resetFunction,
   name,
-}: GenericFormFieldProps<T>) {
+  url,
+}: SlugFormFieldProps<T>) {
+  const content = (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field, fieldState: { isDirty } }) => {
+        return (
+          <InputGroup>
+            <div className="input-group-text">
+              <small>{url ?? ""}</small>
+            </div>
+            <Input
+              aria-describedby={`${entityName}SlugHelp`}
+              className={cx(
+                "form-control",
+                errors.slug && "is-invalid",
+                compact && "p-1"
+              )}
+              data-cy={`${entityName}-slug-input`}
+              id={`${entityName}-slug`}
+              type="text"
+              {...field}
+            />
+
+            {isDirty && resetFunction && (
+              <Button
+                className="py-1 btn-outline-primary"
+                color={errors.slug ? "outline-danger" : "outline-primary"}
+                onClick={resetFunction}
+              >
+                <ArrowCounterclockwise className="bi" />
+              </Button>
+            )}
+          </InputGroup>
+        );
+      }}
+      rules={{
+        required: true,
+        maxLength: {
+          value: 99,
+          message: "The slug must not exceed 99 characters.",
+        },
+        pattern: {
+          message:
+            "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'.",
+          value: /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
+        },
+      }}
+    />
+  );
+
+  if (compact) return content;
   return (
-    <div className="mb-3">
+    <div>
       <Label className="form-label" for={`${entityName}-slug`}>
         Slug
       </Label>
-      <Controller
-        control={control}
-        name={name}
-        render={({ field }) => (
-          <Input
-            aria-describedby={`${entityName}SlugHelp`}
-            className={cx("form-control", errors.slug && "is-invalid")}
-            data-cy={`${entityName}-slug-input`}
-            id={`${entityName}-slug`}
-            type="text"
-            {...field}
-          />
-        )}
-        rules={{
-          required: true,
-          maxLength: 99,
-          pattern:
-            /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
-        }}
-      />
+      {content}
       <div className="invalid-feedback">
         Please provide a slug consisting of lowercase letters, numbers, and
         hyphens.

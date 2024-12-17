@@ -27,9 +27,11 @@ import {
   UseFormWatch,
 } from "react-hook-form";
 import { Collapse, Input, Label, ListGroup } from "reactstrap";
+
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
+import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { prioritizeSelectedEnvironment } from "../../session.utils";
 import { useGetSessionEnvironmentsQuery } from "../../sessionsV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
@@ -137,7 +139,6 @@ export default function EditLauncherFormContent({
       <Controller
         control={control}
         name="container_image"
-        rules={{ required: environmentKind === "CUSTOM" }}
         render={({ field }) => (
           <Input
             id="addSessionLauncherContainerImage"
@@ -146,8 +147,21 @@ export default function EditLauncherFormContent({
             className={cx(errors.container_image && "is-invalid")}
           />
         )}
+        rules={{
+          required: {
+            value: environmentKind === "CUSTOM",
+            message: "Please provide a container image.",
+          },
+          pattern: {
+            value: CONTAINER_IMAGE_PATTERN,
+            message: "Please provide a valid container image.",
+          },
+        }}
       />
-      <div className="invalid-feedback">Please provide a container image</div>
+      <div className="invalid-feedback">
+        {errors.container_image?.message ??
+          "Please provide a valid container image."}
+      </div>
       <div>
         <span
           className={cx("fw-bold", "cursor-pointer")}

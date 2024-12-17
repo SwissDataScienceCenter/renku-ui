@@ -23,20 +23,43 @@ describe("Add new v2 group", () => {
   const slug = "new-group";
 
   beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects();
+    fixtures.config().versions().userTest();
     fixtures
       .createGroupV2()
+      .listNamespaceV2()
       .readGroupV2({ groupSlug: slug })
       .readGroupV2Namespace({ groupSlug: slug });
     cy.visit("/v2/groups/new");
   });
 
   it("create a new group", () => {
-    cy.contains("New Group").should("be.visible");
+    cy.contains("Create a new group").should("be.visible");
     cy.getDataCy("group-name-input").clear().type(newGroupName);
+    cy.getDataCy("group-slug-toggle").click();
     cy.getDataCy("group-slug-input").should("have.value", slug);
-    cy.contains("Create").click();
+    cy.getDataCy("group-create-button").click();
+
+    cy.wait("@createGroupV2");
+    cy.wait("@readGroupV2");
+    cy.wait("@readGroupV2Namespace");
+    cy.url().should("contain", `v2/groups/${slug}`);
+    cy.contains("test 2 group-v2").should("be.visible");
+  });
+
+  it("cannot create a new group with invalid slug", () => {
+    cy.contains("Create a new group").should("be.visible");
+    cy.getDataCy("group-name-input").clear().type(newGroupName);
+    cy.getDataCy("group-slug-toggle").click();
+    cy.getDataCy("group-slug-input").should("have.value", slug);
+
+    cy.getDataCy("group-slug-input").clear().type(newGroupName);
+    cy.getDataCy("group-create-button").click();
+    cy.contains(
+      "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'."
+    ).should("be.visible");
+
+    cy.getDataCy("group-slug-input").clear().type(slug);
+    cy.getDataCy("group-create-button").click();
     cy.wait("@createGroupV2");
     cy.wait("@readGroupV2");
     cy.wait("@readGroupV2Namespace");
@@ -66,7 +89,7 @@ describe("List v2 groups", () => {
   });
 
   it("list groups", () => {
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 1 group-v2").should("exist");
     cy.getDataCy("dashboard-group-list")
       .find("a")
@@ -76,7 +99,7 @@ describe("List v2 groups", () => {
 
   it("shows groups", () => {
     fixtures.readGroupV2().readGroupV2Namespace();
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -104,7 +127,7 @@ describe("Edit v2 group", () => {
       .listGroupV2Members()
       .listProjectV2ByNamespace()
       .listDataConnectors({ namespace: "test-2-group-v2" });
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -118,12 +141,11 @@ describe("Edit v2 group", () => {
       .getGroupV2Permissions()
       .listGroupV2Members()
       .updateGroupV2();
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.wait("@getGroupV2Permissions");
-    cy.contains("Edit settings").should("be.visible").click();
+    cy.getDataCy("nav-link-settings").should("be.visible").click();
     cy.getDataCy("group-name-input").clear().type("new name");
     cy.getDataCy("group-slug-input").clear().type("new-slug");
     cy.getDataCy("group-description-input").clear().type("new description");
@@ -155,12 +177,11 @@ describe("Edit v2 group", () => {
       .readGroupV2()
       .readGroupV2Namespace();
 
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.wait("@getGroupV2Permissions");
-    cy.contains("Edit settings").should("be.visible").click();
+    cy.getDataCy("nav-link-settings").should("be.visible").click();
     cy.contains("@user1").should("be.visible");
     cy.contains("user3-uuid").should("be.visible");
     fixtures
@@ -202,12 +223,11 @@ describe("Edit v2 group", () => {
       .getGroupV2Permissions()
       .listGroupV2Members()
       .deleteGroupV2();
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.wait("@getGroupV2Permissions");
-    cy.contains("Edit settings").should("be.visible").click();
+    cy.getDataCy("nav-link-settings").should("be.visible").click();
     cy.getDataCy("group-description-input").clear().type("new description");
     cy.get("button").contains("Delete").should("be.visible").click();
     cy.get("button")
@@ -225,7 +245,9 @@ describe("Edit v2 group", () => {
       fixture: "groupV2/list-groupV2-post-delete.json",
       name: "listGroupV2PostDelete",
     });
-    cy.contains("Group with slug test-2-group-v2 does not exist");
+    cy.contains("Group test 2 group-v2 has been successfully deleted.").should(
+      "be.visible"
+    );
   });
 });
 
@@ -266,7 +288,7 @@ describe("Work with group data connectors", () => {
       .readProjectV2ById({ projectId: "PROJECT-ULID-1", name: "readProject1" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-3", name: "readProject2" });
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
@@ -406,7 +428,7 @@ describe("Work with group data connectors, missing permissions", () => {
       .readProjectV2ById({ projectId: "PROJECT-ULID-1", name: "readProject1" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-2", name: "readProject2" })
       .readProjectV2ById({ projectId: "PROJECT-ULID-3", name: "readProject2" });
-    cy.contains("Groups").should("be.visible");
+    cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");

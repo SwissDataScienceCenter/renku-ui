@@ -16,15 +16,12 @@
  * limitations under the License.
  */
 
-import { Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
+import { Visibility } from "../api/projectV2.api";
 
-const GroupV2Show = lazy(() => import("./show/GroupV2Show"));
-
-export default function LazyGroupV2Show() {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <GroupV2Show />
-    </Suspense>
-  );
+export interface NewProjectForm {
+  description: string;
+  name: string;
+  namespace: string;
+  slug: string;
+  visibility: Visibility;
 }

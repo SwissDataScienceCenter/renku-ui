@@ -404,9 +404,17 @@ describe("Cloud storage settings page", () => {
     cy.getDataCy("cloud-storage-edit-header")
       .contains("Add Cloud Storage")
       .should("be.visible");
+    cy.wait("@getStorageSchema");
+    cy.getDataCy("data-storage-polybox")
+      .contains("PolyBox")
+      .should("be.visible");
+
+    cy.getDataCy("data-storage-switchDrive")
+      .contains("SwitchDrive")
+      .should("be.visible");
 
     cy.getDataCy("cloud-storage-edit-schema")
-      .contains("webdav")
+      .contains("WebDAV")
       .should("be.visible")
       .click();
     cy.getDataCy("cloud-storage-edit-next-button").should("be.visible").click();

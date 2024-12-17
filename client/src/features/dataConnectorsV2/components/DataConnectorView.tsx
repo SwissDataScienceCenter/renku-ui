@@ -35,7 +35,10 @@ import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
 import { EntityPill } from "../../searchV2/components/SearchV2Results";
 
 import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
-import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../project/components/cloudStorage/projectCloudStorage.constants";
+import {
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+  STORAGES_WITH_ACCESS_MODE,
+} from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../project/utils/projectCloudStorage.utils";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 
@@ -368,6 +371,9 @@ function DataConnectorViewMetadata({
           }),
     [namespace, dataConnector.namespace]
   );
+  const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
+    storageDefinition.storage_type
+  );
 
   return (
     <section className={cx("pt-3")} data-cy="data-connector-metadata-section">
@@ -422,7 +428,8 @@ function DataConnectorViewMetadata({
         </div>
       </DataConnectorPropertyValue>
       {nonRequiredCredentialConfigurationKeys.map((key) => {
-        const title = toCapitalized(key);
+        const title =
+          key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
         const value = storageDefinition.configuration[key]?.toString() ?? "";
         return (
           <DataConnectorPropertyValue key={key} title={title}>

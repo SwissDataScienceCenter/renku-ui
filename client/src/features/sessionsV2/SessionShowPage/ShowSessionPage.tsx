@@ -110,8 +110,6 @@ export default function ShowSessionPage() {
     };
   }, [thisSession?.status?.state, isLoading, isFetching, dispatch]);
 
-  const [isTheSessionReady, setIsTheSessionReady] = useState(false);
-
   const toggleModalLogs = useCallback(() => {
     dispatch(
       displaySlice.actions.toggleSessionLogsModal({ targetServer: sessionName })
@@ -144,17 +142,6 @@ export default function ShowSessionPage() {
   const { height } = useWindowSize();
   const iframeHeight = height ? height - 42 : 800;
 
-  useEffect(() => {
-    // Wait 4 seconds before setting `isTheSessionReady` for session view
-    if (thisSession?.status.state === "running") {
-      const timeout = window.setTimeout(() => {
-        setIsTheSessionReady(true);
-      }, 4_000);
-      return () => window.clearTimeout(timeout);
-    }
-    setIsTheSessionReady(false);
-  }, [thisSession?.status.state]);
-
   // Redirect to the sessions list if the session has failed
   useEffect(() => {
     if (thisSession?.status.state === "failed") {
@@ -181,17 +168,13 @@ export default function ShowSessionPage() {
       <SessionPaused session={thisSession} />
     ) : thisSession != null ? (
       <>
-        {!isTheSessionReady && (
+        {thisSession.status.state !== "running" && (
           <StartSessionProgressBarV2
             session={thisSession}
             toggleLogs={toggleModalLogs}
           />
         )}
-        <SessionIframe
-          height={`${iframeHeight}px`}
-          isSessionReady={isTheSessionReady}
-          session={thisSession}
-        />
+        <SessionIframe height={`${iframeHeight}px`} session={thisSession} />
       </>
     ) : (
       <StartSessionProgressBarV2 toggleLogs={toggleModalLogs} />

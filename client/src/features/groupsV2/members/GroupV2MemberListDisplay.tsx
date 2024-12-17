@@ -19,8 +19,9 @@
 import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { useMemo } from "react";
+import { People } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router-dom-v5-compat";
-import { ListGroup } from "reactstrap";
+import { Badge } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
@@ -28,7 +29,7 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toSortedMembers } from "../../ProjectPageV2/utils/roleUtils";
 import type { ProjectMemberResponse } from "../../projectsV2/api/projectV2.api";
 import { useGetGroupsByGroupSlugMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import UserAvatar from "../../usersV2/show/UserAvatar";
+import { GroupInformationBox } from "../show/GroupV2Information";
 
 interface GroupV2MemberListDisplayProps {
   group: string;
@@ -48,30 +49,33 @@ export default function GroupV2MemberListDisplay({
     [members]
   );
 
-  if (isLoading)
-    return (
-      <div className={cx("d-flex", "justify-content-center", "w-100")}>
-        <div className={cx("d-flex", "flex-column")}>
-          <Loader />
-          <div>Retrieving group members...</div>
-        </div>
-      </div>
-    );
-
   if (error || sortedMembers == null) {
     return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
-  if (!sortedMembers.length) {
-    return <p>There are no members in this group.</p>;
-  }
-
   return (
-    <ListGroup className="mb-3">
+    <GroupInformationBox
+      icon={<People className="bi" />}
+      title={
+        <>
+          <span>Members</span>
+          <Badge>{sortedMembers.length ?? 0}</Badge>
+        </>
+      }
+    >
+      {!sortedMembers.length && <p>There are no members in this group.</p>}
+      {isLoading && (
+        <div className={cx("d-flex", "justify-content-center", "w-100")}>
+          <div className={cx("d-flex", "flex-column")}>
+            <Loader />
+            <div>Retrieving group members...</div>
+          </div>
+        </div>
+      )}
       {sortedMembers?.map((member) => (
         <GroupV2Member key={member.id} member={member} />
       ))}
-    </ListGroup>
+    </GroupInformationBox>
   );
 }
 
@@ -95,33 +99,22 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
   return (
     <>
       <Link
-        className={cx("list-group-item-action", "list-group-item")}
+        className={cx("mb-0")}
         to={generatePath(ABSOLUTE_ROUTES.v2.users.show, { username })}
       >
-        <div
-          className={cx(
-            "align-items-center",
-            "d-flex",
-            "flex-wrap",
-            "gap-2",
-            "justify-content-between"
-          )}
-        >
+        <div className={cx("d-flex", "gap-2")}>
           <div
-            className={cx("align-items-center", "d-flex", "flex-wrap", "gap-2")}
+            className={cx(
+              "d-flex",
+              "flex-column",
+              "justify-content-center",
+              "text-truncate"
+            )}
           >
-            <div className={cx("align-items-center", "d-flex", "gap-2")}>
-              <UserAvatar
-                // firstName={firstName}
-                // lastName={lastName}
-                // username={username}
-                namespace={member.namespace ?? ""}
-              />
-              <span className={cx("fw-bold")}>{name ?? "Unknown user"}</span>{" "}
-            </div>
-            <p className="m-0">{`@${username}`}</p>
+            <p className={cx("m-0", "text-truncate")}>
+              {name ?? "Unknown user"} ({capitalize(role)})
+            </p>
           </div>
-          <p className="m-0">{capitalize(role)}</p>
         </div>
       </Link>
     </>

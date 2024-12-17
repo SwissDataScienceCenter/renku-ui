@@ -24,7 +24,6 @@ import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 import { usersApi } from "../api/users.api";
 
 import styles from "./UserAvatar.module.scss";
-
 type AvatarSize = "sm" | "md" | "lg";
 
 interface UserAvatarProps {
@@ -139,4 +138,27 @@ function generatePastelColor(input: string) {
 }
 function hashStringToNumber(str: string) {
   return str.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+}
+
+interface AvatarType {
+  type: "User" | "Group";
+  children: ReactNode;
+}
+export function AvatarTypeWrap({ type, children }: AvatarType) {
+  const styles: CSSProperties = {
+    width: "75px",
+    height: "65px",
+  };
+
+  return (
+    <div
+      style={styles}
+      className={cx("d-flex", "align-items-end", "position-relative")}
+    >
+      {children}
+      <div style={{ right: "0" }} className={cx("position-absolute", "top-0")}>
+        <EntityPill entityType={type} size="sm" />
+      </div>
+    </div>
+  );
 }

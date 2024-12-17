@@ -63,15 +63,26 @@ export function User<T extends FixturesConstructor>(Parent: T) {
         }
       ) as DeepRequired<UserNoneArgs>;
 
-      const response = {
+      const responseGitLab = {
         body: {},
         statusCode: 401,
         ...(delay != null ? { delay } : {}),
       };
+      cy.intercept("GET", "/ui-server/api/user", responseGitLab).as(user.name);
 
-      cy.intercept("GET", "/ui-server/api/user", response).as(user.name);
-
-      cy.intercept("GET", "/api/data/user", response).as(dataServiceUser.name);
+      const responseDataService = {
+        body: {
+          error: {
+            code: 1401,
+            message: "You have to be authenticated to perform this operation.",
+          },
+        },
+        statusCode: 401,
+        ...(delay != null ? { delay } : {}),
+      };
+      cy.intercept("GET", "/api/data/user", responseDataService).as(
+        dataServiceUser.name
+      );
 
       return this;
     }

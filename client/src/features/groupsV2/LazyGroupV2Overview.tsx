@@ -16,22 +16,15 @@
  * limitations under the License.
  */
 
-import type { FieldValues } from "react-hook-form";
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-import SlugFormField from "./SlugFormField";
-import type { GenericProjectFormFieldProps } from "./formField.types";
+const GroupV2Overview = lazy(() => import("./show/GroupV2Show"));
 
-export default function ProjectSlugFormField<T extends FieldValues>({
-  control,
-  errors,
-  name,
-}: GenericProjectFormFieldProps<T>) {
+export default function LazyGroupV2Overview() {
   return (
-    <SlugFormField
-      control={control}
-      entityName="project"
-      errors={errors}
-      name={name}
-    />
+    <Suspense fallback={<PageLoader />}>
+      <GroupV2Overview />
+    </Suspense>
   );
 }

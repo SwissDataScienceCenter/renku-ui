@@ -16,165 +16,38 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
-import cx from "classnames";
-import { useEffect } from "react";
-import { Pencil } from "react-bootstrap-icons";
-import {
-  Link,
-  generatePath,
-  useNavigate,
-  useParams,
-} from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
-
-import { Loader } from "../../../components/Loader";
-import ContainerWrap from "../../../components/container/ContainerWrap";
-import LazyNotFound from "../../../not-found/LazyNotFound";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
-import type { GroupResponse } from "../../projectsV2/api/namespace.api";
-import {
-  useGetGroupsByGroupSlugQuery,
-  useGetNamespacesByNamespaceSlugQuery,
-} from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
-import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
-import { EntityPill } from "../../searchV2/components/SearchV2Results";
-import UserAvatar from "../../usersV2/show/UserAvatar";
-import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
-import useGroupPermissions from "../utils/useGroupPermissions.hook";
+import { useGroup } from "./GroupPageContainer.tsx";
+import GroupInformation from "./GroupV2Information.tsx";
 
 export default function GroupV2Show() {
-  const { slug } = useParams<{ slug: string }>();
-
-  const navigate = useNavigate();
-
-  const {
-    data: namespace,
-    isLoading: isLoadingNamespace,
-    error: namespaceError,
-  } = useGetNamespacesByNamespaceSlugQuery(
-    slug ? { namespaceSlug: slug } : skipToken
-  );
-  const {
-    data: group,
-    isLoading: isLoadingGroup,
-    error: groupError,
-  } = useGetGroupsByGroupSlugQuery(slug ? { groupSlug: slug } : skipToken);
-
-  const isLoading = isLoadingNamespace || isLoadingGroup;
-  const error = namespaceError ?? groupError;
-
-  useEffect(() => {
-    if (slug && namespace?.namespace_kind === "user") {
-      navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.users.show, { username: slug }),
-        {
-          replace: true,
-        }
-      );
-    }
-  }, [namespace?.namespace_kind, navigate, slug]);
-
-  if (!slug) {
-    return <LazyNotFound />;
-  }
-
-  if (isLoading) {
-    return <Loader className="align-self-center" />;
-  }
-
-  if (error || !namespace || !group) {
-    return <GroupNotFound error={error} />;
-  }
+  const { group } = useGroup();
 
   return (
-    <ContainerWrap>
-      <div
-        className={cx("d-flex", "flex-column", "flex-sm-row", "gap-3", "mb-3")}
-      >
-        <div>
-          <div className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
-            <div className={cx("align-items-center", "d-flex", "gap-2")}>
-              <UserAvatar
-                // username={group.name || slug}
-                // group={group}
-                namespace={slug}
-                size="lg"
-              />
-              <h2 className="mb-0">{group.name ?? "Unknown group"}</h2>
-            </div>
-            <div className={cx("align-items-center", "d-flex")}>
-              <EntityPill entityType="Group" size="sm" />
-            </div>
-          </div>
-          <p className={cx("fst-italic", "mb-0")}>{`@${slug}`}</p>
-        </div>
-        <div className={cx("mb-0", "ms-sm-auto")}>
-          <GroupSettingsButton group={group} />
-        </div>
-      </div>
-
-      {group.description && (
-        <section>
-          <p>{group.description}</p>
-        </section>
-      )}
-      <section>
-        <h4>Group Members</h4>
-        <GroupV2MemberListDisplay group={slug} />
-      </section>
-
-      <section>
-        <h4>Group Projects</h4>
-        <ProjectV2ListDisplay
-          namespace={slug}
-          pageParam="projects_page"
-          emptyListElement={<p>No visible projects.</p>}
-        />
-      </section>
-
-      <section className="mt-3">
-        <Row>
-          <Col className="order-3" xs={12} xl={8}>
+    <Row className="g-4">
+      <Col xs={12} md={8} xl={9}>
+        <Row className="g-4">
+          <Col xs={12}>
+            <ProjectV2ListDisplay
+              namespace={group.slug}
+              pageParam="projects_page"
+              namespaceKind="group"
+            />
+          </Col>
+          <Col className="order-3" xs={12}>
             <DataConnectorsBox
-              namespace={slug}
+              namespace={group.slug}
               namespaceKind="group"
               pageParam="data_connectors_page"
             />
           </Col>
         </Row>
-      </section>
-    </ContainerWrap>
-  );
-}
-
-interface GroupSettingsButtonProps {
-  group: GroupResponse;
-}
-
-function GroupSettingsButton({ group }: GroupSettingsButtonProps) {
-  const { permissions } = useGroupPermissions({ groupSlug: group.slug });
-
-  return (
-    <PermissionsGuard
-      enabled={
-        <Link
-          to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.settings, {
-            slug: group.slug,
-          })}
-          className={cx("btn", "btn-outline-primary")}
-        >
-          <Pencil className={cx("bi", "me-1")} />
-          Edit settings
-        </Link>
-      }
-      disabled={null}
-      requestedPermission="write"
-      userPermissions={permissions}
-    />
+      </Col>
+      <Col xs={12} md={4} xl={3}>
+        <GroupInformation output="card" />
+      </Col>
+    </Row>
   );
 }

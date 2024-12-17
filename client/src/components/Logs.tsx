@@ -44,7 +44,8 @@ import { Loader } from "./Loader";
 
 import cx from "classnames";
 import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
-import "./Logs.css";
+
+import styles from "./Logs.module.scss";
 
 export interface ILogs {
   data: Record<string, string>;
@@ -395,7 +396,7 @@ function EnvironmentLogsPresent({
       }}
     >
       <ModalHeader
-        className="header-multiline"
+        className={cx(styles.modalHeader, "header-multiline")}
         toggle={() => {
           toggleLogs(name);
         }}
