@@ -114,28 +114,13 @@ function HeaderDashboard() {
       )}
     >
       <picture>
-        <source
-          media="(min-width: 1400px)"
-          srcSet="/dashboardHeader3840x280.png"
-        />
-        <source
-          media="(min-width: 1200px)"
-          srcSet="/dashboardHeader2560x280.png"
-        />
-        <source
-          media="(min-width: 992px)"
-          srcSet="/dashboardHeader1920x280.png"
-        />
-        <source
-          media="(min-width: 768px)"
-          srcSet="/dashboardHeader1080x280.png"
-        />
-        <source
-          media="(min-width: 576px)"
-          srcSet="/dashboardHeader750x200.png"
-        />
+        <source media="(min-width: 1400px)" srcSet="/dashboardHeader3840.png" />
+        <source media="(min-width: 1200px)" srcSet="/dashboardHeader2560.png" />
+        <source media="(min-width: 992px)" srcSet="/dashboardHeader1920.png" />
+        <source media="(min-width: 768px)" srcSet="/dashboardHeader1080.png" />
+        <source media="(min-width: 576px)" srcSet="/dashboardHeader750.png" />
         <img
-          src="/dashboardHeader640x200.png"
+          src="/dashboardHeader640.png"
           alt="Dashboard Header"
           className={cx("img-fluid", "w-100", "object-fit-cover")}
         />
