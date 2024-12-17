@@ -34,27 +34,28 @@ import {
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
-import LazyGroupContainer from "../groupsV2/LazyGroupContainer.tsx";
 
-import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
-import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
-import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
+import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
+import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
 import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
-import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview.tsx";
+import { groupCreationHash } from "../groupsV2/new/createGroup.constants";
+import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
+import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
+import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
+import { projectCreationHash } from "../projectsV2/new/createProjectV2.constants";
 import LazySearchV2 from "../searchV2/LazySearchV2";
+import LazySecretsV2 from "../secretsV2/LazySecretsV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
 import NavbarV2 from "./NavbarV2";
-import { groupCreationHash } from "../groupsV2/new/createGroup.constants";
-import { projectCreationHash } from "../projectsV2/new/createProjectV2.constants";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -127,10 +128,18 @@ export default function RootV2() {
             }
           />
           <Route
-            path="connected-services"
+            path={RELATIVE_ROUTES.v2.connectedServices}
             element={
               <ContainerWrap>
                 <LazyConnectedServicesPage />
+              </ContainerWrap>
+            }
+          />
+          <Route
+            path={RELATIVE_ROUTES.v2.secrets}
+            element={
+              <ContainerWrap>
+                <LazySecretsV2 />
               </ContainerWrap>
             }
           />
