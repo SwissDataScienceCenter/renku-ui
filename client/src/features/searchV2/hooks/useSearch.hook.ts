@@ -32,8 +32,6 @@ import {
 export default function useSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // console.log({ searchParams });
-
   const dispatch = useAppDispatch();
   const { initialQuery, query } = useAppSelector(({ searchV2 }) => searchV2);
 
