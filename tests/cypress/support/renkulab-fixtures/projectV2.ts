@@ -50,6 +50,11 @@ interface ListProjectV2MembersFixture extends ProjectV2IdArgs {
   };
 }
 
+interface ProjectV2CreateArgs extends SimpleFixture {
+  slug?: string;
+  namespace?: string;
+}
+
 interface ProjectV2IdArgs extends SimpleFixture {
   projectId?: string;
   overrides?: Partial<ProjectOverrides>;
@@ -66,7 +71,7 @@ interface ProjectV2DeleteFixture extends NameOnlyFixture {
 interface ProjectV2ListCopiesFixture
   extends Omit<ProjectV2IdArgs, "overrides"> {
   writeable?: boolean;
-  count?: 0 | 1 | undefined | null;
+  count?: number | null;
 }
 
 interface ProjectV2NameArgs extends SimpleFixture {
@@ -139,7 +144,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    createProjectV2(args?: SimpleFixture) {
+    createProjectV2(args?: ProjectV2CreateArgs) {
       const {
         fixture = "projectV2/create-projectV2.json",
         name = "createProjectV2",

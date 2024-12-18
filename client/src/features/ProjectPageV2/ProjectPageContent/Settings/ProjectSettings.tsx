@@ -59,6 +59,7 @@ import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectSessionSecrets from "../SessionSecrets/ProjectSessionSecrets";
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
+import ProjectUnlinkTemplate from "./ProjectUnlinkTemplate";
 
 function notificationProjectUpdated(
   notifications: NotificationsManager,
@@ -381,30 +382,6 @@ function ProjectSettingsDisplay({ project }: ProjectPageSettingsProps) {
   );
 }
 
-function ProjectSettingsTemplateLink({ project }: { project: Project }) {
-  if (project.template_id === null) return null;
-  return (
-    <Card id="copy">
-      <CardHeader>
-        <h4>
-          <Diagram3Fill className={cx("bi", "me-1")} />
-          Break template link
-        </h4>
-        <p className="m-0">
-          This will break the link between this project and the template it was
-          created from.
-        </p>
-      </CardHeader>
-      <CardBody>
-        <div className="d-flex">
-          <div className="fst-italic me-2">(Not yet implemented)</div>
-          <div className="flex-grow-1"></div>
-        </div>
-      </CardBody>
-    </Card>
-  );
-}
-
 function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
   const permissions = useProjectPermissions({ projectId: project.id });
 
@@ -480,7 +457,7 @@ export default function ProjectPageSettings() {
       <ProjectSessionSecrets />
       <PermissionsGuard
         disabled={null}
-        enabled={<ProjectSettingsTemplateLink project={project} />}
+        enabled={<ProjectUnlinkTemplate project={project} />}
         requestedPermission="write"
         userPermissions={permissions}
       />
