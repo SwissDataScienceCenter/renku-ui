@@ -756,6 +756,11 @@ describe("Project templates and copies", () => {
 
   it("break the template link", () => {
     fixtures
+      .readProjectV2({
+        overrides: {
+          template_id: "TEMPLATE-ULID",
+        },
+      })
       .getProjectV2Permissions()
       .listNamespaceV2()
       .copyProjectV2()

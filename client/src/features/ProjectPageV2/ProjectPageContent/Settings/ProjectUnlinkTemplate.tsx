@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Diagram3Fill, NodeMinus } from "react-bootstrap-icons";
-import { useNavigate } from "react-router-dom-v5-compat";
 import { Button, Card, CardBody, CardHeader, Input } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
@@ -48,7 +47,6 @@ export default function ProjectUnlinkTemplate({
   project,
 }: ProjectUnlinkTemplateProps) {
   const [patchProject, result] = usePatchProjectsByProjectIdMutation();
-  const navigate = useNavigate();
   const { notifications } = useContext(AppContext);
   const onUnlink = useCallback(() => {
     patchProject({
@@ -64,8 +62,9 @@ export default function ProjectUnlinkTemplate({
     if (result.isSuccess) {
       if (notifications)
         notificationProjectDeleted(notifications, project.name);
+      result.reset();
     }
-  }, [result.isSuccess, navigate, notifications, project.name]);
+  }, [notifications, project.name, result]);
 
   const [typedName, setTypedName] = useState("");
   const onChange = useCallback(
