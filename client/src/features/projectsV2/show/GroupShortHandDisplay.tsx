@@ -20,7 +20,7 @@ import cx from "classnames";
 import { Link, generatePath } from "react-router-dom-v5-compat";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import UserAvatar, { UserAvatarSize } from "../../usersV2/show/UserAvatar.tsx";
+import UserAvatar from "../../usersV2/show/UserAvatar";
 import { GroupResponse } from "../api/namespace.api";
 
 interface GroupShortHandDisplayProps {
@@ -41,7 +41,7 @@ export default function GroupShortHandDisplay({
       data-cy="group-item"
     >
       <div className={cx("d-flex", "gap-2")}>
-        <UserAvatar username={group.slug} size={UserAvatarSize.medium} />
+        <UserAvatar namespace={group.slug} size="md" />
         <div
           className={cx(
             "d-flex",
