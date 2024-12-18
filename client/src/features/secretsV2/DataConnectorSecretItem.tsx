@@ -32,10 +32,7 @@ import {
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
 } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import { useGetNamespacesByNamespaceSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import {
-  useGetUserByIdQuery,
-  type SecretWithId,
-} from "../usersV2/api/users.api";
+import { type SecretWithId } from "../usersV2/api/users.api";
 import UserAvatar from "../usersV2/show/UserAvatar";
 import SecretItemActions from "./SecretItemActions";
 
@@ -150,11 +147,6 @@ function DataConnectorSecretUsedForItem({
   } = useGetNamespacesByNamespaceSlugQuery(
     dataConnector ? { namespaceSlug: dataConnector.namespace } : skipToken
   );
-  const { data: user } = useGetUserByIdQuery(
-    namespace?.namespace_kind === "user" && namespace.created_by
-      ? { userId: namespace.created_by }
-      : skipToken
-  );
 
   const isLoading =
     isLoadingDataConnector || isLoadingSecrets || isLoadingNamespace;
@@ -235,11 +227,7 @@ function DataConnectorSecretUsedForItem({
           <div
             className={cx("d-flex", "flex-row", "align-items-center", "gap-1")}
           >
-            <UserAvatar
-              firstName={user?.first_name}
-              lastName={user?.last_name}
-              username={namespaceName}
-            />
+            <UserAvatar namespace={dataConnector.namespace} />
             <span>{namespaceName}</span>
           </div>
         </div>

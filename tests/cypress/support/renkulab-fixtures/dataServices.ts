@@ -25,6 +25,8 @@ interface DataServicesUserFixture extends NameOnlyFixture {
 
 interface ExactUser {
   id: string;
+  username: string;
+  is_admin?: boolean;
   email?: string;
   first_name?: string;
   last_name?: string;
@@ -62,7 +64,11 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
     }
 
     dataServicesUser(args: DataServicesUserFixture) {
-      const { response, name = "getDataServicesUser" } = args;
+      const { response: response_, name = "getDataServicesUser" } = args;
+      const response = {
+        is_admin: false,
+        ...response_,
+      };
       cy.intercept("GET", "/api/data/user", {
         body: response,
       }).as(name);
