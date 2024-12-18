@@ -54,6 +54,7 @@ export const ABSOLUTE_ROUTES = {
     },
     search: "/v2/search",
     connectedServices: "/v2/connected-services",
+    secrets: "/v2/secrets",
   },
 } as const;
 
@@ -78,8 +79,7 @@ export const RELATIVE_ROUTES = {
       new: "new",
       show: {
         root: ":namespace/:slug/*",
-        info: "info",
-        settings: "settings/*",
+        settings: "settings",
         sessions: {
           root: "sessions/*",
           show: "show/:session",
@@ -98,5 +98,6 @@ export const RELATIVE_ROUTES = {
     },
     search: "search",
     connectedServices: "connected-services",
+    secrets: "secrets",
   },
 } as const;

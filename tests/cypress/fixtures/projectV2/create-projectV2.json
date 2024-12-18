@@ -6,5 +6,6 @@
   "created_by": {
     "id": "owner-KC-id"
   },
-  "visibility": "public"
+  "visibility": "public",
+  "secrets_mount_directory": "/secrets"
 }

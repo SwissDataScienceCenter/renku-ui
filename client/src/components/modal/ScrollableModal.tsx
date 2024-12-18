@@ -16,19 +16,18 @@
  * limitations under the License.
  */
 
-import { Docs } from "../../utils/constants/Docs";
-import type { SecretDetails } from "./secrets.types";
+import cx from "classnames";
+import { Modal, type ModalProps } from "reactstrap";
 
-export const SECRETS_DOCS_URL = Docs.rtdTopicGuide("secrets/secrets.html");
+import styles from "./ScrollableModal.module.scss";
 
-export const SECRETS_VALUE_LENGTH_LIMIT = 5_000;
+type ScrollableModalProps = Omit<ModalProps, "scrollable">;
 
-type Secret = Pick<SecretDetails, "name">;
-
-export function storageSecretNameToFieldName(secret: Secret) {
-  return secret.name.split("-").slice(1).join("-") || secret.name;
-}
-
-export function storageSecretNameToStorageId(secret: Secret) {
-  return secret.name.split("-")[0];
+export default function ScrollableModal({
+  className,
+  ...props
+}: ScrollableModalProps) {
+  return (
+    <Modal className={cx(className, styles.modal)} scrollable {...props} />
+  );
 }
