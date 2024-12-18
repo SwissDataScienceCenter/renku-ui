@@ -755,12 +755,20 @@ describe("Project templates and copies", () => {
   });
 
   it("break the template link", () => {
-    fixtures.getProjectV2Permissions().listNamespaceV2().copyProjectV2();
+    fixtures
+      .getProjectV2Permissions()
+      .listNamespaceV2()
+      .copyProjectV2()
+      .updateProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
 
     cy.get("a[title='Settings']").should("be.visible").click();
-    cy.contains("Break template link").should("be.visible").click();
+    cy.contains("Break template link").should("be.visible");
+    cy.contains("Unlink project").should("be.disabled");
+    cy.getDataCy("unlink-confirmation-input").clear().type("test-2-v2-project");
+    cy.contains("Unlink project").should("be.enabled").click();
+    cy.wait("@updateProjectV2");
   });
 });
 

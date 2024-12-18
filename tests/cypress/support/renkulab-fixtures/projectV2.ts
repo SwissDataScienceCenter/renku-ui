@@ -71,7 +71,7 @@ interface ProjectV2DeleteFixture extends NameOnlyFixture {
 interface ProjectV2ListCopiesFixture
   extends Omit<ProjectV2IdArgs, "overrides"> {
   writeable?: boolean;
-  count?: 0 | 1 | undefined | null;
+  count?: number | null;
 }
 
 interface ProjectV2NameArgs extends SimpleFixture {
