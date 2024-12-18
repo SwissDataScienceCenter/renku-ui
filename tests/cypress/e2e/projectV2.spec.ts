@@ -425,6 +425,7 @@ describe("Editor cannot maintain members", () => {
       .dataServicesUser({
         response: {
           id: "user3-uuid",
+          username: "user3",
         },
       })
       .namespaces();
@@ -477,6 +478,7 @@ describe("Viewer cannot edit project", () => {
       .dataServicesUser({
         response: {
           id: "user2-uuid",
+          username: "user2",
         },
       })
       .namespaces();
