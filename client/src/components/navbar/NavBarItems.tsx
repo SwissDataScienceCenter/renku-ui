@@ -312,7 +312,7 @@ export function RenkuToolbarItemUser({
   const userSecretsUrl = isV2 ? ABSOLUTE_ROUTES.v2.secrets : "/secrets";
 
   return (
-    <UncontrolledDropdown className="nav-item dropdown">
+    <UncontrolledDropdown className={cx("nav-item", "dropdown")}>
       <DropdownToggle
         nav
         className={cx("nav-link", "fs-5")}
@@ -330,14 +330,12 @@ export function RenkuToolbarItemUser({
         key="user-bar"
         aria-labelledby="user-menu"
       >
-        <DropdownItem className="p-0">
-          <ExternalLink
-            url={`${gatewayURL}/auth/user-profile`}
-            title="Account"
-            className="dropdown-item"
-            role="link"
-          />
-        </DropdownItem>
+        <ExternalLink
+          url={`${gatewayURL}/auth/user-profile`}
+          title="Account"
+          className="dropdown-item"
+          role="link"
+        />
 
         <Link to={userSecretsUrl} className="dropdown-item">
           User Secrets

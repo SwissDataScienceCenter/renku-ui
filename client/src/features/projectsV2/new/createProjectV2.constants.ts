@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export const projectCreationHash = "create-project";
+export const PROJECT_CREATION_HASH = "create-project";
