@@ -20,7 +20,7 @@ import { useCallback } from "react";
 import { Button } from "reactstrap";
 
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
-import { projectCreationHash } from "./createProjectV2.constants";
+import { PROJECT_CREATION_HASH } from "./createProjectV2.constants";
 
 export interface CreateProjectV2ButtonProps {
   children?: React.ReactNode;
@@ -36,7 +36,7 @@ export default function CreateProjectV2Button({
 }: CreateProjectV2ButtonProps) {
   const [, setHash] = useLocationHash();
   const openModal = useCallback(() => {
-    setHash(projectCreationHash);
+    setHash(PROJECT_CREATION_HASH);
   }, [setHash]);
 
   return (
