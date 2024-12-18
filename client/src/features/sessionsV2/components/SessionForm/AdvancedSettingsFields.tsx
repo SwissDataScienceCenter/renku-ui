@@ -130,7 +130,6 @@ function JsonField<T extends FieldValues>({
             className={cx("w-100 form-control", errors?.[name] && "is-invalid")}
             id={`addSessionLauncher${name}`}
             rows={2}
-            defaultValue={field.value ? JSON.stringify(field.value) : ""}
             {...field}
           />
         )}
