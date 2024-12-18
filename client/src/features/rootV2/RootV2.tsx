@@ -34,17 +34,17 @@ import {
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
-import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
 
-import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
-import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
-import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
-import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
+import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
 import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
+import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 import { groupCreationHash } from "../groupsV2/new/createGroup.constants";
+import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
+import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
+import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyGroupV2New from "../projectsV2/LazyGroupNew";
 import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";

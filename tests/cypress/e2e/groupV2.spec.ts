@@ -113,7 +113,11 @@ describe("Edit v2 group", () => {
       .versions()
       .userTest()
       .dataServicesUser({
-        response: { id: "0945f006-e117-49b7-8966-4c0842146313" },
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
+          email: "user1@email.com",
+        },
       })
       .namespaces();
     fixtures.projects().landingUserProjects().listGroupV2();
@@ -258,7 +262,11 @@ describe("Work with group data connectors", () => {
       .versions()
       .userTest()
       .dataServicesUser({
-        response: { id: "0945f006-e117-49b7-8966-4c0842146313" },
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
+          email: "user1@email.com",
+        },
       })
       .projects()
       .landingUserProjects()
@@ -396,7 +404,11 @@ describe("Work with group data connectors, missing permissions", () => {
       .versions()
       .userTest()
       .dataServicesUser({
-        response: { id: "0945f006-e117-49b7-8966-4c0842146313" },
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
+          email: "user1@email.com",
+        },
       })
       .projects()
       .landingUserProjects()

@@ -21,7 +21,6 @@ import { useCallback, useMemo, useState } from "react";
 import { generatePath, Link } from "react-router-dom-v5-compat";
 import { Badge, Col, Collapse, ListGroupItem, Row } from "reactstrap";
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import { Folder, ShieldLock } from "react-bootstrap-icons";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
@@ -34,10 +33,7 @@ import type {
   SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import {
-  useGetUserByIdQuery,
-  type SecretWithId,
-} from "../usersV2/api/users.api";
+import { type SecretWithId } from "../usersV2/api/users.api";
 import UserAvatar from "../usersV2/show/UserAvatar";
 import SecretItemActions from "./SecretItemActions";
 import useGetRelatedProjects from "./useGetRelatedProjects.hook";
@@ -164,11 +160,6 @@ function GeneralSecretUsedInProject({
   const { data: namespace } = useGetNamespacesByNamespaceSlugQuery({
     namespaceSlug: project.namespace,
   });
-  const { data: user } = useGetUserByIdQuery(
-    namespace?.namespace_kind === "user" && namespace.created_by
-      ? { userId: namespace.created_by }
-      : skipToken
-  );
   const namespaceName = useMemo(
     () => namespace?.name ?? project.namespace,
     [namespace?.name, project.namespace]
@@ -208,11 +199,7 @@ function GeneralSecretUsedInProject({
                   "gap-1"
                 )}
               >
-                <UserAvatar
-                  firstName={user?.first_name}
-                  lastName={user?.last_name}
-                  username={namespaceName}
-                />
+                <UserAvatar namespace={project.namespace} />
                 <span>{namespaceName}</span>
               </div>
             </div>

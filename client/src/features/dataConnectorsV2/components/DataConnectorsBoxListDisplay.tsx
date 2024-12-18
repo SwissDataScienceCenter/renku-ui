@@ -24,7 +24,7 @@ import { Col, ListGroupItem, Row } from "reactstrap";
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { TimeCaption } from "../../../components/TimeCaption";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
-import UserAvatar, { UserAvatarSize } from "../../usersV2/show/UserAvatar";
+import UserAvatar from "../../usersV2/show/UserAvatar";
 import type {
   DataConnector,
   DataConnectorToProjectLink,
@@ -102,7 +102,7 @@ export default function DataConnectorBoxListDisplay({
                 "align-items-center"
               )}
             >
-              <UserAvatar username={namespace} size={UserAvatarSize.small} />
+              <UserAvatar namespace={namespace} size="sm" />
               <p className={cx("mb-0", "text-truncate", "text-muted")}>
                 {namespace}
               </p>
