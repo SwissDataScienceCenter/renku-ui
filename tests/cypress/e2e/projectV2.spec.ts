@@ -425,6 +425,7 @@ describe("Editor cannot maintain members", () => {
       .dataServicesUser({
         response: {
           id: "user3-uuid",
+          username: "user3",
         },
       })
       .namespaces();
@@ -477,6 +478,7 @@ describe("Viewer cannot edit project", () => {
       .dataServicesUser({
         response: {
           id: "user2-uuid",
+          username: "user2",
         },
       })
       .namespaces();
@@ -753,12 +755,25 @@ describe("Project templates and copies", () => {
   });
 
   it("break the template link", () => {
-    fixtures.getProjectV2Permissions().listNamespaceV2().copyProjectV2();
+    fixtures
+      .readProjectV2({
+        overrides: {
+          template_id: "TEMPLATE-ULID",
+        },
+      })
+      .getProjectV2Permissions()
+      .listNamespaceV2()
+      .copyProjectV2()
+      .updateProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
 
     cy.get("a[title='Settings']").should("be.visible").click();
-    cy.contains("Break template link").should("be.visible").click();
+    cy.contains("Break template link").should("be.visible");
+    cy.contains("Unlink project").should("be.disabled");
+    cy.getDataCy("unlink-confirmation-input").clear().type("test-2-v2-project");
+    cy.contains("Unlink project").should("be.enabled").click();
+    cy.wait("@updateProjectV2");
   });
 });
 
