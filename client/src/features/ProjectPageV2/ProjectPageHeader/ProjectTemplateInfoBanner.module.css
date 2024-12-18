@@ -1,0 +1,9 @@
+.modalBody {
+  max-height: 50vh;
+}
+
+/* this is needed for correct alignment */
+.projectCopiesButton {
+  position: relative;
+  top: -2px;
+}

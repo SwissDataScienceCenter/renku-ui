@@ -43,7 +43,9 @@ export default function ProjectOverviewPage() {
         </Row>
       </Col>
       <Col xs={12} md={4} xl={3}>
-        <ProjectInformation output="card" />
+        <div className="mb-3">
+          <ProjectInformation output="card" />
+        </div>
       </Col>
     </Row>
   );
