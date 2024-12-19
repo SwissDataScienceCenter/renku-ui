@@ -48,6 +48,7 @@ import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
 import {
   GetGroupsApiResponse,
@@ -55,6 +56,7 @@ import {
   useGetGroupsQuery,
   useGetProjectsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
+import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
@@ -519,7 +521,10 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
     <ViewAllLink noItems={!hasGroups} type="group" total={data?.total ?? 0} />
   ) : (
     <div className="d-flex">
-      <Link to={"/v2/groups/new"} className={cx("btn", "btn-outline-primary")}>
+      <Link
+        to={{ hash: GROUP_CREATION_HASH }}
+        className={cx("btn", "btn-outline-primary")}
+      >
         <PlusSquare className={cx("bi", "me-1")} />
         Create my first group
       </Link>
@@ -606,7 +611,10 @@ function ViewAllLink({
 function EmptyProjectsButtons() {
   return (
     <div className={cx("d-flex", "gap-3")}>
-      <Link to={"/v2/projects/new"} className={cx("btn", "btn-primary")}>
+      <Link
+        to={{ hash: PROJECT_CREATION_HASH }}
+        className={cx("btn", "btn-primary")}
+      >
         <PlusSquare className={cx("bi", "me-1")} />
         Create my first project
       </Link>
