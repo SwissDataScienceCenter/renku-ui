@@ -27,7 +27,13 @@ import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Fragment, ReactNode, useRef, useState } from "react";
-import { ArrowRight, ChevronDown, Pencil, PlusLg } from "react-bootstrap-icons";
+import {
+  ArrowRight,
+  ChevronDown,
+  Pencil,
+  PlusLg,
+  ThreeDotsVertical,
+} from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -114,7 +120,7 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
   );
 }
 
-interface BButtonWithMenuV2Props {
+interface ButtonWithMenuV2Props {
   children?: React.ReactNode;
   className?: string;
   color?: string;
@@ -125,7 +131,9 @@ interface BButtonWithMenuV2Props {
   preventPropagation?: boolean;
   size?: string;
 }
-export function ButtonWithMenuV2({
+export const ButtonWithMenuV2 = SplitButtonWithMenu;
+
+export function SplitButtonWithMenu({
   children,
   className,
   color,
@@ -135,7 +143,7 @@ export function ButtonWithMenuV2({
   id,
   preventPropagation,
   size,
-}: BButtonWithMenuV2Props) {
+}: ButtonWithMenuV2Props) {
   // ! Temporary workaround to quickly implement a design solution -- to be removed ASAP #3250
   const additionalProps = preventPropagation
     ? { onClick: (e: React.MouseEvent) => e.stopPropagation() }
@@ -143,7 +151,7 @@ export function ButtonWithMenuV2({
   return (
     <UncontrolledDropdown
       {...additionalProps}
-      className={cx(className)}
+      className={className}
       color={color ?? "primary"}
       direction={direction ?? "down"}
       disabled={disabled}
@@ -160,6 +168,44 @@ export function ButtonWithMenuV2({
         data-cy="button-with-menu-dropdown"
         disabled={disabled}
       />
+      <DropdownMenu end>{children}</DropdownMenu>
+    </UncontrolledDropdown>
+  );
+}
+
+export function SingleButtonWithMenu({
+  children,
+  className,
+  color,
+  direction,
+  disabled,
+  id,
+  preventPropagation,
+  size,
+}: Omit<ButtonWithMenuV2Props, "default">) {
+  // ! Temporary workaround to quickly implement a design solution -- to be removed ASAP #3250
+  const additionalProps = preventPropagation
+    ? { onClick: (e: React.MouseEvent) => e.stopPropagation() }
+    : {};
+  return (
+    <UncontrolledDropdown
+      {...additionalProps}
+      className={className}
+      color={color ?? "primary"}
+      direction={direction ?? "down"}
+      disabled={disabled}
+      id={id}
+      size={size ?? "md"}
+    >
+      <DropdownToggle
+        caret={false}
+        data-bs-toggle="dropdown"
+        color={color ?? "primary"}
+        data-cy="button-with-menu-dropdown"
+        disabled={disabled}
+      >
+        <ThreeDotsVertical />
+      </DropdownToggle>
       <DropdownMenu end>{children}</DropdownMenu>
     </UncontrolledDropdown>
   );
