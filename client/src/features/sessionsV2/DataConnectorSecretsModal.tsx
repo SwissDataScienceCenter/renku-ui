@@ -44,6 +44,8 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
+import { User } from "../../model/renkuModels.types";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 
 import type { RCloneOption } from "../dataConnectorsV2/api/data-connectors.api";
 import { validationParametersFromDataConnectorConfiguration } from "../dataConnectorsV2/components/dataConnector.utils";
@@ -105,6 +107,10 @@ function DataConnectorSecrets({
   context,
   control,
 }: DataConnectorConfigurationSecretsProps) {
+  const userLogged = useLegacySelector<User["logged"]>(
+    (state) => state.stateModel.user.logged
+  );
+
   const dataConnector = dataConnectorConfig.dataConnector;
   const storage = dataConnector.storage;
 
@@ -144,7 +150,9 @@ function DataConnectorSecrets({
           );
         })}
       </div>
-      {context === "session" && <SaveCredentialsInput control={control} />}
+      {context === "session" && userLogged && (
+        <SaveCredentialsInput control={control} />
+      )}
       {context === "storage" && hasIncompleteSavedCredentials && (
         <div className={cx("text-danger", "mb-3")}>
           The saved credentials for this data connector are incomplete so they
