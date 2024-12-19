@@ -65,6 +65,7 @@ import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
 
 import DashboardStyles from "./DashboardV2.module.scss";
+import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 
 export default function DashboardV2() {
   const userLogged = useLegacySelector<boolean>(
@@ -606,7 +607,10 @@ function ViewAllLink({
 function EmptyProjectsButtons() {
   return (
     <div className={cx("d-flex", "gap-3")}>
-      <Link to={"/v2/projects/new"} className={cx("btn", "btn-primary")}>
+      <Link
+        to={{ hash: PROJECT_CREATION_HASH }}
+        className={cx("btn", "btn-primary")}
+      >
         <PlusSquare className={cx("bi", "me-1")} />
         Create my first project
       </Link>
