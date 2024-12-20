@@ -63,12 +63,14 @@ import {
   useGetOauth2ProvidersQuery,
 } from "../../../connectedServices/api/connectedServices.api";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import repositoriesApi, {
   useGetRepositoryMetadataQuery,
   useGetRepositoryProbeQuery,
 } from "../../../repositories/repositories.api";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -293,6 +295,8 @@ function CodeRepositoryActions({
   url: string;
   project: Project;
 }) {
+  const permissions = useProjectPermissions({ projectId: project.id });
+
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
@@ -317,31 +321,41 @@ function CodeRepositoryActions({
   );
 
   return (
-    <>
-      <ButtonWithMenuV2
-        color="outline-primary"
-        default={defaultAction}
-        preventPropagation
-        size="sm"
-      >
-        <DropdownItem data-cy="code-repository-delete" onClick={toggleDelete}>
-          <Trash className={cx("bi", "me-1")} />
-          Remove
-        </DropdownItem>
-      </ButtonWithMenuV2>
-      <CodeRepositoryDeleteModal
-        repositoryUrl={url}
-        isOpen={isDeleteOpen}
-        toggleModal={toggleDelete}
-        project={project}
-      />
-      <EditCodeRepositoryModal
-        toggleModal={toggleEdit}
-        isOpen={isEditOpen}
-        project={project}
-        repositoryUrl={url}
-      />
-    </>
+    <PermissionsGuard
+      disabled={null}
+      enabled={
+        <>
+          <ButtonWithMenuV2
+            color="outline-primary"
+            default={defaultAction}
+            preventPropagation
+            size="sm"
+          >
+            <DropdownItem
+              data-cy="code-repository-delete"
+              onClick={toggleDelete}
+            >
+              <Trash className={cx("bi", "me-1")} />
+              Remove
+            </DropdownItem>
+          </ButtonWithMenuV2>
+          <CodeRepositoryDeleteModal
+            repositoryUrl={url}
+            isOpen={isDeleteOpen}
+            toggleModal={toggleDelete}
+            project={project}
+          />
+          <EditCodeRepositoryModal
+            toggleModal={toggleEdit}
+            isOpen={isEditOpen}
+            project={project}
+            repositoryUrl={url}
+          />
+        </>
+      }
+      requestedPermission="write"
+      userPermissions={permissions}
+    />
   );
 }
 
