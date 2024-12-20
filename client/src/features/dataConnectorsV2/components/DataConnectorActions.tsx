@@ -39,7 +39,10 @@ import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
-import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
+import {
+  projectV2Api,
+  useGetNamespacesByNamespaceProjectsAndSlugQuery,
+} from "../../projectsV2/api/projectV2.enhanced-api";
 
 import type {
   DataConnectorRead,
@@ -50,11 +53,10 @@ import {
   useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
 } from "../api/data-connectors.enhanced-api";
+import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 import DataConnectorModal from "./DataConnectorModal";
-import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 
 interface DataConnectorRemoveModalProps {
   dataConnector: DataConnectorRead;
@@ -359,15 +361,11 @@ function DataConnectorRemoveUnlinkModal({
   );
 }
 
-export default function DataConnectorActions({
+function DataConnectorActionsInner({
   dataConnector,
   dataConnectorLink,
   toggleView,
-}: {
-  dataConnector: DataConnectorRead;
-  dataConnectorLink?: DataConnectorToProjectLink;
-  toggleView: () => void;
-}) {
+}: DataConnectorActionsProps) {
   const location = useLocation();
   const pathMatch = matchPath(
     ABSOLUTE_ROUTES.v2.projects.show.root,
@@ -478,5 +476,25 @@ export default function DataConnectorActions({
         />
       )}
     </>
+  );
+}
+
+interface DataConnectorActionsProps {
+  dataConnector: DataConnectorRead;
+  dataConnectorLink?: DataConnectorToProjectLink;
+  toggleView: () => void;
+}
+
+export default function DataConnectorActions(props: DataConnectorActionsProps) {
+  const { id: dataConnectorId } = props.dataConnector;
+  const { permissions } = useDataConnectorPermissions({ dataConnectorId });
+
+  return (
+    <PermissionsGuard
+      disabled={null}
+      enabled={<DataConnectorActionsInner {...props} />}
+      requestedPermission="write"
+      userPermissions={permissions}
+    />
   );
 }

@@ -20,30 +20,51 @@ import { skipToken } from "@reduxjs/toolkit/query";
 
 import { DEFAULT_PERMISSIONS } from "../../permissionsV2/permissions.constants";
 import type { Permissions } from "../../permissionsV2/permissions.types";
-import { useGetDataConnectorsByDataConnectorIdPermissionsQuery } from "../api/data-connectors.enhanced-api";
+import {
+  useGetDataConnectorsByDataConnectorIdPermissionsQuery,
+  dataConnectorsApi,
+} from "../api/data-connectors.enhanced-api";
+import { useEffect } from "react";
 
 interface UseDataConnectorPermissionsArgs {
   dataConnectorId: string;
 }
+type UseQueryStateResult = ReturnType<
+  typeof useGetDataConnectorsByDataConnectorIdPermissionsQuery
+>;
+type Result = Omit<UseQueryStateResult, "data" | "currentData"> & {
+  permissions: Permissions;
+};
 
 export default function useDataConnectorPermissions({
   dataConnectorId,
-}: UseDataConnectorPermissionsArgs): {
-  permissions: Permissions;
-  isLoading: boolean;
-} {
-  const { data, isLoading, isError } =
-    useGetDataConnectorsByDataConnectorIdPermissionsQuery(
+}: UseDataConnectorPermissionsArgs): Result {
+  const { currentData, isLoading, isError, isUninitialized, ...result } =
+    dataConnectorsApi.endpoints.getDataConnectorsByDataConnectorIdPermissions.useQueryState(
       dataConnectorId ? { dataConnectorId } : skipToken
     );
+  const [fetchPermissions] =
+    dataConnectorsApi.endpoints.getDataConnectorsByDataConnectorIdPermissions.useLazyQuery();
 
-  if (isLoading || isError || !data) {
-    return { permissions: DEFAULT_PERMISSIONS, isLoading };
+  useEffect(() => {
+    if (dataConnectorId && isUninitialized) {
+      fetchPermissions({ dataConnectorId });
+    }
+  }, [dataConnectorId, fetchPermissions, isUninitialized]);
+
+  if (isLoading || isError || !currentData) {
+    return {
+      permissions: DEFAULT_PERMISSIONS,
+      isLoading,
+      isError,
+      isUninitialized,
+      ...result,
+    };
   }
 
   const permissions: Permissions = {
     ...DEFAULT_PERMISSIONS,
-    ...data,
+    ...currentData,
   };
-  return { permissions, isLoading };
+  return { permissions, isLoading, isError, isUninitialized, ...result };
 }
