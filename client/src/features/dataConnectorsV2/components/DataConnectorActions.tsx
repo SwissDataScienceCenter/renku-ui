@@ -36,6 +36,7 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -366,6 +367,21 @@ function DataConnectorActionsInner({
   dataConnectorLink,
   toggleView,
 }: DataConnectorActionsProps) {
+  const { id: dataConnectorId } = dataConnector;
+  const { permissions } = useDataConnectorPermissions({ dataConnectorId });
+
+  const { project_id: projectId } = dataConnectorLink ?? {};
+  const projectPermissions = useProjectPermissions({
+    projectId: projectId ?? "",
+  });
+
+  //   const { data: project, isLoading: isLoadingProject } =
+  //   useGetNamespacesByNamespaceProjectsAndSlugQuery({
+  //     namespace: projectNamespace,
+  //     slug: projectSlug,
+  //   });
+  // const permissions = useProjectPermissions({ projectId: project?.id ?? "" });
+
   const location = useLocation();
   const pathMatch = matchPath(
     ABSOLUTE_ROUTES.v2.projects.show.root,
@@ -374,7 +390,7 @@ function DataConnectorActionsInner({
   const namespace = pathMatch?.params?.namespace;
   const slug = pathMatch?.params?.slug;
   const removeMode =
-    pathMatch === null ||
+    pathMatch == null ||
     namespace == null ||
     slug == null ||
     dataConnectorLink == null
@@ -397,21 +413,112 @@ function DataConnectorActionsInner({
     setIsEditOpen((open) => !open);
   }, []);
 
-  const defaultAction = (
-    <Button
-      className="text-nowrap"
-      color="outline-primary"
-      data-cy="data-connector-edit"
-      onClick={toggleEdit}
-      size="sm"
-    >
-      <Pencil className={cx("bi", "me-1")} />
-      Edit
-    </Button>
-  );
+  const actions = [
+    ...(permissions.write
+      ? [
+          {
+            key: "data-connector-edit",
+            onClick: toggleEdit,
+            content: (
+              <>
+                <Pencil className={cx("bi", "me-1")} />
+                Edit
+              </>
+            ),
+          },
+        ]
+      : []),
+    {
+      key: "data-connector-credentials",
+      onClick: toggleCredentials,
+      content: (
+        <>
+          <Lock className={cx("bi", "me-1")} />
+          Credentials
+        </>
+      ),
+    },
+    ...(permissions.delete && removeMode === "delete"
+      ? [
+          {
+            key: "data-connector-delete",
+            onClick: toggleDelete,
+            content: (
+              <>
+                <Trash className={cx("bi", "me-1")} />
+                Remove
+              </>
+            ),
+          },
+        ]
+      : []),
+    ...(projectPermissions.write && removeMode === "unlink"
+      ? [
+          {
+            key: "data-connector-delete",
+            onClick: toggleDelete,
+            content: (
+              <>
+                <NodeMinus className={cx("bi", "me-1")} />
+                Unlink
+              </>
+            ),
+          },
+        ]
+      : []),
+  ];
 
-  const removeModal =
-    removeMode == "delete" ? (
+  if (actions.length < 1) {
+    return null;
+  }
+
+  const actionsContent =
+    actions.length == 1 ? (
+      <Button
+        color="outline-primary"
+        data-cy={actions[0].key}
+        onClick={actions[0].onClick}
+        size="sm"
+      >
+        {actions[0].content}
+      </Button>
+    ) : (
+      <ButtonWithMenuV2
+        color="outline-primary"
+        default={
+          <Button
+            color="outline-primary"
+            data-cy={actions[0].key}
+            onClick={actions[0].onClick}
+            size="sm"
+          >
+            {actions[0].content}
+          </Button>
+        }
+        size="sm"
+      >
+        {actions.slice(1).map(({ key, onClick, content }) => (
+          <DropdownItem key={key} data-cy={key} onClick={onClick}>
+            {content}
+          </DropdownItem>
+        ))}
+      </ButtonWithMenuV2>
+    );
+
+  return (
+    <>
+      {actionsContent}
+      <DataConnectorModal
+        dataConnector={dataConnector}
+        isOpen={isEditOpen}
+        namespace={dataConnector.namespace}
+        toggle={toggleEdit}
+      />
+      <DataConnectorCredentialsModal
+        dataConnector={dataConnector}
+        setOpen={setCredentialsOpen}
+        isOpen={isCredentialsOpen}
+      />
       <DataConnectorRemoveDeleteModal
         dataConnector={dataConnector}
         dataConnectorLink={dataConnectorLink}
@@ -419,60 +526,15 @@ function DataConnectorActionsInner({
         onDelete={onDelete}
         toggleModal={toggleDelete}
       />
-    ) : (
-      <DataConnectorRemoveUnlinkModal
-        dataConnector={dataConnector}
-        dataConnectorLink={dataConnectorLink!}
-        isOpen={isDeleteOpen}
-        onDelete={onDelete}
-        projectNamespace={namespace!}
-        projectSlug={slug!}
-        toggleModal={toggleDelete}
-      />
-    );
-
-  return (
-    <>
-      <ButtonWithMenuV2
-        color="outline-primary"
-        default={defaultAction}
-        preventPropagation
-        size="sm"
-      >
-        <DropdownItem
-          data-cy="data-connector-credentials"
-          onClick={toggleCredentials}
-        >
-          <Lock className={cx("bi", "me-1")} />
-          Credentials
-        </DropdownItem>
-        <DropdownItem data-cy="data-connector-delete" onClick={toggleDelete}>
-          {removeMode === "delete" ? (
-            <span>
-              <Trash className={cx("bi", "me-1")} />
-              Remove
-            </span>
-          ) : (
-            <span>
-              <NodeMinus className={cx("bi", "me-1")} />
-              Unlink
-            </span>
-          )}
-        </DropdownItem>
-      </ButtonWithMenuV2>
-      {/* This component needs to be always be in the DOM for some reason... */}
-      <DataConnectorCredentialsModal
-        dataConnector={dataConnector}
-        setOpen={setCredentialsOpen}
-        isOpen={isCredentialsOpen}
-      />
-      {isDeleteOpen && removeModal}
-      {isEditOpen && (
-        <DataConnectorModal
+      {dataConnectorLink && (
+        <DataConnectorRemoveUnlinkModal
           dataConnector={dataConnector}
-          isOpen={isEditOpen}
-          namespace={dataConnector.namespace}
-          toggle={toggleEdit}
+          dataConnectorLink={dataConnectorLink}
+          isOpen={isDeleteOpen}
+          onDelete={onDelete}
+          projectNamespace={namespace!}
+          projectSlug={slug!}
+          toggleModal={toggleDelete}
         />
       )}
     </>
@@ -486,15 +548,13 @@ interface DataConnectorActionsProps {
 }
 
 export default function DataConnectorActions(props: DataConnectorActionsProps) {
-  const { id: dataConnectorId } = props.dataConnector;
-  const { permissions } = useDataConnectorPermissions({ dataConnectorId });
-
-  return (
-    <PermissionsGuard
-      disabled={null}
-      enabled={<DataConnectorActionsInner {...props} />}
-      requestedPermission="write"
-      userPermissions={permissions}
-    />
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
   );
+
+  if (!userLogged) {
+    return null;
+  }
+
+  return <DataConnectorActionsInner {...props} />;
 }
