@@ -407,6 +407,18 @@ export function SessionView({
                 You do not have access to this resource class.
               </p>
             )}
+            {launcher &&
+              launcherResourceClass &&
+              launcher.disk_storage &&
+              launcher.disk_storage > launcherResourceClass.max_storage && (
+                <p>
+                  <ExclamationTriangleFill
+                    className={cx("bi", "text-warning", "me-1")}
+                  />
+                  The selected disk storage exceeds the maximum value allowed (
+                  {launcherResourceClass.max_storage} GB).
+                </p>
+              )}
             {launcher && (
               <ModifyResourcesLauncherModal
                 isOpen={isModifyResourcesOpen}

@@ -190,6 +190,10 @@ export function ModifyResourcesLauncherModal({
               <>
                 <InputGroup>
                   <Input
+                    className={cx(
+                      currentDiskStorage > currentSessionClass.max_storage &&
+                        "is-invalid"
+                    )}
                     type="number"
                     min={MIN_SESSION_STORAGE_GB}
                     max={currentSessionClass?.max_storage}
@@ -227,6 +231,9 @@ export function ModifyResourcesLauncherModal({
             !resourcePools ||
             resourcePools.length == 0 ||
             isErrorResources ||
+            (currentSessionClass != null &&
+              currentDiskStorage != null &&
+              currentDiskStorage > currentSessionClass?.max_storage) ||
             !isDirty
           }
           onClick={onModifyResources}

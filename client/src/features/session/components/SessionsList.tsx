@@ -340,7 +340,9 @@ export function SessionRowResourceRequests({
       {entries.map(([key, value], index) => (
         <span key={key}>
           <span className="text-nowrap">
-            <span className="fw-bold">{value} </span>
+            <span className="fw-bold">
+              {value} {(key === "memory" || key === "storage") && "GB "}
+            </span>
             {key !== "name" && key}
           </span>
           {entries.length - 1 === index ? " " : " | "}

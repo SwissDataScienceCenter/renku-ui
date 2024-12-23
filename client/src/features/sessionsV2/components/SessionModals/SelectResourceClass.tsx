@@ -188,6 +188,10 @@ export function SelectResourceClassModal({
               <>
                 <InputGroup>
                   <Input
+                    className={cx(
+                      currentDiskStorage > currentSessionClass.max_storage &&
+                        "is-invalid"
+                    )}
                     type="number"
                     min={MIN_SESSION_STORAGE_GB}
                     max={currentSessionClass?.max_storage}
@@ -224,7 +228,11 @@ export function SelectResourceClassModal({
         </Link>
         <Button
           color="primary"
-          disabled={!currentSessionClass}
+          disabled={
+            !currentSessionClass ||
+            (currentDiskStorage != null &&
+              currentDiskStorage > currentSessionClass.max_storage)
+          }
           onClick={onClick}
         >
           Continue

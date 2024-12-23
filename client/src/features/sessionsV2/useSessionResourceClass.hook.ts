@@ -52,9 +52,12 @@ export default function useSessionResourceClass({
         dispatch(
           startSessionOptionsV2Slice.actions.setSessionClass(envClass.id)
         );
+        const cappedStorage = diskStorage
+          ? Math.min(diskStorage, envClass.max_storage)
+          : diskStorage;
         dispatch(
           startSessionOptionsV2Slice.actions.setStorage(
-            diskStorage ?? envClass.default_storage
+            cappedStorage ?? envClass.default_storage
           )
         );
         setIsPendingResourceClass(false);
@@ -90,6 +93,7 @@ export default function useSessionResourceClass({
   }, [
     isCustomLaunch,
     isLoadingLauncherClass,
+    launcher.disk_storage,
     launcherClass,
     resourcePools,
     setResourceClass,

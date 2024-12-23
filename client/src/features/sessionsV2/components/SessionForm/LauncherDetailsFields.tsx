@@ -157,7 +157,10 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
             <Controller
               control={control}
               name="diskStorage"
-              render={({ field: { ref, onChange, value, ...rest } }) => (
+              render={({
+                field: { ref, onChange, value, ...rest },
+                fieldState: { error },
+              }) => (
                 <>
                   <div className={cx("form-check", "form-switch")}>
                     <Input
@@ -165,7 +168,6 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
                       role="switch"
                       id="configure-disk-storage"
                       checked={watchCurrentDiskStorage != null}
-                      // onChange={toggleDiskStorage}
                       onChange={() =>
                         onChange(value ? undefined : MIN_SESSION_STORAGE_GB)
                       }
@@ -178,9 +180,10 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
                     <>
                       <InputGroup>
                         <Input
+                          className={cx(error && "is-invalid")}
                           type="number"
                           min={MIN_SESSION_STORAGE_GB}
-                          max={watchCurrentSessionClass?.max_storage}
+                          max={watchCurrentSessionClass.max_storage}
                           step={STEP_SESSION_STORAGE_GB}
                           innerRef={ref}
                           onChange={onChange}
@@ -195,13 +198,16 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
                         </UncontrolledTooltip>
                       </InputGroup>
                       <FormText>
-                        Default: {watchCurrentSessionClass?.default_storage} GB,
-                        max: {watchCurrentSessionClass?.max_storage} GB
+                        Default: {watchCurrentSessionClass.default_storage} GB,
+                        max: {watchCurrentSessionClass.max_storage} GB
                       </FormText>
                     </>
                   )}
                 </>
               )}
+              rules={{
+                max: watchCurrentSessionClass.max_storage,
+              }}
             />
           </div>
         )}
