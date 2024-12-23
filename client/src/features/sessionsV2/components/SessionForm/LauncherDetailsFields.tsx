@@ -169,7 +169,11 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
                       id="configure-disk-storage"
                       checked={watchCurrentDiskStorage != null}
                       onChange={() =>
-                        onChange(value ? undefined : MIN_SESSION_STORAGE_GB)
+                        onChange(
+                          value
+                            ? undefined
+                            : watchCurrentSessionClass.default_storage
+                        )
                       }
                     />
                     <Label for="configure-disk-storage">
