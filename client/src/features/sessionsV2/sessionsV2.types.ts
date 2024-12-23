@@ -45,6 +45,7 @@ export type SessionLauncher = {
   creation_date: string;
   description?: string;
   resource_class_id?: number;
+  disk_storage?: number;
   environment: SessionLauncherEnvironment;
 };
 
@@ -98,6 +99,7 @@ export type AddSessionLauncherParams = {
   name: string;
   project_id: string;
   resource_class_id?: number;
+  disk_storage?: number;
   environment: SessionLauncherEnvironmentParams;
 };
 
@@ -106,6 +108,7 @@ export interface UpdateSessionLauncherParams {
   description?: string;
   name?: string;
   resource_class_id?: number;
+  disk_storage?: number | null;
   environment?: SessionLauncherEnvironmentParams;
 }
 
