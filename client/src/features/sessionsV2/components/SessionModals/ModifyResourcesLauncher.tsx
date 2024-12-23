@@ -2,7 +2,15 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import { SingleValue } from "react-select";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import {
+  Button,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
@@ -18,7 +26,8 @@ interface ModifyResourcesLauncherModalProps {
   isOpen: boolean;
   toggleModal: () => void;
   resourceClassId?: number;
-  sessionLauncherId?: string;
+  diskStorage?: number;
+  sessionLauncherId: string;
 }
 
 export function ModifyResourcesLauncherModal({
@@ -26,6 +35,7 @@ export function ModifyResourcesLauncherModal({
   sessionLauncherId,
   toggleModal,
   resourceClassId,
+  diskStorage,
 }: ModifyResourcesLauncherModalProps) {
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const {
@@ -37,12 +47,30 @@ export function ModifyResourcesLauncherModal({
   const [currentSessionClass, setCurrentSessionClass] = useState<
     ResourceClass | undefined
   >(undefined);
+  const [currentDiskStorage, setCurrentDiskStorage] = useState<
+    number | undefined
+  >(undefined);
 
   const onChange = useCallback((newValue: SingleValue<ResourceClass>) => {
     if (newValue) {
       setCurrentSessionClass(newValue);
     }
   }, []);
+  const onChangeDiskStorage = useCallback((newValue: number | null) => {
+    if (newValue) {
+      setCurrentDiskStorage(newValue);
+    } else {
+      setCurrentDiskStorage(undefined);
+    }
+  }, []);
+  const toggleDiskStorage = useCallback(() => {
+    setCurrentDiskStorage((oldValue) => {
+      if (oldValue == null && currentSessionClass) {
+        return currentSessionClass.default_storage;
+      }
+      return undefined;
+    });
+  }, [currentSessionClass]);
 
   const onModifyResources = useCallback(() => {
     if (currentSessionClass) {
@@ -59,6 +87,20 @@ export function ModifyResourcesLauncherModal({
       .find((c) => c.id === resourceClassId);
     setCurrentSessionClass(currentSessionClass);
   }, [resourceClassId, resourcePools]);
+
+  useEffect(() => {
+    setCurrentDiskStorage(diskStorage);
+  }, [diskStorage]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      const currentSessionClass = resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id === resourceClassId);
+      setCurrentSessionClass(currentSessionClass);
+      setCurrentDiskStorage(diskStorage);
+    }
+  }, [diskStorage, isOpen, resourceClassId, resourcePools]);
 
   const selector = isLoadingResources ? (
     <FetchingResourcePools />
@@ -102,6 +144,26 @@ export function ModifyResourcesLauncherModal({
           session’ in the session options.
         </p>
         <div className="field-group">{selector}</div>
+        <div className={cx("field-group", "mt-3")}>
+          Disk Storage:{" "}
+          <span className="fw-bold">
+            {currentDiskStorage ? (
+              <>{currentDiskStorage}GB</>
+            ) : (
+              <>{currentSessionClass?.default_storage}GB (default)</>
+            )}
+          </span>
+          <div className={cx("form-check", "form-switch")}>
+            <Input
+              type="checkbox"
+              role="switch"
+              id="configure-disk-storage"
+              checked={currentDiskStorage != null}
+              onChange={toggleDiskStorage}
+            />
+            <Label for="configure-disk-storage">Configure disk storage</Label>
+          </div>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="outline-primary" onClick={toggleModal}>

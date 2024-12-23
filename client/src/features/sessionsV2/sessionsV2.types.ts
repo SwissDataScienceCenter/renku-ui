@@ -104,7 +104,7 @@ export type AddSessionLauncherParams = {
 };
 
 export interface UpdateSessionLauncherParams {
-  launcherId?: string;
+  launcherId: string;
   description?: string;
   name?: string;
   resource_class_id?: number;
