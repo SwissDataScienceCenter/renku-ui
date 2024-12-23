@@ -265,10 +265,9 @@ export function SessionView({
         resourceRequests={{
           name: launcherResourceClass.name,
           cpu: launcherResourceClass.cpu,
-          memory: `${launcherResourceClass.memory}G`,
-          storage: `${
-            launcher?.disk_storage ?? launcherResourceClass.default_storage
-          }G`,
+          memory: launcherResourceClass.memory,
+          storage:
+            launcher?.disk_storage ?? launcherResourceClass.default_storage,
           gpu: launcherResourceClass.gpu,
         }}
       />
