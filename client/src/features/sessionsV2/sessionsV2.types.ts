@@ -124,6 +124,7 @@ export interface SessionLauncherForm {
   environment_kind: EnvironmentKind;
   environment_id: string;
   resourceClass: ResourceClass;
+  diskStorage: number | undefined;
   port: number;
   working_directory: string;
   uid: number;

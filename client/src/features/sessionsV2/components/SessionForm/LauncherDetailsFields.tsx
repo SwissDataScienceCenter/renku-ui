@@ -15,43 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { useMemo } from "react";
+import { Control, Controller, useWatch } from "react-hook-form";
 import {
-  Control,
-  Controller,
-  FieldErrors,
-  UseFormSetValue,
-} from "react-hook-form";
-import { SingleValue } from "react-select";
-import { Input, Label } from "reactstrap";
+  FormText,
+  Input,
+  InputGroup,
+  InputGroupText,
+  Label,
+  UncontrolledTooltip,
+} from "reactstrap";
 import { WarnAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
-import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import {
+  MIN_SESSION_STORAGE_GB,
+  STEP_SESSION_STORAGE_GB,
+} from "../../../session/startSessionOptions.constants";
 
 interface LauncherDetailsFieldsProps {
-  control: Control<SessionLauncherForm, unknown>;
-  errors: FieldErrors<SessionLauncherForm>;
-  setValue: UseFormSetValue<SessionLauncherForm>;
+  control: Control<SessionLauncherForm>;
 }
-export function LauncherDetailsFields({
-  setValue,
-  control,
-  errors,
-}: LauncherDetailsFieldsProps) {
+export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
   const {
     data: resourcePools,
     isLoading: isLoadingResourcesPools,
     error: resourcePoolsError,
   } = useGetResourcePoolsQuery({});
-
-  const onChangeResourceClass = (resourceClass: SingleValue<ResourceClass>) => {
-    if (resourceClass) setValue("resourceClass", resourceClass);
-  };
 
   const defaultSessionClass = useMemo(
     () =>
@@ -63,6 +58,13 @@ export function LauncherDetailsFields({
       undefined,
     [resourcePools]
   );
+
+  const watchCurrentSessionClass = useWatch({
+    control,
+    name: "resourceClass",
+    defaultValue: defaultSessionClass,
+  });
+  const watchCurrentDiskStorage = useWatch({ control, name: "diskStorage" });
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -76,9 +78,9 @@ export function LauncherDetailsFields({
         <Controller
           control={control}
           name="name"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx(errors.name && "is-invalid")}
+              className={cx(error && "is-invalid")}
               id="addSessionLauncherName"
               placeholder="session name"
               type="text"
@@ -107,31 +109,101 @@ export function LauncherDetailsFields({
         {!isLoadingResourcesPools &&
         resourcePools &&
         resourcePools?.length > 0 ? (
-          <Controller
-            control={control}
-            name="resourceClass"
-            defaultValue={defaultSessionClass}
-            render={() => (
-              <>
-                <SessionClassSelectorV2
-                  id="addSessionResourceClass"
-                  resourcePools={resourcePools}
-                  onChange={onChangeResourceClass}
-                  defaultSessionClass={defaultSessionClass}
-                />
-                {errors?.resourceClass && (
-                  <div className={cx("small", "text-danger")}>
-                    Please provide a resource class
-                  </div>
-                )}
-              </>
-            )}
-            rules={{ required: true }}
-          />
+          <>
+            <Controller
+              control={control}
+              name="resourceClass"
+              defaultValue={defaultSessionClass}
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
+                <>
+                  <SessionClassSelectorV2
+                    id="addSessionResourceClass"
+                    currentSessionClass={value}
+                    resourcePools={resourcePools}
+                    onChange={onChange}
+                    defaultSessionClass={defaultSessionClass}
+                  />
+                  {error && (
+                    <div className={cx("small", "text-danger")}>
+                      Please provide a resource class
+                    </div>
+                  )}
+                </>
+              )}
+              rules={{ required: true }}
+            />
+          </>
         ) : (
           <WarnAlert>
             There are no one resource pool available to create a session
           </WarnAlert>
+        )}
+
+        {watchCurrentSessionClass && (
+          <div className={cx("field-group", "mt-3")}>
+            <div>
+              Disk Storage:{" "}
+              <span className="fw-bold">
+                {watchCurrentDiskStorage ? (
+                  <>{watchCurrentDiskStorage} GB</>
+                ) : (
+                  <>{watchCurrentSessionClass?.default_storage} GB (default)</>
+                )}
+              </span>
+            </div>
+            <Controller
+              control={control}
+              name="diskStorage"
+              render={({ field: { ref, onChange, value, ...rest } }) => (
+                <>
+                  <div className={cx("form-check", "form-switch")}>
+                    <Input
+                      type="checkbox"
+                      role="switch"
+                      id="configure-disk-storage"
+                      checked={watchCurrentDiskStorage != null}
+                      // onChange={toggleDiskStorage}
+                      onChange={() =>
+                        onChange(value ? undefined : MIN_SESSION_STORAGE_GB)
+                      }
+                    />
+                    <Label for="configure-disk-storage">
+                      Configure disk storage
+                    </Label>
+                  </div>
+                  {watchCurrentDiskStorage != null && (
+                    <>
+                      <InputGroup>
+                        <Input
+                          type="number"
+                          min={MIN_SESSION_STORAGE_GB}
+                          max={watchCurrentSessionClass?.max_storage}
+                          step={STEP_SESSION_STORAGE_GB}
+                          innerRef={ref}
+                          onChange={onChange}
+                          value={value}
+                          {...rest}
+                        />
+                        <InputGroupText id="configure-disk-storage-addon">
+                          GB
+                        </InputGroupText>
+                        <UncontrolledTooltip target="configure-disk-storage-addon">
+                          Gigabytes
+                        </UncontrolledTooltip>
+                      </InputGroup>
+                      <FormText>
+                        Default: {watchCurrentSessionClass?.default_storage} GB,
+                        max: {watchCurrentSessionClass?.max_storage} GB
+                      </FormText>
+                    </>
+                  )}
+                </>
+              )}
+            />
+          </div>
         )}
       </div>
     </div>
