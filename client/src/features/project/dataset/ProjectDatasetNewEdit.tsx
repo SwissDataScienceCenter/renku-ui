@@ -178,8 +178,6 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
       externalUrl={projectMetadata.externalUrl}
       fetchDatasets={props.fetchDatasets}
       initialized={true}
-      // history={props.history}
-      // location={props.location}
       metadataVersion={props.metadataVersion}
       notifications={props.notifications}
       onCancel={onCancel}
@@ -198,7 +196,6 @@ function ProjectDatasetNew(
   props: Omit<ChangeDatasetProps, "submitting" | "setSubmitting"> &
     ProjectDatasetNewOnlyProps
 ) {
-  // const location = props.location;
   const location = useLocation();
 
   const project = useLegacySelector<StateModelProject>(
@@ -232,8 +229,6 @@ function ProjectDatasetNew(
           apiVersion={props.apiVersion}
           client={props.client}
           fetchDatasets={props.fetchDatasets}
-          // history={props.history}
-          // location={props.location}
           metadataVersion={props.metadataVersion}
           model={props.model}
           notifications={props.notifications}
@@ -341,8 +336,6 @@ function ProjectDatasetEdit(props: ProjectDatasetEditProps) {
         datasetId={datasetId}
         fetchDatasets={props.fetchDatasets}
         files={props.files}
-        // history={props.history}
-        // location={props.location}
         metadataVersion={props.metadataVersion}
         model={props.model}
         notifications={props.notifications}

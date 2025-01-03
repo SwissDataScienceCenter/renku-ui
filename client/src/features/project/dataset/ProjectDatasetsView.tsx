@@ -20,7 +20,6 @@ import { faInfoCircle, faUserClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
 import React, { useEffect } from "react";
-// import { Link, Route, Switch, useHistory, useParams } from "react-router-dom";
 import {
   Link,
   Route,
@@ -40,23 +39,13 @@ import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
-// import type { DatasetCore } from "../project.types";
 import { StateModelProject } from "../project.types";
 import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
 import ProjectDatasetImport from "./ProjectDatasetImport";
-// import type { ProjectDatasetEditProps } from "./ProjectDatasetNewEdit";
 import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
 import ProjectDatasetShow from "./ProjectDatasetShow";
 import ProjectDatasetListView from "./ProjectDatasetsListView";
-
-// type LocationState = {
-//   dataset: DatasetCore;
-//   files: ProjectDatasetEditProps["files"];
-//   isFilesFetching: boolean;
-//   filesFetchError: ProjectDatasetEditProps["filesFetchError"];
-//   reload: boolean;
-// };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetLockAlert({ lockStatus }: any) {
@@ -134,8 +123,6 @@ function ProjectAddDataset(props: any) {
           apiVersion={props.apiVersion}
           client={props.client}
           fetchDatasets={props.fetchDatasets}
-          // history={props.history}
-          // location={props.location}
           metadataVersion={props.metadataVersion}
           model={props.model}
           notifications={props.notifications}
@@ -147,8 +134,6 @@ function ProjectAddDataset(props: any) {
         <ProjectDatasetImport
           client={props.client}
           fetchDatasets={props.fetchDatasets}
-          // history={props.history}
-          // location={props.location}
           model={props.model}
           notifications={props.notifications}
           params={props.params}
@@ -184,14 +169,9 @@ function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetsView(props: any) {
-  const {
-    datasets,
-    fetchDatasets,
-    //  location
-  } = props;
+  const { datasets, fetchDatasets } = props;
   const location = useLocation();
   const navigate = useNavigate();
-  // const history = useHistory();
 
   const [datasetCoordinator, setDatasetCoordinator] =
     React.useState<unknown>(null);
@@ -243,7 +223,6 @@ function ProjectDatasetsView(props: any) {
       (location.state && location.state.reload)
     ) {
       fetchDatasets(location.state && location.state.reload, versionUrl);
-      // history.replace({ state: { reload: false } });
       navigate(location, { replace: true, state: { reload: false } });
     }
   }, [
@@ -462,8 +441,6 @@ function EditDatasetRoute({
   params,
   versionUrl,
 }: EditDatasetRouteProps) {
-  // const history = useHistory<Partial<LocationState>>();
-  // const location = history.location;
   const location = useLocation();
 
   const { datasetId } = useParams<{ datasetId: string }>();
@@ -484,9 +461,7 @@ function EditDatasetRoute({
         fetchDatasets={fetchDatasets}
         files={location.state.files ?? { hasPart: [] }}
         filesFetchError={location.state.filesFetchError}
-        // history={history}
         isFilesFetching={location.state.isFilesFetching ?? false}
-        // location={location}
         metadataVersion={metadataVersion}
         model={model}
         notifications={notifications}
@@ -512,8 +487,6 @@ function ShowDatasetRoute({
   pathWithNamespace,
   projectIndexingStatus,
 }: ShowDatasetRouteProps) {
-  // const history = useHistory();
-  // const location = history.location;
   const { datasetId } = useParams<{ datasetId: string }>();
 
   return (
@@ -529,8 +502,6 @@ function ShowDatasetRoute({
         datasetCoordinator={datasetCoordinator}
         datasetId={decodeURIComponent(datasetId ?? "")}
         graphStatus={projectIndexingStatus.data?.activated ?? false}
-        // history={history}
-        // location={location}
         model={model}
         projectInsideKg={projectIndexingStatus.data?.activated ?? false}
       />

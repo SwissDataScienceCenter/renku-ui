@@ -497,10 +497,7 @@ export default function DatasetView(props) {
       }
     >
       <Col>
-        <ErrorAfterCreation
-          // location={props.location}
-          dataset={dataset}
-        />
+        <ErrorAfterCreation dataset={dataset} />
         {props.insideProject ? null : (
           <Helmet>
             <title>{pageTitle}</title>
