@@ -16,8 +16,11 @@
  * limitations under the License.
  */
 
+import { useEffect } from "react";
 import {
+  generatePath,
   Outlet,
+  useNavigate,
   useOutletContext,
   useParams,
 } from "react-router-dom-v5-compat";
@@ -30,10 +33,10 @@ import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV
 import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 export default function ProjectPageContainer() {
   const { namespace, slug } = useParams<{
-    id: string | undefined;
     namespace: string | undefined;
     slug: string | undefined;
   }>();
@@ -42,6 +45,28 @@ export default function ProjectPageContainer() {
       namespace: namespace ?? "",
       slug: slug ?? "",
     });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (namespace && data && data.namespace !== namespace) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: data.namespace,
+          slug: data.slug,
+        }),
+        { replace: true }
+      );
+    } else if (slug && data && data.slug !== slug) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: data.namespace,
+          slug: data.slug,
+        }),
+        { replace: true }
+      );
+    }
+  }, [data, namespace, navigate, slug]);
 
   if (isLoading) return <Loader className="align-self-center" />;
 
