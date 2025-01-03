@@ -76,12 +76,21 @@ export default function UserShow() {
     if (username && namespace?.namespace_kind === "group") {
       navigate(
         generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, { slug: username }),
-        {
-          replace: true,
-        }
+        { replace: true }
+      );
+    } else if (
+      username &&
+      namespace?.namespace_kind === "user" &&
+      namespace.slug !== username
+    ) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+          username: namespace.slug,
+        }),
+        { replace: true }
       );
     }
-  }, [namespace?.namespace_kind, navigate, username]);
+  }, [namespace?.namespace_kind, namespace?.slug, navigate, username]);
 
   if (isLoading) {
     return <Loader className="align-self-center" />;
