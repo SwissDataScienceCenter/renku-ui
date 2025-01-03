@@ -72,12 +72,12 @@ export { mapDataset, getDatasetAuthors, getUpdatedDatasetImage };
  * @param {*} location - current location object
  * @param {*} newState - any new state to set
  */
-export function cleanModifyLocation(location, newState) {
+export function cleanModifyLocation(location) {
   return {
     ...location,
     pathname: location.pathname.endsWith("/")
       ? location.pathname + "modify"
       : location.pathname + "/modify",
-    state: newState,
+    // state: newState,
   };
 }

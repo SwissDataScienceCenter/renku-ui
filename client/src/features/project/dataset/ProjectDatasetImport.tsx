@@ -6,8 +6,8 @@ import type { StateModelProject } from "../project.types";
 type ProjectDatasetImportProps = {
   client: DatasetImportProps["client"];
   fetchDatasets: DatasetImportProps["fetchDatasets"];
-  history: DatasetImportProps["history"];
-  location: DatasetImportProps["location"];
+  // history: DatasetImportProps["history"];
+  // location: DatasetImportProps["location"];
   model: unknown;
   notifications: unknown;
   params: unknown;
@@ -33,8 +33,8 @@ function ProjectDatasetImport(props: ProjectDatasetImportProps) {
       client={props.client}
       externalUrl={externalUrl}
       fetchDatasets={props.fetchDatasets}
-      history={props.history}
-      location={props.location}
+      // history={props.history}
+      // location={props.location}
       projectPathWithNamespace={projectPathWithNamespace}
       toggleNewDataset={props.toggleNewDataset}
     />

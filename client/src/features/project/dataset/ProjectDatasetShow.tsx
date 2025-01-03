@@ -50,8 +50,8 @@ type ProjectDatasetShowProps = {
   datasetCoordinator: unknown;
   datasetId: string;
   graphStatus: boolean;
-  history: unknown;
-  location: unknown;
+  // history: unknown;
+  // location: unknown;
   model: unknown;
   projectInsideKg: boolean;
 };
@@ -63,10 +63,10 @@ type ProjectDatasetViewProps = {
   externalUrl: string;
   fileContentUrl: string;
   graphStatus: boolean;
-  history: unknown;
+  // history: unknown;
   httpProjectUrl: string;
   lineagesUrl: string;
-  location: unknown;
+  // location: unknown;
   lockStatus: unknown;
   logged: unknown;
   maintainer: boolean;
@@ -181,13 +181,13 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
       fetchError={kgFetchError}
       fetchedKg={kgDataset != null}
       fileContentUrl={props.fileContentUrl}
-      history={props.history}
+      // history={props.history}
       httpProjectUrl={props.httpProjectUrl}
       identifier={datasetId}
       insideProject={true}
       lineagesUrl={props.lineagesUrl}
       loadingDatasets={loadingDatasets}
-      location={props.location}
+      // location={props.location}
       lockStatus={props.lockStatus}
       logged={props.logged}
       maintainer={props.maintainer}
@@ -238,10 +238,10 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
       externalUrl={projectMetadata.externalUrl}
       fileContentUrl={fileContentUrl}
       graphStatus={props.graphStatus}
-      history={props.history}
+      // history={props.history}
       httpProjectUrl={httpProjectUrl}
       lineagesUrl={lineagesUrl}
-      location={props.location}
+      // location={props.location}
       lockStatus={lockStatus}
       logged={user.logged}
       maintainer={maintainer}

@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { groupBy, isEmpty } from "lodash-es";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useNavigate } from "react-router-dom-v5-compat";
+import { Link, useLocation, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
   Card,
@@ -271,13 +271,14 @@ function DisplayInfoTable(props) {
 }
 
 function ErrorAfterCreation(props) {
+  const location = useLocation();
+
   const editButton = (
     <Link
       className="float-right me-1 mb-1"
       id="editDatasetTooltip"
-      to={(location) =>
-        cleanModifyLocation(location, { dataset: props.dataset })
-      }
+      to={cleanModifyLocation(location)}
+      state={{ dataset: props.dataset }}
     >
       <Button size="sm" color="danger" className="btn-icon-text">
         <FontAwesomeIcon icon={faPen} color="dark" /> Edit
@@ -285,7 +286,7 @@ function ErrorAfterCreation(props) {
     </Link>
   );
 
-  return props.location.state && props.location.state.errorOnCreation ? (
+  return location.state && location.state.errorOnCreation ? (
     <ErrorAlert>
       <strong>Error on creation</strong>
       <br />
@@ -345,6 +346,8 @@ function EditDatasetButton({
   locked,
   maintainer,
 }) {
+  const location = useLocation();
+
   if (!insideProject || !maintainer) return null;
   if (locked) {
     return (
@@ -368,14 +371,8 @@ function EditDatasetButton({
       className="float-right mb-1"
       id="editDatasetTooltip"
       data-cy="edit-dataset-button"
-      to={(location) =>
-        cleanModifyLocation(location, {
-          dataset,
-          files,
-          isFilesFetching,
-          filesFetchError,
-        })
-      }
+      to={cleanModifyLocation(location)}
+      state={{ dataset, files, isFilesFetching, filesFetchError }}
     >
       <Button
         className="btn-outline-rk-pink icon-button"
@@ -500,7 +497,10 @@ export default function DatasetView(props) {
       }
     >
       <Col>
-        <ErrorAfterCreation location={props.location} dataset={dataset} />
+        <ErrorAfterCreation
+          // location={props.location}
+          dataset={dataset}
+        />
         {props.insideProject ? null : (
           <Helmet>
             <title>{pageTitle}</title>
