@@ -21,7 +21,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { groupBy, isEmpty } from "lodash-es";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-// import { Link } from "react-router-dom";
 import { Link, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
@@ -298,12 +297,10 @@ function ErrorAfterCreation(props) {
 }
 
 function AddToProjectButton({ insideKg, locked, logged, identifier }) {
-  // const history = useHistory();
   const navigate = useNavigate();
 
   const addDatasetUrl = `/datasets/${identifier}/add`;
   const goToAddToProject = () => {
-    // if (history) history.push(addDatasetUrl);
     navigate(addDatasetUrl);
   };
 
@@ -595,7 +592,6 @@ export default function DatasetView(props) {
             client={props.client}
             dataset={dataset}
             externalUrl={props.externalUrl}
-            // history={props.history}
             metadataVersion={props.metadataVersion}
             modalOpen={deleteDatasetModalOpen}
             projectPathWithNamespace={props.projectPathWithNamespace}

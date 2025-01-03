@@ -17,7 +17,6 @@
  */
 
 import { useEffect, useState } from "react";
-// import { useHistory } from "react-router";
 import { useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
@@ -109,7 +108,6 @@ type DatasetDeleteModalProps = {
   closeModal: () => void;
   dataset: DeleteDatasetProps["dataset"];
   deleteDataset: () => void;
-  // history: DeleteDatasetProps["history"];
   modalOpen: DeleteDatasetProps["modalOpen"];
   serverErrors: CoreErrorContent | string | undefined;
   submitLoader: { isSubmitting: boolean; text: string | undefined };
@@ -142,7 +140,6 @@ export type DeleteDatasetSuccessResponse = {
 
 export interface DeleteDatasetProps extends CoreVersionUrl {
   dataset: DatasetCore;
-  // history: ReturnType<typeof useHistory>;
   externalUrl: string;
   onCancel: () => void;
   modalOpen: boolean;
@@ -169,33 +166,24 @@ function DeleteDataset(props: DeleteDatasetProps) {
   });
 
   // handle deleting dataset
-  useEffect(
-    () => {
-      if (deleteDatasetStatus.error && "data" in deleteDatasetStatus.error) {
-        const errorResponse = deleteDatasetStatus.error
-          .data as CoreErrorResponse;
-        setSubmitting(false);
-        setServerErrors(errorResponse.error);
-      } else if (deleteDatasetStatus.error) {
-        // ? This cases is unlikely to happen with the current implementation of renku-core
-        setSubmitting(false);
-        const errorMessage =
-          "There was an unexpected problem deleting the dataset: " +
-          deleteDatasetStatus.error.toString();
-        setServerErrors(errorMessage);
-      } else if (deleteDatasetStatus.isSuccess) {
-        setSubmitting(false);
-        setSubmitLoaderText("Dataset deleted, you will be redirected soon...");
-        // props.history.push({
-        //   pathname: projectDatasetsUrl,
-        //   state: { reload: true },
-        // });
-        navigate({ pathname: projectDatasetsUrl }, { state: { reload: true } });
-      }
-    },
-    [deleteDatasetStatus, navigate, projectDatasetsUrl]
-    // [deleteDatasetStatus, props.history, projectDatasetsUrl]
-  );
+  useEffect(() => {
+    if (deleteDatasetStatus.error && "data" in deleteDatasetStatus.error) {
+      const errorResponse = deleteDatasetStatus.error.data as CoreErrorResponse;
+      setSubmitting(false);
+      setServerErrors(errorResponse.error);
+    } else if (deleteDatasetStatus.error) {
+      // ? This cases is unlikely to happen with the current implementation of renku-core
+      setSubmitting(false);
+      const errorMessage =
+        "There was an unexpected problem deleting the dataset: " +
+        deleteDatasetStatus.error.toString();
+      setServerErrors(errorMessage);
+    } else if (deleteDatasetStatus.isSuccess) {
+      setSubmitting(false);
+      setSubmitLoaderText("Dataset deleted, you will be redirected soon...");
+      navigate({ pathname: projectDatasetsUrl }, { state: { reload: true } });
+    }
+  }, [deleteDatasetStatus, navigate, projectDatasetsUrl]);
 
   const localDeleteDataset = () => {
     setSubmitting(true);
@@ -225,7 +213,6 @@ function DeleteDataset(props: DeleteDatasetProps) {
       deleteDataset={localDeleteDataset}
       serverErrors={serverErrors}
       submitLoader={{ isSubmitting, text: submitLoaderText }}
-      // history={props.history}
     />
   );
 }
