@@ -17,15 +17,16 @@
  */
 
 import { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router";
+// import { useHistory, useParams } from "react-router";
+import { useLocation, useParams } from "react-router-dom-v5-compat";
 
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import DatasetView from "./Dataset.present";
 
 export default function ShowDataset(props) {
-  const history = useHistory();
-  const location = history.location;
+  // const history = useHistory();
+  const location = useLocation();
 
   const { identifier: identifier_ } = useParams();
   const identifier = identifier_?.replaceAll("-", "");
@@ -160,7 +161,7 @@ export default function ShowDataset(props) {
       fetchError={dataset?.fetchError}
       fetchedKg={dataset?.fetched}
       fileContentUrl={props.fileContentUrl}
-      history={history}
+      // history={history}
       identifier={identifier}
       insideProject={props.insideProject}
       lineagesUrl={props.lineagesUrl}

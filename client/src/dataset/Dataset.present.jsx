@@ -18,10 +18,11 @@
 
 import { faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { isEmpty, groupBy } from "lodash-es";
+import { groupBy, isEmpty } from "lodash-es";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useHistory } from "react-router-dom";
+// import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
   Card,
@@ -42,7 +43,9 @@ import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { CoreError } from "../components/errors/CoreErrorHelpers";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import DeleteDataset from "../project/datasets/delete";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
+import { getEntityImageUrl } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
 import { DatasetError } from "./DatasetError";
 import {
@@ -50,8 +53,6 @@ import {
   getDatasetAuthors,
   getUpdatedDatasetImage,
 } from "./DatasetFunctions";
-import { getEntityImageUrl } from "../utils/helpers/HelperFunctions";
-import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -297,10 +298,13 @@ function ErrorAfterCreation(props) {
 }
 
 function AddToProjectButton({ insideKg, locked, logged, identifier }) {
-  const history = useHistory();
+  // const history = useHistory();
+  const navigate = useNavigate();
+
   const addDatasetUrl = `/datasets/${identifier}/add`;
   const goToAddToProject = () => {
-    if (history) history.push(addDatasetUrl);
+    // if (history) history.push(addDatasetUrl);
+    navigate(addDatasetUrl);
   };
 
   const tooltip =
@@ -591,7 +595,7 @@ export default function DatasetView(props) {
             client={props.client}
             dataset={dataset}
             externalUrl={props.externalUrl}
-            history={props.history}
+            // history={props.history}
             metadataVersion={props.metadataVersion}
             modalOpen={deleteDatasetModalOpen}
             projectPathWithNamespace={props.projectPathWithNamespace}
