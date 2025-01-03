@@ -48,7 +48,7 @@ export default function GroupPageContainer() {
   const navigate = useNavigate();
 
   const {
-    data: namespace,
+    currentData: namespace,
     isLoading: isLoadingNamespace,
     error: namespaceError,
   } = useGetNamespacesByNamespaceSlugQuery(

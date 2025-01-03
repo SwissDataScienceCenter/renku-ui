@@ -40,7 +40,7 @@ export default function ProjectPageContainer() {
     namespace: string | undefined;
     slug: string | undefined;
   }>();
-  const { data, isLoading, error } =
+  const { data, currentData, isLoading, error } =
     useGetNamespacesByNamespaceProjectsAndSlugQuery({
       namespace: namespace ?? "",
       slug: slug ?? "",
@@ -49,24 +49,24 @@ export default function ProjectPageContainer() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (namespace && data && data.namespace !== namespace) {
+    if (namespace && currentData && currentData.namespace !== namespace) {
       navigate(
         generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-          namespace: data.namespace,
-          slug: data.slug,
+          namespace: currentData.namespace,
+          slug: currentData.slug,
         }),
         { replace: true }
       );
-    } else if (slug && data && data.slug !== slug) {
+    } else if (slug && currentData && currentData.slug !== slug) {
       navigate(
         generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-          namespace: data.namespace,
-          slug: data.slug,
+          namespace: currentData.namespace,
+          slug: currentData.slug,
         }),
         { replace: true }
       );
     }
-  }, [data, namespace, navigate, slug]);
+  }, [currentData, namespace, navigate, slug]);
 
   if (isLoading) return <Loader className="align-self-center" />;
 
