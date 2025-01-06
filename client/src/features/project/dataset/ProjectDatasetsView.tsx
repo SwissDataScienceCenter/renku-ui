@@ -20,7 +20,14 @@ import { faInfoCircle, faUserClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
 import React, { useEffect } from "react";
-import { Link, Route, Switch, useHistory, useParams } from "react-router-dom";
+import {
+  Link,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom-v5-compat";
 import { Alert, Button, Col } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -32,23 +39,13 @@ import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
-import type { DatasetCore } from "../project.types";
 import { StateModelProject } from "../project.types";
 import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
 import ProjectDatasetImport from "./ProjectDatasetImport";
-import type { ProjectDatasetEditProps } from "./ProjectDatasetNewEdit";
 import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
 import ProjectDatasetShow from "./ProjectDatasetShow";
 import ProjectDatasetListView from "./ProjectDatasetsListView";
-
-type LocationState = {
-  dataset: DatasetCore;
-  files: ProjectDatasetEditProps["files"];
-  isFilesFetching: boolean;
-  filesFetchError: ProjectDatasetEditProps["filesFetchError"];
-  reload: boolean;
-};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetLockAlert({ lockStatus }: any) {
@@ -126,8 +123,6 @@ function ProjectAddDataset(props: any) {
           apiVersion={props.apiVersion}
           client={props.client}
           fetchDatasets={props.fetchDatasets}
-          history={props.history}
-          location={props.location}
           metadataVersion={props.metadataVersion}
           model={props.model}
           notifications={props.notifications}
@@ -139,8 +134,6 @@ function ProjectAddDataset(props: any) {
         <ProjectDatasetImport
           client={props.client}
           fetchDatasets={props.fetchDatasets}
-          history={props.history}
-          location={props.location}
           model={props.model}
           notifications={props.notifications}
           params={props.params}
@@ -176,8 +169,9 @@ function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetsView(props: any) {
-  const { datasets, fetchDatasets, location } = props;
-  const history = useHistory();
+  const { datasets, fetchDatasets } = props;
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [datasetCoordinator, setDatasetCoordinator] =
     React.useState<unknown>(null);
@@ -229,15 +223,15 @@ function ProjectDatasetsView(props: any) {
       (location.state && location.state.reload)
     ) {
       fetchDatasets(location.state && location.state.reload, versionUrl);
-      history.replace({ state: { reload: false } });
+      navigate(location, { replace: true, state: { reload: false } });
     }
   }, [
     backendAvailable,
     coreSupportComputed,
     datasets.core,
     fetchDatasets,
-    history,
-    location.state,
+    location,
+    navigate,
     versionUrl,
   ]);
 
@@ -350,7 +344,7 @@ function ProjectDatasetsView(props: any) {
   if (
     props.datasets.core.datasets != null &&
     props.datasets.core.datasets.length === 0 &&
-    props.location.pathname !== props.newDatasetUrl
+    location.pathname !== props.newDatasetUrl
   ) {
     return (
       <Col sm={12}>
@@ -369,48 +363,57 @@ function ProjectDatasetsView(props: any) {
     <Col sm={12}>
       {coreSupportMessage}
       <ProjectDatasetLockAlert lockStatus={props.lockStatus} />
-      <Switch>
-        <Route path={props.newDatasetUrl}>
-          <Col key="btn" md={12}>
-            <GoBackButton
-              data-cy="go-back-dataset"
-              label="Back to list"
-              url={props.datasetsUrl}
+      <Routes>
+        <Route
+          path="new"
+          element={
+            <>
+              <Col key="btn" md={12}>
+                <GoBackButton
+                  data-cy="go-back-dataset"
+                  label="Back to list"
+                  url={props.datasetsUrl}
+                />
+              </Col>
+              <ProjectAddDataset
+                {...props}
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+                versionUrl={versionUrl}
+              />
+            </>
+          }
+        />
+        <Route
+          path=":datasetId/modify"
+          element={
+            <EditDatasetRoute
+              apiVersion={apiVersion}
+              client={props.client}
+              datasetsUrl={props.datasetsUrl}
+              fetchDatasets={props.fetchDatasets}
+              metadataVersion={metadataVersion}
+              model={props.model}
+              notifications={props.notifications}
+              params={props.params}
+              versionUrl={versionUrl}
             />
-          </Col>
-          <ProjectAddDataset
-            {...props}
-            apiVersion={apiVersion}
-            metadataVersion={metadataVersion}
-            versionUrl={versionUrl}
-          />
-        </Route>
-        <Route path={props.editDatasetUrl}>
-          <EditDatasetRoute
-            apiVersion={apiVersion}
-            client={props.client}
-            datasetsUrl={props.datasetsUrl}
-            fetchDatasets={props.fetchDatasets}
-            metadataVersion={metadataVersion}
-            model={props.model}
-            notifications={props.notifications}
-            params={props.params}
-            versionUrl={versionUrl}
-          />
-        </Route>
-        <Route path={props.datasetUrl}>
-          <ShowDatasetRoute
-            datasetCoordinator={datasetCoordinator}
-            datasetsUrl={props.datasetsUrl}
-            model={props.model}
-            pathWithNamespace={props.metadata.pathWithNamespace}
-            projectIndexingStatus={projectIndexingStatus}
-          />
-        </Route>
-        <Route exact path={props.datasetsUrl}>
-          <ProjectDatasetsNav {...props} />
-        </Route>
-      </Switch>
+          }
+        />
+        <Route
+          path=":datasetId"
+          element={
+            <ShowDatasetRoute
+              datasetCoordinator={datasetCoordinator}
+              datasetsUrl={props.datasetsUrl}
+              model={props.model}
+              pathWithNamespace={props.metadata.pathWithNamespace}
+              projectIndexingStatus={projectIndexingStatus}
+            />
+          }
+        />
+        <Route path="/" element={<ProjectDatasetsNav {...props} />} />
+      </Routes>
     </Col>
   );
 }
@@ -438,8 +441,7 @@ function EditDatasetRoute({
   params,
   versionUrl,
 }: EditDatasetRouteProps) {
-  const history = useHistory<Partial<LocationState>>();
-  const location = history.location;
+  const location = useLocation();
 
   const { datasetId } = useParams<{ datasetId: string }>();
 
@@ -455,13 +457,11 @@ function EditDatasetRoute({
         apiVersion={apiVersion}
         client={client}
         dataset={location.state.dataset}
-        datasetId={decodeURIComponent(datasetId)}
+        datasetId={decodeURIComponent(datasetId ?? "")}
         fetchDatasets={fetchDatasets}
         files={location.state.files ?? { hasPart: [] }}
         filesFetchError={location.state.filesFetchError}
-        history={history}
         isFilesFetching={location.state.isFilesFetching ?? false}
-        location={location}
         metadataVersion={metadataVersion}
         model={model}
         notifications={notifications}
@@ -487,9 +487,6 @@ function ShowDatasetRoute({
   pathWithNamespace,
   projectIndexingStatus,
 }: ShowDatasetRouteProps) {
-  const history = useHistory();
-  const location = history.location;
-
   const { datasetId } = useParams<{ datasetId: string }>();
 
   return (
@@ -503,10 +500,8 @@ function ShowDatasetRoute({
       </Col>
       <ProjectDatasetShow
         datasetCoordinator={datasetCoordinator}
-        datasetId={decodeURIComponent(datasetId)}
+        datasetId={decodeURIComponent(datasetId ?? "")}
         graphStatus={projectIndexingStatus.data?.activated ?? false}
-        history={history}
-        location={location}
         model={model}
         projectInsideKg={projectIndexingStatus.data?.activated ?? false}
       />

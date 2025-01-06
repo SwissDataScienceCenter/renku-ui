@@ -27,7 +27,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
 import { Alert, Button, Col, UncontrolledAlert } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -300,14 +300,13 @@ async function importDatasetAndWaitForResult({
 function DatasetImportContainer(
   props: DatasetImportProps & { branch: string; versionUrl: string }
 ) {
-  const {
-    externalUrl,
-    fetchDatasets,
-    history,
-    projectPathWithNamespace,
-    versionUrl,
-  } = props;
-  const formLocation = props.location.pathname + "/import";
+  const { externalUrl, fetchDatasets, projectPathWithNamespace, versionUrl } =
+    props;
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const formLocation = location.pathname + "/import";
   const [submitLoader, setSubmitLoader] = useState<
     DatasetImportFormProps["submitLoader"]
   >({ value: false, text: "Please wait..." });
@@ -315,19 +314,15 @@ function DatasetImportContainer(
   const [serverErrors, setServerErrors] = useState<string | undefined>();
 
   const onCancel = React.useCallback(() => {
-    history.push({
-      pathname: `/projects/${projectPathWithNamespace}/datasets`,
-    });
-  }, [history, projectPathWithNamespace]);
+    navigate(`/projects/${projectPathWithNamespace}/datasets`);
+  }, [navigate, projectPathWithNamespace]);
 
   const redirectUser = React.useCallback(() => {
     fetchDatasets(true, versionUrl);
-    history.push({
-      //we should do the redirect to the new dataset
-      //but for this we need the dataset name in the response of the dataset.import operation :(
-      pathname: `/projects/${projectPathWithNamespace}/datasets`,
-    });
-  }, [history, projectPathWithNamespace, fetchDatasets, versionUrl]);
+    //we should do the redirect to the new dataset
+    //but for this we need the dataset name in the response of the dataset.import operation :(
+    navigate(`/projects/${projectPathWithNamespace}/datasets`);
+  }, [fetchDatasets, navigate, projectPathWithNamespace, versionUrl]);
 
   const client = props.client;
   const submitCallback = React.useCallback(
@@ -402,9 +397,7 @@ type DatasetImportProps = {
   client: DatasetImportClient;
   externalUrl: string;
   fetchDatasets: (force: boolean, versionUrl: string) => void;
-  history: ReturnType<typeof useHistory>;
   projectPathWithNamespace: string;
-  location: { pathname: string };
   toggleNewDataset: DatasetImportFormProps["toggleNewDataset"];
 };
 function DatasetImport(props: DatasetImportProps) {
