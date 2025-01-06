@@ -947,9 +947,9 @@ function ProjectView(props) {
           <Route path={props.filesUrl}>
             <ProjectViewFiles key="files" {...props} />
           </Route>
-          <Route path={props.datasetsUrl}>
+          <CompatRoute path={props.datasetsUrl}>
             <ProjectDatasetsView key="datasets" {...props} />
-          </Route>
+          </CompatRoute>
           <Route path={[props.workflowUrl, props.workflowsUrl]}>
             <ProjectViewWorkflows key="workflows" {...props} />
           </Route>
