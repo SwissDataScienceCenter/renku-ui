@@ -48,11 +48,7 @@ export default function ProjectInformationButton({
   if (!userLogged) return null;
   return (
     <>
-      <SingleButtonWithMenu
-        color="outline-primary"
-        preventPropagation
-        size="sm"
-      >
+      <SingleButtonWithMenu color="outline-primary" size="sm">
         <DropdownItem
           data-cy="project-copy-menu-item"
           onClick={toggleCopyModal}

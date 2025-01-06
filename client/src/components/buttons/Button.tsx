@@ -180,16 +180,10 @@ export function SingleButtonWithMenu({
   direction,
   disabled,
   id,
-  preventPropagation,
   size,
-}: Omit<ButtonWithMenuV2Props, "default">) {
-  // ! Temporary workaround to quickly implement a design solution -- to be removed ASAP #3250
-  const additionalProps = preventPropagation
-    ? { onClick: (e: React.MouseEvent) => e.stopPropagation() }
-    : {};
+}: Omit<ButtonWithMenuV2Props, "default" | "preventPropagation">) {
   return (
     <UncontrolledDropdown
-      {...additionalProps}
       className={className}
       color={color ?? "primary"}
       direction={direction ?? "down"}
