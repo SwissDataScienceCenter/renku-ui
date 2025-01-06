@@ -375,13 +375,6 @@ function DataConnectorActionsInner({
     projectId: projectId ?? "",
   });
 
-  //   const { data: project, isLoading: isLoadingProject } =
-  //   useGetNamespacesByNamespaceProjectsAndSlugQuery({
-  //     namespace: projectNamespace,
-  //     slug: projectSlug,
-  //   });
-  // const permissions = useProjectPermissions({ projectId: project?.id ?? "" });
-
   const location = useLocation();
   const pathMatch = matchPath(
     ABSOLUTE_ROUTES.v2.projects.show.root,
