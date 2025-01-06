@@ -17,27 +17,27 @@
  */
 
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom-v5-compat";
 import {
-  Row,
-  Col,
-  Modal,
-  ModalHeader,
-  ModalBody,
   Button,
+  Col,
   FormText,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Row,
 } from "reactstrap";
 
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { Loader } from "../../../components/Loader";
-import type { DatasetCore } from "../../../features/project/project.types";
 import { useDeleteDatasetMutation } from "../../../features/datasets/datasetsCore.api";
+import type { DatasetCore } from "../../../features/project/project.types";
+import { Url } from "../../../utils/helpers/url";
 import {
   CoreErrorContent,
   CoreErrorResponse,
   CoreVersionUrl,
 } from "../../../utils/types/coreService.types";
-import { Url } from "../../../utils/helpers/url";
 
 function ModalContent({
   closeModal,
@@ -108,7 +108,6 @@ type DatasetDeleteModalProps = {
   closeModal: () => void;
   dataset: DeleteDatasetProps["dataset"];
   deleteDataset: () => void;
-  history: DeleteDatasetProps["history"];
   modalOpen: DeleteDatasetProps["modalOpen"];
   serverErrors: CoreErrorContent | string | undefined;
   submitLoader: { isSubmitting: boolean; text: string | undefined };
@@ -141,7 +140,6 @@ export type DeleteDatasetSuccessResponse = {
 
 export interface DeleteDatasetProps extends CoreVersionUrl {
   dataset: DatasetCore;
-  history: ReturnType<typeof useHistory>;
   externalUrl: string;
   onCancel: () => void;
   modalOpen: boolean;
@@ -151,6 +149,8 @@ export interface DeleteDatasetProps extends CoreVersionUrl {
 }
 
 function DeleteDataset(props: DeleteDatasetProps) {
+  const navigate = useNavigate();
+
   const [serverErrors, setServerErrors] = useState<
     CoreErrorContent | string | undefined
   >(undefined);
@@ -181,12 +181,9 @@ function DeleteDataset(props: DeleteDatasetProps) {
     } else if (deleteDatasetStatus.isSuccess) {
       setSubmitting(false);
       setSubmitLoaderText("Dataset deleted, you will be redirected soon...");
-      props.history.push({
-        pathname: projectDatasetsUrl,
-        state: { reload: true },
-      });
+      navigate({ pathname: projectDatasetsUrl }, { state: { reload: true } });
     }
-  }, [deleteDatasetStatus, props.history, projectDatasetsUrl]);
+  }, [deleteDatasetStatus, navigate, projectDatasetsUrl]);
 
   const localDeleteDataset = () => {
     setSubmitting(true);
@@ -216,7 +213,6 @@ function DeleteDataset(props: DeleteDatasetProps) {
       deleteDataset={localDeleteDataset}
       serverErrors={serverErrors}
       submitLoader={{ isSubmitting, text: submitLoaderText }}
-      history={props.history}
     />
   );
 }

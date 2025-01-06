@@ -18,10 +18,10 @@
 
 import { faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { isEmpty, groupBy } from "lodash-es";
+import { groupBy, isEmpty } from "lodash-es";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
   Card,
@@ -42,7 +42,9 @@ import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { CoreError } from "../components/errors/CoreErrorHelpers";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import DeleteDataset from "../project/datasets/delete";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
+import { getEntityImageUrl } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
 import { DatasetError } from "./DatasetError";
 import {
@@ -50,8 +52,6 @@ import {
   getDatasetAuthors,
   getUpdatedDatasetImage,
 } from "./DatasetFunctions";
-import { getEntityImageUrl } from "../utils/helpers/HelperFunctions";
-import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -271,13 +271,14 @@ function DisplayInfoTable(props) {
 }
 
 function ErrorAfterCreation(props) {
+  const location = useLocation();
+
   const editButton = (
     <Link
       className="float-right me-1 mb-1"
       id="editDatasetTooltip"
-      to={(location) =>
-        cleanModifyLocation(location, { dataset: props.dataset })
-      }
+      to={cleanModifyLocation(location)}
+      state={{ dataset: props.dataset }}
     >
       <Button size="sm" color="danger" className="btn-icon-text">
         <FontAwesomeIcon icon={faPen} color="dark" /> Edit
@@ -285,7 +286,7 @@ function ErrorAfterCreation(props) {
     </Link>
   );
 
-  return props.location.state && props.location.state.errorOnCreation ? (
+  return location.state && location.state.errorOnCreation ? (
     <ErrorAlert>
       <strong>Error on creation</strong>
       <br />
@@ -297,10 +298,11 @@ function ErrorAfterCreation(props) {
 }
 
 function AddToProjectButton({ insideKg, locked, logged, identifier }) {
-  const history = useHistory();
+  const navigate = useNavigate();
+
   const addDatasetUrl = `/datasets/${identifier}/add`;
   const goToAddToProject = () => {
-    if (history) history.push(addDatasetUrl);
+    navigate(addDatasetUrl);
   };
 
   const tooltip =
@@ -344,6 +346,8 @@ function EditDatasetButton({
   locked,
   maintainer,
 }) {
+  const location = useLocation();
+
   if (!insideProject || !maintainer) return null;
   if (locked) {
     return (
@@ -367,14 +371,8 @@ function EditDatasetButton({
       className="float-right mb-1"
       id="editDatasetTooltip"
       data-cy="edit-dataset-button"
-      to={(location) =>
-        cleanModifyLocation(location, {
-          dataset,
-          files,
-          isFilesFetching,
-          filesFetchError,
-        })
-      }
+      to={cleanModifyLocation(location)}
+      state={{ dataset, files, isFilesFetching, filesFetchError }}
     >
       <Button
         className="btn-outline-rk-pink icon-button"
@@ -499,7 +497,7 @@ export default function DatasetView(props) {
       }
     >
       <Col>
-        <ErrorAfterCreation location={props.location} dataset={dataset} />
+        <ErrorAfterCreation dataset={dataset} />
         {props.insideProject ? null : (
           <Helmet>
             <title>{pageTitle}</title>
@@ -591,7 +589,6 @@ export default function DatasetView(props) {
             client={props.client}
             dataset={dataset}
             externalUrl={props.externalUrl}
-            history={props.history}
             metadataVersion={props.metadataVersion}
             modalOpen={deleteDatasetModalOpen}
             projectPathWithNamespace={props.projectPathWithNamespace}
