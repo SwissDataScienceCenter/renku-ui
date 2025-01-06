@@ -46,6 +46,7 @@ const Links = {
   EPFL: "https://www.epfl.ch/en/",
   ETHZ: "https://ethz.ch/en.html",
   RENKU_BLOG: "https://blog.renkulab.io",
+  RENKU_2_LEARN_MORE: "https://blog.renkulab.io/renku-2",
 };
 
 const GitlabLinks = {

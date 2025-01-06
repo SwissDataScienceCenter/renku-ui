@@ -94,7 +94,7 @@ export default function ConnectedServicesPage() {
 
   return (
     <div data-cy="connected-services-page">
-      <h1>Connected services</h1>
+      <h1>Integrations</h1>
       {content}
     </div>
   );

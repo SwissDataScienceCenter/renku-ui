@@ -16,9 +16,10 @@
  * limitations under the License
  */
 
-import { ReactNode, useRef } from "react";
 import cx from "classnames";
+import { ReactNode, useRef } from "react";
 import { Badge, UncontrolledTooltip } from "reactstrap";
+import styles from "./WipBadge.module.scss";
 
 interface WipBadeProps {
   className?: string;
@@ -28,16 +29,16 @@ interface WipBadeProps {
 
 export default function WipBadge({
   className,
-  children = "Beta",
-  tooltip = "Renku 2.0 is under active development and features may not work as expected.",
+  children = "Early access",
+  tooltip = "The platform is stable, but some core features are still being developed and will be added soon.",
 }: WipBadeProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
     <>
       <Badge
-        className={cx("text-bg-warning", className)}
-        color="warning"
+        className={cx("rounded-pill", styles.EarlyAccessBadge, className)}
+        color="pink"
         innerRef={ref}
       >
         {children}

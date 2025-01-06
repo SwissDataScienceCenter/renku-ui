@@ -115,36 +115,17 @@ function HeaderDashboard() {
       className={cx(
         DashboardStyles.DashboardHeader,
         "position-absolute",
-        "w-100"
+        "w-100",
+        "bg-navy"
       )}
     >
-      <picture>
-        <source
-          media="(min-width: 1400px)"
-          srcSet="/dashboardHeader3840x280.png"
-        />
-        <source
-          media="(min-width: 1200px)"
-          srcSet="/dashboardHeader2560x280.png"
-        />
-        <source
-          media="(min-width: 992px)"
-          srcSet="/dashboardHeader1920x280.png"
-        />
-        <source
-          media="(min-width: 768px)"
-          srcSet="/dashboardHeader1080x280.png"
-        />
-        <source
-          media="(min-width: 576px)"
-          srcSet="/dashboardHeader750x200.png"
-        />
+      <div className="container-xxl">
         <img
-          src="/dashboardHeader640x200.png"
+          src="/dashboardV2header.png"
           alt="Dashboard Header"
           className={cx("img-fluid", "w-100", "object-fit-cover")}
         />
-      </picture>
+      </div>
     </div>
   );
 }

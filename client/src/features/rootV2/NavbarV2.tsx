@@ -49,7 +49,7 @@ import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constan
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
 
-const RENKU_ALPHA_LOGO = "/static/public/img/logo-yellow.svg";
+const RENKU_ALPHA_LOGO = "/static/public/img/logo.svg";
 
 function NavbarItemPlus() {
   const [isOpen, setIsOpen] = useState(false);
@@ -162,7 +162,7 @@ export default function NavbarV2() {
             >
               <img src={RENKU_ALPHA_LOGO} alt="Renku v2 (beta)" height="50" />
             </RenkuNavLinkV2>
-            <WipBadge>2.0 Beta</WipBadge>
+            <WipBadge>Early access</WipBadge>
             <BackToV1Button outline={true} />
           </div>
           <div className="ms-auto">

@@ -1,0 +1,7 @@
+.EarlyAccessBannerBtn {
+  &:hover,
+  &:active {
+    background-color: var(--bs-rk-green) !important;
+    color: var(--bs-white) !important;
+  }
+}

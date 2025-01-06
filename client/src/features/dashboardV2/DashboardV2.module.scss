@@ -9,6 +9,7 @@
 
   img {
     height: 150px;
+    object-position: top;
 
     @include media-breakpoint-up(md) {
       height: 180px;

@@ -32,10 +32,11 @@ import { CompatRoute } from "react-router-dom-v5-compat";
 import { ToastContainer } from "react-toastify";
 
 import { LoginHelper } from "./authentication";
+import { DashboardBanner } from "./components/earlyAccessBanner/EarlyAccessBanner";
 import { Loader } from "./components/Loader";
+import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import LazyShowDataset from "./dataset/LazyShowDataset";
-import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProject";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import LazyDashboard from "./features/dashboard/LazyDashboard";
 import { Favicon } from "./features/favicon/Favicon";
@@ -266,6 +267,7 @@ function App(props) {
   return (
     <Fragment>
       <Favicon />
+      <DashboardBanner user={props.user} />
       <RenkuNavBar {...props} notifications={notifications} />
       <CentralContentContainer
         notifications={notifications}
