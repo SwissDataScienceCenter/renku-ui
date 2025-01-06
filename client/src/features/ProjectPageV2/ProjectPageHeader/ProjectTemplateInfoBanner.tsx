@@ -60,7 +60,7 @@ export function ProjectCopyListModal({
         <span className="fw-normal">{title} </span>
         {project.namespace}/{project.slug}
       </ModalHeader>
-      <ModalBody className={cx("overflow-y-scroll", styles.modalBody)}>
+      <ModalBody className={cx(styles.modalBody)}>
         <ListGroup flush data-cy="dashboard-project-list">
           {copies.map((project) => (
             <ProjectShortHandDisplay key={project.id} project={project} />
