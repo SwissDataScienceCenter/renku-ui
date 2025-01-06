@@ -17,10 +17,11 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { Button, ListGroup, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Button, ListGroup, ModalBody, ModalHeader } from "reactstrap";
 import { Diagram3Fill } from "react-bootstrap-icons";
 
 import PrimaryAlert from "../../../components/PrimaryAlert";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";
@@ -47,7 +48,7 @@ export function ProjectCopyListModal({
   toggle,
 }: ProjectCopyListModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       data-cy="copy-list-modal"
       backdrop="static"
       isOpen={isOpen}
@@ -66,7 +67,7 @@ export function ProjectCopyListModal({
           ))}
         </ListGroup>
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
