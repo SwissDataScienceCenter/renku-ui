@@ -91,15 +91,15 @@ function ProjectTemplateEditorBanner({ project }: { project: Project }) {
             (copies.length > 1 ? (
               <span>
                 There are{" "}
+                <span className={cx("badge", "text-bg-primary")}>
+                  {copies.length}
+                </span>{" "}
                 <Button
                   className={cx("p-0", styles.projectCopiesButton)}
                   color="link"
                   data-cy="list-copies-link"
                   onClick={toggleOpen}
                 >
-                  <span className={cx("badge", "text-bg-primary")}>
-                    {copies.length}
-                  </span>{" "}
                   copies
                 </Button>{" "}
                 visible to you.
@@ -107,13 +107,14 @@ function ProjectTemplateEditorBanner({ project }: { project: Project }) {
             ) : copies.length === 1 ? (
               <span>
                 There is{" "}
+                <span className={cx("badge", "text-bg-primary")}>1</span>{" "}
                 <Button
                   className={cx("p-0", styles.projectCopiesButton)}
                   color="link"
                   data-cy="list-copies-link"
                   onClick={toggleOpen}
                 >
-                  <span className={cx("badge", "text-bg-primary")}>1</span> copy
+                  copy
                 </Button>{" "}
                 visible to you.
               </span>
