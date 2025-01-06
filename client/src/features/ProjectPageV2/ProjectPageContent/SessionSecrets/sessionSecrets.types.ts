@@ -16,15 +16,9 @@
  * limitations under the License.
  */
 
-import { Suspense, lazy } from "react";
-import PageLoader from "../../components/PageLoader";
+import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 
-const GroupV2Show = lazy(() => import("./show/GroupV2Show"));
-
-export default function LazyGroupV2Show() {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <GroupV2Show />
-    </Suspense>
-  );
-}
+export type SessionSecretSlotWithSecret = {
+  secretSlot: SessionSecretSlot;
+  secretId: string | null;
+};

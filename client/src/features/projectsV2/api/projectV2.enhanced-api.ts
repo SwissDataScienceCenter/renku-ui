@@ -1,5 +1,6 @@
-import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
+import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
+import { usersApi } from "../../usersV2/api/users.api";
 
 import { projectAndNamespaceApi as api } from "./namespace.api";
 
@@ -9,14 +10,15 @@ import type {
   GetProjectsByProjectIdApiArg,
   GetProjectsByProjectIdApiResponse,
   ProjectsList,
+  SessionSecretSlot,
 } from "./projectV2.api";
 
 import type {
   GetGroupsApiArg,
   GetGroupsApiResponse as GetGroupsApiResponseOrig,
-  GroupResponseList,
   GetNamespacesApiArg,
   GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
+  GroupResponseList,
   NamespaceResponseList,
 } from "./namespace.api";
 
@@ -32,6 +34,12 @@ type GetProjectsByProjectIdsApiResponse = Record<
   string,
   GetProjectsByProjectIdApiResponse
 >;
+
+interface GetSessionSecretSlotsByIdsApiArg {
+  sessionSecretSlotIds: string[];
+}
+
+type GetSessionSecretSlotsByIdsApiResponse = SessionSecretSlot[];
 
 export interface GetNamespacesApiResponse extends AbstractKgPaginatedResponse {
   namespaces: GetNamespacesApiResponseOrig;
@@ -136,6 +144,29 @@ const injectedApi = api.injectEndpoints({
         return { data: result };
       },
     }),
+    getSessionSecretSlotsByIds: builder.query<
+      GetSessionSecretSlotsByIdsApiResponse,
+      GetSessionSecretSlotsByIdsApiArg
+    >({
+      queryFn: async (
+        { sessionSecretSlotIds },
+        _api,
+        _options,
+        fetchWithBQ
+      ) => {
+        const result: GetSessionSecretSlotsByIdsApiResponse = [];
+        const promises = sessionSecretSlotIds.map((slotId) =>
+          fetchWithBQ(`/session_secret_slots/${slotId}`)
+        );
+        const responses = await Promise.all(promises);
+        for (let i = 0; i < sessionSecretSlotIds.length; i++) {
+          const response = responses[i];
+          if (response.error) return response;
+          result.push(response.data as SessionSecretSlot);
+        }
+        return { data: result };
+      },
+    }),
   }),
 });
 
@@ -147,6 +178,8 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "Namespace",
     "Project",
     "ProjectMembers",
+    "SessionSecretSlot",
+    "SessionSecret",
   ],
   endpoints: {
     deleteGroupsByGroupSlug: {
@@ -189,10 +222,27 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsByProjectIds: {
       providesTags: ["Project"],
     },
-    getProjectsByNamespaceAndSlug: {
+    getNamespacesByNamespaceProjectsAndSlug: {
+      // Forces the requested URL to not contain "?" when not requesting documentation.
+      query: ({ namespace, slug, withDocumentation }) => ({
+        url: `/namespaces/${namespace}/projects/${slug}`,
+        params: withDocumentation
+          ? { with_documentation: withDocumentation }
+          : undefined,
+      }),
       providesTags: ["Project"],
     },
     getProjectsByProjectId: {
+      // Forces the requested URL to not contain "?" when not requesting documentation.
+      query: ({ projectId, withDocumentation }) => ({
+        url: `/projects/${projectId}`,
+        params: withDocumentation
+          ? { with_documentation: withDocumentation }
+          : undefined,
+      }),
+      providesTags: ["Project"],
+    },
+    getProjectsByProjectIdCopies: {
       providesTags: ["Project"],
     },
     getProjectsByProjectIdDataConnectorLinks: {
@@ -219,23 +269,110 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjects: {
       invalidatesTags: ["Project"],
     },
+    getProjectsByProjectIdSessionSecretSlots: {
+      providesTags: (result, _, { projectId }) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                type: "SessionSecretSlot" as const,
+                id,
+              })),
+              { type: "SessionSecretSlot", id: `LIST-${projectId}` },
+            ]
+          : ["SessionSecretSlot"],
+    },
+    postSessionSecretSlots: {
+      invalidatesTags: (
+        result,
+        _,
+        { sessionSecretSlotPost: { project_id: projectId } }
+      ) =>
+        result
+          ? [{ type: "SessionSecretSlot", id: `LIST-${projectId}` }]
+          : ["SessionSecretSlot"],
+    },
+    patchSessionSecretSlotsBySlotId: {
+      invalidatesTags: (result, _, { slotId }) =>
+        result
+          ? [{ type: "SessionSecretSlot", id: slotId }]
+          : ["SessionSecretSlot"],
+    },
+    deleteSessionSecretSlotsBySlotId: {
+      invalidatesTags: ["SessionSecretSlot"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(usersApi.endpoints.invalidateUserSecrets.initiate());
+        });
+      },
+    },
+    getProjectsByProjectIdSessionSecrets: {
+      providesTags: (result, _, { projectId }) =>
+        result
+          ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
+          : ["SessionSecret"],
+    },
+    patchProjectsByProjectIdSessionSecrets: {
+      invalidatesTags: (result, _, { projectId }) =>
+        result
+          ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
+          : ["SessionSecret"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(usersApi.endpoints.invalidateUserSecrets.initiate());
+        });
+      },
+    },
+    getSessionSecretSlotsByIds: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                type: "SessionSecretSlot" as const,
+                id,
+              })),
+            ]
+          : ["SessionSecretSlot"],
+    },
+    postProjectsByProjectIdCopies: {
+      invalidatesTags: ["Project"],
+    },
   },
 });
 
-export { enhancedApi as projectV2Api };
+// Adds tag invalidation endpoints
+const withInvalidation = enhancedApi.injectEndpoints({
+  endpoints: (build) => ({
+    invalidateSessionSecrets: build.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["SessionSecret", "SessionSecretSlot"],
+    }),
+  }),
+});
+
+export { withInvalidation as projectV2Api };
 export const {
   // project hooks
+  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsPagedQuery: useGetProjectsQuery,
-  usePostProjectsMutation,
-  useGetProjectsByNamespaceAndSlugQuery,
+  useGetNamespacesByNamespaceProjectsAndSlugQuery,
+  useGetProjectsByProjectIdCopiesQuery,
+  useGetProjectsByProjectIdPermissionsQuery,
   useGetProjectsByProjectIdQuery,
   useGetProjectsByProjectIdsQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
-  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
-  useGetProjectsByProjectIdPermissionsQuery,
+  usePostProjectsMutation,
+  usePostProjectsByProjectIdCopiesMutation,
+
+  // project session secret hooks
+  useGetProjectsByProjectIdSessionSecretSlotsQuery,
+  usePostSessionSecretSlotsMutation,
+  usePatchSessionSecretSlotsBySlotIdMutation,
+  useDeleteSessionSecretSlotsBySlotIdMutation,
+  useGetProjectsByProjectIdSessionSecretsQuery,
+  usePatchProjectsByProjectIdSessionSecretsMutation,
 
   // data connector hooks
   useGetProjectsByProjectIdDataConnectorLinksQuery,
@@ -250,9 +387,10 @@ export const {
   usePatchGroupsByGroupSlugMembersMutation,
   useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
   useGetGroupsByGroupSlugPermissionsQuery,
+  useGetSessionSecretSlotsByIdsQuery,
 
   //namespace hooks
   useGetNamespacesPagedQuery: useGetNamespacesQuery,
   useLazyGetNamespacesPagedQuery: useLazyGetNamespacesQuery,
   useGetNamespacesByNamespaceSlugQuery,
-} = enhancedApi;
+} = withInvalidation;

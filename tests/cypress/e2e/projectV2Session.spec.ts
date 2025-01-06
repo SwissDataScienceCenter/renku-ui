@@ -27,6 +27,7 @@ describe("launch sessions with data connectors", () => {
       .dataServicesUser({
         response: {
           id: "user1-uuid",
+          username: "user-1",
           email: "user1@email.com",
         },
       })
@@ -44,7 +45,13 @@ describe("launch sessions with data connectors", () => {
       .sessionServersEmptyV2()
       .sessionImage()
       .newLauncher()
-      .environments();
+      .environments()
+      .sessionSecretSlots({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      })
+      .sessionSecrets({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
   });
@@ -750,6 +757,206 @@ describe("launch sessions with data connectors", () => {
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@getResourceClass");
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+  });
+});
+
+describe("launch sessions with secrets", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "user1-uuid",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .projects()
+      .readGroupV2Namespace({ groupSlug: "user1-uuid" })
+      .landingUserProjects()
+      .readProjectV2()
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .resourcePoolsTest()
+      .getResourceClass()
+      .listProjectV2Members()
+      .sessionLaunchers({
+        fixture: "projectV2/session-launchers.json",
+      })
+      .sessionServersEmptyV2()
+      .sessionImage()
+      .newLauncher()
+      .environments()
+      .listProjectDataConnectors({
+        fixture: "dataConnector/empty-list.json",
+      });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+  });
+
+  it("launch session without secrets", () => {
+    fixtures
+      .sessionSecretSlots({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      })
+      .sessionSecrets({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      });
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    // ensure the session launcher is there
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("session-name").should("contain.text", "Session-custom");
+        cy.getDataCy("session-status").should("contain.text", "Not Running");
+        cy.getDataCy("start-session-button").should("contain.text", "Launch");
+      });
+
+    // start session
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").click();
+      });
+    cy.wait("@getResourceClass");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+  });
+
+  it("launch session requiring secrets, skipping", () => {
+    fixtures.sessionSecretSlots().sessionSecrets();
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    // ensure the session launcher is there
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("session-name").should("contain.text", "Session-custom");
+        cy.getDataCy("session-status").should("contain.text", "Not Running");
+        cy.getDataCy("start-session-button").should("contain.text", "Launch");
+      });
+
+    // start session
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").click();
+      });
+    cy.wait("@getResourceClass");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+
+    cy.getDataCy("session-secrets-modal").should("be.visible");
+    cy.getDataCy("session-secrets-modal")
+      .contains("Session secrets")
+      .should("be.visible");
+    cy.getDataCy("session-secrets-modal").contains(
+      "[data-cy=session-secrets-ready]",
+      "A Secret"
+    );
+    cy.getDataCy("session-secrets-modal").contains("button", "Skip").click();
+
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+  });
+
+  it("launch session requiring secrets, saving new secret", () => {
+    fixtures.sessionSecretSlots().sessionSecrets();
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    // ensure the session launcher is there
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("session-name").should("contain.text", "Session-custom");
+        cy.getDataCy("session-status").should("contain.text", "Not Running");
+        cy.getDataCy("start-session-button").should("contain.text", "Launch");
+      });
+
+    // start session
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").click();
+      });
+    cy.wait("@getResourceClass");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+
+    cy.getDataCy("session-secrets-modal").should("be.visible");
+    cy.getDataCy("session-secrets-modal")
+      .contains("Session secrets")
+      .should("be.visible");
+    cy.getDataCy("session-secrets-modal").contains(
+      "[data-cy=session-secrets-ready]",
+      "A Secret"
+    );
+    cy.getDataCy("session-secrets-modal")
+      .contains("[data-cy=session-secrets-unready-item]", "Another Secret")
+      .should("be.visible")
+      .as("unreadySecret");
+    cy.get("@unreadySecret")
+      .contains("label", "Provide a new secret value")
+      .click();
+    cy.get("@unreadySecret")
+      .contains("label", "Secret value")
+      .click()
+      .type("my new secret value");
+
+    fixtures
+      .patchSessionSecrets({
+        fixture: "projectV2SessionSecrets/patch_secrets_with_new_value.json",
+      })
+      .sessionSecrets({
+        fixture: "projectV2SessionSecrets/patched_secrets_with_new_value.json",
+        name: "updatedSessionSecrets",
+      });
+
+    cy.get("@unreadySecret")
+      .contains("button", "Save new secret")
+      .should("be.visible")
+      .click();
+    cy.wait("@patchSessionSecrets").wait("@updatedSessionSecrets");
+
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });

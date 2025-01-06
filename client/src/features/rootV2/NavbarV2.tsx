@@ -24,7 +24,6 @@ import {
   QuestionCircle,
   Search,
 } from "react-bootstrap-icons";
-import { useLocation } from "react-router";
 import { Link, useMatch } from "react-router-dom-v5-compat";
 import {
   Collapse,
@@ -43,9 +42,10 @@ import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
-import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
+import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
+import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import StatusBanner from "../platform/components/StatusBanner";
-import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
+import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
 
@@ -55,58 +55,25 @@ function NavbarItemPlus() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
-  // ? Temporary workaround for the search page
-  const location = useLocation();
-  const searchPage = location.pathname.startsWith(ABSOLUTE_ROUTES.v2.search);
+  const [, setHash] = useLocationHash();
+  const toggleNewProject = useCallback(() => {
+    setHash(PROJECT_CREATION_HASH);
+  }, [setHash]);
+  const toggleNewGroup = useCallback(() => {
+    setHash(GROUP_CREATION_HASH);
+  }, [setHash]);
 
   return (
     <Dropdown isOpen={isOpen} toggle={toggleOpen} className="nav-item">
       <DropdownToggle nav className={cx("nav-link", "fs-5")} id="plus-dropdown">
         <PlusCircle className="bi" id="createPlus" />
       </DropdownToggle>
-      <DropdownMenu
-        aria-labelledby="plus-menu"
-        className={cx("plus-menu", "btn-with-menu-options", "z-3")}
-        end
-      >
-        <DropdownItem className="p-0">
-          {searchPage ? (
-            <Link
-              className="dropdown-item"
-              data-cy="navbar-project-new"
-              to={ABSOLUTE_ROUTES.v2.projects.new}
-            >
-              Project
-            </Link>
-          ) : (
-            <CreateProjectV2Button
-              className="dropdown-item"
-              dataCy="navbar-project-new"
-              color="link"
-            >
-              Project
-            </CreateProjectV2Button>
-          )}
+      <DropdownMenu end>
+        <DropdownItem data-cy="navbar-project-new" onClick={toggleNewProject}>
+          Project
         </DropdownItem>
-
-        <DropdownItem className="p-0">
-          {searchPage ? (
-            <Link
-              className="dropdown-item"
-              data-cy="navbar-group-new"
-              to={ABSOLUTE_ROUTES.v2.groups.new}
-            >
-              Group
-            </Link>
-          ) : (
-            <CreateGroupButton
-              className="dropdown-item"
-              dataCy="navbar-group-new"
-              color="link"
-            >
-              Group
-            </CreateGroupButton>
-          )}
+        <DropdownItem data-cy="navbar-group-new" onClick={toggleNewGroup}>
+          Group
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
@@ -127,42 +94,30 @@ function NavbarItemHelp() {
       <DropdownToggle nav className={cx("nav-link", "fs-5")}>
         <QuestionCircle className="bi" id="helpDropdownToggle" />
       </DropdownToggle>
-      <DropdownMenu
-        className={cx("help-menu", "btn-with-menu-options")}
-        key="help-bar"
-        aria-labelledby="help-menu"
-      >
-        <DropdownItem className="p-0">
-          <Link
-            data-cy="help-link"
-            className="dropdown-item"
-            to={ABSOLUTE_ROUTES.v2.help.root}
-          >
-            Help
-          </Link>
-        </DropdownItem>
+      <DropdownMenu>
+        <Link
+          data-cy="help-link"
+          className="dropdown-item"
+          to={ABSOLUTE_ROUTES.v2.help.root}
+        >
+          Help
+        </Link>
         <DropdownItem divider />
-        <DropdownItem className="p-0">
-          <ExternalDocsLink
-            url={Links.DISCOURSE}
-            title="Forum"
-            className="dropdown-item"
-          />
-        </DropdownItem>
-        <DropdownItem className="p-0">
-          <ExternalDocsLink
-            url={Links.GITTER}
-            title="Gitter"
-            className="dropdown-item"
-          />
-        </DropdownItem>
-        <DropdownItem className="p-0">
-          <ExternalDocsLink
-            url={Links.GITHUB}
-            title="GitHub"
-            className="dropdown-item"
-          />
-        </DropdownItem>
+        <ExternalDocsLink
+          url={Links.DISCOURSE}
+          title="Forum"
+          className="dropdown-item"
+        />
+        <ExternalDocsLink
+          url={Links.GITTER}
+          title="Gitter"
+          className="dropdown-item"
+        />
+        <ExternalDocsLink
+          url={Links.GITHUB}
+          title="GitHub"
+          className="dropdown-item"
+        />
       </DropdownMenu>
     </Dropdown>
   );
@@ -254,7 +209,7 @@ export default function NavbarV2() {
                 <NavbarItemHelp />
               </NavItem>
               <NavItem>
-                <RenkuToolbarItemUser params={params!} />
+                <RenkuToolbarItemUser isV2 params={params!} />
               </NavItem>
             </Nav>
           </Collapse>

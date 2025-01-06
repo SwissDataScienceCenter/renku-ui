@@ -17,16 +17,16 @@
  */
 import cx from "classnames";
 import { useMemo, useRef } from "react";
-import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
 import {
-  InfoCircleFill,
   Folder,
   Gear,
+  InfoCircleFill,
   Key,
   Lock,
   PersonBadge,
 } from "react-bootstrap-icons";
+import { Link, generatePath } from "react-router-dom-v5-compat";
+import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
@@ -41,15 +41,14 @@ import {
 } from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../project/utils/projectCloudStorage.utils";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import { storageSecretNameToFieldName } from "../../secretsV2/secrets.utils";
+import UserAvatar from "../../usersV2/show/UserAvatar";
 
 import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
-import { storageSecretNameToFieldName } from "../../secrets/secrets.utils";
-
-import UserAvatar from "../../usersV2/show/UserAvatar";
 
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
@@ -393,14 +392,14 @@ function DataConnectorViewMetadata({
       <DataConnectorPropertyValue title="Owner">
         <div className={cx("d-flex", "align-items-center")}>
           <div className="me-1">
-            <UserAvatar username={dataConnector.namespace} />{" "}
+            <UserAvatar namespace={dataConnector.namespace} />{" "}
           </div>
           {namespaceUrl == null ? (
-            <div className="me-1">{dataConnector.namespace}</div>
+            <div className="me-1">@{dataConnector.namespace}</div>
           ) : (
             <div>
               <Link className="me-1" to={namespaceUrl}>
-                {dataConnector.namespace}
+                @{dataConnector.namespace}
               </Link>
             </div>
           )}

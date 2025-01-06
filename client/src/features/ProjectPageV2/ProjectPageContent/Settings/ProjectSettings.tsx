@@ -17,8 +17,8 @@
  */
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Pencil, Sliders } from "react-bootstrap-icons";
-import { useForm } from "react-hook-form";
+import { Diagram3Fill, Pencil, Sliders } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import {
   generatePath,
   useLocation,
@@ -30,6 +30,8 @@ import {
   CardBody,
   CardHeader,
   Form,
+  FormGroup,
+  FormText,
   Input,
   Label,
 } from "reactstrap";
@@ -54,8 +56,10 @@ import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import type { ProjectV2Metadata } from "../../settings/projectSettings.types";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
+import ProjectSessionSecrets from "../SessionSecrets/ProjectSessionSecrets";
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
+import ProjectUnlinkTemplate from "./ProjectUnlinkTemplate";
 
 function notificationProjectUpdated(
   notifications: NotificationsManager,
@@ -125,6 +129,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
       namespace: project.namespace,
       visibility: project.visibility,
       keywords: project.keywords ?? [],
+      is_template: project.is_template ?? false,
     },
   });
   const currentNamespace = watch("namespace");
@@ -160,6 +165,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
         namespace: updatedProject.namespace,
         visibility: updatedProject.visibility,
         keywords: updatedProject.keywords ?? [],
+        is_template: updatedProject.is_template ?? false,
       });
     }
   }, [isSuccess, reset, updatedProject]);
@@ -260,6 +266,44 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
           setDirty={setKeywordsDirty}
           value={project.keywords as string[]}
         />
+        <div className="mb-3">
+          <div className="form-label">Template</div>
+          <Controller
+            aria-describedby="projectTemplateHelp"
+            control={control}
+            name={"is_template"}
+            render={({ field }) => {
+              const { value, ...props } = field;
+              return (
+                <div className={cx("d-flex", "flex-row gap-4")}>
+                  <FormGroup switch>
+                    <Input
+                      type="checkbox"
+                      role="switch"
+                      className={cx(errors.is_template && "is-invalid")}
+                      data-cy="project-template"
+                      id="project-template"
+                      {...props}
+                      checked={value}
+                    />
+                    <Label
+                      for="project-template"
+                      className="cursor-pointer"
+                      check
+                    >
+                      <Diagram3Fill className={cx("bi", "me-1")} />
+                      Mark this project as a template
+                    </Label>
+                  </FormGroup>
+                </div>
+              );
+            }}
+          />
+          <FormText id="projectTemplateHelp" className="input-hint">
+            Make this a template project to indicate to viewers that this
+            project should be copied before being used.
+          </FormText>
+        </div>
 
         <div className={cx("d-flex", "justify-content-end")}>
           <Button
@@ -314,6 +358,25 @@ function ProjectSettingsDisplay({ project }: ProjectPageSettingsProps) {
           />
         </div>
         <ProjectReadOnlyVisibilityField visibility={project.visibility} />
+        <div className="mb-3">
+          <div className="form-label">Template</div>
+          <div className={cx("d-flex", "flex-row gap-4")}>
+            <FormGroup switch>
+              <Input
+                className="form-control"
+                type="checkbox"
+                role="switch"
+                id="project-template"
+                disabled={true}
+                checked={project.is_template}
+              />
+              <Label for="project-template" check>
+                <Diagram3Fill className={cx("bi", "me-1")} />
+                Template Project
+              </Label>
+            </FormGroup>
+          </div>
+        </div>
       </Form>
     </div>
   );
@@ -391,6 +454,13 @@ export default function ProjectPageSettings() {
     <div className={cx("d-flex", "flex-column", "gap-4")}>
       <ProjectSettingsMetadata project={project} />
       <ProjectPageSettingsMembers project={project} />
+      <ProjectSessionSecrets />
+      <PermissionsGuard
+        disabled={null}
+        enabled={<ProjectUnlinkTemplate project={project} />}
+        requestedPermission="write"
+        userPermissions={permissions}
+      />
       <PermissionsGuard
         disabled={null}
         enabled={<ProjectPageDelete project={project} />}

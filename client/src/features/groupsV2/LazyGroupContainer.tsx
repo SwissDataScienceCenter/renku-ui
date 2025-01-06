@@ -16,32 +16,15 @@
  * limitations under the License.
  */
 
-export interface SecretDetails {
-  id: string;
-  modification_date: string;
-  name: string;
-  kind: SecretKind;
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
+
+const GroupV2Container = lazy(() => import("./show/GroupPageContainer"));
+
+export default function LazyGroupContainer() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <GroupV2Container />
+    </Suspense>
+  );
 }
-
-export interface AddSecretParams {
-  name: string;
-  value: string;
-  kind: SecretKind;
-}
-
-export type AddSecretForm = AddSecretParams;
-
-export interface EditSecretForm {
-  value: string;
-}
-
-export interface EditSecretParams {
-  id: string;
-  value: string;
-}
-
-export interface GetSecretsParams {
-  kind: SecretKind;
-}
-
-export type SecretKind = "general" | "storage";

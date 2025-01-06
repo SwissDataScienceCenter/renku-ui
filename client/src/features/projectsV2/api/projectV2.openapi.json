@@ -8,9 +8,6 @@
   "servers": [
     {
       "url": "/api/data"
-    },
-    {
-      "url": "/ui-server/api/data"
     }
   ],
   "paths": {
@@ -117,6 +114,22 @@
             "schema": {
               "$ref": "#/components/schemas/Ulid"
             }
+          },
+          {
+            "in": "query",
+            "name": "with_documentation",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WithDocumentation"
+            }
+          },
+          {
+            "in": "query",
+            "name": "with_documentation",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WithDocumentation"
+            }
           }
         ],
         "responses": {
@@ -221,7 +234,7 @@
         "tags": ["projects"]
       }
     },
-    "/projects/{namespace}/{slug}": {
+    "/namespaces/{namespace}/projects/{slug}": {
       "get": {
         "summary": "Get a project by namespace and project slug",
         "parameters": [
@@ -240,6 +253,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "with_documentation",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WithDocumentation"
+            }
           }
         ],
         "responses": {
@@ -249,6 +270,116 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
+    },
+    "/projects/{project_id}/copies": {
+      "get": {
+        "summary": "Get list of all copies of this project",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          },
+          {
+            "in": "query",
+            "description": "When true, only return projects that the user has write access to",
+            "name": "writable",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectsList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      },
+      "post": {
+        "summary": "Create a new copy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The project was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The project was copied but at least one data connector cannot be copied due to lack of permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -468,6 +599,258 @@
         },
         "tags": ["projects"]
       }
+    },
+    "/projects/{project_id}/session_secret_slots": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the session secret slots of a project",
+        "responses": {
+          "200": {
+            "description": "The list of session secret slots",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionSecretSlotList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
+    },
+    "/projects/{project_id}/session_secrets": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the current user's secrets of a project",
+        "responses": {
+          "200": {
+            "description": "The list of secrets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionSecretList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      },
+      "patch": {
+        "summary": "Save user secrets for a project",
+        "description": "New secrets will be added and existing secrets will have their value updated. Using `null` as a value will remove the corresponding secret.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionSecretPatchList"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The secrets for the project were saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionSecretList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      },
+      "delete": {
+        "summary": "Remove all user secrets for a project",
+        "responses": {
+          "204": {
+            "description": "The secrets were removed or did not exist in the first place or the project doesn't exist"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
+    },
+    "/session_secret_slots": {
+      "post": {
+        "summary": "Create a new session secret slot",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionSecretSlotPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The secret slot was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionSecretSlot"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["session_secret_slots"]
+      }
+    },
+    "/session_secret_slots/{slot_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "slot_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the details of a session secret slot",
+        "responses": {
+          "200": {
+            "description": "The session secret slot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionSecretSlot"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The secret slot does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["session_secret_slots"]
+      },
+      "patch": {
+        "summary": "Update specific fields of an existing session secret slot",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionSecretSlotPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The patched session secret slot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionSecretSlot"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The session secret slot does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["session_secret_slots"]
+      },
+      "delete": {
+        "summary": "Remove a session secret slot",
+        "responses": {
+          "204": {
+            "description": "The session secret slot was removed or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["session_secret_slots"]
+      }
     }
   },
   "components": {
@@ -494,7 +877,7 @@
             "$ref": "#/components/schemas/Slug"
           },
           "slug": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/LegacySlug"
           },
           "creation_date": {
             "$ref": "#/components/schemas/CreationDate"
@@ -519,6 +902,19 @@
           },
           "keywords": {
             "$ref": "#/components/schemas/KeywordsList"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/ProjectDocumentation"
+          },
+          "template_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "is_template": {
+            "$ref": "#/components/schemas/IsTemplate",
+            "default": false
+          },
+          "secrets_mount_directory": {
+            "$ref": "#/components/schemas/SecretsMountDirectory"
           }
         },
         "required": [
@@ -528,7 +924,8 @@
           "slug",
           "created_by",
           "creation_date",
-          "visibility"
+          "visibility",
+          "secrets_mount_directory"
         ],
         "example": {
           "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
@@ -547,7 +944,9 @@
               "url": "git@github.com:SwissDataScienceCenter/project-2.git"
             }
           ],
-          "keywords": ["keyword 1", "keyword 2"]
+          "keywords": ["keyword 1", "keyword 2"],
+          "template_id": "01JC3CB5426KC7P5STS5X3KSS8",
+          "secrets_mount_directory": "/secrets"
         }
       },
       "ProjectPost": {
@@ -568,14 +967,19 @@
             "$ref": "#/components/schemas/RepositoriesList"
           },
           "visibility": {
-            "$ref": "#/components/schemas/Visibility",
-            "default": "private"
+            "$ref": "#/components/schemas/Visibility"
           },
           "description": {
             "$ref": "#/components/schemas/Description"
           },
           "keywords": {
             "$ref": "#/components/schemas/KeywordsList"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/ProjectDocumentation"
+          },
+          "secrets_mount_directory": {
+            "$ref": "#/components/schemas/SecretsMountDirectory"
           }
         },
         "required": ["name", "namespace"]
@@ -602,6 +1006,21 @@
           },
           "keywords": {
             "$ref": "#/components/schemas/KeywordsList"
+          },
+          "documentation": {
+            "$ref": "#/components/schemas/ProjectDocumentation"
+          },
+          "template_id": {
+            "description": "template_id is set when copying a project from a template project and it cannot be modified. This field can be either null or an empty string; a null value won't change it while an empty string value will delete it, meaning that the project is unlinked from its template",
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 0
+          },
+          "is_template": {
+            "$ref": "#/components/schemas/IsTemplate"
+          },
+          "secrets_mount_directory": {
+            "$ref": "#/components/schemas/SecretsMountDirectoryPatch"
           }
         }
       },
@@ -612,6 +1031,10 @@
         "maxLength": 26,
         "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
+      "WithDocumentation": {
+        "description": "Projects with or without possibly extensive documentation?",
+        "type": "boolean"
+      },
       "ProjectName": {
         "description": "Renku project name",
         "type": "string",
@@ -619,12 +1042,20 @@
         "maxLength": 99,
         "example": "My Renku Project :)"
       },
-      "Slug": {
+      "LegacySlug": {
         "description": "A command-line/url friendly name for a namespace",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
         "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-zA-Z0-9][a-zA-Z0-9\\-_.]*$",
+        "example": "a-slug-example"
+      },
+      "Slug": {
+        "description": "A command-line/url friendly name for a namespace",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*$",
         "example": "a-slug-example"
       },
       "CreationDate": {
@@ -644,6 +1075,13 @@
         "type": "string",
         "maxLength": 500
       },
+      "Keyword": {
+        "description": "A single keyword",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "pattern": "^[A-Za-z0-9\\s\\-_.]*$"
+      },
       "KeywordsList": {
         "description": "Project keywords",
         "type": "array",
@@ -653,12 +1091,12 @@
         "minItems": 0,
         "example": ["project", "keywords"]
       },
-      "Keyword": {
-        "description": "A single keyword",
+      "ProjectDocumentation": {
+        "description": "Renku project documentation",
         "type": "string",
-        "minLength": 1,
-        "maxLength": 99,
-        "pattern": "^[A-Za-z0-9\\s\\-_.]*$"
+        "minLength": 0,
+        "maxLength": 5000,
+        "example": "My Renku Project Documentation :)"
       },
       "RepositoriesList": {
         "description": "A list of repositories",
@@ -681,6 +1119,21 @@
         "description": "Project's visibility levels",
         "type": "string",
         "enum": ["private", "public"]
+      },
+      "IsTemplate": {
+        "description": "Shows if a project is a template or not",
+        "type": "boolean"
+      },
+      "SecretsMountDirectory": {
+        "description": "The location where the secrets will be provided inside sessions, if left unset it will default to `/secrets`.",
+        "type": "string",
+        "minLength": 1,
+        "default": "/secrets",
+        "example": "/secrets"
+      },
+      "SecretsMountDirectoryPatch": {
+        "type": "string",
+        "example": "/secrets"
       },
       "ProjectMemberListPatchRequest": {
         "description": "List of members and their access level to the project",
@@ -735,7 +1188,7 @@
             "$ref": "#/components/schemas/UserId"
           },
           "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/LegacySlug"
           },
           "first_name": {
             "$ref": "#/components/schemas/UserFirstLastName"
@@ -847,6 +1300,166 @@
             "type": "boolean"
           }
         }
+      },
+      "SessionSecretSlotList": {
+        "description": "A list of session secret slots",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SessionSecretSlot"
+        }
+      },
+      "SessionSecretSlot": {
+        "description": "A slot for a secret in a session",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "name": {
+            "$ref": "#/components/schemas/SecretSlotName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/Description"
+          },
+          "filename": {
+            "$ref": "#/components/schemas/SecretSlotFileName"
+          },
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
+          }
+        },
+        "required": ["id", "project_id", "name", "filename", "etag"]
+      },
+      "SessionSecretSlotPost": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "name": {
+            "$ref": "#/components/schemas/SecretSlotName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/Description"
+          },
+          "filename": {
+            "$ref": "#/components/schemas/SecretSlotFileName"
+          }
+        },
+        "required": ["project_id", "filename"]
+      },
+      "SessionSecretSlotPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/SecretSlotName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/Description"
+          },
+          "filename": {
+            "$ref": "#/components/schemas/SecretSlotFileName"
+          }
+        }
+      },
+      "SessionSecretList": {
+        "description": "A list of session launcher secrets",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SessionSecret"
+        }
+      },
+      "SessionSecret": {
+        "description": "A user's secret in a session launcher",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "secret_slot": {
+            "$ref": "#/components/schemas/SessionSecretSlot"
+          },
+          "secret_id": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        },
+        "required": ["secret_slot", "secret_id"]
+      },
+      "SessionSecretPatchList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SessionSecretPatch"
+        }
+      },
+      "SessionSecretPatch": {
+        "allOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "secret_slot_id": {
+                "$ref": "#/components/schemas/Ulid"
+              }
+            },
+            "required": ["secret_slot_id"]
+          },
+          {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SessionSecretPatchExistingSecret"
+              },
+              {
+                "$ref": "#/components/schemas/SessionSecretPatchSecretValue"
+              }
+            ]
+          }
+        ]
+      },
+      "SessionSecretPatchExistingSecret": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "secret_id": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        },
+        "required": ["secret_id"]
+      },
+      "SessionSecretPatchSecretValue": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/SecretValueNullable"
+          }
+        }
+      },
+      "SecretSlotName": {
+        "description": "The name of a secret slot",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "example": "API Token"
+      },
+      "SecretSlotFileName": {
+        "description": "The filename given to the corresponding secret in the session",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[a-zA-Z0-9_\\-.]+$",
+        "example": "api_token"
+      },
+      "SecretValueNullable": {
+        "description": "Secret value that can be any text",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 5000,
+        "nullable": true,
+        "example": "My secret value"
       },
       "PaginationRequest": {
         "type": "object",

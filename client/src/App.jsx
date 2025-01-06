@@ -161,7 +161,7 @@ function CentralContentContainer(props) {
               model={props.model}
             />
           </Route>
-          <Route path="/datasets/:identifier">
+          <CompatRoute path="/datasets/:identifier">
             <LazyShowDataset
               insideProject={false}
               client={props.client}
@@ -175,7 +175,7 @@ function CentralContentContainer(props) {
               logged={props.user.logged}
               model={props.model}
             />
-          </Route>
+          </CompatRoute>
           <CompatRoute path="/datasets">
             <Redirect to="/search?type=dataset" />
           </CompatRoute>

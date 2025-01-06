@@ -42,27 +42,32 @@ import {
   ListGroup,
   Row,
 } from "reactstrap";
-import { useLoginUrl } from "../../authentication/useLoginUrl.hook.ts";
+
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook.ts";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
+import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
 import {
   GetGroupsApiResponse,
   GetProjectsApiResponse,
-  useGetProjectsQuery,
   useGetGroupsQuery,
+  useGetProjectsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
-import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
+import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
-import SearchV2Bar from "../searchV2/components/SearchV2Bar.tsx";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/sessionsV2.api.ts";
-import { useGetUserQuery } from "../usersV2/api/users.api.ts";
-import UserAvatar, { UserAvatarSize } from "../usersV2/show/UserAvatar.tsx";
-import DashboardStyles from "./DashboardV2.module.scss";
+import SearchV2Bar from "../searchV2/components/SearchV2Bar";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/sessionsV2.api";
+import { useGetUserQuery } from "../usersV2/api/users.api";
+import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
+
+import DashboardStyles from "./DashboardV2.module.scss";
+
 export default function DashboardV2() {
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
@@ -358,7 +363,7 @@ function UserDashboard() {
           "my-md-4"
         )}
       >
-        <UserAvatar username={userInfo.username} size={UserAvatarSize.large} />
+        <UserAvatar namespace={userInfo.username} size="lg" />
         <h3 className={cx("text-center", "mb-0")}>
           {userInfo.first_name} {userInfo.last_name}
         </h3>
@@ -501,7 +506,10 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
     <ViewAllLink noItems={!hasGroups} type="group" total={data?.total ?? 0} />
   ) : (
     <div className="d-flex">
-      <Link to={"/v2/groups/new"} className={cx("btn", "btn-outline-primary")}>
+      <Link
+        to={{ hash: GROUP_CREATION_HASH }}
+        className={cx("btn", "btn-outline-primary")}
+      >
         <PlusSquare className={cx("bi", "me-1")} />
         Create my first group
       </Link>
@@ -588,7 +596,10 @@ function ViewAllLink({
 function EmptyProjectsButtons() {
   return (
     <div className={cx("d-flex", "gap-3")}>
-      <Link to={"/v2/projects/new"} className={cx("btn", "btn-primary")}>
+      <Link
+        to={{ hash: PROJECT_CREATION_HASH }}
+        className={cx("btn", "btn-primary")}
+      >
         <PlusSquare className={cx("bi", "me-1")} />
         Create my first project
       </Link>
