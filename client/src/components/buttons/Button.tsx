@@ -114,7 +114,7 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
   );
 }
 
-interface BButtonWithMenuV2Props {
+interface ButtonWithMenuV2Props {
   children?: React.ReactNode;
   className?: string;
   color?: string;
@@ -135,33 +135,51 @@ export function ButtonWithMenuV2({
   id,
   preventPropagation,
   size,
-}: BButtonWithMenuV2Props) {
+}: ButtonWithMenuV2Props) {
   // ! Temporary workaround to quickly implement a design solution -- to be removed ASAP #3250
   const additionalProps = preventPropagation
     ? { onClick: (e: React.MouseEvent) => e.stopPropagation() }
     : {};
   return (
-    <UncontrolledDropdown
-      {...additionalProps}
-      className={cx(className)}
-      color={color ?? "primary"}
-      direction={direction ?? "down"}
-      disabled={disabled}
-      group
-      id={id}
-      size={size ?? "md"}
-    >
-      {defaultButton}
-      <DropdownToggle
-        caret
-        className={cx("border-start-0", "dropdown-toggle-split")}
-        data-bs-toggle="dropdown"
-        color={color ?? "primary"}
-        data-cy="button-with-menu-dropdown"
-        disabled={disabled}
-      />
-      <DropdownMenu end>{children}</DropdownMenu>
-    </UncontrolledDropdown>
+    <>
+      <div className={cx("d-flex", "flex-row", "gap-2")}>
+        {/* Bootstrap split button dropdown */}
+        <ButtonGroup>
+          {defaultButton}
+          <DropdownToggle
+            caret
+            className={cx("border-start-0", "dropdown-toggle-split")}
+            data-bs-toggle="dropdown"
+            color={color ?? "primary"}
+            data-cy="button-with-menu-dropdown"
+            disabled={disabled}
+          />
+          <DropdownMenu end>{children}</DropdownMenu>
+        </ButtonGroup>
+
+        <UncontrolledDropdown
+          {...additionalProps}
+          className={cx(className)}
+          color={color ?? "primary"}
+          direction={direction ?? "down"}
+          disabled={disabled}
+          group
+          id={id}
+          size={size ?? "md"}
+        >
+          {defaultButton}
+          <DropdownToggle
+            caret
+            className={cx("border-start-0", "dropdown-toggle-split")}
+            data-bs-toggle="dropdown"
+            color={color ?? "primary"}
+            data-cy="button-with-menu-dropdown"
+            disabled={disabled}
+          />
+          <DropdownMenu end>{children}</DropdownMenu>
+        </UncontrolledDropdown>
+      </div>
+    </>
   );
 }
 
