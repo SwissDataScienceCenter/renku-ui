@@ -439,33 +439,13 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
 }
 
 function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
-  const permissions = useProjectPermissions({ projectId: project.id });
-
   return (
     <Card id="general">
       <CardHeader>
-        <PermissionsGuard
-          disabled={
-            <h4 className="m-0">
-              <Sliders className={cx("me-1", "bi")} />
-              General settings
-            </h4>
-          }
-          enabled={
-            <>
-              <h4>
-                <Sliders className={cx("me-1", "bi")} />
-                General settings
-              </h4>
-              <p className="m-0">
-                Update your project title, description, visibility and
-                namespace.
-              </p>
-            </>
-          }
-          requestedPermission="delete"
-          userPermissions={permissions}
-        />
+        <h4 className="m-0">
+          <Sliders className={cx("me-1", "bi")} />
+          General settings
+        </h4>
       </CardHeader>
       <CardBody>
         <ProjectSettingsForm project={project} />
