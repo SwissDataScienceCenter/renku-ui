@@ -19,13 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import {
-  PencilSquare,
-  People,
-  PersonGear,
-  PlusLg,
-  Trash,
-} from "react-bootstrap-icons";
+import { PencilSquare, PersonGear, PlusLg, Trash } from "react-bootstrap-icons";
 import {
   Button,
   Card,
@@ -40,7 +34,7 @@ import {
 } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
@@ -54,7 +48,6 @@ import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMember
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 import { ProjectMemberDisplay } from "../../../projectsV2/shared/ProjectMemberDisplay";
 import { useGetUserQuery } from "../../../usersV2/api/users.api";
-import { toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 type MemberActionMenuProps = Omit<
@@ -231,29 +224,38 @@ function ProjectPageSettingsMembersList({
   const [isEditMemberModalOpen, setIsEditMemberModalOpen] = useState(false);
   const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState<ProjectMemberResponse>();
-  const sortedMembers = toSortedMembers(members);
-  const numberOfOwners = sortedMembers.filter((m) => m.role === "owner").length;
+  const numberOfOwners = useMemo(
+    () => members.filter((m) => m.role === "owner").length,
+    [members]
+  );
+
+  const onEdit = useCallback((member: ProjectMemberResponse) => {
+    return () => {
+      setMemberToEdit(member);
+      setIsEditMemberModalOpen(true);
+    };
+  }, []);
+  const onRemove = useCallback((member: ProjectMemberResponse) => {
+    return () => {
+      setMemberToEdit(member);
+      setIsRemoveMemberModalOpen(true);
+    };
+  }, []);
 
   return (
     <>
-      <ListGroup flush>
-        {sortedMembers.map((d, i) => {
+      <ListGroup>
+        {members.map((member, idx) => {
           return (
             <ProjectPageSettingsMembersListItem
-              index={i}
-              key={d.id}
-              member={d}
+              index={idx}
+              key={member.id}
+              member={member}
               members={members}
               numberOfOwners={numberOfOwners}
               projectId={projectId}
-              onRemove={() => {
-                setMemberToEdit(d);
-                setIsRemoveMemberModalOpen(true);
-              }}
-              onEdit={() => {
-                setMemberToEdit(d);
-                setIsEditMemberModalOpen(true);
-              }}
+              onEdit={onEdit(member)}
+              onRemove={onRemove(member)}
             />
           );
         })}
@@ -275,74 +277,6 @@ function ProjectPageSettingsMembersList({
   );
 }
 
-interface ProjectPageSettingsMembersContentProps {
-  projectId: string;
-  isLoading: boolean;
-  members: ProjectMemberResponse[] | undefined;
-  error: ReturnType<typeof useGetProjectsByProjectIdMembersQuery>["error"];
-}
-
-function ProjectPageSettingsMembersContent({
-  error,
-  isLoading,
-  members,
-  projectId,
-}: ProjectPageSettingsMembersContentProps) {
-  const permissions = useProjectPermissions({ projectId });
-
-  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
-  const toggleAddMemberModalOpen = useCallback(() => {
-    setIsAddMemberModalOpen((open) => !open);
-  }, []);
-  if (isLoading)
-    return (
-      <p>
-        <Loader className="me-1" inline />
-        Loading members...
-      </p>
-    );
-  if (error) {
-    if (error.status === 401 || error.status === 404) return null;
-    return <RtkErrorAlert error={error} />;
-  }
-  if (members == null) return <p className="mb-0">Could not load members</p>;
-  const totalMembers = members ? members?.length : 0;
-  return (
-    <>
-      <div className={cx("d-flex", "justify-content-between", "mb-2")}>
-        <p className={cx("fw-bold", "my-auto")}>
-          <People className={cx("bi", "me-1")} />
-          Members ({totalMembers})
-        </p>
-        <div className="my-auto">
-          <PermissionsGuard
-            disabled={null}
-            enabled={
-              <Button
-                color="outline-primary"
-                data-cy="project-add-member"
-                onClick={toggleAddMemberModalOpen}
-                size="sm"
-              >
-                <PlusLg className="bi" />
-              </Button>
-            }
-            requestedPermission="change_membership"
-            userPermissions={permissions}
-          />
-        </div>
-      </div>
-      <ProjectPageSettingsMembersList members={members} projectId={projectId} />
-      <AddProjectMemberModal
-        isOpen={isAddMemberModalOpen}
-        members={members}
-        projectId={projectId}
-        toggle={toggleAddMemberModalOpen}
-      />
-    </>
-  );
-}
-
 interface ProjectPageSettingsMembersProps {
   project: Project;
 }
@@ -350,44 +284,69 @@ interface ProjectPageSettingsMembersProps {
 export default function ProjectPageSettingsMembers({
   project,
 }: ProjectPageSettingsMembersProps) {
-  const {
-    data: members,
-    error,
-    isLoading,
-  } = useGetProjectsByProjectIdMembersQuery({
+  const { data, error, isLoading } = useGetProjectsByProjectIdMembersQuery({
     projectId: project.id,
   });
   const permissions = useProjectPermissions({ projectId: project.id });
 
+  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+  const toggleAddMemberModalOpen = useCallback(() => {
+    setIsAddMemberModalOpen((open) => !open);
+  }, []);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (data == null || error) {
+    return (
+      <>
+        <CardHeader>
+          <h4>
+            <PersonGear className={cx("me-1", "bi")} />
+            Project Members
+          </h4>
+        </CardHeader>
+        <CardBody>
+          <div className="mb-3">Could not load members</div>
+          {error && <RtkOrNotebooksError error={error} />}
+        </CardBody>
+      </>
+    );
+  }
+
   return (
     <Card id="members">
       <CardHeader>
-        <PermissionsGuard
-          disabled={
-            <h4 className="m-0">
-              <PersonGear className={cx("me-1", "bi")} />
-              Members of the project
-            </h4>
-          }
-          enabled={
-            <>
-              <h4>
-                <PersonGear className={cx("me-1", "bi")} />
-                Members of the project
-              </h4>
-              <p className="m-0">Manage access permissions to the project</p>
-            </>
-          }
-          requestedPermission="change_membership"
-          userPermissions={permissions}
-        />
+        <div className={cx("d-flex", "gap-2")}>
+          <h4 className="m-0">
+            <PersonGear className={cx("me-1", "bi")} />
+            Project Members
+          </h4>
+          <PermissionsGuard
+            disabled={null}
+            enabled={
+              <Button
+                color="outline-primary"
+                data-cy="group-add-member"
+                onClick={toggleAddMemberModalOpen}
+                size="sm"
+              >
+                <PlusLg className="bi" id="createPlus" />
+              </Button>
+            }
+            requestedPermission="change_membership"
+            userPermissions={permissions}
+          />
+        </div>
       </CardHeader>
       <CardBody>
-        <ProjectPageSettingsMembersContent
-          error={error}
-          isLoading={isLoading}
-          members={members}
+        <ProjectPageSettingsMembersList members={data} projectId={project.id} />
+        <AddProjectMemberModal
+          isOpen={isAddMemberModalOpen}
+          members={data}
           projectId={project.id}
+          toggle={toggleAddMemberModalOpen}
         />
       </CardBody>
     </Card>

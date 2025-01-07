@@ -72,13 +72,10 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
   return (
     <Card id="delete">
       <CardHeader>
-        <h4>
+        <h4 className="mb-0">
           <Trash className={cx("me-1", "bi")} />
           Delete project
         </h4>
-        <p className="m-0">
-          Deleting the project will remove its repository and session launchers.
-        </p>
       </CardHeader>
       <CardBody>
         <p className="fw-bold">Are you sure you want to delete this project?</p>
