@@ -87,7 +87,7 @@ export default function GroupSettingsMembers({
   return (
     <>
       <CardHeader>
-        <div className={cx("d-flex", "gap-2", "mb-3")}>
+        <div className={cx("d-flex", "gap-2")}>
           <h4>
             <PersonGear className={cx("me-1", "bi")} />
             Group Members

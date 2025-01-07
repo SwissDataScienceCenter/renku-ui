@@ -123,15 +123,10 @@ export default function ProjectSessionSecrets() {
             />
           </div>
         </div>
-        <p className="mb-1">
+        <p className="mb-0">
           Use session secrets to connect to resources from inside a session that
           require a password or credential.
         </p>
-        <p className="mb-0">
-          Session secrets will be mounted at the following location:
-        </p>
-        <SecretsMountDirectoryComponent />
-
         {!userLogged && (
           <InfoAlert
             className={cx("mt-3", "mb-0")}
@@ -144,7 +139,14 @@ export default function ProjectSessionSecrets() {
           </InfoAlert>
         )}
       </CardHeader>
-      <CardBody className={cx(sessionSecretSlots?.length == 0 && "pb-0")}>
+      <CardBody>
+        <div className={cx(sessionSecretSlots?.length !== 0 && "mb-3")}>
+          <p className="mb-1">
+            Session secrets will be mounted at the following location:
+          </p>
+          <SecretsMountDirectoryComponent />
+        </div>
+
         {content}
       </CardBody>
     </Card>

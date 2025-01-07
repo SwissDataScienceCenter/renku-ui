@@ -72,21 +72,19 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
   return (
     <Card id="delete">
       <CardHeader>
-        <h4>
+        <h4 className="mb-0">
           <Trash className={cx("me-1", "bi")} />
           Delete project
         </h4>
-        <p className="m-0">
-          Deleting the project will remove its repository and session launchers.
-        </p>
       </CardHeader>
       <CardBody>
         <p className="fw-bold">Are you sure you want to delete this project?</p>
-        <p>
-          Deleted projects cannot be restored. Please type{" "}
-          <strong>{project.slug}</strong>, the slug of the project, to confirm.
-        </p>
         <div className="mb-3">
+          <p className="mb-2">
+            Deleted projects cannot be restored. Please type{" "}
+            <strong>{project.slug}</strong>, the slug of the project, to
+            confirm.
+          </p>
           <Input
             data-cy="delete-confirmation-input"
             value={typedName}

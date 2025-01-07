@@ -284,12 +284,15 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         name = "readGroupV2",
         groupSlug = "test-2-group-v2",
       } = args ?? {};
-      const response = { fixture };
-      cy.intercept(
-        "GET",
-        `/ui-server/api/data/groups/${groupSlug}`,
-        response
-      ).as(name);
+      cy.fixture(fixture).then((group_) => {
+        const group = {
+          ...group_,
+          slug: groupSlug,
+        };
+        cy.intercept("GET", `/ui-server/api/data/groups/${groupSlug}`, {
+          body: group,
+        }).as(name);
+      });
       return this;
     }
 
@@ -299,12 +302,15 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         name = "readGroupV2Namespace",
         groupSlug = "test-2-group-v2",
       } = args ?? {};
-      const response = { fixture };
-      cy.intercept(
-        "GET",
-        `/ui-server/api/data/namespaces/${groupSlug}`,
-        response
-      ).as(name);
+      cy.fixture(fixture).then((namespace_) => {
+        const namespace = {
+          ...namespace_,
+          slug: groupSlug,
+        };
+        cy.intercept("GET", `/ui-server/api/data/namespaces/${groupSlug}`, {
+          body: namespace,
+        }).as(name);
+      });
       return this;
     }
 
