@@ -186,7 +186,12 @@ export function SelectResourceClassModal({
             </div>
             {currentDiskStorage != null && (
               <>
-                <InputGroup>
+                <InputGroup
+                  className={cx(
+                    currentDiskStorage > currentSessionClass.max_storage &&
+                      "is-invalid"
+                  )}
+                >
                   <Input
                     className={cx(
                       currentDiskStorage > currentSessionClass.max_storage &&
@@ -212,6 +217,10 @@ export function SelectResourceClassModal({
                   Default: {currentSessionClass?.default_storage} GB, max:{" "}
                   {currentSessionClass?.max_storage} GB
                 </FormText>
+                <div className="invalid-feedback">
+                  Selected disk storage exceeds maximum allowed value (
+                  {currentSessionClass.max_storage} GB).
+                </div>
               </>
             )}
           </div>

@@ -182,7 +182,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
                   </div>
                   {watchCurrentDiskStorage != null && (
                     <>
-                      <InputGroup>
+                      <InputGroup className={cx(error && "is-invalid")}>
                         <Input
                           className={cx(error && "is-invalid")}
                           type="number"
@@ -205,12 +205,18 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
                         Default: {watchCurrentSessionClass.default_storage} GB,
                         max: {watchCurrentSessionClass.max_storage} GB
                       </FormText>
+                      <div className="invalid-feedback">
+                        {error?.message ?? "Invalid disk storage."}
+                      </div>
                     </>
                   )}
                 </>
               )}
               rules={{
-                max: watchCurrentSessionClass.max_storage,
+                max: {
+                  value: watchCurrentSessionClass.max_storage,
+                  message: `Selected disk storage exceeds maximum allowed value (${watchCurrentSessionClass.max_storage} GB).`,
+                },
               }}
             />
           </div>
