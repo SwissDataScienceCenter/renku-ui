@@ -123,7 +123,7 @@ jobs:
         with:
           browser: chrome
           start: npm run client:preview
-          wait-on: http://localhost:3000/
+          wait-on: http://localhost:3001/
           wait-on-timeout: 300
           working-directory: tests
       - uses: actions/upload-artifact@v4
