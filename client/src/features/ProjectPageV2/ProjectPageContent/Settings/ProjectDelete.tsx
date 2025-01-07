@@ -82,11 +82,12 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
       </CardHeader>
       <CardBody>
         <p className="fw-bold">Are you sure you want to delete this project?</p>
-        <p>
-          Deleted projects cannot be restored. Please type{" "}
-          <strong>{project.slug}</strong>, the slug of the project, to confirm.
-        </p>
         <div className="mb-3">
+          <p className="mb-2">
+            Deleted projects cannot be restored. Please type{" "}
+            <strong>{project.slug}</strong>, the slug of the project, to
+            confirm.
+          </p>
           <Input
             data-cy="delete-confirmation-input"
             value={typedName}
