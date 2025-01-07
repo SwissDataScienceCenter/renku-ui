@@ -467,10 +467,8 @@ describe("Work with group data connectors, missing permissions", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible").click();
-    cy.getDataCy("data-connector-edit").should("be.visible").click();
-    cy.contains(
-      "You do not have the required permissions to modify this data connector"
-    ).should("be.visible");
+    cy.getDataCy("data-connector-credentials").should("be.visible");
+    cy.getDataCy("data-connector-edit").should("not.exist");
   });
 
   it("delete a group data connector", () => {
@@ -481,10 +479,7 @@ describe("Work with group data connectors, missing permissions", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible").click();
-    cy.getDataCy("button-with-menu-dropdown").should("be.visible").click();
-    cy.getDataCy("data-connector-delete").should("be.visible").click();
-    cy.contains(
-      "You do not have the required permissions to delete this data connector"
-    ).should("be.visible");
+    cy.getDataCy("data-connector-credentials").should("be.visible");
+    cy.getDataCy("data-connector-delete").should("not.exist");
   });
 });
