@@ -328,7 +328,7 @@ export default function ProjectPageSettingsMembers({
             enabled={
               <Button
                 color="outline-primary"
-                data-cy="group-add-member"
+                data-cy="project-add-member"
                 onClick={toggleAddMemberModalOpen}
                 size="sm"
               >
