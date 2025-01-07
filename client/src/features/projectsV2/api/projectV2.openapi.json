@@ -122,6 +122,14 @@
             "schema": {
               "$ref": "#/components/schemas/WithDocumentation"
             }
+          },
+          {
+            "in": "query",
+            "name": "with_documentation",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WithDocumentation"
+            }
           }
         ],
         "responses": {
