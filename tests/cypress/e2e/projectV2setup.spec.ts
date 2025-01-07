@@ -287,8 +287,8 @@ describe("Set up data connectors", () => {
     cy.contains("example storage").should("be.visible").click();
     cy.getDataCy("data-connector-credentials")
       .should("be.visible")
-      .siblings()
-      .get("[data-cy=button-with-menu-dropdown]")
+      .parent()
+      .find("[data-cy=button-with-menu-dropdown]")
       .click();
     cy.getDataCy("data-connector-delete").should("be.visible").click();
     cy.wait("@getProjectV2Permissions");
