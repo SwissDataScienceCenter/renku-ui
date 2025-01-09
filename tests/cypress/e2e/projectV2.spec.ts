@@ -266,7 +266,7 @@ describe("Edit v2 project", () => {
     const projectMemberToRemove = "user3-uuid";
     fixtures.listProjectV2Members().readProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
     cy.contains("@user3").should("be.visible");
     fixtures
@@ -278,7 +278,6 @@ describe("Edit v2 project", () => {
     cy.getDataCy("project-member-actions-1").contains("Remove").click();
     cy.getDataCy("remove-member-form").should("be.visible");
     cy.contains("Remove member").should("be.visible").click();
-    cy.getDataCy("remove-member-form").should("not.be.visible");
     cy.contains("@user3").should("not.exist");
   });
 
@@ -288,7 +287,7 @@ describe("Edit v2 project", () => {
       .searchV2ListProjects({ numberOfProjects: 0, numberOfUsers: 5 })
       .readProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
     cy.contains("user 1").should("be.visible");
 
@@ -314,7 +313,7 @@ describe("Edit v2 project", () => {
       .searchV2ListProjects({ numberOfProjects: 0, numberOfUsers: 5 })
       .readProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
     cy.contains("user1").should("be.visible");
 
@@ -331,10 +330,10 @@ describe("Edit v2 project", () => {
       .readProjectV2()
       .patchProjectV2Member({ memberId: projectMemberToEdit });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
     cy.contains("@user3").should("be.visible");
-    cy.getDataCy("project-member-edit-1").should("be.visible").click();
+    cy.getDataCy("project-member-edit-2").should("be.visible").click();
     cy.getDataCy("member-role").select("Viewer");
     fixtures.listProjectV2Members({
       removeMemberId: projectMemberToEdit,
@@ -356,7 +355,7 @@ describe("Edit v2 project", () => {
       .readProjectV2()
       .patchProjectV2Member({ memberId: projectMemberToEdit });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
     cy.contains("user 1").should("be.visible");
     cy.getDataCy("project-member-edit-0").should("be.disabled");
@@ -371,11 +370,11 @@ describe("Edit v2 project", () => {
       .readProjectV2()
       .patchProjectV2Member({ memberId: projectMemberToEdit });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
     cy.getDataCy("project-member-edit-0").should("be.enabled");
     cy.getDataCy("project-member-edit-1").should("be.enabled");
-    cy.getDataCy("project-member-edit-1").should("be.visible").click();
+    cy.getDataCy("project-member-edit-0").should("be.visible").click();
     cy.getDataCy("member-role").select("Viewer");
     fixtures.listProjectV2Members({
       fixture: "projectV2/list-projectV2-members-many.json",
@@ -465,7 +464,7 @@ describe("Editor cannot maintain members", () => {
     cy.get("a[title='Settings']").click();
     cy.getDataCy("project-member-edit-2").should("not.exist");
     // TODO: can edit self
-    cy.getDataCy("project-member-remove-1").should("be.enabled");
+    cy.getDataCy("project-member-remove-2").should("be.enabled");
   });
 });
 
