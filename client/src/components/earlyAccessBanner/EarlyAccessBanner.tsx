@@ -64,9 +64,9 @@ export function EarlyAccessBanner({ theme }: EarlyAccessBannerProps) {
     <Link
       to="/v2"
       className={cx(
-        "btn",
         themeAssets[theme].btnStyles,
-        style.EarlyAccessBannerBtn
+        style.EarlyAccessBannerBtn,
+        "btn"
       )}
       rel="noreferrer noopener"
     >
@@ -97,7 +97,7 @@ export function EarlyAccessBanner({ theme }: EarlyAccessBannerProps) {
           "align-items-center"
         )}
       >
-        <div className="d-none d-sm-block d-lg-none">
+        <div className={cx("d-none", "d-sm-block", "d-lg-none")}>
           <img
             src={themeAssets[theme].dotsImgUrl}
             className={cx("img-fluid", "object-fit-cover")}
@@ -105,7 +105,7 @@ export function EarlyAccessBanner({ theme }: EarlyAccessBannerProps) {
             alt="Small image"
           />
         </div>
-        <div className="d-none d-lg-block">
+        <div className={cx("d-none", "d-lg-block")}>
           <img
             src={themeAssets[theme].dotsImgUrl}
             className="img-fluid"
@@ -127,7 +127,7 @@ export function EarlyAccessBanner({ theme }: EarlyAccessBannerProps) {
             alt="Renku 2.0"
             height="25"
           />
-          <h5 className="mt-1 mb-0">EARLY ACCESS!</h5>
+          <h5 className={cx("mt-1", "mb-0")}>EARLY ACCESS!</h5>
         </div>
         <div
           className={cx(

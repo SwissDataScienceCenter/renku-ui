@@ -119,13 +119,9 @@ function HeaderDashboard() {
         "bg-navy"
       )}
     >
-      <div className="container-xxl">
-        <img
-          src="/dashboardV2header.png"
-          alt="Dashboard Header"
-          className={cx("img-fluid", "w-100", "object-fit-cover")}
-        />
-      </div>
+      <div
+        className={cx("container-xxl", DashboardStyles.DashboardHeaderImg)}
+      ></div>
     </div>
   );
 }
