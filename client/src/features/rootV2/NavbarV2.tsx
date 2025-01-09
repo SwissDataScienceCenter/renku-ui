@@ -162,7 +162,9 @@ export default function NavbarV2() {
             >
               <img src={RENKU_ALPHA_LOGO} alt="Renku v2 (beta)" height="50" />
             </RenkuNavLinkV2>
-            <WipBadge>Early access</WipBadge>
+            <WipBadge>
+              <span className="fw-bold">2.0</span>Early access
+            </WipBadge>
             <BackToV1Button outline={true} />
           </div>
           <div className="ms-auto">

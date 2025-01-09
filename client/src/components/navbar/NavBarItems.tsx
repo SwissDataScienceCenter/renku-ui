@@ -340,18 +340,29 @@ export function RenkuToolbarItemUser({
 
         <AdminDropdownItem />
 
-        <>
-          <DropdownItem divider />
-          <Link to={ABSOLUTE_ROUTES.v2.root} className="dropdown-item">
-            Renku <span className="fw-bold">2.0</span> Early access
-          </Link>
-          <Link
-            to={ABSOLUTE_ROUTES.v2.connectedServices}
-            className="dropdown-item"
-          >
-            Integrations
-          </Link>
-        </>
+        {isV2 && (
+          <>
+            <Link
+              to={ABSOLUTE_ROUTES.v2.connectedServices}
+              className="dropdown-item"
+            >
+              Integrations
+            </Link>
+            <DropdownItem divider />
+            <Link to={ABSOLUTE_ROUTES.root} className="dropdown-item">
+              Back <span className="fw-bold">Renku 1.0</span>
+            </Link>
+          </>
+        )}
+
+        {!isV2 && (
+          <>
+            <DropdownItem divider />
+            <Link to={ABSOLUTE_ROUTES.v2.root} className="dropdown-item">
+              <span className="fw-bold">Renku 2.0</span> Early access
+            </Link>
+          </>
+        )}
 
         <DropdownItem divider />
         <a
