@@ -23,7 +23,7 @@ import { Links } from "../../utils/constants/Docs.js";
 import { Url } from "../../utils/helpers/url";
 import style from "./EarlyAccessBanner.module.scss";
 
-const BANNER_DARK_IMG = "/static/public/img/earlyAccessDark.svg";
+const BANNER_DARK_IMG = "/static/public/img/earlyAccessDark.png";
 const BANNER_LIGHT_IMG = "/static/public/img/earlyAccessLight.svg";
 const LOGO_V2 = "/static/public/img/renku2.0Logo.svg";
 const LOGO_V2_DARK = "/static/public/img/renku2.0LogoDark.svg";
