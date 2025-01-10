@@ -61,9 +61,7 @@ const InputLabel = ({ text, isRequired = false }: InputLabelProps) => {
     <Label>
       {text} <RequiredLabel isRequired={isRequired} />
     </Label>
-  ) : (
-    <></>
-  );
+  ) : null;
 };
 
 const LoadingLabel = ({ className, text }: LabelProps) => {

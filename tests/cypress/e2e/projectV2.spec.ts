@@ -130,6 +130,30 @@ describe("Navigate to project", () => {
     );
     cy.getDataCy("project-info-card").contains("public");
     cy.getDataCy("project-info-card").contains("user1-uuid");
+    cy.getDataCy("project-documentation-text").should("be.visible");
+    cy.getDataCy("project-documentation-text")
+      .contains(
+        "A description of this project, supporting markdown and math symbols"
+      )
+      .should("be.visible");
+    cy.getDataCy("project-documentation-edit").should("not.exist");
+  });
+
+  it("show project empty documentation", () => {
+    fixtures.readProjectV2({
+      overrides: {
+        documentation: undefined,
+      },
+    });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    // check project data
+    cy.getDataCy("project-documentation-text").should("be.visible");
+    cy.getDataCy("project-documentation-text")
+      .contains(
+        "Describe your project, so others can understand what it does and how to use it."
+      )
+      .should("be.visible");
   });
 
   it("shows at most 5 members, owners first", () => {
@@ -197,6 +221,29 @@ describe("Edit v2 project", () => {
       "be.visible"
     );
     cy.contains("new name").should("be.visible");
+  });
+
+  it("changes project documentation", () => {
+    fixtures.readProjectV2().updateProjectV2().listNamespaceV2();
+    cy.contains("My projects").should("be.visible");
+    cy.getDataCy("dashboard-project-list")
+      .contains("a", "test 2 v2-project")
+      .should("be.visible")
+      .click();
+    cy.wait("@readProjectV2");
+    cy.getDataCy("project-documentation-edit").click();
+    cy.getDataCy("project-documentation-modal-body")
+      .contains(
+        "A description of this project, supporting markdown and math symbols"
+      )
+      .should("be.visible");
+    cy.getDataCy("project-documentation-modal-body")
+      .find(".ck-content")
+      .click()
+      .clear()
+      .type("new description");
+    cy.getDataCy("project-documentation-modal-footer").contains("Save").click();
+    cy.getDataCy("project-documentation-modal-body").should("not.be.visible");
   });
 
   it("changes project namespace", () => {

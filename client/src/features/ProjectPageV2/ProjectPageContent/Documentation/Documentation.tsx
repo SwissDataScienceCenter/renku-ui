@@ -17,142 +17,261 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { FileEarmarkText } from "react-bootstrap-icons";
-import { Card, CardBody, CardHeader, ListGroup } from "reactstrap";
+import { FileEarmarkText, Pencil, XLg } from "react-bootstrap-icons";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Form,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
+} from "reactstrap";
+import { useForm } from "react-hook-form";
 
-import { EditSaveButton } from "../../../../components/buttons/Button";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import TextAreaInput from "../../../../components/form-field/TextAreaInput.tsx";
+import { Loader } from "../../../../components/Loader";
+import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 
+import styles from "./Documentation.module.scss";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-import TextAreaInput from "../../../../components/form-field/TextAreaInput.tsx";
-import { useForm } from "react-hook-form";
-import { LazyCkEditorRenderer } from "../../../../components/form-field/LazyCkEditorRenderer.tsx";
+
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+
+// Taken from src/features/projectsV2/api/projectV2.openapi.json
+const DESCRIPTION_MAX_LENGTH = 5000;
 
 interface DocumentationForm {
-  description: string;
+  documentation: string;
 }
 
-export default function Documentation({ project }: { project: Project }) {
-  const [updateProject] = usePatchProjectsByProjectIdMutation();
-  const [description, setDescription] = useState(project.documentation || "");
+interface DocumentationProps {
+  project: Project;
+}
 
-  const { control, handleSubmit, setValue, getValues, register } =
-    useForm<DocumentationForm>();
-  const onSubmit = useCallback(
-    (data: DocumentationForm) => {
-      setDescription(data.description);
-      setShowEditor(false);
-      updateProject({
-        "If-Match": project.etag ? project.etag : "",
-        projectId: project.id,
-        projectPatch: { documentation: data.description },
-      });
-    },
-    [project.etag, project.id, updateProject]
-  );
-
-  const [showEditor, setShowEditor] = useState(false);
-  const toggle = () => {
-    setShowEditor(!showEditor);
-    setValue("description", description);
-  };
-
-  const markdownCharacterLimit = 5000;
-  const aboutCharacterLimit =
-    Math.floor(((2 / 3) * markdownCharacterLimit) / 10) * 10;
-  const [characterLimit, setCharacterLimit] = useState(aboutCharacterLimit);
-  const [character, setCharacter] = useState(0);
-  const [disabledSaveButton, setDisabledSaveButton] = useState(false);
-
-  const wordCount = (stats: {
-    exact: boolean;
-    characters: number;
-    words: number;
-  }) => {
-    stats.exact
-      ? setCharacterLimit(markdownCharacterLimit)
-      : setCharacterLimit(aboutCharacterLimit);
-    setCharacter(stats.characters);
-  };
-
-  const descriptionField = register("description");
-  {
-    const descriptionFieldTmp = descriptionField.onChange;
-    descriptionField.onChange = (value) => {
-      setDisabledSaveButton(false);
-      return descriptionFieldTmp(value);
-    };
-  }
+export default function Documentation({ project }: DocumentationProps) {
+  const permissions = useProjectPermissions({ projectId: project.id });
+  const [isModalOpen, setModalOpen] = useState(false);
+  const toggleOpen = useCallback(() => {
+    setModalOpen((open) => !open);
+  }, []);
 
   return (
-    <Card data-cy="project-documentation-card">
-      <form className="form-rk-pink" onSubmit={handleSubmit(onSubmit)}>
+    <>
+      <Card data-cy="project-documentation-card">
         <CardHeader>
           <div
             className={cx(
               "align-items-center",
               "d-flex",
-              "flex-wrap",
               "justify-content-between"
             )}
           >
-            <h4 className={cx("m-0")}>
+            <h4 className="m-0">
               <FileEarmarkText className={cx("me-1", "bi")} />
               Documentation
             </h4>
-            <span>
-              {showEditor ? (
-                <span style={{ verticalAlign: "middle" }}>
-                  {character} of
-                  {characterLimit == aboutCharacterLimit ? " about " : " "}
-                  {characterLimit} characters &nbsp;
-                </span>
-              ) : (
-                <></>
-              )}
-              <EditSaveButton
-                data-cy="project-documentation-edit"
-                toggle={toggle}
-                disabled={disabledSaveButton}
-                // tooltip="Save or discard your changes."
-                checksBeforeSave={() => {
-                  if (
-                    getValues("description").length <= markdownCharacterLimit
-                  ) {
-                    return true;
-                  }
-                  setDisabledSaveButton(true);
-                  return false;
-                }}
-                checksBeforeSaveTooltipMessage={() =>
-                  `Documentation is too long.\n The document can not be longer\nthan ${markdownCharacterLimit} characters.`
+            <div className="my-auto">
+              <PermissionsGuard
+                disabled={null}
+                enabled={
+                  <Button
+                    data-cy="project-documentation-edit"
+                    color="outline-primary"
+                    onClick={toggleOpen}
+                    size="sm"
+                  >
+                    <Pencil className="bi" />
+                  </Button>
                 }
+                requestedPermission="write"
+                userPermissions={permissions}
               />
-            </span>
+            </div>
           </div>
         </CardHeader>
         <CardBody>
-          {showEditor ? (
-            <ListGroup flush>
-              <TextAreaInput<DocumentationForm>
-                control={control}
-                getValue={() => getValues("description")}
-                name="description"
-                label="Description"
-                register={descriptionField}
-                wordCount={wordCount}
-              />
-            </ListGroup>
-          ) : (
-            <ListGroup flush>
-              <div className="pb-2"></div>
-              <LazyCkEditorRenderer name="description" data={description} />
-            </ListGroup>
-          )}
+          <div data-cy="project-documentation-text">
+            {project.documentation != null &&
+            project.documentation.length > 0 ? (
+              <LazyRenkuMarkdown markdownText={project.documentation} />
+            ) : (
+              <p className={cx("m-0", "text-muted", "fst-italic")}>
+                Describe your project, so others can understand what it does and
+                how to use it.
+              </p>
+            )}
+          </div>
         </CardBody>
-      </form>
-    </Card>
+      </Card>
+      <DocumentationModal
+        isOpen={isModalOpen}
+        project={project}
+        toggle={toggleOpen}
+      />
+    </>
+  );
+}
+
+interface DocumentationModalProps extends DocumentationProps {
+  isOpen: boolean;
+  toggle: () => void;
+}
+
+function DocumentationModal({
+  isOpen,
+  project,
+  toggle,
+}: DocumentationModalProps) {
+  const [updateProject, result] = usePatchProjectsByProjectIdMutation();
+  const { isSuccess, isLoading, error } = result;
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    getValues,
+    register,
+    reset,
+    setValue,
+    watch,
+  } = useForm<DocumentationForm>({
+    defaultValues: {
+      documentation: project.documentation || "",
+    },
+  });
+
+  useEffect(() => {
+    setValue("documentation", project.documentation || "");
+  }, [project.documentation, setValue]);
+
+  const onSubmit = useCallback(
+    (data: DocumentationForm) => {
+      updateProject({
+        "If-Match": project.etag ? project.etag : "",
+        projectId: project.id,
+        projectPatch: { documentation: data.documentation },
+      });
+    },
+    [project.etag, project.id, updateProject]
+  );
+
+  useEffect(() => {
+    if (!isOpen) {
+      reset({ documentation: project.documentation || "" });
+      result.reset();
+    }
+  }, [isOpen, project.documentation, reset, result]);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      toggle();
+    }
+  }, [result.isSuccess, toggle]);
+
+  const documentationField = register("documentation", {
+    maxLength: {
+      message: `Documentation is limited to ${DESCRIPTION_MAX_LENGTH} characters.`,
+      value: DESCRIPTION_MAX_LENGTH,
+    },
+  });
+  return (
+    <ScrollableModal
+      backdrop="static"
+      centered
+      data-cy="project-documentation-modal"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
+      <ModalHeader toggle={toggle} data-cy="project-documentation-modal-header">
+        <div>
+          <FileEarmarkText className={cx("me-1", "bi")} />
+          Documentation
+        </div>
+      </ModalHeader>
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+        <ModalBody
+          data-cy="project-documentation-modal-body"
+          className={styles.modalBody}
+        >
+          <div className="mb-1">
+            <TextAreaInput<DocumentationForm>
+              control={control}
+              getValue={() => getValues("documentation")}
+              name="documentation"
+              register={documentationField}
+            />
+          </div>
+        </ModalBody>
+        <ModalFooter
+          className="border-top"
+          data-cy="project-documentation-modal-footer"
+        >
+          {errors.documentation ? (
+            <div className="text-danger">
+              {errors.documentation.message ? (
+                <>{errors.documentation.message}</>
+              ) : (
+                <>Documentation text is invalid</>
+              )}
+            </div>
+          ) : (
+            <div className="mb-2"></div>
+          )}
+          {isSuccess != null && !isSuccess && (
+            <RtkOrNotebooksError error={error} />
+          )}
+          <DocumentationWordCount watch={watch} />
+          <Button
+            color="outline-primary"
+            className="me-2"
+            onClick={() => {
+              toggle();
+            }}
+          >
+            <XLg className={cx("bi", "me-1")} /> Close
+          </Button>
+          <Button color="primary" disabled={isLoading} type="submit">
+            {isLoading ? (
+              <Loader className="me-1" inline size={16} />
+            ) : (
+              <Pencil className={cx("bi", "me-1")} />
+            )}
+            Save
+          </Button>
+        </ModalFooter>
+      </Form>
+    </ScrollableModal>
+  );
+}
+
+function DocumentationWordCount({
+  watch,
+}: {
+  watch: ReturnType<typeof useForm<DocumentationForm>>["watch"];
+}) {
+  const documentation = watch("documentation");
+  const charCount = documentation.length;
+  const isCloseToLimit = charCount >= DESCRIPTION_MAX_LENGTH - 10;
+  return (
+    <div>
+      <span
+        className={cx(
+          isCloseToLimit && "text-danger",
+          isCloseToLimit && "fw-bold"
+        )}
+      >
+        {charCount}
+      </span>{" "}
+      of {DESCRIPTION_MAX_LENGTH} characters
+    </div>
   );
 }
