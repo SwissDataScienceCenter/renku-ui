@@ -72,9 +72,8 @@ function newDataset(newDataset: Dataset) {
     cy.getDataCy("ckeditor-description")
       .find(".ck-content[contenteditable=true]")
       .click()
-      .then((element) =>
-        element[0].ckeditorInstance.setData(newDataset.description)
-      );
+      .clear()
+      .type(newDataset.description);
 
   if (newDataset.file) {
     cy.get('[data-cy="dropzone"]').attachFile(

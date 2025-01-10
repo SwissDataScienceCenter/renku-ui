@@ -155,10 +155,7 @@ describe("Project dataset", () => {
         cy.getDataCy("ckeditor-description")
           .find(".ck-content[contenteditable=true]")
           .click()
-          // eslint-disable-next-line max-nested-callbacks
-          .then((element) =>
-            element[0].ckeditorInstance.setData(". New description")
-          );
+          .type(". New description");
 
         cy.get("div.tree-container").contains("air_quality_no2.txt");
         cy.get('[data-cy="dropzone"]').attachFile(

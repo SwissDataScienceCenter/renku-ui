@@ -29,6 +29,7 @@ interface ProjectOverrides {
   keywords?: string[];
   template_id?: string;
   is_template?: boolean;
+  documentation: string | null | undefined;
 }
 
 /**

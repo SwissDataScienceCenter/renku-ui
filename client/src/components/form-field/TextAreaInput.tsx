@@ -17,6 +17,7 @@
  */
 
 // TODO: Upgrade to ckeditor5 v6.0.0 to get TS support
+import cx from "classnames";
 import React from "react";
 import { Controller } from "react-hook-form";
 import type {
@@ -42,9 +43,9 @@ function EditMarkdownSwitch(props: EditMarkdownSwitchProps) {
   const outputType = "markdown";
   const switchLabel = outputType === "markdown" ? "Raw Markdown" : "Raw HTML";
   return (
-    <div className="form-check form-switch float-end">
+    <div className={cx("form-check", "form-switch", "float-end")}>
       <Input
-        className="form-check-input rounded-pill"
+        className={cx("form-check-input", "rounded-pill")}
         type="switch"
         id="CKEditorSwitch"
         name="customSwitch"
@@ -107,15 +108,10 @@ interface TextAreaInputProps<T extends FieldValues> {
   error?: FieldError;
   getValue: () => string;
   help?: string | React.ReactNode;
-  label: string;
+  label?: string;
   name: string;
   register: UseFormRegisterReturn;
   required?: boolean;
-  wordCount?: (stats: {
-    exact: boolean;
-    characters: number;
-    words: number;
-  }) => void;
 }
 
 function TextAreaInput<T extends FieldValues>(props: TextAreaInputProps<T>) {
@@ -124,12 +120,14 @@ function TextAreaInput<T extends FieldValues>(props: TextAreaInputProps<T>) {
   return (
     <div>
       <FormGroup className="field-group">
-        <div className="pb-2">
-          <FormLabel
-            name={props.name}
-            label={props.label}
-            required={props.required ?? false}
-          />
+        <div className={cx("pb-2", props.label == null && "mb-4")}>
+          {props.label && (
+            <FormLabel
+              name={props.name}
+              label={props.label}
+              required={props.required ?? false}
+            />
+          )}
           <EditMarkdownSwitch codeView={codeView} setCodeView={setCodeView} />
         </div>
         <div data-cy={`ckeditor-${props.name}`}>
