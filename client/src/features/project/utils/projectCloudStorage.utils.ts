@@ -25,6 +25,7 @@ import { CloudStorageGetRead } from "../../projectsV2/api/storagesV2.api";
 import { SessionCloudStorageV2 } from "../../sessionsV2/sessionsV2.types.ts";
 import {
   CLOUD_OPTIONS_OVERRIDE,
+  CLOUD_OPTIONS_PROVIDER_OVERRIDE,
   CLOUD_STORAGE_MOUNT_PATH_HELP,
   CLOUD_STORAGE_OVERRIDE,
   CLOUD_STORAGE_PROVIDERS_SHORTLIST,
@@ -253,7 +254,7 @@ export function getSchemaOptions(
   if (!storage) return;
 
   const optionsOverridden = flags.override
-    ? overrideOptions(storage.options, targetSchema)
+    ? overrideOptions(storage.options, targetSchema, targetProvider)
     : storage.options;
 
   const optionsFiltered = optionsOverridden.filter((option) =>
@@ -365,11 +366,20 @@ export function storageDefinitionFromConfig(
 
 function overrideOptions(
   options: CloudStorageSchemaOptions[],
-  targetSchema: string
+  targetSchema: string,
+  targetProvider?: string
 ): CloudStorageSchemaOptions[] {
   return options.map((option) => {
-    const override = CLOUD_OPTIONS_OVERRIDE[targetSchema]?.[option.name];
-    return override ? { ...option, ...override } : option;
+    const schemaOverrides =
+      CLOUD_OPTIONS_OVERRIDE[targetSchema]?.[option.name] || {};
+    const providerOverrides =
+      targetProvider &&
+      CLOUD_OPTIONS_PROVIDER_OVERRIDE[targetSchema]?.[targetProvider]?.[
+        option.name
+      ];
+    return providerOverrides
+      ? { ...option, ...schemaOverrides, ...providerOverrides }
+      : { ...option, ...schemaOverrides };
   });
 }
 

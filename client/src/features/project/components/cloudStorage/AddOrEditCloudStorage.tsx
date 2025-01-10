@@ -425,15 +425,11 @@ function PasswordOptionItem({
     );
   }
 
-  const inputName =
-    option.filteredExamples?.length > 0
-      ? option.filteredExamples[0]?.friendlyName
-      : option.friendlyName ?? option.name;
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
     <>
       <label htmlFor={option.name}>
-        {inputName}{" "}
+        {option.friendlyName ?? option.name}{" "}
         <div id={tooltipContainerId} className="d-inline">
           <KeyFill className={cx("bi", "ms-1")} />
           <ExclamationTriangleFill
