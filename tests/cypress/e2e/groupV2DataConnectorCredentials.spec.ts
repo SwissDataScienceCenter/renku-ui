@@ -367,7 +367,6 @@ describe("Set up data connectors with credentials", () => {
     );
 
     // clear credentials
-    openDataConnectorMenu();
     cy.getDataCy("data-connector-credentials").click();
     cy.getDataCy("data-connector-credentials-modal")
       .contains("The saved credentials for this data connector are incomplete")

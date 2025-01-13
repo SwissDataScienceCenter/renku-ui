@@ -183,7 +183,11 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
         <RtkOrNotebooksError error={updateGroupResult.error} />
       )}
       <GroupDeleteConfirmation isOpen={isOpen} group={group} toggle={toggle} />
-      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+      <Form
+        className={cx("d-flex", "flex-column", "gap-3")}
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <PermissionsGuard
           disabled={<GroupReadOnlyField title="Name" value={group.name} />}
           enabled={
@@ -294,7 +298,7 @@ function GroupReadOnlyField({
   value: string;
 }) {
   return (
-    <div className="mb-3">
+    <div>
       <Label className="form-label" for={`group-${title}`}>
         {title}
       </Label>
