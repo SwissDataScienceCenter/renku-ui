@@ -267,8 +267,8 @@ function App(props) {
   return (
     <Fragment>
       <Favicon />
-      <DashboardBanner user={props.user} />
       <RenkuNavBar {...props} notifications={notifications} />
+      <DashboardBanner user={props.user} />
       <CentralContentContainer
         notifications={notifications}
         socket={webSocket}
