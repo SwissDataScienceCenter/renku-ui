@@ -911,13 +911,7 @@ export function AddStorageOptions({
             />
           )}
           <div className={cx("form-text", "text-muted")}>
-            <OptionTruncatedText
-              text={
-                inputType !== "dropdown" && o.filteredExamples?.length > 0
-                  ? o.filteredExamples[0]?.help
-                  : o.help
-              }
-            />
+            <OptionTruncatedText text={o.help} />
           </div>
         </div>
       );
@@ -929,7 +923,7 @@ export function AddStorageOptions({
         <Input
           className={cx("form-check-input", "rounded-pill", "my-auto", "me-2")}
           checked={state.showAllOptions}
-          id="switch-storage-advanced-mode"
+          id="switch-storage-full-list"
           onChange={() => setState({ showAllOptions: !state.showAllOptions })}
           role="switch"
           type="checkbox"

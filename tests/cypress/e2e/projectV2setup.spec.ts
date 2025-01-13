@@ -200,10 +200,25 @@ describe("Set up data connectors", () => {
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
     cy.getDataCy("project-data-controller-mode-create").click();
+
+    // is polybox visible
+    cy.getDataCy("data-storage-polybox")
+      .contains("PolyBox")
+      .should("be.visible");
     // Pick a provider
     cy.getDataCy("data-storage-s3").click();
     cy.getDataCy("data-provider-AWS").click();
     cy.getDataCy("data-connector-edit-next-button").click();
+
+    // Validate is shown well the label and the help for passwords in full list
+    cy.get("#switch-storage-full-list").click();
+    cy.get("label")
+      .contains("sse_kms_key_id") // Find the label with the desired text
+      .parent() // Go one node above (to the parent div)
+      .should(
+        "contain.text",
+        "If using KMS ID you must provide the ARN of Key"
+      );
 
     // Fill out the details
     cy.get("#sourcePath").type("bucket/my-source");
