@@ -73,11 +73,29 @@ function notificationProjectUpdated(
   );
 }
 
+function ProjectReadOnlyNameField({ name }: { name: string }) {
+  return (
+    <div>
+      <Label className="form-label" for="project-name">
+        Name
+      </Label>
+      <Input
+        className="form-control"
+        id="project-name"
+        type="text"
+        value={name}
+        disabled={true}
+        readOnly
+      />
+    </div>
+  );
+}
+
 function ProjectReadOnlyNamespaceField({ namespace }: { namespace: string }) {
   return (
     <div>
       <Label className="form-label" for="project-namespace">
-        Namespace
+        Owner
       </Label>
       <Input
         className="form-control"
@@ -113,7 +131,55 @@ function ProjectReadOnlyVisibilityField({
   );
 }
 
-function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
+function ProjectReadOnlyDescriptionFiled({
+  description,
+}: {
+  description: string;
+}) {
+  return (
+    <div>
+      <Label className="form-label" for="project-description">
+        Description
+      </Label>
+      <Input
+        className="form-control"
+        id="project-description"
+        type="textarea"
+        value={description}
+        disabled={true}
+        readOnly
+      />
+    </div>
+  );
+}
+
+function ProjectReadOnlyTemplateField({ isTemplate }: { isTemplate: boolean }) {
+  return (
+    <div>
+      <Label className="form-label" for="project-template">
+        Template
+      </Label>
+      <div className={cx("d-flex", "flex-row gap-4")}>
+        <FormGroup switch>
+          <Input
+            className="form-control"
+            type="checkbox"
+            role="switch"
+            id="project-template"
+            disabled={true}
+            checked={isTemplate}
+          />
+          <Label for="project-template" check>
+            <Diagram3Fill className={cx("bi", "me-1")} />
+            Template Project
+          </Label>
+        </FormGroup>
+      </div>
+    </div>
+  );
+}
+
+function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const permissions = useProjectPermissions({ projectId: project.id });
   const {
     control,
@@ -204,7 +270,18 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ProjectNameFormField name="name" control={control} errors={errors} />
+        <PermissionsGuard
+          disabled={<ProjectReadOnlyNameField name={project.name} />}
+          enabled={
+            <ProjectNameFormField
+              name="name"
+              control={control}
+              errors={errors}
+            />
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
 
         <PermissionsGuard
           disabled={
@@ -219,7 +296,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
               errors={errors}
             />
           }
-          requestedPermission="delete"
+          requestedPermission="write"
           userPermissions={permissions}
         />
         {currentNamespace !== project.namespace && (
@@ -245,179 +322,133 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
               errors={errors}
             />
           }
-          requestedPermission="delete"
+          requestedPermission="write"
           userPermissions={permissions}
         />
 
-        <ProjectDescriptionFormField
-          name="description"
-          control={control}
-          errors={errors}
+        <PermissionsGuard
+          disabled={
+            <ProjectReadOnlyDescriptionFiled
+              description={project.description ?? ""}
+            />
+          }
+          enabled={
+            <ProjectDescriptionFormField
+              name="description"
+              control={control}
+              errors={errors}
+            />
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
         />
 
-        <KeywordsInput
-          hasError={errors.keywords != null}
-          help="Keywords are used to describe the project. To add one, type a keyword and press enter."
-          label="Keywords"
-          name="keywords"
-          register={register("keywords", {
-            validate: () => !areKeywordsDirty,
-          })}
-          setDirty={setKeywordsDirty}
-          value={project.keywords as string[]}
-        />
-        <div className="mb-3">
-          <div className="form-label">Template</div>
-          <Controller
-            aria-describedby="projectTemplateHelp"
-            control={control}
-            name={"is_template"}
-            render={({ field }) => {
-              const { value, ...props } = field;
-              return (
-                <div className={cx("d-flex", "flex-row gap-4")}>
-                  <FormGroup switch>
-                    <Input
-                      type="checkbox"
-                      role="switch"
-                      className={cx(errors.is_template && "is-invalid")}
-                      data-cy="project-template"
-                      id="project-template"
-                      {...props}
-                      checked={value}
-                    />
-                    <Label
-                      for="project-template"
-                      className="cursor-pointer"
-                      check
-                    >
-                      <Diagram3Fill className={cx("bi", "me-1")} />
-                      Mark this project as a template
-                    </Label>
-                  </FormGroup>
-                </div>
-              );
-            }}
-          />
-          <FormText id="projectTemplateHelp" className="input-hint">
-            Make this a template project to indicate to viewers that this
-            project should be copied before being used.
-          </FormText>
-        </div>
-
-        <div className={cx("d-flex", "justify-content-end")}>
-          <Button
-            color="primary"
-            disabled={isUpdating || !isDirty}
-            type="submit"
-          >
-            {isUpdating ? (
-              <Loader className="me-1" inline size={16} />
-            ) : (
-              <Pencil className={cx("bi", "me-1")} />
-            )}
-            Update project
-          </Button>
-        </div>
-      </Form>
-    </div>
-  );
-}
-
-function ProjectSettingsDisplay({ project }: ProjectPageSettingsProps) {
-  const onSubmit = () => {};
-
-  return (
-    <div>
-      <Form className="form-rk-green" noValidate onSubmit={onSubmit}>
-        <div className="mb-3">
-          <Label className="form-label" for="project-name">
-            Name
-          </Label>
-          <Input
-            className="form-control"
-            id="project-name"
-            type="text"
-            value={project.name}
-            disabled={true}
-            readOnly
-          />
-        </div>
-        <ProjectReadOnlyNamespaceField namespace={project.namespace} />
-        <div className="mb-3">
-          <Label className="form-label" for="project-description">
-            Description
-          </Label>
-          <Input
-            className="form-control"
-            id="project-description"
-            type="textarea"
-            value={project.description}
-            disabled={true}
-            readOnly
-          />
-        </div>
-        <ProjectReadOnlyVisibilityField visibility={project.visibility} />
-        <div className="mb-3">
-          <div className="form-label">Template</div>
-          <div className={cx("d-flex", "flex-row gap-4")}>
-            <FormGroup switch>
-              <Input
-                className="form-control"
-                type="checkbox"
-                role="switch"
-                id="project-template"
-                disabled={true}
-                checked={project.is_template}
+        <PermissionsGuard
+          disabled={
+            <ProjectReadOnlyTemplateField
+              isTemplate={project.is_template ?? false}
+            />
+          }
+          enabled={
+            <div>
+              <div className="form-label">Template</div>
+              <Controller
+                aria-describedby="projectTemplateHelp"
+                control={control}
+                name={"is_template"}
+                render={({ field }) => {
+                  const { value, ...props } = field;
+                  return (
+                    <div className={cx("d-flex", "flex-row gap-4")}>
+                      <FormGroup switch>
+                        <Input
+                          type="checkbox"
+                          role="switch"
+                          className={cx(errors.is_template && "is-invalid")}
+                          data-cy="project-template"
+                          id="project-template"
+                          {...props}
+                          checked={value}
+                        />
+                        <Label
+                          for="project-template"
+                          className="cursor-pointer"
+                          check
+                        >
+                          <Diagram3Fill className={cx("bi", "me-1")} />
+                          Mark this project as a template
+                        </Label>
+                      </FormGroup>
+                    </div>
+                  );
+                }}
               />
-              <Label for="project-template" check>
-                <Diagram3Fill className={cx("bi", "me-1")} />
-                Template Project
-              </Label>
-            </FormGroup>
-          </div>
-        </div>
+              <FormText id="projectTemplateHelp" className="input-hint">
+                Make this a template project to indicate to viewers that this
+                project should be copied before being used.
+              </FormText>
+            </div>
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
+
+        <PermissionsGuard
+          disabled={null}
+          enabled={
+            <KeywordsInput
+              hasError={errors.keywords != null}
+              help="Keywords are used to describe the project. To add one, type a keyword and press enter."
+              label="Keywords"
+              name="keywords"
+              register={register("keywords", {
+                validate: () => !areKeywordsDirty,
+              })}
+              setDirty={setKeywordsDirty}
+              value={project.keywords as string[]}
+            />
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
+
+        <PermissionsGuard
+          disabled={null}
+          enabled={
+            <div className={cx("d-flex", "justify-content-end")}>
+              <Button
+                color="primary"
+                disabled={isUpdating || !isDirty}
+                type="submit"
+              >
+                {isUpdating ? (
+                  <Loader className="me-1" inline size={16} />
+                ) : (
+                  <Pencil className={cx("bi", "me-1")} />
+                )}
+                Update project
+              </Button>
+            </div>
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
       </Form>
     </div>
   );
 }
 
 function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
-  const permissions = useProjectPermissions({ projectId: project.id });
-
   return (
     <Card id="general">
       <CardHeader>
-        <PermissionsGuard
-          disabled={
-            <h4 className="m-0">
-              <Sliders className={cx("me-1", "bi")} />
-              General settings
-            </h4>
-          }
-          enabled={
-            <>
-              <h4>
-                <Sliders className={cx("me-1", "bi")} />
-                General settings
-              </h4>
-              <p className="m-0">
-                Update your project title, description, visibility and
-                namespace.
-              </p>
-            </>
-          }
-          requestedPermission="delete"
-          userPermissions={permissions}
-        />
+        <h4 className="m-0">
+          <Sliders className={cx("me-1", "bi")} />
+          General settings
+        </h4>
       </CardHeader>
       <CardBody>
-        <PermissionsGuard
-          disabled={<ProjectSettingsDisplay project={project} />}
-          enabled={<ProjectSettingsEditForm project={project} />}
-          requestedPermission="write"
-          userPermissions={permissions}
-        />
+        <ProjectSettingsForm project={project} />
       </CardBody>
     </Card>
   );
