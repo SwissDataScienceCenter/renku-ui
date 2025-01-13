@@ -68,7 +68,7 @@ export function ModifyResourcesLauncherModal({
     (data: ModifyResourcesLauncherForm) => {
       if (data.resourceClass) {
         const diskStorage =
-          data.diskStorage != null &&
+          data.diskStorage &&
           data.diskStorage != data.resourceClass.default_storage
             ? data.diskStorage
             : null;
@@ -233,6 +233,7 @@ export function ModifyResourcesLauncherModal({
                 },
                 validate: {
                   integer: (value: unknown) =>
+                    value == null ||
                     value === "" ||
                     (!isNaN(parseInt(`${value}`, 10)) &&
                       parseInt(`${value}`, 10) == parseFloat(`${value}`)),

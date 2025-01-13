@@ -147,7 +147,9 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
             <div>
               Disk Storage:{" "}
               <span className="fw-bold">
-                {watchCurrentDiskStorage ? (
+                {watchCurrentDiskStorage &&
+                watchCurrentDiskStorage !=
+                  watchCurrentSessionClass.default_storage ? (
                   <>{watchCurrentDiskStorage} GB</>
                 ) : (
                   <>{watchCurrentSessionClass?.default_storage} GB (default)</>
@@ -157,66 +159,59 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
             <Controller
               control={control}
               name="diskStorage"
-              render={({
-                field: { ref, onChange, value, ...rest },
-                fieldState: { error },
-              }) => (
+              render={({ field, fieldState: { error } }) => (
                 <>
-                  <div className={cx("form-check", "form-switch")}>
+                  <InputGroup className={cx(error && "is-invalid")}>
                     <Input
-                      type="checkbox"
-                      role="switch"
-                      id="configure-disk-storage"
-                      checked={watchCurrentDiskStorage != null}
-                      onChange={() =>
-                        onChange(
-                          value
-                            ? undefined
-                            : watchCurrentSessionClass.default_storage
-                        )
-                      }
+                      className={cx(error && "is-invalid")}
+                      type="number"
+                      min={MIN_SESSION_STORAGE_GB}
+                      max={watchCurrentSessionClass.max_storage}
+                      step={STEP_SESSION_STORAGE_GB}
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(event) => {
+                        if (isNaN(event.target.valueAsNumber)) {
+                          field.onChange(event.target.value);
+                        } else {
+                          field.onChange(event.target.valueAsNumber);
+                        }
+                      }}
                     />
-                    <Label for="configure-disk-storage">
-                      Configure disk storage
-                    </Label>
+                    <InputGroupText id="configure-disk-storage-addon">
+                      GB
+                    </InputGroupText>
+                    <UncontrolledTooltip target="configure-disk-storage-addon">
+                      Gigabytes
+                    </UncontrolledTooltip>
+                  </InputGroup>
+                  <FormText>
+                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
+                    {watchCurrentSessionClass.max_storage} GB
+                  </FormText>
+                  <div className="invalid-feedback">
+                    {error?.message ||
+                      "Please provide a valid value for disk storage."}
                   </div>
-                  {watchCurrentDiskStorage != null && (
-                    <>
-                      <InputGroup className={cx(error && "is-invalid")}>
-                        <Input
-                          className={cx(error && "is-invalid")}
-                          type="number"
-                          min={MIN_SESSION_STORAGE_GB}
-                          max={watchCurrentSessionClass.max_storage}
-                          step={STEP_SESSION_STORAGE_GB}
-                          innerRef={ref}
-                          onChange={onChange}
-                          value={value}
-                          {...rest}
-                        />
-                        <InputGroupText id="configure-disk-storage-addon">
-                          GB
-                        </InputGroupText>
-                        <UncontrolledTooltip target="configure-disk-storage-addon">
-                          Gigabytes
-                        </UncontrolledTooltip>
-                      </InputGroup>
-                      <FormText>
-                        Default: {watchCurrentSessionClass.default_storage} GB,
-                        max: {watchCurrentSessionClass.max_storage} GB
-                      </FormText>
-                      <div className="invalid-feedback">
-                        {error?.message ?? "Invalid disk storage."}
-                      </div>
-                    </>
-                  )}
                 </>
               )}
               rules={{
+                min: {
+                  value: MIN_SESSION_STORAGE_GB,
+                  message: `Please select a value greater than or equal to ${MIN_SESSION_STORAGE_GB}.`,
+                },
                 max: {
                   value: watchCurrentSessionClass.max_storage,
                   message: `Selected disk storage exceeds maximum allowed value (${watchCurrentSessionClass.max_storage} GB).`,
                 },
+                validate: {
+                  integer: (value: unknown) =>
+                    value == null ||
+                    value === "" ||
+                    (!isNaN(parseInt(`${value}`, 10)) &&
+                      parseInt(`${value}`, 10) == parseFloat(`${value}`)),
+                },
+                deps: ["resourceClass"],
               }}
             />
           </div>

@@ -18,23 +18,23 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { XLg } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import { Link } from "react-router-dom-v5-compat";
-import { SingleValue } from "react-select";
 import {
   Button,
   FormText,
   Input,
   InputGroup,
   InputGroupText,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import {
   useGetResourceClassByIdQuery,
   useGetResourcePoolsQuery,
@@ -43,13 +43,13 @@ import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import {
-  ErrorOrNotAvailableResourcePools,
-  FetchingResourcePools,
-} from "./ResourceClassWarning";
-import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../../session/startSessionOptions.constants";
+import {
+  ErrorOrNotAvailableResourcePools,
+  FetchingResourcePools,
+} from "./ResourceClassWarning";
 
 interface SelectResourceClassModalProps {
   isOpen: boolean;
@@ -71,52 +71,61 @@ export function SelectResourceClassModal({
     isError,
   } = useGetResourcePoolsQuery({});
 
-  const [currentSessionClass, setCurrentSessionClass] = useState<
-    ResourceClass | undefined
-  >(undefined);
-  const [currentDiskStorage, setCurrentDiskStorage] = useState<
-    number | undefined
-  >(undefined);
-
   const { data: launcherClass, isLoading: isLoadingLauncherClass } =
     useGetResourceClassByIdQuery(resourceClassId ?? skipToken);
 
-  const onChange = useCallback((newValue: SingleValue<ResourceClass>) => {
-    if (newValue) {
-      setCurrentSessionClass(newValue);
-    }
-  }, []);
-  const onChangeDiskStorage = useCallback((newValue: number | null) => {
-    if (newValue) {
-      setCurrentDiskStorage(newValue);
-    } else {
-      setCurrentDiskStorage(undefined);
-    }
-  }, []);
-  const toggleDiskStorage = useCallback(() => {
-    setCurrentDiskStorage((oldValue) => {
-      if (oldValue == null && currentSessionClass) {
-        return currentSessionClass.default_storage;
-      }
-      return undefined;
-    });
-  }, [currentSessionClass]);
+  const {
+    control,
+    formState: { isDirty },
+    handleSubmit,
+    watch,
+  } = useForm<SelectResourceClassForm>();
 
-  const onClick = useCallback(() => {
-    if (currentSessionClass) {
-      onContinue(currentSessionClass, currentDiskStorage);
-    }
-  }, [currentDiskStorage, currentSessionClass, onContinue]);
+  const onSubmitInner = useCallback(
+    (data: SelectResourceClassForm) => {
+      if (data.resourceClass) {
+        const diskStorage =
+          data.diskStorage != null &&
+          data.diskStorage != data.resourceClass.default_storage
+            ? data.diskStorage
+            : undefined;
+        onContinue(data.resourceClass, diskStorage);
+      }
+    },
+    [onContinue]
+  );
+  const onSubmit = useMemo(
+    () => handleSubmit(onSubmitInner),
+    [handleSubmit, onSubmitInner]
+  );
+
+  const watchCurrentSessionClass = watch("resourceClass");
+  const watchCurrentDiskStorage = watch("diskStorage");
 
   const selector = isLoading ? (
     <FetchingResourcePools />
   ) : !resourcePools || resourcePools.length == 0 || isError ? (
     <ErrorOrNotAvailableResourcePools />
   ) : (
-    <SessionClassSelectorV2
-      resourcePools={resourcePools}
-      currentSessionClass={currentSessionClass}
-      onChange={onChange}
+    <Controller
+      control={control}
+      name="resourceClass"
+      render={({ field: { onChange, value }, fieldState: { error } }) => (
+        <>
+          <SessionClassSelectorV2
+            id="addSessionResourceClass"
+            currentSessionClass={value}
+            resourcePools={resourcePools}
+            onChange={onChange}
+          />
+          {error && (
+            <div className={cx("small", "text-danger")}>
+              {error.message || "Please provide a valid resource class."}
+            </div>
+          )}
+        </>
+      )}
+      rules={{ required: "Please provide a resource class." }}
     />
   );
 
@@ -162,7 +171,82 @@ export function SelectResourceClassModal({
           </p>
         )}
         <div className="field-group">{selector}</div>
-        {currentSessionClass && (
+        {watchCurrentSessionClass && (
+          <div className={cx("field-group", "mt-3")}>
+            <div>
+              Disk Storage:{" "}
+              <span className="fw-bold">
+                {watchCurrentDiskStorage &&
+                watchCurrentDiskStorage !=
+                  watchCurrentSessionClass.default_storage ? (
+                  <>{watchCurrentDiskStorage} GB</>
+                ) : (
+                  <>{watchCurrentSessionClass?.default_storage} GB (default)</>
+                )}
+              </span>
+            </div>
+            <Controller
+              control={control}
+              name="diskStorage"
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <InputGroup className={cx(error && "is-invalid")}>
+                    <Input
+                      className={cx(error && "is-invalid")}
+                      type="number"
+                      min={MIN_SESSION_STORAGE_GB}
+                      max={watchCurrentSessionClass.max_storage}
+                      step={STEP_SESSION_STORAGE_GB}
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(event) => {
+                        if (isNaN(event.target.valueAsNumber)) {
+                          field.onChange(event.target.value);
+                        } else {
+                          field.onChange(event.target.valueAsNumber);
+                        }
+                      }}
+                    />
+                    <InputGroupText id="configure-disk-storage-addon">
+                      GB
+                    </InputGroupText>
+                    <UncontrolledTooltip target="configure-disk-storage-addon">
+                      Gigabytes
+                    </UncontrolledTooltip>
+                  </InputGroup>
+                  <FormText>
+                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
+                    {watchCurrentSessionClass.max_storage} GB
+                  </FormText>
+                  <div className="invalid-feedback">
+                    {error?.message ||
+                      "Please provide a valid value for disk storage."}
+                  </div>
+                </>
+              )}
+              rules={{
+                min: {
+                  value: MIN_SESSION_STORAGE_GB,
+                  message: `Please select a value greater than or equal to ${MIN_SESSION_STORAGE_GB}.`,
+                },
+                max: {
+                  value: watchCurrentSessionClass.max_storage,
+                  message: `Selected disk storage exceeds maximum allowed value (${watchCurrentSessionClass.max_storage} GB).`,
+                },
+                validate: {
+                  integer: (value: unknown) =>
+                    value == null ||
+                    value === "" ||
+                    (!isNaN(parseInt(`${value}`, 10)) &&
+                      parseInt(`${value}`, 10) == parseFloat(`${value}`)),
+                },
+                deps: ["resourceClass"],
+              }}
+            />
+          </div>
+        )}
+
+        {/* {currentSessionClass && (
           <div className={cx("field-group", "mt-3")}>
             <div>
               Disk Storage:{" "}
@@ -224,7 +308,7 @@ export function SelectResourceClassModal({
               </>
             )}
           </div>
-        )}
+        )} */}
       </ModalBody>
       <ModalFooter className="gap-2">
         <Link
@@ -235,18 +319,15 @@ export function SelectResourceClassModal({
           <XLg className={cx("bi", "me-1")} />
           Cancel launch
         </Link>
-        <Button
-          color="primary"
-          disabled={
-            !currentSessionClass ||
-            (currentDiskStorage != null &&
-              currentDiskStorage > currentSessionClass.max_storage)
-          }
-          onClick={onClick}
-        >
+        <Button color="primary" disabled={!isDirty} onClick={onSubmit}>
           Continue
         </Button>
       </ModalFooter>
     </Modal>
   );
+}
+
+interface SelectResourceClassForm {
+  resourceClass: ResourceClass | undefined;
+  diskStorage: number | undefined;
 }
