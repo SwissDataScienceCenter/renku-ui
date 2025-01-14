@@ -4384,5 +4384,144 @@
       },
       "Help": "User metadata is stored as x-amz-meta- keys. S3 metadata keys are case insensitive and are always returned in lower case."
     }
+  },
+  {
+    "name": "PolyBox",
+    "description": "Polybox",
+    "prefix": "polybox",
+    "options": [
+      {
+        "name": "url",
+        "help": "URL of http host to connect to.\n\nE.g. https://example.com.",
+        "provider": "personal",
+        "default": "https://polybox.ethz.ch/remote.php/webdav/",
+        "default_str": "",
+        "required": false,
+        "sensitive": false,
+        "advanced": false,
+        "exclusive": false,
+        "type": "string"
+      },
+      {
+        "name": "user",
+        "help": "User name.\n\nIn case NTLM authentication is used, the username should be in the format 'Domain\\User'.",
+        "provider": "personal",
+        "default": "",
+        "default_str": "",
+        "required": false,
+        "sensitive": false,
+        "advanced": false,
+        "exclusive": false,
+        "type": "string"
+      },
+      {
+        "name": "pass",
+        "help": "Password.",
+        "provider": "",
+        "default": "",
+        "default_str": "",
+        "required": false,
+        "sensitive": true,
+        "advanced": false,
+        "exclusive": false,
+        "type": "string"
+      },
+      {
+        "name": "bearer_token",
+        "help": "Bearer token instead of user/pass (e.g. a Macaroon).",
+        "provider": "personal",
+        "default": "",
+        "default_str": "",
+        "required": false,
+        "sensitive": true,
+        "advanced": false,
+        "exclusive": false,
+        "type": "string"
+      },
+      {
+        "name": "bearer_token_command",
+        "help": "Command to run to get a bearer token.",
+        "provider": "personal",
+        "default": "",
+        "default_str": "",
+        "required": false,
+        "sensitive": false,
+        "advanced": true,
+        "exclusive": false,
+        "type": "string"
+      },
+      {
+        "name": "encoding",
+        "help": "The encoding for the backend.\n\nSee the [encoding section in the overview](/overview/#encoding) for more info.\n\nDefault encoding is Slash,LtGt,DoubleQuote,Colon,Question,Asterisk,Pipe,Hash,Percent,BackSlash,Del,Ctl,LeftSpace,LeftTilde,RightSpace,RightPeriod,InvalidUtf8 for sharepoint-ntlm or identity otherwise.",
+        "provider": "",
+        "default": "",
+        "default_str": "",
+        "required": false,
+        "sensitive": false,
+        "advanced": true,
+        "exclusive": false,
+        "type": "string"
+      },
+      {
+        "name": "headers",
+        "help": "Set HTTP headers for all transactions.\n\nUse this to set additional HTTP headers for all transactions\n\nThe input format is comma separated list of key,value pairs.  Standard\n[CSV encoding](https://godoc.org/encoding/csv) may be used.\n\nFor example, to set a Cookie use 'Cookie,name=value', or '\"Cookie\",\"name=value\"'.\n\nYou can set multiple headers, e.g. '\"Cookie\",\"name=value\",\"Authorization\",\"xxx\"'.\n",
+        "provider": "personal",
+        "default": [],
+        "default_str": "",
+        "required": false,
+        "sensitive": false,
+        "advanced": true,
+        "exclusive": false,
+        "type": "CommaSepList"
+      },
+      {
+        "name": "pacer_min_sleep",
+        "help": "Minimum time to sleep between API calls.",
+        "provider": "",
+        "default": 10000000.0,
+        "default_str": "10ms",
+        "required": false,
+        "sensitive": false,
+        "advanced": true,
+        "exclusive": false,
+        "type": "Duration"
+      },
+      {
+        "name": "provider",
+        "help": "Choose the mode to access the data source.",
+        "provider": "",
+        "default": "",
+        "default_str": "",
+        "examples": [
+          {
+            "value": "personal",
+            "help": "Connect to your personal storage space. This data connector cannot be used to share access to a folder.",
+            "provider": ""
+          },
+          {
+            "value": "shared",
+            "help": "Connect a 'public' folder shared with others. A 'public' folder may or may not be protected with a password.",
+            "provider": ""
+          }
+        ],
+        "required": true,
+        "sensitive": false,
+        "advanced": false,
+        "exclusive": true,
+        "type": "string"
+      },
+      {
+        "name": "public_link",
+        "help": "Shared folder link. E.g., https://polybox.ethz.ch/index.php/s/8NffJ3rFyHaVyyy",
+        "provider": "shared",
+        "default": "",
+        "default_str": "",
+        "required": true,
+        "sensitive": false,
+        "advanced": false,
+        "exclusive": false,
+        "type": "string"
+      }
+    ]
   }
 ]
