@@ -94,7 +94,8 @@ export default function ConnectedServicesPage() {
 
   return (
     <div data-cy="connected-services-page">
-      <h1>Connected services</h1>
+      <h1>Integrations</h1>
+      <p>These integrations are only supported in Renku 2.0</p>
       {content}
     </div>
   );

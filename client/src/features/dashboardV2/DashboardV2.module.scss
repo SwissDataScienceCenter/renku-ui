@@ -6,18 +6,14 @@
 
 .DashboardHeader {
   height: auto;
+}
 
-  img {
-    height: 150px;
-
-    @include media-breakpoint-up(md) {
-      height: 180px;
-    }
-
-    @include media-breakpoint-up(lg) {
-      height: 130px;
-    }
-  }
+.DashboardHeaderImg {
+  height: 150px;
+  background-image: url("/dashboardV2header.png");
+  background-size: cover;
+  background-position: top center;
+  overflow: hidden;
 }
 
 .AnonymousAvatar {

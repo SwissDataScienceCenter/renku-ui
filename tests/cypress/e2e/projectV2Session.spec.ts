@@ -98,7 +98,7 @@ describe("launch sessions with data connectors", () => {
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(1);
         req.reply({ body: session, delay: 2000 });
@@ -157,7 +157,7 @@ describe("launch sessions with data connectors", () => {
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(1);
         const storage = csConfig[0];
@@ -238,7 +238,7 @@ describe("launch sessions with data connectors", () => {
 
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(1);
         const storage = csConfig[0];
@@ -331,7 +331,7 @@ describe("launch sessions with data connectors", () => {
 
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(1);
         const storage = csConfig[0];
@@ -394,7 +394,7 @@ describe("launch sessions with data connectors", () => {
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(1);
         const storage = csConfig[0];
@@ -433,7 +433,7 @@ describe("launch sessions with data connectors", () => {
 
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(1);
         const storage = csConfig[0];
@@ -523,7 +523,7 @@ describe("launch sessions with data connectors", () => {
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(3);
         const s3Storage = csConfig[0];
@@ -607,7 +607,7 @@ describe("launch sessions with data connectors", () => {
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(3);
         const s3Storage = csConfig[0];
@@ -702,7 +702,7 @@ describe("launch sessions with data connectors", () => {
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         const csConfig = req.body.cloudstorage;
         expect(csConfig.length).equal(3);
         const s3Storage = csConfig[0];
@@ -824,7 +824,7 @@ describe("launch sessions with secrets", () => {
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -861,7 +861,7 @@ describe("launch sessions with secrets", () => {
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -909,7 +909,7 @@ describe("launch sessions with secrets", () => {
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/data/sessions", (req) => {
+      cy.intercept("POST", "/api/data/sessions", (req) => {
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
