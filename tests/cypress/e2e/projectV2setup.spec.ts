@@ -76,7 +76,7 @@ describe("Set up project components", () => {
   });
 
   it("set up sessions", () => {
-    cy.intercept("/ui-server/api/data/sessions*", {
+    cy.intercept("/api/data/sessions*", {
       body: [],
     }).as("getSessionsV2");
     fixtures

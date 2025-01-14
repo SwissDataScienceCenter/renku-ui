@@ -39,7 +39,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       const { fixture = "sessions/sessions.json", name = "getSessionsV2" } =
         args ?? {};
       const response = { fixture };
-      cy.intercept("GET", "/ui-server/api/data/sessions*", response).as(name);
+      cy.intercept("GET", "/api/data/sessions*", response).as(name);
       return this;
     }
 
@@ -231,11 +231,9 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
     sessionImage(args?: NameOnlyFixture) {
       const { name = "getSessionImage" } = args ?? {};
       const response = { status: 200 };
-      cy.intercept(
-        "GET",
-        "/ui-server/api/data/sessions/images?image_url=*",
-        response
-      ).as(name);
+      cy.intercept("GET", "/api/data/sessions/images?image_url=*", response).as(
+        name
+      );
       return this;
     }
 
@@ -251,7 +249,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
     sessionServersEmptyV2(args?: NameOnlyFixture) {
       const { name = "sessionServersEmptyV2" } = args ?? {};
       const response = { body: [] };
-      cy.intercept("GET", "/ui-server/api/data/sessions", response).as(name);
+      cy.intercept("GET", "/api/data/sessions", response).as(name);
       return this;
     }
 
