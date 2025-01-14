@@ -40,7 +40,7 @@ import {
 const sessionsV2Api = createApi({
   reducerPath: "sessionsV2Api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/ui-server/api/data",
+    baseUrl: "/api/data",
   }),
   tagTypes: ["Environment", "Launcher", "SessionsV2"],
   endpoints: (builder) => ({

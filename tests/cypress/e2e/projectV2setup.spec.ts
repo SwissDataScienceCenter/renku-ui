@@ -18,14 +18,6 @@
 
 import fixtures from "../support/renkulab-fixtures";
 
-function openDataConnectorMenu() {
-  cy.getDataCy("data-connector-edit")
-    .parent()
-    .find("[data-cy=button-with-menu-dropdown]")
-    .first()
-    .click();
-}
-
 describe("Set up project components", () => {
   beforeEach(() => {
     fixtures
@@ -84,11 +76,12 @@ describe("Set up project components", () => {
   });
 
   it("set up sessions", () => {
-    cy.intercept("/ui-server/api/data/sessions*", {
+    cy.intercept("/api/data/sessions*", {
       body: [],
     }).as("getSessionsV2");
     fixtures
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
       .listProjectDataConnectors()
       .getDataConnector()
       .sessionLaunchers()
@@ -207,10 +200,25 @@ describe("Set up data connectors", () => {
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
     cy.getDataCy("project-data-controller-mode-create").click();
+
+    // is polybox visible
+    cy.getDataCy("data-storage-polybox")
+      .contains("PolyBox")
+      .should("be.visible");
     // Pick a provider
     cy.getDataCy("data-storage-s3").click();
     cy.getDataCy("data-provider-AWS").click();
     cy.getDataCy("data-connector-edit-next-button").click();
+
+    // Validate is shown well the label and the help for passwords in full list
+    cy.get("#switch-storage-full-list").click();
+    cy.get("label")
+      .contains("sse_kms_key_id") // Find the label with the desired text
+      .parent() // Go one node above (to the parent div)
+      .should(
+        "contain.text",
+        "If using KMS ID you must provide the ARN of Key"
+      );
 
     // Fill out the details
     cy.get("#sourcePath").type("bucket/my-source");
@@ -292,7 +300,11 @@ describe("Set up data connectors", () => {
     cy.wait("@listProjectDataConnectors");
 
     cy.contains("example storage").should("be.visible").click();
-    openDataConnectorMenu();
+    cy.getDataCy("data-connector-credentials")
+      .should("be.visible")
+      .parent()
+      .find("[data-cy=button-with-menu-dropdown]")
+      .click();
     cy.getDataCy("data-connector-delete").should("be.visible").click();
     cy.wait("@getProjectV2Permissions");
     cy.contains("Are you sure you want to unlink the data connector").should(
@@ -319,12 +331,8 @@ describe("Set up data connectors", () => {
     cy.wait("@listProjectDataConnectors");
 
     cy.contains("example storage").should("be.visible").click();
-    openDataConnectorMenu();
-    cy.getDataCy("data-connector-delete").should("be.visible").click();
-    cy.contains(
-      "You do not have the required permissions to unlink this data connector."
-    ).should("be.visible");
-    cy.getDataCy("delete-data-connector-modal-button").should("not.exist");
+    cy.getDataCy("data-connector-credentials").should("be.visible");
+    cy.getDataCy("data-connector-delete").should("not.exist");
   });
 
   it("should clear state after a data connector has been created", () => {

@@ -143,22 +143,6 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     nextcloud_chunk_size: {
       hide: 1,
     },
-    pass: {
-      examples: [
-        {
-          value: "",
-          help: "For secure access to your Polybox WebDAV shares, we recommend using an application token instead of your account password. To create one, open Polybox, go to Settings > Security, and generate a new Application pass-code.",
-          provider: "personal",
-          friendlyName: "Token (or password)",
-        },
-        {
-          value: "",
-          help: "If there is a password for the folder, enter that in the password field. Otherwise, leave it blank",
-          provider: "shared",
-          friendlyName: "Password",
-        },
-      ],
-    },
   },
   switchDrive: {
     bearer_token: { friendlyName: "Bearer Token", advanced: true },
@@ -177,22 +161,6 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     nextcloud_chunk_size: {
       hide: true,
     },
-    pass: {
-      examples: [
-        {
-          value: "",
-          help: "For secure access to your SwitchDrive WebDAV shares, we recommend using an application token instead of your account password. To create one, open SwitchDrive, go to Settings > Security, and generate a new Application password",
-          provider: "personal",
-          friendlyName: "Token (or password)",
-        },
-        {
-          value: "",
-          help: "If there is a password for the folder, enter that in the password field. Otherwise, leave it blank",
-          provider: "shared",
-          friendlyName: "Password",
-        },
-      ],
-    },
   },
   webdav: {
     pass: {
@@ -205,6 +173,44 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     vendor: { advanced: true },
   },
 } as Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>;
+
+export const CLOUD_OPTIONS_PROVIDER_OVERRIDE = {
+  polybox: {
+    personal: {
+      pass: {
+        value: "",
+        friendlyName: "Token (or password)",
+        help: "For secure access to your SwitchDrive WebDAV shares, we recommend using an application token instead of your account password. To create one, open SwitchDrive, go to Settings > Security, and generate a new Application password",
+      },
+    },
+    shared: {
+      pass: {
+        value: "",
+        help: "If there is a password for the folder, enter that in the password field. Otherwise, leave it blank",
+        friendlyName: "Password",
+      },
+    },
+  },
+  switchDrive: {
+    personal: {
+      pass: {
+        value: "",
+        help: "For secure access to your SwitchDrive WebDAV shares, we recommend using an application token instead of your account password. To create one, open SwitchDrive, go to Settings > Security, and generate a new Application password",
+        friendlyName: "Token (or password)",
+      },
+    },
+    shared: {
+      pass: {
+        value: "",
+        help: "If there is a password for the folder, enter that in the password field. Otherwise, leave it blank",
+        friendlyName: "Password",
+      },
+    },
+  },
+} as Record<
+  string,
+  Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>
+>;
 
 export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
   s3: {

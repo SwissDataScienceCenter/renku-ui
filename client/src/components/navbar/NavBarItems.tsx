@@ -39,7 +39,6 @@ import { User } from "../../model/renkuModels.types";
 import NotificationsMenu from "../../notifications/NotificationsMenu";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
 import type { AppParams } from "../../utils/context/appParams.types";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
   getActiveProjectPathWithNamespace,
@@ -49,8 +48,8 @@ import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
 
-import styles from "./NavBarItem.module.scss";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import styles from "./NavBarItem.module.scss";
 
 export function RenkuToolbarItemPlus() {
   const location = useLocation();
@@ -291,8 +290,6 @@ export function RenkuToolbarItemUser({
 }: RenkuToolbarItemUserProps) {
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
-  const { renku10Enabled } = useAppSelector(({ featureFlags }) => featureFlags);
-
   const gatewayURL = params.GATEWAY_URL;
   const uiserverURL = params.UISERVER_URL;
   const redirect_url = encodeURIComponent(params.BASE_URL);
@@ -343,17 +340,26 @@ export function RenkuToolbarItemUser({
 
         <AdminDropdownItem />
 
-        {renku10Enabled && (
+        {isV2 && (
           <>
-            <DropdownItem divider />
-            <Link to={ABSOLUTE_ROUTES.v2.root} className="dropdown-item">
-              Renku 2.0
-            </Link>
             <Link
               to={ABSOLUTE_ROUTES.v2.connectedServices}
               className="dropdown-item"
             >
-              Renku 2.0 Settings
+              Integrations
+            </Link>
+            <DropdownItem divider />
+            <Link to={ABSOLUTE_ROUTES.root} className="dropdown-item">
+              Back <span className="fw-bold">Renku 1.0</span>
+            </Link>
+          </>
+        )}
+
+        {!isV2 && (
+          <>
+            <DropdownItem divider />
+            <Link to={ABSOLUTE_ROUTES.v2.root} className="dropdown-item">
+              <span className="fw-bold">Renku 2.0</span> Early access
             </Link>
           </>
         )}

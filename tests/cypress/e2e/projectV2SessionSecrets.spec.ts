@@ -31,7 +31,7 @@ describe("Project Session secret slots", () => {
   it("Shows the session secrets section", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
 
     cy.getDataCy("project-settings-session-secrets")
       .contains("Session secret slots")
@@ -43,7 +43,7 @@ describe("Project Session secret slots", () => {
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
 
     cy.getDataCy("project-settings-session-secrets")
       .contains("Session secret slots")
@@ -70,7 +70,7 @@ describe("Project Session secret slots", () => {
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
 
     cy.getDataCy("project-settings-session-secrets")
       .contains("Session secret slots")
@@ -125,7 +125,7 @@ describe("Project Session secret slots", () => {
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
 
     cy.getDataCy("project-settings-session-secrets")
       .contains("Session secret slots")
@@ -174,7 +174,7 @@ describe("Project Session secret slots", () => {
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
 
     cy.getDataCy("project-settings-session-secrets")
       .contains("Session secret slots")
@@ -224,7 +224,7 @@ describe("Project Session secret slots", () => {
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
 
     cy.getDataCy("project-settings-session-secrets")
       .contains("Session secret slots")
@@ -281,7 +281,7 @@ describe("Project Session secret slots", () => {
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
 
     cy.getDataCy("project-settings-session-secrets")
       .contains("Session secret slots")
@@ -344,7 +344,7 @@ describe("Project Session secret slots", () => {
 
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
 
     cy.getDataCy("project-settings-session-secrets")
       .contains("Session secret slots")

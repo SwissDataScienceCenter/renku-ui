@@ -180,6 +180,9 @@ export function SessionV2Actions({
   launcher,
   sessionsLength,
 }: SessionV2ActionsProps) {
+  const { project_id: projectId } = launcher;
+  const permissions = useProjectPermissions({ projectId });
+
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -204,30 +207,40 @@ export function SessionV2Actions({
   );
 
   return (
-    <>
-      <ButtonWithMenuV2
-        color="outline-primary"
-        default={defaultAction}
-        preventPropagation
-        size="sm"
-      >
-        <DropdownItem data-cy="session-view-menu-delete" onClick={toggleDelete}>
-          <Trash className={cx("bi", "me-1")} />
-          Delete
-        </DropdownItem>
-      </ButtonWithMenuV2>
-      <UpdateSessionLauncherModal
-        isOpen={isUpdateOpen}
-        launcher={launcher}
-        toggle={toggleUpdate}
-      />
-      <DeleteSessionV2Modal
-        isOpen={isDeleteOpen}
-        launcher={launcher}
-        toggle={toggleDelete}
-        sessionsLength={sessionsLength}
-      />
-    </>
+    <PermissionsGuard
+      disabled={null}
+      enabled={
+        <>
+          <ButtonWithMenuV2
+            color="outline-primary"
+            default={defaultAction}
+            preventPropagation
+            size="sm"
+          >
+            <DropdownItem
+              data-cy="session-view-menu-delete"
+              onClick={toggleDelete}
+            >
+              <Trash className={cx("bi", "me-1")} />
+              Delete
+            </DropdownItem>
+          </ButtonWithMenuV2>{" "}
+          <UpdateSessionLauncherModal
+            isOpen={isUpdateOpen}
+            launcher={launcher}
+            toggle={toggleUpdate}
+          />
+          <DeleteSessionV2Modal
+            isOpen={isDeleteOpen}
+            launcher={launcher}
+            toggle={toggleDelete}
+            sessionsLength={sessionsLength}
+          />
+        </>
+      }
+      requestedPermission="write"
+      userPermissions={permissions}
+    />
   );
 }
 

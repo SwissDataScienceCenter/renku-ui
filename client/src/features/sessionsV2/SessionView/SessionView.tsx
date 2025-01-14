@@ -265,8 +265,9 @@ export function SessionView({
         resourceRequests={{
           name: launcherResourceClass.name,
           cpu: launcherResourceClass.cpu,
-          memory: `${launcherResourceClass.memory}G`,
-          storage: `${launcherResourceClass.default_storage}G`,
+          memory: launcherResourceClass.memory,
+          storage:
+            launcher?.disk_storage ?? launcherResourceClass.default_storage,
           gpu: launcherResourceClass.gpu,
         }}
       />
@@ -374,27 +375,29 @@ export function SessionView({
           <div>
             <div className={cx("d-flex", "justify-content-between", "mb-2")}>
               <h4 className="my-auto">Default Resource Class</h4>
-              <PermissionsGuard
-                disabled={null}
-                enabled={
-                  <>
-                    <Button
-                      color="outline-primary"
-                      id="modify-resource-class-button"
-                      onClick={toggleModifyResources}
-                      size="sm"
-                      tabIndex={0}
-                    >
-                      <Pencil className="bi" />
-                    </Button>
-                    <UncontrolledTooltip target="modify-resource-class-button">
-                      Set resource class
-                    </UncontrolledTooltip>
-                  </>
-                }
-                requestedPermission="write"
-                userPermissions={permissions}
-              />
+              {launcher && (
+                <PermissionsGuard
+                  disabled={null}
+                  enabled={
+                    <>
+                      <Button
+                        color="outline-primary"
+                        id="modify-resource-class-button"
+                        onClick={toggleModifyResources}
+                        size="sm"
+                        tabIndex={0}
+                      >
+                        <Pencil className="bi" />
+                      </Button>
+                      <UncontrolledTooltip target="modify-resource-class-button">
+                        Set resource class
+                      </UncontrolledTooltip>
+                    </>
+                  }
+                  requestedPermission="write"
+                  userPermissions={permissions}
+                />
+              )}
             </div>
             {resourceDetails}
             {launcherResourceClass && !userLauncherResourceClass && (
@@ -403,12 +406,27 @@ export function SessionView({
                 You do not have access to this resource class.
               </p>
             )}
-            <ModifyResourcesLauncherModal
-              isOpen={isModifyResourcesOpen}
-              toggleModal={toggleModifyResources}
-              resourceClassId={userLauncherResourceClass?.id}
-              sessionLauncherId={launcher?.id}
-            />
+            {launcher &&
+              launcherResourceClass &&
+              launcher.disk_storage &&
+              launcher.disk_storage > launcherResourceClass.max_storage && (
+                <p>
+                  <ExclamationTriangleFill
+                    className={cx("bi", "text-warning", "me-1")}
+                  />
+                  The selected disk storage exceeds the maximum value allowed (
+                  {launcherResourceClass.max_storage} GB).
+                </p>
+              )}
+            {launcher && (
+              <ModifyResourcesLauncherModal
+                isOpen={isModifyResourcesOpen}
+                toggleModal={toggleModifyResources}
+                resourceClassId={userLauncherResourceClass?.id}
+                diskStorage={launcher.disk_storage}
+                sessionLauncherId={launcher.id}
+              />
+            )}
           </div>
 
           <div>

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect } from "react";
 
 import { DEFAULT_PERMISSIONS } from "../../permissionsV2/permissions.constants";
@@ -30,14 +31,14 @@ export default function useProjectPermissions({
   projectId,
 }: UseProjectPermissionsArgs): Permissions {
   const { currentData, isLoading, isError, isUninitialized } =
-    projectV2Api.endpoints.getProjectsByProjectIdPermissions.useQueryState({
-      projectId,
-    });
+    projectV2Api.endpoints.getProjectsByProjectIdPermissions.useQueryState(
+      projectId ? { projectId } : skipToken
+    );
   const [fetchPermissions] =
     projectV2Api.endpoints.getProjectsByProjectIdPermissions.useLazyQuery();
 
   useEffect(() => {
-    if (isUninitialized) {
+    if (projectId && isUninitialized) {
       fetchPermissions({ projectId });
     }
   }, [fetchPermissions, isUninitialized, projectId]);
