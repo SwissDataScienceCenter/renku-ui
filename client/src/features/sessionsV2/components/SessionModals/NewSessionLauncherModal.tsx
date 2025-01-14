@@ -114,10 +114,15 @@ export default function NewSessionLauncherModal({
     (data: SessionLauncherForm) => {
       const { name, resourceClass } = data;
       const environment = getFormattedEnvironmentValues(data);
+      const diskStorage =
+        data.diskStorage && data.diskStorage != resourceClass.default_storage
+          ? data.diskStorage
+          : undefined;
       if (environment.success && environment.data)
         addSessionLauncher({
           project_id: projectId ?? "",
           resource_class_id: resourceClass.id,
+          disk_storage: diskStorage,
           name,
           environment: environment.data,
         });
@@ -192,11 +197,7 @@ export default function NewSessionLauncherModal({
                 />
               )}
               {step === "launcherDetails" && (
-                <LauncherDetailsFields
-                  setValue={setValue}
-                  errors={errors}
-                  control={control}
-                />
+                <LauncherDetailsFields control={control} />
               )}
             </Form>
           </div>

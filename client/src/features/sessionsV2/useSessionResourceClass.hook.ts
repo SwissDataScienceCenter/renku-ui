@@ -47,14 +47,17 @@ export default function useSessionResourceClass({
   const [isPendingResourceClass, setIsPendingResourceClass] =
     useState<boolean>(false);
   const setResourceClass = useCallback(
-    (envClass: ResourceClass) => {
+    (envClass: ResourceClass, diskStorage: number | undefined) => {
       if (envClass) {
         dispatch(
           startSessionOptionsV2Slice.actions.setSessionClass(envClass.id)
         );
+        const cappedStorage = diskStorage
+          ? Math.min(diskStorage, envClass.max_storage)
+          : diskStorage;
         dispatch(
           startSessionOptionsV2Slice.actions.setStorage(
-            envClass.default_storage
+            cappedStorage ?? envClass.default_storage
           )
         );
         setIsPendingResourceClass(false);
@@ -86,10 +89,11 @@ export default function useSessionResourceClass({
     }
 
     if (initialSessionClass && !isCustomLaunch)
-      setResourceClass(initialSessionClass);
+      setResourceClass(initialSessionClass, launcher.disk_storage);
   }, [
     isCustomLaunch,
     isLoadingLauncherClass,
+    launcher.disk_storage,
     launcherClass,
     resourcePools,
     setResourceClass,

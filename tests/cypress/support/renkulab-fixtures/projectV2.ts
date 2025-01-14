@@ -420,7 +420,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/projects/*/session_launchers`,
+        `/api/data/projects/*/session_launchers`,
         response
       ).as(name);
       return this;
