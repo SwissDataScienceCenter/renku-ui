@@ -90,21 +90,7 @@ function ForkProject(props) {
 
   const loginUrl = useLoginUrl();
 
-  // const history = useHistory();
-
-  // const location = useLocation();
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (
-  //     !logged &&
-  //     typeof window === "object" &&
-  //     typeof window.location.assign === "function"
-  //   ) {
-  //     window.location.assign(loginUrl);
-  //   }
-  //   // This only needs to run once
-  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!logged) {
@@ -262,7 +248,6 @@ function ForkProject(props) {
 
       if (mounted.current && !visibilityError) {
         // addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, false);
-        // history.push(newUrl);
         navigate(newUrl);
       } else if (mounted.current && visibilityError) {
         setForking(false); // finish forking
@@ -389,8 +374,6 @@ function NewProjectWrapper(props) {
 function NewProject(props) {
   const { model, importingDataset, startImportDataset, coordinator } = props;
   const { params } = useContext(AppContext);
-  // const history = useHistory();
-  // const location = useLocation();
   const navigate = useNavigate();
   const user = useLegacySelector((state) => state.stateModel.user);
   const newProject = useLegacySelector((state) => state.stateModel.newProject);
@@ -626,7 +609,6 @@ function NewProject(props) {
 
   const goToProject = () => {
     const slug = coordinator?.getSlugAndReset();
-    // history.push(`/projects/${slug}`);
     navigate(`/projects/${slug}`);
   };
 
