@@ -269,7 +269,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
 
   // Redirect to the sessions list if the session has failed
   if (thisSession?.status.state === "failed") {
-    return <Navigate to={sessionsListUrl} />;
+    return <Navigate to={sessionsListUrl} replace />;
   }
 
   return (

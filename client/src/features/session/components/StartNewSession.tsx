@@ -241,6 +241,7 @@ function SessionStarting() {
           }),
         }}
         state={{ redirectFromStartServer: true, fromLanding: fromLanding }}
+        replace
       />
     );
   }
