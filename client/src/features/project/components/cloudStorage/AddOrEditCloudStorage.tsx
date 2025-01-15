@@ -865,7 +865,6 @@ export function AddStorageOptions({
     const { sourcePath, ...validOptions } = getValues();
     setStorage({ options: validOptions });
   };
-
   const optionItems =
     options &&
     options.map((o) => {
@@ -877,25 +876,31 @@ export function AddStorageOptions({
         ? "checkbox"
         : o.convertedType === "number"
         ? "number"
-        : o.filteredExamples?.length > 1
+        : o.filteredExamples?.length >= 1
         ? "dropdown"
         : "text";
 
-      const defaultValue =
-        storage?.options?.[o.name as string] ?? o.default ?? "";
       return (
         <div className="mb-3" key={o.name}>
           {inputType === "checkbox" ? (
             <CheckboxOptionItem
               control={control}
-              defaultValue={defaultValue as boolean}
+              defaultValue={
+                storage.options && storage.options[o.name]
+                  ? (storage.options[o.name] as boolean)
+                  : (o.convertedDefault as boolean) ?? undefined
+              }
               onFieldValueChange={onFieldValueChange}
               option={o}
             />
           ) : inputType === "password" ? (
             <PasswordOptionItem
               control={control}
-              defaultValue={defaultValue as string}
+              defaultValue={
+                storage.options && storage.options[o.name]
+                  ? (storage.options[o.name] as string)
+                  : ""
+              }
               isV2={isV2}
               onFieldValueChange={onFieldValueChange}
               option={o}
@@ -904,7 +909,13 @@ export function AddStorageOptions({
           ) : (
             <InputOptionItem
               control={control}
-              defaultValue={defaultValue as string | number | undefined}
+              defaultValue={
+                storage.options &&
+                storage.options[o.name] &&
+                storage.options[o.name] !== "[object Object]"
+                  ? (storage.options[o.name] as string | number | undefined)
+                  : ""
+              }
               inputType={inputType}
               onFieldValueChange={onFieldValueChange}
               option={o}
