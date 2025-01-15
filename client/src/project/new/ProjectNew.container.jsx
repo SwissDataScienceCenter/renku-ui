@@ -94,9 +94,9 @@ function ForkProject(props) {
 
   useEffect(() => {
     if (!logged) {
-      navigate(loginUrl);
+      window.location.assign(loginUrl);
     }
-  }, [logged, loginUrl, navigate]);
+  }, [logged, loginUrl]);
 
   // Monitor changes to projects list
   useEffect(() => {
