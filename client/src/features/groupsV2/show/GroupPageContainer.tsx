@@ -48,7 +48,7 @@ export default function GroupPageContainer() {
   const navigate = useNavigate();
 
   const {
-    data: namespace,
+    currentData: namespace,
     isLoading: isLoadingNamespace,
     error: namespaceError,
   } = useGetNamespacesByNamespaceSlugQuery(
@@ -71,8 +71,19 @@ export default function GroupPageContainer() {
           replace: true,
         }
       );
+    } else if (
+      slug &&
+      namespace?.namespace_kind === "group" &&
+      namespace.slug !== slug
+    ) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+          slug: namespace.slug,
+        }),
+        { replace: true }
+      );
     }
-  }, [namespace?.namespace_kind, navigate, slug]);
+  }, [namespace?.namespace_kind, namespace?.slug, navigate, slug]);
 
   if (!slug) {
     return <LazyNotFound />;
