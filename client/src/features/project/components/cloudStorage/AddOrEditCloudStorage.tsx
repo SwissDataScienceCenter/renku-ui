@@ -465,7 +465,12 @@ function PasswordOptionItem({
               id={option.name}
               type={showPassword ? "text" : "password"}
               className={cx("form-control", "rounded-0", "rounded-start")}
-              placeholder={option.convertedDefault?.toString() ?? ""}
+              placeholder={
+                option.convertedDefault &&
+                option.convertedDefault?.toString() !== "[object Object]"
+                  ? option.convertedDefault?.toString()
+                  : ""
+              }
               onChange={(e) => {
                 field.onChange(e);
                 onFieldValueChange(option.name, e.target.value);
@@ -530,7 +535,12 @@ function PasswordOptionItemStored({
             readOnly={true}
             type="text"
             className={cx("form-control", "rounded-0", "rounded-start")}
-            placeholder={option.convertedDefault?.toString() ?? ""}
+            placeholder={
+              option.convertedDefault &&
+              option.convertedDefault?.toString() !== "[object Object]"
+                ? option.convertedDefault?.toString()
+                : ""
+            }
             onChange={() => {}}
           />
         )}
@@ -580,7 +590,8 @@ function InputOptionItem({
                 type={inputType}
                 className="form-control"
                 placeholder={
-                  option.convertedDefault
+                  option.convertedDefault &&
+                  option.convertedDefault?.toString() !== "[object Object]"
                     ? option.convertedDefault?.toString()
                     : inputType === "dropdown"
                     ? option.filteredExamples[0].value
@@ -910,9 +921,7 @@ export function AddStorageOptions({
             <InputOptionItem
               control={control}
               defaultValue={
-                storage.options &&
-                storage.options[o.name] &&
-                storage.options[o.name] !== "[object Object]"
+                storage.options && storage.options[o.name]
                   ? (storage.options[o.name] as string | number | undefined)
                   : ""
               }
