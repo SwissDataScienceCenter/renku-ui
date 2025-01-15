@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-// import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
   Card,
@@ -37,7 +37,6 @@ import { Loader } from "../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import { useDeleteProjectMutation } from "../projectKg.api";
-import { useNavigate } from "react-router-dom-v5-compat";
 
 interface ProjectSettingsGeneralDeleteProjectProps {
   isMaintainer: boolean;

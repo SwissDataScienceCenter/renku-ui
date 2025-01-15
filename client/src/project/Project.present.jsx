@@ -27,8 +27,15 @@ import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Component, Fragment, useEffect } from "react";
-import { Link, Route, Switch, useHistory, useParams } from "react-router-dom";
-import { CompatRoute } from "react-router-dom-v5-compat";
+import { Route, Switch } from "react-router-dom";
+import {
+  CompatRoute,
+  Link,
+  Route as NewRoute,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom-v5-compat";
 import {
   Alert,
   Button,
@@ -738,50 +745,62 @@ class ProjectViewFiles extends Component {
   }
 
   render() {
+    const filesUrl = this.props.filesUrl;
+    const lineageUrl = this.props.lineageUrl
+      .slice(filesUrl.length)
+      .replace(":filePath+", "*");
+    const fileContentUrl =
+      this.props.fileContentUrl.slice(filesUrl.length) + "/*";
+
     return [
       <div key="files" className="variableWidthColLeft me-2 pb-0 pe-0">
         <ProjectFilesNav {...this.props} />
       </div>,
       <div key="content" className="flex-shrink-1 variableWidthColRight">
-        <Switch>
-          <Route path={this.props.lineageUrl}>
-            <ProjectFileLineageRoute
-              client={this.props.client}
-              fetchBranches={() =>
-                this.props.projectCoordinator.fetchBranches()
-              }
-              model={this.props.model}
-              projectId={this.props.metadata?.id ?? undefined}
-            />
-          </Route>
-          <Route path={this.props.fileContentUrl}>
-            <ProjectFileViewRoute
-              client={this.props.client}
-              fetchBranches={() =>
-                this.props.projectCoordinator.fetchBranches()
-              }
-              model={this.props.model}
-              params={this.props.params}
-            />
-          </Route>
-        </Switch>
+        <Routes>
+          <NewRoute
+            path={lineageUrl}
+            element={
+              <ProjectFileLineageRoute
+                client={this.props.client}
+                fetchBranches={() =>
+                  this.props.projectCoordinator.fetchBranches()
+                }
+                model={this.props.model}
+                projectId={this.props.metadata?.id ?? undefined}
+              />
+            }
+          />
+          <NewRoute
+            path={fileContentUrl}
+            element={
+              <ProjectFileViewRoute
+                client={this.props.client}
+                fetchBranches={() =>
+                  this.props.projectCoordinator.fetchBranches()
+                }
+                model={this.props.model}
+                params={this.props.params}
+              />
+            }
+          />
+        </Routes>
       </div>,
     ];
   }
 }
 
 function ProjectFileLineageRoute({ client, fetchBranches, model, projectId }) {
-  const history = useHistory();
-  const location = history.location;
+  const location = useLocation();
 
-  const { filePath } = useParams();
+  const params = useParams();
+  const filePath = params["*"];
 
   return (
     <ProjectFileLineage
       client={client}
       fetchBranches={fetchBranches}
       filePath={filePath}
-      history={history}
       location={location}
       model={model}
       projectId={projectId}
@@ -790,17 +809,16 @@ function ProjectFileLineageRoute({ client, fetchBranches, model, projectId }) {
 }
 
 function ProjectFileViewRoute({ client, fetchBranches, model, params }) {
-  const history = useHistory();
-  const location = history.location;
+  const location = useLocation();
 
-  const { filePath } = useParams();
+  const routeParams = useParams();
+  const filePath = routeParams["*"];
 
   return (
     <ProjectFileView
       client={client}
       fetchBranches={fetchBranches}
       filePath={filePath}
-      history={history}
       location={location}
       model={model}
       params={params}
@@ -942,9 +960,9 @@ function ProjectView(props) {
           <Route path={props.overviewUrl}>
             <ProjectViewOverview key="overview" {...props} />
           </Route>
-          <Route path={props.filesUrl}>
+          <CompatRoute path={props.filesUrl}>
             <ProjectViewFiles key="files" {...props} />
-          </Route>
+          </CompatRoute>
           <CompatRoute path={props.datasetsUrl}>
             <ProjectDatasetsView key="datasets" {...props} />
           </CompatRoute>
