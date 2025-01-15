@@ -17,7 +17,7 @@
  */
 
 import { MouseEvent, useCallback } from "react";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom-v5-compat";
 
 interface RoutedContentProps {
   htmlContent: string;
@@ -25,7 +25,7 @@ interface RoutedContentProps {
 
 /** /!\ Never render user-provided content inside this component /!\ */
 export default function RoutedContent({ htmlContent }: RoutedContentProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const onClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -38,7 +38,7 @@ export default function RoutedContent({ htmlContent }: RoutedContentProps) {
 
       // Remove the origin for local links
       const toUrl = targetLink.href.replace(window.location.origin, "");
-      history.push(toUrl);
+      navigate(toUrl);
     },
     [history]
   );
