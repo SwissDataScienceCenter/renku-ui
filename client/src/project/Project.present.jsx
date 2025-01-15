@@ -448,7 +448,6 @@ class ProjectViewHeaderOverview extends Component {
             <div className="d-flex gap-2 gap-md-3 justify-content-end align-items-end flex-wrap">
               <ForkProjectModal
                 client={this.props.client}
-                history={this.props.history}
                 model={this.props.model}
                 notifications={this.props.notifications}
                 title={
@@ -595,7 +594,6 @@ class ProjectFilesNav extends Component {
         hash={this.props.filesTree.hash}
         fileView={this.props.filesTreeView}
         currentUrl={this.props.location.pathname}
-        history={this.props.history}
         limitHeight={true}
       />
     );
@@ -708,8 +706,8 @@ class ProjectViewOverview extends Component {
               <Route exact path={this.props.overviewCommitsUrl}>
                 <ProjectOverviewCommits
                   location={this.props.location}
-                  history={this.props.history}
                   projectCoordinator={projectCoordinator}
+                  navigate={this.props.navigate}
                 />
               </Route>
             </Switch>
