@@ -1,11 +1,12 @@
 import cx from "classnames";
-import React, { Component, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { Component, useEffect, useState } from "react";
 import {
   FileEarmarkFill,
-  FolderFill,
   Folder2Open,
+  FolderFill,
 } from "react-bootstrap-icons";
+import { Link } from "react-router-dom-v5-compat";
+
 import { Loader } from "./Loader";
 
 type HashElt = {

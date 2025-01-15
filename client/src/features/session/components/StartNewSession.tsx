@@ -25,7 +25,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Redirect, useLocation } from "react-router";
+import {
+  Navigate,
+  useLocation,
+  type Location,
+} from "react-router-dom-v5-compat";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -159,7 +163,7 @@ function BackButton() {
   };
   const projectUrl = Url.get(Url.pages.project, projectUrlData);
 
-  const location = useLocation<LocationState | undefined>();
+  const location: Location<LocationState | undefined> = useLocation();
 
   const { from, filePath } = location.state ?? {};
   const searchParams = useMemo(
@@ -195,7 +199,7 @@ function SessionStarting() {
     (state) => state.stateModel.project.metadata.path
   );
 
-  const location = useLocation<LocationState | undefined>();
+  const location: Location<LocationState | undefined> = useLocation();
   const searchParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
@@ -228,15 +232,15 @@ function SessionStarting() {
 
   if (session != null) {
     return (
-      <Redirect
+      <Navigate
         to={{
           pathname: Url.get(Url.pages.project.session.show, {
             namespace,
             path,
             server: session.name,
           }),
-          state: { redirectFromStartServer: true, fromLanding: fromLanding },
         }}
+        state={{ redirectFromStartServer: true, fromLanding: fromLanding }}
       />
     );
   }

@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom-v5-compat";
 import { Progress } from "reactstrap";
 
 import { ProjectIndexingStatuses } from "../../features/project/projectEnums";

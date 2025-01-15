@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom-v5-compat";
 import { Alert } from "reactstrap";
 import { QuestionCircle } from "react-bootstrap-icons";
 import { generatePath, useParams } from "react-router-dom-v5-compat";

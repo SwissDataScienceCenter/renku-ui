@@ -40,7 +40,7 @@ export default function RoutedContent({ htmlContent }: RoutedContentProps) {
       const toUrl = targetLink.href.replace(window.location.origin, "");
       navigate(toUrl);
     },
-    [history]
+    [navigate]
   );
 
   return (

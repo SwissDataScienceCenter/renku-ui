@@ -33,7 +33,12 @@ import {
   Journals,
   Save,
 } from "react-bootstrap-icons";
-import { Redirect, useLocation, useParams } from "react-router";
+import {
+  type Location,
+  Navigate,
+  useLocation,
+  useParams,
+} from "react-router-dom-v5-compat";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
 
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
@@ -81,7 +86,7 @@ export default function ShowSession() {
 
   return (
     <Row>
-      <ShowSessionFullscreen sessionName={sessionName} />
+      <ShowSessionFullscreen sessionName={sessionName ?? ""} />
     </Row>
   );
 }
@@ -103,9 +108,9 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     path: pathWithNamespace,
   });
 
-  const location = useLocation<
+  const location: Location<
     { redirectFromStartServer?: boolean; fromLanding?: boolean } | undefined
-  >();
+  > = useLocation();
 
   const { data: sessions, isLoading } = useGetSessionsQuery();
   const thisSession = useMemo(() => {
@@ -264,7 +269,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
 
   // Redirect to the sessions list if the session has failed
   if (thisSession?.status.state === "failed") {
-    return <Redirect to={sessionsListUrl} />;
+    return <Navigate to={sessionsListUrl} />;
   }
 
   return (

@@ -1,5 +1,5 @@
 import { Fragment, useMemo, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom-v5-compat";
 import { Button, Col, Row, UncontrolledTooltip } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
