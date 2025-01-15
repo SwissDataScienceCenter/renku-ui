@@ -137,9 +137,7 @@ export const CLOUD_OPTIONS_OVERRIDE = {
       friendlyName: "Public link",
       position: 1,
     },
-    vendor: {
-      hide: 1,
-    },
+    vendor: { hide: false },
     nextcloud_chunk_size: {
       hide: 1,
     },
@@ -157,7 +155,7 @@ export const CLOUD_OPTIONS_OVERRIDE = {
       friendlyName: "Public link",
       position: 1,
     },
-    vendor: { hide: true },
+    vendor: { hide: false },
     nextcloud_chunk_size: {
       hide: true,
     },
