@@ -465,7 +465,12 @@ function PasswordOptionItem({
               id={option.name}
               type={showPassword ? "text" : "password"}
               className={cx("form-control", "rounded-0", "rounded-start")}
-              placeholder={option.convertedDefault?.toString() ?? ""}
+              placeholder={
+                option.convertedDefault &&
+                option.convertedDefault?.toString() !== "[object Object]"
+                  ? option.convertedDefault?.toString()
+                  : ""
+              }
               onChange={(e) => {
                 field.onChange(e);
                 onFieldValueChange(option.name, e.target.value);
@@ -530,7 +535,12 @@ function PasswordOptionItemStored({
             readOnly={true}
             type="text"
             className={cx("form-control", "rounded-0", "rounded-start")}
-            placeholder={option.convertedDefault?.toString() ?? ""}
+            placeholder={
+              option.convertedDefault &&
+              option.convertedDefault?.toString() !== "[object Object]"
+                ? option.convertedDefault?.toString()
+                : ""
+            }
             onChange={() => {}}
           />
         )}
@@ -580,7 +590,8 @@ function InputOptionItem({
                 type={inputType}
                 className="form-control"
                 placeholder={
-                  option.convertedDefault
+                  option.convertedDefault &&
+                  option.convertedDefault?.toString() !== "[object Object]"
                     ? option.convertedDefault?.toString()
                     : inputType === "dropdown"
                     ? option.filteredExamples[0].value
@@ -865,7 +876,6 @@ export function AddStorageOptions({
     const { sourcePath, ...validOptions } = getValues();
     setStorage({ options: validOptions });
   };
-
   const optionItems =
     options &&
     options.map((o) => {
@@ -877,25 +887,31 @@ export function AddStorageOptions({
         ? "checkbox"
         : o.convertedType === "number"
         ? "number"
-        : o.filteredExamples?.length > 1
+        : o.filteredExamples?.length >= 1
         ? "dropdown"
         : "text";
 
-      const defaultValue =
-        storage?.options?.[o.name as string] ?? o.default ?? "";
       return (
         <div className="mb-3" key={o.name}>
           {inputType === "checkbox" ? (
             <CheckboxOptionItem
               control={control}
-              defaultValue={defaultValue as boolean}
+              defaultValue={
+                storage.options && storage.options[o.name]
+                  ? (storage.options[o.name] as boolean)
+                  : (o.convertedDefault as boolean) ?? undefined
+              }
               onFieldValueChange={onFieldValueChange}
               option={o}
             />
           ) : inputType === "password" ? (
             <PasswordOptionItem
               control={control}
-              defaultValue={defaultValue as string}
+              defaultValue={
+                storage.options && storage.options[o.name]
+                  ? (storage.options[o.name] as string)
+                  : ""
+              }
               isV2={isV2}
               onFieldValueChange={onFieldValueChange}
               option={o}
@@ -904,7 +920,11 @@ export function AddStorageOptions({
           ) : (
             <InputOptionItem
               control={control}
-              defaultValue={defaultValue as string | number | undefined}
+              defaultValue={
+                storage.options && storage.options[o.name]
+                  ? (storage.options[o.name] as string | number | undefined)
+                  : ""
+              }
               inputType={inputType}
               onFieldValueChange={onFieldValueChange}
               option={o}
