@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Route, Switch } from "react-router";
+import { Route, Routes } from "react-router-dom-v5-compat";
 import { Col } from "reactstrap";
 
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
@@ -44,26 +44,25 @@ export default function ProjectSessionsRouter() {
   const startSessionUrl = Url.get(
     Url.pages.project.session.new,
     projectUrlData
-  );
+  ).slice(sessionsListUrl.length);
   const sessionShowUrl = Url.get(Url.pages.project.session.show, {
     namespace,
     path,
     server: ":server",
-  });
+  }).slice(sessionsListUrl.length);
 
   return (
     <Col key="content" xs={12}>
-      <Switch>
-        <Route exact path={sessionsListUrl}>
-          <ProjectSessionsList projectPathWithNamespace={pathWithNamespace} />
-        </Route>
-        <Route path={startSessionUrl}>
-          <StartNewSession />
-        </Route>
-        <Route path={sessionShowUrl}>
-          <ShowSession />
-        </Route>
-      </Switch>
+      <Routes>
+        <Route
+          index
+          element={
+            <ProjectSessionsList projectPathWithNamespace={pathWithNamespace} />
+          }
+        />
+        <Route path={startSessionUrl} element={<StartNewSession />} />
+        <Route path={sessionShowUrl} element={<ShowSession />} />
+      </Routes>
     </Col>
   );
 }

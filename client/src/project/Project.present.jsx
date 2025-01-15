@@ -977,9 +977,9 @@ function ProjectView(props) {
               metadataVersion={metadataVersion}
             />
           </CompatRoute>
-          <Route path={props.notebookServersUrl}>
+          <CompatRoute path={props.notebookServersUrl}>
             <ProjectSessionsRouter key="sessions" />
-          </Route>
+          </CompatRoute>
           <Route component={NotFoundInsideProject} />
         </Switch>
       </Row>
