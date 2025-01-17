@@ -89,6 +89,7 @@ export default function Documentation({ project }: DocumentationProps) {
                     size="sm"
                   >
                     <Pencil className="bi" />
+                    <span className="visually-hidden">Edit</span>
                   </Button>
                 }
                 requestedPermission="write"
@@ -99,8 +100,7 @@ export default function Documentation({ project }: DocumentationProps) {
         </CardHeader>
         <CardBody>
           <div data-cy="project-documentation-text">
-            {project.documentation != null &&
-            project.documentation.length > 0 ? (
+            {project.documentation ? (
               <LazyRenkuMarkdown markdownText={project.documentation} />
             ) : (
               <p className={cx("m-0", "text-muted", "fst-italic")}>
@@ -131,16 +131,15 @@ function DocumentationModal({
   toggle,
 }: DocumentationModalProps) {
   const [updateProject, result] = usePatchProjectsByProjectIdMutation();
-  const { isSuccess, isLoading, error } = result;
+  const { isLoading } = result;
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
     getValues,
     register,
     reset,
-    setValue,
     watch,
   } = useForm<DocumentationForm>({
     defaultValues: {
@@ -149,8 +148,10 @@ function DocumentationModal({
   });
 
   useEffect(() => {
-    setValue("documentation", project.documentation || "");
-  }, [project.documentation, setValue]);
+    reset({
+      documentation: project.documentation || "",
+    });
+  }, [project.documentation, reset]);
 
   const onSubmit = useCallback(
     (data: DocumentationForm) => {
@@ -215,7 +216,7 @@ function DocumentationModal({
           className="border-top"
           data-cy="project-documentation-modal-footer"
         >
-          {errors.documentation ? (
+          {errors.documentation && (
             <div className="text-danger">
               {errors.documentation.message ? (
                 <>{errors.documentation.message}</>
@@ -223,12 +224,8 @@ function DocumentationModal({
                 <>Documentation text is invalid</>
               )}
             </div>
-          ) : (
-            <div className="mb-2"></div>
           )}
-          {isSuccess != null && !isSuccess && (
-            <RtkOrNotebooksError error={error} />
-          )}
+          {result.error && <RtkOrNotebooksError error={result.error} />}
           <DocumentationWordCount watch={watch} />
           <Button
             color="outline-primary"
@@ -237,9 +234,14 @@ function DocumentationModal({
               toggle();
             }}
           >
-            <XLg className={cx("bi", "me-1")} /> Close
+            <XLg className={cx("bi", "me-1")} />
+            Close
           </Button>
-          <Button color="primary" disabled={isLoading} type="submit">
+          <Button
+            color="primary"
+            disabled={isLoading || !isDirty}
+            type="submit"
+          >
             {isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
