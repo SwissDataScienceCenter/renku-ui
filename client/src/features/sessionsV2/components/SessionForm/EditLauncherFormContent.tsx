@@ -36,7 +36,7 @@ import { prioritizeSelectedEnvironment } from "../../session.utils";
 import { useGetSessionEnvironmentsQuery } from "../../sessionsV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
-import { EnvironmentKindField } from "./EnvironmentKindField";
+import EnvironmentKindField from "./EnvironmentKindField";
 import { SessionEnvironmentItem } from "./SessionEnvironmentItem";
 
 interface SessionLauncherFormContentProps {

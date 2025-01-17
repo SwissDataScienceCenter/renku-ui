@@ -24,7 +24,7 @@ interface EnvironmentKindField {
   control: Control<SessionLauncherForm, unknown>;
   setValue: UseFormSetValue<SessionLauncherForm>;
 }
-export function EnvironmentKindField({
+export default function EnvironmentKindField({
   control,
   setValue,
 }: EnvironmentKindField) {

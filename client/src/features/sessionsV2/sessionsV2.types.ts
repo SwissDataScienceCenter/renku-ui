@@ -49,7 +49,7 @@ export type SessionLauncher = {
   environment: SessionLauncherEnvironment;
 };
 
-export type EnvironmentKind = "GLOBAL" | "CUSTOM";
+export type EnvironmentKind = "GLOBAL" | "CUSTOM" | "BUILDER";
 
 export type SessionLauncherEnvironment = {
   id?: string;

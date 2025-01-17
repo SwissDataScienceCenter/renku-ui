@@ -25,7 +25,7 @@ import {
 } from "react-hook-form";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { CustomEnvironmentFields } from "./CustomEnvironmentFields";
-import { EnvironmentKindField } from "./EnvironmentKindField";
+import EnvironmentKindField from "./EnvironmentKindField";
 import { GlobalEnvironmentFields } from "./GlobalEnvironmentFields";
 
 export interface EnvironmentFieldsProps {

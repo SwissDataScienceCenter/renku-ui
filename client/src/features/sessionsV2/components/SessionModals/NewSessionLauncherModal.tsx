@@ -20,19 +20,14 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckLg, XLg } from "react-bootstrap-icons";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom-v5-compat";
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
 import { SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { DEFAULT_PORT, DEFAULT_URL } from "../../session.constants";
 import { getFormattedEnvironmentValues } from "../../session.utils";
@@ -44,7 +39,7 @@ import { SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentFields } from "../SessionForm/EnvironmentField";
 import { LauncherDetailsFields } from "../SessionForm/LauncherDetailsFields";
 import {
-  LauncherType,
+  LauncherStep,
   SessionLauncherBreadcrumbNavbar,
 } from "../SessionForm/SessionLauncherBreadcrumbNavbar";
 
@@ -57,7 +52,7 @@ export default function NewSessionLauncherModal({
   isOpen,
   toggle,
 }: NewSessionLauncherModalProps) {
-  const [step, setStep] = useState<LauncherType>(LauncherType.Environment);
+  const [step, setStep] = useState<LauncherStep>(LauncherStep.Environment);
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
   const { data: environments } = useGetSessionEnvironmentsQuery();
   const [addSessionLauncher, result] = useAddSessionLauncherMutation();
@@ -66,15 +61,7 @@ export default function NewSessionLauncherModal({
   );
   const projectId = project?.id;
 
-  const {
-    control,
-    formState: { errors, isDirty, touchedFields, isValid },
-    handleSubmit,
-    reset,
-    setValue,
-    watch,
-    trigger,
-  } = useForm<SessionLauncherForm>({
+  const useFormResult = useForm<SessionLauncherForm>({
     defaultValues: {
       name: "",
       environment_kind: "GLOBAL",
@@ -84,6 +71,15 @@ export default function NewSessionLauncherModal({
       port: DEFAULT_PORT,
     },
   });
+  const {
+    control,
+    formState: { errors, isDirty, touchedFields, isValid },
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    trigger,
+  } = useFormResult;
 
   const watchEnvironmentId = watch("environment_id");
   const watchEnvironmentCustomImage = watch("container_image");
@@ -101,11 +97,11 @@ export default function NewSessionLauncherModal({
     trigger(["environment_id", "container_image", "command", "args"]);
 
     if (isDirty && isEnvironmentDefined && isValid)
-      setStep(LauncherType.LauncherDetails);
+      setStep(LauncherStep.LauncherDetails);
   }, [isDirty, setStep, trigger, isEnvironmentDefined, isValid]);
 
   const onCancel = useCallback(() => {
-    setStep(LauncherType.Environment);
+    setStep(LauncherStep.Environment);
     reset();
     toggle();
   }, [reset, toggle, setStep]);
@@ -155,24 +151,26 @@ export default function NewSessionLauncherModal({
 
   useEffect(() => {
     if (!isOpen) {
-      setStep(LauncherType.Environment);
+      setStep(LauncherStep.Environment);
       reset();
       result.reset();
     }
   }, [isOpen, reset, result, setStep]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      scrollable
+      // scrollable
     >
       <ModalHeader toggle={toggle}>Add session launcher</ModalHeader>
-      <ModalBody style={{ height: result.isSuccess ? "auto" : "600px" }}>
+      <ModalBody
+      // style={{ height: result.isSuccess ? "auto" : "600px" }}
+      >
         {result.isSuccess ? (
           <ConfirmationCreate />
         ) : (
@@ -185,21 +183,23 @@ export default function NewSessionLauncherModal({
                 </p>
               </>
             )}
-            <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-              {result.error && <RtkErrorAlert error={result.error} />}
-              {step === "environment" && (
-                <EnvironmentFields
-                  errors={errors}
-                  touchedFields={touchedFields}
-                  control={control}
-                  watch={watch}
-                  setValue={setValue}
-                />
-              )}
-              {step === "launcherDetails" && (
-                <LauncherDetailsFields control={control} />
-              )}
-            </Form>
+            <FormProvider {...useFormResult}>
+              <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+                {result.error && <RtkErrorAlert error={result.error} />}
+                {step === "environment" && (
+                  <EnvironmentFields
+                    errors={errors}
+                    touchedFields={touchedFields}
+                    control={control}
+                    watch={watch}
+                    setValue={setValue}
+                  />
+                )}
+                {step === "launcherDetails" && (
+                  <LauncherDetailsFields control={control} />
+                )}
+              </Form>
+            </FormProvider>
           </div>
         )}
       </ModalBody>
@@ -209,7 +209,7 @@ export default function NewSessionLauncherModal({
             <SessionLauncherBreadcrumbNavbar
               step={step}
               setStep={setStep}
-              readyToGoNext={!!isEnvironmentDefined}
+              readyToGoNext={isEnvironmentDefined}
             />
           </div>
         )}
@@ -228,7 +228,8 @@ export default function NewSessionLauncherModal({
             onClick={onNext}
             type="submit"
           >
-            Next <ArrowRight />
+            Next
+            <ArrowRight className={cx("bi", "ms-1")} />
           </Button>
         )}
         {!result.isSuccess && step === "launcherDetails" && (
@@ -248,7 +249,7 @@ export default function NewSessionLauncherModal({
           </Button>
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
