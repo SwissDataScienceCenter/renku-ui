@@ -172,6 +172,8 @@ function CkEditor({
   disabled = false,
   invalid = false,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  outputType = "html",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setInputs = (value) => {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   wordCount = (stats) => {},
