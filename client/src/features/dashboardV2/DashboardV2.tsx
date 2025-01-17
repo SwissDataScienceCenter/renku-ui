@@ -136,13 +136,13 @@ function FooterDashboard() {
         </FooterDashboardCard>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <FooterDashboardCard url="https://www.notion.so/renku/Documentation-db396cfc9a664cd2b161e4c6068a5ec9">
+        <FooterDashboardCard url="https://renku.notion.site/Documentation-db396cfc9a664cd2b161e4c6068a5ec9">
           <FileEarmarkText size={27} />
           Documentation
         </FooterDashboardCard>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <FooterDashboardCard url="https://www.notion.so/renku/f9caf41b579f474b8007803b007e3999?v=807326f870984774900fd87095225d7a">
+        <FooterDashboardCard url="https://renku.notion.site/f9caf41b579f474b8007803b007e3999?v=807326f870984774900fd87095225d7a">
           <Calendar3Week size={27} />
           Community events
         </FooterDashboardCard>
