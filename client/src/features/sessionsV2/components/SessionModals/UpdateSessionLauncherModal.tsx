@@ -130,7 +130,6 @@ export default function UpdateSessionLauncherModal({
               watch={watch}
               touchedFields={touchedFields}
               environmentId={launcher.environment?.id}
-              setValue={setValue}
             />
           </Form>
         )}

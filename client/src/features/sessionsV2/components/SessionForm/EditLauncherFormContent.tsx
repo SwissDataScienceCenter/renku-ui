@@ -23,7 +23,6 @@ import {
   Controller,
   FieldErrors,
   FieldNamesMarkedBoolean,
-  UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
 import { Collapse, Input, Label, ListGroup } from "reactstrap";
@@ -50,7 +49,6 @@ interface SessionLauncherFormContentProps {
 
 interface EditLauncherFormContentProps extends SessionLauncherFormContentProps {
   environmentId?: string;
-  setValue: UseFormSetValue<SessionLauncherForm>;
 }
 export default function EditLauncherFormContent({
   control,
@@ -58,7 +56,6 @@ export default function EditLauncherFormContent({
   watch,
   touchedFields,
   environmentId,
-  setValue,
 }: EditLauncherFormContentProps) {
   const {
     data: environments,
@@ -221,7 +218,7 @@ export default function EditLauncherFormContent({
           )}
         />
       </div>
-      <EnvironmentKindField control={control} setValue={setValue} />
+      <EnvironmentKindField control={control} />
 
       {environmentKind === "GLOBAL" && renderEnvironmentList()}
 

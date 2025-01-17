@@ -52,7 +52,7 @@ export function EnvironmentFields({
         <span className="fw-bold">1 of 2. Define environment</span>
       </div>
       <div>
-        <EnvironmentKindField control={control} setValue={setValue} />
+        <EnvironmentKindField control={control} />
       </div>
       <div className={cx(watchEnvironmentKind !== "GLOBAL" && "d-none")}>
         <GlobalEnvironmentFields
