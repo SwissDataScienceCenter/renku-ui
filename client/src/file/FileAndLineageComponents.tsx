@@ -17,11 +17,11 @@
  */
 
 import { useRef } from "react";
+import { Diagram2, FileEarmarkFill } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom-v5-compat";
 import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
-import { FileEarmarkFill, Diagram2 } from "react-bootstrap-icons";
 
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
-import { useHistory } from "react-router-dom";
 
 interface FileAndLineageSwitchProps {
   switchToPath: string;
@@ -33,10 +33,10 @@ export default function FileAndLineageSwitch({
 }: FileAndLineageSwitchProps) {
   const fileIconRef = useRef(null);
   const lineageIconRef = useRef(null);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const performSwitch = () => {
-    history.push(switchToPath);
+    navigate(switchToPath);
   };
 
   return (

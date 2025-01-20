@@ -27,7 +27,6 @@ type ProjectFileLineageProps = {
   client: unknown;
   fetchBranches: unknown;
   filePath: string;
-  history: unknown;
   location: {
     pathname: string;
   };
@@ -91,7 +90,6 @@ function ProjectFileLineage(props: ProjectFileLineageProps) {
       forked={forked}
       gitFilePath={gitFilePath}
       hashElement={filesTree ? filesTree.hash[props.filePath] : undefined}
-      history={props.history}
       httpProjectUrl={httpProjectUrl}
       insideProject={true}
       launchNotebookUrl={sessionNewUrl}
@@ -170,7 +168,6 @@ function ProjectFileView(props: ProjectFileViewProps) {
       filesTree={filesTree}
       forked={forked}
       hashElement={filesTree ? filesTree.hash[props.filePath] : undefined}
-      history={props.history}
       httpProjectUrl={httpProjectUrl}
       insideProject={true}
       lineagesPath={lineagesUrl}

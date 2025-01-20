@@ -3,7 +3,7 @@
  * New implementation of the Project component in TypeScript.
  */
 
-import { useHistory, useRouteMatch } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
 
 import ProjectV1 from "./Project";
 
@@ -18,8 +18,8 @@ interface ProjectViewProps {
 }
 
 function ProjectView(props: ProjectViewProps) {
-  const history = useHistory();
-  const match = useRouteMatch();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <ProjectV1.View
@@ -30,9 +30,8 @@ function ProjectView(props: ProjectViewProps) {
       blockAnonymous={props.blockAnonymous}
       notifications={props.notifications}
       socket={props.socket}
-      history={history}
-      location={history.location}
-      match={match}
+      location={location}
+      navigate={navigate}
     />
   );
 }

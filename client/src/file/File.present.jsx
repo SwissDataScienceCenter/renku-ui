@@ -158,7 +158,6 @@ class ShowFile extends React.Component {
       this.props.lineagesPath !== undefined ? (
         <FileAndLineageSwitch
           insideFile={true}
-          history={this.props.history}
           switchToPath={`${this.props.lineagesPath}/${gitLabFilePath}`}
         />
       ) : null;
