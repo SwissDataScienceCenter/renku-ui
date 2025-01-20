@@ -72,8 +72,12 @@ function newDataset(newDataset: Dataset) {
     cy.getDataCy("ckeditor-description")
       .find(".ck-content[contenteditable=true]")
       .click()
-      .clear()
-      .type(newDataset.description);
+      .click()
+      .then((element) =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        element[0].ckeditorInstance.setData(newDataset.description)
+      );
 
   if (newDataset.file) {
     cy.get('[data-cy="dropzone"]').attachFile(

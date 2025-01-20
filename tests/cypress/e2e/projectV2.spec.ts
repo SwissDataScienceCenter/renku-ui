@@ -238,10 +238,13 @@ describe("Edit v2 project", () => {
       )
       .should("be.visible");
     cy.getDataCy("project-documentation-modal-body")
-      .find(".ck-content")
+      .find("[contenteditable=true]")
       .click()
-      .clear()
-      .type("new description");
+      .then((element) =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        element[0].ckeditorInstance.setData("new description")
+      );
     cy.getDataCy("project-documentation-modal-footer").contains("Save").click();
     cy.getDataCy("project-documentation-modal-body").should("not.be.visible");
   });
