@@ -135,6 +135,8 @@ export interface SessionLauncherForm {
 
   // new
   code_repository: string;
+  builder_type: string;
+  builder_frontend: string;
 }
 
 export interface SessionResources {

@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
-import { useWatch, type Control } from "react-hook-form";
+import { type Control } from "react-hook-form";
 
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
@@ -27,6 +27,7 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
 import { useGetRepositoriesProbesQuery } from "../../../repositories/repositories.api";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
+import BuilderTypeSelector from "./BuilderTypeSelector";
 import CodeRepositorySelector from "./CodeRepositorySelector";
 
 interface BuilderEnvironmentFieldsProps {
@@ -52,8 +53,6 @@ export default function BuilderEnvironmentFields({
     [repositoriesDetails]
   );
 
-  const watchCodeRepository = useWatch({ control, name: "code_repository" });
-
   const content = isLoading ? (
     <p className="mb-0">
       <Loader className="me-1" inline size={16} />
@@ -75,12 +74,13 @@ export default function BuilderEnvironmentFields({
       can only build session environments from public code repositories.
     </WarnAlert>
   ) : (
-    <div>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
       <CodeRepositorySelector
         name="code_repository"
         control={control}
         repositoriesDetails={repositoriesDetails}
       />
+      <BuilderTypeSelector name="builder_type" control={control} />
     </div>
   );
 
@@ -92,14 +92,6 @@ export default function BuilderEnvironmentFields({
         code repository.
       </p>
       {content}
-      <p>
-        Repo:
-        <code>
-          {'"'}
-          {watchCodeRepository}
-          {'"'}
-        </code>
-      </p>
     </div>
   );
 }

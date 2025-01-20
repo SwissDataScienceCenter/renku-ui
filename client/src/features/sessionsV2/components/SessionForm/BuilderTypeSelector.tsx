@@ -21,34 +21,35 @@ import { useCallback, useEffect, useMemo } from "react";
 import {
   Controller,
   type FieldValues,
+  type Path,
+  type PathValue,
   type UseControllerProps,
 } from "react-hook-form";
 import Select, { type SingleValue } from "react-select";
 import { Label } from "reactstrap";
 
-import type { GetRepositoriesProbesResponse } from "../../../repositories/repositories.types";
+/* eslint-disable spellcheck/spell-checker */
+const BUILDER_TYPES = ["Python (conda)"] as const;
+/* eslint-enable spellcheck/spell-checker */
 
-interface CodeRepositorySelectorProps<T extends FieldValues>
-  extends UseControllerProps<T> {
-  repositoriesDetails: GetRepositoriesProbesResponse;
-}
+interface BuilderTypeSelectorProps<T extends FieldValues>
+  extends UseControllerProps<T> {}
 
-export default function CodeRepositorySelector<T extends FieldValues>({
-  repositoriesDetails,
+export default function BuilderTypeSelector<T extends FieldValues>({
   ...controllerProps
-}: CodeRepositorySelectorProps<T>) {
+}: BuilderTypeSelectorProps<T>) {
   const defaultValue = useMemo(
     () =>
       controllerProps.defaultValue
         ? controllerProps.defaultValue
-        : repositoriesDetails.find(({ probe }) => probe)?.repositoryUrl,
-    [controllerProps.defaultValue, repositoriesDetails]
+        : BUILDER_TYPES[0],
+    [controllerProps.defaultValue]
   );
 
   return (
     <div>
-      <Label for="builder-environment-code-repository-select-input">
-        Code repository
+      <Label for="builder-environment-type-select-input">
+        Environment type
       </Label>
       <Controller
         {...controllerProps}
@@ -59,15 +60,15 @@ export default function CodeRepositorySelector<T extends FieldValues>({
           <>
             <div
               className={cx(error && "is-invalid")}
-              data-cy="code-repository-select"
+              data-cy="environment-type-select"
             >
-              <CodeRepositorySelect
+              <BuilderTypeSelect
                 name={controllerProps.name}
                 defaultValue={defaultValue}
-                options={repositoriesDetails}
+                options={BUILDER_TYPES}
                 onBlur={onBlur}
                 onChange={onChange}
-                value={value}
+                value={value ?? ""}
                 disabled={disabled}
               />
             </div>
@@ -75,16 +76,17 @@ export default function CodeRepositorySelector<T extends FieldValues>({
               {error?.message ? (
                 <>{error.message}</>
               ) : (
-                <>Please select a valid code repository.</>
+                <>Please select a valid environment type.</>
               )}
             </div>
           </>
         )}
         rules={
           controllerProps.rules ?? {
-            required: "Please select a code repository.",
+            required: "Please select an environment type.",
           }
         }
+        defaultValue={defaultValue as PathValue<T, Path<T>>}
       />
     </div>
   );
@@ -95,7 +97,7 @@ interface CodeRepositorySelectProps {
 
   defaultValue?: string;
 
-  options: GetRepositoriesProbesResponse;
+  options: readonly string[];
 
   onChange?: (newValue?: string) => void;
   onBlur?: () => void;
@@ -103,60 +105,45 @@ interface CodeRepositorySelectProps {
   disabled?: boolean;
 }
 
-function CodeRepositorySelect({
+function BuilderTypeSelect({
   name,
   options,
-  defaultValue: defaultValue_,
+  defaultValue,
   onBlur,
   onChange: onChange_,
-  value: value_,
   disabled,
+  value,
 }: CodeRepositorySelectProps) {
-  const defaultValue = useMemo(
-    () => options.find(({ repositoryUrl }) => repositoryUrl === defaultValue_),
-    [defaultValue_, options]
-  );
-  const value = useMemo(
-    () => options.find(({ repositoryUrl }) => repositoryUrl === value_),
-    [options, value_]
-  );
-
   const onChange = useCallback(
-    (
-      newValue: SingleValue<{
-        repositoryUrl: string;
-        probe: boolean;
-      }>
-    ) => {
-      onChange_?.(newValue?.repositoryUrl);
+    (newValue: SingleValue<{ value: string }>) => {
+      onChange_?.(newValue?.value);
     },
     [onChange_]
   );
 
   // We need to set the default value by hand here
   useEffect(() => {
-    if (onChange_ != null && defaultValue_) {
-      onChange_(defaultValue_);
+    if (onChange_ != null && defaultValue) {
+      onChange_(defaultValue);
     }
-  }, [defaultValue_, onChange_]);
+  }, [defaultValue, onChange_]);
 
   return (
     <Select
-      id="builder-environment-code-repository-select"
-      inputId="builder-environment-code-repository-select-input"
+      id="builder-environment-type-select"
+      inputId="builder-environment-type-select-input"
       name={name}
       isClearable={false}
       isSearchable
-      options={options}
-      getOptionLabel={(option) => option.repositoryUrl}
-      getOptionValue={(option) => option.repositoryUrl}
+      options={options.map((value) => ({ value }))}
+      getOptionLabel={({ value }) => value}
+      getOptionValue={({ value }) => value}
       // unstyled
-      isOptionDisabled={(option) => !option.probe}
       onChange={onChange}
       onBlur={onBlur}
-      value={value}
+      value={{ value }}
       isDisabled={disabled}
-      defaultValue={defaultValue}
+      defaultValue={defaultValue ? { value: defaultValue } : undefined}
     />
   );
 }
