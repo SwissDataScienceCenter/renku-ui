@@ -132,6 +132,9 @@ export interface SessionLauncherForm {
   mount_directory: string;
   command: string;
   args: string;
+
+  // new
+  code_repository: string;
 }
 
 export interface SessionResources {

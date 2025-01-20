@@ -18,22 +18,29 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { useMemo } from "react";
+import { useWatch, type Control } from "react-hook-form";
 
 import { WarnAlert } from "../../../../components/Alert";
-import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
-import { useGetRepositoriesProbesQuery } from "../../../repositories/repositories.api";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { useMemo } from "react";
+import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
+import { useGetRepositoriesProbesQuery } from "../../../repositories/repositories.api";
+import type { SessionLauncherForm } from "../../sessionsV2.types";
+import CodeRepositorySelector from "./CodeRepositorySelector";
 
-// interface BuilderEnvironmentFieldsProps {}
+interface BuilderEnvironmentFieldsProps {
+  control: Control<SessionLauncherForm>;
+}
 
-export default function BuilderEnvironmentFields() {
+export default function BuilderEnvironmentFields({
+  control,
+}: BuilderEnvironmentFieldsProps) {
   const { project } = useProject();
   const repositories = project.repositories ?? [];
 
   const {
-    data: repositoryDetails,
+    data: repositoriesDetails,
     isLoading,
     error,
   } = useGetRepositoriesProbesQuery(
@@ -41,9 +48,11 @@ export default function BuilderEnvironmentFields() {
   );
 
   const firstEligibleRepository = useMemo(
-    () => repositoryDetails?.repositories.findIndex(({ probe }) => probe),
-    [repositoryDetails?.repositories]
+    () => repositoriesDetails?.findIndex(({ probe }) => probe),
+    [repositoriesDetails]
   );
+
+  const watchCodeRepository = useWatch({ control, name: "code_repository" });
 
   const content = isLoading ? (
     <p className="mb-0">
@@ -55,7 +64,7 @@ export default function BuilderEnvironmentFields() {
       No repositories found in this project. Add a repository first before
       creating a session environment from one.
     </WarnAlert>
-  ) : error || repositoryDetails == null ? (
+  ) : error || repositoriesDetails == null ? (
     <>
       <p className="mb-0">Error: could not check code repositories.</p>
       {error && <RtkOrNotebooksError error={error} dismissible={false} />}
@@ -67,8 +76,11 @@ export default function BuilderEnvironmentFields() {
     </WarnAlert>
   ) : (
     <div>
-      SELECT REPO FROM
-      <pre>{JSON.stringify(repositoryDetails, null, 2)}</pre>
+      <CodeRepositorySelector
+        name="code_repository"
+        control={control}
+        repositoriesDetails={repositoriesDetails}
+      />
     </div>
   );
 
@@ -80,6 +92,14 @@ export default function BuilderEnvironmentFields() {
         code repository.
       </p>
       {content}
+      <p>
+        Repo:
+        <code>
+          {'"'}
+          {watchCodeRepository}
+          {'"'}
+        </code>
+      </p>
     </div>
   );
 }

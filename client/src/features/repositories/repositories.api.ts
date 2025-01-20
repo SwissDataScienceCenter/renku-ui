@@ -71,7 +71,7 @@ const repositoriesApi = createApi({
     >({
       async queryFn(queryArg, _api, _options, fetchWithBQ) {
         const { repositoriesUrls } = queryArg;
-        const result: GetRepositoriesProbesResponse = { repositories: [] };
+        const result: GetRepositoriesProbesResponse = [];
         const promises = repositoriesUrls.map((repositoryUrl) =>
           fetchWithBQ({
             url: `${encodeURIComponent(repositoryUrl)}/probe`,
@@ -90,7 +90,7 @@ const repositoriesApi = createApi({
           if (response.error) return response;
           const status = response.meta?.response?.status;
           const probe = status != null && status >= 200 && status < 300;
-          result.repositories.push({
+          result.push({
             repositoryUrl,
             probe,
           });
@@ -100,7 +100,7 @@ const repositoriesApi = createApi({
       },
       providesTags: (result) =>
         result != null
-          ? result.repositories.map(({ repositoryUrl }) => ({
+          ? result.map(({ repositoryUrl }) => ({
               type: "RepositoryProbe" as const,
               id: repositoryUrl,
             }))

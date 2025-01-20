@@ -69,6 +69,8 @@ export default function NewSessionLauncherModal({
       container_image: "",
       default_url: DEFAULT_URL,
       port: DEFAULT_PORT,
+      // new
+      code_repository: "",
     },
   });
   const {

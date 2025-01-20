@@ -75,7 +75,9 @@ export function EnvironmentFields({
           setValue={setValue}
         />
       </div>
-      {watchEnvironmentKind === "BUILDER" && <BuilderEnvironmentFields />}
+      {watchEnvironmentKind === "BUILDER" && (
+        <BuilderEnvironmentFields control={control} />
+      )}
     </div>
   );
 }
