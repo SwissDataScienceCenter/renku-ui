@@ -18,6 +18,8 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
+  GetRepositoriesProbesParams,
+  GetRepositoriesProbesResponse,
   GetRepositoryMetadataParams,
   GetRepositoryProbeParams,
   RepositoryProviderMatch,
@@ -63,9 +65,53 @@ const repositoriesApi = createApi({
           ? [{ type: "RepositoryProbe" as const, id: repositoryUrl }]
           : [],
     }),
+    getRepositoriesProbes: builder.query<
+      GetRepositoriesProbesResponse,
+      GetRepositoriesProbesParams
+    >({
+      async queryFn(queryArg, _api, _options, fetchWithBQ) {
+        const { repositoriesUrls } = queryArg;
+        const result: GetRepositoriesProbesResponse = { repositories: [] };
+        const promises = repositoriesUrls.map((repositoryUrl) =>
+          fetchWithBQ({
+            url: `${encodeURIComponent(repositoryUrl)}/probe`,
+            validateStatus: (response) => {
+              return (
+                (response.status >= 200 && response.status < 300) ||
+                response.status == 404
+              );
+            },
+          })
+        );
+        const responses = await Promise.all(promises);
+        for (let i = 0; i < repositoriesUrls.length; i++) {
+          const repositoryUrl = repositoriesUrls[i];
+          const response = responses[i];
+          if (response.error) return response;
+          const status = response.meta?.response?.status;
+          const probe = status != null && status >= 200 && status < 300;
+          result.repositories.push({
+            repositoryUrl,
+            probe,
+          });
+        }
+
+        return { data: result };
+      },
+      providesTags: (result) =>
+        result != null
+          ? result.repositories.map(({ repositoryUrl }) => ({
+              type: "RepositoryProbe" as const,
+              id: repositoryUrl,
+            }))
+          : [],
+    }),
   }),
 });
 
 export default repositoriesApi;
-export const { useGetRepositoryMetadataQuery, useGetRepositoryProbeQuery } =
-  repositoriesApi;
+export const {
+  useGetRepositoryMetadataQuery,
+  useGetRepositoryProbeQuery,
+  useGetRepositoriesProbesQuery,
+} = repositoriesApi;

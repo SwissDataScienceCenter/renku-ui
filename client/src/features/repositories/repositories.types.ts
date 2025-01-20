@@ -40,3 +40,14 @@ export interface GetRepositoryMetadataParams {
 export interface GetRepositoryProbeParams {
   repositoryUrl: string;
 }
+
+export interface GetRepositoriesProbesResponse {
+  repositories: {
+    repositoryUrl: string;
+    probe: boolean;
+  }[];
+}
+
+export interface GetRepositoriesProbesParams {
+  repositoriesUrls: string[];
+}

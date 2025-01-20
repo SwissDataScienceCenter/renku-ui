@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import {
   Control,
@@ -23,7 +24,9 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
+
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import BuilderEnvironmentFields from "./BuilderEnvironmentFields";
 import { CustomEnvironmentFields } from "./CustomEnvironmentFields";
 import EnvironmentKindField from "./EnvironmentKindField";
 import { GlobalEnvironmentFields } from "./GlobalEnvironmentFields";
@@ -72,6 +75,7 @@ export function EnvironmentFields({
           setValue={setValue}
         />
       </div>
+      {watchEnvironmentKind === "BUILDER" && <BuilderEnvironmentFields />}
     </div>
   );
 }
