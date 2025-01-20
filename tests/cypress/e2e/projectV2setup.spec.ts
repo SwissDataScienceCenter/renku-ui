@@ -39,7 +39,9 @@ describe("Set up project components", () => {
 
   it("set up repositories", () => {
     fixtures
-      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .readProjectV2({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
       .listProjectDataConnectors()
       .getDataConnector()
       .updateProjectV2({
@@ -63,7 +65,7 @@ describe("Set up project components", () => {
     cy.wait("@getProjectAfterUpdate");
 
     // edit code repository
-    cy.getDataCy("code-repository-edit").click();
+    cy.getDataCy("code-repository-edit").first().click();
     cy.getDataCy("project-edit-repository-url").type("2");
     cy.getDataCy("edit-code-repository-modal-button").click();
     cy.wait("@updateProjectV2");
@@ -186,7 +188,9 @@ describe("Set up data connectors", () => {
 
   it("create a simple data connector", () => {
     fixtures
-      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .readProjectV2({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
       .listProjectDataConnectors()
       .getDataConnector()
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
@@ -251,7 +255,9 @@ describe("Set up data connectors", () => {
 
   it("link a data connector", () => {
     fixtures
-      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .readProjectV2({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
       .listProjectDataConnectors()
       .getDataConnectorByNamespaceAndSlug()
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-1" });
@@ -270,7 +276,9 @@ describe("Set up data connectors", () => {
 
   it("link a data connector not found", () => {
     fixtures
-      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .readProjectV2({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
       .listProjectDataConnectors()
       .getDataConnectorByNamespaceAndSlugNotFound();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
@@ -290,7 +298,9 @@ describe("Set up data connectors", () => {
 
   it("unlink a data connector", () => {
     fixtures
-      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
+      .readProjectV2({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
       .listProjectDataConnectors()
       .getDataConnector()
       .deleteDataConnectorProjectLink();
@@ -319,7 +329,6 @@ describe("Set up data connectors", () => {
 
   it("unlink data connector not allowed", () => {
     fixtures
-      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
       .listProjectDataConnectors()
       .getDataConnector()
       .getProjectV2Permissions({
@@ -327,7 +336,6 @@ describe("Set up data connectors", () => {
       })
       .deleteDataConnectorProjectLinkNotAllowed();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
     cy.wait("@listProjectDataConnectors");
 
     cy.contains("example storage").should("be.visible").click();
@@ -416,6 +424,7 @@ describe("Set up data connectors", () => {
       .getDataConnectorPermissions()
       .patchDataConnector({ namespace: "user1-uuid" })
       .patchDataConnectorSecrets({
+        content: [],
         shouldNotBeCalled: true,
       });
 

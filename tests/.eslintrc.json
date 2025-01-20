@@ -17,7 +17,7 @@
       }
     ],
     "no-console": "warn",
-    "max-nested-callbacks": ["warn", 3],
+    "max-nested-callbacks": ["warn", 4],
     "no-alert": "error",
     "no-else-return": "warn",
     "jest/expect-expect": "off",

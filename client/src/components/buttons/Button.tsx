@@ -26,7 +26,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Fragment, ReactNode, useRef, useState } from "react";
+import React, { Fragment, ReactNode, useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   ChevronDown,
@@ -42,6 +42,7 @@ import {
   Col,
   DropdownMenu,
   DropdownToggle,
+  Tooltip,
   UncontrolledDropdown,
   UncontrolledTooltip,
 } from "reactstrap";
@@ -444,6 +445,100 @@ function EditButtonLink({
   );
 }
 
+interface EditSaveButtonProps {
+  "data-cy"?: string;
+  disabled?: boolean;
+  toggle: () => void;
+  tooltipMessage?: string | null;
+  checksBeforeSave?: () => boolean;
+  checksBeforeSaveTooltipMessage?: () => string | null;
+}
+function EditSaveButton({
+  "data-cy": dataCy,
+  disabled,
+  toggle,
+  tooltipMessage = null,
+  checksBeforeSave = () => false,
+  checksBeforeSaveTooltipMessage = () => null,
+}: EditSaveButtonProps) {
+  const [localDisabled, setLocalDisabled] = useState(disabled);
+  const ref = useRef(null);
+  const saveButtonRef = useRef(null);
+  const [editMode, setEditMode] = useState(false);
+  const [checksBeforeSaveTooltip, setChecksBeforeSaveTooltip] = useState(false);
+
+  useEffect(() => {
+    setLocalDisabled(disabled);
+  }, [disabled]);
+
+  return (
+    <>
+      <span ref={ref}>
+        {!editMode && localDisabled ? (
+          <Button color="outline-primary" disabled size="sm">
+            <Pencil className="bi" />
+          </Button>
+        ) : editMode ? (
+          <ButtonGroup>
+            <Button
+              innerRef={saveButtonRef}
+              disabled={localDisabled}
+              color="outline-primary"
+              size="sm"
+              data-cy={dataCy}
+              onClick={(event) => {
+                if (checksBeforeSave()) {
+                  setEditMode(false);
+                  (event.target as HTMLInputElement).form?.requestSubmit();
+                } else {
+                  setChecksBeforeSaveTooltip(true);
+                }
+              }}
+            >
+              Save
+            </Button>
+            {checksBeforeSaveTooltip && localDisabled ? (
+              <Tooltip target={saveButtonRef} isOpen={true}>
+                {checksBeforeSaveTooltipMessage()}
+              </Tooltip>
+            ) : tooltipMessage ? (
+              <UncontrolledTooltip target={ref} delay={{ show: 500, hide: 50 }}>
+                {tooltipMessage}
+              </UncontrolledTooltip>
+            ) : (
+              <></>
+            )}
+            <Button
+              color="outline-primary"
+              size="sm"
+              data-cy={dataCy}
+              onClick={() => {
+                setEditMode(false);
+                setLocalDisabled(false);
+                toggle();
+              }}
+            >
+              Discard
+            </Button>
+          </ButtonGroup>
+        ) : (
+          <Button
+            color="outline-primary"
+            size="sm"
+            data-cy={dataCy}
+            onClick={() => {
+              setEditMode(true);
+              toggle();
+            }}
+          >
+            <Pencil className="bi" />
+          </Button>
+        )}
+      </span>
+    </>
+  );
+}
+
 export function PlusRoundButton({
   "data-cy": dataCy,
   handler,
@@ -478,6 +573,7 @@ export {
   ButtonWithMenu,
   CardButton,
   EditButtonLink,
+  EditSaveButton,
   GoBackButton,
   InlineSubmitButton,
   RefreshButton,

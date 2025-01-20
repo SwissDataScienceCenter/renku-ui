@@ -44,6 +44,7 @@ export default function ProjectPageContainer() {
     useGetNamespacesByNamespaceProjectsAndSlugQuery({
       namespace: namespace ?? "",
       slug: slug ?? "",
+      withDocumentation: true,
     });
 
   const navigate = useNavigate();
