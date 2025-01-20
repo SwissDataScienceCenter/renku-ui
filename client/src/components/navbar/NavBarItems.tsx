@@ -44,6 +44,7 @@ import {
   getActiveProjectPathWithNamespace,
   gitLabUrlFromProfileUrl,
 } from "../../utils/helpers/HelperFunctions";
+import { Url } from "../../utils/helpers/url";
 import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
@@ -212,7 +213,7 @@ export function RenkuToolbarHelpMenu({ firstItem }: RenkuToolbarHelpMenuProps) {
         aria-labelledby="help-menu"
       >
         <DropdownItem className="p-0">
-          <Link className="dropdown-item" to="/help">
+          <Link className="dropdown-item" to={Url.get(ABSOLUTE_ROUTES.v1.help)}>
             Help
           </Link>
         </DropdownItem>
@@ -306,7 +307,9 @@ export function RenkuToolbarItemUser({
     );
   }
 
-  const userSecretsUrl = isV2 ? ABSOLUTE_ROUTES.v2.secrets : "/secrets";
+  const userSecretsUrl = isV2
+    ? ABSOLUTE_ROUTES.v2.secrets
+    : ABSOLUTE_ROUTES.v1.secrets;
 
   return (
     <UncontrolledDropdown className={cx("nav-item", "dropdown")}>
@@ -349,7 +352,7 @@ export function RenkuToolbarItemUser({
               Integrations
             </Link>
             <DropdownItem divider />
-            <Link to={ABSOLUTE_ROUTES.root} className="dropdown-item">
+            <Link to={ABSOLUTE_ROUTES.v1.root} className="dropdown-item">
               Back to <span className="fw-bold">Renku 1.0</span>
             </Link>
           </>
@@ -358,7 +361,7 @@ export function RenkuToolbarItemUser({
         {!isV2 && (
           <>
             <DropdownItem divider />
-            <Link to={ABSOLUTE_ROUTES.v2.root} className="dropdown-item">
+            <Link to={ABSOLUTE_ROUTES.root} className="dropdown-item">
               <span className="fw-bold">Renku 2.0</span> Early access
             </Link>
           </>

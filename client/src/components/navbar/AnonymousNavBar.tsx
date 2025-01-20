@@ -55,10 +55,23 @@ export default function AnonymousNavBar({
 
   return (
     <>
-      <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
+      <header
+        className={cx(
+          "navbar",
+          "navbar-expand-lg",
+          "bg-navy",
+          "rk-navbar",
+          "p-0"
+        )}
+      >
         <Navbar
           color="primary"
-          className="container-fluid flex-wrap flex-lg-nowrap renku-container"
+          className={cx(
+            "container",
+            "flex-wrap",
+            "flex-lg-nowrap",
+            "renku-container"
+          )}
         >
           <Link
             id="link-home"

@@ -364,6 +364,14 @@ function getEntityImageUrl(images) {
   }
 }
 
+export function isRenkuLegacy(pathname) {
+  return (
+    pathname.startsWith("/v1") ||
+    pathname.startsWith("/projects") ||
+    pathname.startsWith("/datasets")
+  );
+}
+
 export {
   capitalizeFirstLetter,
   generateZip,

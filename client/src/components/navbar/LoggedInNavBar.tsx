@@ -23,6 +23,7 @@ import { Link } from "react-router-dom";
 import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
 import StatusBanner from "../../features/platform/components/StatusBanner";
 import { NavBarWarnings } from "../../landing/NavBarWarnings";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
 import { AppParams } from "../../utils/context/appParams.types";
 import { Url } from "../../utils/helpers/url";
 import { RenkuNavLink } from "../RenkuNavLink";
@@ -85,7 +86,7 @@ export default function LoggedInNavBar({
             >
               <NavItem className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4">
                 <RenkuNavLink
-                  to={Url.get(Url.pages.search)}
+                  to={Url.get(ABSOLUTE_ROUTES.v1.search)}
                   title="Search"
                   id="link-search"
                   icon={<Search />}
@@ -98,7 +99,7 @@ export default function LoggedInNavBar({
                 className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4"
               >
                 <RenkuNavLink
-                  to={Url.get(Url.pages.landing)}
+                  to={Url.get(ABSOLUTE_ROUTES.v1.root)}
                   title="Dashboard"
                   id="link-dashboard"
                 />

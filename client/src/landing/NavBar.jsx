@@ -28,14 +28,15 @@ import { Link, Route, Switch, useLocation } from "react-router-dom";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
 import { RenkuNavLink } from "../components/RenkuNavLink";
-import AnonymousNavBar from "../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../components/navbar/navbar.constans";
+import NavbarV2 from "../features/rootV2/NavbarV2";
 import { parseChartVersion } from "../help/release.utils";
+import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 import { Links } from "../utils/constants/Docs";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
+import { isRenkuLegacy } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
-import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 
 import "./NavBar.css";
 
@@ -51,7 +52,6 @@ function RenkuNavBar(props) {
 }
 
 function RenkuNavBarInner(props) {
-  const { user } = props;
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
@@ -65,20 +65,23 @@ function RenkuNavBarInner(props) {
     <Switch key="mainNav">
       <Route path={sessionShowUrl} />
       <Route path="/v2/" />
+      <Route path="/v1/" />
+      <Route path="/projects/">
+        <LoggedInNavBar
+          model={props.model}
+          notifications={props.notifications}
+          params={props.params}
+        />
+      </Route>
+      <Route path="/datasets/">
+        <LoggedInNavBar
+          model={props.model}
+          notifications={props.notifications}
+          params={props.params}
+        />
+      </Route>
       <Route>
-        {user.logged ? (
-          <LoggedInNavBar
-            model={props.model}
-            notifications={props.notifications}
-            params={props.params}
-          />
-        ) : (
-          <AnonymousNavBar
-            model={props.model}
-            notifications={props.notifications}
-            params={props.params}
-          />
-        )}
+        <NavbarV2 />
       </Route>
     </Switch>
   );
@@ -159,6 +162,7 @@ function FooterNavbarInner({ location, params }) {
     ? ABSOLUTE_ROUTES.v2.help.release
     : Url.pages.help.release;
 
+  const isRenkuV1 = isRenkuLegacy(location.pathname);
   const footer = (
     <footer className={cx("text-body", "bg-body")} data-bs-theme="navy">
       <div
@@ -168,7 +172,7 @@ function FooterNavbarInner({ location, params }) {
           "px-2",
           "px-sm-3",
           "py-2",
-          !location.pathname.startsWith("/v2") && "bg-primary"
+          isRenkuV1 && "bg-primary"
         )}
       >
         <div className="navbar-nav">

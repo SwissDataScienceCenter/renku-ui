@@ -56,10 +56,23 @@ export const ABSOLUTE_ROUTES = {
     connectedServices: "/v2/connected-services",
     secrets: "/v2/secrets",
   },
+  v1: {
+    root: "/v1",
+    search: "/v1/search",
+    help: "/v1/help",
+    notifications: "/v1/notifications",
+    styleGuide: "/v1/style-guide",
+    secrets: "/v1/secrets",
+  },
 } as const;
 
 export const RELATIVE_ROUTES = {
   root: "/",
+  v1: {
+    root: "v1/*",
+    search: "search",
+    help: "help",
+  },
   v2: {
     root: "v2/*",
     user: "user",

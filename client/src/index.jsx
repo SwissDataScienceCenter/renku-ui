@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
 import { Route, Switch, useHistory } from "react-router-dom";
-import { CompatRoute } from "react-router-dom-v5-compat";
 
 import "bootstrap";
 
@@ -141,14 +140,34 @@ function FeatureFlagHandler() {
 export function StyleHandler() {
   return (
     <Switch>
-      <CompatRoute path="/v2">
-        <Helmet>
-          <style type="text/css">{v2Styles}</style>
-        </Helmet>
-      </CompatRoute>
-      <Route path="*">
+      <Route path="/projects">
         <Helmet>
           <style type="text/css">{v1Styles}</style>
+        </Helmet>
+      </Route>
+      <Route path="/datasets">
+        <Helmet>
+          <style type="text/css">{v1Styles}</style>
+        </Helmet>
+      </Route>
+      <Route path="/notifications">
+        <Helmet>
+          <style type="text/css">{v1Styles}</style>
+        </Helmet>
+      </Route>
+      <Route path="/style-guide">
+        <Helmet>
+          <style type="text/css">{v1Styles}</style>
+        </Helmet>
+      </Route>
+      <Route path="/v1">
+        <Helmet>
+          <style type="text/css">{v1Styles}</style>
+        </Helmet>
+      </Route>
+      <Route path="*">
+        <Helmet>
+          <style type="text/css">{v2Styles}</style>
         </Helmet>
       </Route>
     </Switch>
