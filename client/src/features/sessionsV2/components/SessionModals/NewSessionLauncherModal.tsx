@@ -86,17 +86,32 @@ export default function NewSessionLauncherModal({
   const watchEnvironmentId = watch("environment_id");
   const watchEnvironmentCustomImage = watch("container_image");
   const watchEnvironmentKind = watch("environment_kind");
+  const watchCodeRepository = watch("code_repository");
 
   const isEnvironmentDefined = useMemo(() => {
     return (
       (watchEnvironmentKind === "GLOBAL" && !!watchEnvironmentId) ||
       (watchEnvironmentKind === "CUSTOM" &&
-        watchEnvironmentCustomImage?.length > 0)
+        watchEnvironmentCustomImage?.length > 0) ||
+      (watchEnvironmentKind === "BUILDER" && !!watchCodeRepository)
     );
-  }, [watchEnvironmentId, watchEnvironmentCustomImage, watchEnvironmentKind]);
+  }, [
+    watchCodeRepository,
+    watchEnvironmentId,
+    watchEnvironmentCustomImage,
+    watchEnvironmentKind,
+  ]);
 
   const onNext = useCallback(() => {
-    trigger(["environment_id", "container_image", "command", "args"]);
+    trigger([
+      "environment_id",
+      "container_image",
+      "command",
+      "args",
+      "builder_frontend",
+      "builder_type",
+      "code_repository",
+    ]);
 
     if (isDirty && isEnvironmentDefined && isValid)
       setStep(LauncherStep.LauncherDetails);
