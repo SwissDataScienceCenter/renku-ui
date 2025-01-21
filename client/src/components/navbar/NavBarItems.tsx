@@ -350,7 +350,7 @@ export function RenkuToolbarItemUser({
             </Link>
             <DropdownItem divider />
             <Link to={ABSOLUTE_ROUTES.root} className="dropdown-item">
-              Back <span className="fw-bold">Renku 1.0</span>
+              Back to <span className="fw-bold">Renku 1.0</span>
             </Link>
           </>
         )}
