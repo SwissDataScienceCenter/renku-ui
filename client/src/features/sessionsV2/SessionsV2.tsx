@@ -158,6 +158,12 @@ export default function SessionsV2({ project }: SessionsV2Props) {
         {loading}
         {totalSessions > 0 && !isLoading && (
           <ListGroup flush>
+            {launchers?.map((launcher) => (
+              <ListGroupItem key={`launcher-${launcher.id}`}>
+                {"<SESSION LAUNCHER ITEM>"}
+              </ListGroupItem>
+            ))}
+
             <ListGroupItem>
               <ArrowUp className={cx("bi", "me-1")} />
               New interface - Old interface
