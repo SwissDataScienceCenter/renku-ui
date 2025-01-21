@@ -27,6 +27,7 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
 import { useGetRepositoriesProbesQuery } from "../../../repositories/repositories.api";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
+import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
 import CodeRepositorySelector from "./CodeRepositorySelector";
 
@@ -81,6 +82,7 @@ export default function BuilderEnvironmentFields({
         repositoriesDetails={repositoriesDetails}
       />
       <BuilderTypeSelector name="builder_type" control={control} />
+      <BuilderFrontendSelector name="builder_frontend" control={control} />
     </div>
   );
 

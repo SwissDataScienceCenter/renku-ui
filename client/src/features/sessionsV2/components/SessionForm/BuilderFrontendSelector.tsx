@@ -29,28 +29,26 @@ import Select, { type SingleValue } from "react-select";
 import { Label } from "reactstrap";
 
 /* eslint-disable spellcheck/spell-checker */
-const BUILDER_TYPES = ["Python (conda)"] as const;
+const BUILDER_FRONTENDS = ["VSCodium"] as const;
 /* eslint-enable spellcheck/spell-checker */
 
-interface BuilderTypeSelectorProps<T extends FieldValues>
+interface BuilderFrontendSelectorProps<T extends FieldValues>
   extends UseControllerProps<T> {}
 
-export default function BuilderTypeSelector<T extends FieldValues>({
+export default function BuilderFrontendSelector<T extends FieldValues>({
   ...controllerProps
-}: BuilderTypeSelectorProps<T>) {
+}: BuilderFrontendSelectorProps<T>) {
   const defaultValue = useMemo(
     () =>
       controllerProps.defaultValue
         ? controllerProps.defaultValue
-        : BUILDER_TYPES[0],
+        : BUILDER_FRONTENDS[0],
     [controllerProps.defaultValue]
   );
 
   return (
     <div>
-      <Label for="builder-environment-type-select-input">
-        Environment type
-      </Label>
+      <Label for="builder-environment-type-select-input">User interface</Label>
       <Controller
         {...controllerProps}
         render={({
@@ -62,10 +60,10 @@ export default function BuilderTypeSelector<T extends FieldValues>({
               className={cx(error && "is-invalid")}
               data-cy="environment-type-select"
             >
-              <BuilderTypeSelect
+              <BuilderFrontendSelect
                 name={controllerProps.name}
                 defaultValue={defaultValue}
-                options={BUILDER_TYPES}
+                options={BUILDER_FRONTENDS}
                 onBlur={onBlur}
                 onChange={onChange}
                 value={value ?? ""}
@@ -92,7 +90,7 @@ export default function BuilderTypeSelector<T extends FieldValues>({
   );
 }
 
-interface BuilderTypeSelectProps {
+interface BuilderFrontendSelectProps {
   name: string;
 
   defaultValue?: string;
@@ -105,7 +103,7 @@ interface BuilderTypeSelectProps {
   disabled?: boolean;
 }
 
-function BuilderTypeSelect({
+function BuilderFrontendSelect({
   name,
   options,
   defaultValue,
@@ -113,7 +111,7 @@ function BuilderTypeSelect({
   onChange: onChange_,
   disabled,
   value,
-}: BuilderTypeSelectProps) {
+}: BuilderFrontendSelectProps) {
   const onChange = useCallback(
     (newValue: SingleValue<{ value: string }>) => {
       onChange_?.(newValue?.value);
