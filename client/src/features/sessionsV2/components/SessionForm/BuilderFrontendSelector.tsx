@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
+import { ChevronDown } from "react-bootstrap-icons";
 import {
   Controller,
   type FieldValues,
@@ -25,8 +26,16 @@ import {
   type PathValue,
   type UseControllerProps,
 } from "react-hook-form";
-import Select, { type SingleValue } from "react-select";
+import Select, {
+  components,
+  type ClassNamesConfig,
+  type GroupBase,
+  type SelectComponentsConfig,
+  type SingleValue,
+} from "react-select";
 import { Label } from "reactstrap";
+
+import styles from "./Select.module.scss";
 
 /* eslint-disable spellcheck/spell-checker */
 const BUILDER_FRONTENDS = ["VSCodium"] as const;
@@ -136,12 +145,50 @@ function BuilderFrontendSelect({
       options={options.map((value) => ({ value }))}
       getOptionLabel={({ value }) => value}
       getOptionValue={({ value }) => value}
-      // unstyled
+      unstyled
       onChange={onChange}
       onBlur={onBlur}
       value={{ value }}
       isDisabled={disabled}
       defaultValue={defaultValue ? { value: defaultValue } : undefined}
+      classNames={selectClassNames}
+      components={selectComponents}
     />
   );
 }
+
+const selectClassNames: ClassNamesConfig<{ value: string }, false> = {
+  control: ({ menuIsOpen }) =>
+    cx(menuIsOpen ? "rounded-top" : "rounded", "border", styles.control),
+  dropdownIndicator: () => cx("pe-3"),
+  input: () => cx("px-3"),
+  menu: () => cx("bg-white", "rounded-bottom", "border"),
+  menuList: () => cx("d-grid"),
+  option: ({ isFocused, isSelected, isDisabled }) =>
+    cx(
+      "px-3",
+      "py-2",
+      isDisabled && "text-secondary",
+      styles.option,
+      isDisabled && styles.optionIsDisabled,
+      isFocused && !isDisabled && styles.optionIsFocused,
+      !isFocused && isSelected && !isDisabled && styles.optionIsSelected
+    ),
+  placeholder: () => cx("px-3"),
+  loadingMessage: () => cx("p-3"),
+  singleValue: () => cx("px-3"),
+};
+
+const selectComponents: SelectComponentsConfig<
+  { value: string },
+  false,
+  GroupBase<{ value: string }>
+> = {
+  DropdownIndicator: (props) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        <ChevronDown className="bi" />
+      </components.DropdownIndicator>
+    );
+  },
+};

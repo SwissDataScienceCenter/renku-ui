@@ -18,19 +18,30 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
+import { ChevronDown, XLg } from "react-bootstrap-icons";
 import {
   Controller,
   type FieldValues,
   type UseControllerProps,
 } from "react-hook-form";
-import Select, { type SingleValue } from "react-select";
+import Select, {
+  type ClassNamesConfig,
+  type GroupBase,
+  type OptionProps,
+  type SelectComponentsConfig,
+  type SingleValue,
+  type SingleValueProps,
+  components,
+} from "react-select";
 import { Label } from "reactstrap";
 
-import type { GetRepositoriesProbesResponse } from "../../../repositories/repositories.types";
+import type { RepositoryWithProbe } from "../../../repositories/repositories.types";
+
+import styles from "./Select.module.scss";
 
 interface CodeRepositorySelectorProps<T extends FieldValues>
   extends UseControllerProps<T> {
-  repositoriesDetails: GetRepositoriesProbesResponse;
+  repositoriesDetails: RepositoryWithProbe[];
 }
 
 export default function CodeRepositorySelector<T extends FieldValues>({
@@ -95,7 +106,7 @@ interface CodeRepositorySelectProps {
 
   defaultValue?: string;
 
-  options: GetRepositoriesProbesResponse;
+  options: RepositoryWithProbe[];
 
   onChange?: (newValue?: string) => void;
   onBlur?: () => void;
@@ -150,13 +161,104 @@ function CodeRepositorySelect({
       options={options}
       getOptionLabel={(option) => option.repositoryUrl}
       getOptionValue={(option) => option.repositoryUrl}
-      // unstyled
+      unstyled
       isOptionDisabled={(option) => !option.probe}
       onChange={onChange}
       onBlur={onBlur}
       value={value}
       isDisabled={disabled}
       defaultValue={defaultValue}
+      classNames={selectClassNames}
+      components={selectComponents}
     />
   );
 }
+
+const selectClassNames: ClassNamesConfig<RepositoryWithProbe, false> = {
+  control: ({ menuIsOpen }) =>
+    cx(menuIsOpen ? "rounded-top" : "rounded", "border", styles.control),
+  dropdownIndicator: () => cx("pe-3"),
+  input: () => cx("px-3"),
+  menu: () => cx("bg-white", "rounded-bottom", "border"),
+  menuList: () => cx("d-grid"),
+  option: ({ isFocused, isSelected, isDisabled }) =>
+    cx(
+      "d-flex",
+      "flex-column",
+      "flex-sm-row",
+      "column-gap-3",
+      "justify-content-sm-between",
+      "px-3",
+      "py-2",
+      isDisabled && "text-secondary",
+      styles.option,
+      isDisabled && styles.optionIsDisabled,
+      isFocused && !isDisabled && styles.optionIsFocused,
+      !isFocused && isSelected && !isDisabled && styles.optionIsSelected
+    ),
+  placeholder: () => cx("px-3"),
+  loadingMessage: () => cx("p-3"),
+  singleValue: () => cx("px-3"),
+};
+
+interface OptionOrSingleValueContentProps {
+  option: RepositoryWithProbe;
+}
+
+function OptionOrSingleValueContent({
+  option,
+}: OptionOrSingleValueContentProps) {
+  return (
+    <>
+      <span>{option.repositoryUrl}</span>
+      {!option.probe && (
+        <span>
+          <XLg className={cx("bi", "me-1")} />
+          No public access
+        </span>
+      )}
+    </>
+  );
+}
+
+const selectComponents: SelectComponentsConfig<
+  RepositoryWithProbe,
+  false,
+  GroupBase<RepositoryWithProbe>
+> = {
+  DropdownIndicator: (props) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        <ChevronDown className="bi" />
+      </components.DropdownIndicator>
+    );
+  },
+  Option: (
+    props: OptionProps<
+      RepositoryWithProbe,
+      false,
+      GroupBase<RepositoryWithProbe>
+    >
+  ) => {
+    const { data } = props;
+    return (
+      <components.Option {...props}>
+        <OptionOrSingleValueContent option={data} />
+      </components.Option>
+    );
+  },
+  SingleValue: (
+    props: SingleValueProps<
+      RepositoryWithProbe,
+      false,
+      GroupBase<RepositoryWithProbe>
+    >
+  ) => {
+    const { data } = props;
+    return (
+      <components.SingleValue {...props}>
+        <OptionOrSingleValueContent option={data} />
+      </components.SingleValue>
+    );
+  },
+};
