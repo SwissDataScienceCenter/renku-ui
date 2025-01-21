@@ -251,7 +251,7 @@ export function AddStorageAdvanced({
         </div>
       </div>
 
-      <div className="mb-3">
+      <div className={cx("mt-0", "mb-3")}>
         <h5>Advanced storage configuration</h5>
         <Label className={cx("form-label", "mb-3")} for="addCloudStorageConfig">
           Under the hood, we use{" "}
