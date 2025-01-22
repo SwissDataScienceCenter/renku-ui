@@ -59,6 +59,7 @@ import { SessionLauncher, SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
+import SessionLauncherItem from "./SessionList/SessionLauncherItem";
 
 export function getShowSessionUrlByProject(
   project: Project,
@@ -159,9 +160,10 @@ export default function SessionsV2({ project }: SessionsV2Props) {
         {totalSessions > 0 && !isLoading && (
           <ListGroup flush>
             {launchers?.map((launcher) => (
-              <ListGroupItem key={`launcher-${launcher.id}`}>
-                {"<SESSION LAUNCHER ITEM>"}
-              </ListGroupItem>
+              <SessionLauncherItem
+                key={`launcher-${launcher.id}`}
+                launcher={launcher}
+              />
             ))}
 
             <ListGroupItem>
