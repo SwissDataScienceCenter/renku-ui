@@ -22,8 +22,11 @@ import { CircleFill } from "react-bootstrap-icons";
 import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
+import { useProject } from "../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2.api";
 import type { SessionLauncher } from "../sessionsV2.types";
 import SessionLauncherView from "../SessionView/SessionLauncherView";
+import SessionItemV2 from "./SessionItemV2";
 
 interface SessionLauncherItemProps {
   launcher: SessionLauncher;
@@ -33,6 +36,21 @@ export default function SessionLauncherItem({
   launcher,
 }: SessionLauncherItemProps) {
   const { name } = launcher;
+
+  const { project } = useProject();
+
+  const { data: sessions } = useGetSessionsQueryV2();
+  const filteredSessions = useMemo(
+    () =>
+      sessions != null
+        ? sessions.filter(
+            (session) =>
+              session.launcher_id === launcher.id &&
+              session.project_id === project.id
+          )
+        : [],
+    [launcher.id, project.id, sessions]
+  );
 
   const [hash, setHash] = useLocationHash();
   const launcherHash = useMemo(
@@ -97,6 +115,13 @@ export default function SessionLauncherItem({
       <div className="d-none">
         <button>{"<ACTIONS>"}</button>
       </div>
+      {filteredSessions.map((session) => (
+        <SessionItemV2
+          key={session.name}
+          launcher={launcher}
+          session={session}
+        />
+      ))}
       <SessionLauncherView
         isOpen={isLauncherViewOpen}
         toggle={toggleLauncherView}

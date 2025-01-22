@@ -24,10 +24,12 @@ import {
   ExclamationTriangleFill,
   FileCode,
   Pencil,
+  Trash,
 } from "react-bootstrap-icons";
 import {
   Badge,
   Button,
+  DropdownItem,
   ListGroup,
   ListGroupItem,
   Offcanvas,
@@ -35,6 +37,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
 import {
   useGetResourceClassByIdQuery,
@@ -49,6 +52,8 @@ import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projects
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
+import DeleteSessionLauncherModal from "../DeleteSessionLauncherModal";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2.api";
 import type { SessionLauncher } from "../sessionsV2.types";
 import { EnvironmentCard } from "./EnvironmentCard";
 
@@ -95,12 +100,28 @@ export default function SessionLauncherView({
     );
   const dataConnectors = Object.values(dataConnectorsMap ?? {});
 
+  const { data: sessions } = useGetSessionsQueryV2();
+  const filteredSessions = useMemo(
+    () =>
+      sessions != null
+        ? sessions.filter(
+            (session) =>
+              session.launcher_id === launcher.id &&
+              session.project_id === project.id
+          )
+        : [],
+    [launcher.id, project.id, sessions]
+  );
+  const totalSessions = filteredSessions
+    ? Object.keys(filteredSessions).length
+    : 0;
+
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const toggleUpdate = useCallback(() => {
     setIsUpdateOpen((open) => !open);
   }, []);
 
-  const [isResouresOpen, setResourcesOpen] = useState(false);
+  const [isResourcesOpen, setResourcesOpen] = useState(false);
   const toggleResources = useCallback(() => {
     setResourcesOpen((open) => !open);
   }, []);
@@ -138,7 +159,10 @@ export default function SessionLauncherView({
           <div>
             <div>
               <div className={cx("float-end", "mt-1", "ms-1")}>
-                {"<launcherMenu>"}
+                <SessionLauncherActions
+                  launcher={launcher}
+                  sessionsLength={totalSessions}
+                />
               </div>
               <h2
                 className={cx("m-0", "text-break")}
@@ -240,7 +264,7 @@ export default function SessionLauncherView({
               )}
             {launcher && (
               <ModifyResourcesLauncherModal
-                isOpen={isResouresOpen}
+                isOpen={isResourcesOpen}
                 toggleModal={toggleResources}
                 resourceClassId={userLauncherResourceClass?.id}
                 diskStorage={launcher.disk_storage}
@@ -307,5 +331,77 @@ export default function SessionLauncherView({
         </div>
       </OffcanvasBody>
     </Offcanvas>
+  );
+}
+
+interface SessionLauncherActionsProps {
+  launcher: SessionLauncher;
+  sessionsLength: number;
+}
+
+function SessionLauncherActions({
+  launcher,
+  sessionsLength,
+}: SessionLauncherActionsProps) {
+  const { project_id: projectId } = launcher;
+  const permissions = useProjectPermissions({ projectId });
+
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const toggleUpdate = useCallback(() => {
+    setIsUpdateOpen((open) => !open);
+  }, []);
+
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const toggleDelete = useCallback(() => {
+    setIsDeleteOpen((open) => !open);
+  }, []);
+
+  const defaultAction = (
+    <Button
+      className="text-nowrap"
+      color="outline-primary"
+      data-cy="session-view-menu-edit"
+      onClick={toggleUpdate}
+      size="sm"
+    >
+      <Pencil className={cx("bi", "me-1")} />
+      Edit
+    </Button>
+  );
+
+  return (
+    <PermissionsGuard
+      disabled={null}
+      enabled={
+        <>
+          <ButtonWithMenuV2
+            color="outline-primary"
+            default={defaultAction}
+            size="sm"
+          >
+            <DropdownItem
+              data-cy="session-view-menu-delete"
+              onClick={toggleDelete}
+            >
+              <Trash className={cx("bi", "me-1")} />
+              Delete
+            </DropdownItem>
+          </ButtonWithMenuV2>{" "}
+          <UpdateSessionLauncherModal
+            isOpen={isUpdateOpen}
+            launcher={launcher}
+            toggle={toggleUpdate}
+          />
+          <DeleteSessionLauncherModal
+            isOpen={isDeleteOpen}
+            launcher={launcher}
+            toggle={toggleDelete}
+            sessionsLength={sessionsLength}
+          />
+        </>
+      }
+      requestedPermission="write"
+      userPermissions={permissions}
+    />
   );
 }
