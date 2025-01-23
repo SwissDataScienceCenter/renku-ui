@@ -24,7 +24,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Redirect, useLocation } from "react-router";
 import { Route, Switch } from "react-router-dom";
@@ -42,7 +42,6 @@ import { Favicon } from "./features/favicon/Favicon";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV1 from "./features/rootV1/LazyRootV1";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
-import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
 import { useGetUserQuery } from "./features/usersV2/api/users.api";
 import LazyAnonymousHome from "./landing/LazyAnonymousHome";
 import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
@@ -54,7 +53,6 @@ import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
-import { Url } from "./utils/helpers/url";
 import { setupWebSocket } from "./websocket";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -67,15 +65,15 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
   return <div className={classContainer}>{children}</div>;
 };
 
-function CentralContentContainer(props) {
-  const { notifications, socket, user } = props;
+function CentralContentContainer({ user, socket }) {
+  const { params, model, client, notifications } = useContext(AppContext);
 
   const { data: userInfo } = useGetUserQuery(
-    props.user.logged ? undefined : skipToken
+    user.logged ? undefined : skipToken
   );
 
   // check anonymous sessions settings
-  const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
+  const blockAnonymous = !user.logged && !params["ANONYMOUS_SESSIONS"];
 
   return (
     <div className="d-flex flex-grow-1">
@@ -84,7 +82,7 @@ function CentralContentContainer(props) {
       </Helmet>
       <Switch>
         <CompatRoute exact path="/">
-          {props.user.logged ? (
+          {user.logged ? (
             <ContainerWrap fullSize={true}>
               <LazyDashboardV2 />
             </ContainerWrap>
@@ -108,41 +106,35 @@ function CentralContentContainer(props) {
         </CompatRoute>
         <Route path="/projects/:subUrl+">
           <LazyProjectView
-            client={props.client}
-            params={props.params}
-            model={props.model}
-            user={props.user}
+            client={client}
+            params={params}
+            model={model}
+            user={user}
             blockAnonymous={blockAnonymous}
             notifications={notifications}
             socket={socket}
           />
         </Route>
-        <Route exact path={Url.get(Url.pages.sessions)}>
-          {!user.logged ? <LazyAnonymousSessionsList /> : <Redirect to="/" />}
-        </Route>
         <Route path="/datasets/:identifier/add">
-          <LazyDatasetAddToProject insideProject={false} model={props.model} />
+          <LazyDatasetAddToProject insideProject={false} model={model} />
         </Route>
         <CompatRoute path="/datasets/:identifier">
           <LazyShowDataset
             insideProject={false}
-            client={props.client}
+            client={client}
             projectsUrl="/projects"
             datasetCoordinator={
-              new DatasetCoordinator(
-                props.client,
-                props.model.subModel("dataset")
-              )
+              new DatasetCoordinator(client, model.subModel("dataset"))
             }
-            logged={props.user.logged}
-            model={props.model}
+            logged={user.logged}
+            model={model}
           />
         </CompatRoute>
         <CompatRoute path="/datasets">
           <Redirect to="/search?type=dataset" />
         </CompatRoute>
         <CompatRoute path="/v1">
-          <LazyRootV1 {...props} />
+          <LazyRootV1 user={user} />
         </CompatRoute>
         <CompatRoute path="/v2">
           <LazyRootV2 />
@@ -226,15 +218,10 @@ function App(props) {
     <Fragment>
       <Favicon />
       <AppContext.Provider value={appContext}>
-        <RenkuNavBar {...props} notifications={notifications} />
-        <CentralContentContainer
-          notifications={notifications}
-          socket={webSocket}
-          location={location}
-          {...props}
-        />
+        <RenkuNavBar user={user} />
+        <CentralContentContainer user={user} socket={webSocket} />
       </AppContext.Provider>
-      <FooterNavbar params={props.params} />
+      <FooterNavbar />
       <Cookie />
       <ToastContainer />
     </Fragment>

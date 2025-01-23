@@ -17,45 +17,32 @@
  */
 
 import cx from "classnames";
+import { Redirect } from "react-router";
 import { Route, Routes } from "react-router-dom-v5-compat";
-import ContainerWrap from "../../components/container/ContainerWrap.tsx";
-import LoggedInNavBar from "../../components/navbar/LoggedInNavBar.tsx";
-import LazyHelp from "../../help/LazyHelp.tsx";
-import LazyAnonymousHome from "../../landing/LazyAnonymousHome.tsx";
-import { StateModel } from "../../model";
-import LazyNotFound from "../../not-found/LazyNotFound.tsx";
-import LazyNotificationsPage from "../../notifications/LazyNotificationsPage.tsx";
-import { NotificationsManager } from "../../notifications/notifications.types.ts";
-import LazyStyleGuide from "../../styleguide/LazyStyleGuide.tsx";
-import { AppParams } from "../../utils/context/appParams.types.ts";
-import LazyDashboard from "../dashboard/LazyDashboard.tsx";
-import LazyInactiveKGProjectsPage from "../inactiveKgProjects/LazyInactiveKGProjectsPage.tsx";
-import LazySearchPage from "../kgSearch/LazySearchPage.tsx";
-import LazySecrets from "../secrets/LazySecrets.tsx";
+import ContainerWrap from "../../components/container/ContainerWrap";
+import AnonymousNavBar from "../../components/navbar/AnonymousNavBar";
+import LoggedInNavBar from "../../components/navbar/LoggedInNavBar";
+import LazyHelp from "../../help/LazyHelp";
+import LazyNotFound from "../../not-found/LazyNotFound";
+import LazyNotificationsPage from "../../notifications/LazyNotificationsPage";
+import { RELATIVE_ROUTES } from "../../routing/routes.constants";
+import LazyStyleGuide from "../../styleguide/LazyStyleGuide";
+import LazyDashboard from "../dashboard/LazyDashboard";
+import LazyInactiveKGProjectsPage from "../inactiveKgProjects/LazyInactiveKGProjectsPage";
+import LazySearchPage from "../kgSearch/LazySearchPage";
+import LazySecrets from "../secrets/LazySecrets";
+import LazyAnonymousSessionsList from "../session/components/LazyAnonymousSessionsList";
 
-export default function RootV1(props: {
-  model: StateModel;
-  notifications: NotificationsManager;
-  params: AppParams;
+export default function RootV1({
+  user,
+}: {
   user: {
     logged: boolean;
   };
 }) {
-  if (!props.user.logged)
-    return (
-      <div className="w-100">
-        <LazyAnonymousHome />
-      </div>
-    );
-
   return (
     <div className="w-100">
-      <LoggedInNavBar
-        model={props.model}
-        notifications={props.notifications}
-        params={props.params}
-      />
-
+      {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
       <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
           <Route
@@ -67,7 +54,7 @@ export default function RootV1(props: {
             }
           />
           <Route
-            path="help/*"
+            path={RELATIVE_ROUTES.v1.help}
             element={
               <ContainerWrap>
                 <LazyHelp />
@@ -75,7 +62,7 @@ export default function RootV1(props: {
             }
           />
           <Route
-            path="search/*"
+            path={RELATIVE_ROUTES.v1.search}
             element={
               <ContainerWrap>
                 <LazySearchPage />
@@ -83,7 +70,7 @@ export default function RootV1(props: {
             }
           />
           <Route
-            path="/notifications"
+            path={RELATIVE_ROUTES.v1.notifications}
             element={
               <ContainerWrap>
                 <LazyNotificationsPage />
@@ -91,7 +78,7 @@ export default function RootV1(props: {
             }
           />
           <Route
-            path="/style-guide"
+            path={RELATIVE_ROUTES.v1.styleGuide}
             element={
               <ContainerWrap>
                 <LazyStyleGuide />
@@ -99,7 +86,7 @@ export default function RootV1(props: {
             }
           />
           <Route
-            path="/secrets"
+            path={RELATIVE_ROUTES.v1.secrets}
             element={
               <ContainerWrap>
                 <LazySecrets />
@@ -107,11 +94,21 @@ export default function RootV1(props: {
             }
           />
           <Route
-            path="/inactive-kg-projects"
+            path={RELATIVE_ROUTES.v1.inactiveKGProjects}
             element={
               <ContainerWrap>
                 <LazyInactiveKGProjectsPage />
               </ContainerWrap>
+            }
+          />
+          <Route
+            path={RELATIVE_ROUTES.v1.sessions}
+            element={
+              !user.logged ? (
+                <LazyAnonymousSessionsList />
+              ) : (
+                <Redirect to="/v1" />
+              )
             }
           />
           <Route

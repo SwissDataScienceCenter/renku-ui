@@ -5,6 +5,7 @@ import { connect, Provider } from "react-redux";
 import { Route, Switch, useHistory } from "react-router-dom";
 
 import "bootstrap";
+import { RELATIVE_ROUTES } from "./routing/routes.constants";
 
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import v1Styles from "./styles/index.scss?inline";
@@ -140,27 +141,17 @@ function FeatureFlagHandler() {
 export function StyleHandler() {
   return (
     <Switch>
-      <Route path="/projects">
+      <Route path={RELATIVE_ROUTES.projects}>
         <Helmet>
           <style type="text/css">{v1Styles}</style>
         </Helmet>
       </Route>
-      <Route path="/datasets">
+      <Route path={RELATIVE_ROUTES.datasets}>
         <Helmet>
           <style type="text/css">{v1Styles}</style>
         </Helmet>
       </Route>
-      <Route path="/notifications">
-        <Helmet>
-          <style type="text/css">{v1Styles}</style>
-        </Helmet>
-      </Route>
-      <Route path="/style-guide">
-        <Helmet>
-          <style type="text/css">{v1Styles}</style>
-        </Helmet>
-      </Route>
-      <Route path="/v1">
+      <Route path={RELATIVE_ROUTES.v1.root}>
         <Helmet>
           <style type="text/css">{v1Styles}</style>
         </Helmet>

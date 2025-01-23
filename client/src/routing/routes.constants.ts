@@ -63,15 +63,23 @@ export const ABSOLUTE_ROUTES = {
     notifications: "/v1/notifications",
     styleGuide: "/v1/style-guide",
     secrets: "/v1/secrets",
+    sessions: "/v1/sessions",
   },
 } as const;
 
 export const RELATIVE_ROUTES = {
   root: "/",
+  datasets: "/datasets",
+  projects: "/projects",
   v1: {
-    root: "v1/*",
+    root: "/v1",
     search: "search",
-    help: "help",
+    help: "help/*",
+    sessions: "sessions",
+    notifications: "notifications",
+    secrets: "secrets",
+    styleGuide: "style-guide",
+    inactiveKGProjects: "inactive-kg-projects",
   },
   v2: {
     root: "v2/*",

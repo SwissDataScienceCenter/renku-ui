@@ -17,15 +17,14 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
 import StatusBanner from "../../features/platform/components/StatusBanner";
 import { NavBarWarnings } from "../../landing/NavBarWarnings";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
-import { AppParams } from "../../utils/context/appParams.types";
-import { Url } from "../../utils/helpers/url";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import AppContext from "../../utils/context/appContext";
 import { RenkuNavLink } from "../RenkuNavLink";
 import {
   RenkuToolbarGitLabMenu,
@@ -36,24 +35,14 @@ import {
 } from "./NavBarItems";
 import { RENKU_LOGO } from "./navbar.constans";
 
-interface LoggedInNavBarProps {
-  model: unknown;
-  notifications: unknown;
-  params: AppParams;
-}
-
-export default function LoggedInNavBar({
-  model,
-  notifications,
-  params,
-}: LoggedInNavBarProps) {
-  const uiShortSha = params.UI_SHORT_SHA;
-
+export default function LoggedInNavBar() {
+  const { params, model, notifications } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
-
   const onToggle = useCallback(() => {
     setIsOpen((isOpen) => !isOpen);
   }, []);
+  if (!params) return null;
+  const uiShortSha = params?.UI_SHORT_SHA;
 
   return (
     <>
@@ -65,7 +54,7 @@ export default function LoggedInNavBar({
           <Link
             id="link-home"
             data-cy="link-home"
-            to={Url.get(Url.pages.landing)}
+            to={ABSOLUTE_ROUTES.v1.root}
             className="navbar-brand me-2 pb-0 pt-0"
           >
             <img src={RENKU_LOGO} alt="Renku" height="50" className="d-block" />
@@ -86,7 +75,7 @@ export default function LoggedInNavBar({
             >
               <NavItem className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4">
                 <RenkuNavLink
-                  to={Url.get(ABSOLUTE_ROUTES.v1.search)}
+                  to={ABSOLUTE_ROUTES.v1.search}
                   title="Search"
                   id="link-search"
                   icon={<Search />}
@@ -99,7 +88,7 @@ export default function LoggedInNavBar({
                 className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4"
               >
                 <RenkuNavLink
-                  to={Url.get(ABSOLUTE_ROUTES.v1.root)}
+                  to={ABSOLUTE_ROUTES.v1.root}
                   title="Dashboard"
                   id="link-dashboard"
                 />

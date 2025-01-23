@@ -24,34 +24,36 @@
  */
 
 import cx from "classnames";
+import { useContext } from "react";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
-import { RenkuNavLink } from "../components/RenkuNavLink";
+import AnonymousNavBar from "../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../components/navbar/navbar.constans";
+import { RenkuNavLink } from "../components/RenkuNavLink";
 import NavbarV2 from "../features/rootV2/NavbarV2";
 import { parseChartVersion } from "../help/release.utils";
 import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 import { Links } from "../utils/constants/Docs";
+import AppContext from "../utils/context/appContext";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
-import { isRenkuLegacy } from "../utils/helpers/HelperFunctions";
+import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
 import { Url } from "../utils/helpers/url";
 
 import "./NavBar.css";
 
-function RenkuNavBar(props) {
-  const { user } = props;
+function RenkuNavBar({ user }) {
   const location = useLocation();
 
   if (!user.logged && location.pathname === Url.get(Url.pages.landing)) {
     return null;
   }
 
-  return <RenkuNavBarInner {...props} />;
+  return <RenkuNavBarInner user={user} />;
 }
 
-function RenkuNavBarInner(props) {
+function RenkuNavBarInner({ user }) {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
@@ -67,18 +69,10 @@ function RenkuNavBarInner(props) {
       <Route path="/v2/" />
       <Route path="/v1/" />
       <Route path="/projects/">
-        <LoggedInNavBar
-          model={props.model}
-          notifications={props.notifications}
-          params={props.params}
-        />
+        {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
       </Route>
       <Route path="/datasets/">
-        <LoggedInNavBar
-          model={props.model}
-          notifications={props.notifications}
-          params={props.params}
-        />
+        {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
       </Route>
       <Route>
         <NavbarV2 />
@@ -126,13 +120,13 @@ function FooterNavbarLoggedInLinks({ privacyLink }) {
   );
 }
 
-function FooterNavbar(props) {
+function FooterNavbar() {
   const location = useLocation();
 
-  return <FooterNavbarInner {...props} location={location} />;
+  return <FooterNavbarInner location={location} />;
 }
 
-function FooterNavbarInner({ location, params }) {
+function FooterNavbarInner({ location }) {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
@@ -142,6 +136,7 @@ function FooterNavbarInner({ location, params }) {
     path: projectMetadata["path"],
     server: ":server",
   });
+  const { params } = useContext(AppContext);
 
   const privacyLink =
     params && params["PRIVACY_STATEMENT"] ? (
