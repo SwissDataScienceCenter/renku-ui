@@ -374,7 +374,7 @@ export default function ActiveSessionButton({
 
   return (
     <ButtonWithMenuV2
-      className={cx(className)}
+      className={className}
       color="primary"
       default={defaultAction}
       preventPropagation

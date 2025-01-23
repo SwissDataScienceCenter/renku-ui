@@ -19,12 +19,16 @@
 import cx from "classnames";
 import { Offcanvas, OffcanvasBody } from "reactstrap";
 
+import { useProject } from "../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
+import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
   SessionStatusV2Description,
   SessionStatusV2Label,
 } from "../components/SessionStatus/SessionStatus";
+import { getShowSessionUrlByProject } from "../SessionsV2";
 import type { SessionLauncher, SessionV2 } from "../sessionsV2.types";
+import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 
 interface SessionViewV2Props {
   isOpen: boolean;
@@ -40,6 +44,8 @@ export default function SessionViewV2({
   launcher,
   session,
 }: SessionViewV2Props) {
+  const { project } = useProject();
+
   return (
     <Offcanvas isOpen={isOpen} toggle={toggle} direction="end" backdrop>
       <OffcanvasBody>
@@ -56,7 +62,15 @@ export default function SessionViewV2({
         <div className={cx("d-flex", "flex-column", "gap-4")}>
           <div>
             <div>
-              <div className={cx("float-end", "mt-1", "ms-1")}>{"<MENU>"}</div>
+              <div className={cx("float-end", "mt-1", "ms-1")}>
+                <ActiveSessionButton
+                  session={session}
+                  showSessionUrl={getShowSessionUrlByProject(
+                    project,
+                    session.name
+                  )}
+                />
+              </div>
               <h2
                 className={cx("m-0", "text-break")}
                 data-cy="session-view-title"
@@ -75,6 +89,11 @@ export default function SessionViewV2({
             <SessionRowResourceRequests
               resourceRequests={session.resources.requests}
             />
+          </div>
+
+          <div>
+            <h4 className={cx("mb-0", "me-2")}>Container image</h4>
+            <CommandCopy command={session.image} />
           </div>
         </div>
       </OffcanvasBody>
