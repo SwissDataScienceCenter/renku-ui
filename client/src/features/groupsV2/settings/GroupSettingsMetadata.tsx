@@ -216,7 +216,7 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
                 errors={errors}
                 name={"slug"}
                 resetFunction={resetUrl}
-                url="renkulab.io/v2/groups/"
+                url="renkulab.io/g/"
               />
               {errors.slug && dirtyFields.slug && (
                 <div className={cx("d-block", "invalid-feedback")}>

@@ -57,7 +57,7 @@ describe("Set up data connectors with credentials", () => {
         // No call to postCloudStorageSecrets is expected
         shouldNotBeCalled: true,
       });
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@listProjectDataConnectors");
 
@@ -127,7 +127,7 @@ describe("Set up data connectors with credentials", () => {
       .dataConnectorSecrets({
         fixture: "dataConnector/data-connector-secrets.json",
       });
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@listProjectDataConnectors");
 

@@ -37,7 +37,6 @@ import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProj
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import LazyShowDataset from "./dataset/LazyShowDataset";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
-import LazyDashboardV2 from "./features/dashboardV2/LazyDashboardV2";
 import { Favicon } from "./features/favicon/Favicon";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV1 from "./features/rootV1/LazyRootV1";
@@ -45,7 +44,6 @@ import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQuery } from "./features/usersV2/api/users.api";
 import LazyAnonymousHome from "./landing/LazyAnonymousHome";
 import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
-import LazyNotFound from "./not-found/LazyNotFound";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
@@ -83,7 +81,7 @@ function CentralContentContainer({ user, socket }) {
         <CompatRoute exact path="/">
           {user.logged ? (
             <ContainerWrap fullSize={true}>
-              <LazyDashboardV2 />
+              <LazyRootV2 />
             </ContainerWrap>
           ) : (
             <div className="w-100">
@@ -123,9 +121,6 @@ function CentralContentContainer({ user, socket }) {
         <CompatRoute path="/v1">
           <LazyRootV1 user={user} />
         </CompatRoute>
-        <CompatRoute path="/v2">
-          <LazyRootV2 />
-        </CompatRoute>
         {userInfo?.isLoggedIn && userInfo.is_admin && (
           <CompatRoute path="/admin">
             <ContainerWrap>
@@ -134,7 +129,7 @@ function CentralContentContainer({ user, socket }) {
           </CompatRoute>
         )}
         <Route path="/*">
-          <LazyNotFound />
+          <LazyRootV2 />
         </Route>
       </Switch>
     </div>

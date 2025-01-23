@@ -33,7 +33,7 @@ import {
   RenkuToolbarItemUser,
   RenkuToolbarNotifications,
 } from "./NavBarItems";
-import { RENKU_LOGO } from "./navbar.constans";
+import { RENKU_LOGO } from "./navbar.constants";
 
 export default function AnonymousNavBar() {
   const { params, model, notifications } = useContext(AppContext);

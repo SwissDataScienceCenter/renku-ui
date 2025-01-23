@@ -170,7 +170,7 @@ function ProjectV2CreationDetails() {
     });
   }, [setValue, currentName]);
 
-  const url = `renkulab.io/v2/projects/${currentNamespace ?? "<Owner>"}/`;
+  const url = `renkulab.io/p/${currentNamespace ?? "<Owner>"}/`;
 
   return (
     <>

@@ -27,7 +27,7 @@ describe("Interact with Connected services", () => {
   });
 
   it("Shows an empty page when no services are available", () => {
-    cy.visit("/v2/connected-services");
+    cy.visit("/connected-services");
     cy.getDataCy("connected-services-page").should(
       "contain.text",
       "There are currently no external services"
@@ -36,7 +36,7 @@ describe("Interact with Connected services", () => {
 
   it("Connect GitHub user", () => {
     fixtures.listConnectedServicesProviders();
-    cy.visit("/v2/connected-services");
+    cy.visit("/connected-services");
     cy.getDataCy("connected-services-card").should("have.length", 2);
     cy.getDataCy("connected-services-card").contains("GitHub.com");
     cy.getDataCy("connected-services-card")
@@ -49,7 +49,7 @@ describe("Interact with Connected services", () => {
     // ? Instead of clicking the Connect link, we just load the connection.
     fixtures.listConnectedServicesConnections();
     cy.reload();
-    cy.visit("/v2/connected-services");
+    cy.visit("/connected-services");
     cy.getDataCy("connected-services-card")
       .filter(`:contains("GitHub.com")`)
       .contains("Connected");
@@ -64,7 +64,7 @@ describe("Interact with Connected services", () => {
       .listConnectedServicesConnections()
       .listConnectedServicesAccount()
       .listConnectedServicesInstallations({ empty: true });
-    cy.visit("/v2/connected-services");
+    cy.visit("/connected-services");
 
     cy.getDataCy("connected-services-card")
       .should("contain", "@my-github-user")

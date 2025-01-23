@@ -19,11 +19,13 @@
 import * as Sentry from "@sentry/react";
 import cx from "classnames";
 import { ReactNode, useCallback } from "react";
+import { useLocation } from "react-router-dom-v5-compat";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { StyleHandler } from "../index";
 import rkOopsImg from "../styles/assets/oops.svg";
 import rkOopsV2Img from "../styles/assets/oopsV2.svg";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
+import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
@@ -52,7 +54,8 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
 }
 
 function ErrorPage() {
-  const isV2 = location.pathname.startsWith("/v2");
+  const location = useLocation();
+  const isLegacy = isRenkuLegacy(location.pathname);
   const logged = useLegacySelector((state) => state.stateModel.user.logged);
   return (
     <>
@@ -61,10 +64,10 @@ function ErrorPage() {
         className={cx("d-flex", "flex-column", "align-items-center", "mt-5")}
       >
         <div className={cx("p-4")}>
-          <img src={isV2 ? rkOopsV2Img : rkOopsImg} />
+          <img src={isLegacy ? rkOopsImg : rkOopsV2Img} />
           <h3
             className={cx(
-              isV2 ? "text-primary" : "text-rk-green",
+              isLegacy ? "text-rk-green" : "text-primary",
               "fw-bold",
               "mt-3"
             )}
@@ -77,7 +80,7 @@ function ErrorPage() {
             <a
               className={cx(
                 "btn",
-                isV2 ? "btn-outline-primary" : "btn-outline-rk-green",
+                isLegacy ? "btn-outline-rk-green" : "btn-outline-primary",
                 "m-2"
               )}
               href={window.location.href}
@@ -89,7 +92,7 @@ function ErrorPage() {
             <a
               className={cx(
                 "btn",
-                isV2 ? "btn-primary" : "btn-rk-green",
+                isLegacy ? "btn-rk-green" : "btn-primary",
                 "m-2"
               )}
               href="/"

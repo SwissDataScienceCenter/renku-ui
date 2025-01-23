@@ -159,7 +159,7 @@ function GroupV2CreationDetails() {
     }
   }, [result, navigate]);
 
-  const url = "renkulab.io/v2/groups/";
+  const url = "renkulab.io/g/";
 
   const resetUrl = useCallback(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {

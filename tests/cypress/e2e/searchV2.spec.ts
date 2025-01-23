@@ -25,7 +25,7 @@ describe("Search V2", () => {
 
   it("Load the page and search", () => {
     fixtures.searchV2ListProjects({ numberOfProjects: 5, numberOfUsers: 0 });
-    cy.visit("/v2/search");
+    cy.visit("/search");
 
     cy.getDataCy("search-input").type("test{enter}");
     cy.getDataCy("search-header").contains("5 results for");
@@ -34,7 +34,7 @@ describe("Search V2", () => {
 
   it("Updates the search parameters", () => {
     fixtures.searchV2ListProjects({ numberOfProjects: 5, numberOfUsers: 2 });
-    cy.visit("/v2/search");
+    cy.visit("/search");
     cy.getDataCy("search-input").type("type:project test{enter}");
 
     cy.getDataCy("search-filter-type-project")
@@ -54,7 +54,7 @@ describe("Search V2", () => {
 
   it("Updates the search sorting", () => {
     fixtures.searchV2ListProjects();
-    cy.visit("/v2/search");
+    cy.visit("/search");
     cy.getDataCy("search-input").type("sort:name-asc test{enter}");
     cy.getDataCy("search-header").contains("sort:name-asc");
 

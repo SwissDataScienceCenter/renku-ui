@@ -31,9 +31,8 @@ import { Link, Route, useLocation } from "react-router-dom-v5-compat";
 import { ExternalDocsLink } from "../components/ExternalLinks";
 import AnonymousNavBar from "../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../components/navbar/LoggedInNavBar";
-import { RENKU_LOGO } from "../components/navbar/navbar.constans";
+import { RENKU_LOGO } from "../components/navbar/navbar.constants";
 import { RenkuNavLink } from "../components/RenkuNavLink";
-import NavbarV2 from "../features/rootV2/NavbarV2";
 import { parseChartVersion } from "../help/release.utils";
 import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 import { Links } from "../utils/constants/Docs";
@@ -67,16 +66,12 @@ function RenkuNavBarInner({ user }) {
   return (
     <Switch key="mainNav">
       <Route path={sessionShowUrl} />
-      <Route path="/v2/" />
-      <Route path="/v1/" />
-      <Route path="/projects/">
+      <Route path={ABSOLUTE_ROUTES.v1.root} />
+      <Route path={ABSOLUTE_ROUTES.projects}>
         {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
       </Route>
-      <Route path="/datasets/">
+      <Route path={ABSOLUTE_ROUTES.datasets}>
         {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
-      </Route>
-      <Route>
-        <NavbarV2 />
       </Route>
     </Switch>
   );
@@ -96,10 +91,9 @@ function FooterNavbarAnonymousLinks() {
 
 function FooterNavbarLoggedInLinks({ privacyLink }) {
   const location = useLocation();
-  const helpLocation =
-    location && location.pathname.startsWith("/v2")
-      ? ABSOLUTE_ROUTES.v2.help.root
-      : Url.pages.help.base;
+  const helpLocation = isRenkuLegacy(location.pathname)
+    ? ABSOLUTE_ROUTES.v1.help.root
+    : ABSOLUTE_ROUTES.v2.help.root;
   return (
     <>
       <RenkuNavLink to={helpLocation} title="Help" />
@@ -206,7 +200,7 @@ function FooterNavbarInner() {
   return (
     <Switch key="footerNav">
       <Route path={sessionShowUrl} />
-      <Route path="/v2/projects/:namespace/:slug/sessions/show/:server" />
+      <Route path="/p/:namespace/:slug/sessions/show/:server" />
       <Route>{footer}</Route>
     </Switch>
   );
