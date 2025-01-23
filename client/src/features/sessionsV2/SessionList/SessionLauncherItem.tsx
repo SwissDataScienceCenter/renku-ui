@@ -70,6 +70,18 @@ export default function SessionLauncherItem({
 
   return (
     <>
+      <div className="position-relative">
+        <div
+          className={cx("position-absolute", "z-2")}
+          style={{
+            top: 0,
+            marginTop: "1rem",
+            right: 0,
+          }}
+        >
+          <button className="my-auto">{"<ACTIONS>"}</button>
+        </div>
+      </div>
       <ListGroupItem
         action
         className="cursor-pointer"
@@ -112,9 +124,6 @@ export default function SessionLauncherItem({
           </Col>
         </Row>
       </ListGroupItem>
-      <div className="d-none">
-        <button>{"<ACTIONS>"}</button>
-      </div>
       {filteredSessions.map((session) => (
         <SessionItemV2
           key={session.name}
