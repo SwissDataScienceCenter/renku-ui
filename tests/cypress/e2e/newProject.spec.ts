@@ -26,7 +26,7 @@ describe("Add new project", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects();
-    cy.visit("projects/new");
+    cy.visit("/v1/projects/new");
   });
 
   it("create a new project that should change name", () => {
@@ -183,7 +183,7 @@ describe("Add new project shared link", () => {
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
-    cy.visit(`projects/new${customValues}`);
+    cy.visit(`/v1/projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
@@ -228,7 +228,7 @@ describe("Add new project shared link", () => {
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
-    cy.visit(`projects/new${customValues}`);
+    cy.visit(`/v1/projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
@@ -249,7 +249,7 @@ describe("Add new project shared link", () => {
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
-    cy.visit(`projects/new${customValues}`);
+    cy.visit(`/v1/projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
@@ -278,7 +278,7 @@ describe("Add new project shared link", () => {
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
-    cy.visit(`projects/new${customValues}`);
+    cy.visit(`/v1/projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
@@ -310,7 +310,7 @@ describe("Add new project shared link", () => {
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
-    cy.visit(`projects/new${customValues}`);
+    cy.visit(`/v1/projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages
@@ -337,7 +337,7 @@ describe("Add new project shared link", () => {
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
-    cy.visit(`projects/new${customValues}`);
+    cy.visit(`/v1/projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // Check feedback messages

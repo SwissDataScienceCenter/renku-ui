@@ -59,6 +59,11 @@ export const ABSOLUTE_ROUTES = {
   v1: {
     root: "/v1",
     search: "/v1/search",
+    projects: {
+      root: "/v1/projects",
+      all: "/v1/projects/all",
+      starred: "/v1/projects/starred",
+    },
     help: {
       root: "/v1/help",
       contact: "/v1/help/contact",
@@ -79,14 +84,20 @@ export const RELATIVE_ROUTES = {
   datasets: "/datasets",
   projects: "/projects",
   v1: {
-    root: "/v1",
-    search: "search",
+    root: "v1/*",
+    projects: {
+      root: "projects/*",
+      all: "all",
+      new: "new",
+      starred: "starred",
+    },
     help: "help/*",
-    sessions: "sessions",
-    notifications: "notifications",
-    secrets: "secrets",
-    styleGuide: "style-guide",
     inactiveKGProjects: "inactive-kg-projects",
+    notifications: "notifications",
+    search: "search",
+    secrets: "secrets",
+    sessions: "sessions",
+    styleGuide: "style-guide",
   },
   v2: {
     root: "v2/*",

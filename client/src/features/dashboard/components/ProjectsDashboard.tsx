@@ -92,7 +92,7 @@ function ProjectAlert({ total }: ProjectAlertProps) {
           <ExternalLink
             role="text"
             title="create a new project"
-            url="/projects/new"
+            url="/v1/projects/new"
             className="fw-bold"
           />
           ,{" "}

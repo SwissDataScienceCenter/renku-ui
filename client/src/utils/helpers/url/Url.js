@@ -147,7 +147,7 @@ function searchValidation(data) {
 function projectsSearchUrlBuilder(subSection) {
   return (data) => {
     // create base url
-    let url = subSection ? `/projects/${subSection}` : "/projects";
+    let url = subSection ? `/v1/projects/${subSection}` : "/v1/projects";
 
     // add optional parameters
     if (!data || !Object.keys(data).length) return url;
@@ -164,7 +164,7 @@ function projectsSearchUrlBuilder(subSection) {
 function projectNewUrlBuilder() {
   return (data) => {
     // create base url
-    let url = "/projects/new";
+    let url = "/v1/projects/new";
     if (!data || !data.data) return url;
     const search = new URLSearchParams();
     search.append("data", data.data);
@@ -284,20 +284,20 @@ const Url = {
     },
     projects: {
       base: new UrlRule(projectsSearchUrlBuilder(), [], searchValidation, [
-        "/projects",
-        "/projects?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects",
+        "/v1/projects",
+        "/v1/projects?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects",
       ]),
       all: new UrlRule(projectsSearchUrlBuilder("all"), [], searchValidation, [
-        "/projects/all",
-        "/projects/all?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects",
+        "/v1/projects/all",
+        "/v1/projects/all?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects",
       ]),
       starred: new UrlRule(
         projectsSearchUrlBuilder("starred"),
         [],
         searchValidation,
         [
-          "/projects/starred",
-          "/projects/starred?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects",
+          "/v1/projects/starred",
+          "/v1/projects/starred?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects",
         ]
       ),
     },
@@ -309,8 +309,8 @@ const Url = {
         ["/projects/namespace/path", "/projects/group/subgroup/path"]
       ),
       new: new UrlRule(projectNewUrlBuilder(), [], null, [
-        "/projects/new",
-        "/projects/new?data=eyJ0aXRsZSI6InRlC3QifQ==",
+        "/v1/projects/new",
+        "/v1/projects/new?data=eyJ0aXRsZSI6InRlC3QifQ==",
       ]),
       datasets: {
         base: new UrlRule(projectDatabaseUrlBuilder(), ["path"], null, [

@@ -74,7 +74,7 @@ export function RenkuToolbarItemPlus() {
       <Link
         className="dropdown-item"
         id="navbar-project-new"
-        to="/projects/new"
+        to="/v1/projects/new"
       >
         Project
       </Link>
