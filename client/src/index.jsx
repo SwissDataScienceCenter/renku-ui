@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import "bootstrap";
-import { RELATIVE_ROUTES } from "./routing/routes.constants";
+import { useLocation } from "react-router-dom-v5-compat";
 
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import v1Styles from "./styles/index.scss?inline";
@@ -24,6 +24,7 @@ import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
+import { isRenkuLegacy } from "./utils/helpers/HelperFunctionsV2";
 import { Sentry } from "./utils/helpers/sentry";
 import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
 
@@ -139,28 +140,12 @@ function FeatureFlagHandler() {
 }
 
 export function StyleHandler() {
+  const location = useLocation();
   return (
-    <Switch>
-      <Route path={RELATIVE_ROUTES.projects}>
-        <Helmet>
-          <style type="text/css">{v1Styles}</style>
-        </Helmet>
-      </Route>
-      <Route path={RELATIVE_ROUTES.datasets}>
-        <Helmet>
-          <style type="text/css">{v1Styles}</style>
-        </Helmet>
-      </Route>
-      <Route path={RELATIVE_ROUTES.v1.root}>
-        <Helmet>
-          <style type="text/css">{v1Styles}</style>
-        </Helmet>
-      </Route>
-      <Route path="*">
-        <Helmet>
-          <style type="text/css">{v2Styles}</style>
-        </Helmet>
-      </Route>
-    </Switch>
+    <Helmet>
+      <style type="text/css">
+        {isRenkuLegacy(location.pathname) ? v1Styles : v2Styles}
+      </style>
+    </Helmet>
   );
 }
