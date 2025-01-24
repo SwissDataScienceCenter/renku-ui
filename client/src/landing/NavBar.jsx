@@ -153,11 +153,11 @@ function FooterNavbarInner({ location }) {
       ? `${taggedVersion} (dev)`
       : taggedVersion;
 
-  const releaseLocation = location.pathname.startsWith("/v2")
-    ? ABSOLUTE_ROUTES.v2.help.release
-    : Url.pages.help.release;
-
   const isRenkuV1 = isRenkuLegacy(location.pathname);
+  const releaseLocation = isRenkuV1
+    ? ABSOLUTE_ROUTES.v1.help.release
+    : ABSOLUTE_ROUTES.v2.help.release;
+
   const footer = (
     <footer className={cx("text-body", "bg-body")} data-bs-theme="navy">
       <div

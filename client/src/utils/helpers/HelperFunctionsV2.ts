@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
-export function isRenkuLegacy(pathname: string) {
+export function isRenkuLegacy(pathname: string | undefined) {
   return (
-    pathname.startsWith("/v1") ||
-    pathname.startsWith("/projects") ||
-    pathname.startsWith("/datasets")
+    typeof pathname === "string" &&
+    (pathname.startsWith("/v1") ||
+      pathname.startsWith("/projects") ||
+      pathname.startsWith("/datasets"))
   );
 }

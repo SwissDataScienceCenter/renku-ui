@@ -212,7 +212,7 @@ export function RenkuToolbarHelpMenu({ firstItem }: RenkuToolbarHelpMenuProps) {
         aria-labelledby="help-menu"
       >
         <DropdownItem className="p-0">
-          <Link className="dropdown-item" to={ABSOLUTE_ROUTES.v1.help}>
+          <Link className="dropdown-item" to={ABSOLUTE_ROUTES.v1.help.root}>
             Help
           </Link>
         </DropdownItem>
