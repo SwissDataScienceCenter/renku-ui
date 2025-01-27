@@ -35,15 +35,15 @@ import { stateToSearchString } from "../features/kgSearch";
 import AppContext from "../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 import { Url } from "../utils/helpers/url";
+import { IntroductionRenku20 } from "./Introduction/IntroductionRenku2.0.tsx";
 
 import { NavBarWarnings } from "./NavBarWarnings";
 
 import VisualHead from "./Graphics/Visual_Head.svg";
 
 import DividerLandingPage from "./Dividier/Divider";
-import GetStarted from "./GetSarted/GetStarted";
 import HeroLanding from "./HeroLanding/HeroLanding";
-import SectionShowcase, { validatedShowcaseConfig } from "./SectionShowcase";
+import { ResourcesAndSupport } from "./ResourcesSupport/ResourcesAndSupport.tsx";
 import Teaching from "./Teaching/Teaching";
 import WhatIsRenku from "./WhatIsRenku/WhatIsRenku";
 import WhoWeAre from "./WhoWeAre/WhoWeAre";
@@ -138,21 +138,14 @@ function StandardHome(props: AnonymousHomeConfig) {
   return (
     <>
       <HeroLanding {...props} scrollToGetStarted={scrollToGetStarted} />
-      <GetStarted {...props} sectionRef={sectionRef} />
-      <DividerLandingPage />
+      <IntroductionRenku20 />
       <WhatIsRenku
         projectPath={props.homeCustomized.projectPath}
         datasetSlug={props.homeCustomized.datasetSlug}
       />
       <DividerLandingPage />
-      <SectionShowcase
-        {...validatedShowcaseConfig(props.homeCustomized.showcase)}
-      />
-      {props.homeCustomized.showcase.enabled ? (
-        <DividerLandingPage />
-      ) : undefined}
       <Teaching />
-      <DividerLandingPage />
+      <ResourcesAndSupport />
       <WhoWeAre />
       <BottomNav {...props} />
     </>
