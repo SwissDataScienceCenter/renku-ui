@@ -33,10 +33,12 @@ import CodeRepositorySelector from "./CodeRepositorySelector";
 
 interface BuilderEnvironmentFieldsProps {
   control: Control<SessionLauncherForm>;
+  isEdit?: boolean;
 }
 
 export default function BuilderEnvironmentFields({
   control,
+  isEdit,
 }: BuilderEnvironmentFieldsProps) {
   const { project } = useProject();
   const repositories = project.repositories ?? [];
@@ -88,11 +90,13 @@ export default function BuilderEnvironmentFields({
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <p className={cx("mb-0")}>
-        Let RenkuLab create a customized environment from a code repository. A
-        container image will be created based on the requirements found in the
-        code repository.
-      </p>
+      {!isEdit && (
+        <p className={cx("mb-0")}>
+          Let RenkuLab create a customized environment from a code repository. A
+          container image will be created based on the requirements found in the
+          code repository.
+        </p>
+      )}
       {content}
     </div>
   );

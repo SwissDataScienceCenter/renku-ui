@@ -37,6 +37,7 @@ import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import EnvironmentKindField from "./EnvironmentKindField";
 import { SessionEnvironmentItem } from "./SessionEnvironmentItem";
+import BuilderEnvironmentFields from "./BuilderEnvironmentFields";
 
 interface SessionLauncherFormContentProps {
   control: Control<SessionLauncherForm, unknown>;
@@ -221,8 +222,52 @@ export default function EditLauncherFormContent({
       <EnvironmentKindField control={control} />
 
       {environmentKind === "GLOBAL" && renderEnvironmentList()}
-
       {environmentKind === "CUSTOM" && renderCustomEnvironmentFields()}
+      {environmentKind === "BUILDER" && (
+        <EditBuilderEnvironmentFields control={control} errors={errors} />
+      )}
     </div>
+  );
+}
+
+interface EditBuilderEnvironmentFieldsProps {
+  control: Control<SessionLauncherForm>;
+  errors: FieldErrors<SessionLauncherForm>;
+}
+
+function EditBuilderEnvironmentFields({
+  control,
+  errors,
+}: EditBuilderEnvironmentFieldsProps) {
+  const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
+  const toggleAdvancedSettings = useCallback(
+    () => setIsAdvancedSettingsOpen((open) => !open),
+    []
+  );
+
+  return (
+    <>
+      <BuilderEnvironmentFields control={control} isEdit />
+
+      <div>
+        <button
+          className={cx("p-0", "border-0", "bg-transparent", "fw-bold")}
+          onClick={toggleAdvancedSettings}
+          type="button"
+        >
+          Advanced settings
+          <ChevronFlippedIcon
+            className="ms-1"
+            flipped={isAdvancedSettingsOpen}
+          />
+        </button>
+      </div>
+      <Collapse isOpen={isAdvancedSettingsOpen}>
+        <AdvancedSettingsFields<SessionLauncherForm>
+          control={control}
+          errors={errors}
+        />
+      </Collapse>
+    </>
   );
 }
