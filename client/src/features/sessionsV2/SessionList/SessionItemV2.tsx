@@ -25,7 +25,10 @@ import { Col, ListGroupItem, Row } from "reactstrap";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { useProject } from "../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
-import { SessionStatusV2Label } from "../components/SessionStatus/SessionStatus";
+import {
+  SessionStatusV2Description,
+  SessionStatusV2Label,
+} from "../components/SessionStatus/SessionStatus";
 import { getShowSessionUrlByProject } from "../SessionsV2";
 import type { SessionLauncher, SessionV2 } from "../sessionsV2.types";
 import SessionViewV2 from "../SessionView/SessionViewV2";
@@ -83,6 +86,20 @@ export default function SessionItemV2({
             >
               <CaretRightFill className={cx("bi", "me-1")} />
               <SessionStatusV2Label session={session} />
+            </Col>
+            <Col
+              className={cx(
+                "order-2",
+                "order-md-3",
+                "align-items-center",
+                "d-flex"
+              )}
+              xs={12}
+            >
+              <SessionStatusV2Description
+                session={session}
+                showInfoDetails={false}
+              />
             </Col>
             <Col className={cx("order-3", "order-md-2")} xs={12} md={3} lg={2}>
               {/* NOTE: This is a placeholder for the session actions button */}
