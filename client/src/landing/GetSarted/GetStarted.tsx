@@ -58,7 +58,7 @@ export default function GetStarted(props: GetStartedProps) {
   const installRenku = "pipx install renku";
   return (
     <div id="rk-anon-home-get-started" ref={sectionRef}>
-      <div className="rk-anon-home-section-content">
+      <div className="container">
         <div id={styles.getStartedContainer}>
           <div className={styles.getStartedTitle}>
             <h2 className="text-rk-green">
