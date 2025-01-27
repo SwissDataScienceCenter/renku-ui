@@ -50,6 +50,7 @@ import {
 
 import { ExternalLink } from "../components/ExternalLinks";
 import { TimeCaption } from "../components/TimeCaption";
+import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 import { NotificationsInfo } from "./Notifications.state";
 
 import "./Notifications.css";
@@ -323,7 +324,7 @@ class NotificationsMenuList extends Component {
 
     return (
       <Fragment>
-        <Link to="/notifications">
+        <Link to={ABSOLUTE_ROUTES.v1.notifications}>
           <DropdownItem>
             Notifications ({renderedNotifications.length})
           </DropdownItem>
@@ -561,7 +562,7 @@ export {
   CloseToast,
   NotificationDropdownItem,
   NotificationPageItem,
-  NotificationToast,
   Notifications,
   NotificationsMenu,
+  NotificationToast,
 };
