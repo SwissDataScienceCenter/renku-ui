@@ -17,13 +17,20 @@
  */
 
 import cx from "classnames";
-import { PlayCircle } from "react-bootstrap-icons";
-import { Button, UncontrolledTooltip } from "reactstrap";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Pencil, PlayCircle } from "react-bootstrap-icons";
+import { generatePath, Link } from "react-router-dom-v5-compat";
+import { Button, DropdownItem, UncontrolledTooltip } from "reactstrap";
 
+import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { useProject } from "../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
+import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
+import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
+import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import type { SessionLauncher, SessionV2 } from "../sessionsV2.types";
-import StartSessionButton from "../StartSessionButton";
-import { useRef } from "react";
 
 interface SessionLauncherActionsProps {
   launcher: SessionLauncher;
@@ -35,17 +42,115 @@ export default function SessionLauncherActions({
   sessions,
 }: SessionLauncherActionsProps) {
   const { project } = useProject();
+  const permissions = useProjectPermissions({ projectId: project.id });
 
-  if (sessions.length > 0) {
-    return <DisabledLaunchButton />;
-  }
+  const startUrl = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
+    {
+      launcherId: launcher.id,
+      namespace: project.namespace,
+      slug: project.slug,
+    }
+  );
+
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const userLauncherResourceClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == launcher?.resource_class_id),
+    [launcher, resourcePools]
+  );
+
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const toggleUpdate = useCallback(() => {
+    setIsUpdateOpen((open) => !open);
+  }, []);
+
+  const [isResourcesOpen, setResourcesOpen] = useState(false);
+  const toggleResources = useCallback(() => {
+    setResourcesOpen((open) => !open);
+  }, []);
+
+  const defaultAction =
+    sessions.length > 0 ? (
+      <DisabledLaunchButton />
+    ) : (
+      <Link
+        className={cx("btn", "btn-sm", "btn-primary")}
+        to={startUrl}
+        data-cy="start-session-button"
+      >
+        <PlayCircle className={cx("bi", "me-1")} />
+        Launch
+      </Link>
+    );
+
+  const customLaunch =
+    sessions.length > 0 ? (
+      <DropdownItem disabled>
+        <PlayCircle className={cx("bi", "me-1")} />
+        Custom launch
+      </DropdownItem>
+    ) : (
+      <Link
+        className="dropdown-item"
+        to={{
+          pathname: startUrl,
+          search: new URLSearchParams({ custom: "1" }).toString(),
+        }}
+        data-cy="start-custom-session-button"
+      >
+        <PlayCircle className={cx("bi", "me-1")} />
+        Custom launch
+      </Link>
+    );
+
+  const editActions = (
+    <PermissionsGuard
+      disabled={null}
+      enabled={
+        <>
+          <DropdownItem onClick={toggleUpdate}>
+            <Pencil className={cx("bi", "me-1")} />
+            Modify session environment
+          </DropdownItem>
+          <DropdownItem onClick={toggleResources}>
+            <Pencil className={cx("bi", "me-1")} />
+            Set resource class
+          </DropdownItem>
+        </>
+      }
+      requestedPermission="write"
+      userPermissions={permissions}
+    />
+  );
 
   return (
-    <StartSessionButton
-      launcherId={launcher.id}
-      namespace={project.namespace}
-      slug={project.slug}
-    />
+    <>
+      <ButtonWithMenuV2
+        color="primary"
+        default={defaultAction}
+        preventPropagation
+        size="sm"
+      >
+        {customLaunch}
+        {editActions}
+      </ButtonWithMenuV2>
+
+      <UpdateSessionLauncherModal
+        isOpen={isUpdateOpen}
+        launcher={launcher}
+        toggle={toggleUpdate}
+      />
+      <ModifyResourcesLauncherModal
+        isOpen={isResourcesOpen}
+        toggleModal={toggleResources}
+        resourceClassId={userLauncherResourceClass?.id}
+        diskStorage={launcher.disk_storage}
+        sessionLauncherId={launcher.id}
+      />
+    </>
   );
 }
 
@@ -54,8 +159,14 @@ function DisabledLaunchButton() {
 
   return (
     <>
-      <span className="d-inline-block" tabIndex={0} ref={ref}>
-        <Button type="button" color="primary" disabled size="sm">
+      <span className={cx("d-inline-block", "btn-sm")} tabIndex={0} ref={ref}>
+        <Button
+          type="button"
+          className="rounded-end-0"
+          color="primary"
+          disabled
+          size="sm"
+        >
           <PlayCircle className={cx("bi", "me-1")} />
           Launch
         </Button>

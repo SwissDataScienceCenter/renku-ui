@@ -386,7 +386,7 @@ function SessionLauncherActions({
               <Trash className={cx("bi", "me-1")} />
               Delete
             </DropdownItem>
-          </ButtonWithMenuV2>{" "}
+          </ButtonWithMenuV2>
           <UpdateSessionLauncherModal
             isOpen={isUpdateOpen}
             launcher={launcher}
