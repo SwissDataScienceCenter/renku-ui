@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import type { CSSProperties } from "react";
 import React from "react";
 import { List } from "react-bootstrap-icons";
@@ -85,8 +86,8 @@ function BottomNavSection(props: BottomNavSectionProps) {
 function BottomNav(props: AnonymousHomeConfig) {
   const tutorialLink = props.homeCustomized.tutorialLink;
   return (
-    <div id="rk-anon-home-bottom-nav">
-      <div className="rk-anon-home-section-content rk-pt-m">
+    <div id="rk-anon-home-bottom-nav" className={cx("bg-navy")}>
+      <div className={cx("container", "py-5", "text-white")}>
         <Row>
           <Col md={3}>
             <BottomNavSection sectionTitle="Learn">
@@ -150,7 +151,7 @@ function TopNavExternalLink({ title, url }: BottomNavExternalLinkProps) {
 
 function TopNavLink({ title, to }: BottomNavLinkProps) {
   return (
-    <Link className="rk-anon-home-nav-link text-white" to={to}>
+    <Link className={cx("text-decoration-none", "text-white")} to={to}>
       {title}
     </Link>
   );
@@ -164,22 +165,26 @@ function TopNav() {
 
   return (
     <>
-      <header className="pt-2 pb-4 d-flex rk-anon-home">
-        <div className="align-self-center flex-grow-1">
+      <header className={cx("pt-2", "pb-4", "d-flex", "container")}>
+        <div className={cx("align-self-center", "flex-grow-1")}>
           <img src={logo} alt="Renku" height="68" className="d-block my-1" />
         </div>
         <div
-          className="px-2 mt-3 d-flex justify-content-center icons-menu
-        align-items-center bg-primary gap-3"
+          className={cx(
+            "px-2",
+            "mt-3",
+            "d-flex",
+            "justify-content-center",
+            "icons-menu",
+            "align-items-center",
+            "gap-3"
+          )}
         >
-          <div className="d-none d-md-inline-block">
-            <TopNavLink title="Sessions" to={Url.get(Url.pages.sessions)} />
-          </div>
           <div className="d-none d-md-inline-block">
             <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
           </div>
           <a
-            className="btn btn-outline-secondary"
+            className={cx("btn", "btn-outline-primary")}
             id="login-button"
             href={loginUrl.href}
           >
@@ -188,7 +193,7 @@ function TopNav() {
           <Button
             onClick={toggleOpen}
             id="nav-hamburger"
-            className="border-0"
+            className={cx("border-0", "bg-transparent", "shadow-none")}
             title="Navigation Toggle"
           >
             <List className="m-0 bi" />
@@ -197,7 +202,7 @@ function TopNav() {
       </header>
       <div className="rk-navbar-home">
         <Collapse isOpen={isOpen}>
-          <Navbar className="navbar rk-anon-home px-0">
+          <Navbar className={cx("navbar", "container", "px-0")}>
             <Nav
               className="ms-auto flex-column rk-bg-shaded-dark text-end"
               style={{ "--rk-bg-opacity": 0.9, zIndex: 100 } as CSSProperties}
@@ -225,9 +230,6 @@ function TopNav() {
               </NavItem>
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink title="GitHub" url={Links.GITHUB} />
-              </NavItem>
-              <NavItem className="d-block d-md-none nav-item mb-2">
-                <TopNavLink title="Sessions" to={Url.get(Url.pages.sessions)} />
               </NavItem>
               <NavItem className="d-block d-md-none nav-item">
                 <TopNavLink title="Help" to={Url.get(Url.pages.help)} />

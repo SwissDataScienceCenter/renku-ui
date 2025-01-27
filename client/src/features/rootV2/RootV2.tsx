@@ -106,7 +106,7 @@ export default function RootV2() {
             element={<ProjectsV2Routes />}
           />
           <Route
-            path="help/*"
+            path={RELATIVE_ROUTES.v2.help.root}
             element={
               <ContainerWrap>
                 <LazyHelpV2 />
@@ -114,7 +114,7 @@ export default function RootV2() {
             }
           />
           <Route
-            path="search/*"
+            path={RELATIVE_ROUTES.v2.search}
             element={
               <ContainerWrap>
                 <LazySearchV2 />
