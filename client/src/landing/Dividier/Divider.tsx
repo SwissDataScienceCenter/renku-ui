@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import styles from "./Divider.module.css";
 
 export default function DividerLandingPage() {
-  return <div className={styles.dividerLandingPage}></div>;
+  return <div className={cx(styles.dividerLandingPage, "bg-navy")}></div>;
 }

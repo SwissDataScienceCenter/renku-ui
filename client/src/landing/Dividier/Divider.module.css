@@ -1,8 +1,8 @@
 .dividerLandingPage {
-  background-image: url("../Graphics/divider.svg");
+  background-image: url("../Graphics/dividerDots.svg");
   min-height: 252px;
   background-attachment: fixed;
   background-position: center;
   background-repeat: repeat;
-  background-size: 500px;
+  background-size: 1500px;
 }

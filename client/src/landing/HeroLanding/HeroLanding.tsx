@@ -1,9 +1,9 @@
 import cx from "classnames";
-import { Button } from "reactstrap";
+import { Button, Col, Row } from "reactstrap";
 
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import { HomeHeader } from "../AnonymousHome";
-import heroGraphic from "../Graphics/hero_graph.svg";
+import heroGraphic from "../Graphics/heroBoxes.svg";
 import { AnonymousHomeConfig } from "../anonymousHome.types";
 
 import styles from "./HeroLanding.module.scss";
@@ -19,23 +19,23 @@ export default function HeroLanding(props: HeroLandingProps) {
   return (
     <div id="rk-anon-home-hero" className="bg-navy">
       <HomeHeader {...props} />
-      <div className="container">
-        <div id={styles.heroContainer}>
-          <div className={styles.heroTitle}>
-            <h1 className="text-white">Connecting the research ecosystem</h1>
-          </div>
-          <div className={styles.heroGraphic}>
-            <img src={heroGraphic} alt="Renku" className="graphicHero" />
-          </div>
-          <div className={styles.heroDescription}>
-            <h2 className="text-white">
-              The research ecosystem is fragmented.
-              <span className={cx("d-lg-block", "d-sm-inline")}>
-                {" "}
-                Renku is where it comes together.
-              </span>
+      <div className={cx("container", "py-5")}>
+        <Row>
+          <Col xs={12} lg={6}>
+            <h1 className="text-white">
+              Connecting data, code, compute, <br />
+              and people.
+            </h1>
+            <img
+              src={heroGraphic}
+              alt="Renku"
+              className={cx("w-100", "d-block", "d-lg-none", "my-5")}
+            />
+            <h2 className={cx("text-white", "py-4")}>
+              One seamless platform powering <br />
+              collaboration in your project, team, <br />
+              and community.
             </h2>
-            <p>Data, Code, and Compute all under one roof.</p>
             <div
               className={cx(
                 "d-flex",
@@ -53,7 +53,7 @@ export default function HeroLanding(props: HeroLandingProps) {
                 id="link-try-it-out"
                 onClick={scrollToGetStarted}
               >
-                Try it out
+                Explore a project
               </Button>
               <a
                 className={cx("btn", "btn-outline-primary", styles.heroBtn)}
@@ -63,8 +63,19 @@ export default function HeroLanding(props: HeroLandingProps) {
                 Create an account
               </a>
             </div>
-          </div>
-        </div>
+          </Col>
+          <Col
+            xs={12}
+            lg={6}
+            className={cx("text-center", "text-lg-end", "ps-5")}
+          >
+            <img
+              src={heroGraphic}
+              alt="Renku"
+              className={cx("w-100", "d-none", "d-lg-block")}
+            />
+          </Col>
+        </Row>
       </div>
     </div>
   );
