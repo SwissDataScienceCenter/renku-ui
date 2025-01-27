@@ -23,7 +23,7 @@ describe("display a dataset", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.entitySearch().getLastSearch();
-    cy.visit("datasets");
+    cy.visit("/v1/search?type=dataset");
   });
 
   it("displays the dataset list", () => {
