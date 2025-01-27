@@ -19,6 +19,9 @@ import cx from "classnames";
 import { Control, Controller } from "react-hook-form";
 import { ButtonGroup } from "reactstrap";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import { useContext } from "react";
+import AppContext from "../../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 
 interface EnvironmentKindFieldProps {
   control: Control<SessionLauncherForm>;
@@ -26,6 +29,10 @@ interface EnvironmentKindFieldProps {
 export default function EnvironmentKindField({
   control,
 }: EnvironmentKindFieldProps) {
+  const { params } = useContext(AppContext);
+  const imageBuildersEnabled =
+    params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
+
   return (
     <Controller
       control={control}
@@ -50,7 +57,6 @@ export default function EnvironmentKindField({
             >
               Global environment
             </label>
-
             <input
               type="radio"
               className="btn-check"
@@ -68,24 +74,26 @@ export default function EnvironmentKindField({
             >
               Custom Environment
             </label>
-
-            <input
-              type="radio"
-              className="btn-check"
-              name={field.name}
-              autoComplete="off"
-              checked={field.value === "custom + build"}
-              id="environment-kind-builder-radio"
-              onChange={() => field.onChange("custom + build")}
-              onBlur={field.onBlur}
-            />
-            <label
-              className={cx("btn", "btn-outline-primary")}
-              data-cy="environment-kind-builder"
-              htmlFor="environment-kind-builder-radio"
-            >
-              Create from code
-            </label>
+            {imageBuildersEnabled && (
+              <>
+                <input
+                  type="radio"
+                  className="btn-check"
+                  name={field.name}
+                  autoComplete="off"
+                  checked={field.value === "custom + build"}
+                  id="environment-kind-builder-radio"
+                  onChange={() => field.onChange("custom + build")}
+                  onBlur={field.onBlur}
+                />
+                <label
+                  className={cx("btn", "btn-outline-primary")}
+                  htmlFor="environment-kind-builder-radio"
+                >
+                  Create from code
+                </label>
+              </>
+            )}
           </ButtonGroup>
         </div>
       )}
