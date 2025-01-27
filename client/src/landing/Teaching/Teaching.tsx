@@ -26,7 +26,7 @@ import styles from "../Teaching/Teaching.module.scss";
 export default function Teaching() {
   return (
     <div id="rk-anon-home-teaching">
-      <div className="rk-anon-home-section-content">
+      <div className="container">
         <div id={styles.teachingContainer}>
           <div className={styles.teachingTitle}>
             <h2>Computing courses without the hassle</h2>
@@ -57,7 +57,7 @@ export default function Teaching() {
                   "align-self-lg-center",
                   "gap-2"
                 )}
-                color="rk-green"
+                color="primary"
                 role="button"
                 id="learnMoreTeachingBtn"
                 url={Docs.rtdTopicGuide(
