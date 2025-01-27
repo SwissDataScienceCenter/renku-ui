@@ -271,7 +271,7 @@ const Url = {
   // Please assign only strings or UrlRule objects.
   pages: {
     landing: "/",
-    search: "/search",
+    search: "/v1/search",
     inactiveKgProjects: "/inactive-kg-projects",
     help: {
       base: "/help",
@@ -466,7 +466,7 @@ const Url = {
       base: "/datasets",
     },
     searchEntities: {
-      base: "/search",
+      base: "/v1/search",
     },
     secrets: {
       base: "/secrets",

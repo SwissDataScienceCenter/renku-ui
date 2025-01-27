@@ -34,7 +34,7 @@ export const defaultSuggestionQuickBar = {
       type: "fixed",
       path: "",
       id: "link-projects",
-      url: "/search",
+      url: "/v1/search",
       label: "My Projects",
       icon: "/project-icon.svg",
     },
@@ -42,7 +42,7 @@ export const defaultSuggestionQuickBar = {
       type: "fixed",
       path: "",
       id: "link-datasets",
-      url: "/search",
+      url: "/v1/search",
       label: "My datasets",
       icon: "/dataset-icon.svg",
     },
@@ -57,7 +57,7 @@ export const defaultAnonymousSuggestionQuickBar = {
       type: "fixed",
       path: "",
       id: "link-projects",
-      url: "/search",
+      url: "/v1/search",
       label: "Projects",
       icon: "/project-icon.svg",
     },
@@ -65,7 +65,7 @@ export const defaultAnonymousSuggestionQuickBar = {
       type: "fixed",
       path: "",
       id: "link-datasets",
-      url: "/search",
+      url: "/v1/search",
       label: "Datasets",
       icon: "/dataset-icon.svg",
     },
@@ -98,7 +98,7 @@ export function QuickNavContainer({ user }) {
           type: "last-queries",
           path: "",
           id: "last-queries",
-          url: "/search",
+          url: "/v1/search",
           label: query,
           query,
         });
@@ -132,8 +132,8 @@ export function QuickNavContainer({ user }) {
     e.preventDefault();
     setPhrase(currentPhrase);
     refetchLastQueries(e.currentTarget);
-    if (location.pathname === "/search") return;
-    navigate("/search");
+    if (location.pathname === "/v1/search") return;
+    navigate("/v1/search");
   };
 
   const onSuggestionsFetchRequested = () => {

@@ -99,14 +99,14 @@ function ProjectAlert({ total }: ProjectAlertProps) {
           <ExternalLink
             role="text"
             title="explore other projects"
-            url="/search"
+            url="/v1/search"
             className="fw-bold"
           />{" "}
           or{" "}
           <ExternalLink
             role="text"
             title="search"
-            url="/search"
+            url="/v1/search"
             className="fw-bold"
           />{" "}
           for a specific project or dataset.

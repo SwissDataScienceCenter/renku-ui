@@ -131,7 +131,7 @@ function CentralContentContainer({ user, socket }) {
           />
         </CompatRoute>
         <CompatRoute path="/datasets">
-          <Redirect to="/search?type=dataset" />
+          <Redirect to="/v1/search?type=dataset" />
         </CompatRoute>
         <CompatRoute path="/v1">
           <LazyRootV1 user={user} />
