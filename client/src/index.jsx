@@ -2,13 +2,7 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
-import {
-  BrowserRouter,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router";
+import { BrowserRouter, useLocation, useNavigate } from "react-router";
 
 import "bootstrap";
 
@@ -28,6 +22,7 @@ import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
+import { isRenkuLegacy } from "./utils/helpers/HelperFunctionsV2";
 import { Sentry } from "./utils/helpers/sentry";
 import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
 
@@ -145,24 +140,12 @@ function FeatureFlagHandler() {
 }
 
 export function StyleHandler() {
+  const location = useLocation();
   return (
-    <Routes>
-      <Route
-        path="/v2/*"
-        element={
-          <Helmet>
-            <style type="text/css">{v2Styles}</style>
-          </Helmet>
-        }
-      />
-      <Route
-        path="*"
-        element={
-          <Helmet>
-            <style type="text/css">{v1Styles}</style>
-          </Helmet>
-        }
-      />
-    </Routes>
+    <Helmet>
+      <style type="text/css">
+        {isRenkuLegacy(location.pathname) ? v1Styles : v2Styles}
+      </style>
+    </Helmet>
   );
 }
