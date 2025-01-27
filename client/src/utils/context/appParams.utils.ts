@@ -65,6 +65,10 @@ export function validatedAppParams(params: unknown): AppParams {
     "PRIVACY_BANNER_ENABLED"
   );
   const TERMS_PAGES_ENABLED = validateBoolean(params_, "TERMS_PAGES_ENABLED");
+  const IMAGE_BUILDERS_ENABLED = validateBoolean(
+    params_,
+    "IMAGE_BUILDERS_ENABLED"
+  );
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -108,6 +112,8 @@ export function validatedAppParams(params: unknown): AppParams {
     UI_VERSION,
     UPLOAD_THRESHOLD,
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
+    // new
+    IMAGE_BUILDERS_ENABLED,
   };
 }
 

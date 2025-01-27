@@ -46,6 +46,9 @@ export interface AppParams {
   UI_VERSION: string;
   UPLOAD_THRESHOLD: UploadThresholdParams;
   USER_PREFERENCES_MAX_PINNED_PROJECTS: number;
+
+  // new
+  IMAGE_BUILDERS_ENABLED: boolean;
 }
 
 export type AppParamsStrings = {
