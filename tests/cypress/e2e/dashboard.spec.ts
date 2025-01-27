@@ -43,7 +43,7 @@ describe("dashboard", () => {
       .noActiveProjects()
       .sessionServersEmpty();
 
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUser");
     cy.wait("@getDataServiceUser");
     cy.wait("@getEntities");
@@ -88,7 +88,7 @@ describe("dashboard", () => {
       });
     }
 
-    cy.visit("/");
+    cy.visit("/v1");
     let projects;
     cy.wait("@getUser");
     cy.wait("@getDataServiceUser");
@@ -138,7 +138,7 @@ describe("dashboard", () => {
       });
     }
 
-    cy.visit("/");
+    cy.visit("/v1");
     let projects;
     cy.wait("@getUser");
     cy.wait("@getDataServiceUser");
@@ -248,7 +248,7 @@ describe("dashboard message", () => {
   });
 
   const visitDashboardPage = () => {
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUser");
     cy.wait("@getDataServiceUser");
     cy.wait("@getEntities");
@@ -357,7 +357,7 @@ describe("Dashboard pins", () => {
       })
       .sessionServersEmpty()
       .userPreferences();
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUserPreferences");
 
     cy.getDataCy("projects-container").should("be.visible");
@@ -391,7 +391,7 @@ describe("Dashboard pins", () => {
       });
     }
 
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUserPreferences");
     cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
 
@@ -454,7 +454,7 @@ describe("Dashboard pins", () => {
       });
     }
 
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUserPreferences");
     cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
 
@@ -525,7 +525,7 @@ describe("Dashboard pins", () => {
       });
     }
 
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUserPreferences");
     cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
 
