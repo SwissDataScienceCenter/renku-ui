@@ -17,14 +17,15 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
 
 import StatusBanner from "../../features/platform/components/StatusBanner";
 import { NavBarWarnings } from "../../landing/NavBarWarnings";
-import type { AppParams } from "../../utils/context/appParams.types";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import AppContext from "../../utils/context/appContext";
 import { Url } from "../../utils/helpers/url";
 import RenkuNavLinkV2 from "../RenkuNavLinkV2";
 import {
@@ -34,18 +35,9 @@ import {
 } from "./NavBarItems";
 import { RENKU_LOGO } from "./navbar.constans";
 
-interface AnonymousNavBarProps {
-  model: unknown;
-  notifications: unknown;
-  params: AppParams;
-}
-
-export default function AnonymousNavBar({
-  model,
-  notifications,
-  params,
-}: AnonymousNavBarProps) {
-  const uiShortSha = params.UI_SHORT_SHA;
+export default function AnonymousNavBar() {
+  const { params, model, notifications } = useContext(AppContext);
+  const uiShortSha = params?.UI_SHORT_SHA;
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -55,10 +47,23 @@ export default function AnonymousNavBar({
 
   return (
     <>
-      <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
+      <header
+        className={cx(
+          "navbar",
+          "navbar-expand-lg",
+          "bg-navy",
+          "rk-navbar",
+          "p-0"
+        )}
+      >
         <Navbar
           color="primary"
-          className="container-fluid flex-wrap flex-lg-nowrap renku-container"
+          className={cx(
+            "container",
+            "flex-wrap",
+            "flex-lg-nowrap",
+            "renku-container"
+          )}
         >
           <Link
             id="link-home"
@@ -85,7 +90,7 @@ export default function AnonymousNavBar({
                 <RenkuNavLinkV2
                   className={cx("d-flex", "gap-2", "align-items-center")}
                   id="link-search"
-                  to={Url.get(Url.pages.search)}
+                  to={ABSOLUTE_ROUTES.v1.search}
                 >
                   <Search />
                   Search
@@ -94,7 +99,7 @@ export default function AnonymousNavBar({
               <NavItem className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4">
                 <RenkuNavLinkV2
                   id="link-sessions"
-                  to={Url.get(Url.pages.sessions)}
+                  to={ABSOLUTE_ROUTES.v1.sessions}
                 >
                   Sessions
                 </RenkuNavLinkV2>
