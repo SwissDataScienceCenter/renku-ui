@@ -24,7 +24,7 @@ describe("display kg search", () => {
     fixtures.entitySearch().getLastSearch();
     fixtures.projects().landingUserProjects().projectTest();
     fixtures.projectLockStatus().projectMigrationUpToDate();
-    cy.visit("/search");
+    cy.visit("/v1/search");
   });
 
   it("displays the filters", () => {
