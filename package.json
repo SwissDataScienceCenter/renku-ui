@@ -2,7 +2,8 @@
   "name": "renku-ui-root",
   "private": true,
   "devDependencies": {
-    "husky": "^8.0.0"
+    "husky": "^8.0.0",
+    "pretty-quick": "^4.0.0"
   },
   "scripts": {
     "prepare": "husky install"

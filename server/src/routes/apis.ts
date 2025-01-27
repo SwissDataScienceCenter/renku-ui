@@ -36,16 +36,16 @@ import { getUserData } from "./helperFunctions";
 const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
   target: config.deployment.gatewayUrl,
-  changeOrigin: true,
+  changeOrigin: false,
   proxyTimeout: config.server.proxyTimeout,
   timeout: config.server.proxyTimeout,
   pathRewrite: (path): string => {
     // remove basic ui-server routing
     const rewrittenPath = path.substring(
-      (config.server.prefix + config.routes.api).length
+      (config.server.prefix + config.routes.api).length,
     );
     logger.debug(
-      `rewriting path from "${path}" to "${rewrittenPath}" and routing to ${config.deployment.gatewayUrl}`
+      `rewriting path from "${path}" to "${rewrittenPath}" and routing to ${config.deployment.gatewayUrl}`,
     );
     return rewrittenPath;
   },
@@ -58,7 +58,7 @@ const proxyMiddleware = createProxyMiddleware({
       for (const cookieName of config.server.keepCookies) {
         const cookieValue: string = getCookieValueByName(
           existingCookie,
-          cookieName
+          cookieName,
         );
         if (cookieValue) {
           newCookies.push(serializeCookie(cookieName, cookieValue));
@@ -74,7 +74,7 @@ const proxyMiddleware = createProxyMiddleware({
     if (gitlabAccessToken) {
       clientReq.setHeader(
         config.auth.authHeaderField,
-        `${config.auth.authHeaderPrefix}${gitlabAccessToken}`
+        `${config.auth.authHeaderPrefix}${gitlabAccessToken}`,
       );
     } else {
       clientReq.removeHeader(config.auth.authHeaderField);
@@ -89,7 +89,7 @@ const proxyMiddleware = createProxyMiddleware({
 function registerApiRoutes(
   app: express.Application,
   prefix: string,
-  storage: Storage
+  storage: Storage,
 ): void {
   // Locally defined APIs
   if (config.sentry.enabled && config.sentry.debugMode) {
@@ -118,7 +118,7 @@ function registerApiRoutes(
         // check content-security-policy
         const validation = validateCSP(
           req.params.url,
-          requestExternalURL.headers.get("content-security-policy")
+          requestExternalURL.headers.get("content-security-policy"),
         );
         validationResponse.isIframeValid = validation.isIframeValid;
         validationResponse.error = validation.error;
@@ -144,10 +144,10 @@ function registerApiRoutes(
         config.data.projectsStoragePrefix,
         user.id,
         storage,
-        length
+        length,
       );
       res.json({ projects: data });
-    }
+    },
   );
 
   app.get(
@@ -164,10 +164,10 @@ function registerApiRoutes(
         config.data.searchStoragePrefix,
         user.id,
         storage,
-        length
+        length,
       );
       res.json({ queries: data });
-    }
+    },
   );
 
   // /version endpoint
@@ -189,17 +189,17 @@ function registerApiRoutes(
   app.get(
     prefix + "/projects/:projectName",
     [lastProjectsMiddleware(storage)],
-    proxyMiddleware
+    proxyMiddleware,
   );
   app.post(
     prefix + "/renku/cache.files_upload",
     [uploadFileMiddleware],
-    proxyMiddleware
+    proxyMiddleware,
   );
   app.get(
     prefix + "/kg/entities",
     [lastSearchQueriesMiddleware(storage)],
-    proxyMiddleware
+    proxyMiddleware,
   );
   app.delete(prefix + "/*", proxyMiddleware);
   app.get(prefix + "/*", proxyMiddleware);
