@@ -17,9 +17,9 @@ export default function HeroLanding(props: HeroLandingProps) {
   const loginUrl = useLoginUrl();
 
   return (
-    <div id="rk-anon-home-hero" className="rk-bg-shaded-dark">
+    <div id="rk-anon-home-hero" className="bg-navy">
       <HomeHeader {...props} />
-      <div className="rk-anon-home-section-content">
+      <div className="container">
         <div id={styles.heroContainer}>
           <div className={styles.heroTitle}>
             <h1 className="text-white">Connecting the research ecosystem</h1>
@@ -47,7 +47,8 @@ export default function HeroLanding(props: HeroLandingProps) {
               )}
             >
               <Button
-                className={cx("btn", "btn-rk-green", styles.heroBtn)}
+                className={cx("btn", styles.heroBtn)}
+                color="primary"
                 role="button"
                 id="link-try-it-out"
                 onClick={scrollToGetStarted}
@@ -55,7 +56,7 @@ export default function HeroLanding(props: HeroLandingProps) {
                 Try it out
               </Button>
               <a
-                className={cx("btn", "btn-outline-secondary", styles.heroBtn)}
+                className={cx("btn", "btn-outline-primary", styles.heroBtn)}
                 id="hero_link-sign_up"
                 href={loginUrl.href}
               >

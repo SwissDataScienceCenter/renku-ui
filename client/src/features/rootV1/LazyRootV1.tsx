@@ -13,14 +13,25 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License
  */
 
-export function isRenkuLegacy(pathname: string | undefined) {
+import { Suspense, lazy } from "react";
+
+import PageLoader from "../../components/PageLoader";
+
+const RootV1 = lazy(() => import("./RootV1"));
+
+export default function LazyRootV1({
+  user,
+}: {
+  user: {
+    logged: boolean;
+  };
+}) {
   return (
-    typeof pathname === "string" &&
-    (pathname.startsWith("/v1") ||
-      pathname.startsWith("/projects") ||
-      pathname.startsWith("/datasets"))
+    <Suspense fallback={<PageLoader />}>
+      <RootV1 user={user} />
+    </Suspense>
   );
 }
