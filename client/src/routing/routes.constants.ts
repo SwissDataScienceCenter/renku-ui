@@ -56,10 +56,38 @@ export const ABSOLUTE_ROUTES = {
     connectedServices: "/v2/connected-services",
     secrets: "/v2/secrets",
   },
+  v1: {
+    root: "/v1",
+    search: "/v1/search",
+    help: {
+      root: "/v1/help",
+      contact: "/v1/help/contact",
+      status: "/v1/help/status",
+      release: "/v1/help/release",
+      tos: "/v1/help/tos",
+      privacy: "/v1/help/privacy",
+    },
+    notifications: "/v1/notifications",
+    styleGuide: "/v1/style-guide",
+    secrets: "/v1/secrets",
+    sessions: "/v1/sessions",
+  },
 } as const;
 
 export const RELATIVE_ROUTES = {
   root: "/",
+  datasets: "/datasets",
+  projects: "/projects",
+  v1: {
+    root: "/v1",
+    search: "search",
+    help: "help/*",
+    sessions: "sessions",
+    notifications: "notifications",
+    secrets: "secrets",
+    styleGuide: "style-guide",
+    inactiveKGProjects: "inactive-kg-projects",
+  },
   v2: {
     root: "v2/*",
     user: "user",

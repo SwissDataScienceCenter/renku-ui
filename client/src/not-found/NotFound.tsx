@@ -30,6 +30,7 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import ContainerWrap from "../components/container/ContainerWrap";
 import rkNotFoundImg from "../styles/assets/not-found.svg";
 import rkNotFoundImgV2 from "../styles/assets/not-foundV2.svg";
+import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
 import "./NotFound.css";
 
 interface NotFoundProps {
@@ -43,7 +44,7 @@ export default function NotFound({
   description: description_,
   children,
 }: NotFoundProps) {
-  const isV2 = location.pathname?.startsWith("/v2");
+  const isV2 = !isRenkuLegacy(location.pathname);
   const title = title_ ?? "Page not found";
   const description =
     description_ ??
