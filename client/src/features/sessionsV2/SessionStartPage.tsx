@@ -61,8 +61,9 @@ import { SelectResourceClassModal } from "./components/SessionModals/SelectResou
 import {
   useGetDockerImageQuery,
   useGetProjectSessionLaunchersQuery,
-  useLaunchSessionMutation,
+  // useLaunchSessionMutation,
 } from "./sessionsV2.api";
+import { usePostSessionsMutation as useLaunchSessionMutation } from "./api/sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
@@ -224,7 +225,9 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
   // Request session
   useEffect(() => {
     if (isLoadingStartSession || session != null || isError) return;
-    startSessionV2(launcherToStart);
+    startSessionV2({
+      sessionPostRequest: launcherToStart,
+    });
     dispatch(setFavicon("waiting"));
   }, [
     isLoadingStartSession,

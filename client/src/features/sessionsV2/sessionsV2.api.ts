@@ -224,9 +224,9 @@ export const {
   useAddSessionLauncherMutation,
   useUpdateSessionLauncherMutation,
   useDeleteSessionLauncherMutation,
-  useLaunchSessionMutation,
-  usePatchSessionMutation,
-  useStopSessionMutation,
+  // useLaunchSessionMutation,
+  // usePatchSessionMutation,
+  // useStopSessionMutation,
   useGetLogsQuery,
   useGetDockerImageQuery,
 } = sessionsV2Api;

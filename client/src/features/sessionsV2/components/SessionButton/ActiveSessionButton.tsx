@@ -63,9 +63,9 @@ import { SessionClassSelectorV2 } from "../../../session/components/options/Sess
 import { SessionStatusState } from "../../../session/sessions.types";
 import { useWaitForSessionStatusV2 } from "../../../session/useWaitForSessionStatus.hook";
 import {
-  usePatchSessionMutation,
-  useStopSessionMutation,
-} from "../../sessionsV2.api";
+  usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
+  useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
+} from "../../api/sessionsV2.api";
 import {
   SessionResources,
   SessionStatus,
@@ -111,7 +111,10 @@ export default function ActiveSessionButton({
     { isSuccess: isSuccessResumeSession, error: errorResumeSession },
   ] = usePatchSessionMutation();
   const onResumeSession = useCallback(() => {
-    resumeSession({ session_id: session.name, state: "running" });
+    resumeSession({
+      sessionId: session.name,
+      sessionPatchRequest: { state: "running" },
+    });
     setIsResuming(true);
   }, [resumeSession, session.name]);
   const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatusV2({
@@ -147,7 +150,10 @@ export default function ActiveSessionButton({
     { isSuccess: isSuccessHibernateSession, error: errorHibernateSession },
   ] = usePatchSessionMutation();
   const onHibernateSession = useCallback(() => {
-    hibernateSession({ session_id: session.name, state: "hibernated" });
+    hibernateSession({
+      sessionId: session.name,
+      sessionPatchRequest: { state: "hibernated" },
+    });
     setIsHibernating(true);
   }, [hibernateSession, session.name]);
   const { isWaiting: isWaitingForHibernatedSession } =
@@ -177,7 +183,7 @@ export default function ActiveSessionButton({
   // Optimistically show a session as "stopping" when triggered from the UI
   const [isStopping, setIsStopping] = useState<boolean>(false);
   const onStopSession = useCallback(() => {
-    stopSession({ session_id: session.name });
+    stopSession({ sessionId: session.name });
     setIsStopping(true);
   }, [session.name, stopSession]);
   useEffect(() => {
@@ -204,8 +210,8 @@ export default function ActiveSessionButton({
     (sessionClass: number, resumeSession: boolean) => {
       const status = session.status.state;
       const request = modifySession({
-        session_id: session.name,
-        resource_class_id: sessionClass,
+        sessionId: session.name,
+        sessionPatchRequest: { resource_class_id: sessionClass },
       });
       if (resumeSession && status === "hibernated") {
         request.then(() => {

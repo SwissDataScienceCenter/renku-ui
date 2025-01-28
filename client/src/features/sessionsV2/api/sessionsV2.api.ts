@@ -19,8 +19,37 @@
 import { sessionsV2GeneratedApi } from "./sessionsV2.generated-api";
 
 export const sessionsV2Api = sessionsV2GeneratedApi.enhanceEndpoints({
-  addTagTypes: [],
-  endpoints: {},
+  addTagTypes: ["Session"],
+  endpoints: {
+    getSessions: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ name }) => ({
+                id: name,
+                type: "Session" as const,
+              })),
+              "Session",
+            ]
+          : ["Session"],
+    },
+    getSessionsBySessionId: {
+      providesTags: (result) =>
+        result
+          ? [{ id: result.name, type: "Session" }, "Session"]
+          : ["Session"],
+    },
+    postSessions: {
+      invalidatesTags: ["Session"],
+    },
+    patchSessionsBySessionId: {
+      invalidatesTags: (result) =>
+        result ? [{ id: result.name, type: "Session" }] : ["Session"],
+    },
+    deleteSessionsBySessionId: {
+      invalidatesTags: ["Session"],
+    },
+  },
 });
 
 // useGetNotebooksImagesQuery,
@@ -43,6 +72,9 @@ export const sessionsV2Api = sessionsV2GeneratedApi.enhanceEndpoints({
 export const {
   // "sessions" hooks
   useGetSessionsQuery,
+  usePostSessionsMutation,
+  usePatchSessionsBySessionIdMutation,
+  useDeleteSessionsBySessionIdMutation,
 } = sessionsV2Api;
 
 export type * from "./sessionsV2.generated-api";
