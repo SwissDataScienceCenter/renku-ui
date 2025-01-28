@@ -17,7 +17,7 @@
  */
 import { useEffect, useState } from "react";
 import { useGetLogsQuery } from "../../features/session/sessions.api";
-import { useGetLogsQuery as useGetLogsQueryV2 } from "../../features/sessionsV2/sessionsV2.api";
+import { useGetSessionsBySessionIdLogsQuery as useGetLogsQueryV2 } from "../../features/sessionsV2/api/sessionsV2.api";
 import { ILogs } from "../../components/Logs";
 
 /**
@@ -57,7 +57,7 @@ export function useGetSessionLogsV2(
   show: boolean | string
 ) {
   const { data, isFetching, isLoading, error, refetch } = useGetLogsQueryV2(
-    { session_id: serverName, max_lines: 250 },
+    { sessionId: serverName, maxLines: 250 },
     { skip: !serverName }
   );
   const [logs, setLogs] = useState<ILogs | undefined>(undefined);
@@ -71,8 +71,8 @@ export function useGetSessionLogsV2(
 
   useEffect(() => {
     setLogs({
-      data,
-      fetched: !isLoading && !error && data,
+      data: data ?? {},
+      fetched: !isLoading && !error && !!data,
       fetching: isFetching,
       show: show ? serverName : false,
     });

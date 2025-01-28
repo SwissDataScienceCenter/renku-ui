@@ -59,11 +59,14 @@ import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SessionSecretsModal from "./SessionSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import {
-  useGetDockerImageQuery,
+  // useGetDockerImageQuery,
   useGetProjectSessionLaunchersQuery,
   // useLaunchSessionMutation,
 } from "./sessionsV2.api";
-import { usePostSessionsMutation as useLaunchSessionMutation } from "./api/sessionsV2.api";
+import {
+  usePostSessionsMutation as useLaunchSessionMutation,
+  useGetSessionsImagesQuery as useGetDockerImageQuery,
+} from "./api/sessionsV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
@@ -456,7 +459,7 @@ function StartSessionFromLauncher({
     isError: isErrorDockerImageStatus,
     error: errorDockerImageStatus,
   } = useGetDockerImageQuery(
-    containerImage ? { image_url: containerImage } : skipToken
+    containerImage ? { imageUrl: containerImage } : skipToken
   );
 
   const needsCredentials = startSessionOptionsV2.cloudStorage?.some(

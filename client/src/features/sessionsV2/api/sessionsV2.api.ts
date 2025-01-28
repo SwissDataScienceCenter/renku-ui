@@ -49,6 +49,14 @@ export const sessionsV2Api = sessionsV2GeneratedApi.enhanceEndpoints({
     deleteSessionsBySessionId: {
       invalidatesTags: ["Session"],
     },
+    getSessionsBySessionIdLogs: {
+      transformResponse: (result: unknown) => {
+        return result && typeof result == "string"
+          ? JSON.parse(result)
+          : result;
+      },
+      keepUnusedDataFor: 0,
+    },
   },
 });
 
@@ -75,6 +83,8 @@ export const {
   usePostSessionsMutation,
   usePatchSessionsBySessionIdMutation,
   useDeleteSessionsBySessionIdMutation,
+  useGetSessionsBySessionIdLogsQuery,
+  useGetSessionsImagesQuery,
 } = sessionsV2Api;
 
 export type * from "./sessionsV2.generated-api";
