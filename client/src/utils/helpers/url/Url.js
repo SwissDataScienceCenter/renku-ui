@@ -274,13 +274,13 @@ const Url = {
     search: "/v1/search",
     inactiveKgProjects: "/inactive-kg-projects",
     help: {
-      base: "/help",
-      documentation: "/help/docs",
-      getting: "/help/getting",
-      privacy: "/help/privacy",
-      release: "/help/release",
-      status: "/help/status",
-      tos: "/help/tos",
+      base: "/v1/help",
+      documentation: "/v1/help/docs",
+      getting: "/v1/help/getting",
+      privacy: "/v1/help/privacy",
+      release: "/v1/help/release",
+      status: "/v1/help/status",
+      tos: "/v1/help/tos",
     },
     projects: {
       base: new UrlRule(projectsSearchUrlBuilder(), [], searchValidation, [

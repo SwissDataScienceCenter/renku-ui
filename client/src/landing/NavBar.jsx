@@ -93,10 +93,11 @@ function FooterNavbarAnonymousLinks() {
   );
 }
 
-function FooterNavbarLoggedInLinks({ privacyLink }) {
-  const helpLocation = location.pathname.startsWith("/v2")
-    ? ABSOLUTE_ROUTES.v2.help.root
-    : Url.pages.help;
+function FooterNavbarLoggedInLinks({ location, privacyLink }) {
+  const helpLocation =
+    location && location.pathname.startsWith("/v2")
+      ? ABSOLUTE_ROUTES.v2.help.root
+      : Url.pages.help.base;
   return (
     <>
       <RenkuNavLink to={helpLocation} title="Help" />
@@ -190,7 +191,10 @@ function FooterNavbarInner({ location }) {
             location.pathname === Url.get(Url.pages.landing) ? (
               <FooterNavbarAnonymousLinks />
             ) : (
-              <FooterNavbarLoggedInLinks privacyLink={privacyLink} />
+              <FooterNavbarLoggedInLinks
+                location={location}
+                privacyLink={privacyLink}
+              />
             )}
           </div>
         </div>
