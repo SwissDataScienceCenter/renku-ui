@@ -70,14 +70,14 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
   );
 
   return (
-    <Card id="delete">
-      <CardHeader>
+    <Card data-cy="project-delete">
+      <CardHeader data-cy="project-delete-header">
         <h4 className="mb-0">
           <Trash className={cx("me-1", "bi")} />
           Delete project
         </h4>
       </CardHeader>
-      <CardBody>
+      <CardBody data-cy="project-delete-body">
         <p className="fw-bold">Are you sure you want to delete this project?</p>
         <div className="mb-3">
           <p className="mb-2">
@@ -94,6 +94,7 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
         <div className="text-end">
           <Button
             color="danger"
+            data-cy="project-delete-button"
             disabled={typedName !== project.slug?.trim() || result.isLoading}
             onClick={onDelete}
           >
