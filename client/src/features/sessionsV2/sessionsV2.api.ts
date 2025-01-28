@@ -216,7 +216,7 @@ const sessionsV2Api = createApi({
 
 export default sessionsV2Api;
 export const {
-  useGetSessionsQuery,
+  // useGetSessionsQuery,
   useGetSessionEnvironmentsQuery,
   useGetSessionLaunchersQuery,
   useGetProjectSessionLauncherQuery,

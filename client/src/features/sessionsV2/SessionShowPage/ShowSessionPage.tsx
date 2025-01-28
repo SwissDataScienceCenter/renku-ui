@@ -63,8 +63,9 @@ import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import { getSessionFavicon } from "../session.utils";
 import {
   useGetProjectSessionLaunchersQuery,
-  useGetSessionsQuery,
+  // useGetSessionsQuery,
 } from "../sessionsV2.api";
+import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
@@ -432,18 +433,20 @@ function SessionDetails({
               </Link>
             </p>
           </div>
-          <div>
-            <p className="mb-0">
-              <Clock className={cx("bi", "me-2")} />
-              <span className="fw-bold">
-                <TimeCaption
-                  prefix="Launched"
-                  datetime={session.started}
-                  className={cx("fs-6")}
-                />
-              </span>
-            </p>
-          </div>
+          {session.started && (
+            <div>
+              <p className="mb-0">
+                <Clock className={cx("bi", "me-2")} />
+                <span className="fw-bold">
+                  <TimeCaption
+                    prefix="Launched"
+                    datetime={session.started}
+                    className={cx("fs-6")}
+                  />
+                </span>
+              </p>
+            </div>
+          )}
           <div
             className={cx(
               "d-block",

@@ -20,7 +20,8 @@ import { useCallback, useMemo } from "react";
 
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2.api";
+// import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2.api";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
 import { SessionView } from "../SessionView/SessionView";
 import { SessionLauncher } from "../sessionsV2.types";
 import SessionItem from "./SessionItem";

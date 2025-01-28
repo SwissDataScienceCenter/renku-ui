@@ -46,8 +46,9 @@ import { SessionView } from "./SessionView/SessionView";
 import UpdateSessionLauncherModal from "./components/SessionModals/UpdateSessionLauncherModal";
 import {
   useGetProjectSessionLaunchersQuery,
-  useGetSessionsQuery as useGetSessionsQueryV2,
+  // useGetSessionsQuery as useGetSessionsQueryV2,
 } from "./sessionsV2.api";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
 import { SessionLauncher, SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting

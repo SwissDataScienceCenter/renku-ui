@@ -476,7 +476,7 @@ interface ModifySessionModalProps {
   resources: SessionResources;
   status: SessionStatus;
   toggleModal: () => void;
-  resource_class_id: string;
+  resource_class_id: number;
 }
 
 function ModifySessionModal({
@@ -512,7 +512,7 @@ interface ModifySessionModalContentProps {
   resources: SessionResources;
   status: SessionStatus;
   toggleModal: () => void;
-  resource_class_id: string;
+  resource_class_id: number;
 }
 
 function ModifySessionModalContent({
@@ -556,7 +556,7 @@ function ModifySessionModalContent({
   useEffect(() => {
     const currentSessionClass = resourcePools
       ?.flatMap((pool) => pool.classes)
-      .find((c) => `${c.id}` == resource_class_id);
+      .find((c) => c.id == resource_class_id);
     setCurrentSessionClass(currentSessionClass);
   }, [resource_class_id, resourcePools]);
 
@@ -614,7 +614,7 @@ function ModifySessionModalContent({
               resourcePools.length == 0 ||
               isError ||
               currentSessionClass == null ||
-              resource_class_id === `${currentSessionClass?.id}`
+              resource_class_id === currentSessionClass?.id
             }
             onClick={onClick({ resumeSession: true })}
             type="submit"
@@ -632,7 +632,7 @@ function ModifySessionModalContent({
             isError ||
             currentSessionClass == null ||
             (resource_class_id != null &&
-              resource_class_id === `${currentSessionClass?.id}`)
+              resource_class_id === currentSessionClass?.id)
           }
           onClick={onClick({ resumeSession: false })}
           type="submit"
