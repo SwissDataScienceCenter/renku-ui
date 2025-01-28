@@ -30,7 +30,8 @@
     "generate-api:platform": "rtk-query-codegen-openapi src/features/platform/api/platform.api-config.ts",
     "generate-api:searchV2": "rtk-query-codegen-openapi src/features/searchV2/api/searchV2.api-config.ts",
     "generate-api:users": "rtk-query-codegen-openapi src/features/usersV2/api/users.api-config.ts",
-    "generate-api:sessionsV2": "rtk-query-codegen-openapi src/features/sessionsV2/api/sessionsV2.api-config.ts"
+    "generate-api:sessionsV2": "rtk-query-codegen-openapi src/features/sessionsV2/api/sessionsV2.api-config.ts",
+    "generate-api:sessionLaunchersV2": "rtk-query-codegen-openapi src/features/sessionsV2/api/sessionLaunchersV2.api-config.ts"
   },
   "type": "module",
   "dependencies": {
