@@ -60,23 +60,6 @@ export const sessionsV2Api = sessionsV2GeneratedApi.enhanceEndpoints({
   },
 });
 
-// useGetNotebooksImagesQuery,
-// useGetNotebooksLogsByServerNameQuery,
-// useGetNotebooksServerOptionsQuery,
-// usePostNotebooksServersMutation,
-// useGetNotebooksServersQuery,
-// useDeleteNotebooksServersByServerNameMutation,
-// useGetNotebooksServersByServerNameQuery,
-// usePatchNotebooksServersByServerNameMutation,
-// "sessions"
-// usePostSessionsMutation,
-// useGetSessionsQuery,
-// useGetSessionsBySessionIdQuery,
-// useDeleteSessionsBySessionIdMutation,
-// usePatchSessionsBySessionIdMutation,
-// useGetSessionsBySessionIdLogsQuery,
-// useGetSessionsImagesQuery,
-
 export const {
   // "sessions" hooks
   useGetSessionsQuery,
