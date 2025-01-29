@@ -17,9 +17,11 @@
  */
 
 import cx from "classnames";
-import { CodeSquare, InfoCircle, PersonLinesFill } from "react-bootstrap-icons";
+import { CodeSquare, InfoCircle } from "react-bootstrap-icons";
 import { Col, Container, Row } from "reactstrap";
 import { FooterDashboardCard } from "../../features/dashboardV2/DashboardV2.js";
+import renkuBlackIcon from "../Graphics/renkuBlack.svg";
+import { Links } from "../../utils/constants/Docs.js";
 
 export function ResourcesAndSupport() {
   return (
@@ -42,7 +44,7 @@ export function ResourcesAndSupport() {
           <Row className={cx("text-center", "gap-5", "gap-lg-0")}>
             <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
               <FooterDashboardCard
-                url="https://blog.renkulab.io/"
+                url={Links.RENKU_BLOG}
                 className="text-decoration-none text-navy"
               >
                 <InfoCircle size={60} />
@@ -54,10 +56,10 @@ export function ResourcesAndSupport() {
             </Col>
             <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
               <FooterDashboardCard
-                url="https://blog.renkulab.io/"
+                url={Links.RENKU_2_COMMUNITY_PORTAL}
                 className="text-decoration-none text-navy"
               >
-                <PersonLinesFill size={60} />
+                <img src={renkuBlackIcon} alt="Renku" width="60" height="60" />
                 <h4>Get Involved</h4>
                 <p className={cx("fs-4", "mb-0")}>
                   Visit our Community Portal for community events and our
@@ -67,7 +69,7 @@ export function ResourcesAndSupport() {
             </Col>
             <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
               <FooterDashboardCard
-                url="https://blog.renkulab.io/"
+                url={Links.GITHUB}
                 className="text-decoration-none text-navy"
               >
                 <CodeSquare size={60} />

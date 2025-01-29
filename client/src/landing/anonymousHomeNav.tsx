@@ -25,7 +25,7 @@ import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
 
 import { useLoginUrl } from "../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../components/ExternalLinks";
-import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
+import { Docs, Links } from "../utils/constants/Docs";
 import { Url } from "../utils/helpers/url";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 
@@ -151,7 +151,10 @@ function TopNavExternalLink({ title, url }: BottomNavExternalLinkProps) {
 
 function TopNavLink({ title, to }: BottomNavLinkProps) {
   return (
-    <Link className={cx("text-decoration-none", "text-white")} to={to}>
+    <Link
+      className={cx("text-decoration-none", "text-white", "nav-link")}
+      to={to}
+    >
       {title}
     </Link>
   );
@@ -184,7 +187,7 @@ function TopNav() {
             <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
           </div>
           <a
-            className={cx("btn", "btn-outline-primary")}
+            className={cx("btn", "btn-outline-light", "text-decoration-none")}
             id="login-button"
             href={loginUrl.href}
           >
@@ -209,14 +212,14 @@ function TopNav() {
             >
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink
-                  title="Renku Docs"
-                  url={Docs.READ_THE_DOCS_ROOT}
+                  title="Documentation"
+                  url={Links.RENKU_2_DOCUMENTATION}
                 />
               </NavItem>
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink
-                  title="Renku CLI Docs"
-                  url={RenkuPythonDocs.READ_THE_DOCS_ROOT}
+                  title="Community Portal"
+                  url={Links.RENKU_2_COMMUNITY_PORTAL}
                 />
               </NavItem>
               <NavItem>
@@ -231,7 +234,9 @@ function TopNav() {
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink title="GitHub" url={Links.GITHUB} />
               </NavItem>
-              <NavItem className="d-block d-md-none nav-item">
+              <NavItem
+                className={cx("d-block", "d-md-none", "nav-item", "mb-2")}
+              >
                 <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
               </NavItem>
             </Nav>

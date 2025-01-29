@@ -25,7 +25,7 @@
 
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment, useContext, useRef } from "react";
+import { Fragment, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { Col, Row } from "reactstrap";
@@ -130,14 +130,9 @@ export function SearchInput() {
   );
 }
 function StandardHome(props: AnonymousHomeConfig) {
-  const sectionRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollToGetStarted = () => {
-    sectionRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
   return (
     <>
-      <HeroLanding {...props} scrollToGetStarted={scrollToGetStarted} />
+      <HeroLanding {...props} />
       <IntroductionRenku20 />
       <WhatIsRenku
         projectPath={props.homeCustomized.projectPath}

@@ -1,19 +1,13 @@
 import cx from "classnames";
-import { Button, Col, Row } from "reactstrap";
+import { Link } from "react-router-dom-v5-compat";
+import { Col, Row } from "reactstrap";
 
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import { HomeHeader } from "../AnonymousHome";
 import heroGraphic from "../Graphics/heroBoxes.svg";
 import { AnonymousHomeConfig } from "../anonymousHome.types";
 
-import styles from "./HeroLanding.module.scss";
-
-interface HeroLandingProps extends AnonymousHomeConfig {
-  scrollToGetStarted: () => void;
-}
-export default function HeroLanding(props: HeroLandingProps) {
-  const { scrollToGetStarted } = props;
-
+export default function HeroLanding(props: AnonymousHomeConfig) {
   const loginUrl = useLoginUrl();
 
   return (
@@ -21,10 +15,10 @@ export default function HeroLanding(props: HeroLandingProps) {
       <HomeHeader {...props} />
       <div className={cx("container", "py-5")}>
         <Row>
-          <Col xs={12} lg={6}>
+          <Col xs={12} lg={7}>
             <h1 className="text-white">
               Connecting data, code, compute, <br />
-              and people.
+              and <span className="fst-italic">people</span>.
             </h1>
             <img
               src={heroGraphic}
@@ -46,27 +40,29 @@ export default function HeroLanding(props: HeroLandingProps) {
                 "flex-column"
               )}
             >
-              <Button
-                className={cx("btn", styles.heroBtn)}
-                color="primary"
-                role="button"
-                id="link-try-it-out"
-                onClick={scrollToGetStarted}
-              >
-                Explore a project
-              </Button>
               <a
-                className={cx("btn", "btn-outline-primary", styles.heroBtn)}
+                className={cx("btn", "btn-primary")}
                 id="hero_link-sign_up"
                 href={loginUrl.href}
               >
                 Create an account
               </a>
+              <Link
+                className={cx(
+                  "btn",
+                  "btn-outline-light",
+                  "text-decoration-none"
+                )}
+                to="/v2/search?page=1&perPage=12&q=type:project"
+                data-cy={`view-other-projects-btn`}
+              >
+                Explore a project
+              </Link>
             </div>
           </Col>
           <Col
             xs={12}
-            lg={6}
+            lg={5}
             className={cx("text-center", "text-lg-end", "ps-5")}
           >
             <img
