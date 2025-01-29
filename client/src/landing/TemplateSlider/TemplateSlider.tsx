@@ -141,18 +141,21 @@ export default function TemplateSlider() {
           alt="Template Renku"
           loading="lazy"
           hidden={templateSelected !== "python"}
+          className="w-100"
         />
         <img
           src={templateRStudioGraphic}
           alt="Template Renku"
           loading="lazy"
           hidden={templateSelected !== "rStudio"}
+          className="w-100"
         />
         <img
           src={templateJuliaGraphic}
           alt="Template Renku"
           loading="lazy"
           hidden={templateSelected !== "julia"}
+          className="w-100"
         />
       </div>
       <div className={styles.templateSliderBtn}>
