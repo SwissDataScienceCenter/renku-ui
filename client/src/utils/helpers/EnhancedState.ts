@@ -105,10 +105,10 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [repositoriesApi.reducerPath]: repositoriesApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
+    [sessionLaunchersV2Api.reducerPath]: sessionLaunchersV2Api.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
-    [sessionLaunchersV2Api.reducerPath]: sessionLaunchersV2Api.reducer,
     [statuspageApi.reducerPath]: statuspageApi.reducer,
     [termsApi.reducerPath]: termsApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
@@ -143,11 +143,11 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(recentUserActivityApi.middleware)
         .concat(repositoriesApi.middleware)
         .concat(searchV2Api.middleware)
+        .concat(sessionLaunchersV2Api.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsV2Api.middleware)
-        .concat(sessionLaunchersV2Api.middleware)
         .concat(statuspageApi.middleware)
         .concat(termsApi.middleware)
         .concat(usersApi.middleware)
