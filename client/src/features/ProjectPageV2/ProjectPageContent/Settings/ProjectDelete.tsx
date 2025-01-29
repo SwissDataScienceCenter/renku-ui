@@ -71,13 +71,13 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
 
   return (
     <Card data-cy="project-delete">
-      <CardHeader data-cy="project-delete-header">
+      <CardHeader>
         <h4 className="mb-0">
           <Trash className={cx("me-1", "bi")} />
           Delete project
         </h4>
       </CardHeader>
-      <CardBody data-cy="project-delete-body">
+      <CardBody>
         <p className="fw-bold">Are you sure you want to delete this project?</p>
         <div className="mb-3">
           <p className="mb-2">
