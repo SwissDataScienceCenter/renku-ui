@@ -10,17 +10,6 @@
   justify-content: center;
 }
 
-.templateSliderImages {
-  img {
-    width: 544px;
-    height: 313px;
-    @include media-breakpoint-down(lg) {
-      width: 100%;
-      height: auto;
-    }
-  }
-}
-
 .templateSliderBtn {
   display: flex;
   flex-direction: row;

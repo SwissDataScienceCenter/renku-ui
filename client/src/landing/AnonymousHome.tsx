@@ -134,10 +134,7 @@ function StandardHome(props: AnonymousHomeConfig) {
     <>
       <HeroLanding {...props} />
       <IntroductionRenku20 />
-      <WhatIsRenku
-        projectPath={props.homeCustomized.projectPath}
-        datasetSlug={props.homeCustomized.datasetSlug}
-      />
+      <WhatIsRenku />
       <DividerLandingPage />
       <Teaching />
       <ResourcesAndSupport />
