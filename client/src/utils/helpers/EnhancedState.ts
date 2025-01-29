@@ -57,7 +57,8 @@ import sessionsApi from "../../features/session/sessions.api";
 import sessionSidecarApi from "../../features/session/sidecar.api";
 import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
-import sessionsV2Api from "../../features/sessionsV2/sessionsV2.api";
+import { sessionLaunchersV2EmptyApi as sessionLaunchersV2Api } from "../../features/sessionsV2/api/sessionLaunchersV2.empty-api";
+import { sessionsV2EmptyApi as sessionsV2Api } from "../../features/sessionsV2/api/sessionsV2.empty-api";
 import startSessionOptionsV2Slice from "../../features/sessionsV2/startSessionOptionsV2.slice";
 import termsApi from "../../features/terms/terms.api";
 import { usersEmptyApi as usersApi } from "../../features/usersV2/api/users.empty-api";
@@ -107,6 +108,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
+    [sessionLaunchersV2Api.reducerPath]: sessionLaunchersV2Api.reducer,
     [statuspageApi.reducerPath]: statuspageApi.reducer,
     [termsApi.reducerPath]: termsApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
@@ -145,6 +147,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionSidecarApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsV2Api.middleware)
+        .concat(sessionLaunchersV2Api.middleware)
         .concat(statuspageApi.middleware)
         .concat(termsApi.middleware)
         .concat(usersApi.middleware)

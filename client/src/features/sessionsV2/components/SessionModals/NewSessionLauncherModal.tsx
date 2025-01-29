@@ -37,9 +37,9 @@ import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../../projec
 import { DEFAULT_PORT, DEFAULT_URL } from "../../session.constants";
 import { getFormattedEnvironmentValues } from "../../session.utils";
 import {
-  useAddSessionLauncherMutation,
-  useGetSessionEnvironmentsQuery,
-} from "../../sessionsV2.api";
+  useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
+  usePostSessionLaunchersMutation as useAddSessionLauncherMutation,
+} from "../../api/sessionLaunchersV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentFields } from "../SessionForm/EnvironmentField";
 import { LauncherDetailsFields } from "../SessionForm/LauncherDetailsFields";
@@ -59,7 +59,7 @@ export default function NewSessionLauncherModal({
 }: NewSessionLauncherModalProps) {
   const [step, setStep] = useState<LauncherType>(LauncherType.Environment);
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
-  const { data: environments } = useGetSessionEnvironmentsQuery();
+  const { data: environments } = useGetSessionEnvironmentsQuery({});
   const [addSessionLauncher, result] = useAddSessionLauncherMutation();
   const { data: project } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
     namespace && slug ? { namespace, slug } : skipToken
@@ -120,11 +120,15 @@ export default function NewSessionLauncherModal({
           : undefined;
       if (environment.success && environment.data)
         addSessionLauncher({
-          project_id: projectId ?? "",
-          resource_class_id: resourceClass.id,
-          disk_storage: diskStorage,
-          name,
-          environment: environment.data,
+          sessionLauncherPost: {
+            project_id: projectId ?? "",
+            resource_class_id: resourceClass.id,
+            disk_storage: diskStorage,
+            name,
+            // TODO: fix types for this session environment
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            environment: environment.data as any,
+          },
         });
     },
     [projectId, addSessionLauncher]

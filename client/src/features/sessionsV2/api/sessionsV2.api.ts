@@ -18,7 +18,8 @@
 
 import { sessionsV2GeneratedApi } from "./sessionsV2.generated-api";
 
-export const sessionsV2Api = sessionsV2GeneratedApi.enhanceEndpoints({
+// Adds tag handling for cache management
+const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
   addTagTypes: ["Session"],
   endpoints: {
     getSessions: {
@@ -58,6 +59,16 @@ export const sessionsV2Api = sessionsV2GeneratedApi.enhanceEndpoints({
       keepUnusedDataFor: 0,
     },
   },
+});
+
+// Adds tag invalidation endpoints
+export const sessionsV2Api = withTagHandling.injectEndpoints({
+  endpoints: (build) => ({
+    invalidateSessions: build.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["Session"],
+    }),
+  }),
 });
 
 export const {

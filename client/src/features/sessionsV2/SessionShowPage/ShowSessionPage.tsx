@@ -61,10 +61,7 @@ import styles from "../../session/components/ShowSession.module.scss";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import { getSessionFavicon } from "../session.utils";
-import {
-  useGetProjectSessionLaunchersQuery,
-  // useGetSessionsQuery,
-} from "../sessionsV2.api";
+import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionIframe from "./SessionIframe";

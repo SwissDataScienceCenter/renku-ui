@@ -25,7 +25,7 @@ import { Col, ListGroup, Row } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useGetProjectSessionLauncherQuery } from "../../features/sessionsV2/sessionsV2.api";
+import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.generated-api";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
@@ -122,7 +122,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
     projectId ? { projectId } : skipToken
   );
   const { data: launcher } = useGetProjectSessionLauncherQuery(
-    launcherId ? { id: launcherId } : skipToken
+    launcherId ? { launcherId } : skipToken
   );
 
   const projectUrl = project

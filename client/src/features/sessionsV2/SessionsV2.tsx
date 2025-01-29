@@ -44,10 +44,7 @@ import SessionItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
 import UpdateSessionLauncherModal from "./components/SessionModals/UpdateSessionLauncherModal";
-import {
-  useGetProjectSessionLaunchersQuery,
-  // useGetSessionsQuery as useGetSessionsQueryV2,
-} from "./sessionsV2.api";
+import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
 import { SessionLauncher, SessionV2 } from "./sessionsV2.types";
 

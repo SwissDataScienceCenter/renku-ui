@@ -33,7 +33,8 @@ import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon"
 import { Loader } from "../../../../components/Loader";
 import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { prioritizeSelectedEnvironment } from "../../session.utils";
-import { useGetSessionEnvironmentsQuery } from "../../sessionsV2.api";
+// import { useGetSessionEnvironmentsQuery } from "../../sessionsV2.api";
+import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import { EnvironmentKindField } from "./EnvironmentKindField";
@@ -64,7 +65,7 @@ export default function EditLauncherFormContent({
     data: environments,
     error,
     isLoading,
-  } = useGetSessionEnvironmentsQuery();
+  } = useGetSessionEnvironmentsQuery({});
   const environmentKind = watch("environment_kind");
   const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
   const toggleIsOpen = useCallback(

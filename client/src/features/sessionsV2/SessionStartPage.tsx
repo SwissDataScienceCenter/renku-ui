@@ -58,11 +58,7 @@ import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SessionSecretsModal from "./SessionSecretsModal";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
-import {
-  // useGetDockerImageQuery,
-  useGetProjectSessionLaunchersQuery,
-  // useLaunchSessionMutation,
-} from "./sessionsV2.api";
+import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import {
   usePostSessionsMutation as useLaunchSessionMutation,
   useGetSessionsImagesQuery as useGetDockerImageQuery,

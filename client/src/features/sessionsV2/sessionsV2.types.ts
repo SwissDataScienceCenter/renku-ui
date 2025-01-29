@@ -31,7 +31,7 @@ export interface SessionEnvironment {
   working_directory?: string;
   mount_directory?: string;
   port?: number;
-  environment_kind: EnvironmentKind;
+  environment_kind?: EnvironmentKind;
   command?: string[];
   args?: string[];
 }
@@ -44,7 +44,7 @@ export type SessionLauncher = {
   name: string;
   creation_date: string;
   description?: string;
-  resource_class_id?: number;
+  resource_class_id?: number | null;
   disk_storage?: number;
   environment: SessionLauncherEnvironment;
 };
