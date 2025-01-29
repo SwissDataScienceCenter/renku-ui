@@ -73,11 +73,7 @@ export default function ProjectV2New() {
         unmountOnClose={true}
         toggle={toggleModal}
       >
-        <ModalHeader
-          data-cy="new-project-modal-header"
-          tag="div"
-          toggle={toggleModal}
-        >
+        <ModalHeader tag="div" toggle={toggleModal}>
           <h2>
             <Folder className="bi" /> Create a new project
           </h2>
@@ -174,7 +170,7 @@ function ProjectV2CreationDetails() {
 
   return (
     <>
-      <ModalBody data-cy="new-project-modal-body">
+      <ModalBody>
         <Form id="project-creation-form" onSubmit={handleSubmit(onSubmit)}>
           <FormGroup className="d-inline" disabled={result.isLoading}>
             {/* //? FormGroup hard codes an additional mb-3. Adding "d-inline" makes it ineffective. */}
