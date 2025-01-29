@@ -44,7 +44,7 @@ export function IntroductionRenku20() {
               Taking collaboration to the next level.
             </span>
           </h2>
-          <p className={cx("text-center", "mb-0", "fs-4")}>
+          <p className={cx("text-center", "mb-0", "fs-3")}>
             We’re thrilled to announce the next generation of the Renku
             platform, Renku 2.0. <br />
             Here’s what’s new:
@@ -59,7 +59,7 @@ export function IntroductionRenku20() {
           >
             <Col xs={12} lg={6} className={cx("px-5", "text-center")}>
               <img src={connectIcon} alt="Renku" width="62" height="62" />
-              <h4 className={cx("py-3", "text-primary", "fw-bold")}>
+              <h4 className={cx("py-3", "fw-bold")}>
                 Connect your favorite tools and platforms.
               </h4>
               <p className={cx("fs-3", "mb-0")}>
@@ -70,7 +70,7 @@ export function IntroductionRenku20() {
             </Col>
             <Col xs={12} lg={6} className={cx("px-5", "text-center")}>
               <img src={puzzleIcon} alt="Renku" width="62" height="62" />
-              <h4 className={cx("py-3", "text-primary", "fw-bold")}>
+              <h4 className={cx("py-3", "fw-bold")}>
                 Plug-and-Play Flexibility.
               </h4>
               <p className={cx("fs-3", "mb-0")}>

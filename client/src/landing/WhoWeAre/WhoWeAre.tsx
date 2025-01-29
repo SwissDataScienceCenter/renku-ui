@@ -33,7 +33,7 @@ export default function WhoWeAre() {
         <div id={styles.whoWeAreContainer}>
           <div className={styles.whoWeAreTitle}>
             <h2 className="text-rk-green">
-              Built by data scientists, for data scientists.
+              Built for data scientists, by data scientists.
             </h2>
           </div>
           <div className={styles.whoWeAreContent}>
