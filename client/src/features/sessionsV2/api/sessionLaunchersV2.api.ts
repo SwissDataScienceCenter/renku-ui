@@ -16,52 +16,71 @@
  * limitations under the License.
  */
 
-import { sessionLaunchersV2GeneratedApi } from "./sessionLaunchersV2.generated-api";
+import {
+  type GetEnvironmentsApiArg,
+  type GetEnvironmentsApiResponse,
+  sessionLaunchersV2GeneratedApi,
+} from "./sessionLaunchersV2.generated-api";
+
+// Fixes some API endpoints
+const withFixedEndpoints = sessionLaunchersV2GeneratedApi.injectEndpoints({
+  overrideExisting: true,
+  endpoints: (build) => ({
+    getEnvironments: build.query<
+      GetEnvironmentsApiResponse,
+      GetEnvironmentsApiArg
+    >({
+      query: ({ getEnvironmentParams }) => ({
+        url: `/environments`,
+        params: getEnvironmentParams,
+      }),
+    }),
+  }),
+});
 
 // Adds tag handling for cache management
-export const sessionLaunchersV2Api =
-  sessionLaunchersV2GeneratedApi.enhanceEndpoints({
-    addTagTypes: ["Environment", "Launcher"],
-    endpoints: {
-      getEnvironments: {
-        providesTags: (result) =>
-          result
-            ? [
-                ...result.map(({ id }) => ({
-                  id,
-                  type: "Environment" as const,
-                })),
-                "Environment",
-              ]
-            : ["Environment"],
-      },
-      getSessionLaunchersByLauncherId: {
-        providesTags: (result) =>
-          result
-            ? [{ id: result.id, type: "Launcher" }, "Launcher"]
-            : ["Launcher"],
-      },
-      postSessionLaunchers: {
-        invalidatesTags: ["Launcher"],
-      },
-      patchSessionLaunchersByLauncherId: {
-        invalidatesTags: (result) =>
-          result ? [{ id: result.id, type: "Launcher" }] : ["Launcher"],
-      },
-      deleteSessionLaunchersByLauncherId: {
-        invalidatesTags: ["Launcher"],
-      },
-      getProjectsByProjectIdSessionLaunchers: {
-        providesTags: (result) =>
-          result
-            ? [
-                ...result.map(({ id }) => ({ id, type: "Launcher" as const })),
-                "Launcher",
-              ]
-            : ["Launcher"],
-      },
+export const sessionLaunchersV2Api = withFixedEndpoints.enhanceEndpoints({
+  addTagTypes: ["Environment", "Launcher"],
+  endpoints: {
+    getEnvironments: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                id,
+                type: "Environment" as const,
+              })),
+              "Environment",
+            ]
+          : ["Environment"],
     },
-  });
+    getSessionLaunchersByLauncherId: {
+      providesTags: (result) =>
+        result
+          ? [{ id: result.id, type: "Launcher" }, "Launcher"]
+          : ["Launcher"],
+    },
+    postSessionLaunchers: {
+      invalidatesTags: ["Launcher"],
+    },
+    patchSessionLaunchersByLauncherId: {
+      invalidatesTags: (result) =>
+        result ? [{ id: result.id, type: "Launcher" }] : ["Launcher"],
+    },
+    deleteSessionLaunchersByLauncherId: {
+      invalidatesTags: ["Launcher"],
+    },
+    getProjectsByProjectIdSessionLaunchers: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ id, type: "Launcher" as const })),
+              "Launcher",
+            ]
+          : ["Launcher"],
+    },
+  },
+});
 
 export const {
   // "environments" hooks

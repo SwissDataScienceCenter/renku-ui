@@ -128,7 +128,7 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
         name = "getEnvironments",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept("GET", `/api/data/environments*`, response).as(name);
+      cy.intercept("GET", `/api/data/environments`, response).as(name);
       return this;
     }
   };
