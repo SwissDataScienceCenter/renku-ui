@@ -190,7 +190,7 @@ describe("Edit v2 project", () => {
       fixture: "projectV2/update-projectV2-metadata.json",
       name: "readPostUpdate",
     });
-    cy.get("button").contains("Update project").should("be.visible").click();
+    cy.getDataCy("project-update-button").should("be.visible").click();
     cy.wait("@updateProjectV2");
     cy.wait("@readPostUpdate");
     cy.contains("The project has been successfully updated.").should(
@@ -229,7 +229,7 @@ describe("Edit v2 project", () => {
       name: "readPostUpdate",
       namespace: "test-25-group-v2",
     });
-    cy.get("button").contains("Update project").should("be.visible").click();
+    cy.getDataCy("project-update-button").should("be.visible").click();
     cy.wait("@updateProjectV2");
     cy.wait("@readPostUpdate");
     cy.contains("new name").should("be.visible");

@@ -418,6 +418,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
             <div className={cx("d-flex", "justify-content-end")}>
               <Button
                 color="primary"
+                data-cy="project-update-button"
                 disabled={isUpdating || !isDirty}
                 type="submit"
               >
