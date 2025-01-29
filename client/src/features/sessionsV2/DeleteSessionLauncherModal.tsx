@@ -21,10 +21,10 @@ import { useCallback, useEffect } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
+import { WarnAlert } from "../../components/Alert";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { useDeleteSessionLaunchersByLauncherIdMutation as useDeleteSessionLauncherMutation } from "./api/sessionLaunchersV2.api";
 import { SessionLauncher } from "./sessionsV2.types";
-import { WarnAlert } from "../../components/Alert";
 
 interface DeleteSessionLauncherModalProps {
   isOpen: boolean;

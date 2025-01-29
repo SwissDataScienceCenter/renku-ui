@@ -30,16 +30,17 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+import {
+  usePostSessionLaunchersMutation as useAddSessionLauncherMutation,
+  useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
+} from "../../api/sessionLaunchersV2.api";
 import { DEFAULT_PORT, DEFAULT_URL } from "../../session.constants";
 import { getFormattedEnvironmentValues } from "../../session.utils";
-import {
-  useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
-  usePostSessionLaunchersMutation as useAddSessionLauncherMutation,
-} from "../../api/sessionLaunchersV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentFields } from "../SessionForm/EnvironmentField";
 import { LauncherDetailsFields } from "../SessionForm/LauncherDetailsFields";

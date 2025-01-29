@@ -28,6 +28,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom-v5-compat";
+
 import { ErrorAlert } from "../../components/Alert";
 import PageLoader from "../../components/PageLoader";
 import {
@@ -57,12 +58,12 @@ import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/a
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SessionSecretsModal from "./SessionSecretsModal";
-import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import {
-  usePostSessionsMutation as useLaunchSessionMutation,
   useGetSessionsImagesQuery as useGetDockerImageQuery,
+  usePostSessionsMutation as useLaunchSessionMutation,
 } from "./api/sessionsV2.api";
+import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {

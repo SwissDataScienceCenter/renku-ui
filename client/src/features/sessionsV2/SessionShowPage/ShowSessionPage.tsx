@@ -43,6 +43,7 @@ import {
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
 import EnvironmentLogsV2 from "../../../components/LogsV2";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -57,15 +58,16 @@ import { displaySlice, resetFavicon, setFavicon } from "../../display";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import SessionUnavailable from "../../session/components/SessionUnavailable";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
-import styles from "../../session/components/ShowSession.module.scss";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
-import { getSessionFavicon } from "../session.utils";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery } from "../api/sessionsV2.api";
+import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
+
+import styles from "../../session/components/ShowSession.module.scss";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();

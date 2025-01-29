@@ -15,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { Controller } from "react-hook-form";
 import { Input, ListGroup } from "reactstrap";
+
 import { WarnAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
-// import { useGetSessionEnvironmentsQuery } from "../../sessionsV2.api";
 import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
 import { SessionEnvironmentItem } from "./SessionEnvironmentItem";

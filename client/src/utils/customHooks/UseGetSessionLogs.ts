@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { useEffect, useState } from "react";
+
+import { ILogs } from "../../components/Logs";
 import { useGetLogsQuery } from "../../features/session/sessions.api";
 import { useGetSessionsBySessionIdLogsQuery as useGetLogsQueryV2 } from "../../features/sessionsV2/api/sessionsV2.api";
-import { ILogs } from "../../components/Logs";
 
 /**
  *  useGetSessionLogs custom hook

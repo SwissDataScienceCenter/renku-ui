@@ -17,9 +17,8 @@
  */
 
 import { useEffect, useMemo, useState } from "react";
-import { useGetSessionsQuery } from "./sessions.api";
-// import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/sessionsV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
+import { useGetSessionsQuery } from "./sessions.api";
 import { SessionStatusState } from "./sessions.types";
 
 const DEFAULT_POLLING_INTERVAL_MS = 5_000;

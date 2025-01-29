@@ -28,17 +28,18 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import {
-  getFormattedEnvironmentValues,
-  getLauncherDefaultValues,
-} from "../../session.utils";
-import {
   useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
   usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation,
 } from "../../api/sessionLaunchersV2.api";
+import {
+  getFormattedEnvironmentValues,
+  getLauncherDefaultValues,
+} from "../../session.utils";
 import { SessionLauncher, SessionLauncherForm } from "../../sessionsV2.types";
 import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 

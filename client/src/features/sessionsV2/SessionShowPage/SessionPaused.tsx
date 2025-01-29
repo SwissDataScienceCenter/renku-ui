@@ -29,7 +29,6 @@ import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.consta
 import type { NotificationsManager } from "../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
-// import { usePatchSessionMutation } from "../sessionsV2.api";
 import { usePatchSessionsBySessionIdMutation as usePatchSessionMutation } from "../api/sessionsV2.api";
 import type { SessionV2 } from "../sessionsV2.types";
 
