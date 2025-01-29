@@ -20,6 +20,21 @@ set -e
 
 CURRENT_CONTEXT=`kubectl config current-context`
 
+# Try to guess the namespace using the GitHub CLI
+if [[ ! $DEV_NAMESPACE ]]
+then
+  if [[ ! $PR ]]
+  then
+    GH_CLI="${GH_CLI:-gh}"
+    PR_NUMBER=$($GH_CLI pr view --json number --jq .number || true)
+    if [[ $PR_NUMBER ]]
+    then
+      echo "Detected current PR: ${PR_NUMBER}"
+      PR=$PR_NUMBER
+    fi
+  fi
+fi
+
 if [[ -n $PR ]]
 then
   DEV_NAMESPACE=renku-ci-ui-${PR}
