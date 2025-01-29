@@ -65,7 +65,12 @@ function NavbarItemPlus() {
 
   return (
     <Dropdown isOpen={isOpen} toggle={toggleOpen} className="nav-item">
-      <DropdownToggle nav className={cx("nav-link", "fs-5")} id="plus-dropdown">
+      <DropdownToggle
+        nav
+        className={cx("nav-link", "fs-5")}
+        data-cy="navbar-new-entity"
+        id="plus-dropdown"
+      >
         <PlusCircle className="bi" id="createPlus" />
       </DropdownToggle>
       <DropdownMenu end>
