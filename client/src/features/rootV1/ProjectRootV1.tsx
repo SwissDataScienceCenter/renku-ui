@@ -18,9 +18,10 @@
 
 import { Route, Routes } from "react-router-dom-v5-compat";
 import ContainerWrap from "../../components/container/ContainerWrap";
-import { RELATIVE_ROUTES } from "../../routing/routes.constants";
+import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyProjectList from "../../project/list/LazyProjectList";
 import LazyNewProject from "../../project/new/LazyNewProject";
+import { RELATIVE_ROUTES } from "../../routing/routes.constants";
 
 export default function RootV1() {
   return (
@@ -61,7 +62,7 @@ export default function RootV1() {
         path="*"
         element={
           <ContainerWrap>
-            <LazyProjectList />
+            <LazyNotFound />
           </ContainerWrap>
         }
       />

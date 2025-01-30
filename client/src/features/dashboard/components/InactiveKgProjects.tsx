@@ -18,9 +18,9 @@
 import { Link } from "react-router-dom";
 
 import { WarnAlert } from "../../../components/Alert";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { Url } from "../../../utils/helpers/url";
 import { useGetInactiveKgProjectsQuery } from "../../inactiveKgProjects/InactiveKgProjectsApi";
 
 function InactiveProjectsWarning({
@@ -39,7 +39,7 @@ function InactiveProjectsWarning({
     <WarnAlert>
       <div data-cy="inactive-kg-project-alert">
         Metadata indexing is not activated on {totalProjectsText}.{" "}
-        <Link to={Url.get(Url.pages.inactiveKgProjects)}>
+        <Link to={ABSOLUTE_ROUTES.v1.inactiveKGProjects}>
           Activate indexing on your projects
         </Link>{" "}
         to properly integrate them with Renku.

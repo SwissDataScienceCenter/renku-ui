@@ -49,6 +49,7 @@ import LazyNotFound from "./not-found/LazyNotFound";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
+import { ABSOLUTE_ROUTES } from "./routing/routes.constants";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
@@ -117,7 +118,7 @@ function CentralContentContainer({ user, socket }) {
           />
         </CompatRoute>
         <CompatRoute path="/datasets">
-          <Redirect to="/v1/search?type=dataset" />
+          <Redirect to={`${ABSOLUTE_ROUTES.v1.search}?type=dataset`} />
         </CompatRoute>
         <CompatRoute path="/v1">
           <LazyRootV1 user={user} />

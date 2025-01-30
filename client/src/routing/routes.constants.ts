@@ -18,6 +18,29 @@
 
 export const ABSOLUTE_ROUTES = {
   root: "/",
+  v1: {
+    root: "/v1",
+    inactiveKGProjects: "/v1/inactive-kg-projects",
+    search: "/v1/search",
+    projects: {
+      root: "/v1/projects",
+      all: "/v1/projects/all",
+      new: "/v1/projects/new",
+      starred: "/v1/projects/starred",
+    },
+    help: {
+      root: "/v1/help",
+      contact: "/v1/help/contact",
+      status: "/v1/help/status",
+      release: "/v1/help/release",
+      tos: "/v1/help/tos",
+      privacy: "/v1/help/privacy",
+    },
+    notifications: "/v1/notifications",
+    styleGuide: "/v1/style-guide",
+    secrets: "/v1/secrets",
+    sessions: "/v1/sessions",
+  },
   v2: {
     root: "/v2",
     user: "/v2/user",
@@ -55,27 +78,6 @@ export const ABSOLUTE_ROUTES = {
     search: "/v2/search",
     connectedServices: "/v2/connected-services",
     secrets: "/v2/secrets",
-  },
-  v1: {
-    root: "/v1",
-    search: "/v1/search",
-    projects: {
-      root: "/v1/projects",
-      all: "/v1/projects/all",
-      starred: "/v1/projects/starred",
-    },
-    help: {
-      root: "/v1/help",
-      contact: "/v1/help/contact",
-      status: "/v1/help/status",
-      release: "/v1/help/release",
-      tos: "/v1/help/tos",
-      privacy: "/v1/help/privacy",
-    },
-    notifications: "/v1/notifications",
-    styleGuide: "/v1/style-guide",
-    secrets: "/v1/secrets",
-    sessions: "/v1/sessions",
   },
 } as const;
 
