@@ -25,8 +25,10 @@ import styles from "./IntroductionRenku20.module.scss";
 
 export function IntroductionRenku20() {
   return (
-    <div className={cx("bg-navy", "py-5", styles.IntroductionRenku20Bg)}>
-      <Container className="py-3">
+    <div
+      className={cx("bg-navy", "py-5", "px-3", styles.IntroductionRenku20Bg)}
+    >
+      <Container className={cx("py-3", "px-0")}>
         <div
           className={cx(
             "bg-white",
@@ -57,7 +59,11 @@ export function IntroductionRenku20() {
               "gap-lg-0"
             )}
           >
-            <Col xs={12} lg={6} className={cx("px-5", "text-center")}>
+            <Col
+              xs={12}
+              lg={6}
+              className={cx("px-0", "px-lg-5", "text-center")}
+            >
               <img src={connectIcon} alt="Renku" width="62" height="62" />
               <h4 className={cx("py-3", "fw-bold")}>
                 Connect your favorite tools and platforms.
@@ -68,7 +74,11 @@ export function IntroductionRenku20() {
                 and powerful.
               </p>
             </Col>
-            <Col xs={12} lg={6} className={cx("px-5", "text-center")}>
+            <Col
+              xs={12}
+              lg={6}
+              className={cx("px-0", "px-lg-5", "text-center")}
+            >
               <img src={puzzleIcon} alt="Renku" width="62" height="62" />
               <h4 className={cx("py-3", "fw-bold")}>
                 Plug-and-Play Flexibility.

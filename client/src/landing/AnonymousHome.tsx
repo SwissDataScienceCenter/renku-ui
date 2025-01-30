@@ -35,6 +35,7 @@ import { stateToSearchString } from "../features/kgSearch";
 import AppContext from "../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 import { Url } from "../utils/helpers/url";
+import { RenkuBenefits } from "./Benefits/Benefits.tsx";
 import { IntroductionRenku20 } from "./Introduction/IntroductionRenku2.0.tsx";
 
 import { NavBarWarnings } from "./NavBarWarnings";
@@ -44,7 +45,6 @@ import VisualHead from "./Graphics/Visual_Head.svg";
 import DividerLandingPage from "./Dividier/Divider";
 import HeroLanding from "./HeroLanding/HeroLanding";
 import { ResourcesAndSupport } from "./ResourcesSupport/ResourcesAndSupport.tsx";
-import Teaching from "./Teaching/Teaching";
 import WhatIsRenku from "./WhatIsRenku/WhatIsRenku";
 import WhoWeAre from "./WhoWeAre/WhoWeAre";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
@@ -55,6 +55,7 @@ import { BottomNav, TopNav } from "./anonymousHomeNav";
 import "../project/new/Project.style.css";
 // ? the "quick-nav" class is used in this file
 import "../components/quicknav/QuickNav.style.css";
+import { RenkuUsers } from "./RenkuUsers/RenkuUsers.tsx";
 
 export default function AnonymousHome() {
   const { client, model, params } = useContext(AppContext);
@@ -135,8 +136,10 @@ function StandardHome(props: AnonymousHomeConfig) {
       <HeroLanding {...props} />
       <IntroductionRenku20 />
       <WhatIsRenku />
+      <RenkuUsers />
       <DividerLandingPage />
-      <Teaching />
+      <RenkuBenefits />
+      {/*<Teaching />*/}
       <ResourcesAndSupport />
       <WhoWeAre />
       <BottomNav {...props} />
