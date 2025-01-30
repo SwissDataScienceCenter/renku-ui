@@ -31,7 +31,7 @@ export interface SessionEnvironment {
   working_directory?: string;
   mount_directory?: string;
   port?: number;
-  environment_kind: EnvironmentKind;
+  environment_kind?: EnvironmentKind;
   command?: string[];
   args?: string[];
 }
@@ -44,7 +44,7 @@ export type SessionLauncher = {
   name: string;
   creation_date: string;
   description?: string;
-  resource_class_id?: number;
+  resource_class_id?: number | null;
   disk_storage?: number;
   environment: SessionLauncherEnvironment;
 };
@@ -135,19 +135,19 @@ export interface SessionLauncherForm {
 }
 
 export interface SessionResources {
-  requests: {
-    cpu: number;
-    gpu: number;
-    memory: number;
-    storage: number;
+  requests?: {
+    cpu?: number;
+    gpu?: number;
+    memory?: number;
+    storage?: number;
   };
 }
 
 export interface SessionStatus {
   message?: string;
   state: "running" | "starting" | "stopping" | "failed" | "hibernated";
-  will_hibernate_at?: string;
-  will_delete_at?: string;
+  will_hibernate_at?: string | null;
+  will_delete_at?: string | null;
   ready_containers: number;
   total_containers: number;
 }
@@ -157,12 +157,12 @@ export interface SessionV2 {
   image: string;
   name: string;
   resources: SessionResources;
-  started: string;
+  started: string | null;
   status: SessionStatus;
   url: string;
   project_id: string;
   launcher_id: string;
-  resource_class_id: string;
+  resource_class_id: number;
 }
 
 export interface SessionCloudStorageV2 {
