@@ -171,7 +171,11 @@ function ProjectV2CreationDetails() {
   return (
     <>
       <ModalBody>
-        <Form id="project-creation-form" onSubmit={handleSubmit(onSubmit)}>
+        <Form
+          data-cy="project-creation-form"
+          id="project-creation-form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <FormGroup className="d-inline" disabled={result.isLoading}>
             {/* //? FormGroup hard codes an additional mb-3. Adding "d-inline" makes it ineffective. */}
             <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -230,7 +234,7 @@ function ProjectV2CreationDetails() {
         </Form>
       </ModalBody>
 
-      <ModalFooter data-cy="new-project-modal-footer">
+      <ModalFooter>
         <Button color="outline-primary" onClick={closeModal} type="button">
           <XLg className={cx("bi", "me-1")} />
           Cancel

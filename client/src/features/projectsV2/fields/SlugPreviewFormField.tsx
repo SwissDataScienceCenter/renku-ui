@@ -42,7 +42,7 @@ export default function SlugPreviewFormField<T extends FieldValues>({
     <div>
       <FormText className="me-2">
         The URL for this {entityName} will be{" "}
-        <span className="fw-bold">
+        <span className="fw-bold" data-cy={`${entityName}-url-preview`}>
           {url}
           {slug || "<name>"}
         </span>

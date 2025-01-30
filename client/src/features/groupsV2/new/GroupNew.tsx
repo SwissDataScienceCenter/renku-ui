@@ -204,7 +204,7 @@ function GroupV2CreationDetails() {
         </Form>
       </ModalBody>
 
-      <ModalFooter data-cy="new-project-modal-footer">
+      <ModalFooter>
         <Button color="outline-primary" onClick={closeModal} type="button">
           <XLg className={cx("bi", "me-1")} />
           Cancel
