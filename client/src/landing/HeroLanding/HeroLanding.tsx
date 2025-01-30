@@ -13,7 +13,7 @@ export default function HeroLanding(props: AnonymousHomeConfig) {
   return (
     <div id="rk-anon-home-hero" className="bg-navy">
       <HomeHeader {...props} />
-      <div className={cx("container", "py-5")}>
+      <div className={cx("container", "py-5", "px-3")}>
         <Row>
           <Col xs={12} lg={7}>
             <h1 className="text-white">
