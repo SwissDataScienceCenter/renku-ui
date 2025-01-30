@@ -24,7 +24,7 @@ import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../../session/startSessionOptions.constants";
-import { useUpdateSessionLauncherMutation } from "../../sessionsV2.api";
+import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../../api/sessionLaunchersV2.api";
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
@@ -74,8 +74,10 @@ export function ModifyResourcesLauncherModal({
             : null;
         updateSessionLauncher({
           launcherId: sessionLauncherId,
-          resource_class_id: data.resourceClass.id,
-          disk_storage: diskStorage,
+          sessionLauncherPatch: {
+            resource_class_id: data.resourceClass.id,
+            disk_storage: diskStorage,
+          },
         });
       }
     },
