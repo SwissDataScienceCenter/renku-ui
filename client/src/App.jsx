@@ -49,7 +49,6 @@ import LazyNotFound from "./not-found/LazyNotFound";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
-import LazyProjectList from "./project/list/LazyProjectList";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
@@ -91,13 +90,6 @@ function CentralContentContainer({ user, socket }) {
             </div>
           )}
         </CompatRoute>
-        {["/projects", "/projects/starred", "/projects/all"].map((path) => (
-          <CompatRoute key={path} exact path={path}>
-            <ContainerWrap>
-              <LazyProjectList />
-            </ContainerWrap>
-          </CompatRoute>
-        ))}
         <Route path="/projects/:subUrl+">
           <LazyProjectView
             client={client}
