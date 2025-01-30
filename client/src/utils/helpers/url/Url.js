@@ -272,7 +272,7 @@ const Url = {
   pages: {
     landing: "/",
     search: "/v1/search",
-    inactiveKgProjects: "/inactive-kg-projects",
+    inactiveKgProjects: "/v1/inactive-kg-projects",
     help: {
       base: "/v1/help",
       documentation: "/v1/help/docs",

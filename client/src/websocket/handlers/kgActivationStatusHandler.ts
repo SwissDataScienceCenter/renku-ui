@@ -25,6 +25,7 @@ import {
   updateProgress,
 } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import type { KgInactiveProjectsState } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
+import { Url } from "../../utils/helpers/url";
 
 type ActivationStatus = {
   [key: string]: number;
@@ -105,9 +106,9 @@ function processStatusForNotifications(
         notifications.addSuccess(
           notifications.Topics.KG_ACTIVATION,
           "Project indexing has been activated.",
-          "/inactive-kg-projects",
+          Url.get(Url.pages.inactiveKgProjects),
           "Go to activation page",
-          "/inactive-kg-projects",
+          Url.get(Url.pages.inactiveKgProjects),
           "Check the status of projects that need to be indexed."
         );
       }
@@ -115,9 +116,9 @@ function processStatusForNotifications(
         notifications.addError(
           notifications.Topics.KG_ACTIVATION,
           "Project indexing has been activated, but with errors.",
-          "/inactive-kg-projects",
+          Url.get(Url.pages.inactiveKgProjects),
           "Go to activation page",
-          "/inactive-kg-projects",
+          Url.get(Url.pages.inactiveKgProjects),
           "Check the status of projects that need to be indexed"
         );
       }
