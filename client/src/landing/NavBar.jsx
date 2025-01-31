@@ -25,8 +25,8 @@
 
 import cx from "classnames";
 import { useContext } from "react";
-import { Switch } from "react-router-dom";
-import { Link, Route, useLocation } from "react-router-dom-v5-compat";
+import { Link, Route, Switch } from "react-router-dom";
+import { useLocation } from "react-router-dom-v5-compat";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
 import AnonymousNavBar from "../components/navbar/AnonymousNavBar";
