@@ -49,8 +49,7 @@ import LazyNotFound from "./not-found/LazyNotFound";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
-import LazyProjectList from "./project/list/LazyProjectList";
-import LazyNewProject from "./project/new/LazyNewProject";
+import { ABSOLUTE_ROUTES } from "./routing/routes.constants";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
@@ -92,18 +91,6 @@ function CentralContentContainer({ user, socket }) {
             </div>
           )}
         </CompatRoute>
-        {["/projects", "/projects/starred", "/projects/all"].map((path) => (
-          <CompatRoute key={path} exact path={path}>
-            <ContainerWrap>
-              <LazyProjectList />
-            </ContainerWrap>
-          </CompatRoute>
-        ))}
-        <CompatRoute exact path="/projects/new">
-          <ContainerWrap>
-            <LazyNewProject />
-          </ContainerWrap>
-        </CompatRoute>
         <Route path="/projects/:subUrl+">
           <LazyProjectView
             client={client}
@@ -131,7 +118,7 @@ function CentralContentContainer({ user, socket }) {
           />
         </CompatRoute>
         <CompatRoute path="/datasets">
-          <Redirect to="/search?type=dataset" />
+          <Redirect to={`${ABSOLUTE_ROUTES.v1.search}?type=dataset`} />
         </CompatRoute>
         <CompatRoute path="/v1">
           <LazyRootV1 user={user} />
