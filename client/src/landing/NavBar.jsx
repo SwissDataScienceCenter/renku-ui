@@ -25,7 +25,7 @@
 
 import cx from "classnames";
 import { useContext } from "react";
-import { Link, Route, Switch, useLocation } from "react-router-dom";
+import { Link, Route, Switch, useLocation } from "react-router-dom-v5-compat";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
 import AnonymousNavBar from "../components/navbar/AnonymousNavBar";
@@ -93,7 +93,8 @@ function FooterNavbarAnonymousLinks() {
   );
 }
 
-function FooterNavbarLoggedInLinks({ location, privacyLink }) {
+function FooterNavbarLoggedInLinks({ privacyLink }) {
+  const location = useLocation();
   const helpLocation =
     location && location.pathname.startsWith("/v2")
       ? ABSOLUTE_ROUTES.v2.help.root
@@ -122,12 +123,11 @@ function FooterNavbarLoggedInLinks({ location, privacyLink }) {
 }
 
 function FooterNavbar() {
-  const location = useLocation();
-
-  return <FooterNavbarInner location={location} />;
+  return <FooterNavbarInner />;
 }
 
-function FooterNavbarInner({ location }) {
+function FooterNavbarInner() {
+  const location = useLocation();
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
