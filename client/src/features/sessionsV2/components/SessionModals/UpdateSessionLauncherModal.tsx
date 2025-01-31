@@ -28,17 +28,18 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import {
+  useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
+  usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation,
+} from "../../api/sessionLaunchersV2.api";
+import {
   getFormattedEnvironmentValues,
   getLauncherDefaultValues,
 } from "../../session.utils";
-import {
-  useGetSessionEnvironmentsQuery,
-  useUpdateSessionLauncherMutation,
-} from "../../sessionsV2.api";
 import { SessionLauncher, SessionLauncherForm } from "../../sessionsV2.types";
 import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 
@@ -53,7 +54,7 @@ export default function UpdateSessionLauncherModal({
   launcher,
   toggle,
 }: UpdateSessionLauncherModalProps) {
-  const { data: environments } = useGetSessionEnvironmentsQuery();
+  const { data: environments } = useGetSessionEnvironmentsQuery({});
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const defaultValues = useMemo(
     () => getLauncherDefaultValues(launcher),
@@ -77,9 +78,13 @@ export default function UpdateSessionLauncherModal({
       if (environment.success && environment.data)
         updateSessionLauncher({
           launcherId: launcher.id,
-          name,
-          description: description?.trim() || undefined,
-          environment: environment.data,
+          sessionLauncherPatch: {
+            name,
+            description: description?.trim() || undefined,
+            // TODO: fix types for this session environment
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            environment: environment.data as any,
+          },
         });
     },
     [launcher.id, updateSessionLauncher]
