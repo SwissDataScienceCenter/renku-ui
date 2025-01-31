@@ -102,7 +102,10 @@ export function DataConnectorModalBodyAndFooter({
         ) : schemaQueryResult.error ? (
           <RtkOrNotebooksError error={schemaQueryResult.error} />
         ) : (
-          <DataConnectorModalBody storageSecrets={connectorSecrets ?? []} />
+          <DataConnectorModalBody
+            storageSecrets={connectorSecrets ?? []}
+            project={project}
+          />
         )}
       </ModalBody>
 

@@ -80,6 +80,7 @@ interface AddOrEditCloudStorageProps {
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
   storageSecrets: CloudStorageSecretGet[];
+  projectId?: string;
 }
 
 export default function AddOrEditCloudStorage({
@@ -88,6 +89,7 @@ export default function AddOrEditCloudStorage({
   setState,
   state,
   storage,
+  projectId,
 }: AddOrEditCloudStorageProps) {
   const ContentByStep =
     state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
@@ -107,6 +109,7 @@ export default function AddOrEditCloudStorage({
           setStorage={setStorage}
           storageSecrets={[]}
           validationSucceeded={false}
+          projectId={projectId}
         />
       </>
     );
@@ -171,6 +174,7 @@ export interface AddStorageStepProps {
   storageSecrets: CloudStorageSecretGet[];
   isV2?: boolean;
   validationSucceeded: boolean;
+  projectId?: string;
 }
 
 const mapStepToElement: {
@@ -1035,6 +1039,7 @@ export function AddStorageMount({
   storage,
   state,
   validationSucceeded,
+  projectId,
 }: AddStorageStepProps) {
   const {
     control,
