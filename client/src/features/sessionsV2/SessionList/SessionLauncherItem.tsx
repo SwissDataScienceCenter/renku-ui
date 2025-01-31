@@ -24,7 +24,7 @@ import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { useProject } from "../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2.api";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
 import type { SessionLauncher } from "../sessionsV2.types";
 import SessionLauncherView from "../SessionView/SessionLauncherView";
 import SessionItemV2 from "./SessionItemV2";

@@ -50,10 +50,10 @@ import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/Se
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import DeleteSessionLauncherModal from "../DeleteSessionLauncherModal";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2.api";
 import type { SessionLauncher } from "../sessionsV2.types";
 import { EnvironmentCard } from "./EnvironmentCard";
 
