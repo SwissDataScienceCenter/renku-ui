@@ -92,9 +92,11 @@ function FooterNavbarAnonymousLinks() {
 }
 
 function FooterNavbarLoggedInLinks({ privacyLink }) {
-  const helpLocation = location.pathname.startsWith("/v2")
-    ? ABSOLUTE_ROUTES.v2.help.root
-    : Url.pages.help.base;
+  const location = useLocation();
+  const helpLocation =
+    location && location.pathname.startsWith("/v2")
+      ? ABSOLUTE_ROUTES.v2.help.root
+      : Url.pages.help.base;
   return (
     <>
       <RenkuNavLinkV2 to={helpLocation}>Help</RenkuNavLinkV2>
@@ -119,12 +121,11 @@ function FooterNavbarLoggedInLinks({ privacyLink }) {
 }
 
 function FooterNavbar() {
-  const location = useLocation();
-
-  return <FooterNavbarInner location={location} />;
+  return <FooterNavbarInner />;
 }
 
-function FooterNavbarInner({ location }) {
+function FooterNavbarInner() {
+  const location = useLocation();
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
@@ -188,7 +189,10 @@ function FooterNavbarInner({ location }) {
             location.pathname === Url.get(Url.pages.landing) ? (
               <FooterNavbarAnonymousLinks />
             ) : (
-              <FooterNavbarLoggedInLinks privacyLink={privacyLink} />
+              <FooterNavbarLoggedInLinks
+                location={location}
+                privacyLink={privacyLink}
+              />
             )}
           </div>
         </div>
