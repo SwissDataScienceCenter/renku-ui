@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   Control,
   Controller,
@@ -26,9 +26,10 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
-import { useLocation } from "react-router";
+import { generatePath, useLocation } from "react-router";
 import { Input, Label } from "reactstrap";
-import AppContext from "../../../../utils/context/appContext";
+
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
@@ -54,7 +55,6 @@ export default function ProjectMigrationFormInputs({
   const currentName = watch("name");
   const currentNamespace = watch("namespace");
   const currentSlug = watch("slug");
-  const { params } = useContext(AppContext);
 
   useEffect(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
@@ -66,9 +66,13 @@ export default function ProjectMigrationFormInputs({
       shouldValidate: true,
     });
   }, [setValue, currentName]);
-  const url = `${params?.BASE_URL ?? ""}/v2/projects/${
-    currentNamespace ?? "<Owner>"
-  }/`;
+  const projectParentPath = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.root,
+    {
+      namespace: currentNamespace ?? "<Owner>",
+      slug: "",
+    }
+  );
   const location = useLocation();
   const isRenkuV1 = isRenkuLegacy(location.pathname);
   const formId = "project-migration-form";
@@ -113,7 +117,7 @@ export default function ProjectMigrationFormInputs({
           errors={errors}
           name="slug"
           resetFunction={resetUrl}
-          url={url}
+          parentPath={projectParentPath}
           slug={currentSlug}
           dirtyFields={dirtyFields}
           label="Project URL"

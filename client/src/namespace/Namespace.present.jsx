@@ -30,11 +30,12 @@ import { Col, Row } from "reactstrap";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import NotFound from "../not-found/NotFound";
+import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 
 const NamespaceProjects = (props) => {
   const { namespace } = props;
   // TODO: I should get the URLs from the redux store: #779
-  const searchUrl = "/projects/all";
+  const searchUrl = ABSOLUTE_ROUTES.v1.projects.all;
   const searchProjectUrl = (project) => {
     return `${searchUrl}?q=${project}`;
   };
