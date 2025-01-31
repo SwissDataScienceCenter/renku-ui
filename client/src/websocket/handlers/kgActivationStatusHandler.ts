@@ -25,7 +25,7 @@ import {
   updateProgress,
 } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import type { KgInactiveProjectsState } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
-import { Url } from "../../utils/helpers/url";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 
 type ActivationStatus = {
   [key: string]: number;
@@ -106,9 +106,9 @@ function processStatusForNotifications(
         notifications.addSuccess(
           notifications.Topics.KG_ACTIVATION,
           "Project indexing has been activated.",
-          Url.get(Url.pages.inactiveKgProjects),
+          ABSOLUTE_ROUTES.v1.inactiveKGProjects,
           "Go to activation page",
-          Url.get(Url.pages.inactiveKgProjects),
+          ABSOLUTE_ROUTES.v1.inactiveKGProjects,
           "Check the status of projects that need to be indexed."
         );
       }
@@ -116,9 +116,9 @@ function processStatusForNotifications(
         notifications.addError(
           notifications.Topics.KG_ACTIVATION,
           "Project indexing has been activated, but with errors.",
-          Url.get(Url.pages.inactiveKgProjects),
+          ABSOLUTE_ROUTES.v1.inactiveKGProjects,
           "Go to activation page",
-          Url.get(Url.pages.inactiveKgProjects),
+          ABSOLUTE_ROUTES.v1.inactiveKGProjects,
           "Check the status of projects that need to be indexed"
         );
       }
