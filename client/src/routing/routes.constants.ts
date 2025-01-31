@@ -18,6 +18,29 @@
 
 export const ABSOLUTE_ROUTES = {
   root: "/",
+  v1: {
+    root: "/v1",
+    inactiveKGProjects: "/v1/inactive-kg-projects",
+    search: "/v1/search",
+    projects: {
+      root: "/v1/projects",
+      all: "/v1/projects/all",
+      new: "/v1/projects/new",
+      starred: "/v1/projects/starred",
+    },
+    help: {
+      root: "/v1/help",
+      contact: "/v1/help/contact",
+      status: "/v1/help/status",
+      release: "/v1/help/release",
+      tos: "/v1/help/tos",
+      privacy: "/v1/help/privacy",
+    },
+    notifications: "/v1/notifications",
+    styleGuide: "/v1/style-guide",
+    secrets: "/v1/secrets",
+    sessions: "/v1/sessions",
+  },
   v2: {
     root: "/v2",
     user: "/v2/user",
@@ -57,22 +80,6 @@ export const ABSOLUTE_ROUTES = {
     connectedServices: "/v2/connected-services",
     secrets: "/v2/secrets",
   },
-  v1: {
-    root: "/v1",
-    search: "/v1/search",
-    help: {
-      root: "/v1/help",
-      contact: "/v1/help/contact",
-      status: "/v1/help/status",
-      release: "/v1/help/release",
-      tos: "/v1/help/tos",
-      privacy: "/v1/help/privacy",
-    },
-    notifications: "/v1/notifications",
-    styleGuide: "/v1/style-guide",
-    secrets: "/v1/secrets",
-    sessions: "/v1/sessions",
-  },
 } as const;
 
 export const RELATIVE_ROUTES = {
@@ -80,14 +87,20 @@ export const RELATIVE_ROUTES = {
   datasets: "/datasets",
   projects: "/projects",
   v1: {
-    root: "/v1",
-    search: "search",
+    root: "v1/*",
+    projects: {
+      root: "projects/*",
+      all: "all",
+      new: "new",
+      starred: "starred",
+    },
     help: "help/*",
-    sessions: "sessions",
-    notifications: "notifications",
-    secrets: "secrets",
-    styleGuide: "style-guide",
     inactiveKGProjects: "inactive-kg-projects",
+    notifications: "notifications",
+    search: "search",
+    secrets: "secrets",
+    sessions: "sessions",
+    styleGuide: "style-guide",
   },
   v2: {
     root: "v2/*",
