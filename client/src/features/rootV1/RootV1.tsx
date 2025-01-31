@@ -32,6 +32,8 @@ import LazySearchPage from "../kgSearch/LazySearchPage";
 import LazySecrets from "../secrets/LazySecrets";
 import LazyAnonymousSessionsList from "../session/components/LazyAnonymousSessionsList";
 
+import ProjectRootV1 from "./ProjectRootV1";
+
 export default function RootV1({
   user,
 }: {
@@ -97,6 +99,14 @@ export default function RootV1({
             element={
               <ContainerWrap>
                 <LazyInactiveKGProjectsPage />
+              </ContainerWrap>
+            }
+          />
+          <Route
+            path={RELATIVE_ROUTES.v1.projects.root}
+            element={
+              <ContainerWrap>
+                <ProjectRootV1 />
               </ContainerWrap>
             }
           />
