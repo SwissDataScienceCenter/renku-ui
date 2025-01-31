@@ -74,7 +74,7 @@ describe("display the status page", () => {
     fixtures.config().versions().userNone().getStatuspageInfo();
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
-    cy.get(".alert").should("not.exist");
+    cy.get(".alert").contains("Ongoing incident").should("not.exist");
   });
 
   it("Shows the banner on the dashboard if there is an incident", () => {

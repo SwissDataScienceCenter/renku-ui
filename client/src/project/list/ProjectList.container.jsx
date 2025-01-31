@@ -18,7 +18,10 @@
 
 import { isEqual } from "lodash-es";
 import { useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import {
+  useNavigate,
+  useLocation as useRouterLocation,
+} from "react-router-dom-v5-compat";
 
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
@@ -338,7 +341,7 @@ function useUserProjectSearch(
  * Check ProjectListRedirected for the functional component logic.
  */
 function ProjectList() {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { client } = useContext(AppContext);
 
@@ -352,7 +355,7 @@ function ProjectList() {
       // Searching in own or starred projects
       if (section !== SECTION_MAP.all) {
         const newUrl = Url.get(Url.pages.projects.all, searchParams);
-        history.replace(newUrl);
+        navigate(newUrl, { replace: true });
         return;
       }
       // filtering per user or group
@@ -362,43 +365,37 @@ function ProjectList() {
           searchIn: SEARCH_IN_MAP.projects.value,
         };
         const newUrl = Url.get(Url.pages.projects.all, newParams);
-        history.replace(newUrl);
+        navigate(newUrl, { replace: true });
         return;
       }
     }
-  }, [history, user.logged]);
+  }, [navigate, user.logged]);
 
-  return (
-    <ProjectListRedirected
-      user={user}
-      client={client}
-      location={history.location}
-      history={history}
-    />
-  );
+  return <ProjectListRedirected user={user} client={client} />;
 }
 
 /**
  * Show list of projects, allowing advanced search.
  *
- * @param {object} props.location - React location object.
- * @param {object} props.history - React history object.
  * @param {object} props.client - client object.
  * @param {object} props.user - user object.
  */
 function ProjectListRedirected(props) {
+  const location = useRouterLocation();
+  const navigate = useNavigate();
+
   // *** Setup ***
   const [projects, setProjects] = useState(DEFAULT_PROJECTS);
   const [users, setUsers] = useState(DEFAULT_USERS_GROUPS);
   const [targetUser, setTargetUser] = useState(null);
   const [params, setParams] = useState({
     ...getSearchParams(DEFAULT_PARAMS, CONVERSIONS),
-    section: getSection(props.location),
+    section: getSection(location),
   });
 
   // *** Hooks ***
   // Monitor location changes and set params
-  useLocation(props.location, params, setParams, setTargetUser);
+  useLocation(location, params, setParams, setTargetUser);
 
   // Get new projects when params change (ONLY when searching in projects)
   useProjectSearchParams(props.client, params, setParams, setProjects);
@@ -445,7 +442,7 @@ function ProjectListRedirected(props) {
     let addedParams = { ...modifiedParams, ...(newParams || {}) };
     const finalParams = removeDefaultParams(addedParams, true);
     const url = Url.get(target, finalParams);
-    props.history.push(url);
+    navigate(url);
   };
 
   // Get the url for other sections, params included

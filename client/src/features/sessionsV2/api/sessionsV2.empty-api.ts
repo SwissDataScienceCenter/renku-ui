@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,19 +16,11 @@
  * limitations under the License.
  */
 
-import { sessionsV2Api } from "../../features/sessionsV2/api/sessionsV2.api";
-import { StateModel } from "../../model";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-function handleSessionsStatusV2(
-  data: Record<string, unknown>,
-  _webSocket: WebSocket,
-  model: StateModel
-) {
-  if ((data.message as boolean) && model) {
-    model.reduxStore.dispatch(
-      sessionsV2Api.endpoints.invalidateSessions.initiate()
-    );
-  }
-}
-
-export { handleSessionsStatusV2 };
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const sessionsV2EmptyApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
+  endpoints: () => ({}),
+  reducerPath: "sessionsV2Api",
+});

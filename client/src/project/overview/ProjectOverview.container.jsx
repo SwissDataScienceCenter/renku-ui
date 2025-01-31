@@ -82,7 +82,7 @@ class OverviewStats extends Component {
  * Create a visualization of the project commits.
  *
  * @param {Object} props.location - react location object
- * @param {Object} props.history - react history object
+ * @param {Object} props.navigate - react navigate function
  * @param {Object} props.projectCoordinator - project coordinator
  */
 class OverviewCommits extends Component {
@@ -120,7 +120,7 @@ class OverviewCommits extends Component {
       <OverviewStatsConnected
         projectCoordinator={this.projectCoordinator}
         location={this.props.location}
-        history={this.props.history}
+        navigate={this.props.navigate}
       />
     );
   }

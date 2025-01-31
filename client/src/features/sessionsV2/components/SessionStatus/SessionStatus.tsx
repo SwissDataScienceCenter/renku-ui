@@ -134,7 +134,9 @@ export function SessionStatusV2Description({
         "align-items-center"
       )}
     >
-      <SessionStatusV2Text startTimestamp={started} status={status} />
+      {started && (
+        <SessionStatusV2Text startTimestamp={started} status={status} />
+      )}
       {showInfoDetails && (
         <SessionListRowStatusExtraDetailsV2 status={status} uid={name} />
       )}
