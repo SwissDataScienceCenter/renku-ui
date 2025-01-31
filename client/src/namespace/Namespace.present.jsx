@@ -31,20 +31,21 @@ import cx from "classnames";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import NotFound from "../not-found/NotFound";
+import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],
   initialIndex: 0,
 });
 fakeHistory.push({
-  pathname: "/projects",
+  pathname: ABSOLUTE_ROUTES.v1.projects.root,
   search: "?page=1",
 });
 
 const NamespaceProjects = (props) => {
   const { namespace } = props;
   // TODO: I should get the URLs from the redux store: #779
-  const searchUrl = "/projects/all";
+  const searchUrl = ABSOLUTE_ROUTES.v1.projects.all;
   const searchProjectUrl = (project) => {
     return `${searchUrl}?q=${project}`;
   };
