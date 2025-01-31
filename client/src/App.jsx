@@ -50,8 +50,7 @@ import LazyNotFound from "./not-found/LazyNotFound";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
-import LazyProjectList from "./project/list/LazyProjectList";
-import LazyNewProject from "./project/new/LazyNewProject";
+import { ABSOLUTE_ROUTES } from "./routing/routes.constants";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
@@ -93,25 +92,6 @@ function CentralContentContainer({ user }) {
             )
           }
         />
-        {["/projects", "/projects/starred", "/projects/all"].map((path) => (
-          <Route
-            key={path}
-            path={path}
-            element={
-              <ContainerWrap>
-                <LazyProjectList />
-              </ContainerWrap>
-            }
-          />
-        ))}
-        <Route
-          path="/projects/new"
-          element={
-            <ContainerWrap>
-              <LazyNewProject />
-            </ContainerWrap>
-          }
-        />
         <Route path="/projects/*" element={<LazyProjectView />} />
         <Route
           path="/datasets/:identifier/add"
@@ -136,7 +116,7 @@ function CentralContentContainer({ user }) {
         />
         <Route
           path="/datasets"
-          element={<Navigate to="/search?type=dataset" replace />}
+          element={<Navigate to={`${ABSOLUTE_ROUTES.v1.search}?type=dataset`} replace />}
         />
         <Route path="/v1/*" element={<LazyRootV1 />} />
         <Route path="/v2/*" element={<LazyRootV2 />} />
