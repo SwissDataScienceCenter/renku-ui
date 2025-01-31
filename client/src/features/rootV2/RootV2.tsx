@@ -18,11 +18,19 @@
 
 import cx from "classnames";
 import { useEffect, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom-v5-compat";
+import {
+  Route,
+  Routes,
+  generatePath,
+  useNavigate,
+} from "react-router-dom-v5-compat";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
-import { RELATIVE_ROUTES } from "../../routing/routes.constants";
+import {
+  ABSOLUTE_ROUTES,
+  RELATIVE_ROUTES,
+} from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
@@ -149,6 +157,7 @@ export default function RootV2() {
 function GroupsV2Routes() {
   return (
     <Routes>
+      <Route index element={<RedirectToSearch entityType="group" />} />
       <Route path={RELATIVE_ROUTES.v2.groups.show.root}>
         <Route element={<LazyGroupContainer />}>
           <Route index element={<LazyGroupV2Overview />} />
@@ -178,9 +187,23 @@ function HelpV2Routes() {
   );
 }
 
+function RedirectToSearch({ entityType }: { entityType: string }) {
+  const navigate = useNavigate();
+  navigate(
+    {
+      pathname: generatePath(ABSOLUTE_ROUTES.v2.search),
+      search: `q=type:${entityType}`,
+    },
+    { replace: true }
+  );
+
+  return null;
+}
+
 function ProjectsV2Routes() {
   return (
     <Routes>
+      <Route index element={<RedirectToSearch entityType="project" />} />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
         <Route element={<LazyProjectPageV2Show />}>
           <Route index element={<LazyProjectPageOverview />} />

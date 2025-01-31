@@ -61,4 +61,16 @@ describe("Search V2", () => {
     cy.getDataCy("search-sorting-select").select("Newest");
     cy.getDataCy("search-header").contains("sort:created-desc");
   });
+
+  it("/g redirects to search", () => {
+    fixtures.searchV2ListProjects();
+    cy.visit("/g");
+    cy.location("pathname").should("eq", "/search");
+  });
+
+  it("/p redirects to search", () => {
+    fixtures.searchV2ListProjects();
+    cy.visit("/p");
+    cy.location("pathname").should("eq", "/search");
+  });
 });
