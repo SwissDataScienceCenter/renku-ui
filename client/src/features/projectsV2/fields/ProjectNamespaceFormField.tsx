@@ -138,6 +138,7 @@ interface NamespaceSelectorProps {
   namespaces: ResponseNamespaces;
   onChange?: (newValue: SingleValue<ResponseNamespace>) => void;
   onFetchMore?: () => void;
+  project?: Project;
 }
 
 function NamespaceSelector({
@@ -148,10 +149,27 @@ function NamespaceSelector({
   namespaces,
   onChange,
   onFetchMore,
+  project,
 }: NamespaceSelectorProps) {
+  const namespaceOptions = useMemo(() => {
+    if (!project) {
+      return namespaces;
+    }
+    return [
+      {
+        id: project.id,
+        name: project.name,
+        slug: `${project.namespace}/${project.slug}`,
+        created_by: project.created_by,
+        creation_date: project.creation_date,
+        namespace_kind: "project",
+      } as NamespaceResponse,
+      ...namespaces,
+    ];
+  }, [namespaces, project]);
   const currentValue = useMemo(
-    () => namespaces.find(({ slug }) => slug === currentNamespace),
-    [namespaces, currentNamespace]
+    () => namespaceOptions.find(({ slug }) => slug === currentNamespace),
+    [namespaceOptions, currentNamespace]
   );
 
   const components = useMemo(
@@ -165,7 +183,7 @@ function NamespaceSelector({
   return (
     <Select
       inputId={inputId}
-      options={namespaces}
+      options={namespaceOptions}
       value={currentValue}
       unstyled
       getOptionValue={(option) => option.id}
@@ -251,6 +269,7 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
               id={`${entityName}-namespace`}
               inputId={`${entityName}-namespace-input`}
               onChange={(newValue) => field.onChange(newValue?.slug)}
+              project={undefined}
             />
           );
         }}
@@ -442,6 +461,7 @@ export function ProjectNamespaceControl({
         namespaces={allNamespacesWithProject}
         onChange={onChange}
         onFetchMore={onFetchMore}
+        project={project}
       />
     </div>
   );
