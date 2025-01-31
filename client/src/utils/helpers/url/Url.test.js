@@ -267,10 +267,10 @@ describe("Url helper class", () => {
     const { get, pages } = Url;
     expect(get(pages.landing)).toBe("/");
 
-    expect(get(pages.projects)).toBe("/projects");
-    expect(get(pages.projects.all)).toBe("/projects/all");
+    expect(get(pages.projects)).toBe("/v1/projects");
+    expect(get(pages.projects.all)).toBe("/v1/projects/all");
     expect(get(pages.projects.all, { q: "test", searchIn: "projects" })).toBe(
-      "/projects/all?q=test&searchIn=projects"
+      "/v1/projects/all?q=test&searchIn=projects"
     );
 
     expect(() => {
