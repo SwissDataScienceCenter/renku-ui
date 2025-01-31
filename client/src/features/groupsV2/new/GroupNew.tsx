@@ -166,7 +166,11 @@ function GroupV2CreationDetails() {
   return (
     <>
       <ModalBody>
-        <Form id="group-creation-form" onSubmit={handleSubmit(onSubmit)}>
+        <Form
+          data-cy="group-creation-form"
+          id="group-creation-form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <FormGroup className="d-inline" disabled={result.isLoading}>
             <div className={cx("d-flex", "flex-column", "gap-3")}>
               <div className="mb-1">
