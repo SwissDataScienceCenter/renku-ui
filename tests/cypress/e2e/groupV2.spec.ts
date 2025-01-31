@@ -71,7 +71,7 @@ describe("Add new v2 group", () => {
 describe("Add new group -- not logged in", () => {
   beforeEach(() => {
     fixtures.config().versions().userNone();
-    cy.visit("/g/#create-group");
+    cy.visit("/user#create-group");
   });
 
   it("create a new group", () => {

@@ -81,7 +81,7 @@ describe("Add new v2 project", () => {
 describe("Add new v2 project -- not logged in", () => {
   beforeEach(() => {
     fixtures.config().versions().userNone();
-    cy.visit("/p/#create-project");
+    cy.visit("/user#create-project");
   });
 
   it("create a new project", () => {
