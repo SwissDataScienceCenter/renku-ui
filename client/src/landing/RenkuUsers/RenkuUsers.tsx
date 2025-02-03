@@ -18,12 +18,11 @@
 
 import cx from "classnames";
 import { ReactNode } from "react";
-import { Link } from "react-router-dom";
 import { Card, Col, Row } from "reactstrap";
-import researcherIcon from "../Graphics/researcherIcon.svg";
+import { Links } from "../../utils/constants/Docs.js";
 import educatorIcon from "../Graphics/educatorIcon.svg";
 import organizerIcon from "../Graphics/organizerIcon.svg";
-import { Links } from "../../utils/constants/Docs.js";
+import researcherIcon from "../Graphics/researcherIcon.svg";
 
 interface RenkuUserCardProps {
   user: string;
@@ -63,12 +62,14 @@ function RenkuUserCard({
         <p className={cx("mb-0", "fs-4", "text-center")}>{description}</p>
       </div>
       <div className="pt-5">
-        <Link
+        <a
           className={cx("btn", "btn-primary", "text-decoration-none")}
-          to={linkUrl}
+          href={linkUrl}
+          target="_blank"
+          rel="noreferrer noopener"
         >
           Learn more
-        </Link>
+        </a>
       </div>
     </Card>
   );
@@ -79,7 +80,7 @@ export function RenkuUsers() {
       title: "Unified Research",
       description:
         "Connect your entire research workflow in one place, and collaborate across specialties without technical barriers.",
-      link: Links.RENKU_2_LEARN_MORE,
+      link: Links.RENKU_2_RESEARCH,
       icon: (
         <img
           src={researcherIcon}
@@ -93,7 +94,7 @@ export function RenkuUsers() {
       title: "Computing Courses made easy",
       description:
         "Help your students focus on the material, not getting lost during setup. Ideal for project-based coursework and time-sensitive workshops.",
-      link: Links.RENKU_2_LEARN_MORE,
+      link: Links.RENKU_2_TEACHING,
       icon: (
         <img
           src={educatorIcon}
@@ -107,7 +108,7 @@ export function RenkuUsers() {
       title: "Seamless Events",
       description:
         "Focus on innovation, not setup and infrastructure. Provide a consistent environment for all teams, and get participants coding and collaborating right away.",
-      link: Links.RENKU_2_LEARN_MORE,
+      link: Links.RENKU_2_EVENTS,
       icon: (
         <img
           src={organizerIcon}
@@ -137,7 +138,7 @@ export function RenkuUsers() {
           </h2>
         </div>
         <Row className={cx("pb-5", "gap-4", "gap-lg-0")}>
-          <Col className="px-4">
+          <Col xs={12} lg={4} className="px-4">
             <RenkuUserCard
               user="Researchers"
               title={content.research.title}
@@ -146,7 +147,7 @@ export function RenkuUsers() {
               icon={content.research.icon}
             />
           </Col>
-          <Col className="px-4">
+          <Col xs={12} lg={4} className="px-4">
             <RenkuUserCard
               user="Educators"
               title={content.educator.title}
@@ -155,7 +156,7 @@ export function RenkuUsers() {
               icon={content.educator.icon}
             />
           </Col>
-          <Col className="px-4">
+          <Col xs={12} lg={4} className="px-4">
             <RenkuUserCard
               user="Event organizer"
               title={content.eventOrganizer.title}

@@ -17,13 +17,16 @@
  */
 
 import cx from "classnames";
-import { Button, Col, Container, Row } from "reactstrap";
+import { Link } from "react-router-dom-v5-compat";
+import { Col, Container, Row } from "reactstrap";
 import { Links } from "../../utils/constants/Docs.js";
 import connectIcon from "../Graphics/connectIcon.svg";
 import puzzleIcon from "../Graphics/puzzleIcon.svg";
+import { useCustomHomePageProjectUrl } from "../hooks/useCustomHomePageProjectUrl.hook";
 import styles from "./IntroductionRenku20.module.scss";
 
 export function IntroductionRenku20() {
+  const projectUrl = useCustomHomePageProjectUrl();
   return (
     <div
       className={cx("bg-navy", "py-5", "px-3", styles.IntroductionRenku20Bg)}
@@ -48,8 +51,8 @@ export function IntroductionRenku20() {
           </h2>
           <p className={cx("text-center", "mb-0", "fs-3")}>
             We’re thrilled to announce the next generation of the Renku
-            platform, Renku 2.0. <br />
-            Here’s what’s new:
+            platform, Renku 2.0.
+            <span className="d-block">Here’s what’s new:</span>
           </p>
           <Row
             className={cx(
@@ -100,21 +103,22 @@ export function IntroductionRenku20() {
               "align-items-center"
             )}
           >
-            <Button
-              className={cx("btn", styles.heroBtn)}
-              color="primary"
-              role="button"
-              id="link-try-it-out"
+            <Link
+              className={cx("btn", "btn-primary", "text-decoration-none")}
+              to={projectUrl}
+              data-cy={`explore-a-project-introduction-btn`}
+              target="_blank"
             >
               Explore a Renku 2.0 project
-            </Button>
-            <a
-              className={cx("btn", "btn-outline-primary", styles.heroBtn)}
+            </Link>
+            <Link
+              className={cx("btn", "btn-outline-primary")}
               id="hero_link-learn-more"
-              href={Links.RENKU_2_LEARN_MORE}
+              to={Links.RENKU_2_LEARN_MORE}
+              target="_blank"
             >
               Learn more...
-            </a>
+            </Link>
           </div>
         </div>
       </Container>
