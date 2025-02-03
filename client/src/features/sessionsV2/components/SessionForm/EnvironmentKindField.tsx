@@ -20,12 +20,12 @@ import { Control, Controller } from "react-hook-form";
 import { ButtonGroup } from "reactstrap";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 
-interface EnvironmentKindField {
+interface EnvironmentKindFieldProps {
   control: Control<SessionLauncherForm>;
 }
 export default function EnvironmentKindField({
   control,
-}: EnvironmentKindField) {
+}: EnvironmentKindFieldProps) {
   return (
     <Controller
       control={control}
@@ -40,7 +40,7 @@ export default function EnvironmentKindField({
               autoComplete="off"
               checked={field.value === "global"}
               id="environment-kind-global-radio"
-              onChange={() => field.onChange("GLOBAL")}
+              onChange={() => field.onChange("global")}
               onBlur={field.onBlur}
             />
             <label
@@ -57,7 +57,7 @@ export default function EnvironmentKindField({
               autoComplete="off"
               checked={field.value === "custom"}
               id="environment-kind-custom-radio"
-              onChange={() => field.onChange("CUSTOM")}
+              onChange={() => field.onChange("custom")}
               onBlur={field.onBlur}
             />
             <label
