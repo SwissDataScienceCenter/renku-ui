@@ -151,12 +151,14 @@ export function getJSONStringArray(value: string[] | undefined) {
   return valueToString === null ? undefined : valueToString;
 }
 
-export function getLauncherDefaultValues(launcher: SessionLauncher) {
+export function getLauncherDefaultValues(
+  launcher: SessionLauncher
+): Partial<SessionLauncherForm> {
   return {
     name: launcher.name,
     description: launcher.description ?? "",
-    environment_kind: launcher.environment?.environment_kind,
-    environment_id:
+    environmentKind: launcher.environment?.environment_kind,
+    environmentId:
       launcher.environment?.environment_kind === "global"
         ? launcher.environment?.id
         : "",

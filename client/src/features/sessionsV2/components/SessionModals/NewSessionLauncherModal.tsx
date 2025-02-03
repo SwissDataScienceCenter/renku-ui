@@ -101,8 +101,9 @@ export default function NewSessionLauncherModal({
     );
   }, [
     watchCodeRepository,
-    watchEnvironmentId,
     watchEnvironmentCustomImage,
+    watchEnvironmentId,
+    watchEnvironmentImageSource,
     watchEnvironmentKind,
   ]);
 
