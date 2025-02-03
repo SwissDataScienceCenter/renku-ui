@@ -138,7 +138,6 @@ interface NamespaceSelectorProps {
   namespaces: ResponseNamespaces;
   onChange?: (newValue: SingleValue<ResponseNamespace>) => void;
   onFetchMore?: () => void;
-  project?: Project;
 }
 
 function NamespaceSelector({
@@ -149,27 +148,10 @@ function NamespaceSelector({
   namespaces,
   onChange,
   onFetchMore,
-  project,
 }: NamespaceSelectorProps) {
-  const namespaceOptions = useMemo(() => {
-    if (!project) {
-      return namespaces;
-    }
-    return [
-      {
-        id: project.id,
-        name: project.name,
-        slug: `${project.namespace}/${project.slug}`,
-        created_by: project.created_by,
-        creation_date: project.creation_date,
-        namespace_kind: "project",
-      } as NamespaceResponse,
-      ...namespaces,
-    ];
-  }, [namespaces, project]);
   const currentValue = useMemo(
-    () => namespaceOptions.find(({ slug }) => slug === currentNamespace),
-    [namespaceOptions, currentNamespace]
+    () => namespaces.find(({ slug }) => slug === currentNamespace),
+    [namespaces, currentNamespace]
   );
 
   const components = useMemo(
@@ -183,7 +165,7 @@ function NamespaceSelector({
   return (
     <Select
       inputId={inputId}
-      options={namespaceOptions}
+      options={namespaces}
       value={currentValue}
       unstyled
       getOptionValue={(option) => option.id}
@@ -415,6 +397,23 @@ export function ProjectNamespaceControl({
     });
   }, [allNamespaces, specificNamespace, specificNamespaceRequestId]);
 
+  const allNamespacesWithProject = useMemo(() => {
+    if (!project) {
+      return allNamespaces || [];
+    }
+    return [
+      {
+        id: project.id,
+        slug: `${project.namespace}/${project.slug}`,
+        creation_date: project.creation_date,
+        created_by: project.created_by,
+        namespace_kind: "project",
+        name: `${project.namespace}/${project.slug}`,
+      } as NamespaceResponse,
+      ...(allNamespaces || []),
+    ];
+  }, [allNamespaces, project]);
+
   if (isFetching) {
     return (
       <div className={cx(className, "form-control")} id={id}>
@@ -441,10 +440,9 @@ export function ProjectNamespaceControl({
         hasMore={hasMore}
         inputId={inputId}
         isFetchingMore={namespacesPageResult.isFetching}
-        namespaces={allNamespaces}
+        namespaces={allNamespacesWithProject}
         onChange={onChange}
         onFetchMore={onFetchMore}
-        project={project}
       />
     </div>
   );

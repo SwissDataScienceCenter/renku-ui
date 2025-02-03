@@ -315,18 +315,6 @@ export function DataConnectorMount({ project }: AddOrEditDataConnectorProps) {
             const fields: Partial<typeof field> = { ...field };
             delete fields?.ref;
             return (
-              //<DataConnectorNamespaceControl
-              //  {...fields}
-              //  projectId={projectId || ""}
-              //  className={cx(errors.namespace && "is-invalid")}
-              //  data-cy={"data-controller-namespace-input"}
-              //  id="namespace"
-              //  inputId="namespace-input"
-              //  onChange={(e) => {
-              //    field.onChange(e);
-              //    onFieldValueChange("namespace", e?.value || "");
-              //  }}
-              ///>
               <ProjectNamespaceControl
                 {...fields}
                 className={cx(errors.namespace && "is-invalid")}
@@ -338,9 +326,6 @@ export function DataConnectorMount({ project }: AddOrEditDataConnectorProps) {
                   onFieldValueChange("namespace", e?.slug ?? "");
                 }}
                 project={project}
-                value={
-                  project ? `${project.namespace}/${project.slug}` : undefined
-                }
               />
             );
           }}
