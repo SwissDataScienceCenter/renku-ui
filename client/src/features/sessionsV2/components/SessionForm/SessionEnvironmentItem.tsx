@@ -38,7 +38,7 @@ import { SessionLauncherForm } from "../../sessionsV2.types";
 
 interface SessionEnvironmentItemProps {
   environment: SessionEnvironment;
-  field: ControllerRenderProps<SessionLauncherForm, "environment_id">;
+  field: ControllerRenderProps<SessionLauncherForm, "environmentId">;
   touchedFields: Partial<
     Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
   >;

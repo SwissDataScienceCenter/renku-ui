@@ -63,7 +63,8 @@ export default function EditLauncherFormContent({
     error,
     isLoading,
   } = useGetSessionEnvironmentsQuery({});
-  const environmentKind = watch("environment_kind");
+  const environmentKind = watch("environmentKind");
+  const environmentImageSource = watch("environmentImageSource");
   const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
   const toggleIsOpen = useCallback(
     () =>
@@ -97,7 +98,7 @@ export default function EditLauncherFormContent({
       return (
         <Controller
           control={control}
-          name="environment_id"
+          name="environmentId"
           rules={{ required: environmentKind === "global" }}
           render={({ field }) => (
             <>
@@ -116,7 +117,7 @@ export default function EditLauncherFormContent({
               <Input
                 type="hidden"
                 {...field}
-                className={cx(errors.environment_id && "is-invalid")}
+                className={cx(errors.environmentId && "is-invalid")}
               />
               <div className="invalid-feedback">
                 Please choose an environment
@@ -222,8 +223,10 @@ export default function EditLauncherFormContent({
       <EnvironmentKindField control={control} />
 
       {environmentKind === "global" && renderEnvironmentList()}
-      {environmentKind === "custom" && renderCustomEnvironmentFields()}
-      {environmentKind === "BUILDER" && (
+      {environmentKind === "custom" &&
+        environmentImageSource === "image" &&
+        renderCustomEnvironmentFields()}
+      {environmentKind === "custom" && environmentImageSource === "build" && (
         <EditBuilderEnvironmentFields control={control} errors={errors} />
       )}
     </div>

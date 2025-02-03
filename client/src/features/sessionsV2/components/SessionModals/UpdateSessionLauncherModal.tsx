@@ -96,7 +96,7 @@ export default function UpdateSessionLauncherModal({
       return;
     }
     if (environments.length == 0) {
-      setValue("environment_kind", "custom");
+      setValue("environmentKind", "custom");
     }
   }, [environments, setValue]);
 

@@ -32,7 +32,7 @@ export function CustomEnvironmentFields({
   control,
   errors,
 }: EnvironmentFieldsProps) {
-  const watchEnvironmentKind = watch("environment_kind");
+  const watchEnvironmentKind = watch("environmentKind");
   const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
   const toggleIsOpen = useCallback(
     () =>

@@ -38,7 +38,7 @@ export function GlobalEnvironmentFields({
     error,
     isLoading,
   } = useGetSessionEnvironmentsQuery({});
-  const watchEnvironmentKind = watch("environment_kind");
+  const watchEnvironmentKind = watch("environmentKind");
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -67,11 +67,11 @@ export function GlobalEnvironmentFields({
       {environments && environments.length > 0 && (
         <Controller
           control={control}
-          name="environment_id"
+          name="environmentId"
           render={({ field }) => (
             <div>
               <Input
-                className={cx(errors.environment_id && "is-invalid")}
+                className={cx(errors.environmentId && "is-invalid")}
                 id="addSessionLauncherEnvironmentId"
                 type="hidden"
                 {...field}

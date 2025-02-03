@@ -79,12 +79,12 @@ export default function BuilderEnvironmentFields({
   ) : (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <CodeRepositorySelector
-        name="code_repository"
+        name="repository"
         control={control}
         repositoriesDetails={repositoriesDetails}
       />
-      <BuilderTypeSelector name="builder_type" control={control} />
-      <BuilderFrontendSelector name="builder_frontend" control={control} />
+      <BuilderTypeSelector name="builder_variant" control={control} />
+      <BuilderFrontendSelector name="frontend_variant" control={control} />
     </div>
   );
 

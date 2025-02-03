@@ -29,7 +29,7 @@ export default function EnvironmentKindField({
   return (
     <Controller
       control={control}
-      name="environment_kind"
+      name="environmentKind"
       render={({ field }) => (
         <div className={cx("d-flex", "gap-4")}>
           <ButtonGroup size="sm">
@@ -72,9 +72,9 @@ export default function EnvironmentKindField({
               className="btn-check"
               name={field.name}
               autoComplete="off"
-              checked={field.value === "BUILDER"}
+              checked={field.value === "custom"}
               id="environment-kind-builder-radio"
-              onChange={() => field.onChange("BUILDER")}
+              onChange={() => field.onChange("custom")}
               onBlur={field.onBlur}
             />
             <label
