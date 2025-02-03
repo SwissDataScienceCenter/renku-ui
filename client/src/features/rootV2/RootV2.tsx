@@ -189,13 +189,15 @@ function HelpV2Routes() {
 
 function RedirectToSearch({ entityType }: { entityType: string }) {
   const navigate = useNavigate();
-  navigate(
-    {
-      pathname: generatePath(ABSOLUTE_ROUTES.v2.search),
-      search: `q=type:${entityType}`,
-    },
-    { replace: true }
-  );
+  useEffect(() => {
+    navigate(
+      {
+        pathname: generatePath(ABSOLUTE_ROUTES.v2.search),
+        search: `q=type:${entityType}`,
+      },
+      { replace: true }
+    );
+  });
 
   return null;
 }
