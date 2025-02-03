@@ -17,6 +17,8 @@
  */
 
 import {
+  type EnvironmentIdOnlyPost,
+  type EnvironmentPostInLauncher,
   type GetEnvironmentsApiArg,
   type GetEnvironmentsApiResponse,
   sessionLaunchersV2GeneratedApi,
@@ -94,3 +96,8 @@ export const {
 } = sessionLaunchersV2Api;
 
 export type * from "./sessionLaunchersV2.generated-api";
+
+// Type aliases derived from the generated API types
+export type SessionLauncherEnvironmentParams =
+  | EnvironmentPostInLauncher
+  | EnvironmentIdOnlyPost;

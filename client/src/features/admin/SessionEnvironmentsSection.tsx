@@ -30,12 +30,12 @@ import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { ErrorLabel } from "../../components/formlabels/FormLabels.tsx";
-import { safeStringify } from "../sessionsV2/session.utils";
+import { ErrorLabel } from "../../components/formlabels/FormLabels";
 import type {
-  SessionEnvironment,
-  SessionEnvironmentList,
-} from "../sessionsV2/sessionsV2.types";
+  Environment as SessionEnvironment,
+  EnvironmentList as SessionEnvironmentList,
+} from "../sessionsV2/api/sessionLaunchersV2.api.ts";
+import { safeStringify } from "../sessionsV2/session.utils";
 import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";

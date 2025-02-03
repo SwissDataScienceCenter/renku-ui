@@ -33,10 +33,8 @@ import {
   ResourcePool,
 } from "../../../dataServices/dataServices.types";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
-import {
-  SessionEnvironment,
-  SessionLauncherForm,
-} from "../../sessionsV2.types";
+import type { Environment as SessionEnvironment } from "../../api/sessionLaunchersV2.api";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 
 interface SessionEnvironmentItemProps {
   environment: SessionEnvironment;

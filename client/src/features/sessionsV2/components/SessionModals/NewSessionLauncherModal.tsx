@@ -64,13 +64,13 @@ export default function NewSessionLauncherModal({
   const useFormResult = useForm<SessionLauncherForm>({
     defaultValues: {
       name: "",
-      environment_kind: "global",
-      environment_id: "",
+      environmentKind: "global",
+      environmentId: "",
       container_image: "",
       default_url: DEFAULT_URL,
       port: DEFAULT_PORT,
       // new
-      code_repository: "",
+      repository: "",
     },
   });
   const {
@@ -79,21 +79,25 @@ export default function NewSessionLauncherModal({
     handleSubmit,
     reset,
     setValue,
-    watch,
     trigger,
+    watch,
   } = useFormResult;
 
-  const watchEnvironmentId = watch("environment_id");
+  const watchEnvironmentId = watch("environmentId");
   const watchEnvironmentCustomImage = watch("container_image");
-  const watchEnvironmentKind = watch("environment_kind");
-  const watchCodeRepository = watch("code_repository");
+  const watchEnvironmentKind = watch("environmentKind");
+  const watchEnvironmentImageSource = watch("environmentImageSource");
+  const watchCodeRepository = watch("repository");
 
   const isEnvironmentDefined = useMemo(() => {
     return (
       (watchEnvironmentKind === "global" && !!watchEnvironmentId) ||
       (watchEnvironmentKind === "custom" &&
+        watchEnvironmentImageSource === "image" &&
         watchEnvironmentCustomImage?.length > 0) ||
-      (watchEnvironmentKind === "BUILDER" && !!watchCodeRepository)
+      (watchEnvironmentKind === "custom" &&
+        watchEnvironmentImageSource === "build" &&
+        !!watchCodeRepository)
     );
   }, [
     watchCodeRepository,
@@ -104,13 +108,13 @@ export default function NewSessionLauncherModal({
 
   const onNext = useCallback(() => {
     trigger([
-      "environment_id",
-      "container_image",
-      "command",
       "args",
-      "builder_frontend",
-      "builder_type",
-      "code_repository",
+      "builder_variant",
+      "command",
+      "container_image",
+      "environmentId",
+      "frontend_variant",
+      "repository",
     ]);
 
     if (isDirty && isEnvironmentDefined && isValid)
@@ -128,8 +132,8 @@ export default function NewSessionLauncherModal({
       const { name, resourceClass } = data;
       const environment = getFormattedEnvironmentValues(data);
       const diskStorage =
-        data.diskStorage && data.diskStorage != resourceClass.default_storage
-          ? data.diskStorage
+        data.disk_storage && data.disk_storage != resourceClass.default_storage
+          ? data.disk_storage
           : undefined;
       if (environment.success && environment.data)
         addSessionLauncher({
@@ -140,7 +144,7 @@ export default function NewSessionLauncherModal({
             name,
             // TODO: fix types for this session environment
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            environment: environment.data as any,
+            environment: environment.data,
           },
         });
     },
@@ -152,7 +156,7 @@ export default function NewSessionLauncherModal({
   }, [watchEnvironmentCustomImage, trigger]);
 
   useEffect(() => {
-    trigger(["environment_id"]);
+    trigger(["environmentId"]);
     if (environments?.length) {
       const environmentSelected = environments.find(
         (env) => env.id === watchEnvironmentId
@@ -166,7 +170,8 @@ export default function NewSessionLauncherModal({
       return;
     }
     if (environments.length == 0) {
-      setValue("environment_kind", "custom");
+      setValue("environmentKind", "custom");
+      setValue("environmentImageSource", "image");
     }
   }, [environments, setValue]);
 

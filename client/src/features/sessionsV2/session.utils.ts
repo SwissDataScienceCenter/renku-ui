@@ -18,13 +18,13 @@
 
 import { FaviconStatus } from "../display/display.types";
 import { SessionStatusState } from "../session/sessions.types";
-import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
-import { DEFAULT_URL } from "./session.constants";
-import {
-  SessionEnvironmentList,
+import type {
+  EnvironmentList as SessionEnvironmentList,
+  SessionLauncher,
   SessionLauncherEnvironmentParams,
-  SessionLauncherForm,
-} from "./sessionsV2.types";
+} from "./api/sessionLaunchersV2.api";
+import { DEFAULT_URL } from "./session.constants";
+import { SessionLauncherForm } from "./sessionsV2.types";
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
@@ -87,22 +87,39 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
   error?: string;
 } {
   const {
+    args,
+    builder_variant,
+    command,
     container_image,
     default_url,
-    name,
-    port,
-    working_directory,
-    uid,
+    environmentId,
+    environmentImageSource,
+    environmentKind,
+    frontend_variant,
     gid,
     mount_directory,
-    environment_id,
-    environment_kind,
-    command,
-    args,
+    name,
+    port,
+    repository,
+    uid,
+    working_directory,
   } = data;
 
-  if (environment_kind === "global") {
-    return { success: true, data: { id: environment_id } };
+  if (environmentKind === "global") {
+    return { success: true, data: { id: environmentId } };
+  }
+
+  if (environmentImageSource === "build") {
+    return {
+      success: true,
+      data: {
+        environment_kind: "custom",
+        environment_image_source: "build",
+        builder_variant,
+        frontend_variant,
+        repository,
+      },
+    };
   }
 
   const commandFormatted = safeParseJSONStringArray(command);
@@ -114,6 +131,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     success: true,
     data: {
       environment_kind: "custom",
+      environment_image_source: "image",
       container_image,
       name,
       default_url: default_url.trim() || DEFAULT_URL,
@@ -122,8 +140,8 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
       mount_directory,
       uid,
       gid,
-      command: commandFormatted.data,
-      args: argsFormatted.data,
+      command: commandFormatted.data ?? undefined,
+      args: argsFormatted.data ?? undefined,
     },
   };
 }

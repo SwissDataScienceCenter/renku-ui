@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
+import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { getJSONStringArray } from "../sessionsV2/session.utils";
-import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
 
 export function getSessionEnvironmentValues(environment: SessionEnvironment) {
   return {
