@@ -1041,7 +1041,6 @@ export function AddStorageMount({
   storage,
   state,
   validationSucceeded,
-  projectId,
 }: AddStorageStepProps) {
   const {
     control,
