@@ -177,6 +177,12 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
     });
   }, [setValue, group.slug]);
 
+  const { params } = useContext(AppContext);
+  const domain = params?.BASE_URL
+    ? new URL(params.BASE_URL).hostname
+    : "renkulab.io";
+  const groupUrl = `${domain}/g/`;
+
   return (
     <div>
       {updateGroupResult.error && (
@@ -216,7 +222,7 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
                 errors={errors}
                 name={"slug"}
                 resetFunction={resetUrl}
-                url="renkulab.io/g/"
+                url={groupUrl}
               />
               {errors.slug && dirtyFields.slug && (
                 <div className={cx("d-block", "invalid-feedback")}>
