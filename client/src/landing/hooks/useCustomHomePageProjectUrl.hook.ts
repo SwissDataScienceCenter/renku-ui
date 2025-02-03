@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,28 +16,12 @@
  * limitations under the License.
  */
 
-export interface AnonymousHomeConfig {
-  client: unknown;
-  homeCustomized: HomepageParams;
-  model: unknown;
-  params: {
-    UI_SHORT_SHA: string;
-  };
-  urlMap: {
-    siteStatusUrl: string;
-  };
-}
+import { useContext } from "react";
+import AppContext from "../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 
-export interface HomepageParams {
-  custom: {
-    enabled: boolean;
-    main: {
-      backgroundImage: {
-        url: string;
-      };
-      contentMd: string;
-    };
-  };
-  projectPath: string;
-  tutorialLink: string;
+export function useCustomHomePageProjectUrl(): string {
+  const { params } = useContext(AppContext);
+  const homePage = params?.["HOMEPAGE"] ?? DEFAULT_APP_PARAMS.HOMEPAGE;
+  return `/v2/projects/${homePage?.projectPath}`; // TODO: Change this to the new project url
 }

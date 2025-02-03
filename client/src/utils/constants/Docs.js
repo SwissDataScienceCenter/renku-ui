@@ -51,6 +51,14 @@ const Links = {
     "https://www.notion.so/renku/Renku-Community-Portal-2a154d7d30b24ab8a5968c60c2592d87",
   RENKU_2_DOCUMENTATION:
     "https://www.notion.so/renku/Documentation-db396cfc9a664cd2b161e4c6068a5ec9",
+  RENKU_2_RESEARCH:
+    "https://renku.notion.site/Renku-for-Data-Scientists-21d46b16e76e4bc484add8367c44f884",
+  RENKU_2_TEACHING:
+    "https://renku.notion.site/Renku-for-Teaching-1460df2efafc809cb134d2a4e32ed90e",
+  RENKU_2_EVENTS:
+    "https://renku.notion.site/Renku-for-Events-18c0df2efafc800bb26ae93333b4318d",
+  RENKU_2_QUICK_START_TUTORIAL:
+    "https://www.notion.so/renku/Quick-Start-tutorial-1460df2efafc80998204c1f61e333e63",
 };
 
 const GitlabLinks = {

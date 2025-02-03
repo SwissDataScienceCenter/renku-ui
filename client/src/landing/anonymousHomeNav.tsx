@@ -27,7 +27,6 @@ import { useLoginUrl } from "../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Docs, Links } from "../utils/constants/Docs";
 import { Url } from "../utils/helpers/url";
-import type { AnonymousHomeConfig } from "./anonymousHome.types";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -83,8 +82,7 @@ function BottomNavSection(props: BottomNavSectionProps) {
   );
 }
 
-function BottomNav(props: AnonymousHomeConfig) {
-  const tutorialLink = props.homeCustomized.tutorialLink;
+function BottomNav() {
   return (
     <div id="rk-anon-home-bottom-nav" className={cx("bg-navy")}>
       <div className={cx("container", "py-5", "text-white")}>
@@ -93,9 +91,12 @@ function BottomNav(props: AnonymousHomeConfig) {
             <BottomNavSection sectionTitle="Learn">
               <BottomNavExternalLink
                 title="Documentation"
-                url={Docs.READ_THE_DOCS_ROOT}
+                url={Links.RENKU_2_DOCUMENTATION}
               />
-              <BottomNavExternalLink title="Get Started" url={tutorialLink} />
+              <BottomNavExternalLink
+                title="Get Started"
+                url={Links.RENKU_2_QUICK_START_TUTORIAL}
+              />
               <BottomNavLink title="Help" to={Url.get(Url.pages.help)} />
             </BottomNavSection>
           </Col>

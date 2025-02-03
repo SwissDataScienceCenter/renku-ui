@@ -18,38 +18,45 @@
 
 import cx from "classnames";
 import { Link } from "react-router-dom";
-import { useLoginUrl } from "../../authentication/useLoginUrl.hook.ts";
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 
 import { ExternalLink } from "../../components/ExternalLinks";
 import { RenkuContactEmail } from "../../utils/constants/Docs";
-import computingGraphic from "../Graphics/computing.svg";
 import collaborationGraphic from "../Graphics/boxes.svg";
+import computingGraphic from "../Graphics/computing.svg";
 import connectionGraphic from "../Graphics/network.svg";
 import researchGraphic from "../Graphics/research.svg";
+import { useCustomHomePageProjectUrl } from "../hooks/useCustomHomePageProjectUrl.hook";
 import TemplateSlider from "../TemplateSlider/TemplateSlider";
 
-import styles from "./WhatIsRenku.module.scss";
 import { Col, Row } from "reactstrap";
 
 function FeatureButtons() {
   const loginUrl = useLoginUrl();
+  const projectUrl = useCustomHomePageProjectUrl();
   return (
     <div className={cx("d-flex", "gap-3")}>
       <Link
         className={cx("btn", "btn-primary", "text-decoration-none")}
-        to="/v2/search?page=1&perPage=12&q=type:project"
+        to={projectUrl}
         data-cy={`view-other-projects-btn`}
+        target="_blank"
       >
         Explore a project
       </Link>
-      <a className={cx("btn", "btn-outline-primary")} href={loginUrl.href}>
+      <a
+        className={cx("btn", "btn-outline-primary")}
+        href={loginUrl.href}
+        target="_blank"
+        rel="noreferrer noopener"
+      >
         Create an account
       </a>
     </div>
   );
 }
 
-const ResearchFeatSection = () => {
+function ResearchFeatSection() {
   return (
     <Row
       className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0", "pt-5", "pt-lg-0")}
@@ -67,8 +74,10 @@ const ResearchFeatSection = () => {
         lg={6}
         className={cx("d-flex", "flex-column", "gap-3", "gap-lg-4")}
       >
-        <h3 className="my-0">Where research comes together</h3>
-        <p className="mb-0">
+        <h3 className={cx("my-0", "fs-1", "fw-bold")}>
+          Where research comes together
+        </h3>
+        <p className={cx("mb-0", "fs-4")}>
           Integrations galore! We support integrations for your favorite code
           and data platforms, so you can connect your whole project in one
           place.
@@ -77,9 +86,9 @@ const ResearchFeatSection = () => {
       </Col>
     </Row>
   );
-};
+}
 
-const ResearcherFeatSection = () => {
+function ResearcherFeatSection() {
   return (
     <Row
       className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0", "pt-5", "pt-lg-0")}
@@ -96,12 +105,14 @@ const ResearcherFeatSection = () => {
           "order-lg-1"
         )}
       >
-        <h3 className="my-0">Built for Every Researcher</h3>
-        <p className="mb-0">
+        <h3 className={cx("my-0", "fs-1", "fw-bold")}>
+          Built for Every Researcher
+        </h3>
+        <p className={cx("mb-0", "fs-4")}>
           Whether you&apos;re comfortable with command lines or prefer graphical
           interfaces, Renku adapts to your working style.
         </p>
-        <p className="mb-0">
+        <p className={cx("mb-0", "fs-4")}>
           Launch browser-based sessions with zero setup. Customize your
           development environment for advanced needs.
         </p>
@@ -114,9 +125,9 @@ const ResearcherFeatSection = () => {
       </Col>
     </Row>
   );
-};
+}
 
-const CollaborationFeatSection = () => {
+function CollaborationFeatSection() {
   return (
     <Row
       className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0", "pt-5", "pt-lg-0")}
@@ -134,8 +145,10 @@ const CollaborationFeatSection = () => {
         lg={6}
         className={cx("d-flex", "flex-column", "gap-3", "gap-lg-4")}
       >
-        <h3 className="my-0">Effortless Collaboration</h3>
-        <p className="mb-0">
+        <h3 className={cx("my-0", "fs-1", "fw-bold")}>
+          Effortless Collaboration
+        </h3>
+        <p className={cx("mb-0", "fs-4")}>
           Share your Renku project with anyone, and never worry about “it
           doesn’t work on my machine” again.
         </p>
@@ -143,9 +156,9 @@ const CollaborationFeatSection = () => {
       </Col>
     </Row>
   );
-};
+}
 
-const ComputingFeatSection = () => {
+function ComputingFeatSection() {
   return (
     <Row
       className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0", "pt-5", "pt-lg-0")}
@@ -162,8 +175,8 @@ const ComputingFeatSection = () => {
           "order-lg-1"
         )}
       >
-        <h3 className="my-0">Flexible Computing</h3>
-        <p className="mb-0">
+        <h3 className={cx("my-0", "fs-1", "fw-bold")}>Flexible Computing</h3>
+        <p className={cx("mb-0", "fs-4")}>
           Scaling up your project is as simple as switching your resource class.
           Do data exploration and model training all in one place!
         </p>
@@ -195,9 +208,9 @@ const ComputingFeatSection = () => {
       </Col>
     </Row>
   );
-};
+}
 
-const ConnectionFeatSection = () => {
+function ConnectionFeatSection() {
   return (
     <Row
       className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0", "pt-5", "pt-lg-0")}
@@ -215,8 +228,10 @@ const ConnectionFeatSection = () => {
         lg={6}
         className={cx("d-flex", "flex-column", "gap-3", "gap-lg-4")}
       >
-        <h3 className="my-0">Let others stand on your shoulders</h3>
-        <p className="mb-0">
+        <h3 className={cx("my-0", "fs-1", "fw-bold")}>
+          Let others stand on your shoulders
+        </h3>
+        <p className={cx("mb-0", "fs-4")}>
           Research thrives on connection. Renku makes your work naturally
           well-structured, discoverable by others, and easy to build upon.
         </p>
@@ -224,13 +239,12 @@ const ConnectionFeatSection = () => {
       </Col>
     </Row>
   );
-};
+}
 
 export default function WhatIsRenku() {
   return (
     <div id="rk-anon-home-what-is-renku">
       <div
-        id={styles.featContainer}
         className={cx("container", "d-flex", "flex-column", "gap-5", "my-5")}
       >
         <div className={cx("text-center", "mt-0", "mt-lg-5")}>

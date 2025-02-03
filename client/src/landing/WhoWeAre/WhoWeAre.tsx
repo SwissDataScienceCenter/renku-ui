@@ -28,7 +28,7 @@ import logo_SDSC from "../Logos/SDSC.svg";
 export default function WhoWeAre() {
   const contactEmail = RenkuContactEmail || "";
   return (
-    <div id="rk-anon-home-who-we-are">
+    <div className="bg-light">
       <div className="container">
         <div id={styles.whoWeAreContainer}>
           <div className={styles.whoWeAreTitle}>
