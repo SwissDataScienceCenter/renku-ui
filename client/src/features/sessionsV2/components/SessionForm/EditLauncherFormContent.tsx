@@ -98,7 +98,7 @@ export default function EditLauncherFormContent({
         <Controller
           control={control}
           name="environment_id"
-          rules={{ required: environmentKind === "GLOBAL" }}
+          rules={{ required: environmentKind === "global" }}
           render={({ field }) => (
             <>
               <ListGroup>
@@ -147,7 +147,7 @@ export default function EditLauncherFormContent({
         )}
         rules={{
           required: {
-            value: environmentKind === "CUSTOM",
+            value: environmentKind === "custom",
             message: "Please provide a container image.",
           },
           pattern: {
@@ -221,8 +221,8 @@ export default function EditLauncherFormContent({
       </div>
       <EnvironmentKindField control={control} />
 
-      {environmentKind === "GLOBAL" && renderEnvironmentList()}
-      {environmentKind === "CUSTOM" && renderCustomEnvironmentFields()}
+      {environmentKind === "global" && renderEnvironmentList()}
+      {environmentKind === "custom" && renderCustomEnvironmentFields()}
       {environmentKind === "BUILDER" && (
         <EditBuilderEnvironmentFields control={control} errors={errors} />
       )}

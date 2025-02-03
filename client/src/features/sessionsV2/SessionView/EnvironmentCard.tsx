@@ -20,16 +20,17 @@ import cx from "classnames";
 import { ReactNode } from "react";
 import { Clock, Globe2, Link45deg } from "react-bootstrap-icons";
 import { Card, CardBody, Col, Row } from "reactstrap";
+
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
+import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { safeStringify } from "../session.utils";
-import { SessionLauncher } from "../sessionsV2.types";
 
 export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
   const environment = launcher.environment;
   if (!environment) return null;
   const { environment_kind, name } = environment;
-  const cardName = environment_kind === "GLOBAL" ? name || "" : launcher.name;
+  const cardName = environment_kind === "global" ? name || "" : launcher.name;
 
   return (
     <>
@@ -42,7 +43,7 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
               </h5>
             </EnvironmentRow>
             <EnvironmentRow>
-              {environment.environment_kind === "CUSTOM" ? (
+              {environment.environment_kind === "custom" ? (
                 <>
                   <Link45deg size={24} />
                   Custom image
@@ -54,7 +55,7 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
                 </>
               )}
             </EnvironmentRow>
-            {environment_kind === "GLOBAL" && (
+            {environment_kind === "global" && (
               <>
                 <EnvironmentRow>
                   {environment?.description ? (
@@ -77,7 +78,7 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
                 </EnvironmentRow>
               </>
             )}
-            {environment_kind === "CUSTOM" && (
+            {environment_kind === "custom" && (
               <>
                 <CustomEnvironmentValues launcher={launcher} />
               </>
@@ -96,7 +97,7 @@ export function CustomEnvironmentValues({
 }) {
   const environment = launcher.environment;
 
-  if (environment.environment_kind !== "CUSTOM") {
+  if (environment.environment_kind !== "custom") {
     return null;
   }
 

@@ -196,6 +196,7 @@ export type ErrorResponse = {
     message: string;
   };
 };
+export type EnvironmentImageSourceImage = "image";
 export type EnvironmentPost = {
   name: SessionName;
   description?: Description;
@@ -209,6 +210,7 @@ export type EnvironmentPost = {
   command?: EnvironmentCommand;
   args?: EnvironmentArgs;
   is_archived?: IsArchived;
+  environment_image_source: EnvironmentImageSourceImage;
 };
 export type EnvironmentWorkingDirectoryPatch = string;
 export type EnvironmentMountDirectoryPatch = string;
@@ -225,9 +227,29 @@ export type EnvironmentPatch = {
   command?: EnvironmentCommand;
   args?: EnvironmentArgs;
   is_archived?: IsArchived;
+  environment_image_source: EnvironmentImageSourceImage;
 };
-export type EnvironmentKind = "GLOBAL" | "CUSTOM";
-export type EnvironmentGetInLauncher = Environment & {
+export type EnvironmentWithImageGet = Environment & {
+  environment_image_source: EnvironmentImageSourceImage;
+};
+export type Repository = string;
+export type BuilderVariant = "conda" | "pip";
+export type FrontendVariant = "vscodium" | "jupyterlab" | "streamlit";
+export type BuildParameters = {
+  repository: Repository;
+  builder_variant: BuilderVariant;
+  frontend_variant: FrontendVariant;
+};
+export type EnvironmentImageSourceBuild = "build";
+export type EnvironmentWithBuildGet = Environment & {
+  build_parameters: BuildParameters;
+  environment_image_source: EnvironmentImageSourceBuild;
+};
+export type EnvironmentKind = "global" | "custom";
+export type EnvironmentGetInLauncher = (
+  | EnvironmentWithImageGet
+  | EnvironmentWithBuildGet
+) & {
   environment_kind: EnvironmentKind;
 };
 export type ResourceClassId = number | null;
@@ -243,7 +265,16 @@ export type SessionLauncher = {
   disk_storage?: DiskStorage;
 };
 export type SessionLaunchersList = SessionLauncher[];
-export type EnvironmentPostInLauncher = EnvironmentPost & {
+export type BuildParametersPost = {
+  repository: Repository;
+  builder_variant: BuilderVariant;
+  frontend_variant: FrontendVariant;
+  environment_image_source: EnvironmentImageSourceBuild;
+};
+export type EnvironmentPostInLauncher = (
+  | EnvironmentPost
+  | BuildParametersPost
+) & {
   environment_kind: EnvironmentKind;
 };
 export type EnvironmentId = string;
@@ -259,8 +290,17 @@ export type SessionLauncherPost = {
   environment: EnvironmentPostInLauncher | EnvironmentIdOnlyPost;
 };
 export type DiskStoragePatch = number | null;
-export type EnvironmentPatchInLauncher = EnvironmentPatch & {
-  environment_kind?: EnvironmentKind;
+export type BuildParametersPatch = {
+  repository?: Repository;
+  builder_variant?: BuilderVariant;
+  frontend_variant?: FrontendVariant;
+  environment_image_source: EnvironmentImageSourceBuild;
+};
+export type EnvironmentPatchInLauncher = (
+  | EnvironmentPatch
+  | BuildParametersPatch
+) & {
+  environment_kind: EnvironmentKind;
 };
 export type EnvironmentIdOnlyPatch = {
   id?: EnvironmentId;

@@ -38,18 +38,18 @@ export interface SessionEnvironment {
 
 export type SessionEnvironmentList = SessionEnvironment[];
 
-export type SessionLauncher = {
-  id: string;
-  project_id: string;
-  name: string;
-  creation_date: string;
-  description?: string;
-  resource_class_id?: number | null;
-  disk_storage?: number;
-  environment: SessionLauncherEnvironment;
-};
+// export type SessionLauncher = {
+//   id: string;
+//   project_id: string;
+//   name: string;
+//   creation_date: string;
+//   description?: string;
+//   resource_class_id?: number | null;
+//   disk_storage?: number;
+//   environment: SessionLauncherEnvironment;
+// };
 
-export type EnvironmentKind = "GLOBAL" | "CUSTOM" | "BUILDER";
+export type EnvironmentKind = "global" | "custom" | "BUILDER";
 
 export type SessionLauncherEnvironment = {
   id?: string;
@@ -86,7 +86,7 @@ export type SessionLauncherEnvironmentParams =
       args?: string[] | null;
     };
 
-export type SessionLauncherList = SessionLauncher[];
+// export type SessionLauncherList = SessionLauncher[];
 export interface GetProjectSessionLauncherParams {
   id: string;
 }

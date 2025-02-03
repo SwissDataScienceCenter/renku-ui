@@ -32,6 +32,7 @@ import {
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
   useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
   usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation,
@@ -40,7 +41,7 @@ import {
   getFormattedEnvironmentValues,
   getLauncherDefaultValues,
 } from "../../session.utils";
-import { SessionLauncher, SessionLauncherForm } from "../../sessionsV2.types";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 
 interface UpdateSessionLauncherModalProps {
@@ -95,7 +96,7 @@ export default function UpdateSessionLauncherModal({
       return;
     }
     if (environments.length == 0) {
-      setValue("environment_kind", "CUSTOM");
+      setValue("environment_kind", "custom");
     }
   }, [environments, setValue]);
 

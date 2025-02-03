@@ -69,7 +69,7 @@ export function CustomEnvironmentFields({
           )}
           rules={{
             required: {
-              value: watchEnvironmentKind === "CUSTOM",
+              value: watchEnvironmentKind === "custom",
               message: "Please provide a container image.",
             },
             pattern: {

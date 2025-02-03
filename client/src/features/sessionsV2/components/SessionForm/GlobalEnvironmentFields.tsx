@@ -94,7 +94,7 @@ export function GlobalEnvironmentFields({
             </div>
           )}
           rules={{
-            required: watchEnvironmentKind === "GLOBAL",
+            required: watchEnvironmentKind === "global",
           }}
         />
       )}

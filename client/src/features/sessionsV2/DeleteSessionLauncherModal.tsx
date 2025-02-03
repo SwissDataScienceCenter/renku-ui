@@ -23,8 +23,8 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useDeleteSessionLaunchersByLauncherIdMutation as useDeleteSessionLauncherMutation } from "./api/sessionLaunchersV2.api";
-import { SessionLauncher } from "./sessionsV2.types";
 
 interface DeleteSessionLauncherModalProps {
   isOpen: boolean;

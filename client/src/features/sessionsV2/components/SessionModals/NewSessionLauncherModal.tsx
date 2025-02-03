@@ -64,7 +64,7 @@ export default function NewSessionLauncherModal({
   const useFormResult = useForm<SessionLauncherForm>({
     defaultValues: {
       name: "",
-      environment_kind: "GLOBAL",
+      environment_kind: "global",
       environment_id: "",
       container_image: "",
       default_url: DEFAULT_URL,
@@ -90,8 +90,8 @@ export default function NewSessionLauncherModal({
 
   const isEnvironmentDefined = useMemo(() => {
     return (
-      (watchEnvironmentKind === "GLOBAL" && !!watchEnvironmentId) ||
-      (watchEnvironmentKind === "CUSTOM" &&
+      (watchEnvironmentKind === "global" && !!watchEnvironmentId) ||
+      (watchEnvironmentKind === "custom" &&
         watchEnvironmentCustomImage?.length > 0) ||
       (watchEnvironmentKind === "BUILDER" && !!watchCodeRepository)
     );
@@ -166,7 +166,7 @@ export default function NewSessionLauncherModal({
       return;
     }
     if (environments.length == 0) {
-      setValue("environment_kind", "CUSTOM");
+      setValue("environment_kind", "custom");
     }
   }, [environments, setValue]);
 

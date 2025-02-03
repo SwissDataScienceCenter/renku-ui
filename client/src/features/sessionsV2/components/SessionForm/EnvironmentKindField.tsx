@@ -38,7 +38,7 @@ export default function EnvironmentKindField({
               className="btn-check"
               name={field.name}
               autoComplete="off"
-              checked={field.value === "GLOBAL"}
+              checked={field.value === "global"}
               id="environment-kind-global-radio"
               onChange={() => field.onChange("GLOBAL")}
               onBlur={field.onBlur}
@@ -55,7 +55,7 @@ export default function EnvironmentKindField({
               className="btn-check"
               name={field.name}
               autoComplete="off"
-              checked={field.value === "CUSTOM"}
+              checked={field.value === "custom"}
               id="environment-kind-custom-radio"
               onChange={() => field.onChange("CUSTOM")}
               onBlur={field.onBlur}

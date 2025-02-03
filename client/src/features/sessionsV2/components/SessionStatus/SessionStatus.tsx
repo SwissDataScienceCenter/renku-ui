@@ -31,11 +31,8 @@ import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { PrettySessionErrorMessage } from "../../../session/components/status/SessionStatusBadge";
 import { MissingHibernationInfo } from "../../../session/components/status/SessionStatusText";
-import {
-  SessionLauncher,
-  SessionStatus,
-  SessionV2,
-} from "../../sessionsV2.types";
+import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
+import { SessionStatus, SessionV2 } from "../../sessionsV2.types";
 
 export function SessionBadge({
   children,

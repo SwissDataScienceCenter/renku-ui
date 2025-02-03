@@ -18,10 +18,10 @@
 
 import { FaviconStatus } from "../display/display.types";
 import { SessionStatusState } from "../session/sessions.types";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { DEFAULT_URL } from "./session.constants";
 import {
   SessionEnvironmentList,
-  SessionLauncher,
   SessionLauncherEnvironmentParams,
   SessionLauncherForm,
 } from "./sessionsV2.types";
@@ -101,7 +101,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     args,
   } = data;
 
-  if (environment_kind === "GLOBAL") {
+  if (environment_kind === "global") {
     return { success: true, data: { id: environment_id } };
   }
 
@@ -113,7 +113,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
   return {
     success: true,
     data: {
-      environment_kind: "CUSTOM",
+      environment_kind: "custom",
       container_image,
       name,
       default_url: default_url.trim() || DEFAULT_URL,
@@ -139,11 +139,11 @@ export function getLauncherDefaultValues(launcher: SessionLauncher) {
     description: launcher.description ?? "",
     environment_kind: launcher.environment?.environment_kind,
     environment_id:
-      launcher.environment?.environment_kind === "GLOBAL"
+      launcher.environment?.environment_kind === "global"
         ? launcher.environment?.id
         : "",
     container_image:
-      launcher.environment?.environment_kind === "CUSTOM"
+      launcher.environment?.environment_kind === "custom"
         ? launcher.environment?.container_image
         : "",
     default_url: launcher.environment?.default_url ?? DEFAULT_URL,

@@ -57,7 +57,7 @@ export function EnvironmentFields({
       <div>
         <EnvironmentKindField control={control} />
       </div>
-      <div className={cx(watchEnvironmentKind !== "GLOBAL" && "d-none")}>
+      <div className={cx(watchEnvironmentKind !== "global" && "d-none")}>
         <GlobalEnvironmentFields
           errors={errors}
           touchedFields={touchedFields}
@@ -66,7 +66,7 @@ export function EnvironmentFields({
           setValue={setValue}
         />
       </div>
-      <div className={cx(watchEnvironmentKind !== "CUSTOM" && "d-none")}>
+      <div className={cx(watchEnvironmentKind !== "custom" && "d-none")}>
         <CustomEnvironmentFields
           errors={errors}
           touchedFields={touchedFields}
