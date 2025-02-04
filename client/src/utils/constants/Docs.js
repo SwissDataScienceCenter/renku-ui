@@ -61,6 +61,10 @@ const Links = {
     "https://renku.notion.site/Renku-for-Events-18c0df2efafc800bb26ae93333b4318d",
   RENKU_2_QUICK_START_TUTORIAL:
     "https://www.notion.so/renku/Quick-Start-tutorial-1460df2efafc80998204c1f61e333e63",
+  RENKU_2_GET_HELP:
+    "https://www.notion.so/renku/Get-help-1a2b4b7b0e4746769e246c0328d3d3ad",
+  RENKU_2_WHY_RENKU:
+    "https://renku.notion.site/Why-Renku-1900df2efafc80839b26cbad43f24778",
 };
 
 const GitlabLinks = {

@@ -44,7 +44,7 @@ export function ResourcesAndSupport() {
           <Row className={cx("text-center", "gap-5", "gap-lg-0")}>
             <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
               <FooterDashboardCard
-                url={Links.RENKU_BLOG}
+                url={Links.RENKU_2_GET_HELP}
                 className="text-decoration-none text-navy"
               >
                 <InfoCircle size={60} />
