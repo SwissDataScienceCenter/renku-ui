@@ -178,10 +178,11 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
   }, [setValue, group.slug]);
 
   const { params } = useContext(AppContext);
-  const domain = params?.BASE_URL
-    ? new URL(params.BASE_URL).hostname
-    : "renkulab.io";
-  const groupUrl = `${domain}/g/`;
+  const baseUrl = params?.BASE_URL ?? window.location.origin;
+  const groupPath = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+    slug: "",
+  });
+  const url = `${baseUrl}${groupPath}/`;
 
   return (
     <div>
@@ -222,7 +223,7 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
                 errors={errors}
                 name={"slug"}
                 resetFunction={resetUrl}
-                url={groupUrl}
+                url={url}
               />
               {errors.slug && dirtyFields.slug && (
                 <div className={cx("d-block", "invalid-feedback")}>

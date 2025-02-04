@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { CheckLg, People, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
@@ -35,7 +35,6 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import AppContext from "../../../utils/context/appContext.ts";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 import type { GroupPostRequest } from "../../projectsV2/api/namespace.api";
@@ -160,11 +159,10 @@ function GroupV2CreationDetails() {
     }
   }, [result, navigate]);
 
-  const { params } = useContext(AppContext);
-  const domain = params?.BASE_URL
-    ? new URL(params.BASE_URL).hostname
-    : "renkulab.io";
-  const baseUrl = `${domain}/g/`;
+  const groupPath = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+    slug: "",
+  });
+  const parentPath = `${groupPath}/`;
 
   const resetUrl = useCallback(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
@@ -193,7 +191,7 @@ function GroupV2CreationDetails() {
                 errors={errors}
                 name="slug"
                 resetFunction={resetUrl}
-                url={baseUrl}
+                parentPath={parentPath}
                 slug={currentSlug}
                 dirtyFields={dirtyFields}
                 label="Group URL"

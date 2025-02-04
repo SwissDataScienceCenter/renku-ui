@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { CheckLg, Folder, InfoCircle, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router-dom-v5-compat";
@@ -36,7 +36,6 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import AppContext from "../../../utils/context/appContext.ts";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
@@ -171,11 +170,14 @@ function ProjectV2CreationDetails() {
     });
   }, [setValue, currentName]);
 
-  const { params } = useContext(AppContext);
-  const domain = params?.BASE_URL
-    ? new URL(params.BASE_URL).hostname
-    : "renkulab.io";
-  const baseUrl = `${domain}/p/${currentNamespace ?? "<Owner>"}/`;
+  const projectParentPath = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.root,
+    {
+      namespace: currentNamespace ?? "<Owner>",
+      slug: "",
+    }
+  );
+  const parentPath = `${projectParentPath}/`;
 
   return (
     <>
@@ -205,7 +207,7 @@ function ProjectV2CreationDetails() {
                 errors={errors}
                 name="slug"
                 resetFunction={resetUrl}
-                url={baseUrl}
+                parentPath={parentPath}
                 slug={currentSlug}
                 dirtyFields={dirtyFields}
                 label="Project URL"
