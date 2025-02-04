@@ -64,7 +64,8 @@ export default function NewSessionLauncherModal({
   const useFormResult = useForm<SessionLauncherForm>({
     defaultValues: {
       name: "",
-      environmentKind: "global",
+      // environmentKind: "global",
+      environmentSelect: "global",
       environmentId: "",
       container_image: "",
       default_url: DEFAULT_URL,
@@ -85,26 +86,23 @@ export default function NewSessionLauncherModal({
 
   const watchEnvironmentId = watch("environmentId");
   const watchEnvironmentCustomImage = watch("container_image");
-  const watchEnvironmentKind = watch("environmentKind");
-  const watchEnvironmentImageSource = watch("environmentImageSource");
+  // const watchEnvironmentKind = watch("environmentKind");
+  // const watchEnvironmentImageSource = watch("environmentImageSource");
+  const watchEnvironmentSelect = watch("environmentSelect");
   const watchCodeRepository = watch("repository");
 
   const isEnvironmentDefined = useMemo(() => {
     return (
-      (watchEnvironmentKind === "global" && !!watchEnvironmentId) ||
-      (watchEnvironmentKind === "custom" &&
-        watchEnvironmentImageSource === "image" &&
+      (watchEnvironmentSelect === "global" && !!watchEnvironmentId) ||
+      (watchEnvironmentSelect === "custom + image" &&
         watchEnvironmentCustomImage?.length > 0) ||
-      (watchEnvironmentKind === "custom" &&
-        watchEnvironmentImageSource === "build" &&
-        !!watchCodeRepository)
+      (watchEnvironmentSelect === "custom + build" && !!watchCodeRepository)
     );
   }, [
     watchCodeRepository,
     watchEnvironmentCustomImage,
     watchEnvironmentId,
-    watchEnvironmentImageSource,
-    watchEnvironmentKind,
+    watchEnvironmentSelect,
   ]);
 
   const onNext = useCallback(() => {
@@ -171,8 +169,9 @@ export default function NewSessionLauncherModal({
       return;
     }
     if (environments.length == 0) {
-      setValue("environmentKind", "custom");
-      setValue("environmentImageSource", "image");
+      // setValue("environmentKind", "custom");
+      // setValue("environmentImageSource", "image");
+      setValue("environmentSelect", "custom + image");
     }
   }, [environments, setValue]);
 

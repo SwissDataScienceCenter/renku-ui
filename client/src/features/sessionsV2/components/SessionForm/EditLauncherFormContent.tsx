@@ -63,8 +63,9 @@ export default function EditLauncherFormContent({
     error,
     isLoading,
   } = useGetSessionEnvironmentsQuery({});
-  const environmentKind = watch("environmentKind");
-  const environmentImageSource = watch("environmentImageSource");
+  // const environmentKind = watch("environmentKind");
+  // const environmentImageSource = watch("environmentImageSource");
+  const environmentSelect = watch("environmentSelect");
   const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
   const toggleIsOpen = useCallback(
     () =>
@@ -99,7 +100,7 @@ export default function EditLauncherFormContent({
         <Controller
           control={control}
           name="environmentId"
-          rules={{ required: environmentKind === "global" }}
+          rules={{ required: environmentSelect === "global" }}
           render={({ field }) => (
             <>
               <ListGroup>
@@ -148,7 +149,7 @@ export default function EditLauncherFormContent({
         )}
         rules={{
           required: {
-            value: environmentKind === "custom",
+            value: environmentSelect === "custom + image",
             message: "Please provide a container image.",
           },
           pattern: {
@@ -222,11 +223,10 @@ export default function EditLauncherFormContent({
       </div>
       <EnvironmentKindField control={control} />
 
-      {environmentKind === "global" && renderEnvironmentList()}
-      {environmentKind === "custom" &&
-        environmentImageSource === "image" &&
+      {environmentSelect === "global" && renderEnvironmentList()}
+      {environmentSelect === "custom + image" &&
         renderCustomEnvironmentFields()}
-      {environmentKind === "custom" && environmentImageSource === "build" && (
+      {environmentSelect === "custom + build" && (
         <EditBuilderEnvironmentFields control={control} errors={errors} />
       )}
     </div>

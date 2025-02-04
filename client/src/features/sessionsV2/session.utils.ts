@@ -93,8 +93,9 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     container_image,
     default_url,
     environmentId,
-    environmentImageSource,
-    environmentKind,
+    // environmentImageSource,
+    // environmentKind,
+    environmentSelect,
     frontend_variant,
     gid,
     mount_directory,
@@ -105,11 +106,11 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     working_directory,
   } = data;
 
-  if (environmentKind === "global") {
+  if (environmentSelect === "global") {
     return { success: true, data: { id: environmentId } };
   }
 
-  if (environmentImageSource === "build") {
+  if (environmentSelect === "custom + build") {
     return {
       success: true,
       data: {
@@ -157,7 +158,13 @@ export function getLauncherDefaultValues(
   return {
     name: launcher.name,
     description: launcher.description ?? "",
-    environmentKind: launcher.environment?.environment_kind,
+    // environmentKind: launcher.environment?.environment_kind,
+    environmentSelect:
+      launcher.environment.environment_kind === "global"
+        ? "global"
+        : launcher.environment.environment_image_source === "build"
+        ? "custom + build"
+        : "custom + image",
     environmentId:
       launcher.environment?.environment_kind === "global"
         ? launcher.environment?.id

@@ -48,8 +48,9 @@ export function EnvironmentFields({
   touchedFields,
   setValue,
 }: EnvironmentFieldsProps) {
-  const watchEnvironmentKind = watch("environmentKind");
-  const watchEnvironmentImageSource = watch("environmentImageSource");
+  // const watchEnvironmentKind = watch("environmentKind");
+  // const watchEnvironmentImageSource = watch("environmentImageSource");
+  const watchEnvironmentSelect = watch("environmentSelect");
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <div className={cx("form-label", "mb-0")}>
@@ -58,7 +59,7 @@ export function EnvironmentFields({
       <div>
         <EnvironmentKindField control={control} />
       </div>
-      <div className={cx(watchEnvironmentKind !== "global" && "d-none")}>
+      <div className={cx(watchEnvironmentSelect !== "global" && "d-none")}>
         <GlobalEnvironmentFields
           errors={errors}
           touchedFields={touchedFields}
@@ -68,11 +69,7 @@ export function EnvironmentFields({
         />
       </div>
       <div
-        className={cx({
-          "d-none":
-            watchEnvironmentKind !== "custom" ||
-            watchEnvironmentImageSource !== "image",
-        })}
+        className={cx(watchEnvironmentSelect !== "custom + image" && "d-none")}
       >
         <CustomEnvironmentFields
           errors={errors}
@@ -82,10 +79,9 @@ export function EnvironmentFields({
           setValue={setValue}
         />
       </div>
-      {watchEnvironmentKind === "custom" &&
-        watchEnvironmentImageSource === "build" && (
-          <BuilderEnvironmentFields control={control} />
-        )}
+      {watchEnvironmentSelect === "custom + build" && (
+        <BuilderEnvironmentFields control={control} />
+      )}
     </div>
   );
 }

@@ -38,7 +38,8 @@ export function GlobalEnvironmentFields({
     error,
     isLoading,
   } = useGetSessionEnvironmentsQuery({});
-  const watchEnvironmentKind = watch("environmentKind");
+  // const watchEnvironmentKind = watch("environmentKind");
+  const watchEnvironmentSelect = watch("environmentSelect");
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -94,7 +95,7 @@ export function GlobalEnvironmentFields({
             </div>
           )}
           rules={{
-            required: watchEnvironmentKind === "global",
+            required: watchEnvironmentSelect === "global",
           }}
         />
       )}

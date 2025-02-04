@@ -19,14 +19,12 @@
 import { ResourceClass } from "../dataServices/dataServices.types";
 import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
 import type {
+  BuildParametersPost,
+  EnvironmentId,
+  EnvironmentKind,
+  EnvironmentPost,
   SessionLauncherEnvironmentParams,
   SessionLauncherPost,
-  EnvironmentId,
-  EnvironmentPost,
-  BuildParametersPost,
-  EnvironmentKind,
-  EnvironmentImageSourceBuild,
-  EnvironmentImageSourceImage,
 } from "./api/sessionLaunchersV2.api";
 
 // export interface SessionEnvironment {
@@ -135,15 +133,18 @@ export interface SessionLauncherForm
     > {
   resourceClass: ResourceClass;
 
-  environmentKind: EnvironmentKind;
+  // environmentKind: EnvironmentKind;
+
+  // Substitute for Environment Kind and Environment Image Source in forms
+  environmentSelect: "global" | "custom + image" | "custom + build";
 
   // For "global" environments
   environmentId: EnvironmentId;
 
   // For "custom" environments
-  environmentImageSource:
-    | EnvironmentImageSourceBuild
-    | EnvironmentImageSourceImage;
+  // environmentImageSource:
+  //   | EnvironmentImageSourceBuild
+  //   | EnvironmentImageSourceImage;
 
   // For "custom" + "image" environments
   args: string;
