@@ -120,7 +120,7 @@ export default function RootV2() {
             }
           />
           <Route
-            path={RELATIVE_ROUTES.v2.connectedServices}
+            path={RELATIVE_ROUTES.v2.integrations}
             element={
               <ContainerWrap>
                 <LazyConnectedServicesPage />

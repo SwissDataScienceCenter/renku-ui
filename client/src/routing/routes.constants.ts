@@ -45,7 +45,7 @@ export const ABSOLUTE_ROUTES = {
   },
   v2: {
     root: "/",
-    connectedServices: "/connected-services",
+    integrations: "/integrations",
     groups: {
       show: {
         root: "/g/:slug",
@@ -103,7 +103,7 @@ export const RELATIVE_ROUTES = {
   },
   v2: {
     root: "/*",
-    connectedServices: "connected-services",
+    integrations: "integrations",
     groups: {
       root: "g/*",
       new: "new",
