@@ -24,11 +24,11 @@ describe("display the home page", () => {
     cy.visit("/");
   });
 
-  it.only("displays the home page intro text", () => {
+  it("displays the home page intro text", () => {
     cy.get("h1").should("have.length", 1);
-    // cy.get("h1")
-    //   .first()
-    //   .should("have.text", "Connecting the research ecosystem");
+    cy.get("h1")
+      .first()
+      .should("have.text", "Connecting the research ecosystem");
   });
 });
 
