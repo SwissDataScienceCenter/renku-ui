@@ -18,12 +18,7 @@
 
 import cx from "classnames";
 import { useEffect, useState } from "react";
-import {
-  Route,
-  Routes,
-  generatePath,
-  useNavigate,
-} from "react-router-dom-v5-compat";
+import { Route, Routes, useNavigate } from "react-router-dom-v5-compat";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
@@ -192,7 +187,7 @@ function RedirectToSearch({ entityType }: { entityType: string }) {
   useEffect(() => {
     navigate(
       {
-        pathname: generatePath(ABSOLUTE_ROUTES.v2.search),
+        pathname: ABSOLUTE_ROUTES.v2.search,
         search: `q=type:${entityType}`,
       },
       { replace: true }
