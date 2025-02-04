@@ -17,44 +17,14 @@
  */
 
 import cx from "classnames";
-import { Link } from "react-router-dom";
-import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
-
+import { Col, Row } from "reactstrap";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { RenkuContactEmail } from "../../utils/constants/Docs";
 import collaborationGraphic from "../Graphics/boxes.svg";
 import computingGraphic from "../Graphics/computing.svg";
 import connectionGraphic from "../Graphics/network.svg";
 import researchGraphic from "../Graphics/research.svg";
-import { useCustomHomePageProjectUrl } from "../hooks/useCustomHomePageProjectUrl.hook";
 import TemplateSlider from "../TemplateSlider/TemplateSlider";
-
-import { Col, Row } from "reactstrap";
-
-function FeatureButtons() {
-  const loginUrl = useLoginUrl();
-  const projectUrl = useCustomHomePageProjectUrl();
-  return (
-    <div className={cx("d-flex", "gap-3")}>
-      <Link
-        className={cx("btn", "btn-primary", "text-decoration-none")}
-        to={projectUrl}
-        data-cy={`view-other-projects-btn`}
-        target="_blank"
-      >
-        Explore a project
-      </Link>
-      <a
-        className={cx("btn", "btn-outline-primary")}
-        href={loginUrl.href}
-        target="_blank"
-        rel="noreferrer noopener"
-      >
-        Create an account
-      </a>
-    </div>
-  );
-}
 
 function ResearchFeatSection() {
   return (
@@ -82,7 +52,6 @@ function ResearchFeatSection() {
           and data platforms, so you can connect your whole project in one
           place.
         </p>
-        <FeatureButtons />
       </Col>
     </Row>
   );
@@ -116,7 +85,6 @@ function ResearcherFeatSection() {
           Launch browser-based sessions with zero setup. Customize your
           development environment for advanced needs.
         </p>
-        <FeatureButtons />
       </Col>
       <Col xs={12} lg={6} className={cx("order-1", "order-lg-2")}>
         <div className={cx("py-5", "py-lg-0")}>
@@ -152,7 +120,6 @@ function CollaborationFeatSection() {
           Share your Renku project with anyone, and never worry about “it
           doesn’t work on my machine” again.
         </p>
-        <FeatureButtons />
       </Col>
     </Row>
   );
@@ -180,15 +147,7 @@ function ComputingFeatSection() {
           Scaling up your project is as simple as switching your resource class.
           Do data exploration and model training all in one place!
         </p>
-        <div className={cx("d-flex", "flex-column", "gap-3")}>
-          <div>
-            <Link
-              className={cx("btn", "btn-primary", "text-decoration-none")}
-              to="/v2/search?page=1&perPage=12&q=type:project"
-            >
-              Try it out a session
-            </Link>
-          </div>
+        <div>
           <ExternalLink
             className="text-primary"
             role="link"
@@ -235,7 +194,6 @@ function ConnectionFeatSection() {
           Research thrives on connection. Renku makes your work naturally
           well-structured, discoverable by others, and easy to build upon.
         </p>
-        <FeatureButtons />
       </Col>
     </Row>
   );
