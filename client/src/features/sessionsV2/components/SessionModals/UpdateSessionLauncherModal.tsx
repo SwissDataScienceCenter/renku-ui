@@ -82,9 +82,7 @@ export default function UpdateSessionLauncherModal({
           sessionLauncherPatch: {
             name,
             description: description?.trim() || undefined,
-            // TODO: fix types for this session environment
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            environment: environment.data as any,
+            environment: environment.data,
           },
         });
     },

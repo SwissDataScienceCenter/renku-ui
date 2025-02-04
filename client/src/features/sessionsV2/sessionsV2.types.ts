@@ -20,9 +20,13 @@ import { ResourceClass } from "../dataServices/dataServices.types";
 import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
 import type {
   BuildParametersPost,
+  DefaultUrl,
+  EnvironmentGid,
   EnvironmentId,
   EnvironmentKind,
+  EnvironmentPort,
   EnvironmentPost,
+  EnvironmentUid,
   SessionLauncherEnvironmentParams,
   SessionLauncherPost,
 } from "./api/sessionLaunchersV2.api";
@@ -119,21 +123,13 @@ export interface SessionLauncherForm
     >,
     Pick<
       EnvironmentPost,
-      | "container_image"
-      | "default_url"
-      | "gid"
-      | "mount_directory"
-      | "port"
-      | "uid"
-      | "working_directory"
+      "container_image" | "mount_directory" | "working_directory"
     >,
     Pick<
       BuildParametersPost,
       "builder_variant" | "frontend_variant" | "repository"
     > {
   resourceClass: ResourceClass;
-
-  // environmentKind: EnvironmentKind;
 
   // Substitute for Environment Kind and Environment Image Source in forms
   environmentSelect: "global" | "custom + image" | "custom + build";
@@ -147,28 +143,13 @@ export interface SessionLauncherForm
   //   | EnvironmentImageSourceImage;
 
   // For "custom" + "image" environments
+  default_url: DefaultUrl;
+  uid: EnvironmentUid;
+  gid: EnvironmentGid;
+  port: EnvironmentPort;
+
   args: string;
   command: string;
-
-  // name: string;
-  // container_image: string;
-  // description: string;
-  // default_url: string;
-  // environment_kind: EnvironmentKind;
-  // environment_id: string;
-  // resourceClass: ResourceClass;
-  // diskStorage: number | undefined;
-  // port: number;
-  // working_directory: string;
-  // uid: number;
-  // gid: number;
-  // mount_directory: string;
-  // command: string;
-  // args: string;
-  // // new
-  // code_repository: string;
-  // builder_type: string;
-  // builder_frontend: string;
 }
 
 export interface SessionResources {
