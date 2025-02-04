@@ -36,7 +36,7 @@ import AppContext from "../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 import { Url } from "../utils/helpers/url";
 import { RenkuBenefits } from "./Benefits/Benefits";
-import { IntroductionRenku20 } from "./Introduction/IntroductionRenku2.0";
+import { Introduction } from "./Introduction/Introduction.tsx";
 
 import { NavBarWarnings } from "./NavBarWarnings";
 
@@ -55,7 +55,7 @@ import { BottomNav, TopNav } from "./anonymousHomeNav";
 import "../project/new/Project.style.css";
 // ? the "quick-nav" class is used in this file
 import "../components/quicknav/QuickNav.style.css";
-import { GetStarted } from "./GetStartedToday/GetStarted";
+import { GetStarted } from "./GetStarted/GetStarted";
 import { RenkuUsers } from "./RenkuUsers/RenkuUsers";
 
 export default function AnonymousHome() {
@@ -135,7 +135,7 @@ function StandardHome(props: AnonymousHomeConfig) {
   return (
     <>
       <HeroLanding {...props} />
-      <IntroductionRenku20 />
+      <Introduction />
       <WhatIsRenku />
       <GetStarted />
       <RenkuUsers />

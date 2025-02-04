@@ -23,9 +23,9 @@ import { Links } from "../../utils/constants/Docs.js";
 import connectIcon from "../Graphics/connectIcon.svg";
 import puzzleIcon from "../Graphics/puzzleIcon.svg";
 import { useCustomHomePageProjectUrl } from "../hooks/useCustomHomePageProjectUrl.hook";
-import styles from "./IntroductionRenku20.module.scss";
+import styles from "./Introduction.module.scss";
 
-export function IntroductionRenku20() {
+export function Introduction() {
   const projectUrl = useCustomHomePageProjectUrl();
   return (
     <div
