@@ -17,18 +17,18 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
-  Control,
   Controller,
   FieldErrors,
   FieldNamesMarkedBoolean,
   UseFormSetValue,
   UseFormWatch,
+  type useForm,
 } from "react-hook-form";
-import { useLocation } from "react-router";
+import { generatePath, useLocation } from "react-router";
 import { Input, Label } from "reactstrap";
-import AppContext from "../../../../utils/context/appContext";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants.js";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions.js";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
@@ -39,7 +39,7 @@ import { ProjectMigrationForm } from "./ProjectMigration.types";
 import styles from "../../../projectsV2/fields/RenkuV1FormFields.module.scss";
 
 interface ProjectMigrationFormInputsProps {
-  control: Control<ProjectMigrationForm>;
+  control: ReturnType<typeof useForm<ProjectMigrationForm>>["control"];
   errors: FieldErrors<ProjectMigrationForm>;
   watch: UseFormWatch<ProjectMigrationForm>;
   setValue: UseFormSetValue<ProjectMigrationForm>;
@@ -53,9 +53,7 @@ export function ProjectMigrationFormInputs({
   setValue,
 }: ProjectMigrationFormInputsProps) {
   const currentName = watch("name");
-  const currentNamespace = watch("namespace");
   const currentSlug = watch("slug");
-  const { params } = useContext(AppContext);
 
   useEffect(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
@@ -67,11 +65,17 @@ export function ProjectMigrationFormInputs({
       shouldValidate: true,
     });
   }, [setValue, currentName]);
-  const url = `${params?.BASE_URL ?? ""}/v2/projects/${
-    currentNamespace ?? "<Owner>"
-  }/`;
   const location = useLocation();
   const isRenkuV1 = isRenkuLegacy(location.pathname);
+  const currentNamespace = watch("namespace");
+  const projectParentPath = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.root,
+    {
+      namespace: currentNamespace ?? "<Owner>",
+      slug: "",
+    }
+  );
+  const parentPath = `${projectParentPath}/`;
   const formId = "project-migration-form";
   return (
     <>
@@ -114,7 +118,7 @@ export function ProjectMigrationFormInputs({
           errors={errors}
           name="slug"
           resetFunction={resetUrl}
-          url={url}
+          parentPath={parentPath}
           slug={currentSlug}
           dirtyFields={dirtyFields}
           label="Project URL"

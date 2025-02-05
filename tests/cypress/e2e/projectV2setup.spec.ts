@@ -47,7 +47,7 @@ describe("Set up project components", () => {
       .updateProjectV2({
         fixture: "projectV2/update-projectV2-one-repository.json",
       });
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     // add code repositories
     fixtures.readProjectV2({
@@ -96,7 +96,7 @@ describe("Set up project components", () => {
       .environments()
       .sessionSecretSlots()
       .sessionSecrets();
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@getSessionsV2");
     cy.wait("@sessionLaunchers");
@@ -143,7 +143,7 @@ describe("Set up project components", () => {
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("start-session-button").click();
     });
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
 
     cy.go("back");
 
@@ -349,7 +349,7 @@ describe("Set up data connectors", () => {
         visibility: "public",
       })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@listProjectDataConnectors");
 
@@ -413,7 +413,7 @@ describe("Set up data connectors", () => {
       .listProjectDataConnectors()
       .getDataConnectorByNamespaceAndSlug()
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-1" });
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@listProjectDataConnectors");
 
@@ -433,7 +433,7 @@ describe("Set up data connectors", () => {
       })
       .listProjectDataConnectors()
       .getDataConnectorByNamespaceAndSlugNotFound();
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@listProjectDataConnectors");
 
@@ -457,7 +457,7 @@ describe("Set up data connectors", () => {
       .getDataConnector()
       .deleteDataConnectorProjectLink();
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@listProjectDataConnectors");
 
@@ -487,7 +487,7 @@ describe("Set up data connectors", () => {
         fixture: "projectV2/projectV2-permissions-viewer.json",
       })
       .deleteDataConnectorProjectLinkNotAllowed();
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@listProjectDataConnectors");
 
@@ -508,7 +508,7 @@ describe("Set up data connectors", () => {
         visibility: "public",
       })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@listProjectDataConnectors");
 

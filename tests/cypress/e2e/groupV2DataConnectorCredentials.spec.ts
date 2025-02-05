@@ -33,7 +33,11 @@ describe("Set up data connectors with credentials", () => {
       .versions()
       .userTest()
       .dataServicesUser({
-        response: { id: "0945f006-e117-49b7-8966-4c0842146313" },
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
+          email: "user1@email.com",
+        },
       })
       .listNamespaceV2()
       .landingUserProjects()
@@ -53,7 +57,7 @@ describe("Set up data connectors with credentials", () => {
       .dataConnectorSecrets({
         fixture: "dataConnector/data-connector-secrets-empty.json",
       });
-    cy.visit("/v2/groups/test-2-group-v2");
+    cy.visit("/g/test-2-group-v2");
     cy.wait("@readGroupV2");
     // add data connector
     cy.getDataCy("data-connector-name").contains("private-storage-1").click();
@@ -81,7 +85,7 @@ describe("Set up data connectors with credentials", () => {
         // No call to postCloudStorageSecrets is expected
         shouldNotBeCalled: true,
       });
-    cy.visit("/v2/groups/test-2-group-v2");
+    cy.visit("/g/test-2-group-v2");
     cy.wait("@readGroupV2");
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
@@ -124,7 +128,7 @@ describe("Set up data connectors with credentials", () => {
         // No call to postCloudStorageSecrets is expected
         shouldNotBeCalled: true,
       });
-    cy.visit("/v2/groups/test-2-group-v2");
+    cy.visit("/g/test-2-group-v2");
     cy.wait("@readGroupV2");
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
@@ -160,7 +164,7 @@ describe("Set up data connectors with credentials", () => {
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .listDataConnectors({ namespace: "test-2-group-v2" })
       .testCloudStorage({ success: true });
-    cy.visit("/v2/groups/test-2-group-v2");
+    cy.visit("/g/test-2-group-v2");
     cy.wait("@readGroupV2");
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
@@ -203,7 +207,7 @@ describe("Set up data connectors with credentials", () => {
           },
         ],
       });
-    cy.visit("/v2/groups/test-2-group-v2");
+    cy.visit("/g/test-2-group-v2");
     cy.wait("@readGroupV2");
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
@@ -262,7 +266,7 @@ describe("Set up data connectors with credentials", () => {
         fixture: "dataConnector/data-connector-secrets-empty.json",
       });
 
-    cy.visit("/v2/groups/test-2-group-v2");
+    cy.visit("/g/test-2-group-v2");
     cy.wait("@readGroupV2");
     cy.wait("@listDataConnectors");
     // Credentials should not yet be stored
@@ -350,7 +354,7 @@ describe("Set up data connectors with credentials", () => {
         fixture: "dataConnector/data-connector-secrets-partial.json",
         name: "getDataConnectorSecrets",
       });
-    cy.visit("/v2/groups/test-2-group-v2");
+    cy.visit("/g/test-2-group-v2");
     cy.wait("@readGroupV2");
     cy.wait("@listDataConnectors");
 
@@ -398,7 +402,11 @@ describe("Set up data connectors with credentials", () => {
         .versions()
         .userTest()
         .dataServicesUser({
-          response: { id: "0945f006-e117-49b7-8966-4c0842146313" },
+          response: {
+            id: "0945f006-e117-49b7-8966-4c0842146313",
+            username: "user-1",
+            email: "user1@email.com",
+          },
         })
         .listNamespaceV2()
         .landingUserProjects()
@@ -429,7 +437,7 @@ describe("Set up data connectors with credentials", () => {
             },
           ],
         });
-      cy.visit("/v2/groups/test-2-group-v2");
+      cy.visit("/g/test-2-group-v2");
       cy.wait("@readGroupV2");
       // add data connector
       cy.getDataCy("add-data-connector").should("be.visible").click();
@@ -478,7 +486,7 @@ describe("Set up data connectors with credentials", () => {
         // No call to postCloudStorageSecrets is expected
         shouldNotBeCalled: true,
       });
-      cy.visit("/v2/groups/test-2-group-v2");
+      cy.visit("/g/test-2-group-v2");
       cy.wait("@readGroupV2");
       // add data connector
       cy.getDataCy("add-data-connector").should("be.visible").click();

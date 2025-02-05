@@ -573,16 +573,20 @@ function ViewAllLink({
   noItems: boolean;
   total: number;
 }) {
+  const searchUrl = ABSOLUTE_ROUTES.v2.search;
   return noItems ? (
     <Link
-      to={`/v2/search?page=1&perPage=12&q=type:${type}`}
+      to={{ pathname: searchUrl, search: "q=type:${type}" }}
       data-cy={`view-other-${type}s-btn`}
     >
       View other {type === "project" ? "projects" : "groups"}
     </Link>
   ) : (
     <Link
-      to={`/v2/search?page=1&perPage=12&q=role:owner,editor,viewer+type:${type}+sort:created-desc`}
+      to={{
+        pathname: searchUrl,
+        search: `q=role:owner,editor,viewer+type:${type}+sort:created-desc`,
+      }}
       data-cy={`view-my-${type}s-btn`}
     >
       View all my {total > 5 ? total : ""}{" "}
@@ -592,6 +596,7 @@ function ViewAllLink({
 }
 
 function EmptyProjectsButtons() {
+  const searchUrl = ABSOLUTE_ROUTES.v2.search;
   return (
     <div className={cx("d-flex", "gap-3")}>
       <Link
@@ -602,7 +607,7 @@ function EmptyProjectsButtons() {
         Create my first project
       </Link>
       <Link
-        to={"/v2/search?page=1&perPage=12&q=type:project"}
+        to={{ pathname: searchUrl, search: "q=type:project" }}
         className={cx("btn", "btn-outline-primary")}
       >
         <Eye className={cx("bi", "me-1")} />
