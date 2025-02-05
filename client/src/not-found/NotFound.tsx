@@ -58,6 +58,7 @@ export default function NotFound({
       ? "p"
       : "div";
 
+  const homeLink = isV2 ? "/" : "/v1/";
   return (
     <ContainerWrap>
       <div className={cx("d-flex")}>
@@ -80,7 +81,7 @@ export default function NotFound({
           <Tag data-cy="not-found-description">{description}</Tag>
           <div>
             <Link
-              to="/"
+              to={homeLink}
               className={cx("btn", isV2 ? "btn-primary" : "btn-rk-green")}
             >
               <ArrowLeft className={cx("bi", "me-1")} />
