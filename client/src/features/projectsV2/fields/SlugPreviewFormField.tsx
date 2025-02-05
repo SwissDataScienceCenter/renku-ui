@@ -54,7 +54,7 @@ export default function SlugPreviewFormField<T extends FieldValues>({
         </span>
       </FormText>
       <button
-        className={cx("btn", "btn-link", "p-0", "text-decoration-none")}
+        className={cx("btn", "btn-link", "p-0", "mb-1", "text-decoration-none")}
         data-cy={`${entityName}-slug-toggle`}
         onClick={toggleCollapse}
         type="button"
