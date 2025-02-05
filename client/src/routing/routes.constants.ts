@@ -18,6 +18,8 @@
 
 export const ABSOLUTE_ROUTES = {
   root: "/",
+  datasets: "/datasets",
+  projects: "/projects",
   v1: {
     root: "/v1",
     inactiveKGProjects: "/v1/inactive-kg-projects",
@@ -42,43 +44,41 @@ export const ABSOLUTE_ROUTES = {
     sessions: "/v1/sessions",
   },
   v2: {
-    root: "/v2",
-    user: "/v2/user",
-    users: {
-      show: "/v2/users/:username",
-    },
+    root: "/",
+    integrations: "/integrations",
     groups: {
-      new: "/v2/groups/new",
       show: {
-        root: "/v2/groups/:slug",
-        settings: "/v2/groups/:slug/settings",
-        splat: "/v2/groups/:slug/*",
+        root: "/g/:slug",
+        settings: "/g/:slug/settings",
+        splat: "/g/:slug/*",
       },
-    },
-    projects: {
-      new: "/v2/projects/new",
-      show: {
-        root: "/v2/projects/:namespace/:slug",
-        settings: "/v2/projects/:namespace/:slug/settings",
-        sessions: {
-          root: "/v2/projects/:namespace/:slug/sessions",
-          show: "/v2/projects/:namespace/:slug/sessions/show/:session",
-          start: "/v2/projects/:namespace/:slug/sessions/:launcherId/start",
-        },
-      },
-      showById: "/v2/projects/:id",
     },
     help: {
-      root: "/v2/help",
-      contact: "/v2/help/contact",
-      status: "/v2/help/status",
-      release: "/v2/help/release",
-      tos: "/v2/help/tos",
-      privacy: "/v2/help/privacy",
+      root: "/help",
+      contact: "/help/contact",
+      status: "/help/status",
+      release: "/help/release",
+      tos: "/help/tos",
+      privacy: "/help/privacy",
     },
-    search: "/v2/search",
-    connectedServices: "/v2/connected-services",
-    secrets: "/v2/secrets",
+    projects: {
+      show: {
+        root: "/p/:namespace/:slug",
+        settings: "/p/:namespace/:slug/settings",
+        sessions: {
+          root: "/p/:namespace/:slug/sessions",
+          show: "/p/:namespace/:slug/sessions/show/:session",
+          start: "/p/:namespace/:slug/sessions/:launcherId/start",
+        },
+      },
+      showById: "/p/:id",
+    },
+    search: "/search",
+    secrets: "/secrets",
+    user: "/user",
+    users: {
+      show: "/u/:username",
+    },
   },
 } as const;
 
@@ -103,21 +103,26 @@ export const RELATIVE_ROUTES = {
     styleGuide: "style-guide",
   },
   v2: {
-    root: "v2/*",
-    user: "user",
-    users: {
-      show: "users/:username",
-    },
+    root: "/*",
+    integrations: "integrations",
     groups: {
-      root: "groups/*",
+      root: "g/*",
       new: "new",
       show: {
         root: ":slug/*",
         settings: "settings",
       },
     },
+    help: {
+      root: "help/*",
+      contact: "contact",
+      status: "status",
+      release: "release",
+      tos: "tos",
+      privacy: "privacy",
+    },
     projects: {
-      root: "projects/*",
+      root: "p/*",
       new: "new",
       show: {
         root: ":namespace/:slug/*",
@@ -130,16 +135,11 @@ export const RELATIVE_ROUTES = {
       },
       showById: ":id",
     },
-    help: {
-      root: "help/*",
-      contact: "contact",
-      status: "status",
-      release: "release",
-      tos: "tos",
-      privacy: "privacy",
-    },
     search: "search",
-    connectedServices: "connected-services",
     secrets: "secrets",
+    user: "user",
+    users: {
+      show: "u/:username",
+    },
   },
 } as const;
