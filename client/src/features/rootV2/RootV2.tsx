@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useEffect, useState } from "react";
-import { Navigate, Route, Routes, useNavigate } from "react-router";
+import { Route, Routes, useNavigate } from "react-router";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
@@ -35,13 +35,11 @@ import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
 import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
 import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
-import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import GroupNew from "../groupsV2/new/GroupNew";
 import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
 import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
 import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
-import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 import ProjectV2New from "../projectsV2/new/ProjectV2New";
 import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySecretsV2 from "../secretsV2/LazySecretsV2";
@@ -122,7 +120,7 @@ export default function RootV2() {
             }
           />
           <Route
-            path={RELATIVE_ROUTES.v2.connectedServices}
+            path={RELATIVE_ROUTES.v2.integrations}
             element={
               <ContainerWrap>
                 <LazyConnectedServicesPage />
@@ -154,19 +152,7 @@ export default function RootV2() {
 function GroupsV2Routes() {
   return (
     <Routes>
-      <Route
-        path={RELATIVE_ROUTES.v2.groups.new}
-        element={
-          <Navigate
-            to={{
-              pathname: ABSOLUTE_ROUTES.v2.root,
-              hash: GROUP_CREATION_HASH,
-            }}
-            replace
-          />
-        }
-      />
-
+      <Route index element={<RedirectToSearch entityType="group" />} />
       <Route path={RELATIVE_ROUTES.v2.groups.show.root}>
         <Route element={<LazyGroupContainer />}>
           <Route index element={<LazyGroupV2Overview />} />
@@ -188,21 +174,25 @@ function GroupsV2Routes() {
   );
 }
 
+function RedirectToSearch({ entityType }: { entityType: string }) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate(
+      {
+        pathname: ABSOLUTE_ROUTES.v2.search,
+        search: `q=type:${entityType}`,
+      },
+      { replace: true }
+    );
+  });
+
+  return null;
+}
+
 function ProjectsV2Routes() {
   return (
     <Routes>
-      <Route
-        path={RELATIVE_ROUTES.v2.projects.new}
-        element={
-          <Navigate
-            to={{
-              pathname: ABSOLUTE_ROUTES.v2.root,
-              hash: PROJECT_CREATION_HASH,
-            }}
-            replace
-          />
-        }
-      />
+      <Route index element={<RedirectToSearch entityType="project" />} />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
         <Route element={<LazyProjectPageV2Show />}>
           <Route index element={<LazyProjectPageOverview />} />
