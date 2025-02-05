@@ -21,13 +21,13 @@ import fixtures from "../support/renkulab-fixtures";
 describe("View v2 landing page", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    cy.visit("/v2");
+    cy.visit("/");
   });
 
   it("view help", () => {
     cy.getDataCy("help-dropdown").click();
     cy.getDataCy("help-link").click();
-    cy.location("pathname").should("contain", "/v2/help");
+    cy.location("pathname").should("contain", "/help");
   });
 
   it("create new group", () => {
