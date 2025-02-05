@@ -29,7 +29,7 @@ import { Link, Route, Routes, useLocation } from "react-router";
 import { ExternalDocsLink } from "../../../../components/ExternalLinks";
 import AnonymousNavBar from "../../../../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../../../../components/navbar/LoggedInNavBar";
-import { RENKU_LOGO } from "../../../../components/navbar/navbar.constans";
+import { RENKU_LOGO } from "../../../../components/navbar/navbar.constants";
 import RenkuNavLinkV2 from "../../../../components/RenkuNavLinkV2";
 import { parseChartVersion } from "../../../../help/release.utils";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
@@ -66,12 +66,12 @@ function RenkuNavBarInner({ user }) {
   return (
     <Routes key="mainNav">
       <Route path={sessionShowUrl} element={null} />
-      <Route path={`${ABSOLUTE_ROUTES.v2.root}/*`} element={null} />
+      <Route path={ABSOLUTE_ROUTES.v1.root} element={null} />
       <Route path="/v1/" element={null} />
       <Route path="/projects/">
         {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
       </Route>
-      <Route path="/datasets/">
+      <Route path={ABSOLUTE_ROUTES.datasets}>
         {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
       </Route>
       <Route path="*" element={<NavbarV2 />} />
@@ -93,10 +93,9 @@ function FooterNavbarAnonymousLinks() {
 
 function FooterNavbarLoggedInLinks({ privacyLink }) {
   const location = useLocation();
-  const helpLocation =
-    location && location.pathname.startsWith("/v2")
-      ? ABSOLUTE_ROUTES.v2.help.root
-      : Url.pages.help.base;
+  const helpLocation = isRenkuLegacy(location.pathname)
+    ? ABSOLUTE_ROUTES.v1.help.root
+    : ABSOLUTE_ROUTES.v2.help.root;
   return (
     <>
       <RenkuNavLinkV2 to={helpLocation}>Help</RenkuNavLinkV2>
