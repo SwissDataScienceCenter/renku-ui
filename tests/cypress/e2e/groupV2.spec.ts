@@ -29,7 +29,7 @@ describe("Add new v2 group", () => {
       .listNamespaceV2()
       .readGroupV2({ groupSlug: slug })
       .readGroupV2Namespace({ groupSlug: slug });
-    cy.visit("/v2/groups/new");
+    cy.visit("/#create-group");
   });
 
   it("create a new group", () => {
@@ -42,7 +42,7 @@ describe("Add new v2 group", () => {
     cy.wait("@createGroupV2");
     cy.wait("@readGroupV2");
     cy.wait("@readGroupV2Namespace");
-    cy.url().should("contain", `v2/groups/${slug}`);
+    cy.url().should("contain", `/g/${slug}`);
     cy.contains("test 2 group-v2").should("be.visible");
   });
 
@@ -63,7 +63,7 @@ describe("Add new v2 group", () => {
     cy.wait("@createGroupV2");
     cy.wait("@readGroupV2");
     cy.wait("@readGroupV2Namespace");
-    cy.url().should("contain", `v2/groups/${slug}`);
+    cy.url().should("contain", `/g/${slug}`);
     cy.contains("test 2 group-v2").should("be.visible");
   });
 });
@@ -71,7 +71,7 @@ describe("Add new v2 group", () => {
 describe("Add new group -- not logged in", () => {
   beforeEach(() => {
     fixtures.config().versions().userNone();
-    cy.visit("/v2/groups/new");
+    cy.visit("/user#create-group");
   });
 
   it("create a new group", () => {
@@ -85,7 +85,7 @@ describe("List v2 groups", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects().listManyGroupV2();
-    cy.visit("/v2");
+    cy.visit("/");
   });
 
   it("list groups", () => {
@@ -121,7 +121,7 @@ describe("Edit v2 group", () => {
       })
       .namespaces();
     fixtures.projects().landingUserProjects().listGroupV2();
-    cy.visit("/v2");
+    cy.visit("/");
   });
 
   it("shows a group", () => {
@@ -279,7 +279,7 @@ describe("Work with group data connectors", () => {
       .listProjectV2ByNamespace()
       .listDataConnectors({ namespace: "test-2-group-v2" })
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" });
-    cy.visit("/v2");
+    cy.visit("/");
   });
 
   it("shows group data connectors", () => {
@@ -423,7 +423,7 @@ describe("Work with group data connectors, missing permissions", () => {
       .listProjectV2ByNamespace()
       .listDataConnectors({ namespace: "test-2-group-v2" })
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" });
-    cy.visit("/v2");
+    cy.visit("/");
   });
 
   it("shows group data connectors", () => {
@@ -503,7 +503,7 @@ describe("Create projects in a group", () => {
       .listGroupV2Members()
       .listProjectV2ByNamespace()
       .listDataConnectors({ namespace: "test-2-group-v2" });
-    cy.visit("/v2");
+    cy.visit("/");
   });
 
   it("defaults namespace to the group", () => {
@@ -550,7 +550,7 @@ describe("Create projects in a group", () => {
       .listGroupV2Members({ groupSlug: "test-20-group-v2" })
       .listProjectV2ByNamespace({ namespace: "test-20-group-v2" })
       .listDataConnectors({ namespace: "test-20-group-v2" });
-    cy.visit("/v2/groups/test-20-group-v2");
+    cy.visit("/g/test-20-group-v2");
     cy.wait("@readGroupV2");
     cy.getDataCy("group-create-project-button").click();
     cy.contains("Create a new project").should("be.visible");

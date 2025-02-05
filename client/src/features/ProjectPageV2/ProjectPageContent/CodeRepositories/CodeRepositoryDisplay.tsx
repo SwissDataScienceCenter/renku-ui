@@ -820,7 +820,7 @@ function RepositoryPermissionsAlert({
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
               Your user account is not currently connected to{" "}
               {provider.display_name}. See{" "}
-              <Link to={ABSOLUTE_ROUTES.v2.connectedServices}>
+              <Link to={ABSOLUTE_ROUTES.v2.integrations}>
                 connected services
               </Link>
               .
@@ -847,7 +847,7 @@ function RepositoryPermissionsAlert({
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
               Your user account is not currently connected to{" "}
               {provider.display_name}. See{" "}
-              <Link to={ABSOLUTE_ROUTES.v2.connectedServices}>
+              <Link to={ABSOLUTE_ROUTES.v2.integrations}>
                 connected services
               </Link>
               .

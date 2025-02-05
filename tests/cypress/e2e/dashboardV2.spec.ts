@@ -28,7 +28,7 @@ describe("View v2 landing page", () => {
       .listManyGroupV2()
       .listManyProjectV2()
       .readProjectV2ById();
-    cy.visit("/v2");
+    cy.visit("/");
   });
 
   it("view dashboard", () => {
@@ -54,7 +54,7 @@ describe("View v2 landing page", () => {
       .click();
     cy.location("pathname").should(
       "contain",
-      "/v2/projects/user1-uuid/test-2-v2-project/sessions/show/renku-2-86688c93091df68dffdc594bfd022ce3"
+      "/p/user1-uuid/test-2-v2-project/sessions/show/renku-2-86688c93091df68dffdc594bfd022ce3"
     );
   });
 
@@ -64,7 +64,7 @@ describe("View v2 landing page", () => {
     cy.getDataCy("dashboard-project-list").children().first().click();
     cy.location("pathname").should(
       "contain",
-      "/v2/projects/user1-uuid/test-0-v2-project"
+      "/p/user1-uuid/test-0-v2-project"
     );
   });
 
@@ -72,7 +72,7 @@ describe("View v2 landing page", () => {
     cy.contains("My groups").should("be.visible");
     cy.getDataCy("dashboard-group-list").children().should("have.length", 5);
     cy.getDataCy("group-item").first().click();
-    cy.location("pathname").should("contain", "/v2/groups/test-0-group-v2");
+    cy.location("pathname").should("contain", "/g/test-0-group-v2");
   });
 
   it("list groups", () => {
@@ -100,7 +100,7 @@ describe("View v2 landing page empty", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects().readProjectV2ById();
-    cy.visit("/v2");
+    cy.visit("/");
   });
 
   it("view dashboard", () => {
