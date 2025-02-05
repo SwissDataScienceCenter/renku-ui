@@ -153,7 +153,10 @@ function GroupV2CreationDetails() {
     }
   }, [result, navigate]);
 
-  const url = "renkulab.io/v2/groups/";
+  const groupPath = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+    slug: "",
+  });
+  const parentPath = `${groupPath}/`;
 
   const resetUrl = useCallback(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
@@ -186,7 +189,7 @@ function GroupV2CreationDetails() {
                 errors={errors}
                 name="slug"
                 resetFunction={resetUrl}
-                url={url}
+                parentPath={parentPath}
                 slug={currentSlug}
                 dirtyFields={dirtyFields}
                 label="Group URL"
