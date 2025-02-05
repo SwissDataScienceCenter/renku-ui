@@ -23,7 +23,7 @@ import { RenkuContactEmail } from "../../utils/constants/Docs";
 import collaborationGraphic from "../Graphics/boxes.svg";
 import computingGraphic from "../Graphics/computing.svg";
 import connectionGraphic from "../Graphics/network.svg";
-import researchGraphic from "../Graphics/research.svg";
+import researchGraphic from "../Graphics/research.png";
 import TemplateSlider from "../TemplateSlider/TemplateSlider";
 
 function ResearchFeatSection() {

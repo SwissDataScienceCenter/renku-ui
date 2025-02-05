@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Container } from "reactstrap";
+import { Col, Container, Row } from "reactstrap";
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { RenkuContactEmail } from "../../utils/constants/Docs";
@@ -27,7 +27,7 @@ import styles from "./GetStarted.module.scss";
 export function GetStarted() {
   const loginUrl = useLoginUrl();
   return (
-    <div className={cx("bg-light", "py-5")}>
+    <div className={cx("bg-white", "py-5", "mb-5")}>
       <Container>
         <div
           className={cx(
@@ -36,59 +36,58 @@ export function GetStarted() {
             "align-items-center",
             "gap-4",
             "mt-0",
-            "mt-lg-5",
-            "pt-5"
+            "py-5"
           )}
         >
-          <h3 className={cx("m-0", "fw-bold", "text-center")}>
+          <h3 className={cx("m-0", "fw-bold", "text-center", "fs-1")}>
             <span className={cx("fw-light", "d-block")}>Get started today</span>
             Launch your first session now!
           </h3>
-          <p className={cx("mb-0", "fs-4")}>
-            Creating projects and running sessions in our public compute tier is
-            always free.
-          </p>
-          <img
-            src={getStartedGraphic}
-            alt="Renku"
-            className={cx("w-100", styles.GetStartedImg)}
-          />
-          <p className={cx("mb-0", "fs-4")}>
-            For individuals who need more compute resources, and for instructors
-            organizing courses, get in touch to set up your custom RenkuLab
-            resources.
-          </p>
-          <div
-            className={cx(
-              "pb-3",
-              "mb-5",
-              "d-flex",
-              "gap-3",
-              "flex-sm-row",
-              "flex-column",
-              "align-items-center"
-            )}
-          >
-            <a
-              className={cx("btn", "btn-primary")}
-              href={loginUrl.href}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              Create an account
-            </a>
-            <ExternalLink
-              className={cx(
-                "btn",
-                "btn-outline-primary",
-                "text-decoration-none"
-              )}
-              role="link"
-              url={`mailto:${RenkuContactEmail}?subject=Requesting%20Pricing%20Details `}
-              title="Contact us for pricing"
-            />
-          </div>
         </div>
+        <Row>
+          <Col xs={12} lg={6}>
+            <div className={cx("d-flex", "flex-column", "gap-4", "mt-0")}>
+              <p className={cx("mb-0", "fs-4")}>
+                Creating projects and running sessions in our public compute
+                tier is always free.
+              </p>
+              <div>
+                <a
+                  className={cx("btn", "btn-primary")}
+                  href={loginUrl.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Create an account
+                </a>
+              </div>
+              <p className={cx("mb-0", "fs-4")}>
+                For individuals who need more compute resources, and for
+                instructors organizing courses, get in touch to set up your
+                custom RenkuLab resources.
+              </p>
+              <div>
+                <ExternalLink
+                  className={cx(
+                    "btn",
+                    "btn-outline-primary",
+                    "text-decoration-none"
+                  )}
+                  role="link"
+                  url={`mailto:${RenkuContactEmail}?subject=Requesting%20Pricing%20Details `}
+                  title="Contact us for pricing"
+                />
+              </div>
+            </div>
+          </Col>
+          <Col xs={12} lg={6}>
+            <img
+              src={getStartedGraphic}
+              alt="Renku"
+              className={cx("w-100", styles.GetStartedImg)}
+            />
+          </Col>
+        </Row>
       </Container>
     </div>
   );
