@@ -345,7 +345,7 @@ export function RenkuToolbarItemUser({
         {isV2 && (
           <>
             <Link
-              to={ABSOLUTE_ROUTES.v2.connectedServices}
+              to={ABSOLUTE_ROUTES.v2.integrations}
               className="dropdown-item"
             >
               Integrations

@@ -16,7 +16,7 @@
  * limitations under the License
  */
 
-import { Route, Routes } from "react-router-dom-v5-compat";
+import { Route, Routes } from "react-router";
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyProjectList from "../../project/list/LazyProjectList";
