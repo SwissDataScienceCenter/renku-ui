@@ -38,7 +38,7 @@ export function Introduction() {
             "rounded-5",
             "d-flex",
             "flex-column",
-            "gap-5",
+            "gap-4",
             "px-3",
             "align-items-center"
           )}
@@ -49,7 +49,7 @@ export function Introduction() {
               Taking collaboration to the next level.
             </span>
           </h2>
-          <p className={cx("text-center", "mb-0", "fs-3")}>
+          <p className={cx("text-center", "mb-0", "fs-4")}>
             We’re thrilled to announce the next generation of the Renku
             platform, Renku 2.0.
             <span className="d-block">Here’s what’s new:</span>
@@ -65,13 +65,13 @@ export function Introduction() {
             <Col
               xs={12}
               lg={6}
-              className={cx("px-0", "px-lg-5", "text-center")}
+              className={cx("px-0", "px-lg-3", "text-center")}
             >
               <img src={connectIcon} alt="Renku" width="62" height="62" />
               <h4 className={cx("py-3", "fw-bold")}>
                 Connect your favorite tools and platforms.
               </h4>
-              <p className={cx("fs-3", "mb-0")}>
+              <p className={cx("fs-4", "mb-0")}>
                 Hook up your Renku project to GitHub repositories, external data
                 sources, and more. Flexible integrations make collaboration easy
                 and powerful.
@@ -80,13 +80,13 @@ export function Introduction() {
             <Col
               xs={12}
               lg={6}
-              className={cx("px-0", "px-lg-5", "text-center")}
+              className={cx("px-0", "px-lg-3", "text-center")}
             >
               <img src={puzzleIcon} alt="Renku" width="62" height="62" />
               <h4 className={cx("py-3", "fw-bold")}>
                 Plug-and-Play Flexibility.
               </h4>
-              <p className={cx("fs-3", "mb-0")}>
+              <p className={cx("fs-4", "mb-0")}>
                 Mix and match code, data, and compute to suit your project
                 setup, scaling from exploration to advanced analysis with ease.
               </p>

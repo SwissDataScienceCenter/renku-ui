@@ -46,7 +46,16 @@ export function GetStarted() {
         </div>
         <Row>
           <Col xs={12} lg={6}>
-            <div className={cx("d-flex", "flex-column", "gap-4", "mt-0")}>
+            <div
+              className={cx(
+                "d-flex",
+                "flex-column",
+                "gap-4",
+                "mt-0",
+                "align-items-center",
+                "align-items-lg-start"
+              )}
+            >
               <p className={cx("mb-0", "fs-4")}>
                 Creating projects and running sessions in our public compute
                 tier is always free.
@@ -80,7 +89,11 @@ export function GetStarted() {
               </div>
             </div>
           </Col>
-          <Col xs={12} lg={6}>
+          <Col
+            xs={12}
+            lg={6}
+            className={cx("text-center-end", "text-lg-end", "pt-5", "pt-lg-0")}
+          >
             <img
               src={getStartedGraphic}
               alt="Renku"
