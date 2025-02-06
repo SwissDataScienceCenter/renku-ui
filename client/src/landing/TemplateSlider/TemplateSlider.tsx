@@ -22,15 +22,15 @@ import { DateTime, Duration } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "reactstrap";
 
-import btnJulia from "../Graphics/btnJulia-min.png";
-import btnJuliaSelected from "../Graphics/btnJuliaSelected-min.png";
-import btnPython from "../Graphics/btnPython-min.png";
-import btnPythonSelected from "../Graphics/btnPythonSelected-min.png";
-import btnRStudio from "../Graphics/btnRStudio-min.png";
-import btnRStudioSelected from "../Graphics/btnRstudioSelected-min.png";
-import templateJuliaGraphic from "../Graphics/templateJulia.png";
-import templatePythonGraphic from "../Graphics/templatePython.png";
-import templateRStudioGraphic from "../Graphics/templateRstudio.png";
+import btnVS from "../Graphics/btnVS.png";
+import btnVSSelected from "../Graphics/btnVSSelected.png";
+import btnPython from "../Graphics/btnJupyter.png";
+import btnPythonSelected from "../Graphics/btnJupyterSelected.png";
+import btnRStudio from "../Graphics/btnR.png";
+import btnRStudioSelected from "../Graphics/btnRSelected.png";
+import templateVSGraphic from "../Graphics/templateVS.png";
+import templatePythonGraphic from "../Graphics/templateJupyter.png";
+import templateRStudioGraphic from "../Graphics/templateR.png";
 
 import styles from "./TemplateSlider.module.scss";
 
@@ -64,7 +64,7 @@ export default function TemplateSlider() {
           templateSelected === "python"
             ? "rStudio"
             : templateSelected === "rStudio"
-            ? "julia"
+            ? "vs"
             : "python",
         lastSelection: DateTime.now(),
       }));
@@ -151,16 +151,16 @@ export default function TemplateSlider() {
           className="w-100"
         />
         <img
-          src={templateJuliaGraphic}
+          src={templateVSGraphic}
           alt="Template Renku"
           loading="lazy"
-          hidden={templateSelected !== "julia"}
+          hidden={templateSelected !== "vs"}
           className="w-100"
         />
       </div>
       <div className={styles.templateSliderBtn}>
         <Button
-          className={cx("border-0", "bg-transparent", "p-0")}
+          className={cx("border-0", "bg-transparent", "p-0", "shadow-none")}
           onClick={onSelectTemplate("python")}
           type="button"
           role="button"
@@ -173,11 +173,13 @@ export default function TemplateSlider() {
               }
               alt="Button Python"
               loading="lazy"
+              width={68}
+              height={68}
             />
           </div>
         </Button>
         <Button
-          className={cx("border-0", "bg-transparent", "p-0")}
+          className={cx("border-0", "bg-transparent", "p-0", "shadow-none")}
           onClick={onSelectTemplate("rStudio")}
           type="button"
           role="button"
@@ -190,21 +192,25 @@ export default function TemplateSlider() {
               }
               alt="Button RStudio"
               loading="lazy"
+              width={68}
+              height={68}
             />
           </div>
         </Button>
         <Button
-          className={cx("border-0", "bg-transparent", "p-0")}
-          onClick={onSelectTemplate("julia")}
+          className={cx("border-0", "bg-transparent", "p-0", "shadow-none")}
+          onClick={onSelectTemplate("vs")}
           type="button"
           role="button"
         >
           <div className="position-relative">
-            {templateSelected === "julia" && progressBar}
+            {templateSelected === "vs" && progressBar}
             <img
-              src={templateSelected === "julia" ? btnJuliaSelected : btnJulia}
+              src={templateSelected === "vs" ? btnVSSelected : btnVS}
               alt="Button Julia"
               loading="lazy"
+              width={68}
+              height={68}
             />
           </div>
         </Button>
@@ -214,6 +220,6 @@ export default function TemplateSlider() {
 }
 
 interface State {
-  templateSelected: "python" | "rStudio" | "julia";
+  templateSelected: "python" | "rStudio" | "vs";
   lastSelection: DateTime | null;
 }
