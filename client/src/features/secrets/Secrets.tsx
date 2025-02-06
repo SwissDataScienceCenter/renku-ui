@@ -24,7 +24,6 @@ import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { User } from "../../model/renkuModels.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import WipBadge from "../projectsV2/shared/WipBadge";
 
 import GeneralSecretNew from "./GeneralSecretNew";
 import SecretsList from "./SecretsList";
