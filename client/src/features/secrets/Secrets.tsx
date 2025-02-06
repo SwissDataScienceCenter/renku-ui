@@ -87,10 +87,7 @@ export default function Secrets() {
       <Row>
         <Col>
           <div className={cx("d-flex", "mb-2")}>
-            <h2 className={cx("mb-0", "me-2")}>User Secrets</h2>
-            <div className="my-auto">
-              <WipBadge tooltip="This feature is under development and certain pieces may not work correctly." />
-            </div>
+            <h2 className="mb-0">User Secrets</h2>
           </div>
           <div>
             {!user.logged ? (
