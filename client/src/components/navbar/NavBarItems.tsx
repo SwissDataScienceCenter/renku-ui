@@ -352,7 +352,7 @@ export function RenkuToolbarItemUser({
             </Link>
             <DropdownItem divider />
             <Link to={ABSOLUTE_ROUTES.v1.root} className="dropdown-item">
-              Back to <span className="fw-bold">Renku 1.0</span>
+              Go to <span className="fw-bold">Renku Legacy</span>
             </Link>
           </>
         )}
@@ -361,7 +361,7 @@ export function RenkuToolbarItemUser({
           <>
             <DropdownItem divider />
             <Link to={ABSOLUTE_ROUTES.root} className="dropdown-item">
-              <span className="fw-bold">Renku 2.0</span> Early access
+              <span className="fw-bold">Renku 2.0</span>
             </Link>
           </>
         )}
