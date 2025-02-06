@@ -411,7 +411,7 @@ export function RepositoryItem({
 
   return (
     <>
-      <ListGroupItem {...listGroupProps}>
+      <ListGroupItem {...listGroupProps} data-cy="code-repository-item">
         <Row className={cx("align-items-center", "g-2")}>
           <Col className={cx("align-items-center", "flex-row")}>
             <div>
