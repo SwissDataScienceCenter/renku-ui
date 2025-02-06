@@ -158,7 +158,7 @@ export function RenkuUsers() {
           </Col>
           <Col xs={12} lg={4} className="px-4">
             <RenkuUserCard
-              user="Event organizer"
+              user="Event organizers"
               title={content.eventOrganizer.title}
               description={content.eventOrganizer.description}
               linkUrl={content.eventOrganizer.link}
