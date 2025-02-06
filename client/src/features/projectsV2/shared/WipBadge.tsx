@@ -29,7 +29,7 @@ interface WipBadeProps {
 
 export default function WipBadge({
   className,
-  children = "2 .0 Early access",
+  children = "Work in progress",
   tooltip = "The platform is stable, but some core features are still being developed and will be added soon.",
 }: WipBadeProps) {
   const ref = useRef<HTMLDivElement>(null);
