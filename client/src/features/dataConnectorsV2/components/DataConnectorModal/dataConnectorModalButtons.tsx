@@ -236,12 +236,18 @@ export function DataConnectorConnectionTestResult() {
     return null;
   if (validationResult.error)
     return (
-      <div className={cx("w-100", "my-0")}>
+      <div
+        className={cx("w-100", "my-0")}
+        data-cy="cloud-storage-connection-failure"
+      >
         <RtkOrNotebooksError error={validationResult.error} />
       </div>
     );
   return (
-    <div className={cx("w-100", "my-0")}>
+    <div
+      className={cx("w-100", "my-0")}
+      data-cy="cloud-storage-connection-success"
+    >
       {" "}
       <SuccessAlert timeout={0}>
         <p className="p-0">The connection to the storage works correctly.</p>

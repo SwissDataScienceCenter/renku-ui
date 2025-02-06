@@ -38,11 +38,13 @@ export default function DataConnectorModalResult({
     </>
   );
   return (
-    <SuccessAlert dismissible={false} timeout={0}>
-      <DataConnectorResultAlertContent
-        dataConnectorFragment={dataConnectorFragment}
-      />
-    </SuccessAlert>
+    <div data-cy="data-connector-edit-success">
+      <SuccessAlert dismissible={false} timeout={0}>
+        <DataConnectorResultAlertContent
+          dataConnectorFragment={dataConnectorFragment}
+        />
+      </SuccessAlert>
+    </div>
   );
 }
 

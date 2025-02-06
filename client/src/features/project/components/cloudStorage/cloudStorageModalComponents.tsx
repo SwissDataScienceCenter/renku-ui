@@ -125,13 +125,18 @@ export function AddCloudStorageBodyContent({
   if (redraw) return <Loader />;
   if (success) {
     return (
-      <AddCloudStorageSuccessAlert
-        {...{ addResultStorageName, storageId, credentialSaveStatus }}
-      />
+      <div data-cy="cloud-storage-add-success">
+        <AddCloudStorageSuccessAlert
+          {...{ addResultStorageName, storageId, credentialSaveStatus }}
+        />
+      </div>
     );
   }
   if (schemaIsFetching || !schema) return <Loader />;
-  if (schemaError) return <RtkOrNotebooksError error={schemaError} />;
+  if (schemaError) return;
+  <div data-cy="cloud-storage-add-error">
+    <RtkOrNotebooksError error={schemaError} />
+  </div>;
   return (
     <AddOrEditCloudStorage
       schema={schema}
@@ -290,12 +295,18 @@ export function AddCloudStorageConnectionTestResult({
     return null;
   if (validationResult.error)
     return (
-      <div className={cx("w-100", "my-0")}>
+      <div
+        className={cx("w-100", "my-0")}
+        data-cy="cloud-storage-connection-failure"
+      >
         <RtkOrNotebooksError error={validationResult.error} />
       </div>
     );
   return (
-    <div className={cx("w-100", "my-0")}>
+    <div
+      className={cx("w-100", "my-0")}
+      data-cy="cloud-storage-connection-success"
+    >
       {" "}
       <SuccessAlert timeout={0}>
         <p className="p-0">The connection to the storage works correctly.</p>
