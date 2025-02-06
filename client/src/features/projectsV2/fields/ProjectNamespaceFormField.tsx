@@ -251,7 +251,6 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
               id={`${entityName}-namespace`}
               inputId={`${entityName}-namespace-input`}
               onChange={(newValue) => field.onChange(newValue?.slug)}
-              project={undefined}
             />
           );
         }}
