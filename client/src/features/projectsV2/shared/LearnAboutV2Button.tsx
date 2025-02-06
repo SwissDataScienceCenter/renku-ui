@@ -17,28 +17,27 @@
  */
 
 import cx from "classnames";
-import { BoxArrowInLeft } from "react-bootstrap-icons";
-import { Link } from "react-router";
+import { ExternalLink } from "../../../components/ExternalLinks";
 
-interface BackToV1ButtonProps {
+interface LearnAboutV2ButtonProps {
   outline?: boolean;
   color?: string;
 }
-export default function BackToV1Button({
+export default function LearnAboutV2Button({
   outline = false,
   color = "light",
-}: BackToV1ButtonProps) {
+}: LearnAboutV2ButtonProps) {
   return (
-    <Link
+    <ExternalLink
       className={cx(
         "btn",
         "btn-sm",
         outline ? `btn-outline-${color}` : `btn-${color}`,
         "text-decoration-none"
       )}
-      to="/v1"
+      url="https://blog.renkulab.io/early-access/"
     >
-      <BoxArrowInLeft className="bi" /> Back to <b>Renku 1.0</b>
-    </Link>
+      Learn more about Renku 2.0
+    </ExternalLink>
   );
 }
