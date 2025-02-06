@@ -22,6 +22,7 @@ import { Col, Container, Row } from "reactstrap";
 import { FooterDashboardCard } from "../../features/dashboardV2/DashboardV2.js";
 import renkuBlackIcon from "../Graphics/renkuBlack.svg";
 import { Links } from "../../utils/constants/Docs.js";
+import styles from "./Resources.module.scss";
 
 export function ResourcesAndSupport() {
   return (
@@ -57,7 +58,11 @@ export function ResourcesAndSupport() {
             <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
               <FooterDashboardCard
                 url={Links.RENKU_2_COMMUNITY_PORTAL}
-                className="text-decoration-none text-navy"
+                className={cx(
+                  "text-decoration-none",
+                  "text-navy",
+                  styles.RenkuCard
+                )}
               >
                 <img src={renkuBlackIcon} alt="Renku" width="60" height="60" />
                 <h4>Get Involved</h4>
