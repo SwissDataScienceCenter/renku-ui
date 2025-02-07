@@ -28,6 +28,7 @@ import {
   Navbar,
   NavbarToggler,
 } from "reactstrap";
+import AnnounceV2Banner from "./AnnounceV2Banner";
 import StatusBanner from "../../features/platform/components/StatusBanner";
 import LearnAboutV2Button from "../../features/projectsV2/shared/LearnAboutV2Button";
 import { NavBarWarnings } from "../../landing/NavBarWarnings";
@@ -132,6 +133,7 @@ export default function LoggedInNavBar() {
           </Collapse>
         </Navbar>
       </header>
+      <AnnounceV2Banner />
       <StatusBanner params={params} />
       <NavBarWarnings model={model} uiShortSha={uiShortSha} />
     </>
