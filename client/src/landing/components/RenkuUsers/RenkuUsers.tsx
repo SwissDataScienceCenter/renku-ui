@@ -19,10 +19,10 @@
 import cx from "classnames";
 import { ReactNode } from "react";
 import { Card, Col, Row } from "reactstrap";
-import { Links } from "../../utils/constants/Docs.js";
-import educatorIcon from "../Graphics/educatorIcon.svg";
-import organizerIcon from "../Graphics/organizerIcon.svg";
-import researcherIcon from "../Graphics/researcherIcon.svg";
+import { Links } from "../../../utils/constants/Docs.js";
+import educatorIcon from "../../assets/educatorIcon.svg";
+import organizerIcon from "../../assets/organizerIcon.svg";
+import researcherIcon from "../../assets/researcherIcon.svg";
 
 interface RenkuUserCardProps {
   user: string;

@@ -18,10 +18,10 @@
 
 import cx from "classnames";
 import { Col, Container, Row } from "reactstrap";
-import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
-import { ExternalLink } from "../../components/ExternalLinks";
-import { RenkuContactEmail } from "../../utils/constants/Docs";
-import getStartedGraphic from "../Graphics/getStarted.svg";
+import { useLoginUrl } from "../../../authentication/useLoginUrl.hook.ts";
+import { ExternalLink } from "../../../components/ExternalLinks.tsx";
+import { RenkuContactEmail } from "../../../utils/constants/Docs.js";
+import getStartedGraphic from "../../assets/getStarted.svg";
 import styles from "./GetStarted.module.scss";
 
 export function GetStarted() {
