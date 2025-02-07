@@ -93,7 +93,7 @@ export function GetStarted() {
           <Col
             xs={12}
             lg={6}
-            className={cx("text-center-end", "text-lg-end", "pt-5", "pt-lg-0")}
+            className={cx("text-center", "text-lg-end", "pt-5", "pt-lg-0")}
           >
             <img
               src={getStartedGraphic}
