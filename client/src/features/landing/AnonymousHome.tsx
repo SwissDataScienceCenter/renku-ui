@@ -30,33 +30,33 @@ import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 
-import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
-import { stateToSearchString } from "../features/kgSearch";
-import AppContext from "../utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
-import { Url } from "../utils/helpers/url";
-import { RenkuBenefits } from "./components/Benefits/Benefits";
+import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown.tsx";
+import { stateToSearchString } from "../kgSearch";
+import AppContext from "../../utils/context/appContext.ts";
+import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants.ts";
+import { Url } from "../../utils/helpers/url";
+import { RenkuBenefits } from "./components/Benefits/Benefits.tsx";
 import { Introduction } from "./components/Introduction/Introduction.tsx";
 
 import { NavBarWarnings } from "./components/NavBar/NavBarWarnings.jsx";
 
 import VisualHead from "./assets/Visual_Head.svg";
 
-import DividerLandingPage from "./components/Dividier/Divider";
-import HeroLanding from "./components/HeroLanding/HeroLanding";
-import { ResourcesAndSupport } from "./components/ResourcesSupport/ResourcesAndSupport";
-import WhatIsRenku from "./components/WhatIsRenku/WhatIsRenku";
-import WhoWeAre from "./components/WhoWeAre/WhoWeAre";
-import type { AnonymousHomeConfig } from "./anonymousHome.types";
+import DividerLandingPage from "./components/Dividier/Divider.tsx";
+import HeroLanding from "./components/HeroLanding/HeroLanding.tsx";
+import { ResourcesAndSupport } from "./components/ResourcesSupport/ResourcesAndSupport.tsx";
+import WhatIsRenku from "./components/WhatIsRenku/WhatIsRenku.tsx";
+import WhoWeAre from "./components/WhoWeAre/WhoWeAre.tsx";
+import type { AnonymousHomeConfig } from "./anonymousHome.types.ts";
 import { BottomNav, TopNav } from "./components/anonymousHomeNav.tsx";
 
 // ? react-autosuggest styles are defined there q_q
 // ? also, the order of import matters here q_q
-import "../project/new/Project.style.css";
+import "../../project/new/Project.style.css";
 // ? the "quick-nav" class is used in this file
-import "../components/quicknav/QuickNav.style.css";
-import { GetStarted } from "./components/GetStarted/GetStarted";
-import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers";
+import "../../components/quicknav/QuickNav.style.css";
+import { GetStarted } from "./components/GetStarted/GetStarted.tsx";
+import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers.tsx";
 
 export default function AnonymousHome() {
   const { client, model, params } = useContext(AppContext);

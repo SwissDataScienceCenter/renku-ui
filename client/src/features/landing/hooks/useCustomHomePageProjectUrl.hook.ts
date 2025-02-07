@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,12 @@
  * limitations under the License.
  */
 
-import { Suspense, lazy } from "react";
+import { useContext } from "react";
+import AppContext from "../../../utils/context/appContext.ts";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants.ts";
 
-import PageLoader from "../components/PageLoader";
-
-const AnonymousHome = lazy(() => import("./AnonymousHome"));
-
-export default function LazyAnonymousHome() {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <AnonymousHome />
-    </Suspense>
-  );
+export function useCustomHomePageProjectUrl(): string {
+  const { params } = useContext(AppContext);
+  const homePage = params?.["HOMEPAGE"] ?? DEFAULT_APP_PARAMS.HOMEPAGE;
+  return `/p/${homePage?.projectPath}`;
 }
