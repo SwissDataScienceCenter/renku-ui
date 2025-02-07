@@ -47,7 +47,7 @@ import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import StatusBanner from "../platform/components/StatusBanner";
 import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 
-const RENKU_ALPHA_LOGO = "/static/public/img/logo.svg";
+const RENKU_LOGO = "/static/public/img/logo.svg";
 
 function NavbarItemPlus() {
   const [isOpen, setIsOpen] = useState(false);
@@ -163,7 +163,7 @@ export default function NavbarV2() {
               data-cy="link-home"
               to={ABSOLUTE_ROUTES.v2.root}
             >
-              <img src={RENKU_ALPHA_LOGO} alt="Renku" height="50" />
+              <img src={RENKU_LOGO} alt="Renku" height="50" />
             </RenkuNavLinkV2>
           </div>
           <div className="ms-auto">

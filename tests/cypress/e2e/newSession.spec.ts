@@ -311,8 +311,8 @@ describe("launch sessions, outdated projects", () => {
       .contains("Update the project to start a session.")
       .should("be.visible");
     cy.get("a.btn")
-      .should("have.attr", "href", "/projects/e2e/local-test-project/settings")
       .contains("Settings")
+      .should("have.attr", "href", "/projects/e2e/local-test-project/settings")
       .should("be.visible");
   });
 
@@ -332,8 +332,8 @@ describe("launch sessions, outdated projects", () => {
       .contains("Changes are necessary to start a session.")
       .should("be.visible");
     cy.get("a.btn")
-      .should("have.attr", "href", "/projects/e2e/local-test-project/settings")
       .contains("Settings")
+      .should("have.attr", "href", "/projects/e2e/local-test-project/settings")
       .should("be.visible");
   });
 
