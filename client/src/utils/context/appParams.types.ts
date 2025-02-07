@@ -17,7 +17,7 @@
  */
 
 import type { DashboardMessageParams } from "../../features/dashboard/message/DashboardMessage.types";
-import type { HomepageParams } from "../../landing/anonymousHome.types";
+import type { HomepageParams } from "../../features/landing/anonymousHome.types";
 import type { CoreApiVersionedUrlConfig } from "../helpers/url";
 
 export interface AppParams {

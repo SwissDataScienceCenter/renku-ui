@@ -23,10 +23,10 @@ import { List } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
 
-import { useLoginUrl } from "../../authentication/useLoginUrl.hook.ts";
-import { ExternalLink } from "../../components/ExternalLinks.tsx";
-import { Links } from "../../utils/constants/Docs.js";
-import { Url } from "../../utils/helpers/url";
+import { useLoginUrl } from "../../../authentication/useLoginUrl.hook.ts";
+import { ExternalLink } from "../../../components/ExternalLinks.tsx";
+import { Links } from "../../../utils/constants/Docs.js";
+import { Url } from "../../../utils/helpers/url";
 
 const logo = "/static/public/img/logo.svg";
 

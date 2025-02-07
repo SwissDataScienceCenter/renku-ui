@@ -18,8 +18,8 @@
 
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
-import { ExternalLink } from "../../../components/ExternalLinks.tsx";
-import { RenkuContactEmail } from "../../../utils/constants/Docs.js";
+import { ExternalLink } from "../../../../components/ExternalLinks.tsx";
+import { RenkuContactEmail } from "../../../../utils/constants/Docs.js";
 import collaborationGraphic from "../../assets/boxes.svg";
 import computingGraphic from "../../assets/computing.svg";
 import connectionGraphic from "../../assets/network.svg";

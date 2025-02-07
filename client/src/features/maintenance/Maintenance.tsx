@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Col, Row } from "reactstrap";
 
 import Router from "../../components/router/Router";
-import { FooterNavbar } from "../../landing/components/NavBar/NavBar.jsx";
+import { FooterNavbar } from "../landing/components/NavBar/NavBar.jsx";
 import { StatuspageDisplay, isStatusConfigured } from "../../statuspage";
 
 interface MaintenanceProps {

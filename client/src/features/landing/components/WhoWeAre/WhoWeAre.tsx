@@ -23,8 +23,8 @@ import styles from "./WhoWeAre.module.scss";
 import {
   ExternalDocsLink,
   ExternalLink,
-} from "../../../components/ExternalLinks.tsx";
-import { Links, RenkuContactEmail } from "../../../utils/constants/Docs.js";
+} from "../../../../components/ExternalLinks.tsx";
+import { Links, RenkuContactEmail } from "../../../../utils/constants/Docs.js";
 import logo_EPFL from "../../assets/EPFL.svg";
 import logo_ETH from "../../assets/ETH.svg";
 import logo_SDSC from "../../assets/SDSC.svg";

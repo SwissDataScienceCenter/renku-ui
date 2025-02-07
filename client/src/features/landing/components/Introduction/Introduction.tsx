@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { Link } from "react-router-dom-v5-compat";
 import { Col, Container, Row } from "reactstrap";
-import { Links } from "../../../utils/constants/Docs.js";
+import { Links } from "../../../../utils/constants/Docs.js";
 import connectIcon from "../../assets/connectIcon.svg";
 import puzzleIcon from "../../assets/puzzleIcon.svg";
 import { useCustomHomePageProjectUrl } from "../../hooks/useCustomHomePageProjectUrl.hook.ts";

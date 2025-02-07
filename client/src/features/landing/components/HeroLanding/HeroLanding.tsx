@@ -2,7 +2,7 @@ import cx from "classnames";
 import { Link } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 
-import { useLoginUrl } from "../../../authentication/useLoginUrl.hook.ts";
+import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook.ts";
 import { HomeHeader } from "../../AnonymousHome.tsx";
 import heroGraphic from "../../assets/heroBoxes.svg";
 import { AnonymousHomeConfig } from "../../anonymousHome.types.ts";
