@@ -44,7 +44,7 @@ import LazyRootV1 from "./features/rootV1/LazyRootV1";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQuery } from "./features/usersV2/api/users.api";
 import LazyAnonymousHome from "./landing/LazyAnonymousHome";
-import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
+import { FooterNavbar, RenkuNavBar } from "./landing/components/NavBar/NavBar";
 import LazyNotFound from "./not-found/LazyNotFound";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";

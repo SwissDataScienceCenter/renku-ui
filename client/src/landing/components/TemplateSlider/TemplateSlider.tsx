@@ -22,15 +22,15 @@ import { DateTime, Duration } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "reactstrap";
 
-import btnVS from "../Graphics/btnVS.png";
-import btnVSSelected from "../Graphics/btnVSSelected.png";
-import btnPython from "../Graphics/btnJupyter.png";
-import btnPythonSelected from "../Graphics/btnJupyterSelected.png";
-import btnRStudio from "../Graphics/btnR.png";
-import btnRStudioSelected from "../Graphics/btnRSelected.png";
-import templateVSGraphic from "../Graphics/templateVS.png";
-import templatePythonGraphic from "../Graphics/templateJupyter.png";
-import templateRStudioGraphic from "../Graphics/templateR.png";
+import btnVS from "../../assets/btnVS.png";
+import btnVSSelected from "../../assets/btnVSSelected.png";
+import btnPython from "../../assets/btnJupyter.png";
+import btnPythonSelected from "../../assets/btnJupyterSelected.png";
+import btnRStudio from "../../assets/btnR.png";
+import btnRStudioSelected from "../../assets/btnRSelected.png";
+import templateVSGraphic from "../../assets/templateVS.png";
+import templatePythonGraphic from "../../assets/templateJupyter.png";
+import templateRStudioGraphic from "../../assets/templateR.png";
 
 import styles from "./TemplateSlider.module.scss";
 

@@ -35,28 +35,28 @@ import { stateToSearchString } from "../features/kgSearch";
 import AppContext from "../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 import { Url } from "../utils/helpers/url";
-import { RenkuBenefits } from "./Benefits/Benefits";
-import { Introduction } from "./Introduction/Introduction.tsx";
+import { RenkuBenefits } from "./components/Benefits/Benefits";
+import { Introduction } from "./components/Introduction/Introduction.tsx";
 
-import { NavBarWarnings } from "./NavBarWarnings";
+import { NavBarWarnings } from "./components/NavBar/NavBarWarnings.jsx";
 
-import VisualHead from "./Graphics/Visual_Head.svg";
+import VisualHead from "./assets/Visual_Head.svg";
 
-import DividerLandingPage from "./Dividier/Divider";
-import HeroLanding from "./HeroLanding/HeroLanding";
-import { ResourcesAndSupport } from "./ResourcesSupport/ResourcesAndSupport";
-import WhatIsRenku from "./WhatIsRenku/WhatIsRenku";
-import WhoWeAre from "./WhoWeAre/WhoWeAre";
+import DividerLandingPage from "./components/Dividier/Divider";
+import HeroLanding from "./components/HeroLanding/HeroLanding";
+import { ResourcesAndSupport } from "./components/ResourcesSupport/ResourcesAndSupport";
+import WhatIsRenku from "./components/WhatIsRenku/WhatIsRenku";
+import WhoWeAre from "./components/WhoWeAre/WhoWeAre";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
-import { BottomNav, TopNav } from "./anonymousHomeNav";
+import { BottomNav, TopNav } from "./components/anonymousHomeNav.tsx";
 
 // ? react-autosuggest styles are defined there q_q
 // ? also, the order of import matters here q_q
 import "../project/new/Project.style.css";
 // ? the "quick-nav" class is used in this file
 import "../components/quicknav/QuickNav.style.css";
-import { GetStarted } from "./GetStarted/GetStarted";
-import { RenkuUsers } from "./RenkuUsers/RenkuUsers";
+import { GetStarted } from "./components/GetStarted/GetStarted";
+import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers";
 
 export default function AnonymousHome() {
   const { client, model, params } = useContext(AppContext);

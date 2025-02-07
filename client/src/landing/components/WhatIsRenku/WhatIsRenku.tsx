@@ -18,13 +18,13 @@
 
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
-import { ExternalLink } from "../../components/ExternalLinks";
-import { RenkuContactEmail } from "../../utils/constants/Docs";
-import collaborationGraphic from "../Graphics/boxes.svg";
-import computingGraphic from "../Graphics/computing.svg";
-import connectionGraphic from "../Graphics/network.svg";
-import researchGraphic from "../Graphics/research.png";
-import TemplateSlider from "../TemplateSlider/TemplateSlider";
+import { ExternalLink } from "../../../components/ExternalLinks.tsx";
+import { RenkuContactEmail } from "../../../utils/constants/Docs.js";
+import collaborationGraphic from "../../assets/boxes.svg";
+import computingGraphic from "../../assets/computing.svg";
+import connectionGraphic from "../../assets/network.svg";
+import researchGraphic from "../../assets/research.png";
+import TemplateSlider from "../TemplateSlider/TemplateSlider.tsx";
 
 function ResearchFeatSection() {
   return (

@@ -18,8 +18,8 @@
 
 import { Link } from "react-router-dom";
 import { DropdownItem } from "reactstrap";
-import { useGetUserQuery } from "../features/usersV2/api/users.api";
-import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
+import { useGetUserQuery } from "../../features/usersV2/api/users.api.ts";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook.ts";
 
 export default function AdminDropdownItem() {
   const userLogged = useLegacySelector<boolean>(

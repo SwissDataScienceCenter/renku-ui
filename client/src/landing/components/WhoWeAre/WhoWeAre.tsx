@@ -20,11 +20,14 @@ import cx from "classnames";
 import { Envelope, Github, HeartFill } from "react-bootstrap-icons";
 import styles from "./WhoWeAre.module.scss";
 
-import { ExternalDocsLink, ExternalLink } from "../../components/ExternalLinks";
-import { Links, RenkuContactEmail } from "../../utils/constants/Docs";
-import logo_EPFL from "../Logos/EPFL.svg";
-import logo_ETH from "../Logos/ETH.svg";
-import logo_SDSC from "../Logos/SDSC.svg";
+import {
+  ExternalDocsLink,
+  ExternalLink,
+} from "../../../components/ExternalLinks.tsx";
+import { Links, RenkuContactEmail } from "../../../utils/constants/Docs.js";
+import logo_EPFL from "../../assets/EPFL.svg";
+import logo_ETH from "../../assets/ETH.svg";
+import logo_SDSC from "../../assets/SDSC.svg";
 export default function WhoWeAre() {
   const contactEmail = RenkuContactEmail || "";
   return (

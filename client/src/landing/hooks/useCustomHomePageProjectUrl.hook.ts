@@ -23,5 +23,5 @@ import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 export function useCustomHomePageProjectUrl(): string {
   const { params } = useContext(AppContext);
   const homePage = params?.["HOMEPAGE"] ?? DEFAULT_APP_PARAMS.HOMEPAGE;
-  return `/v2/projects/${homePage?.projectPath}`; // TODO: Change this to the new project url
+  return `/p/${homePage?.projectPath}`;
 }
