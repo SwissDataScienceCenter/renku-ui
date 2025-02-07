@@ -104,7 +104,12 @@ export function Introduction() {
             )}
           >
             <Link
-              className={cx("btn", "btn-primary", "text-decoration-none")}
+              className={cx(
+                "btn",
+                "btn-primary",
+                "text-decoration-none",
+                "fs-5"
+              )}
               to={projectUrl}
               data-cy={`explore-a-project-introduction-btn`}
               target="_blank"
@@ -112,7 +117,7 @@ export function Introduction() {
               Explore a Renku 2.0 project
             </Link>
             <Link
-              className={cx("btn", "btn-outline-primary")}
+              className={cx("btn", "btn-outline-primary", "fs-5")}
               id="hero_link-learn-more"
               to={Links.RENKU_2_LEARN_MORE}
               target="_blank"

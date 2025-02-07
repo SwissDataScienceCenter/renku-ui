@@ -63,7 +63,7 @@ function RenkuUserCard({
       </div>
       <div className="pt-5">
         <a
-          className={cx("btn", "btn-primary", "text-decoration-none")}
+          className={cx("btn", "btn-primary", "text-decoration-none", "fs-5")}
           href={linkUrl}
           target="_blank"
           rel="noreferrer noopener"

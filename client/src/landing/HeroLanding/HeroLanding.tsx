@@ -43,7 +43,7 @@ export default function HeroLanding(props: AnonymousHomeConfig) {
                 )}
               >
                 <a
-                  className={cx("btn", "btn-primary")}
+                  className={cx("btn", "btn-primary", "fs-5")}
                   id="hero_link-sign_up"
                   href={loginUrl.href}
                   target="_blank"
@@ -55,7 +55,8 @@ export default function HeroLanding(props: AnonymousHomeConfig) {
                   className={cx(
                     "btn",
                     "btn-outline-light",
-                    "text-decoration-none"
+                    "text-decoration-none",
+                    "fs-5"
                   )}
                   to={projectUrl}
                   data-cy={`explore-a-project-hero-btn`}

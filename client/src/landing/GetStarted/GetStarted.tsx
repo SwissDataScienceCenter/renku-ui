@@ -62,7 +62,7 @@ export function GetStarted() {
               </p>
               <div>
                 <a
-                  className={cx("btn", "btn-primary")}
+                  className={cx("btn", "btn-primary", "fs-5")}
                   href={loginUrl.href}
                   target="_blank"
                   rel="noreferrer noopener"
@@ -80,7 +80,8 @@ export function GetStarted() {
                   className={cx(
                     "btn",
                     "btn-outline-primary",
-                    "text-decoration-none"
+                    "text-decoration-none",
+                    "fs-5"
                   )}
                   role="link"
                   url={`mailto:${RenkuContactEmail}?subject=Requesting%20Pricing%20Details `}
