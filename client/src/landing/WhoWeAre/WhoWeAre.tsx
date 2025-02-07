@@ -64,7 +64,8 @@ export default function WhoWeAre() {
                       styles.btnContactUs,
                       "align-self-start",
                       "align-self-lg-center",
-                      "gap-2"
+                      "gap-2",
+                      "fs-5"
                     )}
                     color="primary"
                     role="button"
