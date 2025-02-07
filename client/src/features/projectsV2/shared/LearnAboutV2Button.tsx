@@ -20,24 +20,29 @@ import cx from "classnames";
 import { ExternalLink } from "../../../components/ExternalLinks";
 
 interface LearnAboutV2ButtonProps {
-  outline?: boolean;
+  children?: React.ReactNode;
   color?: string;
+  outline?: boolean;
 }
 export default function LearnAboutV2Button({
-  outline = false,
+  children = "Learn more",
   color = "light",
+  outline = false,
 }: LearnAboutV2ButtonProps) {
   return (
     <ExternalLink
       className={cx(
-        "btn",
-        "btn-sm",
-        outline ? `btn-outline-${color}` : `btn-${color}`,
-        "text-decoration-none"
+        outline && [
+          "btn",
+          "btn-sm",
+          `btn-outline-${color}`,
+          "text-decoration-none",
+        ]
       )}
+      role={outline ? "button" : "link"}
       url="https://blog.renkulab.io/early-access/"
     >
-      Learn more about Renku 2.0
+      {children}
     </ExternalLink>
   );
 }
