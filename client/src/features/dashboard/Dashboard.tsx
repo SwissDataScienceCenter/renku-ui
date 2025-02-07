@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { SshModal } from "../../components/ssh/ssh";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import DashboardMessage from "./components/DashboardMessage";
@@ -25,8 +26,25 @@ import { ProjectsDashboard } from "./components/ProjectsDashboard";
 
 import "./Dashboard.scss";
 
+function LoggedOutDashboard() {
+  return (
+    <div className="rk-dashboard">
+      <DashboardMessage />
+      <div className="mt-5">
+        <LoginAlert
+          logged={false}
+          textPost="to view the Renku legacy dashboard."
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const user = useLegacySelector((state) => state.stateModel.user);
+
+  if (user == null || user.data == null || user.data.name == null)
+    return <LoggedOutDashboard />;
 
   return (
     <div className="rk-dashboard">

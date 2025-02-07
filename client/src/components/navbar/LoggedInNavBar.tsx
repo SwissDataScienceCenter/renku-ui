@@ -34,6 +34,7 @@ import { NavBarWarnings } from "../../features/landing/components/NavBar/NavBarW
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import RenkuNavLinkV2 from "../RenkuNavLinkV2";
+import AnnounceV2Banner from "./AnnounceV2Banner";
 import {
   RenkuToolbarGitLabMenu,
   RenkuToolbarHelpMenu,
@@ -134,6 +135,7 @@ export default function LoggedInNavBar() {
           </Collapse>
         </Navbar>
       </header>
+      <AnnounceV2Banner />
       <StatusBanner params={params} />
       <NavBarWarnings model={model} uiShortSha={uiShortSha} />
     </>
