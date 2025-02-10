@@ -27,6 +27,7 @@ import {
   useProjectMetadataQuery,
 } from "../projectKg.api";
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
+import { ProjectEntityMigration } from "./ProjectEntityMigration";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & {
   defaultBranch: string;
@@ -73,13 +74,20 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
   );
 
   return (
-    <EntityHeader
-      {...props}
-      description={descriptionKg}
-      statusButton={statusButton}
-      visibility={projectMetadataQuery.data?.visibility || visibility}
-      tagList={projectMetadataQuery.data?.keywords ?? []}
-      imageUrl={entityImage}
-    />
+    <>
+      <ProjectEntityMigration
+        projectId={projectId}
+        description={descriptionKg}
+        tagList={projectMetadataQuery.data?.keywords ?? []}
+      />
+      <EntityHeader
+        {...props}
+        description={descriptionKg}
+        statusButton={statusButton}
+        visibility={projectMetadataQuery.data?.visibility || visibility}
+        tagList={projectMetadataQuery.data?.keywords ?? []}
+        imageUrl={entityImage}
+      />
+    </>
   );
 }
