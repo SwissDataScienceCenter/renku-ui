@@ -22,7 +22,9 @@ import type { FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
 import { Globe, Lock } from "react-bootstrap-icons";
+import { useLocation } from "react-router-dom";
 import { ButtonGroup, Input, Label } from "reactstrap";
+import { isRenkuLegacy } from "../../../utils/helpers/HelperFunctionsV2";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 
 export default function ProjectVisibilityFormField<T extends FieldValues>({
@@ -30,6 +32,8 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
   formId,
   name,
 }: GenericProjectFormFieldProps<T>) {
+  const location = useLocation();
+  const isRenkuV1 = isRenkuLegacy(location.pathname);
   return (
     <div>
       <Label className="form-label" for={`${formId}-project-visibility`}>
@@ -54,7 +58,11 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                   }}
                 />
                 <Label
-                  className={cx("btn", "btn-outline-primary", "mb-0")}
+                  className={cx(
+                    "btn",
+                    isRenkuV1 ? "btn-outline-rk-green" : "btn-outline-primary",
+                    "mb-0"
+                  )}
                   data-cy="project-visibility-public"
                   for={`${formId}-project-visibility-public`}
                 >
@@ -73,7 +81,11 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                   }}
                 />
                 <Label
-                  className={cx("btn", "btn-outline-primary", "mb-0")}
+                  className={cx(
+                    "btn",
+                    isRenkuV1 ? "btn-outline-rk-green" : "btn-outline-primary",
+                    "mb-0"
+                  )}
                   data-cy="project-visibility-private"
                   for={`${formId}-project-visibility-private`}
                 >

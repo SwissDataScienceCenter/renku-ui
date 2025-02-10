@@ -269,6 +269,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjects: {
       invalidatesTags: ["Project"],
     },
+    postProjectMigrations: {
+      invalidatesTags: ["Project"],
+    },
     getProjectsByProjectIdSessionSecretSlots: {
       providesTags: (result, _, { projectId }) =>
         result

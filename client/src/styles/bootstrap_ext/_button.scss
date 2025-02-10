@@ -513,3 +513,9 @@ $borderRadius: 1000px;
     transform: scale(1);
   }
 }
+
+.btn-group > .btn-check:checked + .btn {
+  background-color: #{$rk-green} !important;
+  color: white !important;
+  border-color: #{$rk-green} !important;
+}
