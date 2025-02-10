@@ -14,6 +14,16 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.projectPost,
       }),
     }),
+    postProjectMigrations: build.mutation<
+      PostProjectsApiResponse,
+      PostProjectsMigrationsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/renku_v1_projects/${queryArg.v1Id}/migrations`,
+        method: "POST",
+        body: queryArg.projectPost,
+      }),
+    }),
     getProjectsByProjectId: build.query<
       GetProjectsByProjectIdApiResponse,
       GetProjectsByProjectIdApiArg
@@ -199,6 +209,10 @@ export type PostProjectsApiResponse =
   /** status 201 The project was created */ Project;
 export type PostProjectsApiArg = {
   projectPost: ProjectPost;
+};
+export type PostProjectsMigrationsApiArg = {
+  projectPost: ProjectPost;
+  v1Id: number;
 };
 export type GetProjectsByProjectIdApiResponse =
   /** status 200 The project */ Project;
@@ -484,4 +498,5 @@ export const {
   useGetSessionSecretSlotsBySlotIdQuery,
   usePatchSessionSecretSlotsBySlotIdMutation,
   useDeleteSessionSecretSlotsBySlotIdMutation,
+  usePostProjectMigrationsMutation,
 } = injectedRtkApi;
