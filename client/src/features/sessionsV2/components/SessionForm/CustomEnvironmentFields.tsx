@@ -33,10 +33,12 @@ export function CustomEnvironmentFields({
   errors,
 }: EnvironmentFieldsProps) {
   const watchEnvironmentKind = watch("environment_kind");
-  const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
+  const [isAdvancedSettingOpen, setIsAdvancedSettingsOpen] = useState(false);
   const toggleIsOpen = useCallback(
     () =>
-      setIsAdvanceSettingsOpen((isAdvanceSettingOpen) => !isAdvanceSettingOpen),
+      setIsAdvancedSettingsOpen(
+        (isAdvancedSettingOpen) => !isAdvancedSettingOpen
+      ),
     []
   );
   return (
@@ -83,16 +85,28 @@ export function CustomEnvironmentFields({
             "Please provide a valid container image."}
         </div>
       </div>
+
       <div>
-        <span
-          className={cx("fw-bold", "cursor-pointer")}
+        <button
+          className={cx(
+            "align-items-center",
+            "bg-transparent",
+            "border-0",
+            "d-flex",
+            "fw-bold",
+            "gap-1",
+            "p-0",
+            "w-100"
+          )}
+          data-cy="environment-advanced-settings-toggle"
           onClick={toggleIsOpen}
         >
           Advanced settings{" "}
-          <ChevronFlippedIcon flipped={isAdvanceSettingOpen} />
-        </span>
+          <ChevronFlippedIcon flipped={isAdvancedSettingOpen} />
+        </button>
       </div>
-      <Collapse isOpen={isAdvanceSettingOpen}>
+
+      <Collapse isOpen={isAdvancedSettingOpen}>
         <AdvancedSettingsFields<SessionLauncherForm>
           control={control}
           errors={errors}
