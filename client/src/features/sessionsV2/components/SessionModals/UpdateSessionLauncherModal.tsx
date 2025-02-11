@@ -167,12 +167,14 @@ export default function UpdateSessionLauncherModal({
 
 const ConfirmationUpdate = () => {
   return (
-    <SuccessAlert dismissible={false} timeout={0}>
-      <p className="fw-bold">Session launcher updated successfully!</p>
-      <p className="mb-0">
-        The changes will take effect the next time you launch a session with
-        this launcher. Current sessions will not be affected.
-      </p>
-    </SuccessAlert>
+    <div data-cy="session-launcher-update-success">
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p className="fw-bold">Session launcher updated successfully!</p>
+        <p className="mb-0">
+          The changes will take effect the next time you launch a session with
+          this launcher. Current sessions will not be affected.
+        </p>
+      </SuccessAlert>
+    </div>
   );
 };

@@ -111,14 +111,13 @@ export default function SessionsV2({ project }: SessionsV2Props) {
   const totalSessions =
     (launchers ? launchers?.length : 0) + orphanSessions.length;
   return (
-    <Card>
+    <Card data-cy="sessions-box">
       <CardHeader
         className={cx(
           "align-items-center",
           "d-flex",
           "justify-content-between"
         )}
-        data-cy="sessions-box"
       >
         <div className={cx("align-items-center", "d-flex")}>
           <h4 className={cx("mb-0", "me-2")}>
