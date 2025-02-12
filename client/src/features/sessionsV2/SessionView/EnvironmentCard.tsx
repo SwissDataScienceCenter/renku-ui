@@ -30,7 +30,7 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
   const environment = launcher.environment;
   if (!environment) return null;
   const { environment_kind, name } = environment;
-  const cardName = environment_kind === "global" ? name || "" : launcher.name;
+  const cardName = environment_kind === "GLOBAL" ? name || "" : launcher.name;
 
   return (
     <>
@@ -43,7 +43,7 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
               </h5>
             </EnvironmentRow>
             <EnvironmentRow>
-              {environment.environment_kind === "custom" ? (
+              {environment.environment_kind === "CUSTOM" ? (
                 <>
                   <Link45deg size={24} />
                   Custom image
@@ -55,7 +55,7 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
                 </>
               )}
             </EnvironmentRow>
-            {environment_kind === "global" && (
+            {environment_kind === "GLOBAL" && (
               <>
                 <EnvironmentRow>
                   {environment?.description ? (
@@ -78,7 +78,7 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
                 </EnvironmentRow>
               </>
             )}
-            {environment_kind === "custom" && (
+            {environment_kind === "CUSTOM" && (
               <>
                 <CustomEnvironmentValues launcher={launcher} />
               </>
@@ -97,7 +97,7 @@ export function CustomEnvironmentValues({
 }) {
   const environment = launcher.environment;
 
-  if (environment.environment_kind !== "custom") {
+  if (environment.environment_kind !== "CUSTOM") {
     return null;
   }
 

@@ -162,7 +162,6 @@ export type Ulid = string;
 export type SessionName = string;
 export type CreationDate = string;
 export type Description = string;
-export type ContainerImage = string;
 export type DefaultUrl = string;
 export type EnvironmentUid = number;
 export type EnvironmentGid = number;
@@ -172,12 +171,11 @@ export type EnvironmentPort = number;
 export type EnvironmentCommand = string[];
 export type EnvironmentArgs = string[];
 export type IsArchived = boolean;
-export type Environment = {
+export type EnvironmentWithoutContainerImage = {
   id: Ulid;
   name: SessionName;
   creation_date: CreationDate;
   description?: Description;
-  container_image: ContainerImage;
   default_url: DefaultUrl;
   uid: EnvironmentUid;
   gid: EnvironmentGid;
@@ -187,6 +185,10 @@ export type Environment = {
   command?: EnvironmentCommand;
   args?: EnvironmentArgs;
   is_archived?: IsArchived;
+};
+export type ContainerImage = string;
+export type Environment = EnvironmentWithoutContainerImage & {
+  container_image: ContainerImage;
 };
 export type EnvironmentList = Environment[];
 export type ErrorResponse = {
@@ -201,12 +203,12 @@ export type EnvironmentPost = {
   name: SessionName;
   description?: Description;
   container_image: ContainerImage;
-  default_url?: DefaultUrl & any;
-  uid?: EnvironmentUid & any;
-  gid?: EnvironmentGid & any;
+  default_url?: DefaultUrl;
+  uid?: EnvironmentUid;
+  gid?: EnvironmentGid;
   working_directory?: EnvironmentWorkingDirectory;
   mount_directory?: EnvironmentMountDirectory;
-  port?: EnvironmentPort & any;
+  port?: EnvironmentPort;
   command?: EnvironmentCommand;
   args?: EnvironmentArgs;
   is_archived?: IsArchived;
@@ -227,31 +229,30 @@ export type EnvironmentPatch = {
   command?: EnvironmentCommand;
   args?: EnvironmentArgs;
   is_archived?: IsArchived;
-  environment_image_source: EnvironmentImageSourceImage;
 };
+export type EnvironmentKind = "GLOBAL" | "CUSTOM";
 export type EnvironmentWithImageGet = Environment & {
   environment_image_source: EnvironmentImageSourceImage;
+  environment_kind: EnvironmentKind;
 };
 export type Repository = string;
-export type BuilderVariant = "conda" | "pip";
-export type FrontendVariant = "vscodium" | "jupyterlab" | "streamlit";
+export type BuilderVariant = string;
+export type FrontendVariant = string;
 export type BuildParameters = {
   repository: Repository;
   builder_variant: BuilderVariant;
   frontend_variant: FrontendVariant;
 };
 export type EnvironmentImageSourceBuild = "build";
-export type EnvironmentWithBuildGet = Environment & {
+export type EnvironmentWithBuildGet = EnvironmentWithoutContainerImage & {
+  container_image?: ContainerImage;
   build_parameters: BuildParameters;
   environment_image_source: EnvironmentImageSourceBuild;
-};
-export type EnvironmentKind = "global" | "custom";
-export type EnvironmentGetInLauncher = (
-  | EnvironmentWithImageGet
-  | EnvironmentWithBuildGet
-) & {
   environment_kind: EnvironmentKind;
 };
+export type EnvironmentGetInLauncher =
+  | EnvironmentWithImageGet
+  | EnvironmentWithBuildGet;
 export type ResourceClassId = number | null;
 export type DiskStorage = number;
 export type SessionLauncher = {
@@ -265,18 +266,15 @@ export type SessionLauncher = {
   disk_storage?: DiskStorage;
 };
 export type SessionLaunchersList = SessionLauncher[];
-export type BuildParametersPost = {
-  repository: Repository;
-  builder_variant: BuilderVariant;
-  frontend_variant: FrontendVariant;
-  environment_image_source: EnvironmentImageSourceBuild;
-};
-export type EnvironmentPostInLauncher = (
-  | EnvironmentPost
-  | BuildParametersPost
-) & {
+export type EnvironmentPostInLauncherHelper = EnvironmentPost & {
   environment_kind: EnvironmentKind;
 };
+export type BuildParametersPost = BuildParameters & {
+  environment_image_source: EnvironmentImageSourceBuild;
+};
+export type EnvironmentPostInLauncher =
+  | EnvironmentPostInLauncherHelper
+  | BuildParametersPost;
 export type EnvironmentId = string;
 export type EnvironmentIdOnlyPost = {
   id: EnvironmentId;
@@ -290,17 +288,18 @@ export type SessionLauncherPost = {
   environment: EnvironmentPostInLauncher | EnvironmentIdOnlyPost;
 };
 export type DiskStoragePatch = number | null;
+export type EnvironmentImageSource =
+  | EnvironmentImageSourceImage
+  | EnvironmentImageSourceBuild;
 export type BuildParametersPatch = {
   repository?: Repository;
   builder_variant?: BuilderVariant;
   frontend_variant?: FrontendVariant;
-  environment_image_source: EnvironmentImageSourceBuild;
 };
-export type EnvironmentPatchInLauncher = (
-  | EnvironmentPatch
-  | BuildParametersPatch
-) & {
-  environment_kind: EnvironmentKind;
+export type EnvironmentPatchInLauncher = EnvironmentPatch & {
+  environment_kind?: EnvironmentKind;
+  environment_image_source?: EnvironmentImageSource;
+  build_parameters?: BuildParametersPatch;
 };
 export type EnvironmentIdOnlyPatch = {
   id?: EnvironmentId;
