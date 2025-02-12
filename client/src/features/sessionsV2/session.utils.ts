@@ -198,7 +198,6 @@ export function getLauncherDefaultValues(
   return {
     name: launcher.name,
     description: launcher.description ?? "",
-    // environmentKind: launcher.environment?.environment_kind,
     environmentSelect:
       launcher.environment.environment_kind === "GLOBAL"
         ? "global"
@@ -221,6 +220,18 @@ export function getLauncherDefaultValues(
     gid: launcher.environment?.gid,
     command: getJSONStringArray(launcher.environment?.command),
     args: getJSONStringArray(launcher.environment?.args),
+    builder_variant:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.builder_variant
+        : "",
+    frontend_variant:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.frontend_variant
+        : "",
+    repository:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.repository
+        : "",
   };
 }
 
