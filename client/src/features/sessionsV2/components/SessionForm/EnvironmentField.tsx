@@ -48,8 +48,6 @@ export function EnvironmentFields({
   touchedFields,
   setValue,
 }: EnvironmentFieldsProps) {
-  // const watchEnvironmentKind = watch("environmentKind");
-  // const watchEnvironmentImageSource = watch("environmentImageSource");
   const watchEnvironmentSelect = watch("environmentSelect");
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>

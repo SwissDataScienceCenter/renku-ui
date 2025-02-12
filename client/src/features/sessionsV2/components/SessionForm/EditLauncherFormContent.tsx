@@ -63,8 +63,6 @@ export default function EditLauncherFormContent({
     error,
     isLoading,
   } = useGetSessionEnvironmentsQuery({});
-  // const environmentKind = watch("environmentKind");
-  // const environmentImageSource = watch("environmentImageSource");
   const environmentSelect = watch("environmentSelect");
   const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
   const toggleIsOpen = useCallback(

@@ -64,13 +64,11 @@ export default function NewSessionLauncherModal({
   const useFormResult = useForm<SessionLauncherForm>({
     defaultValues: {
       name: "",
-      // environmentKind: "global",
       environmentSelect: "global",
       environmentId: "",
       container_image: "",
       default_url: DEFAULT_URL,
       port: DEFAULT_PORT,
-      // new
       repository: "",
     },
   });
@@ -86,8 +84,6 @@ export default function NewSessionLauncherModal({
 
   const watchEnvironmentId = watch("environmentId");
   const watchEnvironmentCustomImage = watch("container_image");
-  // const watchEnvironmentKind = watch("environmentKind");
-  // const watchEnvironmentImageSource = watch("environmentImageSource");
   const watchEnvironmentSelect = watch("environmentSelect");
   const watchCodeRepository = watch("repository");
 
@@ -169,8 +165,6 @@ export default function NewSessionLauncherModal({
       return;
     }
     if (environments.length == 0) {
-      // setValue("environmentKind", "custom");
-      // setValue("environmentImageSource", "image");
       setValue("environmentSelect", "custom + image");
     }
   }, [environments, setValue]);
@@ -191,12 +185,9 @@ export default function NewSessionLauncherModal({
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      // scrollable
     >
       <ModalHeader toggle={toggle}>Add session launcher</ModalHeader>
-      <ModalBody
-      // style={{ height: result.isSuccess ? "auto" : "600px" }}
-      >
+      <ModalBody>
         {result.isSuccess ? (
           <ConfirmationCreate />
         ) : (

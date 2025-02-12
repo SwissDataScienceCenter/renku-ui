@@ -38,7 +38,6 @@ export function GlobalEnvironmentFields({
     error,
     isLoading,
   } = useGetSessionEnvironmentsQuery({});
-  // const watchEnvironmentKind = watch("environmentKind");
   const watchEnvironmentSelect = watch("environmentSelect");
 
   return (

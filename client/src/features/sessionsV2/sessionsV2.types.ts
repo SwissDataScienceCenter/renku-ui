@@ -31,27 +31,6 @@ import type {
   SessionLauncherPost,
 } from "./api/sessionLaunchersV2.api";
 
-// export interface SessionEnvironment {
-//   container_image: string;
-//   creation_date: string;
-//   id: string;
-//   name: string;
-//   default_url?: string;
-//   description?: string;
-//   uid?: number;
-//   gid?: number;
-//   working_directory?: string;
-//   mount_directory?: string;
-//   port?: number;
-//   environment_kind?: EnvironmentKind;
-//   command?: string[];
-//   args?: string[];
-// }
-
-// export type SessionEnvironmentList = SessionEnvironment[];
-
-// export type EnvironmentKind = "global" | "custom" | "BUILDER";
-
 export type SessionLauncherEnvironment = {
   id?: string;
   name: string;
@@ -67,25 +46,6 @@ export type SessionLauncherEnvironment = {
   command?: string[];
   args?: string[];
 };
-
-// export type SessionLauncherEnvironmentParams =
-//   | {
-//       id: string;
-//     }
-//   | {
-//       name: string;
-//       description?: string;
-//       container_image: string;
-//       default_url?: string;
-//       uid?: number;
-//       gid?: number;
-//       working_directory?: string;
-//       mount_directory?: string;
-//       port?: number;
-//       environment_kind: EnvironmentKind;
-//       command?: string[] | null;
-//       args?: string[] | null;
-//     };
 
 export interface GetProjectSessionLauncherParams {
   id: string;
@@ -136,11 +96,6 @@ export interface SessionLauncherForm
 
   // For "global" environments
   environmentId: EnvironmentId;
-
-  // For "custom" environments
-  // environmentImageSource:
-  //   | EnvironmentImageSourceBuild
-  //   | EnvironmentImageSourceImage;
 
   // For "custom" + "image" environments
   default_url: DefaultUrl;
