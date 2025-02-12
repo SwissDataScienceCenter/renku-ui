@@ -22,6 +22,7 @@ import type {
   EnvironmentList as SessionEnvironmentList,
   SessionLauncher,
   SessionLauncherEnvironmentParams,
+  SessionLauncherEnvironmentPatchParams,
 } from "./api/sessionLaunchersV2.api";
 import { DEFAULT_URL } from "./session.constants";
 import { SessionLauncherForm } from "./sessionsV2.types";
@@ -73,7 +74,7 @@ export function prioritizeSelectedEnvironment(
 /**
  * Formats and validates the environment values for launching a session.
  *
- * @param {SessionLauncherForm} data - The form data used to configure the environment for a session launch.
+ * @param {SessionLauncherForm} data - The form data used to configure the environment for a session launcher.
  *
  * @returns {{ success: boolean; data?: SessionLauncherEnvironmentParams; error?: string }} -
  *  Returns an object with the following structure:
@@ -93,8 +94,6 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     container_image,
     default_url,
     environmentId,
-    // environmentImageSource,
-    // environmentKind,
     environmentSelect,
     frontend_variant,
     gid,
@@ -114,7 +113,6 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     return {
       success: true,
       data: {
-        // environment_kind: "custom",
         environment_image_source: "build",
         builder_variant,
         frontend_variant,
@@ -143,6 +141,48 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
       gid,
       command: commandFormatted.data ?? undefined,
       args: argsFormatted.data ?? undefined,
+    },
+  };
+}
+
+/**
+ * Formats and validates the environment values for launching a session. (edit mode)
+ *
+ * @param {SessionLauncherEnvironmentPatchParams} data - The form data used to configure the environment for a session launcher.
+ *
+ * @returns {{ success: boolean; data?: SessionLauncherEnvironmentParams; error?: string }} -
+ *  Returns an object with the following structure:
+ *   - `success`: A boolean indicating whether the function executed successfully.
+ *   - `data`: If `success` is true, contains the formatted `SessionLauncherEnvironmentParams` object.
+ *   - `error`: If `success` is false, contains a string describing the error (e.g., "Invalid command or args format").
+ */
+export function getFormattedEnvironmentValuesForEdit(
+  data: SessionLauncherForm
+): {
+  success: boolean;
+  data?: SessionLauncherEnvironmentPatchParams;
+  error?: string;
+} {
+  const { environmentSelect } = data;
+
+  if (
+    environmentSelect === "global" ||
+    environmentSelect === "custom + image"
+  ) {
+    return getFormattedEnvironmentValues(data);
+  }
+
+  const { builder_variant, frontend_variant, repository } = data;
+
+  return {
+    success: true,
+    data: {
+      environment_image_source: "build",
+      build_parameters: {
+        builder_variant,
+        frontend_variant,
+        repository,
+      },
     },
   };
 }

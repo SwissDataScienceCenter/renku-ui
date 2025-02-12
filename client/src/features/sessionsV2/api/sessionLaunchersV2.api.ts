@@ -17,7 +17,9 @@
  */
 
 import {
+  type EnvironmentIdOnlyPatch,
   type EnvironmentIdOnlyPost,
+  type EnvironmentPatchInLauncher,
   type EnvironmentPostInLauncher,
   type GetEnvironmentsApiArg,
   type GetEnvironmentsApiResponse,
@@ -101,3 +103,7 @@ export type * from "./sessionLaunchersV2.generated-api";
 export type SessionLauncherEnvironmentParams =
   | EnvironmentPostInLauncher
   | EnvironmentIdOnlyPost;
+
+export type SessionLauncherEnvironmentPatchParams =
+  | EnvironmentPatchInLauncher
+  | EnvironmentIdOnlyPatch;

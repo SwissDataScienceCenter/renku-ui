@@ -38,7 +38,7 @@ import { Label } from "reactstrap";
 import styles from "./Select.module.scss";
 
 /* eslint-disable spellcheck/spell-checker */
-const BUILDER_TYPES = ["Python (conda)"] as const;
+const BUILDER_TYPES = ["pip"] as const;
 /* eslint-enable spellcheck/spell-checker */
 
 interface BuilderTypeSelectorProps<T extends FieldValues>

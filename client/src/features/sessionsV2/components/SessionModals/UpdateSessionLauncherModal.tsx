@@ -38,7 +38,7 @@ import {
   usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation,
 } from "../../api/sessionLaunchersV2.api";
 import {
-  getFormattedEnvironmentValues,
+  getFormattedEnvironmentValuesForEdit,
   getLauncherDefaultValues,
 } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
@@ -75,7 +75,8 @@ export default function UpdateSessionLauncherModal({
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
       const { description, name } = data;
-      const environment = getFormattedEnvironmentValues(data);
+      // const environment = getFormattedEnvironmentValues(data);
+      const environment = getFormattedEnvironmentValuesForEdit(data);
       if (environment.success && environment.data)
         updateSessionLauncher({
           launcherId: launcher.id,

@@ -38,7 +38,7 @@ import { Label } from "reactstrap";
 import styles from "./Select.module.scss";
 
 /* eslint-disable spellcheck/spell-checker */
-const BUILDER_FRONTENDS = ["VSCodium"] as const;
+const BUILDER_FRONTENDS = ["vscodium"] as const;
 /* eslint-enable spellcheck/spell-checker */
 
 interface BuilderFrontendSelectorProps<T extends FieldValues>
