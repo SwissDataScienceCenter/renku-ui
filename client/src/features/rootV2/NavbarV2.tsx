@@ -193,18 +193,20 @@ export default function NavbarV2() {
             >
               <NavItem>
                 <RenkuNavLinkV2
+                  data-cy="navbar-link-search"
                   end
-                  to={ABSOLUTE_ROUTES.v2.search}
                   title="Search"
+                  to={ABSOLUTE_ROUTES.v2.search}
                 >
                   <Search className="bi" /> Search
                 </RenkuNavLinkV2>
               </NavItem>
               <NavItem>
                 <RenkuNavLinkV2
+                  data-cy="navbar-link-dashboard"
                   end
-                  to={ABSOLUTE_ROUTES.v2.root}
                   title="Dashboard"
+                  to={ABSOLUTE_ROUTES.v2.root}
                 >
                   Dashboard
                 </RenkuNavLinkV2>
