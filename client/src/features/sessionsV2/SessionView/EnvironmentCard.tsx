@@ -18,8 +18,14 @@
 
 import cx from "classnames";
 import { ReactNode } from "react";
-import { Clock, Globe2, Link45deg } from "react-bootstrap-icons";
-import { Card, CardBody, Col, Row } from "reactstrap";
+import {
+  CircleFill,
+  Clock,
+  Globe2,
+  Link45deg,
+  Tools,
+} from "react-bootstrap-icons";
+import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
@@ -43,15 +49,20 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
               </h5>
             </EnvironmentRow>
             <EnvironmentRow>
-              {environment.environment_kind === "CUSTOM" ? (
-                <>
-                  <Link45deg size={24} />
-                  Custom image
-                </>
-              ) : (
+              {environment.environment_kind === "GLOBAL" ? (
                 <>
                   <Globe2 size={24} />
                   Global environment
+                </>
+              ) : environment.environment_image_source === "build" ? (
+                <>
+                  <Tools size={24} />
+                  Built by RenkuLab
+                </>
+              ) : (
+                <>
+                  <Link45deg size={24} />
+                  Custom image
                 </>
               )}
             </EnvironmentRow>
@@ -90,7 +101,17 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
   );
 }
 
-export function CustomEnvironmentValues({
+function CustomEnvironmentValues({ launcher }: { launcher: SessionLauncher }) {
+  const { environment } = launcher;
+
+  if (environment.environment_image_source === "image") {
+    return <CustomImageEnvironmentValues launcher={launcher} />;
+  }
+
+  return <CustomBuildEnvironmentValues launcher={launcher} />;
+}
+
+function CustomImageEnvironmentValues({
   launcher,
 }: {
   launcher: SessionLauncher;
@@ -134,7 +155,44 @@ export function CustomEnvironmentValues({
   );
 }
 
-function EnvironmentRow({ children }: { children: ReactNode }) {
+function CustomBuildEnvironmentValues({
+  launcher,
+}: {
+  launcher: SessionLauncher;
+}) {
+  const { environment } = launcher;
+
+  if (environment.environment_image_source !== "build") {
+    return null;
+  }
+
+  const { build_parameters } = environment;
+  const { builder_variant, frontend_variant, repository } = build_parameters;
+
+  return (
+    <>
+      <EnvironmentRow>
+        {environment.container_image === "image:unknown-at-the-moment" ? (
+          <NotReadyStatusBadge />
+        ) : (
+          <ReadyStatusBadge />
+        )}
+      </EnvironmentRow>
+
+      <EnvironmentRowWithLabel label="Repository" value={repository || ""} />
+      <EnvironmentRowWithLabel
+        label="Environment type"
+        value={builder_variant || ""}
+      />
+      <EnvironmentRowWithLabel
+        label="User interface"
+        value={frontend_variant || ""}
+      />
+    </>
+  );
+}
+
+function EnvironmentRow({ children }: { children?: ReactNode }) {
   return (
     <Col
       xs={12}
@@ -180,5 +238,43 @@ function EnvironmentJSONArrayRowWithLabel({
         )}
       </div>
     </EnvironmentRow>
+  );
+}
+
+function ReadyStatusBadge() {
+  return (
+    <Badge
+      className={cx(
+        "border",
+        "bg-success-subtle",
+        "border-success",
+        "text-success-emphasis",
+        "fs-small",
+        "fw-normal"
+      )}
+      pill
+    >
+      <CircleFill className={cx("bi", "me-1")} />
+      Ready
+    </Badge>
+  );
+}
+
+function NotReadyStatusBadge() {
+  return (
+    <Badge
+      className={cx(
+        "border",
+        "bg-danger-subtle",
+        "border-danger",
+        "text-danger-emphasis",
+        "fs-small",
+        "fw-normal"
+      )}
+      pill
+    >
+      <CircleFill className={cx("bi", "me-1")} />
+      Not ready
+    </Badge>
   );
 }
