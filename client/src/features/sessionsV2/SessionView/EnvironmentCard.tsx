@@ -16,20 +16,24 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode } from "react";
 import {
+  Bricks,
   CircleFill,
   Clock,
   Globe2,
   Link45deg,
-  Tools,
 } from "react-bootstrap-icons";
 import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 
+import { Loader } from "../../../components/Loader";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import { useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery } from "../api/sessionLaunchersV2.api";
 import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
 import { safeStringify } from "../session.utils";
 
@@ -57,7 +61,7 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
                 </>
               ) : environment.environment_image_source === "build" ? (
                 <>
-                  <Tools size={24} />
+                  <Bricks size={24} />
                   Built by RenkuLab
                 </>
               ) : (
@@ -163,6 +167,17 @@ function CustomBuildEnvironmentValues({
 }) {
   const { environment } = launcher;
 
+  const {
+    data: builds,
+    isLoading,
+    error,
+  } = useGetBuildsQuery(
+    environment.environment_image_source === "build"
+      ? { environmentId: environment.id }
+      : skipToken
+  );
+  const lastBuild = builds?.at(0);
+
   if (environment.environment_image_source !== "build") {
     return null;
   }
@@ -177,6 +192,30 @@ function CustomBuildEnvironmentValues({
           <NotReadyStatusBadge />
         ) : (
           <ReadyStatusBadge />
+        )}
+      </EnvironmentRow>
+      <EnvironmentRow>
+        {isLoading ? (
+          <span>
+            <Loader className="me-1" inline size={16} />
+            Loading build status...
+          </span>
+        ) : error || !builds ? (
+          <div>
+            <p className="mb-0">Error: could not load build status</p>
+            {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+          </div>
+        ) : lastBuild == null ? (
+          <span className="fst-italic">
+            This session environment does not have a build yet.
+          </span>
+        ) : (
+          <div className="d-block">
+            <label className={cx("text-nowrap", "mb-0", "me-2")}>
+              Last build status:
+            </label>
+            <span>{lastBuild.status}</span>
+          </div>
         )}
       </EnvironmentRow>
 

@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
-import { Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
+import { Bricks, Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import {
   Badge,
@@ -44,7 +44,10 @@ import SessionItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
-import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
+import {
+  useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
+  usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
+} from "./api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
 import UpdateSessionLauncherModal from "./components/SessionModals/UpdateSessionLauncherModal";
 import { SessionV2 } from "./sessionsV2.types";
@@ -192,6 +195,11 @@ export function SessionV2Actions({
     setIsDeleteOpen((open) => !open);
   }, []);
 
+  const [postBuild /*, result*/] = usePostBuildMutation();
+  const triggerBuild = useCallback(() => {
+    postBuild({ environmentId: launcher.environment.id });
+  }, [launcher.environment.id, postBuild]);
+
   const defaultAction = (
     <Button
       className="text-nowrap"
@@ -204,6 +212,14 @@ export function SessionV2Actions({
       Edit
     </Button>
   );
+
+  const rebuildAction = launcher.environment.environment_kind === "CUSTOM" &&
+    launcher.environment.environment_image_source === "build" && (
+      <DropdownItem data-cy="session-view-menu-rebuild" onClick={triggerBuild}>
+        <Bricks className={cx("bi", "me-1")} />
+        Rebuild session image
+      </DropdownItem>
+    );
 
   return (
     <PermissionsGuard
@@ -223,7 +239,8 @@ export function SessionV2Actions({
               <Trash className={cx("bi", "me-1")} />
               Delete
             </DropdownItem>
-          </ButtonWithMenuV2>{" "}
+            {rebuildAction}
+          </ButtonWithMenuV2>
           <UpdateSessionLauncherModal
             isOpen={isUpdateOpen}
             launcher={launcher}
