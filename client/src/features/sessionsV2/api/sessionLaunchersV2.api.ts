@@ -43,7 +43,7 @@ const withFixedEndpoints = sessionLaunchersV2GeneratedApi.injectEndpoints({
 });
 
 // Adds tag handling for cache management
-export const sessionLaunchersV2Api = withFixedEndpoints.enhanceEndpoints({
+const withTagHandling = withFixedEndpoints.enhanceEndpoints({
   addTagTypes: ["Environment", "Launcher", "Build"],
   endpoints: {
     getEnvironments: {
@@ -104,6 +104,16 @@ export const sessionLaunchersV2Api = withFixedEndpoints.enhanceEndpoints({
           : ["Build"],
     },
   },
+});
+
+// Adds tag invalidation endpoints
+export const sessionLaunchersV2Api = withTagHandling.injectEndpoints({
+  endpoints: (build) => ({
+    invalidateLaunchers: build.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["Launcher"],
+    }),
+  }),
 });
 
 export const {

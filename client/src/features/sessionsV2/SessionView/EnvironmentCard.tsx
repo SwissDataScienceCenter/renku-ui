@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import {
   Bricks,
   CircleFill,
@@ -31,9 +31,13 @@ import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
-import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import { useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery } from "../api/sessionLaunchersV2.api";
+import type { Build, SessionLauncher } from "../api/sessionLaunchersV2.api";
+import {
+  sessionLaunchersV2Api,
+  useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
+} from "../api/sessionLaunchersV2.api";
 import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
 import { safeStringify } from "../session.utils";
 
@@ -176,7 +180,30 @@ function CustomBuildEnvironmentValues({
       ? { environmentId: environment.id }
       : skipToken
   );
+
   const lastBuild = builds?.at(0);
+
+  sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
+    lastBuild?.status === "in_progress"
+      ? { environmentId: environment.id }
+      : skipToken,
+    {
+      // TODO: use 1 second once the backend has a k8s cache
+      pollingInterval: 30_000,
+    }
+  );
+
+  // Invalidate launchers if the container image is not the same as the
+  // image from the last successful build
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (
+      lastBuild?.status === "succeeded" &&
+      lastBuild.result.image !== launcher.environment.container_image
+    ) {
+      dispatch(sessionLaunchersV2Api.endpoints.invalidateLaunchers.initiate());
+    }
+  }, [dispatch, lastBuild, launcher.environment.container_image]);
 
   if (environment.environment_image_source !== "build") {
     return null;
@@ -214,7 +241,9 @@ function CustomBuildEnvironmentValues({
             <label className={cx("text-nowrap", "mb-0", "me-2")}>
               Last build status:
             </label>
-            <span>{lastBuild.status}</span>
+            <span>
+              <BuildStatusBadge status={lastBuild.status} />
+            </span>
           </div>
         )}
       </EnvironmentRow>
@@ -228,6 +257,10 @@ function CustomBuildEnvironmentValues({
         label="User interface"
         value={frontend_variant || ""}
       />
+
+      {environment.container_image !== "image:unknown-at-the-moment" && (
+        <CustomImageEnvironmentValues launcher={launcher} />
+      )}
     </>
   );
 }
@@ -315,6 +348,42 @@ function NotReadyStatusBadge() {
     >
       <CircleFill className={cx("bi", "me-1")} />
       Not ready
+    </Badge>
+  );
+}
+
+interface BuildStatusBadgeProps {
+  status: Build["status"];
+}
+
+function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
+  const badgeIcon =
+    status === "in_progress" ? (
+      <Loader className="me-1" inline size={12} />
+    ) : (
+      <CircleFill className={cx("me-1", "bi")} />
+    );
+
+  const badgeText =
+    status === "in_progress"
+      ? "In progress"
+      : status === "cancelled"
+      ? "Cancelled"
+      : status === "succeeded"
+      ? "Succeeded"
+      : "Failed";
+
+  const badgeColorClasses =
+    status === "in_progress"
+      ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
+      : status === "succeeded"
+      ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
+      : ["border-danger", "bg-danger-subtle", "text-danger-emphasis"];
+
+  return (
+    <Badge pill className={cx("border", badgeColorClasses)}>
+      {badgeIcon}
+      {badgeText && <span className="fw-normal">{badgeText}</span>}
     </Badge>
   );
 }
