@@ -300,7 +300,7 @@ export function RenkuToolbarItemUser({
     return <Loader inline size={16} />;
   } else if (!user.logged) {
     return (
-      <NavLink className="px-2" href={loginUrl.href}>
+      <NavLink className="px-2" data-cy="navbar-login" href={loginUrl.href}>
         Login
       </NavLink>
     );
@@ -311,13 +311,15 @@ export function RenkuToolbarItemUser({
   return (
     <UncontrolledDropdown className={cx("nav-item", "dropdown")}>
       <DropdownToggle
-        nav
         className={cx("nav-link", "fs-5")}
+        data-cy="navbar-toggle-user-menu"
         id="profile-dropdown"
+        nav
       >
         <PersonCircle className="bi" id="userIcon" />
       </DropdownToggle>
       <DropdownMenu
+        aria-labelledby="user-menu"
         className={cx(
           "user-menu",
           "btn-with-menu-options",
@@ -325,13 +327,12 @@ export function RenkuToolbarItemUser({
         )}
         end
         key="user-bar"
-        aria-labelledby="user-menu"
       >
         <ExternalLink
-          url={`${gatewayURL}/auth/user-profile`}
-          title="Account"
           className="dropdown-item"
           role="link"
+          title="Account"
+          url={`${gatewayURL}/auth/user-profile`}
         />
 
         <Link to={userSecretsUrl} className="dropdown-item">
@@ -366,12 +367,13 @@ export function RenkuToolbarItemUser({
 
         <DropdownItem divider />
         <a
-          id="logout-link"
           className="dropdown-item"
+          data-cy="navbar-logout"
+          href={`${uiserverURL}/auth/logout?redirect_url=${redirect_url}`}
+          id="logout-link"
           onClick={() => {
             LoginHelper.notifyLogout();
           }}
-          href={`${uiserverURL}/auth/logout?redirect_url=${redirect_url}`}
         >
           Logout
         </a>
