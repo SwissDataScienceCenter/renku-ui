@@ -386,6 +386,147 @@
         },
         "tags": ["session_launchers"]
       }
+    },
+    "/builds/{build_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "build_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the details of a container image build",
+        "responses": {
+          "200": {
+            "description": "The container image build",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Build"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["builds"]
+      },
+      "patch": {
+        "summary": "Update a container image build",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BuildPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated container image build",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Build"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["builds"]
+      }
+    },
+    "/builds/{build_id}/logs": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "build_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the logs of a container image build",
+        "responses": {
+          "200": {
+            "description": "The build logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildLogs"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["builds"]
+      }
+    },
+    "/environments/{environment_id}/builds": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "environment_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a session environment's list of builds",
+        "responses": {
+          "200": {
+            "description": "List of container image builds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["builds"]
+      },
+      "post": {
+        "summary": "Create a new container image build",
+        "responses": {
+          "201": {
+            "description": "The build was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Build"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["builds"]
+      }
     }
   },
   "components": {
@@ -1039,6 +1180,136 @@
         "type": "boolean",
         "description": "Whether this environment is archived and not for use in new projects or not",
         "default": false
+      },
+      "Build": {
+        "description": "A container image build",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BuildCommonPart"
+          },
+          {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuildNotCompletedPart"
+              },
+              {
+                "$ref": "#/components/schemas/BuildCompletedPart"
+              }
+            ]
+          }
+        ]
+      },
+      "BuildCommonPart": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "environment_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/CreationDate"
+          }
+        },
+        "required": ["id", "environment_id", "created_at"],
+        "additionalProperties": false
+      },
+      "BuildNotCompletedPart": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["in_progress", "failed", "cancelled"],
+            "example": "in_progress"
+          }
+        },
+        "required": ["status"],
+        "additionalProperties": false
+      },
+      "BuildCompletedPart": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["succeeded"],
+            "example": "succeeded"
+          },
+          "result": {
+            "$ref": "#/components/schemas/BuildResult"
+          }
+        },
+        "required": ["status", "result"],
+        "additionalProperties": false
+      },
+      "BuildList": {
+        "description": "A list of container image builds",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Build"
+        }
+      },
+      "BuildPatch": {
+        "description": "The requested update of a container image build",
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["cancelled"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "BuildLogs": {
+        "description": "The logs of a container image build",
+        "type": "array",
+        "items": {
+          "description": "The logs of build step",
+          "type": "object",
+          "properties": {
+            "process_name": {
+              "type": "string"
+            },
+            "stdout": {
+              "type": "string"
+            },
+            "stderr": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "BuildResult": {
+        "description": "The result of a container image build",
+        "type": "object",
+        "properties": {
+          "image": {
+            "$ref": "#/components/schemas/ContainerImage"
+          },
+          "completed_at": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "repository_url": {
+            "type": "string"
+          },
+          "repository_git_commit_sha": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "image",
+          "completed_at",
+          "repository_url",
+          "repository_git_commit_sha"
+        ],
+        "additionalProperties": false
+      },
+      "BuildStatus": {
+        "description": "The status of a container image build",
+        "type": "string",
+        "enum": ["in_progress", "succeeded", "failed", "cancelled"],
+        "example": "succeeded"
       },
       "ErrorResponse": {
         "type": "object",

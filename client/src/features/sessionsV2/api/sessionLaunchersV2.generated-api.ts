@@ -96,6 +96,45 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/projects/${queryArg.projectId}/session_launchers`,
       }),
     }),
+    getBuildsByBuildId: build.query<
+      GetBuildsByBuildIdApiResponse,
+      GetBuildsByBuildIdApiArg
+    >({
+      query: (queryArg) => ({ url: `/builds/${queryArg.buildId}` }),
+    }),
+    patchBuildsByBuildId: build.mutation<
+      PatchBuildsByBuildIdApiResponse,
+      PatchBuildsByBuildIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/builds/${queryArg.buildId}`,
+        method: "PATCH",
+        body: queryArg.buildPatch,
+      }),
+    }),
+    getBuildsByBuildIdLogs: build.query<
+      GetBuildsByBuildIdLogsApiResponse,
+      GetBuildsByBuildIdLogsApiArg
+    >({
+      query: (queryArg) => ({ url: `/builds/${queryArg.buildId}/logs` }),
+    }),
+    getEnvironmentsByEnvironmentIdBuilds: build.query<
+      GetEnvironmentsByEnvironmentIdBuildsApiResponse,
+      GetEnvironmentsByEnvironmentIdBuildsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/environments/${queryArg.environmentId}/builds`,
+      }),
+    }),
+    postEnvironmentsByEnvironmentIdBuilds: build.mutation<
+      PostEnvironmentsByEnvironmentIdBuildsApiResponse,
+      PostEnvironmentsByEnvironmentIdBuildsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/environments/${queryArg.environmentId}/builds`,
+        method: "POST",
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -157,6 +196,32 @@ export type GetProjectsByProjectIdSessionLaunchersApiResponse =
   /** status 200 List of sessions launchers */ SessionLaunchersList;
 export type GetProjectsByProjectIdSessionLaunchersApiArg = {
   projectId: Ulid;
+};
+export type GetBuildsByBuildIdApiResponse =
+  /** status 200 The container image build */ Build;
+export type GetBuildsByBuildIdApiArg = {
+  buildId: Ulid;
+};
+export type PatchBuildsByBuildIdApiResponse =
+  /** status 200 The updated container image build */ Build;
+export type PatchBuildsByBuildIdApiArg = {
+  buildId: Ulid;
+  buildPatch: BuildPatch;
+};
+export type GetBuildsByBuildIdLogsApiResponse =
+  /** status 200 The build logs */ BuildLogs;
+export type GetBuildsByBuildIdLogsApiArg = {
+  buildId: Ulid;
+};
+export type GetEnvironmentsByEnvironmentIdBuildsApiResponse =
+  /** status 200 List of container image builds */ BuildList;
+export type GetEnvironmentsByEnvironmentIdBuildsApiArg = {
+  environmentId: Ulid;
+};
+export type PostEnvironmentsByEnvironmentIdBuildsApiResponse =
+  /** status 201 The build was created */ Build;
+export type PostEnvironmentsByEnvironmentIdBuildsApiArg = {
+  environmentId: Ulid;
 };
 export type Ulid = string;
 export type SessionName = string;
@@ -311,6 +376,35 @@ export type SessionLauncherPatch = {
   disk_storage?: DiskStoragePatch;
   environment?: EnvironmentPatchInLauncher | EnvironmentIdOnlyPatch;
 };
+export type BuildCommonPart = {
+  id: Ulid;
+  environment_id: Ulid;
+  created_at: CreationDate;
+};
+export type BuildNotCompletedPart = {
+  status: "in_progress" | "failed" | "cancelled";
+};
+export type BuildResult = {
+  image: ContainerImage;
+  completed_at: CreationDate;
+  repository_url: string;
+  repository_git_commit_sha: string;
+};
+export type BuildCompletedPart = {
+  status: "succeeded";
+  result: BuildResult;
+};
+export type Build = BuildCommonPart &
+  (BuildNotCompletedPart | BuildCompletedPart);
+export type BuildPatch = {
+  status?: "cancelled";
+};
+export type BuildLogs = {
+  process_name?: string;
+  stdout?: string;
+  stderr?: string;
+}[];
+export type BuildList = Build[];
 export const {
   useGetEnvironmentsQuery,
   usePostEnvironmentsMutation,
@@ -323,4 +417,9 @@ export const {
   usePatchSessionLaunchersByLauncherIdMutation,
   useDeleteSessionLaunchersByLauncherIdMutation,
   useGetProjectsByProjectIdSessionLaunchersQuery,
+  useGetBuildsByBuildIdQuery,
+  usePatchBuildsByBuildIdMutation,
+  useGetBuildsByBuildIdLogsQuery,
+  useGetEnvironmentsByEnvironmentIdBuildsQuery,
+  usePostEnvironmentsByEnvironmentIdBuildsMutation,
 } = injectedRtkApi;
