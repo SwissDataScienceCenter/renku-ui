@@ -131,7 +131,11 @@ function ProjectDataConnectorBoxContent({
           {data != null && data.length > 0 && (
             <ListGroup flush>
               {data.map((dc) => (
-                <DataConnectorLinkDisplay key={dc.id} dataConnectorLink={dc} />
+                <DataConnectorLinkDisplay
+                  key={dc.id}
+                  dataConnectorLink={dc}
+                  projectPath={`${project.namespace}/${project.slug}`}
+                />
               ))}
             </ListGroup>
           )}
@@ -229,9 +233,11 @@ function DataConnectorLoadingBoxContent() {
 
 interface DataConnectorLinkDisplayProps {
   dataConnectorLink: DataConnectorToProjectLink;
+  projectPath: string;
 }
 function DataConnectorLinkDisplay({
   dataConnectorLink,
+  projectPath,
 }: DataConnectorLinkDisplayProps) {
   const { data_connector_id } = dataConnectorLink;
   const { data: dataConnector, isLoading } =
@@ -244,6 +250,12 @@ function DataConnectorLinkDisplay({
     <DataConnectorBoxListDisplay
       dataConnector={dataConnector}
       dataConnectorLink={dataConnectorLink}
+      warning={
+        projectPath != dataConnector.namespace &&
+        dataConnector.visibility == "private"
+          ? "Some members of this project may not be able to access this data connector"
+          : undefined
+      }
     />
   );
 }
