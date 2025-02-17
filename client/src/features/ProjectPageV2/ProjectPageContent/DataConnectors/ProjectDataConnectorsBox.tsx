@@ -31,7 +31,10 @@ import {
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 
-import { useGetDataConnectorsByDataConnectorIdQuery } from "../../../dataConnectorsV2/api/data-connectors.api";
+import {
+  useGetDataConnectorsByDataConnectorIdQuery,
+  useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
+} from "../../../dataConnectorsV2/api/data-connectors.api";
 import DataConnectorBoxListDisplay from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
@@ -43,6 +46,7 @@ import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../../proje
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
+import { InfoAlert } from "../../../../components/Alert";
 
 interface DataConnectorListDisplayProps {
   project: Project;
@@ -56,22 +60,45 @@ export default function ProjectDataConnectorsBox({
       projectId: project.id,
     });
 
-  if (isLoading) return <DataConnectorLoadingBoxContent />;
+  const {
+    data: dataGetInaccessible,
+    error: errorGetInaccessible,
+    isLoading: isLoadingGetInaccessible,
+  } = useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery({
+    projectId: project.id,
+  });
+
+  if (isLoading || isLoadingGetInaccessible)
+    return <DataConnectorLoadingBoxContent />;
 
   if (error || data == null) {
     return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
-  return <ProjectDataConnectorBoxContent data={data} project={project} />;
+  if (errorGetInaccessible || dataGetInaccessible == null) {
+    return (
+      <RtkOrNotebooksError error={errorGetInaccessible} dismissible={false} />
+    );
+  }
+
+  return (
+    <ProjectDataConnectorBoxContent
+      data={data}
+      project={project}
+      inaccessibleDataConnectors={dataGetInaccessible?.count}
+    />
+  );
 }
 
 interface ProjectDataConnectorBoxContentProps
   extends DataConnectorListDisplayProps {
   data: GetProjectsByProjectIdDataConnectorLinksApiResponse;
+  inaccessibleDataConnectors?: number;
 }
 function ProjectDataConnectorBoxContent({
   data,
   project,
+  inaccessibleDataConnectors,
 }: ProjectDataConnectorBoxContentProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const toggleOpen = useCallback(() => {
@@ -83,7 +110,7 @@ function ProjectDataConnectorBoxContent({
         <ProjectDataConnectorBoxHeader
           projectId={project.id}
           toggleOpen={toggleOpen}
-          totalConnectors={data.length}
+          totalConnectors={data.length + (inaccessibleDataConnectors || 0)}
         />
         <CardBody>
           {data.length === 0 && (
@@ -92,6 +119,15 @@ function ProjectDataConnectorBoxContent({
               cloud storage to read and write custom data.
             </p>
           )}
+          {inaccessibleDataConnectors != null &&
+            inaccessibleDataConnectors > 0 && (
+              <InfoAlert timeout={0} dismissible={false} className={cx("mb-3")}>
+                <p className="mb-0">
+                  You are missing access to {inaccessibleDataConnectors} data
+                  connector(s) in this project.
+                </p>
+              </InfoAlert>
+            )}
           {data != null && data.length > 0 && (
             <ListGroup flush>
               {data.map((dc) => (
