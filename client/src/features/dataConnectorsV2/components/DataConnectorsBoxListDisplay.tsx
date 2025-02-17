@@ -36,11 +36,13 @@ interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;
   dataConnectorLink?: DataConnectorToProjectLink;
   extendedPreview?: boolean;
+  warning?: string;
 }
 export default function DataConnectorBoxListDisplay({
   dataConnector,
   dataConnectorLink,
   extendedPreview,
+  warning,
 }: DataConnectorBoxListDisplayProps) {
   const {
     name,
@@ -142,6 +144,7 @@ export default function DataConnectorBoxListDisplay({
                     Public
                   </div>
                 )}
+                {warning && <p>{warning}</p>}
                 {extendedPreview && readOnly}
               </div>
               <TimeCaption
