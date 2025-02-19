@@ -47,15 +47,18 @@ import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
 import DataConnectorModalResult from "./DataConnectorModalResult";
 import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo";
+import type { Project } from "../../../projectsV2/api/projectV2.api";
 
 interface AddOrEditDataConnectorProps {
   storageSecrets: DataConnectorSecret[];
+  project?: Project;
 }
 
 type DataConnectorModalBodyProps = AddOrEditDataConnectorProps;
 
 export default function DataConnectorModalBody({
   storageSecrets,
+  project,
 }: DataConnectorModalBodyProps) {
   const { flatDataConnector, schemata, success } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -76,13 +79,17 @@ export default function DataConnectorModalBody({
           Or, connect to cloud storage to read and write custom data.
         </p>
       )}
-      <AddOrEditDataConnector storageSecrets={storageSecrets} />
+      <AddOrEditDataConnector
+        storageSecrets={storageSecrets}
+        project={project}
+      />
     </>
   );
 }
 
 function AddOrEditDataConnector({
   storageSecrets,
+  project,
 }: AddOrEditDataConnectorProps) {
   const { cloudStorageState, flatDataConnector, schemata, validationResult } =
     useAppSelector((state) => state.dataConnectorFormSlice);
@@ -150,7 +157,10 @@ function AddOrEditDataConnector({
             setState={setState}
           />
         </div>
-        <DataConnectorContentByStep storageSecrets={storageSecrets} />
+        <DataConnectorContentByStep
+          storageSecrets={storageSecrets}
+          project={project}
+        />
       </>
     );
   return <p>Error - not implemented yet</p>;
@@ -173,7 +183,7 @@ type DataConnectorMountFormFields =
   | "mountPoint"
   | "readOnly"
   | "saveCredentials";
-export function DataConnectorMount() {
+export function DataConnectorMount({ project }: AddOrEditDataConnectorProps) {
   const dispatch = useAppDispatch();
   const { cloudStorageState, flatDataConnector, schemata } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -316,6 +326,7 @@ export function DataConnectorMount() {
                   field.onChange(e);
                   onFieldValueChange("namespace", e?.slug ?? "");
                 }}
+                project={project}
               />
             );
           }}
