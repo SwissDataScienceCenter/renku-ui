@@ -116,7 +116,10 @@ const injectedRtkApi = api.injectEndpoints({
       GetBuildsByBuildIdLogsApiResponse,
       GetBuildsByBuildIdLogsApiArg
     >({
-      query: (queryArg) => ({ url: `/builds/${queryArg.buildId}/logs` }),
+      query: (queryArg) => ({
+        url: `/builds/${queryArg.buildId}/logs`,
+        params: { max_lines: queryArg.maxLines },
+      }),
     }),
     getEnvironmentsByEnvironmentIdBuilds: build.query<
       GetEnvironmentsByEnvironmentIdBuildsApiResponse,
@@ -212,6 +215,8 @@ export type GetBuildsByBuildIdLogsApiResponse =
   /** status 200 The build logs */ BuildLogs;
 export type GetBuildsByBuildIdLogsApiArg = {
   buildId: Ulid;
+  /** The maximum number of most-recent lines to return for each container */
+  maxLines?: number;
 };
 export type GetEnvironmentsByEnvironmentIdBuildsApiResponse =
   /** status 200 List of container image builds */ BuildList;
@@ -400,10 +405,8 @@ export type BuildPatch = {
   status?: "cancelled";
 };
 export type BuildLogs = {
-  process_name?: string;
-  stdout?: string;
-  stderr?: string;
-}[];
+  [key: string]: string;
+};
 export type BuildList = Build[];
 export const {
   useGetEnvironmentsQuery,
