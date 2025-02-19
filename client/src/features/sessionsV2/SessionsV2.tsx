@@ -20,7 +20,14 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
-import { Bricks, Pencil, PlayCircle, Trash, XLg } from "react-bootstrap-icons";
+import {
+  Bricks,
+  FileEarmarkText,
+  Pencil,
+  PlayCircle,
+  Trash,
+  XLg,
+} from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import {
   Badge,
@@ -246,6 +253,15 @@ export function SessionV2Actions({
       </DropdownItem>
     );
 
+  const showLastBuildLogsAction = launcher.environment.environment_kind ===
+    "CUSTOM" &&
+    launcher.environment.environment_image_source === "build" && (
+      <DropdownItem data-cy="session-view-menu-show-last-build-logs" disabled>
+        <FileEarmarkText className={cx("bi", "me-1")} />
+        Show logs from last build
+      </DropdownItem>
+    );
+
   return (
     <>
       <PermissionsGuard
@@ -266,6 +282,7 @@ export function SessionV2Actions({
                 Delete
               </DropdownItem>
               {rebuildAction}
+              {showLastBuildLogsAction}
             </ButtonWithMenuV2>
             <UpdateSessionLauncherModal
               isOpen={isUpdateOpen}
