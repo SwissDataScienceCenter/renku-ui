@@ -38,6 +38,8 @@ import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import type { PaginatedState } from "../../session/components/options/fetchMore.types";
 import type { GetNamespacesApiResponse } from "../api/projectV2.enhanced-api";
+import type { Project } from "../api/projectV2.api";
+import type { NamespaceResponse } from "../api/namespace.enhanced-api";
 import {
   useGetNamespacesByNamespaceSlugQuery,
   useGetNamespacesQuery,
@@ -273,6 +275,7 @@ interface ProjectNamespaceControlProps {
   inputId: string;
   onChange: (newValue: SingleValue<ResponseNamespace>) => void;
   value?: string;
+  project?: Project;
 }
 
 export function ProjectNamespaceControl({
@@ -283,6 +286,7 @@ export function ProjectNamespaceControl({
   onChange,
   value,
   "data-cy": dataCy,
+  project,
 }: ProjectNamespaceControlProps) {
   const {
     data: namespacesFirstPage,
@@ -392,6 +396,23 @@ export function ProjectNamespaceControl({
     });
   }, [allNamespaces, specificNamespace, specificNamespaceRequestId]);
 
+  const allNamespacesWithProject = useMemo(() => {
+    if (!project) {
+      return allNamespaces || [];
+    }
+    return [
+      {
+        id: project.id,
+        slug: `${project.namespace}/${project.slug}`,
+        creation_date: project.creation_date,
+        created_by: project.created_by,
+        namespace_kind: "project",
+        name: `${project.namespace}/${project.slug}`,
+      } as NamespaceResponse,
+      ...(allNamespaces || []),
+    ];
+  }, [allNamespaces, project]);
+
   if (isFetching) {
     return (
       <div className={cx(className, "form-control")} id={id}>
@@ -418,7 +439,7 @@ export function ProjectNamespaceControl({
         hasMore={hasMore}
         inputId={inputId}
         isFetchingMore={namespacesPageResult.isFetching}
-        namespaces={allNamespaces}
+        namespaces={allNamespacesWithProject}
         onChange={onChange}
         onFetchMore={onFetchMore}
       />
