@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
-import { Bricks, Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
+import { Bricks, Pencil, PlayCircle, Trash, XLg } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import {
   Badge,
@@ -28,11 +30,18 @@ import {
   CardHeader,
   DropdownItem,
   ListGroup,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import {
+  RtkErrorAlert,
+  RtkOrNotebooksError,
+} from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -45,6 +54,7 @@ import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import {
+  useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
 } from "./api/sessionLaunchersV2.api";
@@ -195,10 +205,21 @@ export function SessionV2Actions({
     setIsDeleteOpen((open) => !open);
   }, []);
 
-  const [postBuild /*, result*/] = usePostBuildMutation();
+  const [postBuild, result] = usePostBuildMutation();
   const triggerBuild = useCallback(() => {
     postBuild({ environmentId: launcher.environment.id });
   }, [launcher.environment.id, postBuild]);
+
+  const { data: builds } = useGetBuildsQuery(
+    launcher.environment.environment_image_source === "build"
+      ? { environmentId: launcher.environment.id }
+      : skipToken
+  );
+  const hasInProgressBuild = useMemo(
+    () =>
+      builds ? !!builds.find(({ status }) => status === "in_progress") : false,
+    [builds]
+  );
 
   const defaultAction = (
     <Button
@@ -215,48 +236,55 @@ export function SessionV2Actions({
 
   const rebuildAction = launcher.environment.environment_kind === "CUSTOM" &&
     launcher.environment.environment_image_source === "build" && (
-      <DropdownItem data-cy="session-view-menu-rebuild" onClick={triggerBuild}>
+      <DropdownItem
+        data-cy="session-view-menu-rebuild"
+        disabled={hasInProgressBuild}
+        onClick={triggerBuild}
+      >
         <Bricks className={cx("bi", "me-1")} />
         Rebuild session image
       </DropdownItem>
     );
 
   return (
-    <PermissionsGuard
-      disabled={null}
-      enabled={
-        <>
-          <ButtonWithMenuV2
-            color="outline-primary"
-            default={defaultAction}
-            preventPropagation
-            size="sm"
-          >
-            <DropdownItem
-              data-cy="session-view-menu-delete"
-              onClick={toggleDelete}
+    <>
+      <PermissionsGuard
+        disabled={null}
+        enabled={
+          <>
+            <ButtonWithMenuV2
+              color="outline-primary"
+              default={defaultAction}
+              preventPropagation
+              size="sm"
             >
-              <Trash className={cx("bi", "me-1")} />
-              Delete
-            </DropdownItem>
-            {rebuildAction}
-          </ButtonWithMenuV2>
-          <UpdateSessionLauncherModal
-            isOpen={isUpdateOpen}
-            launcher={launcher}
-            toggle={toggleUpdate}
-          />
-          <DeleteSessionV2Modal
-            isOpen={isDeleteOpen}
-            launcher={launcher}
-            toggle={toggleDelete}
-            sessionsLength={sessionsLength}
-          />
-        </>
-      }
-      requestedPermission="write"
-      userPermissions={permissions}
-    />
+              <DropdownItem
+                data-cy="session-view-menu-delete"
+                onClick={toggleDelete}
+              >
+                <Trash className={cx("bi", "me-1")} />
+                Delete
+              </DropdownItem>
+              {rebuildAction}
+            </ButtonWithMenuV2>
+            <UpdateSessionLauncherModal
+              isOpen={isUpdateOpen}
+              launcher={launcher}
+              toggle={toggleUpdate}
+            />
+            <DeleteSessionV2Modal
+              isOpen={isDeleteOpen}
+              launcher={launcher}
+              toggle={toggleDelete}
+              sessionsLength={sessionsLength}
+            />
+          </>
+        }
+        requestedPermission="write"
+        userPermissions={permissions}
+      />
+      <RebuildFailedModal error={result.error} reset={result.reset} />
+    </>
   );
 }
 
@@ -297,5 +325,35 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
         isOpen={isSessionViewOpen}
       />
     </>
+  );
+}
+
+interface RebuildFailedModalProps {
+  error: FetchBaseQueryError | SerializedError | undefined;
+  reset: () => void;
+}
+
+function RebuildFailedModal({ error, reset }: RebuildFailedModalProps) {
+  return (
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={error != null}
+      size="lg"
+      toggle={reset}
+    >
+      <ModalHeader toggle={reset}>
+        Error: could not rebuild session image
+      </ModalHeader>
+      <ModalBody>
+        <RtkOrNotebooksError error={error} dismissible={false} />
+      </ModalBody>
+      <ModalFooter>
+        <Button color="outline-primary" onClick={reset}>
+          <XLg className={cx("bi", "me-1")} />
+          Close
+        </Button>
+      </ModalFooter>
+    </ScrollableModal>
   );
 }

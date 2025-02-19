@@ -188,8 +188,7 @@ function CustomBuildEnvironmentValues({
       ? { environmentId: environment.id }
       : skipToken,
     {
-      // TODO: use 1 second once the backend has a k8s cache
-      pollingInterval: 30_000,
+      pollingInterval: 1_000,
     }
   );
 
