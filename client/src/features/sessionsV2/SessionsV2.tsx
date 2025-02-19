@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   Bricks,
   FileEarmarkText,
@@ -27,6 +27,7 @@ import {
   PlayCircle,
   Trash,
   XLg,
+  XOctagon,
 } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import {
@@ -43,6 +44,7 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
+import { EnvironmentLogsPresent, type ILogs } from "../../components/Logs";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import {
   RtkErrorAlert,
@@ -59,10 +61,12 @@ import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import SessionItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
-import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
+import type { BuildList, SessionLauncher } from "./api/sessionLaunchersV2.api";
 import {
+  useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
+  usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
 } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
@@ -204,12 +208,16 @@ export function SessionV2Actions({
 
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isLogsOpen, setIsLogsOpen] = useState(false);
 
   const toggleUpdate = useCallback(() => {
     setIsUpdateOpen((open) => !open);
   }, []);
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
+  }, []);
+  const toggleLogs = useCallback(() => {
+    setIsLogsOpen((open) => !open);
   }, []);
 
   const [postBuild, result] = usePostBuildMutation();
@@ -222,11 +230,21 @@ export function SessionV2Actions({
       ? { environmentId: launcher.environment.id }
       : skipToken
   );
-  const hasInProgressBuild = useMemo(
-    () =>
-      builds ? !!builds.find(({ status }) => status === "in_progress") : false,
+  const inProgressBuild = useMemo(
+    () => builds?.find(({ status }) => status === "in_progress"),
     [builds]
   );
+  const hasInProgressBuild = !!inProgressBuild;
+
+  const [patchBuild, patchResult] = usePatchBuildMutation();
+  const onCancelBuild = useCallback(() => {
+    if (inProgressBuild != null) {
+      patchBuild({
+        buildId: inProgressBuild?.id,
+        buildPatch: { status: "cancelled" },
+      });
+    }
+  }, [inProgressBuild, patchBuild]);
 
   const defaultAction = (
     <Button
@@ -241,25 +259,38 @@ export function SessionV2Actions({
     </Button>
   );
 
-  const rebuildAction = launcher.environment.environment_kind === "CUSTOM" &&
+  const buildActions = launcher.environment.environment_kind === "CUSTOM" &&
     launcher.environment.environment_image_source === "build" && (
-      <DropdownItem
-        data-cy="session-view-menu-rebuild"
-        disabled={hasInProgressBuild}
-        onClick={triggerBuild}
-      >
-        <Bricks className={cx("bi", "me-1")} />
-        Rebuild session image
-      </DropdownItem>
-    );
-
-  const showLastBuildLogsAction = launcher.environment.environment_kind ===
-    "CUSTOM" &&
-    launcher.environment.environment_image_source === "build" && (
-      <DropdownItem data-cy="session-view-menu-show-last-build-logs" disabled>
-        <FileEarmarkText className={cx("bi", "me-1")} />
-        Show logs from last build
-      </DropdownItem>
+      <>
+        {hasInProgressBuild ? (
+          <DropdownItem
+            data-cy="session-view-menu-cancel-build"
+            disabled={!hasInProgressBuild}
+            onClick={onCancelBuild}
+          >
+            <XOctagon className={cx("bi", "me-1")} />
+            Cancel current build
+          </DropdownItem>
+        ) : (
+          <DropdownItem
+            data-cy="session-view-menu-rebuild"
+            disabled={hasInProgressBuild}
+            onClick={triggerBuild}
+          >
+            <Bricks className={cx("bi", "me-1")} />
+            Rebuild session image
+          </DropdownItem>
+        )}
+        {builds && builds.length > 0 && (
+          <DropdownItem
+            data-cy="session-view-menu-show-last-build-logs"
+            onClick={toggleLogs}
+          >
+            <FileEarmarkText className={cx("bi", "me-1")} />
+            Show logs from {hasInProgressBuild ? "current" : "last"} build
+          </DropdownItem>
+        )}
+      </>
     );
 
   return (
@@ -281,8 +312,7 @@ export function SessionV2Actions({
                 <Trash className={cx("bi", "me-1")} />
                 Delete
               </DropdownItem>
-              {rebuildAction}
-              {showLastBuildLogsAction}
+              {buildActions}
             </ButtonWithMenuV2>
             <UpdateSessionLauncherModal
               isOpen={isUpdateOpen}
@@ -300,7 +330,28 @@ export function SessionV2Actions({
         requestedPermission="write"
         userPermissions={permissions}
       />
-      <RebuildFailedModal error={result.error} reset={result.reset} />
+      {launcher.environment.environment_kind === "CUSTOM" &&
+        launcher.environment.environment_image_source === "build" && (
+          <>
+            <BuildActionFailedModal
+              error={result.error}
+              reset={result.reset}
+              title="Error: could not rebuild session image"
+            />
+            <BuildActionFailedModal
+              error={patchResult.error}
+              reset={patchResult.reset}
+              title="Error: could not cancel image build"
+            />
+            {builds && (
+              <BuildLogsModal
+                builds={builds}
+                isOpen={isLogsOpen}
+                toggle={toggleLogs}
+              />
+            )}
+          </>
+        )}
     </>
   );
 }
@@ -345,12 +396,17 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
   );
 }
 
-interface RebuildFailedModalProps {
+interface BuildActionFailedModalProps {
   error: FetchBaseQueryError | SerializedError | undefined;
   reset: () => void;
+  title: ReactNode;
 }
 
-function RebuildFailedModal({ error, reset }: RebuildFailedModalProps) {
+function BuildActionFailedModal({
+  error,
+  reset,
+  title,
+}: BuildActionFailedModalProps) {
   return (
     <ScrollableModal
       backdrop="static"
@@ -359,9 +415,7 @@ function RebuildFailedModal({ error, reset }: RebuildFailedModalProps) {
       size="lg"
       toggle={reset}
     >
-      <ModalHeader toggle={reset}>
-        Error: could not rebuild session image
-      </ModalHeader>
+      <ModalHeader toggle={reset}>{title}</ModalHeader>
       <ModalBody>
         <RtkOrNotebooksError error={error} dismissible={false} />
       </ModalBody>
@@ -372,5 +426,72 @@ function RebuildFailedModal({ error, reset }: RebuildFailedModalProps) {
         </Button>
       </ModalFooter>
     </ScrollableModal>
+  );
+}
+
+interface BuildLogsModalProps {
+  builds: BuildList;
+  isOpen: boolean;
+  toggle: () => void;
+}
+
+function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
+  const lastBuild = builds.at(0);
+  const name = lastBuild?.id ?? "build_logs";
+
+  const [logs, setLogs] = useState<ILogs>({
+    data: {},
+    fetched: false,
+    fetching: false,
+    show: isOpen,
+  });
+
+  const { data, isFetching, refetch } = useGetBuildLogsQuery(
+    isOpen && lastBuild
+      ? {
+          buildId: lastBuild.id,
+        }
+      : skipToken
+  );
+  const fetchLogs = useCallback(
+    () =>
+      refetch().then((result) => {
+        if (result.error) {
+          throw result.error;
+        }
+        if (result.data == null) {
+          throw new Error("Could not retrieve logs");
+        }
+        return result.data;
+      }),
+    [refetch]
+  );
+
+  useEffect(() => {
+    setLogs((prevState) => ({ ...prevState, show: isOpen ? name : false }));
+  }, [isOpen, name]);
+  useEffect(() => {
+    setLogs((prevState) => ({ ...prevState, fetching: isFetching }));
+  }, [isFetching]);
+  useEffect(() => {
+    setLogs((prevState) => ({
+      ...prevState,
+      fetched: !!data,
+      data: data ? data : {},
+    }));
+  }, [data]);
+
+  if (lastBuild == null) {
+    return null;
+  }
+
+  return (
+    <EnvironmentLogsPresent
+      fetchLogs={fetchLogs}
+      toggleLogs={toggle}
+      logs={logs}
+      name={name}
+      title="Logs"
+    />
   );
 }
