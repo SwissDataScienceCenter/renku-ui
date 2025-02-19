@@ -129,6 +129,7 @@ function JsonField<T extends FieldValues>({
         render={({ field }) => (
           <textarea
             className={cx("w-100 form-control", errors?.[name] && "is-invalid")}
+            data-cy={`session-launcher-field-${name}`}
             id={`addSessionLauncher${name}`}
             rows={2}
             {...field}
