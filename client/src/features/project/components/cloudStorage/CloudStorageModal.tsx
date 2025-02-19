@@ -403,6 +403,7 @@ export default function CloudStorageModal({
           storageId={storageId}
           success={success}
           validationSucceeded={validationSucceeded}
+          projectId={projectId}
         />
       </ModalBody>
 

@@ -17,10 +17,12 @@ import type {
   GetGroupsApiArg,
   GetGroupsApiResponse as GetGroupsApiResponseOrig,
   GetNamespacesApiArg,
-  GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
   GroupResponseList,
-  NamespaceResponseList,
 } from "./namespace.api";
+import type {
+  GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
+  NamespaceResponseList,
+} from "./namespace.enhanced-api";
 
 export interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;
