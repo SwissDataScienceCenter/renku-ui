@@ -36,11 +36,11 @@ export default function AnnounceV2Banner() {
       </div>
       <div className="me-3">
         <Link to={ABSOLUTE_ROUTES.root} className={cx("btn", "btn-primary")}>
-          Try it out now
+          Explore Renku 2.0
         </Link>
       </div>
       <div>
-        <LearnAboutV2Button>Learn more</LearnAboutV2Button>
+        <LearnAboutV2Button />
       </div>
     </div>
   );

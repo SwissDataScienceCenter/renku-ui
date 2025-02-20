@@ -25,7 +25,7 @@ interface LearnAboutV2ButtonProps {
   outline?: boolean;
 }
 export default function LearnAboutV2Button({
-  children = "Learn more about Renku 2.0",
+  children = "Learn more",
   color = "light",
   outline = false,
 }: LearnAboutV2ButtonProps) {
