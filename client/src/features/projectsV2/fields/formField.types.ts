@@ -28,7 +28,7 @@ export interface SlugPreviewFormFieldProps<T extends FieldValues>
   extends GenericProjectFormFieldProps<T> {
   compact?: boolean;
   resetFunction?: () => void;
-  url: string;
+  parentPath: string;
   slug: string;
   label: string;
   entityName: "project" | "group";

@@ -460,19 +460,21 @@ flowchart LR
       subgraph L1
         A(/)-->DA(/datasets)
         A-->HE(/help)
-        A-->LOOUT(/logout)
+        A-->LOGOUT(/logout)
         A-->PR(/projects)
         A-->SEA(/search)
         A-->SE(/sessions)
+        A-->V1(/v1)
       end
       subgraph L2
-        PR-->PR1(/new)
         PR-->PRID(/:id)
         DA-->DAID(/:id)
         HE-->HE1(/changes)
         HE-->HE2(/docs)
         HE-->HE3(/features)
         HE-->HE4(/status)
+        V1-->V1_HE(/help)
+        V1-->V1_PR_NEW(/projects/new)
       end
       subgraph L3
         PRID-->PRID1(/overview)

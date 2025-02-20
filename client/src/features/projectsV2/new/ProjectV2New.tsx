@@ -170,7 +170,14 @@ function ProjectV2CreationDetails() {
     });
   }, [setValue, currentName]);
 
-  const url = `renkulab.io/v2/projects/${currentNamespace ?? "<Owner>"}/`;
+  const projectParentPath = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.root,
+    {
+      namespace: currentNamespace ?? "<Owner>",
+      slug: "",
+    }
+  );
+  const parentPath = `${projectParentPath}/`;
 
   return (
     <>
@@ -200,7 +207,7 @@ function ProjectV2CreationDetails() {
                 errors={errors}
                 name="slug"
                 resetFunction={resetUrl}
-                url={url}
+                parentPath={parentPath}
                 slug={currentSlug}
                 dirtyFields={dirtyFields}
                 label="Project URL"

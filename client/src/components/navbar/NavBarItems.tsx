@@ -74,7 +74,7 @@ export function RenkuToolbarItemPlus() {
       <Link
         className="dropdown-item"
         id="navbar-project-new"
-        to="/projects/new"
+        to={ABSOLUTE_ROUTES.v1.projects.new}
       >
         Project
       </Link>
@@ -345,7 +345,7 @@ export function RenkuToolbarItemUser({
         {isV2 && (
           <>
             <Link
-              to={ABSOLUTE_ROUTES.v2.connectedServices}
+              to={ABSOLUTE_ROUTES.v2.integrations}
               className="dropdown-item"
             >
               Integrations
