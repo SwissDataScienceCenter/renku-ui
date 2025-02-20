@@ -238,7 +238,7 @@ describe("Edit v2 project", () => {
       )
       .should("be.visible");
     cy.getDataCy("project-documentation-modal-body")
-      .find(".ck-content")
+      .find(".editor")
       .click()
       .clear()
       .type("new description");

@@ -33,17 +33,18 @@ import {
 import { useForm } from "react-hook-form";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import TextAreaInput from "../../../../components/form-field/TextAreaInput.tsx";
 import { Loader } from "../../../../components/Loader";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 
-import styles from "./Documentation.module.scss";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+
+import DocumentationInput from "./DocumentationInput";
+import styles from "./Documentation.module.scss";
 
 // Taken from src/features/projectsV2/api/projectV2.openapi.json
 const DESCRIPTION_MAX_LENGTH = 5000;
@@ -183,6 +184,7 @@ function DocumentationModal({
       value: DESCRIPTION_MAX_LENGTH,
     },
   });
+  const getValue = useCallback(() => getValues("documentation"), [getValues]);
   return (
     <ScrollableModal
       backdrop="static"
@@ -204,9 +206,9 @@ function DocumentationModal({
           className={styles.modalBody}
         >
           <div className="mb-1">
-            <TextAreaInput<DocumentationForm>
+            <DocumentationInput<DocumentationForm>
               control={control}
-              getValue={() => getValues("documentation")}
+              getValue={getValue}
               name="documentation"
               register={documentationField}
             />

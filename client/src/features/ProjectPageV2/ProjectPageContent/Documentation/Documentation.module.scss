@@ -1,3 +1,16 @@
 .modalBody {
   max-height: 75vh;
 }
+
+.documentationEditor {
+  :global(.milkdown) {
+    --crepe-font-title: "Inter", sans-serif;
+    --crepe-font-default: "Inter", sans-serif;
+    --crepe-font-code: "Space Mono", Fira Code, Menlo, Monaco, "Courier New",
+      Courier, monospace;
+  }
+
+  :global(.milkdown) :global(.ProseMirror) {
+    padding: 30px 60px;
+  }
+}
