@@ -73,5 +73,6 @@ export function useGetDockerImage() {
     registryTagIsFetching,
     projectConfig,
     commits,
+    branch: defaultBranch,
   };
 }

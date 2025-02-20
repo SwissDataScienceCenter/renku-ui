@@ -21,7 +21,10 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/renku_v1_projects/${queryArg.v1Id}/migrations`,
         method: "POST",
-        body: queryArg.projectPost,
+        body: {
+          project: queryArg.projectMigrationPost.project,
+          session_launcher: queryArg.projectMigrationPost.sessionLauncher,
+        },
       }),
     }),
     getProjectsByProjectId: build.query<
@@ -211,7 +214,14 @@ export type PostProjectsApiArg = {
   projectPost: ProjectPost;
 };
 export type PostProjectsMigrationsApiArg = {
-  projectPost: ProjectPost;
+  projectMigrationPost: {
+    project: ProjectPost;
+    sessionLauncher: {
+      containerImage: string;
+      defaultUrl?: string;
+      name: string;
+    };
+  };
   v1Id: number;
 };
 export type GetProjectsByProjectIdApiResponse =
