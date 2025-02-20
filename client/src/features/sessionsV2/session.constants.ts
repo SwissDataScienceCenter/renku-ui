@@ -91,6 +91,7 @@ export const CONTAINER_IMAGE_PATTERN =
 
 export const BUILDER_IMAGE_NOT_READY_VALUE = "image:unknown-at-the-moment";
 
+/* eslint-disable spellcheck/spell-checker */
 export const BUILDER_TYPES = [
   {
     value: "python",
@@ -98,3 +99,15 @@ export const BUILDER_TYPES = [
     description: "Using conda is recommended. Blah blah blah.",
   },
 ] as readonly BuilderSelectorOption[];
+/* eslint-enable spellcheck/spell-checker */
+
+/* eslint-disable spellcheck/spell-checker */
+export const BUILDER_FRONTENDS = [
+  {
+    value: "vscodium",
+    label: "VSCodium",
+    description:
+      "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft’s editor VS Code.",
+  },
+] as readonly BuilderSelectorOption[];
+/* eslint-enable spellcheck/spell-checker */

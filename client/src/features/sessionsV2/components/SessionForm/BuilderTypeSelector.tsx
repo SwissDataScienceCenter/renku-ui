@@ -17,8 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
-import { ChevronDown } from "react-bootstrap-icons";
+import { useMemo } from "react";
 import {
   Controller,
   type FieldValues,
@@ -26,20 +25,9 @@ import {
   type PathValue,
   type UseControllerProps,
 } from "react-hook-form";
-import Select, {
-  components,
-  type ClassNamesConfig,
-  type GroupBase,
-  type SelectComponentsConfig,
-  type SingleValue,
-} from "react-select";
 import { Label } from "reactstrap";
-
-import styles from "./Select.module.scss";
-
-/* eslint-disable spellcheck/spell-checker */
-const BUILDER_TYPES = ["python"] as const;
-/* eslint-enable spellcheck/spell-checker */
+import { BUILDER_TYPES } from "../../session.constants";
+import BuilderSelectorCommon from "./BuilderSelectorCommon";
 
 interface BuilderTypeSelectorProps<T extends FieldValues>
   extends UseControllerProps<T> {}
@@ -71,7 +59,7 @@ export default function BuilderTypeSelector<T extends FieldValues>({
               className={cx(error && "is-invalid")}
               data-cy="environment-type-select"
             >
-              <BuilderTypeSelect
+              <BuilderSelectorCommon
                 name={controllerProps.name}
                 defaultValue={defaultValue}
                 options={BUILDER_TYPES}
@@ -100,90 +88,3 @@ export default function BuilderTypeSelector<T extends FieldValues>({
     </div>
   );
 }
-
-interface BuilderTypeSelectProps {
-  name: string;
-
-  defaultValue?: string;
-
-  options: readonly string[];
-
-  onChange?: (newValue?: string) => void;
-  onBlur?: () => void;
-  value: string;
-  disabled?: boolean;
-}
-
-function BuilderTypeSelect({
-  name,
-  options,
-  defaultValue,
-  onBlur,
-  onChange: onChange_,
-  disabled,
-  value,
-}: BuilderTypeSelectProps) {
-  const onChange = useCallback(
-    (newValue: SingleValue<{ value: string }>) => {
-      onChange_?.(newValue?.value);
-    },
-    [onChange_]
-  );
-
-  return (
-    <Select
-      id="builder-environment-type-select"
-      inputId="builder-environment-type-select-input"
-      name={name}
-      isClearable={false}
-      isSearchable
-      options={options.map((value) => ({ value }))}
-      getOptionLabel={({ value }) => value}
-      getOptionValue={({ value }) => value}
-      unstyled
-      onChange={onChange}
-      onBlur={onBlur}
-      value={{ value }}
-      isDisabled={disabled}
-      defaultValue={defaultValue ? { value: defaultValue } : undefined}
-      classNames={selectClassNames}
-      components={selectComponents}
-    />
-  );
-}
-
-const selectClassNames: ClassNamesConfig<{ value: string }, false> = {
-  control: ({ menuIsOpen }) =>
-    cx(menuIsOpen ? "rounded-top" : "rounded", "border", styles.control),
-  dropdownIndicator: () => cx("pe-3"),
-  input: () => cx("px-3"),
-  menu: () => cx("bg-white", "rounded-bottom", "border"),
-  menuList: () => cx("d-grid"),
-  option: ({ isFocused, isSelected, isDisabled }) =>
-    cx(
-      "px-3",
-      "py-2",
-      isDisabled && "text-secondary",
-      styles.option,
-      isDisabled && styles.optionIsDisabled,
-      isFocused && !isDisabled && styles.optionIsFocused,
-      !isFocused && isSelected && !isDisabled && styles.optionIsSelected
-    ),
-  placeholder: () => cx("px-3"),
-  loadingMessage: () => cx("p-3"),
-  singleValue: () => cx("px-3"),
-};
-
-const selectComponents: SelectComponentsConfig<
-  { value: string },
-  false,
-  GroupBase<{ value: string }>
-> = {
-  DropdownIndicator: (props) => {
-    return (
-      <components.DropdownIndicator {...props}>
-        <ChevronDown className="bi" />
-      </components.DropdownIndicator>
-    );
-  },
-};
