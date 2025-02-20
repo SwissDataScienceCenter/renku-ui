@@ -96,18 +96,22 @@ export const BUILDER_TYPES = [
   {
     value: "python",
     label: "Python",
-    description: "Using conda is recommended. Blah blah blah.",
+    description: (
+      <>
+        Create a Python environment from an <code>environment.yml</code> file.
+        This file must be at the root of the repository. See the documentation
+        for examples.
+      </>
+    ),
   },
 ] as readonly BuilderSelectorOption[];
-/* eslint-enable spellcheck/spell-checker */
 
 /* eslint-disable spellcheck/spell-checker */
 export const BUILDER_FRONTENDS = [
   {
     value: "vscodium",
     label: "VSCodium",
-    description:
-      "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft’s editor VS Code.",
+    description: "A freely-licensed version Microsoft’s editor VS Code.",
   },
 ] as readonly BuilderSelectorOption[];
 /* eslint-enable spellcheck/spell-checker */
