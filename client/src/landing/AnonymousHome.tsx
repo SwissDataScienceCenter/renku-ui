@@ -27,7 +27,6 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment, useContext, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
@@ -36,13 +35,10 @@ import AppContext from "../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 import { Url } from "../utils/helpers/url";
 
-import { NavBarWarnings } from "./NavBarWarnings";
-
-import VisualHead from "./Graphics/Visual_Head.svg";
-
 import DividerLandingPage from "./Dividier/Divider";
 import GetStarted from "./GetSarted/GetStarted";
 import HeroLanding from "./HeroLanding/HeroLanding";
+import { NavBarWarnings } from "./NavBarWarnings";
 import SectionShowcase, { validatedShowcaseConfig } from "./SectionShowcase";
 import Teaching from "./Teaching/Teaching";
 import WhatIsRenku from "./WhatIsRenku/WhatIsRenku";
@@ -50,10 +46,13 @@ import WhoWeAre from "./WhoWeAre/WhoWeAre";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
 
+import VisualHead from "./Graphics/Visual_Head.svg";
+
 // ? react-autosuggest styles are defined there q_q
 // ? also, the order of import matters here q_q
 import "../project/new/Project.style.css";
 // ? the "quick-nav" class is used in this file
+import { useNavigate } from "react-router-dom-v5-compat";
 import "../components/quicknav/QuickNav.style.css";
 
 export default function AnonymousHome() {
@@ -96,12 +95,12 @@ export function SearchInput() {
   const { handleSubmit, register } = useForm<SearchInputFormFields>({
     defaultValues: { phrase: "" },
   });
-  const history = useHistory();
+  const navigate = useNavigate();
   const onSubmit = (inputs: SearchInputFormFields) => {
     const searchState = { phrase: inputs.phrase };
     const searchString = stateToSearchString(searchState);
     const searchUrl = `${Url.get(Url.pages.search)}/?${searchString}`;
-    history.push(searchUrl);
+    navigate(searchUrl);
   };
   return (
     <div className="d-flex flex-nowrap w-100 mx-0">

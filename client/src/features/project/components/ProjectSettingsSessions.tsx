@@ -27,7 +27,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { debounce } from "lodash-es";
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom-v5-compat";
 import {
   Badge,
   Button,

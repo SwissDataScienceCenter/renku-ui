@@ -21,7 +21,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { Duration } from "luxon";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Redirect } from "react-router";
+import { Navigate } from "react-router-dom-v5-compat";
 import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
 import { InfoAlert } from "../../../components/Alert";
@@ -132,7 +132,7 @@ function AnonymousDeleteSessionModal({
   }, [error, notifications]);
 
   if (isSuccess && !isWaiting) {
-    return <Redirect push to={sessionsListUrl} />;
+    return <Navigate to={sessionsListUrl} />;
   }
 
   return (
@@ -249,7 +249,7 @@ function PauseSessionModalBody({
   }, [error, notifications]);
 
   if (isSuccess && !isWaiting) {
-    return <Redirect push to={sessionsListUrl} />;
+    return <Navigate to={sessionsListUrl} />;
   }
 
   const annotations = session
@@ -365,7 +365,7 @@ function DeleteSessionModalBody({
   }, [error, notifications]);
 
   if (isSuccess && !isWaiting) {
-    return <Redirect push to={sessionsListUrl} />;
+    return <Navigate to={sessionsListUrl} />;
   }
 
   const annotations = session
