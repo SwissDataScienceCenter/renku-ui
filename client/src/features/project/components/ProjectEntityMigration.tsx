@@ -24,6 +24,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import {
   Button,
+  Collapse,
   Form,
   Input,
   Label,
@@ -38,17 +39,14 @@ import {
   WarnAlert,
 } from "../../../components/Alert.jsx";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import KeywordsInput from "../../../components/form-field/KeywordsInput";
+import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon.tsx";
 import { Loader } from "../../../components/Loader";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetMigrationQuery } from "../../projects/projectMigration.api";
 import {
-  Description,
-  KeywordsList,
   LegacySlug,
   ProjectName,
   RepositoriesList,
-  Repository,
   Slug,
   usePostProjectMigrationsMutation,
   Visibility,
@@ -58,19 +56,6 @@ import ProjectVisibilityFormField from "../../projectsV2/fields/ProjectVisibilit
 import { GitLabRegistryTag } from "../GitLab.types.ts";
 import { useGetDockerImage } from "../hook/useGetDockerImage";
 import { ProjectConfig } from "../project.types.ts";
-
-interface ProjectMigrationForm {
-  name: ProjectName;
-  namespace: Slug;
-  slug: LegacySlug;
-  visibility: Visibility;
-  description?: Description;
-  keywords?: KeywordsList;
-  repositories?: Repository;
-  containerImage?: string;
-  launcherName?: string;
-  defaultUrl?: string;
-}
 
 interface ProjectEntityMigrationProps {
   projectId: number;
@@ -91,7 +76,7 @@ export function ProjectEntityMigration({
     refetch: refetchMigrations,
   } = useGetMigrationQuery(projectId);
 
-  const { registryTag, registryTagIsFetching, projectConfig } =
+  const { registryTag, registryTagIsFetching, projectConfig, branch, commits } =
     useGetDockerImage();
 
   const linkToProject = useMemo(() => {
@@ -146,6 +131,9 @@ export function ProjectEntityMigration({
         registryTag={registryTag}
         registryTagIsFetching={registryTagIsFetching}
         projectConfig={projectConfig}
+        branch={branch}
+        commit={commits ? commits[0].id : undefined}
+        commitMessage={commits ? commits[0].message : ""}
       />
     </>
   );
@@ -165,6 +153,13 @@ interface ProjectMetadata {
   tagList: string[];
 }
 
+interface ProjectMigrationForm {
+  name: ProjectName;
+  namespace: Slug;
+  slug: LegacySlug;
+  visibility: Visibility;
+}
+
 function MigrationModal({
   isOpen,
   toggle,
@@ -174,6 +169,9 @@ function MigrationModal({
   registryTag,
   registryTagIsFetching,
   projectConfig,
+  branch,
+  commit,
+  commitMessage,
 }: {
   isOpen: boolean;
   toggle: () => void;
@@ -183,80 +181,129 @@ function MigrationModal({
   registryTag?: GitLabRegistryTag;
   registryTagIsFetching: boolean;
   projectConfig?: ProjectConfig;
+  branch?: string;
+  commit?: string;
+  commitMessage?: string;
 }) {
+  const [showDetails, setShowDetails] = useState(false);
   const [migrateProject, result] = usePostProjectMigrationsMutation();
 
   const {
     control,
     formState: { errors },
     handleSubmit,
-    register,
-    setValue,
   } = useForm<ProjectMigrationForm>({
     defaultValues: {
-      description: "",
+      // description: "",
       name: projectMetadata.title,
       namespace: "",
       slug: projectMetadata.path,
       visibility:
         projectMetadata.visibility === "public" ? "public" : "private",
-      keywords: tagList ?? [],
-      repositories: projectMetadata.httpUrl ?? "",
+      // keywords: tagList ?? [],
+      // repositories: projectMetadata.httpUrl ?? "",
     },
   });
 
-  useEffect(() => {
-    if (description !== undefined) {
-      setValue("description", description);
-    }
-  }, [description, setValue]);
+  const onToggleShowDetails = useCallback(() => {
+    setShowDetails((isOpen) => !isOpen);
+  }, []);
 
-  useEffect(() => {
-    if (tagList !== undefined) {
-      setValue("keywords", tagList);
-    }
-  }, [tagList, setValue]);
+  // useEffect(() => {
+  //   if (description !== undefined) {
+  //     setValue("description", description);
+  //   }
+  // }, [description, setValue]);
 
-  useEffect(() => {
-    if (registryTag !== undefined) {
-      const nowFormatted = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
-      setValue("containerImage", registryTag.location);
-      setValue("launcherName", `${registryTag.location} ${nowFormatted}`);
-    }
-  }, [registryTag, setValue]);
+  // useEffect(() => {
+  //   if (tagList !== undefined) {
+  //     setValue("keywords", tagList);
+  //   }
+  // }, [tagList, setValue]);
 
-  useEffect(() => {
-    if (projectConfig !== undefined) {
-      setValue("defaultUrl", projectConfig?.config?.sessions?.defaultUrl ?? "");
-    }
-  }, [projectConfig, setValue]);
+  // useEffect(() => {
+  //   if (registryTag !== undefined) {
+  //     const nowFormatted = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
+  //     setValue("containerImage", registryTag.location);
+  //     setValue("launcherName", `${registryTag.location} ${nowFormatted}`);
+  //   }
+  // }, [registryTag, setValue]);
+
+  // useEffect(() => {
+  //   if (projectConfig !== undefined) {
+  //     setValue("defaultUrl", projectConfig?.config?.sessions?.defaultUrl ?? "");
+  //   }
+  // }, [projectConfig, setValue]);
 
   const onSubmit = useCallback(
     (data: ProjectMigrationForm) => {
+      const containerImage =
+        projectConfig?.config?.sessions?.dockerImage ?? registryTag?.location;
+      if (!containerImage) return;
+      const nowFormatted = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
+
       const dataMigration = {
-        name: data.name,
-        namespace: data.namespace,
-        slug: data.slug,
-        visibility: data.visibility,
-        description: data.description,
-        keywords: data.keywords,
-        repositories: [data.repositories] as RepositoriesList,
+        project: {
+          name: data.name,
+          namespace: data.namespace,
+          slug: data.slug,
+          visibility: data.visibility,
+          description: description,
+          keywords: tagList,
+          repositories: [projectMetadata.httpUrl ?? ""] as RepositoriesList,
+        },
+        sessionLauncher: {
+          containerImage,
+          name: `${data.name} ${nowFormatted}`,
+          defaultUrl: projectConfig?.config?.sessions?.defaultUrl ?? "",
+        },
       };
       migrateProject({
-        projectPost: dataMigration,
+        projectMigrationPost: dataMigration,
         v1Id: parseInt(projectMetadata.id),
       });
     },
-    [migrateProject, projectMetadata.id]
+    [
+      migrateProject,
+      projectMetadata.id,
+      projectMetadata.httpUrl,
+      tagList,
+      description,
+      registryTag,
+      projectConfig,
+    ]
   );
-
-  const [areKeywordsDirty, setKeywordsDirty] = useState(false);
 
   const linkToProject = useMemo(() => {
     return result?.data
       ? `/v2/projects/${result.data.namespace}/${result.data.slug}`
       : "";
   }, [result.data]);
+
+  const details = projectConfig?.config?.sessions?.dockerImage ? (
+    <p>
+      The pinned image for this project will be used to create a session
+      launcher.
+      {projectConfig?.config?.sessions?.dockerImage}
+    </p>
+  ) : (
+    <div>
+      The latest image for this project will be used to create a session
+      launcher.
+      <p>
+        <span>Branch: {branch}</span>
+      </p>
+      <p>
+        <span>
+          Commit: {commit} {commitMessage}
+        </span>
+      </p>
+      <p>
+        Note: This image will not update when you modify as you make more
+        commits. See ... to learn more.
+      </p>
+    </div>
+  );
 
   const form = !result.data && (
     <>
@@ -316,123 +363,19 @@ function MigrationModal({
         <div className="invalid-feedback">Please provide a slug</div>
       </div>
       <div className="mb-3">
-        <Label className="form-label" for="migrateProjectDescription">
-          Description
-        </Label>
-        <Controller
-          control={control}
-          name="description"
-          render={({ field }) => (
-            <Input
-              className={cx("form-control", errors.name && "is-invalid")}
-              id="migrateProjectDescription"
-              placeholder="Project description"
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{ required: false }}
-        />
-        <div className="invalid-feedback">Please provide a description</div>
+        <a
+          className={cx("d-inline-block", "cursor-pointer", "fw-bold")}
+          onClick={onToggleShowDetails}
+        >
+          View what will be migrated{" "}
+          <ChevronFlippedIcon className="ms-1" flipped={showDetails} />
+        </a>
       </div>
       <div className="mb-3">
-        <KeywordsInput
-          hasError={errors.keywords != null}
-          help="Keywords are used to describe the project. To add one, type a keyword and press enter."
-          label="Keywords"
-          name="keywords"
-          value={tagList ?? []} // Pass current value from form
-          setDirty={setKeywordsDirty}
-          register={register("keywords", {
-            validate: () => !areKeywordsDirty,
-          })}
-        />
-      </div>
-      <div className="mb-3">
-        <Label className="form-label" for="migrateProjectRepository">
-          Repository
-        </Label>
-        <Controller
-          control={control}
-          name="repositories"
-          render={({ field }) => (
-            <Input
-              className={cx("form-control", errors.name && "is-invalid")}
-              id="migrateProjectRepository"
-              placeholder="Code repository"
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a repository</div>
-      </div>
-      <div className="mb-3">
-        <Label className="fw-bold">
-          Session Launcher{" "}
+        <Collapse isOpen={showDetails}>
           {registryTagIsFetching && <Loader inline size={16} />}
-        </Label>
-      </div>
-      <div className="mb-3">
-        <Label className="form-label" for="migrateProjectImage">
-          Container Image
-        </Label>
-        <Controller
-          control={control}
-          name="containerImage"
-          render={({ field }) => (
-            <Input
-              className={cx("form-control", errors.name && "is-invalid")}
-              id="migrateContainerImage"
-              placeholder="image:tag"
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a container image</div>
-      </div>
-      <div className="mb-3">
-        <Label className="form-label" for="migrateLauncherName">
-          Launcher name
-        </Label>
-        <Controller
-          control={control}
-          name="launcherName"
-          render={({ field }) => (
-            <Input
-              className={cx("form-control", errors.name && "is-invalid")}
-              id="migrateLauncherName"
-              placeholder=""
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a launcher name</div>
-      </div>
-      <div className="mb-3">
-        <Label className="form-label" for="migrateDefaultURL">
-          Default URL
-        </Label>
-        <Controller
-          control={control}
-          name="defaultUrl"
-          render={({ field }) => (
-            <Input
-              className={cx("form-control", errors.name && "is-invalid")}
-              id="migrateDefaultURL"
-              placeholder=""
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{ required: false }}
-        />
-        <div className="invalid-feedback">Please provide a default url</div>
+          {details}
+        </Collapse>
       </div>
     </>
   );
@@ -474,7 +417,10 @@ function MigrationModal({
                 <XLg className={cx("bi", "me-1")} />
                 Cancel
               </Button>
-              <Button disabled={result?.isLoading} type="submit">
+              <Button
+                disabled={result?.isLoading || registryTagIsFetching}
+                type="submit"
+              >
                 {result.isLoading ? (
                   <Loader className="me-1" inline size={16} />
                 ) : (
