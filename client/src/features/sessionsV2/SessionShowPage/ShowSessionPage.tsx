@@ -201,7 +201,10 @@ export default function ShowSessionPage() {
   return (
     <div className={cx("bg-white", "p-0")}>
       <div className={cx("d-lg-flex", "flex-column")}>
-        <div className={cx("d-flex", styles.fullscreenHeader)}>
+        <div
+          className={cx("d-flex", styles.fullscreenHeader)}
+          data-cy="session-header"
+        >
           <div
             className={cx(
               "align-items-center",
@@ -239,7 +242,12 @@ export default function ShowSessionPage() {
             </div>
           </div>
         </div>
-        <div className={cx(styles.fullscreenContent, "w-100")}>{content}</div>
+        <div
+          className={cx(styles.fullscreenContent, "w-100")}
+          data-cy="session-page"
+        >
+          {content}
+        </div>
       </div>
       {/* modals */}
       {logs}
