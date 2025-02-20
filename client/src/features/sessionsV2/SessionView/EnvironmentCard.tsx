@@ -16,47 +16,95 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   Bricks,
   CircleFill,
   Clock,
+  FileEarmarkText,
   Globe2,
   Link45deg,
+  XLg,
+  XOctagon,
 } from "react-bootstrap-icons";
-import { Badge, Card, CardBody, Col, Row } from "reactstrap";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Col,
+  DropdownItem,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+} from "reactstrap";
 
-import { Loader } from "../../../components/Loader";
+import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
+import { Loader } from "../../../components/Loader";
+import { type ILogs, EnvironmentLogsPresent } from "../../../components/Logs";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
-import type { Build, SessionLauncher } from "../api/sessionLaunchersV2.api";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
+import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
+import type {
+  Build,
+  BuildList,
+  SessionLauncher,
+} from "../api/sessionLaunchersV2.api";
 import {
   sessionLaunchersV2Api,
+  useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
+  usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
+  usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
 } from "../api/sessionLaunchersV2.api";
 import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
 import { safeStringify } from "../session.utils";
 
 export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
   const environment = launcher.environment;
-  if (!environment) return null;
+
+  if (!environment) {
+    return null;
+  }
+
   const { environment_kind, name } = environment;
   const cardName = environment_kind === "GLOBAL" ? name || "" : launcher.name;
+
+  const buildActions = launcher.environment.environment_kind === "CUSTOM" &&
+    launcher.environment.environment_image_source === "build" && (
+      <BuildActions launcher={launcher} />
+    );
 
   return (
     <>
       <Card className={cx("border")}>
         <CardBody className={cx("d-flex", "flex-column")}>
           <Row>
-            <EnvironmentRow>
-              <h5 className={cx("fw-bold", "mb-0")}>
+            <Col
+              xs={12}
+              className={cx(
+                "d-flex",
+                "flex-wrap",
+                "flex-sm-nowrap",
+                "align-items-start",
+                "justify-content-between",
+                "pb-2",
+                "gap-2"
+              )}
+            >
+              <h5 className={cx("fw-bold", "mb-0", "text-break")}>
                 <small>{cardName}</small>
               </h5>
-            </EnvironmentRow>
+              {buildActions}
+            </Col>
             <EnvironmentRow>
               {environment.environment_kind === "GLOBAL" ? (
                 <>
@@ -247,7 +295,10 @@ function CustomBuildEnvironmentValues({
         )}
       </EnvironmentRow>
 
-      <EnvironmentRowWithLabel label="Repository" value={repository || ""} />
+      <EnvironmentRowWithLabel
+        label="Built from code repository"
+        value={repository || ""}
+      />
       <EnvironmentRowWithLabel
         label="Environment type"
         value={builder_variant || ""}
@@ -384,5 +435,221 @@ function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
       {badgeIcon}
       {badgeText && <span className="fw-normal">{badgeText}</span>}
     </Badge>
+  );
+}
+
+interface BuildActionsProps {
+  launcher: SessionLauncher;
+}
+
+function BuildActions({ launcher }: BuildActionsProps) {
+  const { project_id: projectId } = launcher;
+  const permissions = useProjectPermissions({ projectId });
+
+  const [isLogsOpen, setIsLogsOpen] = useState(false);
+  const toggleLogs = useCallback(() => {
+    setIsLogsOpen((open) => !open);
+  }, []);
+
+  const { data: builds } = useGetBuildsQuery(
+    launcher.environment.environment_image_source === "build"
+      ? { environmentId: launcher.environment.id }
+      : skipToken
+  );
+  const inProgressBuild = useMemo(
+    () => builds?.find(({ status }) => status === "in_progress"),
+    [builds]
+  );
+  const hasInProgressBuild = !!inProgressBuild;
+
+  const isReady =
+    launcher.environment.container_image !== "image:unknown-at-the-moment";
+
+  const [postBuild, postResult] = usePostBuildMutation();
+  const triggerBuild = useCallback(() => {
+    postBuild({ environmentId: launcher.environment.id });
+  }, [launcher.environment.id, postBuild]);
+
+  const [patchBuild, patchResult] = usePatchBuildMutation();
+  const onCancelBuild = useCallback(() => {
+    if (inProgressBuild != null) {
+      patchBuild({
+        buildId: inProgressBuild?.id,
+        buildPatch: { status: "cancelled" },
+      });
+    }
+  }, [inProgressBuild, patchBuild]);
+
+  const defaultAction = hasInProgressBuild ? (
+    <Button
+      className="text-nowrap"
+      color="outline-primary"
+      data-cy="session-view-menu-cancel-build"
+      onClick={onCancelBuild}
+      size="sm"
+    >
+      <XOctagon className={cx("bi", "me-1")} />
+      Cancel build
+    </Button>
+  ) : (
+    <Button
+      className="text-nowrap"
+      color="outline-primary"
+      data-cy="session-view-menu-rebuild"
+      onClick={triggerBuild}
+      size="sm"
+    >
+      <Bricks className={cx("bi", "me-1")} />
+      {isReady ? "Rebuild" : "Build"}
+    </Button>
+  );
+
+  const buttonGroup =
+    builds && builds.length > 0 ? (
+      <ButtonWithMenuV2
+        color="outline-primary"
+        default={defaultAction}
+        size="sm"
+      >
+        <DropdownItem
+          data-cy="session-view-menu-show-last-build-logs"
+          onClick={toggleLogs}
+        >
+          <FileEarmarkText className={cx("bi", "me-1")} />
+          Show logs from {hasInProgressBuild ? "current" : "last"} build
+        </DropdownItem>
+      </ButtonWithMenuV2>
+    ) : (
+      defaultAction
+    );
+
+  return (
+    <>
+      <PermissionsGuard
+        disabled={null}
+        enabled={
+          <>
+            {buttonGroup}
+            <BuildActionFailedModal
+              error={postResult.error}
+              reset={postResult.reset}
+              title="Error: could not rebuild session image"
+            />
+            <BuildActionFailedModal
+              error={patchResult.error}
+              reset={patchResult.reset}
+              title="Error: could not cancel image build"
+            />
+            <BuildLogsModal
+              builds={builds}
+              isOpen={isLogsOpen}
+              toggle={toggleLogs}
+            />
+          </>
+        }
+        requestedPermission="write"
+        userPermissions={permissions}
+      />
+    </>
+  );
+}
+
+interface BuildActionFailedModalProps {
+  error: FetchBaseQueryError | SerializedError | undefined;
+  reset: () => void;
+  title: ReactNode;
+}
+
+function BuildActionFailedModal({
+  error,
+  reset,
+  title,
+}: BuildActionFailedModalProps) {
+  return (
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={error != null}
+      size="lg"
+      toggle={reset}
+    >
+      <ModalHeader toggle={reset}>{title}</ModalHeader>
+      <ModalBody>
+        <RtkOrNotebooksError error={error} dismissible={false} />
+      </ModalBody>
+      <ModalFooter>
+        <Button color="outline-primary" onClick={reset}>
+          <XLg className={cx("bi", "me-1")} />
+          Close
+        </Button>
+      </ModalFooter>
+    </ScrollableModal>
+  );
+}
+
+interface BuildLogsModalProps {
+  builds: BuildList | undefined;
+  isOpen: boolean;
+  toggle: () => void;
+}
+
+function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
+  const lastBuild = builds?.at(0);
+  const name = lastBuild?.id ?? "build_logs";
+
+  const [logs, setLogs] = useState<ILogs>({
+    data: {},
+    fetched: false,
+    fetching: false,
+    show: isOpen,
+  });
+
+  const { data, isFetching, refetch } = useGetBuildLogsQuery(
+    isOpen && lastBuild
+      ? {
+          buildId: lastBuild.id,
+        }
+      : skipToken
+  );
+  const fetchLogs = useCallback(
+    () =>
+      refetch().then((result) => {
+        if (result.error) {
+          throw result.error;
+        }
+        if (result.data == null) {
+          throw new Error("Could not retrieve logs");
+        }
+        return result.data;
+      }),
+    [refetch]
+  );
+
+  useEffect(() => {
+    setLogs((prevState) => ({ ...prevState, show: isOpen ? name : false }));
+  }, [isOpen, name]);
+  useEffect(() => {
+    setLogs((prevState) => ({ ...prevState, fetching: isFetching }));
+  }, [isFetching]);
+  useEffect(() => {
+    setLogs((prevState) => ({
+      ...prevState,
+      fetched: !!data,
+      data: data ? data : {},
+    }));
+  }, [data]);
+
+  if (lastBuild == null) {
+    return null;
+  }
+
+  return (
+    <EnvironmentLogsPresent
+      fetchLogs={fetchLogs}
+      toggleLogs={toggle}
+      logs={logs}
+      name={name}
+      title="Logs"
+    />
   );
 }

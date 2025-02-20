@@ -16,19 +16,9 @@
  * limitations under the License.
  */
 
-import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Bricks,
-  FileEarmarkText,
-  Pencil,
-  PlayCircle,
-  Trash,
-  XLg,
-  XOctagon,
-} from "react-bootstrap-icons";
+import { useCallback, useMemo, useState } from "react";
+import { Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import {
   Badge,
@@ -38,19 +28,11 @@ import {
   CardHeader,
   DropdownItem,
   ListGroup,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
-import { EnvironmentLogsPresent, type ILogs } from "../../components/Logs";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
-import {
-  RtkErrorAlert,
-  RtkOrNotebooksError,
-} from "../../components/errors/RtkErrorAlert";
-import ScrollableModal from "../../components/modal/ScrollableModal";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -61,14 +43,8 @@ import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import SessionItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
-import type { BuildList, SessionLauncher } from "./api/sessionLaunchersV2.api";
-import {
-  useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,
-  useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
-  useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
-  usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
-  usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
-} from "./api/sessionLaunchersV2.api";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
+import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
 import UpdateSessionLauncherModal from "./components/SessionModals/UpdateSessionLauncherModal";
 import { SessionV2 } from "./sessionsV2.types";
@@ -208,7 +184,6 @@ export function SessionV2Actions({
 
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isLogsOpen, setIsLogsOpen] = useState(false);
 
   const toggleUpdate = useCallback(() => {
     setIsUpdateOpen((open) => !open);
@@ -216,35 +191,6 @@ export function SessionV2Actions({
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
   }, []);
-  const toggleLogs = useCallback(() => {
-    setIsLogsOpen((open) => !open);
-  }, []);
-
-  const [postBuild, result] = usePostBuildMutation();
-  const triggerBuild = useCallback(() => {
-    postBuild({ environmentId: launcher.environment.id });
-  }, [launcher.environment.id, postBuild]);
-
-  const { data: builds } = useGetBuildsQuery(
-    launcher.environment.environment_image_source === "build"
-      ? { environmentId: launcher.environment.id }
-      : skipToken
-  );
-  const inProgressBuild = useMemo(
-    () => builds?.find(({ status }) => status === "in_progress"),
-    [builds]
-  );
-  const hasInProgressBuild = !!inProgressBuild;
-
-  const [patchBuild, patchResult] = usePatchBuildMutation();
-  const onCancelBuild = useCallback(() => {
-    if (inProgressBuild != null) {
-      patchBuild({
-        buildId: inProgressBuild?.id,
-        buildPatch: { status: "cancelled" },
-      });
-    }
-  }, [inProgressBuild, patchBuild]);
 
   const defaultAction = (
     <Button
@@ -258,41 +204,6 @@ export function SessionV2Actions({
       Edit
     </Button>
   );
-
-  const buildActions = launcher.environment.environment_kind === "CUSTOM" &&
-    launcher.environment.environment_image_source === "build" && (
-      <>
-        {hasInProgressBuild ? (
-          <DropdownItem
-            data-cy="session-view-menu-cancel-build"
-            disabled={!hasInProgressBuild}
-            onClick={onCancelBuild}
-          >
-            <XOctagon className={cx("bi", "me-1")} />
-            Cancel current build
-          </DropdownItem>
-        ) : (
-          <DropdownItem
-            data-cy="session-view-menu-rebuild"
-            disabled={hasInProgressBuild}
-            onClick={triggerBuild}
-          >
-            <Bricks className={cx("bi", "me-1")} />
-            Rebuild session image
-          </DropdownItem>
-        )}
-        {builds && builds.length > 0 && (
-          <DropdownItem
-            data-cy="session-view-menu-show-last-build-logs"
-            onClick={toggleLogs}
-          >
-            <FileEarmarkText className={cx("bi", "me-1")} />
-            Show logs from {hasInProgressBuild ? "current" : "last"} build
-          </DropdownItem>
-        )}
-      </>
-    );
-
   return (
     <>
       <PermissionsGuard
@@ -312,7 +223,6 @@ export function SessionV2Actions({
                 <Trash className={cx("bi", "me-1")} />
                 Delete
               </DropdownItem>
-              {buildActions}
             </ButtonWithMenuV2>
             <UpdateSessionLauncherModal
               isOpen={isUpdateOpen}
@@ -330,28 +240,6 @@ export function SessionV2Actions({
         requestedPermission="write"
         userPermissions={permissions}
       />
-      {launcher.environment.environment_kind === "CUSTOM" &&
-        launcher.environment.environment_image_source === "build" && (
-          <>
-            <BuildActionFailedModal
-              error={result.error}
-              reset={result.reset}
-              title="Error: could not rebuild session image"
-            />
-            <BuildActionFailedModal
-              error={patchResult.error}
-              reset={patchResult.reset}
-              title="Error: could not cancel image build"
-            />
-            {builds && (
-              <BuildLogsModal
-                builds={builds}
-                isOpen={isLogsOpen}
-                toggle={toggleLogs}
-              />
-            )}
-          </>
-        )}
     </>
   );
 }
@@ -393,105 +281,5 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
         isOpen={isSessionViewOpen}
       />
     </>
-  );
-}
-
-interface BuildActionFailedModalProps {
-  error: FetchBaseQueryError | SerializedError | undefined;
-  reset: () => void;
-  title: ReactNode;
-}
-
-function BuildActionFailedModal({
-  error,
-  reset,
-  title,
-}: BuildActionFailedModalProps) {
-  return (
-    <ScrollableModal
-      backdrop="static"
-      centered
-      isOpen={error != null}
-      size="lg"
-      toggle={reset}
-    >
-      <ModalHeader toggle={reset}>{title}</ModalHeader>
-      <ModalBody>
-        <RtkOrNotebooksError error={error} dismissible={false} />
-      </ModalBody>
-      <ModalFooter>
-        <Button color="outline-primary" onClick={reset}>
-          <XLg className={cx("bi", "me-1")} />
-          Close
-        </Button>
-      </ModalFooter>
-    </ScrollableModal>
-  );
-}
-
-interface BuildLogsModalProps {
-  builds: BuildList;
-  isOpen: boolean;
-  toggle: () => void;
-}
-
-function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
-  const lastBuild = builds.at(0);
-  const name = lastBuild?.id ?? "build_logs";
-
-  const [logs, setLogs] = useState<ILogs>({
-    data: {},
-    fetched: false,
-    fetching: false,
-    show: isOpen,
-  });
-
-  const { data, isFetching, refetch } = useGetBuildLogsQuery(
-    isOpen && lastBuild
-      ? {
-          buildId: lastBuild.id,
-        }
-      : skipToken
-  );
-  const fetchLogs = useCallback(
-    () =>
-      refetch().then((result) => {
-        if (result.error) {
-          throw result.error;
-        }
-        if (result.data == null) {
-          throw new Error("Could not retrieve logs");
-        }
-        return result.data;
-      }),
-    [refetch]
-  );
-
-  useEffect(() => {
-    setLogs((prevState) => ({ ...prevState, show: isOpen ? name : false }));
-  }, [isOpen, name]);
-  useEffect(() => {
-    setLogs((prevState) => ({ ...prevState, fetching: isFetching }));
-  }, [isFetching]);
-  useEffect(() => {
-    setLogs((prevState) => ({
-      ...prevState,
-      fetched: !!data,
-      data: data ? data : {},
-    }));
-  }, [data]);
-
-  if (lastBuild == null) {
-    return null;
-  }
-
-  return (
-    <EnvironmentLogsPresent
-      fetchLogs={fetchLogs}
-      toggleLogs={toggle}
-      logs={logs}
-      name={name}
-      title="Logs"
-    />
   );
 }

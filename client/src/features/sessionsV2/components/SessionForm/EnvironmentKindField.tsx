@@ -84,7 +84,7 @@ export default function EnvironmentKindField({
               data-cy="environment-kind-builder"
               htmlFor="environment-kind-builder-radio"
             >
-              Create from a repository
+              Create from code
             </label>
           </ButtonGroup>
         </div>
