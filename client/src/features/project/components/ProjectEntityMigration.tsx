@@ -234,7 +234,12 @@ function MigrationModal({
   const onSubmit = useCallback(
     (data: ProjectMigrationForm) => {
       const dataMigration = {
-        ...data,
+        name: data.name,
+        namespace: data.namespace,
+        slug: data.slug,
+        visibility: data.visibility,
+        description: data.description,
+        keywords: data.keywords,
         repositories: [data.repositories] as RepositoriesList,
       };
       migrateProject({
