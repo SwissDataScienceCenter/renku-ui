@@ -174,3 +174,9 @@ export interface SessionImageParams {
 export interface DockerImage {
   error?: unknown;
 }
+
+export interface BuilderSelectorOption {
+  label: string;
+  value: string;
+  description: string;
+}
