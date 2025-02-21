@@ -83,8 +83,8 @@ const selectComponents: SelectComponentsConfig<User, false, GroupBase<User>> = {
   Placeholder: (props: PlaceholderProps<User, false, GroupBase<User>>) => {
     return (
       <components.Placeholder {...props}>
-        <div className={cx("text-body-secondary")}>
-          Enter name or namespace to find users
+        <div className="text-body-secondary">
+          Search for users by name or username
         </div>
       </components.Placeholder>
     );
