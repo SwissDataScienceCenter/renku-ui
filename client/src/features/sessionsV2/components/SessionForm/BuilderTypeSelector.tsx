@@ -28,6 +28,8 @@ import {
 import { Label } from "reactstrap";
 import { BUILDER_TYPES } from "../../session.constants";
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
+import { ExternalLink } from "../../../../components/ExternalLinks";
+import { BoxArrowUpRight } from "react-bootstrap-icons";
 
 interface BuilderTypeSelectorProps<T extends FieldValues>
   extends UseControllerProps<T> {}
@@ -46,7 +48,14 @@ export default function BuilderTypeSelector<T extends FieldValues>({
   return (
     <div>
       <Label for="builder-environment-type-select-input">
-        Environment type
+        Environment type{" - "}
+        <ExternalLink
+          role="link"
+          url="https://www.notion.so/renku/UX-Research-How-to-create-a-custom-environment-from-a-code-repository-1960df2efafc801b88f6da59a0aa8234?pvs=4#1990df2efafc805f8548cbd5dafd200c"
+        >
+          Learn more
+          <BoxArrowUpRight className={cx("bi", "ms-1")} />
+        </ExternalLink>
       </Label>
       <Controller
         {...controllerProps}
