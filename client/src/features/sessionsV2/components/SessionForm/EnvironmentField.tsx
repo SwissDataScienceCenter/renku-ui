@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import {
   Control,
@@ -23,9 +24,11 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
+
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import BuilderEnvironmentFields from "./BuilderEnvironmentFields";
 import { CustomEnvironmentFields } from "./CustomEnvironmentFields";
-import { EnvironmentKindField } from "./EnvironmentKindField";
+import EnvironmentKindField from "./EnvironmentKindField";
 import { GlobalEnvironmentFields } from "./GlobalEnvironmentFields";
 
 export interface EnvironmentFieldsProps {
@@ -45,16 +48,16 @@ export function EnvironmentFields({
   touchedFields,
   setValue,
 }: EnvironmentFieldsProps) {
-  const watchEnvironmentKind = watch("environment_kind");
+  const watchEnvironmentSelect = watch("environmentSelect");
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <div className={cx("form-label", "mb-0")}>
         <span className="fw-bold">1 of 2. Define environment</span>
       </div>
       <div>
-        <EnvironmentKindField control={control} setValue={setValue} />
+        <EnvironmentKindField control={control} />
       </div>
-      <div className={cx(watchEnvironmentKind !== "GLOBAL" && "d-none")}>
+      <div className={cx(watchEnvironmentSelect !== "global" && "d-none")}>
         <GlobalEnvironmentFields
           errors={errors}
           touchedFields={touchedFields}
@@ -63,7 +66,9 @@ export function EnvironmentFields({
           setValue={setValue}
         />
       </div>
-      <div className={cx(watchEnvironmentKind !== "CUSTOM" && "d-none")}>
+      <div
+        className={cx(watchEnvironmentSelect !== "custom + image" && "d-none")}
+      >
         <CustomEnvironmentFields
           errors={errors}
           touchedFields={touchedFields}
@@ -72,6 +77,9 @@ export function EnvironmentFields({
           setValue={setValue}
         />
       </div>
+      {watchEnvironmentSelect === "custom + build" && (
+        <BuilderEnvironmentFields control={control} />
+      )}
     </div>
   );
 }

@@ -23,7 +23,6 @@ import {
   Controller,
   FieldErrors,
   FieldNamesMarkedBoolean,
-  UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
 import { Collapse, Input, Label, ListGroup } from "reactstrap";
@@ -31,13 +30,14 @@ import { Collapse, Input, Label, ListGroup } from "reactstrap";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
+import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
 import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { prioritizeSelectedEnvironment } from "../../session.utils";
-import { useGetSessionEnvironmentsQuery } from "../../sessionsV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
-import { EnvironmentKindField } from "./EnvironmentKindField";
+import EnvironmentKindField from "./EnvironmentKindField";
 import { SessionEnvironmentItem } from "./SessionEnvironmentItem";
+import BuilderEnvironmentFields from "./BuilderEnvironmentFields";
 
 interface SessionLauncherFormContentProps {
   control: Control<SessionLauncherForm, unknown>;
@@ -50,7 +50,6 @@ interface SessionLauncherFormContentProps {
 
 interface EditLauncherFormContentProps extends SessionLauncherFormContentProps {
   environmentId?: string;
-  setValue: UseFormSetValue<SessionLauncherForm>;
 }
 export default function EditLauncherFormContent({
   control,
@@ -58,14 +57,13 @@ export default function EditLauncherFormContent({
   watch,
   touchedFields,
   environmentId,
-  setValue,
 }: EditLauncherFormContentProps) {
   const {
     data: environments,
     error,
     isLoading,
-  } = useGetSessionEnvironmentsQuery();
-  const environmentKind = watch("environment_kind");
+  } = useGetSessionEnvironmentsQuery({});
+  const environmentSelect = watch("environmentSelect");
   const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
   const toggleIsOpen = useCallback(
     () =>
@@ -99,8 +97,8 @@ export default function EditLauncherFormContent({
       return (
         <Controller
           control={control}
-          name="environment_id"
-          rules={{ required: environmentKind === "GLOBAL" }}
+          name="environmentId"
+          rules={{ required: environmentSelect === "global" }}
           render={({ field }) => (
             <>
               <ListGroup>
@@ -118,7 +116,7 @@ export default function EditLauncherFormContent({
               <Input
                 type="hidden"
                 {...field}
-                className={cx(errors.environment_id && "is-invalid")}
+                className={cx(errors.environmentId && "is-invalid")}
               />
               <div className="invalid-feedback">
                 Please choose an environment
@@ -149,7 +147,7 @@ export default function EditLauncherFormContent({
         )}
         rules={{
           required: {
-            value: environmentKind === "CUSTOM",
+            value: environmentSelect === "custom + image",
             message: "Please provide a container image.",
           },
           pattern: {
@@ -221,11 +219,14 @@ export default function EditLauncherFormContent({
           )}
         />
       </div>
-      <EnvironmentKindField control={control} setValue={setValue} />
+      <EnvironmentKindField control={control} />
 
-      {environmentKind === "GLOBAL" && renderEnvironmentList()}
-
-      {environmentKind === "CUSTOM" && renderCustomEnvironmentFields()}
+      {environmentSelect === "global" && renderEnvironmentList()}
+      {environmentSelect === "custom + image" &&
+        renderCustomEnvironmentFields()}
+      {environmentSelect === "custom + build" && (
+        <BuilderEnvironmentFields control={control} isEdit />
+      )}
     </div>
   );
 }

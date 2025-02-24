@@ -19,14 +19,14 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useCallback, useEffect, useState } from "react";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetResourceClassByIdQuery } from "../dataServices/computeResources.api";
 import {
   ResourceClass,
   ResourcePool,
 } from "../dataServices/dataServices.types";
-import { SessionLauncher } from "./sessionsV2.types";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 interface UseSessionResourceClassProps {
   isCustomLaunch: boolean;

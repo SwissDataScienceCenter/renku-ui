@@ -1,0 +1,1420 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Renku Data Services API",
+    "description": "Service that allows creating, updating, deleting, and managing Renku user sessions.\nAll errors have the same format as the schema called ErrorResponse.\n",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api/data"
+    }
+  ],
+  "paths": {
+    "/notebooks/images": {
+      "get": {
+        "description": "Docker image availability.",
+        "parameters": [
+          {
+            "description": "The Docker image URL (tag included) that should be fetched.",
+            "in": "query",
+            "name": "image_url",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Docker image is available."
+          },
+          "404": {
+            "description": "The Docker image is not available."
+          }
+        },
+        "tags": ["notebooks"]
+      }
+    },
+    "/notebooks/logs/{server_name}": {
+      "get": {
+        "description": "Server logs.",
+        "parameters": [
+          {
+            "description": "The name of the server whose logs should be fetched.",
+            "in": "path",
+            "name": "server_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ServerName"
+            }
+          },
+          {
+            "description": "The maximum number of (most recent) lines to return from the logs.",
+            "in": "query",
+            "name": "max_lines",
+            "required": false,
+            "schema": {
+              "default": 250,
+              "minimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerLogs"
+                }
+              }
+            },
+            "description": "Server logs. An array of strings where each element is a line of the logs."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The specified server does not exist."
+          }
+        },
+        "tags": ["notebooks"]
+      }
+    },
+    "/notebooks/server_options": {
+      "get": {
+        "description": "Get the options available to customize when starting a server.",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerOptionsEndpointResponse"
+                }
+              }
+            },
+            "description": "Server options such as CPU, memory, storage, etc."
+          }
+        },
+        "tags": ["notebooks"]
+      }
+    },
+    "/notebooks/servers": {
+      "post": {
+        "summary": "Launch a new session",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LaunchNotebookRequestOld"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The project was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotebookResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["notebooks"]
+      },
+      "get": {
+        "description": "Information about all active servers for a user.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "project",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "commit_sha",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "namespace",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "branch",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServersGetResponse"
+                }
+              }
+            },
+            "description": "Map of all servers for a user."
+          }
+        },
+        "tags": ["notebooks"]
+      }
+    },
+    "/notebooks/servers/{server_name}": {
+      "delete": {
+        "description": "Stop a running server by name.",
+        "parameters": [
+          {
+            "description": "The name of the server that should be deleted.",
+            "in": "path",
+            "name": "server_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ServerName"
+            }
+          },
+          {
+            "description": "If true, delete immediately disregarding the grace period\nof the underlying JupyterServer resource.\n",
+            "in": "query",
+            "name": "forced",
+            "required": false,
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The server was stopped successfully."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The server cannot be found."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The server exists but could not be successfully deleted."
+          }
+        },
+        "tags": ["notebooks"]
+      },
+      "get": {
+        "description": "Information about an active server.",
+        "parameters": [
+          {
+            "description": "The name of the server for which additional information is required.",
+            "in": "path",
+            "name": "server_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ServerName"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotebookResponse"
+                }
+              }
+            },
+            "description": "Server properties."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The specified server does not exist."
+          }
+        },
+        "tags": ["notebooks"]
+      },
+      "patch": {
+        "description": "Patch a running server by name.",
+        "parameters": [
+          {
+            "description": "The name of the server that should be patched.",
+            "in": "path",
+            "name": "server_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ServerName"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchServerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotebookResponse"
+                }
+              }
+            },
+            "description": "The server was patched successfully."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid json argument value."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The server cannot be found."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The server exists but could not be successfully hibernated."
+          }
+        },
+        "tags": ["notebooks"]
+      }
+    },
+    "/sessions": {
+      "post": {
+        "summary": "Launch a new session",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionPostRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The session already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "The session was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["sessions"]
+      },
+      "get": {
+        "summary": "Get a list of all sessions for a user",
+        "responses": {
+          "200": {
+            "description": "Information about the sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionListResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["sessions"]
+      }
+    },
+    "/sessions/{session_id}": {
+      "get": {
+        "summary": "Get information about a specific session",
+        "parameters": [
+          {
+            "description": "The id of the session",
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Information about the session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["sessions"]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "description": "The id of the session that should be deleted",
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "summary": "Fully remove a session",
+        "responses": {
+          "204": {
+            "description": "The session was deleted or it never existed in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["sessions"]
+      },
+      "patch": {
+        "summary": "Patch a session",
+        "parameters": [
+          {
+            "description": "The id of the session",
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionPatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The session was patched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["sessions"]
+      }
+    },
+    "/sessions/{session_id}/logs": {
+      "get": {
+        "summary": "Get all logs from a specific session",
+        "parameters": [
+          {
+            "description": "The id of the session",
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The maximum number of most-recent lines to return for each container",
+            "in": "query",
+            "name": "max_lines",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 250
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The session logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionLogsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["sessions"]
+      }
+    },
+    "/sessions/images": {
+      "get": {
+        "summary": "Check if a session image exists",
+        "parameters": [
+          {
+            "description": "The Docker image URL (tag included) that should be fetched.",
+            "in": "query",
+            "name": "image_url",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The docker image can be found"
+          },
+          "404": {
+            "description": "The docker image cannot be found or the user does not have permissions to access it",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["sessions"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BoolServerOptionsChoice": {
+        "properties": {
+          "default": {
+            "type": "boolean"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer"
+          },
+          "type": {
+            "enum": ["enum", "boolean"],
+            "type": "string"
+          }
+        },
+        "required": ["default", "displayName", "order", "type"],
+        "type": "object"
+      },
+      "CullingThreshold": {
+        "properties": {
+          "hibernation": {
+            "type": "integer"
+          },
+          "idle": {
+            "type": "integer"
+          }
+        },
+        "required": ["hibernation", "idle"],
+        "type": "object"
+      },
+      "DefaultCullingThresholds": {
+        "properties": {
+          "anonymous": {
+            "$ref": "#/components/schemas/CullingThreshold"
+          },
+          "registered": {
+            "$ref": "#/components/schemas/CullingThreshold"
+          }
+        },
+        "required": ["anonymous", "registered"],
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "example": 1404
+              },
+              "detail": {
+                "type": "string",
+                "example": "A more detailed optional message showing what the problem was"
+              },
+              "message": {
+                "type": "string",
+                "example": "Something went wrong - please try again later"
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
+      },
+      "Generated": {
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": ["enabled"],
+        "type": "object"
+      },
+      "LaunchNotebookRequest": {
+        "properties": {
+          "project_id": {
+            "type": "string"
+          },
+          "launcher_id": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "repositories": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/LaunchNotebookRequestRepository"
+            }
+          },
+          "cloudstorage": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RCloneStorageRequest"
+            },
+            "type": "array"
+          },
+          "storage": {
+            "default": 1,
+            "type": "integer"
+          },
+          "resource_class_id": {
+            "default": null,
+            "nullable": true,
+            "type": "integer"
+          },
+          "environment_variables": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "user_secrets": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserSecrets"
+              }
+            ],
+            "default": null,
+            "nullable": true
+          }
+        },
+        "required": ["project_id", "launcher_id"],
+        "type": "object"
+      },
+      "LaunchNotebookRequestRepository": {
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "dirname": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "commit_sha": {
+            "type": "string"
+          }
+        },
+        "required": ["url"]
+      },
+      "LaunchNotebookRequestOld": {
+        "properties": {
+          "branch": {
+            "default": "master",
+            "type": "string"
+          },
+          "cloudstorage": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RCloneStorageRequest"
+            },
+            "type": "array"
+          },
+          "commit_sha": {
+            "type": "string"
+          },
+          "default_url": {
+            "default": "/lab",
+            "type": "string"
+          },
+          "environment_variables": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "image": {
+            "default": null,
+            "nullable": true,
+            "type": "string"
+          },
+          "lfs_auto_fetch": {
+            "default": false,
+            "type": "boolean"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "notebook": {
+            "default": null,
+            "nullable": true,
+            "type": "string"
+          },
+          "project": {
+            "type": "string"
+          },
+          "resource_class_id": {
+            "default": null,
+            "nullable": true,
+            "type": "integer"
+          },
+          "serverOptions": {
+            "$ref": "#/components/schemas/LaunchNotebookRequestServerOptions"
+          },
+          "storage": {
+            "default": 1,
+            "type": "integer"
+          },
+          "user_secrets": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserSecrets"
+              }
+            ],
+            "default": null,
+            "nullable": true
+          }
+        },
+        "required": ["commit_sha", "namespace", "project"],
+        "type": "object"
+      },
+      "LaunchNotebookRequestServerOptions": {
+        "properties": {
+          "cpu_request": {
+            "default": 0
+          },
+          "defaultUrl": {
+            "default": "/lab",
+            "type": "string"
+          },
+          "disk_request": {
+            "default": "1G"
+          },
+          "gpu_request": {
+            "default": 0
+          },
+          "lfs_auto_fetch": {
+            "default": false,
+            "type": "boolean"
+          },
+          "mem_request": {
+            "default": "0G"
+          }
+        },
+        "type": "object"
+      },
+      "LaunchNotebookResponseCloudStorage": {
+        "properties": {
+          "mount_folder": {},
+          "remote": {},
+          "type": {}
+        },
+        "type": "object"
+      },
+      "NotebookResponse": {
+        "properties": {
+          "annotations": {
+            "$ref": "#/components/schemas/_UserPodAnnotations"
+          },
+          "cloudstorage": {
+            "items": {
+              "$ref": "#/components/schemas/LaunchNotebookResponseCloudStorage"
+            },
+            "type": "array"
+          },
+          "image": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/ServerName"
+          },
+          "resources": {
+            "$ref": "#/components/schemas/UserPodResources"
+          },
+          "started": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "state": {
+            "type": "object"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ServerStatus"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "NotebooksServiceInfo": {
+        "properties": {
+          "anonymousSessionsEnabled": {
+            "type": "boolean"
+          },
+          "cloudstorageEnabled": {
+            "type": "boolean"
+          },
+          "defaultCullingThresholds": {
+            "$ref": "#/components/schemas/DefaultCullingThresholds"
+          },
+          "sshEnabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "anonymousSessionsEnabled",
+          "cloudstorageEnabled",
+          "defaultCullingThresholds",
+          "sshEnabled"
+        ],
+        "type": "object"
+      },
+      "NotebooksServiceVersions": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/NotebooksServiceInfo"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": ["data", "version"],
+        "type": "object"
+      },
+      "PatchServerRequest": {
+        "properties": {
+          "resource_class_id": {
+            "type": "integer"
+          },
+          "state": {
+            "enum": ["running", "hibernated"],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "RCloneStorageRequest": {
+        "properties": {
+          "configuration": {
+            "additionalProperties": {},
+            "default": null,
+            "nullable": true,
+            "type": "object"
+          },
+          "readonly": {
+            "default": true,
+            "type": "boolean"
+          },
+          "source_path": {
+            "type": "string"
+          },
+          "storage_id": {
+            "default": null,
+            "nullable": true,
+            "type": "string"
+          },
+          "target_path": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ResourceRequests": {
+        "properties": {
+          "cpu": {},
+          "gpu": {},
+          "memory": {},
+          "storage": {}
+        },
+        "required": ["cpu", "memory"],
+        "type": "object"
+      },
+      "ResourceUsage": {
+        "properties": {
+          "cpu": {},
+          "memory": {},
+          "storage": {}
+        },
+        "type": "object"
+      },
+      "ServerLogs": {
+        "additionalProperties": true,
+        "properties": {
+          "jupyter-server": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ServerOptionsEndpointResponse": {
+        "properties": {
+          "cloudstorage": {
+            "$ref": "#/components/schemas/Generated"
+          },
+          "defaultUrl": {
+            "$ref": "#/components/schemas/StringServerOptionsChoice"
+          },
+          "lfs_auto_fetch": {
+            "$ref": "#/components/schemas/BoolServerOptionsChoice"
+          }
+        },
+        "required": ["cloudstorage"],
+        "type": "object"
+      },
+      "ServerStatus": {
+        "properties": {
+          "details": {
+            "items": {
+              "$ref": "#/components/schemas/ServerStatusDetail"
+            },
+            "type": "array"
+          },
+          "message": {
+            "type": "string"
+          },
+          "readyNumContainers": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "state": {
+            "enum": ["running", "starting", "stopping", "failed", "hibernated"],
+            "type": "string"
+          },
+          "totalNumContainers": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/ServerStatusWarning"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "details",
+          "readyNumContainers",
+          "state",
+          "totalNumContainers"
+        ],
+        "type": "object"
+      },
+      "ServerStatusDetail": {
+        "properties": {
+          "status": {
+            "enum": ["ready", "waiting", "executing", "failed"],
+            "type": "string"
+          },
+          "step": {
+            "type": "string"
+          }
+        },
+        "required": ["status", "step"],
+        "type": "object"
+      },
+      "ServerStatusWarning": {
+        "properties": {
+          "critical": {
+            "default": false,
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["message"],
+        "type": "object"
+      },
+      "ServersGetResponse": {
+        "properties": {
+          "servers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/NotebookResponse"
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "StringServerOptionsChoice": {
+        "properties": {
+          "default": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "order": {
+            "type": "integer"
+          },
+          "type": {
+            "enum": ["enum", "boolean"],
+            "type": "string"
+          }
+        },
+        "required": ["default", "displayName", "order", "type"],
+        "type": "object"
+      },
+      "UserPodResources": {
+        "properties": {
+          "requests": {
+            "$ref": "#/components/schemas/ResourceRequests"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/ResourceUsage"
+          }
+        },
+        "type": "object"
+      },
+      "UserSecrets": {
+        "properties": {
+          "mount_path": {},
+          "user_secret_ids": {
+            "items": {},
+            "type": "array"
+          }
+        },
+        "required": ["mount_path", "user_secret_ids"],
+        "type": "object"
+      },
+      "_UserPodAnnotations": {
+        "additionalProperties": true,
+        "properties": {
+          "jupyter.org/servername": {
+            "type": "string"
+          },
+          "jupyter.org/username": {
+            "type": "string"
+          },
+          "renku.io/branch": {
+            "type": "string"
+          },
+          "renku.io/commit-sha": {
+            "type": "string"
+          },
+          "renku.io/default_image_used": {
+            "type": "string"
+          },
+          "renku.io/git-host": {
+            "type": "string"
+          },
+          "renku.io/gitlabProjectId": {
+            "type": "string"
+          },
+          "renku.io/hibernatedSecondsThreshold": {
+            "type": "string"
+          },
+          "renku.io/hibernation": {
+            "type": "string"
+          },
+          "renku.io/hibernationBranch": {
+            "type": "string"
+          },
+          "renku.io/hibernationCommitSha": {
+            "type": "string"
+          },
+          "renku.io/hibernationDate": {
+            "type": "string"
+          },
+          "renku.io/hibernationDirty": {
+            "type": "string"
+          },
+          "renku.io/hibernationSynchronized": {
+            "type": "string"
+          },
+          "renku.io/idleSecondsThreshold": {
+            "type": "string"
+          },
+          "renku.io/lastActivityDate": {
+            "type": "string"
+          },
+          "renku.io/launcherId": {
+            "type": "string"
+          },
+          "renku.io/namespace": {
+            "type": "string"
+          },
+          "renku.io/projectId": {
+            "type": "string"
+          },
+          "renku.io/projectName": {
+            "type": "string"
+          },
+          "renku.io/renkuVersion": {
+            "type": "string"
+          },
+          "renku.io/repository": {
+            "type": "string"
+          },
+          "renku.io/resourceClassId": {
+            "type": "string"
+          },
+          "renku.io/servername": {
+            "type": "string"
+          },
+          "renku.io/username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "renku.io/branch",
+          "renku.io/commit-sha",
+          "renku.io/default_image_used",
+          "renku.io/namespace",
+          "renku.io/projectName",
+          "renku.io/repository"
+        ],
+        "type": "object"
+      },
+      "SessionPostRequest": {
+        "properties": {
+          "launcher_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "disk_storage": {
+            "default": 1,
+            "type": "integer",
+            "description": "The size of disk storage for the session, in gigabytes"
+          },
+          "resource_class_id": {
+            "default": null,
+            "nullable": true,
+            "type": "integer"
+          },
+          "cloudstorage": {
+            "$ref": "#/components/schemas/SessionCloudStoragePostList"
+          }
+        },
+        "required": ["launcher_id"],
+        "type": "object"
+      },
+      "SessionResponse": {
+        "properties": {
+          "image": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/ServerName"
+          },
+          "resources": {
+            "$ref": "#/components/schemas/SessionResources"
+          },
+          "started": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SessionStatus"
+          },
+          "url": {
+            "type": "string"
+          },
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "launcher_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "resource_class_id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "image",
+          "name",
+          "resources",
+          "started",
+          "status",
+          "url",
+          "project_id",
+          "launcher_id",
+          "resource_class_id"
+        ],
+        "type": "object"
+      },
+      "SessionListResponse": {
+        "items": {
+          "$ref": "#/components/schemas/SessionResponse"
+        },
+        "type": "array"
+      },
+      "SessionPatchRequest": {
+        "properties": {
+          "resource_class_id": {
+            "type": "integer"
+          },
+          "state": {
+            "enum": ["running", "hibernated"],
+            "type": "string"
+          }
+        }
+      },
+      "SessionStatus": {
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "state": {
+            "enum": ["running", "starting", "stopping", "failed", "hibernated"],
+            "type": "string"
+          },
+          "will_hibernate_at": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "will_delete_at": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "ready_containers": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total_containers": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": ["state", "ready_containers", "total_containers"],
+        "type": "object"
+      },
+      "SessionResources": {
+        "properties": {
+          "requests": {
+            "$ref": "#/components/schemas/SessionResourcesRequests"
+          }
+        },
+        "type": "object"
+      },
+      "SessionResourcesRequests": {
+        "properties": {
+          "cpu": {
+            "type": "number",
+            "description": "Fractional CPUs"
+          },
+          "gpu": {
+            "type": "integer",
+            "description": "Number of GPUs used"
+          },
+          "memory": {
+            "type": "integer",
+            "description": "Ammount of RAM for the session, in gigabytes"
+          },
+          "storage": {
+            "type": "integer",
+            "description": "The size of disk storage for the session, in gigabytes"
+          }
+        },
+        "example": {
+          "cpu": 1.5,
+          "memory": 1,
+          "storage": 40,
+          "gpu": 0
+        },
+        "type": "object"
+      },
+      "SessionLogsResponse": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "example": {
+          "container-A": "Log line 1\nLog line 2",
+          "container-B": "Log line 1\nLog line 2"
+        }
+      },
+      "Ulid": {
+        "description": "ULID identifier",
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      },
+      "SessionCloudStoragePostList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SessionCloudStoragePost"
+        }
+      },
+      "SessionCloudStoragePost": {
+        "type": "object",
+        "properties": {
+          "configuration": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "readonly": {
+            "type": "boolean"
+          },
+          "source_path": {
+            "type": "string"
+          },
+          "target_path": {
+            "type": "string"
+          },
+          "storage_id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Ulid"
+              },
+              {
+                "description": "If the storage_id is provided then this config must replace an existing storage config in the session"
+              }
+            ]
+          }
+        },
+        "required": ["storage_id"]
+      },
+      "ServerName": {
+        "type": "string",
+        "minLength": 5,
+        "maxLength": 50,
+        "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+        "example": "d185e68d-d43-renku-2-b9ac279a4e8a85ac28d08"
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "The schema for all 4xx and 5xx responses",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}

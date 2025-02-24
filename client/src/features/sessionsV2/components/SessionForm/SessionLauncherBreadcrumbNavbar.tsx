@@ -18,13 +18,13 @@
 import cx from "classnames";
 import { Breadcrumb, BreadcrumbItem, Button } from "reactstrap";
 
-export enum LauncherType {
+export enum LauncherStep {
   Environment = "environment",
   LauncherDetails = "launcherDetails",
 }
 interface SessionLauncherBreadcrumbNavbarProps {
-  setStep: (newState: LauncherType) => void;
-  step: LauncherType;
+  setStep: (newState: LauncherStep) => void;
+  step: LauncherStep;
   readyToGoNext: boolean;
 }
 export const SessionLauncherBreadcrumbNavbar = ({
@@ -32,7 +32,7 @@ export const SessionLauncherBreadcrumbNavbar = ({
   step,
   readyToGoNext,
 }: SessionLauncherBreadcrumbNavbarProps) => {
-  const handleStepChange = (newStep: LauncherType) => {
+  const handleStepChange = (newStep: LauncherStep) => {
     if (newStep === "launcherDetails" && !readyToGoNext) return;
     setStep(newStep);
   };
@@ -40,12 +40,12 @@ export const SessionLauncherBreadcrumbNavbar = ({
   const breadcrumbItems = [
     {
       label: "1. Define Environment",
-      stepKey: "environment",
+      stepKey: LauncherStep.Environment,
       isActive: step === "environment",
     },
     {
       label: "2. Define Launcher Details",
-      stepKey: "launcherDetails",
+      stepKey: LauncherStep.LauncherDetails,
       isActive: step === "launcherDetails",
       disabled: !readyToGoNext,
     },
@@ -61,7 +61,7 @@ export const SessionLauncherBreadcrumbNavbar = ({
               isActive && ["text-decoration-none", "fw-bold"]
             )}
             color="link"
-            onClick={() => handleStepChange(stepKey as LauncherType)}
+            onClick={() => handleStepChange(stepKey)}
             disabled={disabled}
           >
             {label}

@@ -18,10 +18,10 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import {
-  SessionEnvironment,
-  SessionEnvironmentList,
-} from "../sessionsV2/sessionsV2.types";
+import type {
+  Environment as SessionEnvironment,
+  EnvironmentList as SessionEnvironmentList,
+} from "../sessionsV2/api/sessionLaunchersV2.api";
 import {
   AddSessionEnvironmentParams,
   DeleteSessionEnvironmentParams,

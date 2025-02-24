@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,19 +16,17 @@
  * limitations under the License.
  */
 
-import { sessionsV2Api } from "../../features/sessionsV2/api/sessionsV2.api";
-import { StateModel } from "../../model";
+// Run `npm run generate-api:sessionsV2` to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
 
-function handleSessionsStatusV2(
-  data: Record<string, unknown>,
-  _webSocket: WebSocket,
-  model: StateModel
-) {
-  if ((data.message as boolean) && model) {
-    model.reduxStore.dispatch(
-      sessionsV2Api.endpoints.invalidateSessions.initiate()
-    );
-  }
-}
+const config: ConfigFile = {
+  apiFile: "./sessionsV2.empty-api.ts",
+  apiImport: "sessionsV2EmptyApi",
+  outputFile: "./sessionsV2.generated-api.ts",
+  exportName: "sessionsV2GeneratedApi",
+  hooks: true,
+  schemaFile: path.join(__dirname, "sessionsV2.openapi.json"),
+};
 
-export { handleSessionsStatusV2 };
+export default config;

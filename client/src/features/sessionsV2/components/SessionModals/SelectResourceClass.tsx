@@ -55,7 +55,7 @@ interface SelectResourceClassModalProps {
   isOpen: boolean;
   onContinue: (env: ResourceClass, diskStorage: number | undefined) => void;
   projectUrl: string;
-  resourceClassId?: number;
+  resourceClassId?: number | null;
   isCustom: boolean;
 }
 export function SelectResourceClassModal({

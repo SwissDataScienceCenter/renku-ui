@@ -22,29 +22,24 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom-v5-compat";
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
 import { SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+import {
+  usePostSessionLaunchersMutation as useAddSessionLauncherMutation,
+  useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
+} from "../../api/sessionLaunchersV2.api";
 import { DEFAULT_PORT, DEFAULT_URL } from "../../session.constants";
 import { getFormattedEnvironmentValues } from "../../session.utils";
-import {
-  useAddSessionLauncherMutation,
-  useGetSessionEnvironmentsQuery,
-} from "../../sessionsV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentFields } from "../SessionForm/EnvironmentField";
 import { LauncherDetailsFields } from "../SessionForm/LauncherDetailsFields";
 import {
-  LauncherType,
+  LauncherStep,
   SessionLauncherBreadcrumbNavbar,
 } from "../SessionForm/SessionLauncherBreadcrumbNavbar";
 
@@ -57,55 +52,72 @@ export default function NewSessionLauncherModal({
   isOpen,
   toggle,
 }: NewSessionLauncherModalProps) {
-  const [step, setStep] = useState<LauncherType>(LauncherType.Environment);
+  const [step, setStep] = useState<LauncherStep>(LauncherStep.Environment);
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
-  const { data: environments } = useGetSessionEnvironmentsQuery();
+  const { data: environments } = useGetSessionEnvironmentsQuery({});
   const [addSessionLauncher, result] = useAddSessionLauncherMutation();
   const { data: project } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
     namespace && slug ? { namespace, slug } : skipToken
   );
   const projectId = project?.id;
 
+  const useFormResult = useForm<SessionLauncherForm>({
+    defaultValues: {
+      name: "",
+      environmentSelect: "global",
+      environmentId: "",
+      container_image: "",
+      default_url: DEFAULT_URL,
+      port: DEFAULT_PORT,
+      repository: "",
+    },
+  });
   const {
     control,
     formState: { errors, isDirty, touchedFields, isValid },
     handleSubmit,
     reset,
     setValue,
-    watch,
     trigger,
-  } = useForm<SessionLauncherForm>({
-    defaultValues: {
-      name: "",
-      environment_kind: "GLOBAL",
-      environment_id: "",
-      container_image: "",
-      default_url: DEFAULT_URL,
-      port: DEFAULT_PORT,
-    },
-  });
+    watch,
+  } = useFormResult;
 
-  const watchEnvironmentId = watch("environment_id");
+  const watchEnvironmentId = watch("environmentId");
   const watchEnvironmentCustomImage = watch("container_image");
-  const watchEnvironmentKind = watch("environment_kind");
+  const watchEnvironmentSelect = watch("environmentSelect");
+  const watchCodeRepository = watch("repository");
 
   const isEnvironmentDefined = useMemo(() => {
     return (
-      (watchEnvironmentKind === "GLOBAL" && !!watchEnvironmentId) ||
-      (watchEnvironmentKind === "CUSTOM" &&
-        watchEnvironmentCustomImage?.length > 0)
+      (watchEnvironmentSelect === "global" && !!watchEnvironmentId) ||
+      (watchEnvironmentSelect === "custom + image" &&
+        watchEnvironmentCustomImage?.length > 0) ||
+      (watchEnvironmentSelect === "custom + build" && !!watchCodeRepository)
     );
-  }, [watchEnvironmentId, watchEnvironmentCustomImage, watchEnvironmentKind]);
+  }, [
+    watchCodeRepository,
+    watchEnvironmentCustomImage,
+    watchEnvironmentId,
+    watchEnvironmentSelect,
+  ]);
 
   const onNext = useCallback(() => {
-    trigger(["environment_id", "container_image", "command", "args"]);
+    trigger([
+      "args",
+      "builder_variant",
+      "command",
+      "container_image",
+      "environmentId",
+      "frontend_variant",
+      "repository",
+    ]);
 
     if (isDirty && isEnvironmentDefined && isValid)
-      setStep(LauncherType.LauncherDetails);
+      setStep(LauncherStep.LauncherDetails);
   }, [isDirty, setStep, trigger, isEnvironmentDefined, isValid]);
 
   const onCancel = useCallback(() => {
-    setStep(LauncherType.Environment);
+    setStep(LauncherStep.Environment);
     reset();
     toggle();
   }, [reset, toggle, setStep]);
@@ -115,16 +127,20 @@ export default function NewSessionLauncherModal({
       const { name, resourceClass } = data;
       const environment = getFormattedEnvironmentValues(data);
       const diskStorage =
-        data.diskStorage && data.diskStorage != resourceClass.default_storage
-          ? data.diskStorage
+        data.disk_storage && data.disk_storage != resourceClass.default_storage
+          ? data.disk_storage
           : undefined;
       if (environment.success && environment.data)
         addSessionLauncher({
-          project_id: projectId ?? "",
-          resource_class_id: resourceClass.id,
-          disk_storage: diskStorage,
-          name,
-          environment: environment.data,
+          sessionLauncherPost: {
+            project_id: projectId ?? "",
+            resource_class_id: resourceClass.id,
+            disk_storage: diskStorage,
+            name,
+            // TODO: fix types for this session environment
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            environment: environment.data,
+          },
         });
     },
     [projectId, addSessionLauncher]
@@ -135,7 +151,7 @@ export default function NewSessionLauncherModal({
   }, [watchEnvironmentCustomImage, trigger]);
 
   useEffect(() => {
-    trigger(["environment_id"]);
+    trigger(["environmentId"]);
     if (environments?.length) {
       const environmentSelected = environments.find(
         (env) => env.id === watchEnvironmentId
@@ -149,30 +165,29 @@ export default function NewSessionLauncherModal({
       return;
     }
     if (environments.length == 0) {
-      setValue("environment_kind", "CUSTOM");
+      setValue("environmentSelect", "custom + image");
     }
   }, [environments, setValue]);
 
   useEffect(() => {
     if (!isOpen) {
-      setStep(LauncherType.Environment);
+      setStep(LauncherStep.Environment);
       reset();
       result.reset();
     }
   }, [isOpen, reset, result, setStep]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      scrollable
     >
       <ModalHeader toggle={toggle}>Add session launcher</ModalHeader>
-      <ModalBody style={{ height: result.isSuccess ? "auto" : "600px" }}>
+      <ModalBody>
         {result.isSuccess ? (
           <ConfirmationCreate />
         ) : (
@@ -209,7 +224,7 @@ export default function NewSessionLauncherModal({
             <SessionLauncherBreadcrumbNavbar
               step={step}
               setStep={setStep}
-              readyToGoNext={!!isEnvironmentDefined}
+              readyToGoNext={isEnvironmentDefined}
             />
           </div>
         )}
@@ -228,7 +243,8 @@ export default function NewSessionLauncherModal({
             onClick={onNext}
             type="submit"
           >
-            Next <ArrowRight />
+            Next
+            <ArrowRight className={cx("bi", "ms-1")} />
           </Button>
         )}
         {!result.isSuccess && step === "launcherDetails" && (
@@ -248,7 +264,7 @@ export default function NewSessionLauncherModal({
           </Button>
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

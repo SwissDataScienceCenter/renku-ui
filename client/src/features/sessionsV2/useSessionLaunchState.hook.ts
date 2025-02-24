@@ -16,19 +16,20 @@
  * limitations under the License
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
+
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
+import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { SessionLauncher } from "./sessionsV2.types";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
+import { DEFAULT_URL } from "./session.constants";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
-import { skipToken } from "@reduxjs/toolkit/query";
-import { DEFAULT_URL } from "./session.constants";
 import useSessionSecrets from "./useSessionSecrets.hook";
 
 interface StartSessionFromLauncherProps {

@@ -1,0 +1,30 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+.control {
+  cursor: pointer !important;
+}
+
+.option {
+  cursor: pointer !important;
+
+  &:hover,
+  &IsFocused {
+    background-color: #e4e7ea;
+  }
+
+  &IsSelected {
+    background-color: #e4e7ea80;
+  }
+
+  &IsDisabled {
+    cursor: not-allowed !important;
+    &:hover {
+      background-color: unset;
+    }
+  }
+}
+
+.zDropdown {
+  z-index: $zindex-dropdown !important;
+}

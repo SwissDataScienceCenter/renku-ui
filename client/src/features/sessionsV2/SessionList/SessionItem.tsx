@@ -22,13 +22,14 @@ import { Col, ListGroupItem, Row } from "reactstrap";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
+import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
   SessionBadge,
   SessionStatusV2Description,
   SessionStatusV2Label,
 } from "../components/SessionStatus/SessionStatus";
-import { SessionLauncher, SessionV2 } from "../sessionsV2.types";
+import { SessionV2 } from "../sessionsV2.types";
 
 interface SessionItemProps {
   launcher?: SessionLauncher;
