@@ -55,9 +55,7 @@ import {
 import ProjectNamespaceFormField from "../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../projectsV2/fields/ProjectVisibilityFormField";
 import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField";
-import { GitLabRegistryTag } from "../GitLab.types";
 import { useGetDockerImage } from "../hook/useGetDockerImage";
-import { ProjectConfig } from "../project.types";
 
 interface ProjectEntityMigrationProps {
   projectId: number;
@@ -77,9 +75,6 @@ export function ProjectEntityMigration({
     isLoading: isLoadingMigrations,
     refetch: refetchMigrations,
   } = useGetMigrationQuery(projectId);
-
-  const { registryTag, registryTagIsFetching, projectConfig, branch, commits } =
-    useGetDockerImage();
 
   const linkToProject = useMemo(() => {
     return projectMigration
@@ -130,12 +125,6 @@ export function ProjectEntityMigration({
         description={description?.isLoading ? undefined : description?.value}
         tagList={tagList}
         projectMetadata={projectMetadata as ProjectMetadata}
-        registryTag={registryTag}
-        registryTagIsFetching={registryTagIsFetching}
-        projectConfig={projectConfig}
-        branch={branch}
-        commit={commits ? commits[0].id : undefined}
-        commitMessage={commits ? commits[0].message : ""}
       />
     </>
   );
@@ -168,28 +157,23 @@ function MigrationModal({
   projectMetadata,
   description,
   tagList,
-  registryTag,
-  registryTagIsFetching,
-  projectConfig,
-  branch,
-  commit,
-  commitMessage,
 }: {
   isOpen: boolean;
   toggle: () => void;
   projectMetadata: ProjectMetadata;
   description?: string;
   tagList: string[];
-  registryTag?: GitLabRegistryTag;
-  registryTagIsFetching: boolean;
-  projectConfig?: ProjectConfig;
-  branch?: string;
-  commit?: string;
-  commitMessage?: string;
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const [migrateProject, result] = usePostProjectMigrationsMutation();
-
+  const {
+    registryTag,
+    registryTagIsFetching,
+    projectConfig,
+    branch,
+    commits,
+    templateName,
+  } = useGetDockerImage();
   const {
     control,
     formState: { dirtyFields, errors },
@@ -219,11 +203,14 @@ function MigrationModal({
     });
   }, [setValue, currentName]);
   const url = `renkulab.io/p/${currentNamespace ?? "<Owner>"}/`;
+  const containerImage = useMemo(() => {
+    return (
+      projectConfig?.config?.sessions?.dockerImage ?? registryTag?.location
+    );
+  }, [projectConfig, registryTag]);
 
   const onSubmit = useCallback(
     (data: ProjectMigrationForm) => {
-      const containerImage =
-        projectConfig?.config?.sessions?.dockerImage ?? registryTag?.location;
       if (!containerImage) return;
       const nowFormatted = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -239,7 +226,7 @@ function MigrationModal({
         },
         sessionLauncher: {
           containerImage,
-          name: `${data.name} ${nowFormatted}`,
+          name: `${templateName ?? data.name} ${nowFormatted}`,
           defaultUrl: projectConfig?.config?.sessions?.defaultUrl ?? "",
         },
       };
@@ -254,8 +241,9 @@ function MigrationModal({
       projectMetadata.httpUrl,
       tagList,
       description,
-      registryTag,
       projectConfig,
+      containerImage,
+      templateName,
     ]
   );
 
@@ -264,22 +252,26 @@ function MigrationModal({
       ? `/v2/projects/${result.data.namespace}/${result.data.slug}`
       : "";
   }, [result.data]);
+  const commitMessage = useMemo(() => {
+    return commits ? commits[0].message : "";
+  }, [commits]);
+  const commit = useMemo(() => {
+    return commits ? commits[0].id : undefined;
+  }, [commits]);
 
   const details = projectConfig?.config?.sessions?.dockerImage ? (
     <div className="ps-2">
       The pinned image for this project will be used to create a session
       launcher.
       <p>
-        <code className="user-select-all">
-          {projectConfig?.config?.sessions?.dockerImage}
-        </code>
+        <code className="user-select-all">{containerImage}</code>
       </p>
     </div>
   ) : (
     <div className="ps-2">
       <p>
-        The latest image for this project will be used to create a session
-        launcher.
+        The latest image for this project <code>{containerImage}</code> will be
+        used to create a session launcher.
       </p>
       <p>
         <span className="fw-bold">Branch:</span> {branch}
@@ -409,7 +401,9 @@ function MigrationModal({
                 Cancel
               </Button>
               <Button
-                disabled={result?.isLoading || registryTagIsFetching}
+                disabled={
+                  result?.isLoading || registryTagIsFetching || !containerImage
+                }
                 type="submit"
               >
                 {result.isLoading ? (
