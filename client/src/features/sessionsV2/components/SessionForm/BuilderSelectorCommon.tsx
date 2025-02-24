@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import Select, {
   components,
@@ -35,6 +35,8 @@ import styles from "./Select.module.scss";
 interface BuilderSelectorCommonProps {
   defaultValue?: BuilderSelectorOption | undefined;
   disabled?: boolean;
+  id: string;
+  inputId: string;
   name: string;
   options: readonly BuilderSelectorOption[];
   value: string;
@@ -45,6 +47,8 @@ interface BuilderSelectorCommonProps {
 export default function BuilderSelectorCommon({
   defaultValue,
   disabled,
+  id,
+  inputId,
   name,
   options,
   value: value_,
@@ -63,17 +67,10 @@ export default function BuilderSelectorCommon({
     [onChange_]
   );
 
-  // We need to set the default value by hand here
-  useEffect(() => {
-    if (onChange_ != null && defaultValue) {
-      onChange_(defaultValue.value);
-    }
-  }, [defaultValue, onChange_]);
-
   return (
     <Select
-      id="builder-environment-type-select"
-      inputId="builder-environment-type-select-input"
+      id={id}
+      inputId={inputId}
       name={name}
       isClearable={false}
       isSearchable

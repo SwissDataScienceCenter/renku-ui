@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useMemo } from "react";
+import { BoxArrowUpRight } from "react-bootstrap-icons";
 import {
   Controller,
   type FieldValues,
@@ -26,10 +27,9 @@ import {
   type UseControllerProps,
 } from "react-hook-form";
 import { Label } from "reactstrap";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import { BUILDER_TYPES } from "../../session.constants";
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import { BoxArrowUpRight } from "react-bootstrap-icons";
 
 interface BuilderTypeSelectorProps<T extends FieldValues>
   extends UseControllerProps<T> {}
@@ -69,13 +69,15 @@ export default function BuilderTypeSelector<T extends FieldValues>({
               data-cy="environment-type-select"
             >
               <BuilderSelectorCommon
-                name={controllerProps.name}
                 defaultValue={defaultValue}
-                options={BUILDER_TYPES}
+                disabled={disabled}
+                id="builder-environment-type-select"
+                inputId="builder-environment-type-select-input"
+                name={controllerProps.name}
                 onBlur={onBlur}
                 onChange={onChange}
+                options={BUILDER_TYPES}
                 value={value ?? ""}
-                disabled={disabled}
               />
             </div>
             <div className="invalid-feedback">

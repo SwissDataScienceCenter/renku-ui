@@ -60,13 +60,15 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
               data-cy="environment-type-select"
             >
               <BuilderSelectorCommon
-                name={controllerProps.name}
                 defaultValue={defaultValue}
-                options={BUILDER_FRONTENDS}
+                disabled={disabled}
+                id="builder-environment-frontend-select"
+                inputId="builder-environment-frontend-select-input"
+                name={controllerProps.name}
                 onBlur={onBlur}
                 onChange={onChange}
+                options={BUILDER_FRONTENDS}
                 value={value ?? ""}
-                disabled={disabled}
               />
             </div>
             <div className="invalid-feedback">
