@@ -112,7 +112,6 @@ export function validatedAppParams(params: unknown): AppParams {
     UI_VERSION,
     UPLOAD_THRESHOLD,
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
-    // new
     IMAGE_BUILDERS_ENABLED,
   };
 }

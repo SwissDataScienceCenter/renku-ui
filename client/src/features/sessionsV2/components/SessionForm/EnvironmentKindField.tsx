@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 import cx from "classnames";
+import { useContext } from "react";
 import { Control, Controller } from "react-hook-form";
 import { ButtonGroup } from "reactstrap";
-import { SessionLauncherForm } from "../../sessionsV2.types";
-import { useContext } from "react";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 
 interface EnvironmentKindFieldProps {
   control: Control<SessionLauncherForm>;
@@ -57,6 +57,7 @@ export default function EnvironmentKindField({
             >
               Global environment
             </label>
+
             <input
               type="radio"
               className="btn-check"
@@ -74,6 +75,7 @@ export default function EnvironmentKindField({
             >
               Custom Environment
             </label>
+
             {imageBuildersEnabled && (
               <>
                 <input
