@@ -225,50 +225,8 @@ export default function EditLauncherFormContent({
       {environmentSelect === "custom + image" &&
         renderCustomEnvironmentFields()}
       {environmentSelect === "custom + build" && (
-        <EditBuilderEnvironmentFields control={control} errors={errors} />
+        <BuilderEnvironmentFields control={control} isEdit />
       )}
     </div>
-  );
-}
-
-interface EditBuilderEnvironmentFieldsProps {
-  control: Control<SessionLauncherForm>;
-  errors: FieldErrors<SessionLauncherForm>;
-}
-
-function EditBuilderEnvironmentFields({
-  control,
-  errors,
-}: EditBuilderEnvironmentFieldsProps) {
-  const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
-  const toggleAdvancedSettings = useCallback(
-    () => setIsAdvancedSettingsOpen((open) => !open),
-    []
-  );
-
-  return (
-    <>
-      <BuilderEnvironmentFields control={control} isEdit />
-
-      <div>
-        <button
-          className={cx("p-0", "border-0", "bg-transparent", "fw-bold")}
-          onClick={toggleAdvancedSettings}
-          type="button"
-        >
-          Advanced settings
-          <ChevronFlippedIcon
-            className="ms-1"
-            flipped={isAdvancedSettingsOpen}
-          />
-        </button>
-      </div>
-      <Collapse isOpen={isAdvancedSettingsOpen}>
-        <AdvancedSettingsFields<SessionLauncherForm>
-          control={control}
-          errors={errors}
-        />
-      </Collapse>
-    </>
   );
 }
