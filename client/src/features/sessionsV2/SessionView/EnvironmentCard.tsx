@@ -30,6 +30,7 @@ import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
 import { safeStringify } from "../session.utils";
 
 export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
@@ -172,7 +173,7 @@ function CustomBuildEnvironmentValues({
   return (
     <>
       <EnvironmentRow>
-        {environment.container_image === "image:unknown-at-the-moment" ? (
+        {environment.container_image === BUILDER_IMAGE_NOT_READY_VALUE ? (
           <NotReadyStatusBadge />
         ) : (
           <ReadyStatusBadge />

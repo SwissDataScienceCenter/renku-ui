@@ -57,7 +57,9 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
 
   return (
     <div>
-      <Label for="builder-environment-type-select-input">User interface</Label>
+      <Label for="builder-environment-frontend-select-input">
+        User interface
+      </Label>
       <Controller
         {...controllerProps}
         render={({
@@ -137,8 +139,8 @@ function BuilderFrontendSelect({
 
   return (
     <Select
-      id="builder-environment-type-select"
-      inputId="builder-environment-type-select-input"
+      id="builder-environment-frontend-select"
+      inputId="builder-environment-frontend-select-input"
       name={name}
       isClearable={false}
       isSearchable

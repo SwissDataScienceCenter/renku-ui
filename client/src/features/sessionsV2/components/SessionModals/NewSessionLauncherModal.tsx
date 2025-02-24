@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckLg, XLg } from "react-bootstrap-icons";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom-v5-compat";
 import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
@@ -200,23 +200,21 @@ export default function NewSessionLauncherModal({
                 </p>
               </>
             )}
-            <FormProvider {...useFormResult}>
-              <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-                {result.error && <RtkErrorAlert error={result.error} />}
-                {step === "environment" && (
-                  <EnvironmentFields
-                    errors={errors}
-                    touchedFields={touchedFields}
-                    control={control}
-                    watch={watch}
-                    setValue={setValue}
-                  />
-                )}
-                {step === "launcherDetails" && (
-                  <LauncherDetailsFields control={control} />
-                )}
-              </Form>
-            </FormProvider>
+            <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+              {result.error && <RtkErrorAlert error={result.error} />}
+              {step === "environment" && (
+                <EnvironmentFields
+                  errors={errors}
+                  touchedFields={touchedFields}
+                  control={control}
+                  watch={watch}
+                  setValue={setValue}
+                />
+              )}
+              {step === "launcherDetails" && (
+                <LauncherDetailsFields control={control} />
+              )}
+            </Form>
           </div>
         )}
       </ModalBody>
