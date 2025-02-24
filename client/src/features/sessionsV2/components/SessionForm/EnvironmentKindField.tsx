@@ -45,6 +45,7 @@ export default function EnvironmentKindField({
             />
             <label
               className={cx("btn", "btn-outline-primary")}
+              data-cy="environment-kind-global"
               htmlFor="environment-kind-global-radio"
             >
               Global environment
@@ -62,6 +63,7 @@ export default function EnvironmentKindField({
             />
             <label
               className={cx("btn", "btn-outline-primary")}
+              data-cy="environment-kind-custom"
               htmlFor="environment-kind-custom-radio"
             >
               Custom Environment
@@ -79,6 +81,7 @@ export default function EnvironmentKindField({
             />
             <label
               className={cx("btn", "btn-outline-primary")}
+              data-cy="environment-kind-builder"
               htmlFor="environment-kind-builder-radio"
             >
               Create from a repository
