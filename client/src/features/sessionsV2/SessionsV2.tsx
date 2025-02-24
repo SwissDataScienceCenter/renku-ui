@@ -18,7 +18,13 @@
 
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
-import { Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
+import {
+  ArrowDown,
+  ArrowUp,
+  Pencil,
+  PlayCircle,
+  Trash,
+} from "react-bootstrap-icons";
 import { generatePath } from "react-router-dom-v5-compat";
 import {
   Badge,
@@ -28,6 +34,7 @@ import {
   CardHeader,
   DropdownItem,
   ListGroup,
+  ListGroupItem,
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
@@ -51,6 +58,7 @@ import { SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
+import SessionLauncherItem from "./SessionList/SessionLauncherItem";
 
 export function getShowSessionUrlByProject(
   project: Project,
@@ -145,11 +153,24 @@ export default function SessionsV2({ project }: SessionsV2Props) {
         <p>
           {totalSessions > 0
             ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
-            : "Define interactive environments in which to do your work and share it  with others."}
+            : "Define interactive environments in which to do your work and share it with others."}
         </p>
         {loading}
         {totalSessions > 0 && !isLoading && (
           <ListGroup flush>
+            {launchers?.map((launcher) => (
+              <SessionLauncherItem
+                key={`launcher-${launcher.id}`}
+                launcher={launcher}
+              />
+            ))}
+
+            <ListGroupItem>
+              <ArrowUp className={cx("bi", "me-1")} />
+              New interface - Old interface
+              <ArrowDown className={cx("bi", "ms-1")} />
+            </ListGroupItem>
+
             {launchers?.map((launcher) => (
               <SessionItemDisplay
                 key={`launcher-${launcher.id}`}

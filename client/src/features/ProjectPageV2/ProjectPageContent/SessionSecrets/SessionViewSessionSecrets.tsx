@@ -133,7 +133,9 @@ function SessionViewSessionSecretsContent({
   );
 
   if (!sessionSecretSlots.length) {
-    return <p className="fst-italic">No session secrets included</p>;
+    return (
+      <p className={cx("mb-0", "fst-italic")}>No session secrets included</p>
+    );
   }
 
   return (

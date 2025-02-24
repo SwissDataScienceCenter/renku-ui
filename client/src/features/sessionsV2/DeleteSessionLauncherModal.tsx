@@ -72,15 +72,15 @@ export default function DeleteSessionLauncherModal({
       <ModalHeader toggle={toggle} className="text-danger">
         Delete session launcher
       </ModalHeader>
-      <ModalBody className="pt-0">
+      <ModalBody>
         {result.error && <RtkErrorAlert error={result.error} />}
         <p className="mb-3">
           Are you sure you want to delete the <b>{launcher.name}</b> session
           launcher?
         </p>
-        {sessionsLength > 0 && (
-          <WarnAlert dismissible={false}>
-            <p>
+        {sessionsLength > 0 ? (
+          <WarnAlert className="mb-0" dismissible={false}>
+            <p className="mb-0">
               You have a session running from this launcher. If you delete this
               session launcher, that session will continue running, but it
               become an orphan session and will not be able to be launched again
@@ -88,10 +88,9 @@ export default function DeleteSessionLauncherModal({
               this launcher, their sessions will become orphan sessions as well.
             </p>
           </WarnAlert>
-        )}
-        {sessionsLength === 0 && (
-          <WarnAlert dismissible={false}>
-            <p>
+        ) : (
+          <WarnAlert className="mb-0" dismissible={false}>
+            <p className="mb-0">
               If other RenkuLab users are running sessions from this launcher,
               their sessions will become orphan sessions. This means that their
               sessions will continue running, but will not be able to be
@@ -100,7 +99,7 @@ export default function DeleteSessionLauncherModal({
           </WarnAlert>
         )}
       </ModalBody>
-      <ModalFooter className="pt-0">
+      <ModalFooter>
         <Button color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
