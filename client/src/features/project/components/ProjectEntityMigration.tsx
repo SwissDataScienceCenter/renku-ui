@@ -39,9 +39,10 @@ import {
   WarnAlert,
 } from "../../../components/Alert.jsx";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon.tsx";
+import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../components/Loader";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import { slugFromTitle } from "../../../utils/helpers/HelperFunctions.js";
 import { useGetMigrationQuery } from "../../projects/projectMigration.api";
 import {
   LegacySlug,
@@ -53,9 +54,10 @@ import {
 } from "../../projectsV2/api/projectV2.api";
 import ProjectNamespaceFormField from "../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../projectsV2/fields/ProjectVisibilityFormField";
-import { GitLabRegistryTag } from "../GitLab.types.ts";
+import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField";
+import { GitLabRegistryTag } from "../GitLab.types";
 import { useGetDockerImage } from "../hook/useGetDockerImage";
-import { ProjectConfig } from "../project.types.ts";
+import { ProjectConfig } from "../project.types";
 
 interface ProjectEntityMigrationProps {
   projectId: number;
@@ -190,18 +192,17 @@ function MigrationModal({
 
   const {
     control,
-    formState: { errors },
+    formState: { dirtyFields, errors },
     handleSubmit,
+    watch,
+    setValue,
   } = useForm<ProjectMigrationForm>({
     defaultValues: {
-      // description: "",
       name: projectMetadata.title,
       namespace: "",
       slug: projectMetadata.path,
       visibility:
         projectMetadata.visibility === "public" ? "public" : "private",
-      // keywords: tagList ?? [],
-      // repositories: projectMetadata.httpUrl ?? "",
     },
   });
 
@@ -209,31 +210,15 @@ function MigrationModal({
     setShowDetails((isOpen) => !isOpen);
   }, []);
 
-  // useEffect(() => {
-  //   if (description !== undefined) {
-  //     setValue("description", description);
-  //   }
-  // }, [description, setValue]);
-
-  // useEffect(() => {
-  //   if (tagList !== undefined) {
-  //     setValue("keywords", tagList);
-  //   }
-  // }, [tagList, setValue]);
-
-  // useEffect(() => {
-  //   if (registryTag !== undefined) {
-  //     const nowFormatted = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
-  //     setValue("containerImage", registryTag.location);
-  //     setValue("launcherName", `${registryTag.location} ${nowFormatted}`);
-  //   }
-  // }, [registryTag, setValue]);
-
-  // useEffect(() => {
-  //   if (projectConfig !== undefined) {
-  //     setValue("defaultUrl", projectConfig?.config?.sessions?.defaultUrl ?? "");
-  //   }
-  // }, [projectConfig, setValue]);
+  const currentName = watch("name");
+  const currentNamespace = watch("namespace");
+  const currentSlug = watch("slug");
+  const resetUrl = useCallback(() => {
+    setValue("slug", slugFromTitle(currentName, true, true), {
+      shouldValidate: true,
+    });
+  }, [setValue, currentName]);
+  const url = `renkulab.io/p/${currentNamespace ?? "<Owner>"}/`;
 
   const onSubmit = useCallback(
     (data: ProjectMigrationForm) => {
@@ -281,26 +266,30 @@ function MigrationModal({
   }, [result.data]);
 
   const details = projectConfig?.config?.sessions?.dockerImage ? (
-    <p>
+    <div className="ps-2">
       The pinned image for this project will be used to create a session
       launcher.
-      {projectConfig?.config?.sessions?.dockerImage}
-    </p>
-  ) : (
-    <div>
-      The latest image for this project will be used to create a session
-      launcher.
       <p>
-        <span>Branch: {branch}</span>
+        <code className="user-select-all">
+          {projectConfig?.config?.sessions?.dockerImage}
+        </code>
+      </p>
+    </div>
+  ) : (
+    <div className="ps-2">
+      <p>
+        The latest image for this project will be used to create a session
+        launcher.
       </p>
       <p>
-        <span>
-          Commit: {commit} {commitMessage}
-        </span>
+        <span className="fw-bold">Branch:</span> {branch}
+      </p>
+      <p>
+        <span className="fw-bold">Commit:</span> {commit} - {commitMessage}
       </p>
       <p>
         Note: This image will not update when you modify as you make more
-        commits. See ... to learn more.
+        commits.
       </p>
     </div>
   );
@@ -336,6 +325,20 @@ function MigrationModal({
         />
       </div>
       <div className="mb-3">
+        <SlugPreviewFormField
+          compact={true}
+          control={control}
+          errors={errors}
+          name="slug"
+          resetFunction={resetUrl}
+          url={url}
+          slug={currentSlug}
+          dirtyFields={dirtyFields}
+          label="Project URL"
+          entityName="project"
+        />
+      </div>
+      <div className="mb-3">
         <ProjectVisibilityFormField
           name="visibility"
           control={control}
@@ -343,28 +346,13 @@ function MigrationModal({
         />
       </div>
       <div className="mb-3">
-        <Label className="form-label" for="migrateProjectSlug">
-          Slug
-        </Label>
-        <Controller
-          control={control}
-          name="slug"
-          render={({ field }) => (
-            <Input
-              className={cx("form-control", errors.name && "is-invalid")}
-              id="migrateProjectSlug"
-              placeholder="Project slug"
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a slug</div>
-      </div>
-      <div className="mb-3">
         <a
-          className={cx("d-inline-block", "cursor-pointer", "fw-bold")}
+          className={cx(
+            "d-inline-block",
+            "cursor-pointer",
+            "fw-bold",
+            "text-decoration-none"
+          )}
           onClick={onToggleShowDetails}
         >
           View what will be migrated{" "}
@@ -374,6 +362,9 @@ function MigrationModal({
       <div className="mb-3">
         <Collapse isOpen={showDetails}>
           {registryTagIsFetching && <Loader inline size={16} />}
+          <Label className={cx("fw-bold", "pb-3", "ps-2")}>
+            Session launcher
+          </Label>
           {details}
         </Collapse>
       </div>
