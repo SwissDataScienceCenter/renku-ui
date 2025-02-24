@@ -23,7 +23,13 @@ const injectedRtkApi = api.injectEndpoints({
         method: "POST",
         body: {
           project: queryArg.projectMigrationPost.project,
-          session_launcher: queryArg.projectMigrationPost.sessionLauncher,
+          session_launcher: {
+            container_image:
+              queryArg.projectMigrationPost.sessionLauncher.containerImage,
+            default_url:
+              queryArg.projectMigrationPost.sessionLauncher.defaultUrl,
+            name: queryArg.projectMigrationPost.sessionLauncher.name,
+          },
         },
       }),
     }),
