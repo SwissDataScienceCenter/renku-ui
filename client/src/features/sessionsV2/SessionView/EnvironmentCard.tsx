@@ -257,7 +257,7 @@ function CustomBuildEnvironmentValues({
         value={frontend_variant || ""}
       />
 
-      {environment.container_image !== "image:unknown-at-the-moment" && (
+      {environment.container_image !== BUILDER_IMAGE_NOT_READY_VALUE && (
         <CustomImageEnvironmentValues launcher={launcher} />
       )}
     </>
