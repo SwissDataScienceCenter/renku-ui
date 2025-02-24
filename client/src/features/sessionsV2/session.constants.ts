@@ -87,3 +87,5 @@ Default: \`1000\`.`,
 
 export const CONTAINER_IMAGE_PATTERN =
   /^[a-z0-9]+((\.|_|__|-+)[a-z0-9]+)*(\/[a-z0-9]+((\.|_|__|-+)[a-z0-9]+)*)*(:[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}|@sha256:[a-fA-F0-9]{64}){0,1}$/;
+
+export const BUILDER_IMAGE_NOT_READY_VALUE = "image:unknown-at-the-moment";

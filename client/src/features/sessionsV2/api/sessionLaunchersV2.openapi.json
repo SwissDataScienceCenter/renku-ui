@@ -397,7 +397,7 @@
           "$ref": "#/components/schemas/Environment"
         }
       },
-      "Environment": {
+      "EnvironmentWithoutContainerImage": {
         "description": "A Renku 2.0 session environment",
         "type": "object",
         "properties": {
@@ -412,9 +412,6 @@
           },
           "description": {
             "$ref": "#/components/schemas/Description"
-          },
-          "container_image": {
-            "$ref": "#/components/schemas/ContainerImage"
           },
           "default_url": {
             "$ref": "#/components/schemas/DefaultUrl"
@@ -448,28 +445,39 @@
           "id",
           "name",
           "creation_date",
-          "container_image",
           "port",
           "uid",
           "gid",
           "default_url"
-        ],
-        "example": {
-          "id": "01AN4Z79ZS6XX96588FDX0H099",
-          "name": "JupyterLab environment",
-          "creation_date": "2023-11-01T17:32:28Z",
-          "description": "JupyterLab session environment",
-          "container_image": "renku-jupyter:latest",
-          "default_url": "/lab",
-          "port": 8080,
-          "working_directory": "/home/jovyan/work",
-          "mount_directory": "/home/jovyan/work",
-          "uid": 1000,
-          "gid": 1000,
-          "is_archive": false
-        }
+        ]
+      },
+      "Environment": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentWithoutContainerImage"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "container_image": {
+                "$ref": "#/components/schemas/ContainerImage"
+              }
+            },
+            "required": ["container_image"]
+          }
+        ]
       },
       "EnvironmentGetInLauncher": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentWithImageGet"
+          },
+          {
+            "$ref": "#/components/schemas/EnvironmentWithBuildGet"
+          }
+        ]
+      },
+      "EnvironmentWithImageGet": {
         "allOf": [
           {
             "$ref": "#/components/schemas/Environment"
@@ -477,18 +485,57 @@
           {
             "type": "object",
             "properties": {
+              "environment_image_source": {
+                "$ref": "#/components/schemas/EnvironmentImageSourceImage"
+              },
               "environment_kind": {
-                "$ref": "#/components/schemas/EnvironmentKind"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/EnvironmentKind"
+                  }
+                ],
+                "default": "custom"
               }
             },
-            "required": ["environment_kind"],
-            "example": {
-              "environment_kind": "global_environment"
-            }
+            "required": ["environment_image_source", "environment_kind"]
           }
         ]
       },
-      "EnvironmentPostInLauncher": {
+      "EnvironmentWithBuildGet": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentWithoutContainerImage"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "container_image": {
+                "$ref": "#/components/schemas/ContainerImage"
+              },
+              "build_parameters": {
+                "$ref": "#/components/schemas/BuildParameters"
+              },
+              "environment_image_source": {
+                "$ref": "#/components/schemas/EnvironmentImageSourceBuild"
+              },
+              "environment_kind": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/EnvironmentKind"
+                  }
+                ],
+                "default": "custom"
+              }
+            },
+            "required": [
+              "build_parameters",
+              "environment_image_source",
+              "environment_kind"
+            ]
+          }
+        ]
+      },
+      "EnvironmentPostInLauncherHelper": {
         "allOf": [
           {
             "$ref": "#/components/schemas/EnvironmentPost"
@@ -500,10 +547,17 @@
                 "$ref": "#/components/schemas/EnvironmentKind"
               }
             },
-            "required": ["environment_kind"],
-            "example": {
-              "environment_kind": "global_environment"
-            }
+            "required": ["environment_kind"]
+          }
+        ]
+      },
+      "EnvironmentPostInLauncher": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentPostInLauncherHelper"
+          },
+          {
+            "$ref": "#/components/schemas/BuildParametersPost"
           }
         ]
       },
@@ -524,9 +578,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/DefaultUrl"
-              },
-              {
-                "default": "/lab"
               }
             ],
             "default": "/lab"
@@ -535,9 +586,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/EnvironmentUid"
-              },
-              {
-                "default": 1000
               }
             ],
             "default": 1000
@@ -546,9 +594,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/EnvironmentGid"
-              },
-              {
-                "default": 1000
               }
             ],
             "default": 1000
@@ -563,9 +608,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/EnvironmentPort"
-              },
-              {
-                "default": 8080
               }
             ],
             "default": 8080
@@ -577,11 +619,18 @@
             "$ref": "#/components/schemas/EnvironmentArgs"
           },
           "is_archived": {
-            "$ref": "#/components/schemas/IsArchived",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IsArchived"
+              }
+            ],
             "default": false
+          },
+          "environment_image_source": {
+            "$ref": "#/components/schemas/EnvironmentImageSourceImage"
           }
         },
-        "required": ["name", "container_image"]
+        "required": ["name", "container_image", "environment_image_source"]
       },
       "EnvironmentPatchInLauncher": {
         "allOf": [
@@ -593,6 +642,12 @@
             "properties": {
               "environment_kind": {
                 "$ref": "#/components/schemas/EnvironmentKind"
+              },
+              "environment_image_source": {
+                "$ref": "#/components/schemas/EnvironmentImageSource"
+              },
+              "build_parameters": {
+                "$ref": "#/components/schemas/BuildParametersPatch"
               }
             }
           }
@@ -770,6 +825,18 @@
         "maxLength": 99,
         "example": "My Renku Session :)"
       },
+      "BuilderVariant": {
+        "description": "Type of virtual environment manager when building custom environments.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99
+      },
+      "FrontendVariant": {
+        "description": "User's Frontend Choice.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99
+      },
       "EnvironmentIdOnlyPatch": {
         "type": "object",
         "properties": {
@@ -788,10 +855,28 @@
         "required": ["id"]
       },
       "EnvironmentKind": {
-        "description": "Kind of environment to use",
+        "description": "Kind of the environment",
         "type": "string",
-        "enum": ["GLOBAL", "CUSTOM"],
-        "example": "CUSTOM"
+        "enum": ["GLOBAL", "CUSTOM"]
+      },
+      "EnvironmentImageSourceImage": {
+        "type": "string",
+        "enum": ["image"]
+      },
+      "EnvironmentImageSourceBuild": {
+        "type": "string",
+        "enum": ["build"]
+      },
+      "EnvironmentImageSource": {
+        "description": "Source of the environment's image",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentImageSourceImage"
+          },
+          {
+            "$ref": "#/components/schemas/EnvironmentImageSourceBuild"
+          }
+        ]
       },
       "EnvironmentId": {
         "description": "Id of the environment to use",
@@ -810,12 +895,64 @@
         "type": "string",
         "maxLength": 500
       },
+      "BuildParameters": {
+        "description": "Build parameters",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "repository": {
+            "$ref": "#/components/schemas/Repository"
+          },
+          "builder_variant": {
+            "$ref": "#/components/schemas/BuilderVariant"
+          },
+          "frontend_variant": {
+            "$ref": "#/components/schemas/FrontendVariant"
+          }
+        },
+        "required": ["repository", "builder_variant", "frontend_variant"]
+      },
+      "BuildParametersPost": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BuildParameters"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "environment_image_source": {
+                "$ref": "#/components/schemas/EnvironmentImageSourceBuild"
+              }
+            },
+            "required": ["environment_image_source"]
+          }
+        ]
+      },
+      "BuildParametersPatch": {
+        "description": "Data for updating a build",
+        "type": "object",
+        "properties": {
+          "repository": {
+            "$ref": "#/components/schemas/Repository"
+          },
+          "builder_variant": {
+            "$ref": "#/components/schemas/BuilderVariant"
+          },
+          "frontend_variant": {
+            "$ref": "#/components/schemas/FrontendVariant"
+          }
+        }
+      },
       "ContainerImage": {
         "description": "A container image",
         "type": "string",
         "maxLength": 500,
         "pattern": "^[a-z0-9]+((\\.|_|__|-+)[a-z0-9]+)*(\\/[a-z0-9]+((\\.|_|__|-+)[a-z0-9]+)*)*(:[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}|@sha256:[a-fA-F0-9]{64}){0,1}$",
         "example": "renku/renkulab-py:3.10-0.18.1"
+      },
+      "Repository": {
+        "description": "A git repository URL",
+        "type": "string"
       },
       "DefaultUrl": {
         "description": "The default path to open in a session",
@@ -888,7 +1025,7 @@
           "type": "string"
         },
         "description": "The command that will be run i.e. will overwrite the image Dockerfile ENTRYPOINT, equivalent to command in Kubernetes",
-        "minLength": 1
+        "minItems": 1
       },
       "EnvironmentArgs": {
         "type": "array",
@@ -896,7 +1033,7 @@
           "type": "string"
         },
         "description": "The arguments that will follow the command, i.e. will overwrite the image Dockerfile CMD, equivalent to args in Kubernetes",
-        "minLength": 1
+        "minItems": 1
       },
       "IsArchived": {
         "type": "boolean",

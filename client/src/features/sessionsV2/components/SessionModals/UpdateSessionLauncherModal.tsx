@@ -32,15 +32,16 @@ import {
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
   useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
   usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation,
 } from "../../api/sessionLaunchersV2.api";
 import {
-  getFormattedEnvironmentValues,
+  getFormattedEnvironmentValuesForEdit,
   getLauncherDefaultValues,
 } from "../../session.utils";
-import { SessionLauncher, SessionLauncherForm } from "../../sessionsV2.types";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 
 interface UpdateSessionLauncherModalProps {
@@ -74,16 +75,14 @@ export default function UpdateSessionLauncherModal({
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
       const { description, name } = data;
-      const environment = getFormattedEnvironmentValues(data);
+      const environment = getFormattedEnvironmentValuesForEdit(data);
       if (environment.success && environment.data)
         updateSessionLauncher({
           launcherId: launcher.id,
           sessionLauncherPatch: {
             name,
             description: description?.trim() || undefined,
-            // TODO: fix types for this session environment
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            environment: environment.data as any,
+            environment: environment.data,
           },
         });
     },
@@ -95,7 +94,7 @@ export default function UpdateSessionLauncherModal({
       return;
     }
     if (environments.length == 0) {
-      setValue("environment_kind", "CUSTOM");
+      setValue("environmentSelect", "custom + image");
     }
   }, [environments, setValue]);
 
@@ -135,7 +134,6 @@ export default function UpdateSessionLauncherModal({
               watch={watch}
               touchedFields={touchedFields}
               environmentId={launcher.environment?.id}
-              setValue={setValue}
             />
           </Form>
         )}

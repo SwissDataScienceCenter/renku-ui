@@ -32,7 +32,7 @@ export function CustomEnvironmentFields({
   control,
   errors,
 }: EnvironmentFieldsProps) {
-  const watchEnvironmentKind = watch("environment_kind");
+  const watchEnvironmentSelect = watch("environmentSelect");
   const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
   const toggleIsOpen = useCallback(
     () =>
@@ -69,7 +69,7 @@ export function CustomEnvironmentFields({
           )}
           rules={{
             required: {
-              value: watchEnvironmentKind === "CUSTOM",
+              value: watchEnvironmentSelect === "custom + image",
               message: "Please provide a container image.",
             },
             pattern: {

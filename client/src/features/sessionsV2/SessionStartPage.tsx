@@ -58,13 +58,13 @@ import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/a
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SessionSecretsModal from "./SessionSecretsModal";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import {
   useGetSessionsImagesQuery as useGetDockerImageQuery,
   usePostSessionsMutation as useLaunchSessionMutation,
 } from "./api/sessionsV2.api";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
-import { SessionLauncher } from "./sessionsV2.types";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
   SessionStartDataConnectorConfiguration,

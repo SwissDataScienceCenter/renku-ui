@@ -43,10 +43,11 @@ import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import SessionItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
 import UpdateSessionLauncherModal from "./components/SessionModals/UpdateSessionLauncherModal";
-import { SessionLauncher, SessionV2 } from "./sessionsV2.types";
+import { SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";

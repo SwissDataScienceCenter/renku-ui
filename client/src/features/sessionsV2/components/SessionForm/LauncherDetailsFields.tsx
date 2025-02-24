@@ -64,7 +64,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
     name: "resourceClass",
     defaultValue: defaultSessionClass,
   });
-  const watchCurrentDiskStorage = useWatch({ control, name: "diskStorage" });
+  const watchCurrentDiskStorage = useWatch({ control, name: "disk_storage" });
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -158,7 +158,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
             </div>
             <Controller
               control={control}
-              name="diskStorage"
+              name="disk_storage"
               render={({ field, fieldState: { error } }) => (
                 <>
                   <InputGroup className={cx(error && "is-invalid")}>
