@@ -75,11 +75,13 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
 
   return (
     <>
-      <ProjectEntityMigration
-        projectId={projectId}
-        description={descriptionKg}
-        tagList={projectMetadataQuery.data?.keywords ?? []}
-      />
+      {devAccess && (
+        <ProjectEntityMigration
+          projectId={projectId}
+          description={descriptionKg}
+          tagList={projectMetadataQuery.data?.keywords ?? []}
+        />
+      )}
       <EntityHeader
         {...props}
         description={descriptionKg}
