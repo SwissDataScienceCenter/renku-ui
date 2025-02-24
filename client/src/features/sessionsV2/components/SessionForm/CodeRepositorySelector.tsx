@@ -22,6 +22,8 @@ import { ChevronDown, XLg } from "react-bootstrap-icons";
 import {
   Controller,
   type FieldValues,
+  type Path,
+  type PathValue,
   type UseControllerProps,
 } from "react-hook-form";
 import Select, {
@@ -78,7 +80,7 @@ export default function CodeRepositorySelector<T extends FieldValues>({
                 options={repositoriesDetails}
                 onBlur={onBlur}
                 onChange={onChange}
-                value={value}
+                value={value ?? ""}
                 disabled={disabled}
               />
             </div>
@@ -96,6 +98,7 @@ export default function CodeRepositorySelector<T extends FieldValues>({
             required: "Please select a code repository.",
           }
         }
+        defaultValue={defaultValue as PathValue<T, Path<T>>}
       />
     </div>
   );
@@ -146,10 +149,10 @@ function CodeRepositorySelect({
 
   // We need to set the default value by hand here
   useEffect(() => {
-    if (onChange_ != null && defaultValue_) {
+    if (onChange_ != null && defaultValue_ && !value_) {
       onChange_(defaultValue_);
     }
-  }, [defaultValue_, onChange_]);
+  }, [defaultValue_, onChange_, value_]);
 
   return (
     <Select

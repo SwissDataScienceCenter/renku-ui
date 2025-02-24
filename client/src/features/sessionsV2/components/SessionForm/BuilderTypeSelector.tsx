@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import {
   Controller,
@@ -129,13 +129,6 @@ function BuilderTypeSelect({
     },
     [onChange_]
   );
-
-  // We need to set the default value by hand here
-  useEffect(() => {
-    if (onChange_ != null && defaultValue) {
-      onChange_(defaultValue);
-    }
-  }, [defaultValue, onChange_]);
 
   return (
     <Select
