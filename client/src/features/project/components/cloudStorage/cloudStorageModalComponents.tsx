@@ -125,11 +125,9 @@ export function AddCloudStorageBodyContent({
   if (redraw) return <Loader />;
   if (success) {
     return (
-      <div data-cy="cloud-storage-add-success">
-        <AddCloudStorageSuccessAlert
-          {...{ addResultStorageName, storageId, credentialSaveStatus }}
-        />
-      </div>
+      <AddCloudStorageSuccessAlert
+        {...{ addResultStorageName, storageId, credentialSaveStatus }}
+      />
     );
   }
   if (schemaIsFetching || !schema) return <Loader />;
@@ -327,7 +325,11 @@ export function AddCloudStorageSuccessAlert({
 }: AddCloudStorageSuccessAlertProps) {
   if (credentialSaveStatus == "trying")
     return (
-      <SuccessAlert dismissible={false} timeout={0}>
+      <SuccessAlert
+        data-cy="cloud-storage-add-success"
+        dismissible={false}
+        timeout={0}
+      >
         <p className="mb-0">
           The storage {addResultStorageName} has been successfully{" "}
           {storageId ? "updated" : "added"}; saving the credentials...
@@ -337,7 +339,11 @@ export function AddCloudStorageSuccessAlert({
 
   if (credentialSaveStatus == "success")
     return (
-      <SuccessAlert dismissible={false} timeout={0}>
+      <SuccessAlert
+        data-cy="cloud-storage-add-success"
+        dismissible={false}
+        timeout={0}
+      >
         <p className="mb-0">
           The storage {addResultStorageName} has been successfully{" "}
           {storageId ? "updated" : "added"}, along with its credentials.
@@ -346,7 +352,11 @@ export function AddCloudStorageSuccessAlert({
     );
   if (credentialSaveStatus == "failure")
     return (
-      <SuccessAlert dismissible={false} timeout={0}>
+      <SuccessAlert
+        data-cy="cloud-storage-add-success"
+        dismissible={false}
+        timeout={0}
+      >
         <p className="mb-0">
           The storage {addResultStorageName} has been successfully{" "}
           {storageId ? "updated" : "added"},{" "}
@@ -357,7 +367,11 @@ export function AddCloudStorageSuccessAlert({
     );
 
   return (
-    <SuccessAlert dismissible={false} timeout={0}>
+    <SuccessAlert
+      data-cy="cloud-storage-add-success"
+      dismissible={false}
+      timeout={0}
+    >
       <p className="mb-0">
         The storage {addResultStorageName} has been successfully{" "}
         {storageId ? "updated" : "added"}.

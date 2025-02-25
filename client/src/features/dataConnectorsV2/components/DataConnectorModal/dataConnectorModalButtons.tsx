@@ -248,7 +248,6 @@ export function DataConnectorConnectionTestResult() {
       className={cx("w-100", "my-0")}
       data-cy="cloud-storage-connection-success"
     >
-      {" "}
       <SuccessAlert timeout={0}>
         <p className="p-0">The connection to the storage works correctly.</p>
       </SuccessAlert>
