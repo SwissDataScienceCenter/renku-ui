@@ -20,6 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api.ts";
 import useDefaultBranchOption from "../../session/hooks/options/useDefaultBranchOption.hook";
 import useDefaultCommitOption from "../../session/hooks/options/useDefaultCommitOption.hook";
 import {
@@ -33,7 +34,7 @@ import projectGitLabApi, {
 } from "../projectGitLab.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
 
-export function useGetDockerImage() {
+export function useGetSessionLauncherData() {
   const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
@@ -86,6 +87,19 @@ export function useGetDockerImage() {
   );
 
   const [projectMetadata, projectMetadataStatus] = useProjectMetadataMutation();
+
+  const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
+    useGetResourcePoolsQuery(
+      projectConfig
+        ? {
+            cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
+            gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
+            memoryRequest:
+              projectConfig.config.sessions?.legacyConfig?.memoryRequest,
+            storageRequest: projectConfig.config.sessions?.storage,
+          }
+        : skipToken
+    );
 
   useEffect(() => {
     if (
@@ -164,11 +178,13 @@ export function useGetDockerImage() {
       renkuRegistryIsFetching ||
       registryTagIsFetching ||
       !backendAvailable ||
-      !coreSupportComputed,
+      !coreSupportComputed ||
+      resourcePoolsIsFetching,
     error: renkuRegistryError || renkuRegistryTagError,
     projectConfig,
     commits,
     branch: defaultBranch,
     templateName,
+    resourcePools,
   };
 }
