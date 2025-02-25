@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { XLg } from "react-bootstrap-icons";
+import { ExclamationTriangle, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import {
@@ -55,6 +55,7 @@ import {
 import ProjectNamespaceFormField from "../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../projectsV2/fields/ProjectVisibilityFormField";
 import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField";
+import { GitLabRepositoryCommit } from "../GitLab.types.ts";
 import { useGetDockerImage } from "../hook/useGetDockerImage";
 
 interface ProjectEntityMigrationProps {
@@ -168,7 +169,7 @@ function MigrationModal({
   const [migrateProject, result] = usePostProjectMigrationsMutation();
   const {
     registryTag,
-    registryTagIsFetching,
+    isFetchingData,
     projectConfig,
     branch,
     commits,
@@ -252,39 +253,6 @@ function MigrationModal({
       ? `/v2/projects/${result.data.namespace}/${result.data.slug}`
       : "";
   }, [result.data]);
-  const commitMessage = useMemo(() => {
-    return commits ? commits[0].message : "";
-  }, [commits]);
-  const commit = useMemo(() => {
-    return commits ? commits[0].id : undefined;
-  }, [commits]);
-
-  const details = projectConfig?.config?.sessions?.dockerImage ? (
-    <div className="ps-2">
-      The pinned image for this project will be used to create a session
-      launcher.
-      <p>
-        <code className="user-select-all">{containerImage}</code>
-      </p>
-    </div>
-  ) : (
-    <div className="ps-2">
-      <p>
-        The latest image for this project <code>{containerImage}</code> will be
-        used to create a session launcher.
-      </p>
-      <p>
-        <span className="fw-bold">Branch:</span> {branch}
-      </p>
-      <p>
-        <span className="fw-bold">Commit:</span> {commit} - {commitMessage}
-      </p>
-      <p>
-        Note: This image will not update when you modify as you make more
-        commits.
-      </p>
-    </div>
-  );
 
   const form = !result.data && (
     <>
@@ -353,11 +321,16 @@ function MigrationModal({
       </div>
       <div className="mb-3">
         <Collapse isOpen={showDetails}>
-          {registryTagIsFetching && <Loader inline size={16} />}
-          <Label className={cx("fw-bold", "pb-3", "ps-2")}>
-            Session launcher
-          </Label>
-          {details}
+          <DetailsMigration
+            pinnedImage={!!projectConfig?.config?.sessions?.dockerImage}
+            containerImage={containerImage}
+            branch={branch}
+            commits={commits}
+            fetchingSessionInfo={isFetchingData}
+            description={description}
+            keywords={tagList.join(",")}
+            codeRepository={projectMetadata.httpUrl ?? ""}
+          />
         </Collapse>
       </div>
     </>
@@ -402,7 +375,7 @@ function MigrationModal({
               </Button>
               <Button
                 disabled={
-                  result?.isLoading || registryTagIsFetching || !containerImage
+                  result?.isLoading || isFetchingData || !containerImage
                 }
                 type="submit"
               >
@@ -422,5 +395,83 @@ function MigrationModal({
         </ModalFooter>
       </Form>
     </Modal>
+  );
+}
+
+interface DetailsMigrationProps {
+  pinnedImage?: boolean;
+  commits?: GitLabRepositoryCommit[];
+  containerImage?: string;
+  branch?: string;
+  fetchingSessionInfo?: boolean;
+  keywords?: string;
+  description?: string;
+  codeRepository: string;
+}
+export function DetailsMigration({
+  pinnedImage,
+  commits,
+  containerImage,
+  branch,
+  fetchingSessionInfo,
+  keywords,
+  description,
+  codeRepository,
+}: DetailsMigrationProps) {
+  const commitMessage = useMemo(() => {
+    return commits ? commits[0].message : "";
+  }, [commits]);
+  const shortIdCommit = useMemo(() => {
+    return commits ? commits[0].short_id : undefined;
+  }, [commits]);
+
+  const detailsSession = pinnedImage ? (
+    <div className="ps-2">
+      The pinned image for this project will be used to create a session
+      launcher.
+      <p>
+        <code className="user-select-all">{containerImage}</code>
+      </p>
+    </div>
+  ) : (
+    <div className="ps-2">
+      <p>
+        The latest image for this project <code>{containerImage}</code> will be
+        used to create a session launcher.
+      </p>
+      <p>
+        <span className="fw-bold">Branch:</span> {branch}
+      </p>
+      <p>
+        <span className="fw-bold">Commit:</span> <code>{shortIdCommit}</code> -{" "}
+        {commitMessage}
+      </p>
+      <p>
+        <ExclamationTriangle className={cx("bi")} /> Note: This image will not
+        update when you modify as you make more commits
+      </p>
+    </div>
+  );
+
+  return (
+    <div>
+      <Label className={cx("fw-bold", "pb-3", "ps-2")}>
+        {fetchingSessionInfo && <Loader inline size={16} />} Session launcher
+      </Label>
+      {detailsSession}
+      <div>
+        <span className="fw-bold">Code repository:</span> {codeRepository}
+      </div>
+      {keywords && (
+        <div>
+          <span className="fw-bold">Keywords:</span> {keywords}
+        </div>
+      )}
+      {description && (
+        <div>
+          <span className="fw-bold">Description:</span> {description}
+        </div>
+      )}
+    </div>
   );
 }

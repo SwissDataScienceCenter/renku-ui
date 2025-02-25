@@ -160,7 +160,11 @@ export function useGetDockerImage() {
   return {
     registry,
     registryTag,
-    registryTagIsFetching: renkuRegistryIsFetching || registryTagIsFetching,
+    isFetchingData:
+      renkuRegistryIsFetching ||
+      registryTagIsFetching ||
+      !backendAvailable ||
+      !coreSupportComputed,
     error: renkuRegistryError || renkuRegistryTagError,
     projectConfig,
     commits,
