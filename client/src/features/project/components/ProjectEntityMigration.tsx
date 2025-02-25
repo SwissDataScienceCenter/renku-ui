@@ -43,6 +43,7 @@ import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../components/Loader";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions.js";
+import { ResourceClass } from "../../dataServices/dataServices.types.ts";
 import { useGetMigrationQuery } from "../../projects/projectMigration.api";
 import {
   LegacySlug,
@@ -55,8 +56,16 @@ import {
 import ProjectNamespaceFormField from "../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../projectsV2/fields/ProjectVisibilityFormField";
 import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField";
-import { GitLabRepositoryCommit } from "../GitLab.types.ts";
-import { useGetDockerImage } from "../hook/useGetDockerImage";
+import { safeParseJSONStringArray } from "../../sessionsV2/session.utils.ts";
+import { GitLabRepositoryCommit } from "../GitLab.types";
+import { useGetSessionLauncherData } from "../hook/useGetSessionLauncherData";
+import {
+  MIGRATION_ARGS,
+  MIGRATION_COMMAND,
+  MIGRATION_MOUNT_DIRECTORY,
+  MIGRATION_PORT,
+  MIGRATION_WORKING_DIRECTORY,
+} from "../ProjectMigration.constants";
 
 interface ProjectEntityMigrationProps {
   projectId: number;
@@ -174,7 +183,8 @@ function MigrationModal({
     branch,
     commits,
     templateName,
-  } = useGetDockerImage();
+    resourcePools,
+  } = useGetSessionLauncherData();
   const {
     control,
     formState: { dirtyFields, errors },
@@ -210,10 +220,36 @@ function MigrationModal({
     );
   }, [projectConfig, registryTag]);
 
+  const defaultSessionClass = useMemo(
+    () =>
+      resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default) ??
+      resourcePools?.find(() => true)?.classes[0] ??
+      undefined,
+    [resourcePools]
+  );
+
+  const resourceClass = useMemo(() => {
+    return (
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == defaultSessionClass?.id && c.matching) ??
+      resourcePools
+        ?.filter((pool) => pool.default)
+        .flatMap((pool) => pool.classes)
+        .find((c) => c.matching) ??
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == defaultSessionClass?.id) ??
+      undefined
+    );
+  }, [resourcePools, defaultSessionClass]);
+
   const onSubmit = useCallback(
     (data: ProjectMigrationForm) => {
       if (!containerImage) return;
       const nowFormatted = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
+      const commandFormatted = safeParseJSONStringArray(MIGRATION_COMMAND);
+      const argsFormatted = safeParseJSONStringArray(MIGRATION_ARGS);
 
       const dataMigration = {
         project: {
@@ -229,6 +265,12 @@ function MigrationModal({
           containerImage,
           name: `${templateName ?? data.name} ${nowFormatted}`,
           defaultUrl: projectConfig?.config?.sessions?.defaultUrl ?? "",
+          working_directory: MIGRATION_WORKING_DIRECTORY,
+          mount_directory: MIGRATION_MOUNT_DIRECTORY,
+          port: MIGRATION_PORT,
+          command: commandFormatted.data,
+          args: argsFormatted.data,
+          resourceClassId: resourceClass?.id ?? 0,
         },
       };
       migrateProject({
@@ -245,6 +287,7 @@ function MigrationModal({
       projectConfig,
       containerImage,
       templateName,
+      resourceClass,
     ]
   );
 
@@ -330,6 +373,7 @@ function MigrationModal({
             description={description}
             keywords={tagList.join(",")}
             codeRepository={projectMetadata.httpUrl ?? ""}
+            resourceClass={resourceClass}
           />
         </Collapse>
       </div>
@@ -407,6 +451,7 @@ interface DetailsMigrationProps {
   keywords?: string;
   description?: string;
   codeRepository: string;
+  resourceClass?: ResourceClass;
 }
 export function DetailsMigration({
   pinnedImage,
@@ -417,6 +462,7 @@ export function DetailsMigration({
   keywords,
   description,
   codeRepository,
+  resourceClass,
 }: DetailsMigrationProps) {
   const commitMessage = useMemo(() => {
     return commits ? commits[0].message : "";
@@ -459,6 +505,11 @@ export function DetailsMigration({
         {fetchingSessionInfo && <Loader inline size={16} />} Session launcher
       </Label>
       {detailsSession}
+      {resourceClass && (
+        <div>
+          <span className="fw-bold">Resource Class:</span> {resourceClass?.name}
+        </div>
+      )}
       <div>
         <span className="fw-bold">Code repository:</span> {codeRepository}
       </div>
