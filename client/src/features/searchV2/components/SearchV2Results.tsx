@@ -181,10 +181,14 @@ function SearchV2CardTitle({
     <CardHeader className={cx("d-flex", "gap-2")}>
       <div>
         <h5 className="mb-1">
-          <Link to={entityUrl}>{name}</Link>
+          <Link data-cy="search-card-entity-link" to={entityUrl}>
+            {name}
+          </Link>
         </h5>
         <p className="mb-0">
-          <Link to={namespaceUrl}>@{namespace}</Link>
+          <Link data-cy="search-card-namespace-link" to={namespaceUrl}>
+            @{namespace}
+          </Link>
         </p>
       </div>
       {entityType && (

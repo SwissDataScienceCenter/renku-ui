@@ -70,11 +70,7 @@ export default function GroupNew() {
         unmountOnClose={true}
         toggle={toggleModal}
       >
-        <ModalHeader
-          data-cy="new-group-modal-header"
-          tag="div"
-          toggle={toggleModal}
-        >
+        <ModalHeader tag="div" toggle={toggleModal}>
           <h2>
             <People className="bi" /> Create a new group
           </h2>
@@ -169,8 +165,12 @@ function GroupV2CreationDetails() {
 
   return (
     <>
-      <ModalBody data-cy="new-group-modal-body">
-        <Form id="group-creation-form" onSubmit={handleSubmit(onSubmit)}>
+      <ModalBody>
+        <Form
+          data-cy="group-creation-form"
+          id="group-creation-form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <FormGroup className="d-inline" disabled={result.isLoading}>
             <div className={cx("d-flex", "flex-column", "gap-3")}>
               <div className="mb-1">
@@ -208,7 +208,7 @@ function GroupV2CreationDetails() {
         </Form>
       </ModalBody>
 
-      <ModalFooter data-cy="new-project-modal-footer">
+      <ModalFooter>
         <Button color="outline-primary" onClick={closeModal} type="button">
           <XLg className={cx("bi", "me-1")} />
           Cancel

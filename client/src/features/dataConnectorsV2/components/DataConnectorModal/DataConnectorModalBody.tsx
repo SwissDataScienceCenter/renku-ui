@@ -277,6 +277,7 @@ export function DataConnectorMount() {
               type="string"
               {...field}
               className={cx("form-control", errors.name && "is-invalid")}
+              data-cy="data-connector-name-input"
               onChange={(e) => {
                 field.onChange(e);
                 onFieldValueChange("name", e.target.value);
@@ -308,7 +309,7 @@ export function DataConnectorMount() {
               <ProjectNamespaceControl
                 {...fields}
                 className={cx(errors.namespace && "is-invalid")}
-                data-cy={"data-controller-namespace-input"}
+                data-cy="data-controller-namespace-input"
                 id="namespace"
                 inputId="namespace-input"
                 onChange={(e) => {
@@ -466,6 +467,7 @@ export function DataConnectorMount() {
               type="string"
               {...field}
               className={cx("form-control", errors.mountPoint && "is-invalid")}
+              data-cy="data-connector-mount-input"
               onChange={(e) => {
                 field.onChange(e);
                 onFieldValueChange("mountPoint", e.target.value);
@@ -501,6 +503,7 @@ export function DataConnectorMount() {
                 "ms-1",
                 errors.readOnly && "is-invalid"
               )}
+              data-cy="data-connector-readonly-input"
               onChange={(e) => {
                 field.onChange(e);
                 onFieldValueChange("readOnly", e.target.checked);

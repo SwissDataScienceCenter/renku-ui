@@ -31,7 +31,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { User } from "../../searchV2/api/searchV2Api.api";
 import type {
   ProjectMemberPatchRequest,
@@ -102,7 +102,7 @@ function AddProjectMemberAccessForm({
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrNotebooksError error={result.error} />}
           <div className="mb-3">
             <Label className="form-label" for="addProjectMember">
               User

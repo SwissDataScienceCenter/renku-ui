@@ -106,7 +106,7 @@ class RenkuAlert extends Component {
         isOpen={isOpen}
         toggle={toggle}
         className={this.props.className}
-        data-cy={this.props.dataCy}
+        data-cy={this.props.dataCy || this.props["data-cy"]}
       >
         <div className={cx("d-flex", "gap-3")}>
           <div>{alertIcon}</div>
