@@ -409,6 +409,12 @@ function MigrationModal({
           {result.error && <RtkErrorAlert error={result.error} />}
           {form}
           {successResult}
+          {!containerImage && (
+            <div className={cx("text-danger")}>
+              <ExclamationTriangle className={cx("bi")} /> Container image not
+              available
+            </div>
+          )}
         </ModalBody>
         <ModalFooter>
           {!result.data && (
