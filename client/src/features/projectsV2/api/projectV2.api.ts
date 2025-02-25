@@ -29,6 +29,15 @@ const injectedRtkApi = api.injectEndpoints({
             default_url:
               queryArg.projectMigrationPost.sessionLauncher.defaultUrl,
             name: queryArg.projectMigrationPost.sessionLauncher.name,
+            working_directory:
+              queryArg.projectMigrationPost.sessionLauncher.workingDirectory,
+            mount_directory:
+              queryArg.projectMigrationPost.sessionLauncher.mountDirectory,
+            port: queryArg.projectMigrationPost.sessionLauncher.port,
+            command: queryArg.projectMigrationPost.sessionLauncher.command,
+            args: queryArg.projectMigrationPost.sessionLauncher.args,
+            resource_class_id:
+              queryArg.projectMigrationPost.sessionLauncher.resourceClassId,
           },
         },
       }),
@@ -225,7 +234,14 @@ export type PostProjectsMigrationsApiArg = {
     sessionLauncher: {
       containerImage: string;
       defaultUrl?: string;
-      name: string;
+      name?: string;
+      command?: string[] | null;
+      args?: string[] | null;
+      port?: number;
+      workingDirectory?: string;
+      mountDirectory?: string;
+      resourceClassId?: number;
+      diskStorage?: number;
     };
   };
   v1Id: number;
