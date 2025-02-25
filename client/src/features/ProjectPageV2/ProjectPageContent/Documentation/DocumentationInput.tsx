@@ -16,73 +16,27 @@
  * limitations under the License.
  */
 
-import { Crepe } from "@milkdown/crepe";
-import { Milkdown, MilkdownProvider, useEditor } from "@milkdown/react";
 import cx from "classnames";
-import { useCallback } from "react";
 
-import type {
-  Control,
-  FieldError,
-  FieldValues,
-  UseFormRegisterReturn,
+import {
+  Controller,
+  type Control,
+  type FieldError,
+  type FieldValues,
+  type Path,
+  type UseFormRegisterReturn,
 } from "react-hook-form";
-import { FormGroup, FormText, Label } from "reactstrap";
+import { FormGroup, FormText, Input, Label } from "reactstrap";
 
 import {
   ErrorLabel,
   InputLabel,
 } from "../../../../components/formlabels/FormLabels";
 
-import "@milkdown/crepe/theme/common/style.css";
-import "@milkdown/crepe/theme/frame.css";
-import styles from "./Documentation.module.scss";
-
-function MilkdownEditor<T extends FieldValues>(
-  props: DocumentationInputProps<T>
-) {
-  const value = props.getValue();
-  const onMarkdownUpdated = useCallback(
-    (_ctx: unknown, markdown: string) => {
-      props.register.onChange({
-        target: { name: props.name, value: markdown },
-      });
-    },
-    [props.register, props.name]
-  );
-  useEditor((root) => {
-    const crepe = new Crepe({ root, defaultValue: value });
-    crepe.on((listener) => {
-      listener.markdownUpdated(onMarkdownUpdated);
-    });
-    return crepe;
-  }, []);
-
-  return <Milkdown />;
-}
-
-function MilkdownEditorWrapper<T extends FieldValues>(
-  props: DocumentationInputProps<T>
-) {
-  return (
-    <MilkdownProvider>
-      <MilkdownEditor {...props} />
-    </MilkdownProvider>
-  );
-  // <LazyCkEditor
-  //   id={props.name}
-  //   data={value || ""}
-  //   disabled={false}
-  //   invalid={props.error != null}
-  //   name={props.name}
-  //   setInputs={setInputs}
-  // />
-}
-
 interface DocumentationInputProps<T extends FieldValues> {
   control: Control<T>;
   error?: FieldError;
-  getValue: () => string;
+  value: string;
   help?: string | React.ReactNode;
   label?: string;
   name: string;
@@ -93,6 +47,7 @@ interface DocumentationInputProps<T extends FieldValues> {
 function DocumentationInput<T extends FieldValues>(
   props: DocumentationInputProps<T>
 ) {
+  const value = props.value;
   return (
     <div>
       <FormGroup className="field-group">
@@ -106,11 +61,21 @@ function DocumentationInput<T extends FieldValues>(
             </Label>
           )}
         </div>
-        <div
-          data-cy={`markdown-editor-${props.name}`}
-          className={cx(styles.documentationEditor)}
-        >
-          <MilkdownEditorWrapper {...props} />
+        <div data-cy={`markdown-editor-${props.name}`}>
+          <Controller
+            control={props.control}
+            name={props.name as Path<T>}
+            render={({ field }) => (
+              <Input
+                id={`${props.name}-text-area`}
+                data-cy={`text-area-${props.name}`}
+                type="textarea"
+                disabled={false}
+                rows={value ? value.split("\n").length + 2 : 4}
+                {...field}
+              />
+            )}
+          />
         </div>
         {props.help && <FormText color="muted">{props.help}</FormText>}
         {props.error && (

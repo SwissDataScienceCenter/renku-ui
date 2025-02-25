@@ -22,6 +22,7 @@ import { useCallback, useEffect, useState } from "react";
 import { FileEarmarkText, Pencil, XLg } from "react-bootstrap-icons";
 import {
   Button,
+  ButtonGroup,
   Card,
   CardBody,
   CardHeader,
@@ -126,19 +127,22 @@ interface DocumentationModalProps extends DocumentationProps {
   toggle: () => void;
 }
 
+type DocumentationModalDisplayMode = "edit" | "preview";
+
 function DocumentationModal({
   isOpen,
   project,
   toggle,
 }: DocumentationModalProps) {
   const [updateProject, result] = usePatchProjectsByProjectIdMutation();
+  const [displayMode, setDisplayMode] =
+    useState<DocumentationModalDisplayMode>("edit");
   const { isLoading } = result;
 
   const {
     control,
     formState: { errors, isDirty },
     handleSubmit,
-    getValues,
     register,
     reset,
     watch,
@@ -147,6 +151,14 @@ function DocumentationModal({
       documentation: project.documentation || "",
     },
   });
+
+  const safeToggle = useCallback(() => {
+    if (!isDirty) toggle();
+  }, [isDirty, toggle]);
+
+  const onClose = useCallback(() => {
+    toggle();
+  }, [toggle]);
 
   useEffect(() => {
     reset({
@@ -169,6 +181,7 @@ function DocumentationModal({
     if (!isOpen) {
       reset({ documentation: project.documentation || "" });
       result.reset();
+      setDisplayMode("edit");
     }
   }, [isOpen, project.documentation, reset, result]);
 
@@ -184,7 +197,6 @@ function DocumentationModal({
       value: DESCRIPTION_MAX_LENGTH,
     },
   });
-  const getValue = useCallback(() => getValues("documentation"), [getValues]);
   return (
     <ScrollableModal
       backdrop="static"
@@ -192,7 +204,7 @@ function DocumentationModal({
       data-cy="project-documentation-modal"
       isOpen={isOpen}
       size="lg"
-      toggle={toggle}
+      toggle={safeToggle}
     >
       <ModalHeader toggle={toggle} data-cy="project-documentation-modal-header">
         <div>
@@ -205,13 +217,41 @@ function DocumentationModal({
           data-cy="project-documentation-modal-body"
           className={styles.modalBody}
         >
+          <div className={cx("d-flex", "gap-4")}>
+            <ButtonGroup size="sm">
+              <Button
+                active={displayMode === "edit"}
+                data-cy="documentation-display-mode-edit"
+                onClick={() => setDisplayMode("edit")}
+                color={displayMode === "edit" ? "primary" : "outline-primary"}
+              >
+                Edit
+              </Button>
+              <Button
+                active={displayMode === "preview"}
+                data-cy="documentation-display-mode-preview"
+                onClick={() => setDisplayMode("preview")}
+                color={
+                  displayMode === "preview" ? "primary" : "outline-primary"
+                }
+              >
+                Preview
+              </Button>
+            </ButtonGroup>
+          </div>
           <div className="mb-1">
-            <DocumentationInput<DocumentationForm>
-              control={control}
-              getValue={getValue}
-              name="documentation"
-              register={documentationField}
-            />
+            {displayMode === "preview" ? (
+              <div className={cx("pt-2", "mt-4", "mb-5")}>
+                <LazyRenkuMarkdown markdownText={watch("documentation")} />
+              </div>
+            ) : (
+              <DocumentationInput<DocumentationForm>
+                control={control}
+                value={watch("documentation")}
+                name="documentation"
+                register={documentationField}
+              />
+            )}
           </div>
         </ModalBody>
         <ModalFooter
@@ -229,13 +269,7 @@ function DocumentationModal({
           )}
           {result.error && <RtkOrNotebooksError error={result.error} />}
           <DocumentationWordCount watch={watch} />
-          <Button
-            color="outline-primary"
-            className="me-2"
-            onClick={() => {
-              toggle();
-            }}
-          >
+          <Button color="outline-primary" className="me-2" onClick={onClose}>
             <XLg className={cx("bi", "me-1")} />
             Close
           </Button>

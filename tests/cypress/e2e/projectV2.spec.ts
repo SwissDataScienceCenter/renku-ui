@@ -234,14 +234,24 @@ describe("Edit v2 project", () => {
     cy.getDataCy("project-documentation-edit").click();
     cy.getDataCy("project-documentation-modal-body")
       .contains(
-        "A description of this project, supporting markdown and math symbols"
+        "A description of this project, supporting **markdown** and math symbols"
       )
       .should("be.visible");
+    const newDescription =
+      "# Heading\nA new description with **bold** and _italics_.";
     cy.getDataCy("project-documentation-modal-body")
-      .find(".editor")
+      .find("#documentation-text-area")
       .click()
       .clear()
-      .type("new description");
+      .type(newDescription);
+    cy.getDataCy("project-documentation-modal-body")
+      .find("#documentation-text-area")
+      .contains("A new description with **bold**")
+      .should("be.visible");
+    cy.getDataCy("documentation-display-mode-preview").click();
+    cy.getDataCy("project-documentation-modal-body")
+      .contains("A new description with bold")
+      .should("be.visible");
     cy.getDataCy("project-documentation-modal-footer").contains("Save").click();
     cy.getDataCy("project-documentation-modal-body").should("not.be.visible");
   });
