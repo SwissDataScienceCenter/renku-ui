@@ -519,3 +519,11 @@ $borderRadius: 1000px;
   color: white !important;
   border-color: #{$rk-green} !important;
 }
+
+.input-group
+  > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(
+    .valid-feedback
+  ):not(.invalid-tooltip):not(.invalid-feedback) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
