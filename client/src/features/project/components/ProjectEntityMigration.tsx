@@ -34,6 +34,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 import {
+  ErrorAlert,
   InfoAlert,
   SuccessAlert,
   WarnAlert,
@@ -184,6 +185,7 @@ function MigrationModal({
     commits,
     templateName,
     resourcePools,
+    isProjectSupported,
   } = useGetSessionLauncherData();
   const {
     control,
@@ -208,6 +210,11 @@ function MigrationModal({
   const currentName = watch("name");
   const currentNamespace = watch("namespace");
   const currentSlug = watch("slug");
+  useEffect(() => {
+    setValue("slug", slugFromTitle(currentName, true, true), {
+      shouldValidate: true,
+    });
+  }, [currentName, setValue]);
   const resetUrl = useCallback(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
       shouldValidate: true,
@@ -270,7 +277,7 @@ function MigrationModal({
           port: MIGRATION_PORT,
           command: commandFormatted.data,
           args: argsFormatted.data,
-          resourceClassId: resourceClass?.id ?? 0,
+          resourceClassId: resourceClass?.id,
         },
       };
       migrateProject({
@@ -410,10 +417,15 @@ function MigrationModal({
           {form}
           {successResult}
           {!containerImage && (
-            <div className={cx("text-danger")}>
-              <ExclamationTriangle className={cx("bi")} /> Container image not
-              available
-            </div>
+            <ErrorAlert dismissible={false}>
+              Container image not available, it is building or not exist
+            </ErrorAlert>
+          )}
+          {!isProjectSupported && (
+            <ErrorAlert dismissible={false}>
+              Sessions might not work. Please update the project to migrate it
+              to Renku 2.0.
+            </ErrorAlert>
           )}
         </ModalBody>
         <ModalFooter>
@@ -425,7 +437,10 @@ function MigrationModal({
               </Button>
               <Button
                 disabled={
-                  result?.isLoading || isFetchingData || !containerImage
+                  result?.isLoading ||
+                  isFetchingData ||
+                  !containerImage ||
+                  !isProjectSupported
                 }
                 type="submit"
               >

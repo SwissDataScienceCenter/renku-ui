@@ -74,6 +74,8 @@ export function useGetSessionLauncherData() {
     metadataVersion,
   } = coreSupport;
 
+  const isSupported = coreSupportComputed && backendAvailable;
+
   const { data: projectConfig } = useGetConfigQuery(
     backendAvailable && coreSupportComputed && currentBranch && commit
       ? {
@@ -177,8 +179,8 @@ export function useGetSessionLauncherData() {
     isFetchingData:
       renkuRegistryIsFetching ||
       registryTagIsFetching ||
-      !backendAvailable ||
-      !coreSupportComputed ||
+      backendAvailable === undefined ||
+      coreSupportComputed === undefined ||
       resourcePoolsIsFetching,
     error: renkuRegistryError || renkuRegistryTagError,
     projectConfig,
@@ -186,5 +188,6 @@ export function useGetSessionLauncherData() {
     branch: defaultBranch,
     templateName,
     resourcePools,
+    isProjectSupported: isSupported,
   };
 }
