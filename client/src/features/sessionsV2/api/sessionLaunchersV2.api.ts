@@ -43,8 +43,8 @@ const withFixedEndpoints = sessionLaunchersV2GeneratedApi.injectEndpoints({
 });
 
 // Adds tag handling for cache management
-export const sessionLaunchersV2Api = withFixedEndpoints.enhanceEndpoints({
-  addTagTypes: ["Environment", "Launcher"],
+const withTagHandling = withFixedEndpoints.enhanceEndpoints({
+  addTagTypes: ["Environment", "Launcher", "Build"],
   endpoints: {
     getEnvironments: {
       providesTags: (result) =>
@@ -83,7 +83,37 @@ export const sessionLaunchersV2Api = withFixedEndpoints.enhanceEndpoints({
             ]
           : ["Launcher"],
     },
+    getBuildsByBuildId: {
+      providesTags: (result) =>
+        result ? [{ id: result.id, type: "Build" }, "Build"] : ["Build"],
+    },
+    postEnvironmentsByEnvironmentIdBuilds: {
+      invalidatesTags: ["Build"],
+    },
+    patchBuildsByBuildId: {
+      invalidatesTags: (result) =>
+        result ? [{ id: result.id, type: "Build" }] : ["Build"],
+    },
+    getEnvironmentsByEnvironmentIdBuilds: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ id, type: "Build" as const })),
+              "Build",
+            ]
+          : ["Build"],
+    },
   },
+});
+
+// Adds tag invalidation endpoints
+export const sessionLaunchersV2Api = withTagHandling.injectEndpoints({
+  endpoints: (build) => ({
+    invalidateLaunchers: build.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["Launcher"],
+    }),
+  }),
 });
 
 export const {
@@ -95,6 +125,11 @@ export const {
   usePatchSessionLaunchersByLauncherIdMutation,
   useDeleteSessionLaunchersByLauncherIdMutation,
   useGetProjectsByProjectIdSessionLaunchersQuery,
+  // "builds" hooks
+  useGetBuildsByBuildIdQuery,
+  usePostEnvironmentsByEnvironmentIdBuildsMutation,
+  usePatchBuildsByBuildIdMutation,
+  useGetEnvironmentsByEnvironmentIdBuildsQuery,
 } = sessionLaunchersV2Api;
 
 export type * from "./sessionLaunchersV2.generated-api";
