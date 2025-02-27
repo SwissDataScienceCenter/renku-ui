@@ -44,7 +44,7 @@ const withFixedEndpoints = sessionLaunchersV2GeneratedApi.injectEndpoints({
 
 // Adds tag handling for cache management
 const withTagHandling = withFixedEndpoints.enhanceEndpoints({
-  addTagTypes: ["Environment", "Launcher", "Build"],
+  addTagTypes: ["Environment", "Launcher", "Build", "BuildLogs"],
   endpoints: {
     getEnvironments: {
       providesTags: (result) =>
@@ -103,6 +103,12 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
             ]
           : ["Build"],
     },
+    getBuildsByBuildIdLogs: {
+      providesTags: (result, _error, args) =>
+        result
+          ? [{ id: args.buildId, type: "BuildLogs" }, "BuildLogs"]
+          : ["BuildLogs"],
+    },
   },
 });
 
@@ -130,6 +136,7 @@ export const {
   usePostEnvironmentsByEnvironmentIdBuildsMutation,
   usePatchBuildsByBuildIdMutation,
   useGetEnvironmentsByEnvironmentIdBuildsQuery,
+  useGetBuildsByBuildIdLogsQuery,
 } = sessionLaunchersV2Api;
 
 export type * from "./sessionLaunchersV2.generated-api";
