@@ -46,6 +46,7 @@ import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import DocumentationInput from "./DocumentationInput";
 import styles from "./Documentation.module.scss";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 
 // Taken from src/features/projectsV2/api/projectV2.openapi.json
 const DESCRIPTION_MAX_LENGTH = 5000;
@@ -348,7 +349,13 @@ function DocumentationWordCount({
 function MarkdownHelp() {
   return (
     <div>
-      <Markdown className="bi me-1" /> Markdown supported
+      <ExternalLink
+        className={cx("text-decoration-none", "text-secondary")}
+        role="text"
+        url="https://www.notion.so/renku/Writing-Documentation-in-Renku-Renku-s-Markdown-1a70df2efafc80329211c493917ff6e4"
+      >
+        <Markdown className="bi me-1" /> Markdown supported
+      </ExternalLink>
     </div>
   );
 }
