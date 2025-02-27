@@ -51,7 +51,7 @@ export default function BuilderTypeSelector<T extends FieldValues>({
         Environment type{" - "}
         <ExternalLink
           role="link"
-          url="https://www.notion.so/renku/UX-Research-How-to-create-a-custom-environment-from-a-code-repository-1960df2efafc801b88f6da59a0aa8234?pvs=4#1990df2efafc805f8548cbd5dafd200c"
+          url="https://renku.notion.site/How-to-create-a-custom-environment-from-a-code-repository-1960df2efafc801b88f6da59a0aa8234"
         >
           Learn more
           <BoxArrowUpRight className={cx("bi", "ms-1")} />

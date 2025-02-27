@@ -91,7 +91,6 @@ export const CONTAINER_IMAGE_PATTERN =
 
 export const BUILDER_IMAGE_NOT_READY_VALUE = "image:unknown-at-the-moment";
 
-/* eslint-disable spellcheck/spell-checker */
 export const BUILDER_TYPES = [
   {
     value: "python",
@@ -106,12 +105,12 @@ export const BUILDER_TYPES = [
   },
 ] as readonly BuilderSelectorOption[];
 
-/* eslint-disable spellcheck/spell-checker */
 export const BUILDER_FRONTENDS = [
   {
+    /* eslint-disable spellcheck/spell-checker */
     value: "vscodium",
     label: "VSCodium",
     description: "A freely-licensed version Microsoft’s editor VS Code.",
+    /* eslint-enable spellcheck/spell-checker */
   },
 ] as readonly BuilderSelectorOption[];
-/* eslint-enable spellcheck/spell-checker */
