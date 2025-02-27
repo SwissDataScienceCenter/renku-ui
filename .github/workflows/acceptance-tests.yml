@@ -145,13 +145,13 @@ jobs:
       fail-fast: false
       matrix:
         tests:
-          - anonymousNavigation,
-          - dashboardV2,
-          - groupBasics,
-          - projectBasics,
-          - projectResources,
-          - searchEntities,
-          - sessionBasics,
+          - anonymousNavigation
+          - dashboardV2
+          - groupBasics
+          - projectBasics
+          - projectResources
+          - searchEntities
+          - sessionBasics
 
     steps:
       - name: Extract Renku repository reference
