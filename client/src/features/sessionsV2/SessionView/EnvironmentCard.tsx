@@ -516,7 +516,7 @@ function BuildActions({ launcher }: BuildActionsProps) {
           onClick={toggleLogs}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
-          Show logs from {hasInProgressBuild ? "current" : "last"} build
+          Show logs
         </DropdownItem>
       </ButtonWithMenuV2>
     ) : (
@@ -596,6 +596,11 @@ interface BuildLogsModalProps {
 function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
   const lastBuild = builds?.at(0);
   const name = lastBuild?.id ?? "build_logs";
+  const inProgressBuild = useMemo(
+    () => builds?.find(({ status }) => status === "in_progress"),
+    [builds]
+  );
+  const hasInProgressBuild = !!inProgressBuild;
 
   const [logs, setLogs] = useState<ILogs>({
     data: {},
@@ -649,7 +654,7 @@ function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
       toggleLogs={toggle}
       logs={logs}
       name={name}
-      title="Logs"
+      title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
     />
   );
 }
