@@ -57,6 +57,7 @@ import {
 import ProjectNamespaceFormField from "../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../projectsV2/fields/ProjectVisibilityFormField";
 import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField";
+import { SessionRowResourceRequests } from "../../session/components/SessionsList.tsx";
 import { safeParseJSONStringArray } from "../../sessionsV2/session.utils.ts";
 import { GitLabRepositoryCommit } from "../GitLab.types";
 import { useGetSessionLauncherData } from "../hook/useGetSessionLauncherData";
@@ -492,58 +493,104 @@ export function DetailsMigration({
     return commits ? commits[0].short_id : undefined;
   }, [commits]);
 
-  const detailsSession = pinnedImage ? (
-    <div className="ps-2">
-      The pinned image for this project will be used to create a session
-      launcher.
-      <p>
-        <code className="user-select-all">{containerImage}</code>
-      </p>
-    </div>
-  ) : (
-    <div className="ps-2">
-      <p>
-        The latest image for this project <code>{containerImage}</code> will be
-        used to create a session launcher.
-      </p>
-      <p>
-        <span className="fw-bold">Branch:</span> {branch}
-      </p>
-      <p>
-        <span className="fw-bold">Commit:</span> <code>{shortIdCommit}</code> -{" "}
-        {commitMessage}
-      </p>
-      <p>
-        <ExclamationTriangle className={cx("bi")} /> Note: This image will not
-        update when you modify as you make more commits
-      </p>
+  const resourceClassData = resourceClass
+    ? {
+        gpu: resourceClass.gpu,
+        cpu: resourceClass.cpu,
+        storage: resourceClass.max_storage,
+        memory: resourceClass.memory,
+      }
+    : undefined;
+
+  const detailsSession = (
+    <div className={cx("ps-2", "d-flex", "flex-column", "gap-2", "pb-2")}>
+      {pinnedImage ? (
+        <>
+          <div>
+            {" "}
+            The pinned image for this project will be used to create a session
+            launcher.{" "}
+          </div>
+          <div>
+            <span>- Container image:</span> <code>{containerImage}</code>
+          </div>
+          <div>
+            <span>- Resource class:</span>{" "}
+            {resourceClass ? (
+              <>
+                resourceClass.name{" "}
+                <SessionRowResourceRequests
+                  resourceRequests={resourceClassData}
+                />
+              </>
+            ) : (
+              <span className="fst-italic">Not found resource class</span>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <div>
+            The latest image for this project will be used to create a session
+            launcher.
+          </div>
+          <div>
+            <span>- Container image:</span> <code>{containerImage}</code>
+          </div>
+          <div>
+            <span>- Branch:</span> <code>{branch}</code>
+          </div>
+          <div>
+            <span>- Commit:</span> <code>{shortIdCommit}</code> -{" "}
+            <code>{commitMessage}</code>
+          </div>
+          <div>
+            <span>- Resource class:</span>{" "}
+            {resourceClass ? (
+              <>
+                {resourceClass?.name} |{" "}
+                <SessionRowResourceRequests
+                  resourceRequests={resourceClassData}
+                />
+              </>
+            ) : (
+              <span className="fst-italic">Not found resource class</span>
+            )}
+          </div>
+          <div>
+            <ExclamationTriangle className={cx("bi")} /> Note: This image will
+            not update when you modify as you make more commits
+          </div>
+        </>
+      )}
     </div>
   );
 
   return (
     <div>
-      <Label className={cx("fw-bold", "pb-3", "ps-2")}>
+      <Label className={cx("fw-bold", "pb-3")}>
         {fetchingSessionInfo && <Loader inline size={16} />} Session launcher
       </Label>
       {detailsSession}
-      {resourceClass && (
-        <div>
-          <span className="fw-bold">Resource Class:</span> {resourceClass?.name}
-        </div>
-      )}
-      <div>
+      <div className="py-2">
         <span className="fw-bold">Code repository:</span> {codeRepository}
       </div>
-      {keywords && (
-        <div>
-          <span className="fw-bold">Keywords:</span> {keywords}
-        </div>
-      )}
-      {description && (
-        <div>
-          <span className="fw-bold">Description:</span> {description}
-        </div>
-      )}
+      <div className="py-2">
+        <span className="fw-bold">Keywords:</span>{" "}
+        {keywords ? (
+          keywords
+        ) : (
+          <span className="fst-italic">Not found keywords</span>
+        )}
+      </div>
+      <div className="py-2">
+        <span className="fw-bold">Description:</span>{" "}
+        {description ? (
+          description
+        ) : (
+          <span className="fst-italic">Not found description</span>
+        )}
+      </div>
     </div>
   );
 }
