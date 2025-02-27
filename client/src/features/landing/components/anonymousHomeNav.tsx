@@ -23,8 +23,8 @@ import { List } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
 
-import { useLoginUrl } from "../../../authentication/useLoginUrl.hook.ts";
-import { ExternalLink } from "../../../components/ExternalLinks.tsx";
+import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
+import { ExternalLink } from "../../../components/ExternalLinks";
 import { Links } from "../../../utils/constants/Docs.js";
 import { Url } from "../../../utils/helpers/url";
 

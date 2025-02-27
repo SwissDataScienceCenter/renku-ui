@@ -22,7 +22,7 @@ import { Col, Container, Row } from "reactstrap";
 import { Links } from "../../../../utils/constants/Docs.js";
 import connectIcon from "../../assets/connectIcon.svg";
 import puzzleIcon from "../../assets/puzzleIcon.svg";
-import { useCustomHomePageProjectUrl } from "../../hooks/useCustomHomePageProjectUrl.hook.ts";
+import { useCustomHomePageProjectUrl } from "../../hooks/useCustomHomePageProjectUrl.hook";
 import styles from "./Introduction.module.scss";
 
 export function Introduction() {
