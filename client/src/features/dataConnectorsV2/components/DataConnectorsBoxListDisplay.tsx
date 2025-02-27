@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
-import { EyeFill, Globe2, Lock, Pencil } from "react-bootstrap-icons";
+import { EyeFill, Globe2, Lock, Pencil, Folder } from "react-bootstrap-icons";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
@@ -36,11 +36,13 @@ interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;
   dataConnectorLink?: DataConnectorToProjectLink;
   extendedPreview?: boolean;
+  warning?: string;
 }
 export default function DataConnectorBoxListDisplay({
   dataConnector,
   dataConnectorLink,
   extendedPreview,
+  warning,
 }: DataConnectorBoxListDisplayProps) {
   const {
     name,
@@ -102,7 +104,11 @@ export default function DataConnectorBoxListDisplay({
                 "align-items-center"
               )}
             >
-              <UserAvatar namespace={namespace} size="sm" />
+              {namespace.split("/").length >= 2 ? (
+                <Folder />
+              ) : (
+                <UserAvatar namespace={namespace} size="sm" />
+              )}
               <p className={cx("mb-0", "text-truncate", "text-muted")}>
                 {namespace}
               </p>
@@ -138,6 +144,7 @@ export default function DataConnectorBoxListDisplay({
                     Public
                   </div>
                 )}
+                {warning && <p>{warning}</p>}
                 {extendedPreview && readOnly}
               </div>
               <TimeCaption
