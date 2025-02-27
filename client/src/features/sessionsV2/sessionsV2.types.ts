@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { ReactNode } from "react";
 import { ResourceClass } from "../dataServices/dataServices.types";
 import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
 import type {
@@ -173,4 +174,10 @@ export interface SessionImageParams {
 
 export interface DockerImage {
   error?: unknown;
+}
+
+export interface BuilderSelectorOption {
+  label: string;
+  value: string;
+  description?: ReactNode;
 }

@@ -30,6 +30,7 @@ import type { SessionLauncherForm } from "../../sessionsV2.types";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
 import CodeRepositorySelector from "./CodeRepositorySelector";
+import WipBadge from "../../../projectsV2/shared/WipBadge";
 
 interface BuilderEnvironmentFieldsProps {
   control: Control<SessionLauncherForm>;
@@ -90,6 +91,11 @@ export default function BuilderEnvironmentFields({
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <div>
+        <WipBadge tooltip="This is an experimental feature. Use at your own risk.">
+          Experimental
+        </WipBadge>
+      </div>
       {!isEdit && (
         <p className={cx("mb-0")}>
           Let RenkuLab create a customized environment from a code repository. A
