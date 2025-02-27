@@ -305,6 +305,8 @@ function MigrationModal({
       : "";
   }, [result.data]);
 
+  const isPinnedImage = !!projectConfig?.config?.sessions?.dockerImage;
+
   const form = !result.data && (
     <>
       <div className="mb-3">
@@ -373,7 +375,7 @@ function MigrationModal({
       <div className="mb-3">
         <Collapse isOpen={showDetails}>
           <DetailsMigration
-            pinnedImage={!!projectConfig?.config?.sessions?.dockerImage}
+            pinnedImage={isPinnedImage}
             containerImage={containerImage}
             branch={branch}
             commits={commits}
@@ -385,6 +387,15 @@ function MigrationModal({
           />
         </Collapse>
       </div>
+      {!isPinnedImage && containerImage && isProjectSupported && (
+        <div>
+          <div className="mb-2">
+            <ExclamationTriangle size="20" className={cx("align-text-top")} />{" "}
+            The image for this project is used to create a session launcher and
+            will not update as you make additional commits.
+          </div>
+        </div>
+      )}
     </>
   );
 
@@ -417,12 +428,12 @@ function MigrationModal({
           {result.error && <RtkErrorAlert error={result.error} />}
           {form}
           {successResult}
-          {!containerImage && (
+          {!containerImage && !isFetchingData && (
             <ErrorAlert dismissible={false}>
               Container image not available, it is building or not exist
             </ErrorAlert>
           )}
-          {!isProjectSupported && (
+          {!isProjectSupported && !isFetchingData && (
             <ErrorAlert dismissible={false}>
               Sessions might not work. Please update the project to migrate it
               to Renku 2.0.
@@ -556,10 +567,6 @@ export function DetailsMigration({
             ) : (
               <span className="fst-italic">Not found resource class</span>
             )}
-          </div>
-          <div>
-            <ExclamationTriangle className={cx("bi")} /> Note: This image will
-            not update when you modify as you make more commits
           </div>
         </>
       )}

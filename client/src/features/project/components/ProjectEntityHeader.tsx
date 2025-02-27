@@ -17,6 +17,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { ACCESS_LEVELS } from "../../../api-client";
 
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
@@ -32,11 +33,19 @@ import { ProjectEntityMigration } from "./ProjectEntityMigration";
 type ProjectEntityHeaderProps = EntityHeaderProps & {
   defaultBranch: string;
   projectId: number;
+  accessLevel: number;
 };
 
 export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
-  const { defaultBranch, devAccess, fullPath, gitUrl, projectId, visibility } =
-    props;
+  const {
+    defaultBranch,
+    devAccess,
+    fullPath,
+    gitUrl,
+    projectId,
+    visibility,
+    accessLevel,
+  } = props;
 
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(
     fullPath && projectId ? projectId : skipToken
@@ -75,7 +84,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
 
   return (
     <>
-      {devAccess && (
+      {accessLevel === ACCESS_LEVELS.OWNER && (
         <ProjectEntityMigration
           projectId={projectId}
           description={descriptionKg}
