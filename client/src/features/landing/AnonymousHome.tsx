@@ -30,25 +30,25 @@ import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 
-import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown.tsx";
+import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
 import { stateToSearchString } from "../kgSearch";
-import AppContext from "../../utils/context/appContext.ts";
-import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants.ts";
+import AppContext from "../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import { Url } from "../../utils/helpers/url";
-import { RenkuBenefits } from "./components/Benefits/Benefits.tsx";
-import { Introduction } from "./components/Introduction/Introduction.tsx";
+import { RenkuBenefits } from "./components/Benefits/Benefits";
+import { Introduction } from "./components/Introduction/Introduction";
 
-import { NavBarWarnings } from "./components/NavBar/NavBarWarnings.jsx";
+import { NavBarWarnings } from "./components/NavBar/NavBarWarnings";
 
 import VisualHead from "./assets/Visual_Head.svg";
 
-import DividerLandingPage from "./components/Dividier/Divider.tsx";
-import HeroLanding from "./components/HeroLanding/HeroLanding.tsx";
-import { ResourcesAndSupport } from "./components/ResourcesSupport/ResourcesAndSupport.tsx";
-import WhatIsRenku from "./components/WhatIsRenku/WhatIsRenku.tsx";
-import WhoWeAre from "./components/WhoWeAre/WhoWeAre.tsx";
-import type { AnonymousHomeConfig } from "./anonymousHome.types.ts";
-import { BottomNav, TopNav } from "./components/anonymousHomeNav.tsx";
+import DividerLandingPage from "./components/Dividier/Divider";
+import HeroLanding from "./components/HeroLanding/HeroLanding";
+import { ResourcesAndSupport } from "./components/ResourcesSupport/ResourcesAndSupport";
+import WhatIsRenku from "./components/WhatIsRenku/WhatIsRenku";
+import WhoWeAre from "./components/WhoWeAre/WhoWeAre";
+import type { AnonymousHomeConfig } from "./anonymousHome.types";
+import { BottomNav, TopNav } from "./components/anonymousHomeNav";
 
 // ? react-autosuggest styles are defined there q_q
 // ? also, the order of import matters here q_q

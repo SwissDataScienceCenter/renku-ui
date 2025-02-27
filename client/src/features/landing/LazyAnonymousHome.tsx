@@ -18,9 +18,9 @@
 
 import { Suspense, lazy } from "react";
 
-import PageLoader from "../../components/PageLoader.tsx";
+import PageLoader from "../../components/PageLoader";
 
-const AnonymousHome = lazy(() => import("./AnonymousHome.tsx"));
+const AnonymousHome = lazy(() => import("./AnonymousHome"));
 
 export default function LazyAnonymousHome() {
   return (

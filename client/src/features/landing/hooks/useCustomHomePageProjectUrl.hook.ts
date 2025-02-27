@@ -17,8 +17,8 @@
  */
 
 import { useContext } from "react";
-import AppContext from "../../../utils/context/appContext.ts";
-import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants.ts";
+import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 
 export function useCustomHomePageProjectUrl(): string {
   const { params } = useContext(AppContext);
