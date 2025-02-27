@@ -21,11 +21,10 @@ import { useMemo } from "react";
 import {
   Controller,
   type FieldValues,
-  type Path,
-  type PathValue,
   type UseControllerProps,
 } from "react-hook-form";
 import { Label } from "reactstrap";
+
 import { BUILDER_FRONTENDS } from "../../session.constants";
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
 
@@ -85,7 +84,6 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
             required: "Please select an environment type.",
           }
         }
-        defaultValue={defaultValue as PathValue<T, Path<T>>}
       />
     </div>
   );

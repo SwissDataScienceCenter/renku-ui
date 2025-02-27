@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import Select, {
   components,
@@ -27,6 +27,7 @@ import Select, {
   type SelectComponentsConfig,
   type SingleValue,
 } from "react-select";
+
 import { BUILDER_TYPES } from "../../session.constants";
 import type { BuilderSelectorOption } from "../../sessionsV2.types";
 
@@ -66,6 +67,13 @@ export default function BuilderSelectorCommon({
     },
     [onChange_]
   );
+
+  // We need to set the default value by hand here
+  useEffect(() => {
+    if (onChange_ != null && defaultValue && !value_) {
+      onChange_(defaultValue.value);
+    }
+  }, [defaultValue, onChange_, value_]);
 
   return (
     <Select

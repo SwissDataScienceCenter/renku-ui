@@ -22,8 +22,6 @@ import { BoxArrowUpRight } from "react-bootstrap-icons";
 import {
   Controller,
   type FieldValues,
-  type Path,
-  type PathValue,
   type UseControllerProps,
 } from "react-hook-form";
 import { Label } from "reactstrap";
@@ -94,7 +92,6 @@ export default function BuilderTypeSelector<T extends FieldValues>({
             required: "Please select an environment type.",
           }
         }
-        defaultValue={defaultValue as PathValue<T, Path<T>>}
       />
     </div>
   );
