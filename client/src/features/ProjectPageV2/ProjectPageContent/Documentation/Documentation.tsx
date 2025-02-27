@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 
-import { FileEarmarkText, Pencil, XLg } from "react-bootstrap-icons";
+import { FileEarmarkText, Markdown, Pencil, XLg } from "react-bootstrap-icons";
 import {
   Button,
   ButtonGroup,
@@ -258,33 +258,48 @@ function DocumentationModal({
           className="border-top"
           data-cy="project-documentation-modal-footer"
         >
-          {errors.documentation && (
-            <div className="text-danger">
-              {errors.documentation.message ? (
-                <>{errors.documentation.message}</>
-              ) : (
-                <>Documentation text is invalid</>
-              )}
-            </div>
-          )}
-          {result.error && <RtkOrNotebooksError error={result.error} />}
-          <DocumentationWordCount watch={watch} />
-          <Button color="outline-primary" className="me-2" onClick={onClose}>
-            <XLg className={cx("bi", "me-1")} />
-            Close
-          </Button>
-          <Button
-            color="primary"
-            disabled={isLoading || !isDirty}
-            type="submit"
-          >
-            {isLoading ? (
-              <Loader className="me-1" inline size={16} />
-            ) : (
-              <Pencil className={cx("bi", "me-1")} />
+          <div
+            className={cx(
+              "d-flex",
+              "align-items-center",
+              "justify-content-between",
+              "w-100"
             )}
-            Save
-          </Button>
+          >
+            <div>
+              {errors.documentation ? (
+                <div className="text-danger">
+                  {errors.documentation.message ? (
+                    <>{errors.documentation.message}</>
+                  ) : (
+                    <>Documentation text is invalid</>
+                  )}
+                </div>
+              ) : (
+                <MarkdownHelp />
+              )}
+              {result.error && <RtkOrNotebooksError error={result.error} />}
+            </div>
+            <div className={cx("d-flex", "align-items-center", "gap-2")}>
+              <DocumentationWordCount watch={watch} />
+              <Button color="outline-primary" onClick={onClose}>
+                <XLg className={cx("bi", "me-1")} />
+                Close
+              </Button>
+              <Button
+                color="primary"
+                disabled={isLoading || !isDirty}
+                type="submit"
+              >
+                {isLoading ? (
+                  <Loader className="me-1" inline size={16} />
+                ) : (
+                  <Pencil className={cx("bi", "me-1")} />
+                )}
+                Save
+              </Button>
+            </div>
+          </div>
         </ModalFooter>
       </Form>
     </ScrollableModal>
@@ -310,6 +325,14 @@ function DocumentationWordCount({
         {charCount}
       </span>{" "}
       of {DESCRIPTION_MAX_LENGTH} characters
+    </div>
+  );
+}
+
+function MarkdownHelp() {
+  return (
+    <div>
+      <Markdown className="bi me-1" /> Markdown supported
     </div>
   );
 }
