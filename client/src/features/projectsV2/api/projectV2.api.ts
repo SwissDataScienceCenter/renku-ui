@@ -14,6 +14,34 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.projectPost,
       }),
     }),
+    postProjectMigrations: build.mutation<
+      PostProjectsApiResponse,
+      PostProjectsMigrationsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/renku_v1_projects/${queryArg.v1Id}/migrations`,
+        method: "POST",
+        body: {
+          project: queryArg.projectMigrationPost.project,
+          session_launcher: {
+            container_image:
+              queryArg.projectMigrationPost.sessionLauncher.containerImage,
+            default_url:
+              queryArg.projectMigrationPost.sessionLauncher.defaultUrl,
+            name: queryArg.projectMigrationPost.sessionLauncher.name,
+            working_directory:
+              queryArg.projectMigrationPost.sessionLauncher.workingDirectory,
+            mount_directory:
+              queryArg.projectMigrationPost.sessionLauncher.mountDirectory,
+            port: queryArg.projectMigrationPost.sessionLauncher.port,
+            command: queryArg.projectMigrationPost.sessionLauncher.command,
+            args: queryArg.projectMigrationPost.sessionLauncher.args,
+            resource_class_id:
+              queryArg.projectMigrationPost.sessionLauncher.resourceClassId,
+          },
+        },
+      }),
+    }),
     getProjectsByProjectId: build.query<
       GetProjectsByProjectIdApiResponse,
       GetProjectsByProjectIdApiArg
@@ -199,6 +227,24 @@ export type PostProjectsApiResponse =
   /** status 201 The project was created */ Project;
 export type PostProjectsApiArg = {
   projectPost: ProjectPost;
+};
+export type PostProjectsMigrationsApiArg = {
+  projectMigrationPost: {
+    project: ProjectPost;
+    sessionLauncher: {
+      containerImage: string;
+      defaultUrl?: string;
+      name?: string;
+      command?: string[] | null;
+      args?: string[] | null;
+      port?: number;
+      workingDirectory?: string;
+      mountDirectory?: string;
+      resourceClassId?: number;
+      diskStorage?: number;
+    };
+  };
+  v1Id: number;
 };
 export type GetProjectsByProjectIdApiResponse =
   /** status 200 The project */ Project;
@@ -484,4 +530,5 @@ export const {
   useGetSessionSecretSlotsBySlotIdQuery,
   usePatchSessionSecretSlotsBySlotIdMutation,
   useDeleteSessionSecretSlotsBySlotIdMutation,
+  usePostProjectMigrationsMutation,
 } = injectedRtkApi;

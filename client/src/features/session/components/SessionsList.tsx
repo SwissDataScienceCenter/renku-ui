@@ -336,7 +336,7 @@ export function SessionRowResourceRequests({
   }
 
   return (
-    <div>
+    <>
       {entries.map(([key, value], index) => (
         <span key={key}>
           <span className="text-nowrap">
@@ -348,7 +348,7 @@ export function SessionRowResourceRequests({
           {entries.length - 1 === index ? " " : " | "}
         </span>
       ))}
-    </div>
+    </>
   );
 }
 
