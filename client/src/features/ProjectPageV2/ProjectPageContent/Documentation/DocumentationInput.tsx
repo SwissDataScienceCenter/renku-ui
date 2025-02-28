@@ -24,7 +24,6 @@ import {
   type FieldError,
   type FieldValues,
   type Path,
-  type UseFormRegisterReturn,
 } from "react-hook-form";
 import { FormGroup, FormText, Input, Label } from "reactstrap";
 
@@ -40,7 +39,6 @@ interface DocumentationInputProps<T extends FieldValues> {
   help?: string | React.ReactNode;
   label?: string;
   name: string;
-  register: UseFormRegisterReturn;
   required?: boolean;
 }
 
@@ -51,16 +49,16 @@ function DocumentationInput<T extends FieldValues>(
   return (
     <div>
       <FormGroup className="field-group">
-        <div className={cx("pb-2", props.label == null && "mb-4")}>
-          {props.label && (
+        {props.label && (
+          <div className={cx("pb-2", props.label == null && "mb-4")}>
             <Label htmlFor={props.name} required={props.required ?? false}>
               <InputLabel
                 text={props.label}
                 isRequired={props.required ?? false}
               />
             </Label>
-          )}
-        </div>
+          </div>
+        )}
         <div data-cy={`markdown-editor-${props.name}`}>
           <Controller
             control={props.control}

@@ -240,35 +240,16 @@ function DocumentationModal({
               </Button>
             </ButtonGroup>
           </div>
-          <div className={cx("mb-1", "position-relative")}>
-            <div
-              className={cx(
-                "position-relative",
-                "z-1",
-                displayMode !== "edit" && "invisible"
-              )}
-            >
+          <div className="mb-1 mt-3">
+            {displayMode === "edit" ? (
               <DocumentationInput<DocumentationForm>
                 control={control}
                 value={watch("documentation")}
                 name="documentation"
-                register={documentationField}
               />
-            </div>
-            <div
-              className={cx(
-                "pt-2",
-                "mt-4",
-                "mb-5",
-                "position-absolute",
-                "top-0",
-                "start-0",
-                "z-0",
-                displayMode !== "preview" && "invisible"
-              )}
-            >
+            ) : (
               <LazyRenkuMarkdown markdownText={watch("documentation")} />
-            </div>
+            )}
           </div>
         </ModalBody>
         <ModalFooter
