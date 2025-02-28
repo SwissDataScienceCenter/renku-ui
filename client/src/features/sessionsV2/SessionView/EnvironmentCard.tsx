@@ -19,7 +19,14 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Bricks,
   CircleFill,
@@ -49,6 +56,8 @@ import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { Loader } from "../../../components/Loader";
 import { type ILogs, EnvironmentLogsPresent } from "../../../components/Logs";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
+import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -69,6 +78,10 @@ import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
 import { safeStringify } from "../session.utils";
 
 export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
+  const { params } = useContext(AppContext);
+  const imageBuildersEnabled =
+    params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
+
   const environment = launcher.environment;
 
   if (!environment) {
@@ -78,7 +91,8 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
   const { environment_kind, name } = environment;
   const cardName = environment_kind === "GLOBAL" ? name || "" : launcher.name;
 
-  const buildActions = launcher.environment.environment_kind === "CUSTOM" &&
+  const buildActions = imageBuildersEnabled &&
+    launcher.environment.environment_kind === "CUSTOM" &&
     launcher.environment.environment_image_source === "build" && (
       <BuildActions launcher={launcher} />
     );
@@ -217,6 +231,10 @@ function CustomBuildEnvironmentValues({
 }: {
   launcher: SessionLauncher;
 }) {
+  const { params } = useContext(AppContext);
+  const imageBuildersEnabled =
+    params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
+
   const { environment } = launcher;
 
   const {
@@ -224,7 +242,7 @@ function CustomBuildEnvironmentValues({
     isLoading,
     error,
   } = useGetBuildsQuery(
-    environment.environment_image_source === "build"
+    imageBuildersEnabled && environment.environment_image_source === "build"
       ? { environmentId: environment.id }
       : skipToken
   );
@@ -268,6 +286,14 @@ function CustomBuildEnvironmentValues({
           <ReadyStatusBadge />
         )}
       </EnvironmentRow>
+      {!imageBuildersEnabled && (
+        <EnvironmentRow>
+          <p className={cx("mb-0", "alert", "alert-danger")}>
+            This session environment is not currently supported by this instance
+            of RenkuLab. Contact an administrator to learn more.
+          </p>
+        </EnvironmentRow>
+      )}
       <EnvironmentRow>
         {isLoading ? (
           <span>

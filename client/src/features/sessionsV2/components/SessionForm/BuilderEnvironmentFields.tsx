@@ -18,19 +18,21 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { type Control } from "react-hook-form";
 
-import { WarnAlert } from "../../../../components/Alert";
+import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import AppContext from "../../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
+import WipBadge from "../../../projectsV2/shared/WipBadge";
 import { useGetRepositoriesProbesQuery } from "../../../repositories/repositories.api";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
 import CodeRepositorySelector from "./CodeRepositorySelector";
-import WipBadge from "../../../projectsV2/shared/WipBadge";
 
 interface BuilderEnvironmentFieldsProps {
   control: Control<SessionLauncherForm>;
@@ -41,6 +43,10 @@ export default function BuilderEnvironmentFields({
   control,
   isEdit,
 }: BuilderEnvironmentFieldsProps) {
+  const { params } = useContext(AppContext);
+  const imageBuildersEnabled =
+    params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
+
   const { project } = useProject();
   const repositories = project.repositories ?? [];
 
@@ -56,6 +62,15 @@ export default function BuilderEnvironmentFields({
     () => repositoriesDetails?.findIndex(({ probe }) => probe),
     [repositoriesDetails]
   );
+
+  if (!imageBuildersEnabled) {
+    return (
+      <ErrorAlert dismissible={false}>
+        Creating a session environment from code is not currently supported by
+        this instance of RenkuLab. Contact an administrator to learn more.
+      </ErrorAlert>
+    );
+  }
 
   const content = isLoading ? (
     <p className="mb-0">
@@ -92,8 +107,8 @@ export default function BuilderEnvironmentFields({
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <div>
-        <WipBadge tooltip="This is an experimental feature. Use at your own risk.">
-          Experimental
+        <WipBadge tooltip="This feature is available for you to use but still has some rough edges. We welcome your feedback as we continue to polish it.">
+          Early Access Feature
         </WipBadge>
       </div>
       {!isEdit && (
