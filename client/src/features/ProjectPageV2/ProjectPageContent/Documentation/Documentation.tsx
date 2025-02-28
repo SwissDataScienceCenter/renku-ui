@@ -310,14 +310,11 @@ function DocumentationWordCount({
 }) {
   const documentation = watch("documentation");
   const charCount = documentation.length;
-  const isCloseToLimit = charCount >= DESCRIPTION_MAX_LENGTH - 10;
+  const isOverLimit = charCount > DESCRIPTION_MAX_LENGTH;
   return (
     <div>
       <span
-        className={cx(
-          isCloseToLimit && "text-danger",
-          isCloseToLimit && "fw-bold"
-        )}
+        className={cx(isOverLimit && "text-danger", isOverLimit && "fw-bold")}
       >
         {charCount}
       </span>{" "}
