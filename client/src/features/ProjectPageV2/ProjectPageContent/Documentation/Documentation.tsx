@@ -330,7 +330,6 @@ function MarkdownHelp() {
   return (
     <div>
       <ExternalLink
-        className={cx("text-decoration-none", "text-secondary")}
         role="text"
         url="https://www.notion.so/renku/Writing-Documentation-in-Renku-Renku-s-Markdown-1a70df2efafc80329211c493917ff6e4"
       >
