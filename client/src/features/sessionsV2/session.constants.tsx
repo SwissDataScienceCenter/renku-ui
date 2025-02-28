@@ -114,3 +114,6 @@ export const BUILDER_FRONTENDS = [
     /* eslint-enable spellcheck/spell-checker */
   },
 ] as readonly BuilderSelectorOption[];
+
+export const IMAGE_BUILD_DOCS =
+  "https://renku.notion.site/How-to-create-a-custom-environment-from-a-code-repository-1960df2efafc801b88f6da59a0aa8234";
