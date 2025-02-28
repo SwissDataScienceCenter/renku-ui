@@ -381,10 +381,12 @@ export type SessionLauncherPatch = {
   disk_storage?: DiskStoragePatch;
   environment?: EnvironmentPatchInLauncher | EnvironmentIdOnlyPatch;
 };
+export type ErrorReason = string;
 export type BuildCommonPart = {
   id: Ulid;
   environment_id: Ulid;
   created_at: CreationDate;
+  error_reason?: ErrorReason;
 };
 export type BuildNotCompletedPart = {
   status: "in_progress" | "failed" | "cancelled";
