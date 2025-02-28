@@ -56,6 +56,8 @@ import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { Loader } from "../../../components/Loader";
 import { type ILogs, EnvironmentLogsPresent } from "../../../components/Logs";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
+import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -74,8 +76,6 @@ import {
 } from "../api/sessionLaunchersV2.api";
 import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
 import { safeStringify } from "../session.utils";
-import AppContext from "../../../utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 
 export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
   const { params } = useContext(AppContext);
@@ -286,12 +286,14 @@ function CustomBuildEnvironmentValues({
           <ReadyStatusBadge />
         )}
       </EnvironmentRow>
-      <EnvironmentRow>
-        <p className={cx("mb-0", "alert", "alert-danger")}>
-          This session environment is not currently supported by this instance
-          of RenkuLab. Contact an administrator to learn more.
-        </p>
-      </EnvironmentRow>
+      {!imageBuildersEnabled && (
+        <EnvironmentRow>
+          <p className={cx("mb-0", "alert", "alert-danger")}>
+            This session environment is not currently supported by this instance
+            of RenkuLab. Contact an administrator to learn more.
+          </p>
+        </EnvironmentRow>
+      )}
       <EnvironmentRow>
         {isLoading ? (
           <span>
