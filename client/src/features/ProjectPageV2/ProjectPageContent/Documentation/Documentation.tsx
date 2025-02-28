@@ -192,7 +192,7 @@ function DocumentationModal({
     }
   }, [result.isSuccess, toggle]);
 
-  const documentationField = register("documentation", {
+  register("documentation", {
     maxLength: {
       message: `Documentation is limited to ${DESCRIPTION_MAX_LENGTH} characters.`,
       value: DESCRIPTION_MAX_LENGTH,
@@ -244,7 +244,6 @@ function DocumentationModal({
             {displayMode === "edit" ? (
               <DocumentationInput<DocumentationForm>
                 control={control}
-                value={watch("documentation")}
                 name="documentation"
               />
             ) : (

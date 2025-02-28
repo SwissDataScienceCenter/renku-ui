@@ -21,7 +21,6 @@ import cx from "classnames";
 import {
   Controller,
   type Control,
-  type FieldError,
   type FieldValues,
   type Path,
 } from "react-hook-form";
@@ -34,53 +33,51 @@ import {
 
 interface DocumentationInputProps<T extends FieldValues> {
   control: Control<T>;
-  error?: FieldError;
-  value: string;
   help?: string | React.ReactNode;
   label?: string;
   name: string;
   required?: boolean;
 }
 
-function DocumentationInput<T extends FieldValues>(
-  props: DocumentationInputProps<T>
-) {
-  const value = props.value;
+function DocumentationInput<T extends FieldValues>({
+  control,
+  help,
+  label,
+  name,
+  required,
+}: DocumentationInputProps<T>) {
+  const { error } = control.getFieldState(name as Path<T>);
   return (
     <div>
       <FormGroup className="field-group">
-        {props.label && (
-          <div className={cx("pb-2", props.label == null && "mb-4")}>
-            <Label htmlFor={props.name} required={props.required ?? false}>
-              <InputLabel
-                text={props.label}
-                isRequired={props.required ?? false}
-              />
+        {label && (
+          <div className={cx("pb-2", label == null && "mb-4")}>
+            <Label htmlFor={name} required={required ?? false}>
+              <InputLabel text={label} isRequired={required ?? false} />
             </Label>
           </div>
         )}
-        <div data-cy={`markdown-editor-${props.name}`}>
+        <div data-cy={`markdown-editor-${name}`}>
           <Controller
-            control={props.control}
-            name={props.name as Path<T>}
+            control={control}
+            name={name as Path<T>}
             render={({ field }) => (
               <Input
-                id={`${props.name}-text-area`}
-                data-cy={`text-area-${props.name}`}
+                id={`${name}-text-area`}
+                data-cy={`text-area-${name}`}
                 type="textarea"
                 disabled={false}
-                rows={value ? value.split("\n").length + 2 : 4}
+                rows={field.value ? field.value.split("\n").length + 2 : 4}
                 {...field}
               />
             )}
           />
         </div>
-        {props.help && <FormText color="muted">{props.help}</FormText>}
-        {props.error && (
+        {help && <FormText color="muted">{help}</FormText>}
+        {error && (
           <ErrorLabel
             text={
-              props.error.message ??
-              "There is a problem with the text in this field."
+              error.message ?? "There is a problem with the text in this field."
             }
           />
         )}
