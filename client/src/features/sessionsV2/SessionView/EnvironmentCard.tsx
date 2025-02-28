@@ -321,6 +321,13 @@ function CustomBuildEnvironmentValues({
         )}
       </EnvironmentRow>
 
+      {lastBuild && (
+        <EnvironmentRowWithLabel
+          label="Error reason"
+          value={lastBuild.status}
+        />
+      )}
+
       <EnvironmentRowWithLabel
         label="Built from code repository"
         value={repository || ""}
