@@ -22,6 +22,7 @@ import SessionsV2 from "../../sessionsV2/SessionsV2";
 import { useProject } from "../ProjectPageContainer/ProjectPageContainer";
 import { CodeRepositoriesDisplay } from "./CodeRepositories/RepositoriesBox";
 import ProjectDataConnectorsBox from "./DataConnectors/ProjectDataConnectorsBox";
+import Documentation from "./Documentation/Documentation";
 import ProjectInformation from "./ProjectInformation/ProjectInformation";
 
 export default function ProjectOverviewPage() {
@@ -39,6 +40,9 @@ export default function ProjectOverviewPage() {
           </Col>
           <Col className="order-4" xs={12} xl={6}>
             <CodeRepositoriesDisplay project={project} />
+          </Col>
+          <Col className="order-5" xs={12}>
+            <Documentation project={project} />
           </Col>
         </Row>
       </Col>

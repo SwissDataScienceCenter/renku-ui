@@ -35,6 +35,7 @@ describe("launch sessions with data connectors", () => {
       .readGroupV2Namespace({ groupSlug: "user1-uuid" })
       .landingUserProjects()
       .readProjectV2()
+      .readProjectV2WithoutDocumentation()
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .resourcePoolsTest()
       .getResourceClass()

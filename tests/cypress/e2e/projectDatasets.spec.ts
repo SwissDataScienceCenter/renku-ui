@@ -153,7 +153,7 @@ describe("Project dataset", () => {
 
         cy.get("div.ck-editor__main").contains("Dataset for testing purposes");
         cy.getDataCy("ckeditor-description")
-          .find("p")
+          .find(".ck-content[contenteditable=true]")
           .click()
           .type(". New description");
 
