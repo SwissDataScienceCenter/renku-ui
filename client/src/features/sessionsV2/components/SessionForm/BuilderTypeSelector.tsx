@@ -26,7 +26,7 @@ import {
 } from "react-hook-form";
 import { Label } from "reactstrap";
 import { ExternalLink } from "../../../../components/ExternalLinks";
-import { BUILDER_TYPES } from "../../session.constants";
+import { BUILDER_TYPES, IMAGE_BUILD_DOCS } from "../../session.constants";
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
 
 interface BuilderTypeSelectorProps<T extends FieldValues>
@@ -47,10 +47,7 @@ export default function BuilderTypeSelector<T extends FieldValues>({
     <div>
       <Label for="builder-environment-type-select-input">
         Environment type{" - "}
-        <ExternalLink
-          role="link"
-          url="https://renku.notion.site/How-to-create-a-custom-environment-from-a-code-repository-1960df2efafc801b88f6da59a0aa8234"
-        >
+        <ExternalLink role="link" url={IMAGE_BUILD_DOCS}>
           Learn more
           <BoxArrowUpRight className={cx("bi", "ms-1")} />
         </ExternalLink>
