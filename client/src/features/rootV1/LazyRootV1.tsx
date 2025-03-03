@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,29 +16,22 @@
  * limitations under the License
  */
 
-import cx from "classnames";
-import { BoxArrowInLeft } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
+import { Suspense, lazy } from "react";
 
-interface BackToV1ButtonProps {
-  outline?: boolean;
-  color?: string;
-}
-export default function BackToV1Button({
-  outline = false,
-  color = "light",
-}: BackToV1ButtonProps) {
+import PageLoader from "../../components/PageLoader";
+
+const RootV1 = lazy(() => import("./RootV1"));
+
+export default function LazyRootV1({
+  user,
+}: {
+  user: {
+    logged: boolean;
+  };
+}) {
   return (
-    <Link
-      className={cx(
-        "btn",
-        "btn-sm",
-        outline ? `btn-outline-${color}` : `btn-${color}`,
-        "text-decoration-none"
-      )}
-      to="/v1"
-    >
-      <BoxArrowInLeft className="bi" /> Back to <b>Renku 1.0</b>
-    </Link>
+    <Suspense fallback={<PageLoader />}>
+      <RootV1 user={user} />
+    </Suspense>
   );
 }
