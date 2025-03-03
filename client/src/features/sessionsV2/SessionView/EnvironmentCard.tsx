@@ -704,6 +704,9 @@ function BuildErrorReason({ build }: BuildErrorReasonProps) {
     return null;
   }
 
+  // Note: We provide a help text for some of the error conditions for image builds.
+  // See Shipwright's documentation for the error reasons:
+  // https://shipwright.io/docs/build/buildrun/#understanding-the-state-of-a-buildrun
   const helpText =
     error_reason === "Failed" ? (
       <>
