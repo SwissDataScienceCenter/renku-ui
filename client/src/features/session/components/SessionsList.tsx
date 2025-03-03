@@ -314,6 +314,7 @@ function SessionRowProject({ annotations }: SessionRowProjectProps) {
 }
 
 export interface SessionLauncherResources {
+  poolName?: string;
   name?: string;
   cpu: number;
   memory: number;
@@ -343,7 +344,7 @@ export function SessionRowResourceRequests({
             <span className="fw-bold">
               {value} {(key === "memory" || key === "storage") && "GB "}
             </span>
-            {key !== "name" && key}
+            {key !== "name" && key !== "poolName" && key}
           </span>
           {entries.length - 1 === index ? " " : " | "}
         </span>
