@@ -47,6 +47,8 @@ const Links = {
   ETHZ: "https://ethz.ch/en.html",
   RENKU_BLOG: "https://blog.renkulab.io",
   RENKU_2_LEARN_MORE: "https://blog.renkulab.io/early-access",
+  RENKU_2_MIGRATION_INFO:
+    "https://blog.renkulab.io/migration-renku-v1-to-renku-v2",
 };
 
 const GitlabLinks = {
