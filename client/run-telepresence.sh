@@ -199,7 +199,8 @@ tee > ./public/config.json << EOF
     "datasetSlug": "${HOMEPAGE_DATASET_SLUG}"
   },
   "USER_PREFERENCES_MAX_PINNED_PROJECTS": ${USER_PREFERENCES_MAX_PINNED_PROJECTS:-5},
-  "SESSION_CLASS_EMAIL_US": { "enabled": false }
+  "SESSION_CLASS_EMAIL_US": { "enabled": false },
+  "IMAGE_BUILDERS_ENABLED": true
 }
 EOF
 
