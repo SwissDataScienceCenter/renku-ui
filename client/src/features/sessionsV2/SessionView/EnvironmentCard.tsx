@@ -28,6 +28,7 @@ import {
   useState,
 } from "react";
 import {
+  BoxArrowUpRight,
   Bricks,
   CircleFill,
   Clock,
@@ -52,6 +53,7 @@ import {
 
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { ExternalLink } from "../../../components/ExternalLinks";
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { Loader } from "../../../components/Loader";
 import { type ILogs, EnvironmentLogsPresent } from "../../../components/Logs";
@@ -74,7 +76,10 @@ import {
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
 } from "../api/sessionLaunchersV2.api";
-import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
+import {
+  BUILDER_IMAGE_NOT_READY_VALUE,
+  IMAGE_BUILD_DOCS,
+} from "../session.constants";
 import { safeStringify } from "../session.utils";
 
 export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
@@ -321,6 +326,9 @@ function CustomBuildEnvironmentValues({
         )}
       </EnvironmentRow>
 
+      {lastBuild && lastBuild.status === "failed" && (
+        <BuildErrorReason build={lastBuild} />
+      )}
       <EnvironmentRowWithLabel
         label="Built from code repository"
         value={repository || ""}
@@ -682,5 +690,65 @@ function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
       name={name}
       title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
     />
+  );
+}
+
+interface BuildErrorReasonProps {
+  build: Build;
+}
+
+function BuildErrorReason({ build }: BuildErrorReasonProps) {
+  const { error_reason, status } = build;
+
+  if (status !== "failed") {
+    return null;
+  }
+
+  // Note: We provide a help text for some of the error conditions for image builds.
+  // See Shipwright's documentation for the error reasons:
+  // https://shipwright.io/docs/build/buildrun/#understanding-the-state-of-a-buildrun
+  const helpText =
+    error_reason === "Failed" ? (
+      <>
+        The build process failed, consult the build logs and{" "}
+        <ExternalLink role="link" url={IMAGE_BUILD_DOCS}>
+          our documentation
+          <BoxArrowUpRight className={cx("bi", "ms-1")} />
+        </ExternalLink>{" "}
+        to see how to fix the issue.
+      </>
+    ) : error_reason === "BuildRunTimeout" ? (
+      <>
+        The build process did not complete in time. Try to identify which
+        packages may take too long to install or contact an administrator to see
+        if builds can have longer timeouts.
+      </>
+    ) : error_reason === "StepOutOfMemory" ? (
+      <>
+        The build process ran out of memory. Try to identify which packages may
+        cause issues or contact an administrator to see if builds can have
+        access to more memory.
+      </>
+    ) : error_reason === "BuildRegistrationFailed" ? (
+      <>
+        The container image build has an invalid configuration. Contact an
+        administrator to learn more.
+      </>
+    ) : null;
+
+  return (
+    <Col xs={12} className={cx("d-flex", "flex-column", "py-2", "gap-2")}>
+      <div className={cx("alert", "alert-danger", "m-0")}>
+        <div className="d-block">
+          <label className={cx("text-nowrap", "mb-0", "me-2")}>
+            Error reason:
+          </label>
+          <code className={cx("text-danger-emphasis", "fw-bold")}>
+            {error_reason}
+          </code>
+        </div>
+        {helpText && <p className="mb-0">{helpText}</p>}
+      </div>
+    </Col>
   );
 }
