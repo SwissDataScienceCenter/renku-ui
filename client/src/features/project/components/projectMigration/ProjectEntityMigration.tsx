@@ -117,7 +117,7 @@ export function ProjectEntityMigration({
             Go to the 2.0 version of the project
           </Link>
           <Link
-            to={Links.RENKU_2_MIGRATION_INFO}
+            to={Links.RENKU_2_LEARN_MORE}
             className={cx("btn", "btn-outline-info")}
             rel="noreferrer noopener"
             target="_blank"
@@ -131,13 +131,10 @@ export function ProjectEntityMigration({
   return (
     <>
       <WarnAlert>
-        <p>
-          This version of Renku will be deprecated in the future. Please migrate
-          your project to Renku 2.0.
-        </p>
+        <p>This project can be migrated to Renku 2.0</p>
         <div className={cx("d-flex", "flex-row", "gap-2")}>
           <Button size="sm" color="warning" onClick={toggle}>
-            Yes, I want to migrate this project to Renku 2.0
+            Migrate this project to Renku 2.0
           </Button>
           <Link
             to={Links.RENKU_2_MIGRATION_INFO}
@@ -346,8 +343,7 @@ function MigrationModal({
           )}
           {!isProjectSupported && !isFetchingData && (
             <ErrorAlert dismissible={false}>
-              Sessions might not work. Please update the project to migrate it
-              to Renku 2.0.
+              Please update this project before migrating it to Renku 2.0.
             </ErrorAlert>
           )}
         </ModalBody>
