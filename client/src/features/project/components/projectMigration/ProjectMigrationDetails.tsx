@@ -24,7 +24,7 @@ import {
   Check2Circle,
   Database,
   FileCode,
-  FileEarmarkExcel,
+  FileEarmarkRuled,
   FileText,
   FileX,
   People,
@@ -172,7 +172,7 @@ export function DetailsMigration({
             </div>
             <div className="py-2">
               <span className="fw-bold">
-                <FileEarmarkExcel className={cx("bi", "me-1")} /> Datasets &
+                <FileEarmarkRuled className={cx("bi", "me-1")} /> Datasets &
                 Data in Git LFS:{" "}
               </span>
               Will continue to be available via the git lfs command line
@@ -201,7 +201,9 @@ export function DetailsMigration({
               {description ? (
                 description
               ) : (
-                <span className="fst-italic">Description not found</span>
+                <span className="text-body-secondary">
+                  Description not found
+                </span>
               )}
             </div>
             <div className="py-2">
@@ -211,7 +213,7 @@ export function DetailsMigration({
               {keywords ? (
                 keywords
               ) : (
-                <span className="fst-italic">Keywords not found</span>
+                <span className="text-body-secondary">Keywords not found</span>
               )}
             </div>
           </div>
