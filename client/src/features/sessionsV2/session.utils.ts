@@ -178,6 +178,7 @@ export function getFormattedEnvironmentValuesForEdit(
     success: true,
     data: {
       environment_image_source: "build",
+      environment_kind: "CUSTOM",
       build_parameters: {
         builder_variant,
         frontend_variant,
