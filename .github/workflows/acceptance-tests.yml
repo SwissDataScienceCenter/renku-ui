@@ -1,8 +1,4 @@
 name: Acceptance tests
-permissions:
-  contents: read
-  pull-requests: write
-  issues: write
 
 on:
   pull_request:
@@ -28,6 +24,9 @@ jobs:
   check-deploy:
     name: Analyze deploy string
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       pr-contains-string: ${{ steps.deploy-comment.outputs.pr-contains-string }}
       renku: ${{ steps.deploy-comment.outputs.renku}}
@@ -49,9 +48,12 @@ jobs:
 
   deploy-pr:
     name: Deploy
-    needs: [check-deploy]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
     runs-on: ubuntu-22.04
+    needs: [check-deploy]
+    permissions:
+      contents: read
+      pull-requests: write
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
     environment:
       name: renku-ci-ui-${{ github.event.number }}
       url: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
@@ -102,10 +104,12 @@ jobs:
 
   legacy-cypress-acceptance-tests:
     name: Legacy Cypress tests
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
-    needs: [check-deploy, deploy-pr]
     runs-on: ubuntu-22.04
-
+    needs: [check-deploy, deploy-pr]
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
+    permissions:
+      contents: read
+      pull-requests: read
     strategy:
       fail-fast: false
       matrix:
@@ -118,7 +122,6 @@ jobs:
           - checkWorkflows
           - rstudioSession
           - dashboardV2
-
     steps:
       - name: Extract Renku repository reference
         run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
@@ -131,10 +134,12 @@ jobs:
 
   cypress-acceptance-tests:
     name: Cypress tests
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
-    needs: [check-deploy, deploy-pr]
     runs-on: ubuntu-22.04
-
+    needs: [check-deploy, deploy-pr]
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
+    permissions:
+      contents: read
+      pull-requests: read
     strategy:
       fail-fast: false
       matrix:
@@ -146,7 +151,6 @@ jobs:
           - projectResources
           - searchEntities
           - sessionBasics
-
     steps:
       - name: Extract Renku repository reference
         run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
@@ -159,9 +163,12 @@ jobs:
 
   cleanup:
     name: Cleanup
+    runs-on: ubuntu-22.04
     needs: check-deploy
     if: github.event.action == 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
-    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - name: Find deplyoment url
         uses: peter-evans/find-comment@v3
