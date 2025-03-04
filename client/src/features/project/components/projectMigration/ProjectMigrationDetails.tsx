@@ -30,9 +30,11 @@ import {
   People,
   PlayCircle,
 } from "react-bootstrap-icons";
+import { Link } from "react-router-dom-v5-compat";
 import { Collapse } from "reactstrap";
 import { InfoAlert } from "../../../../components/Alert.jsx";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
+import { Links } from "../../../../utils/constants/Docs.js";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
 import { GitLabRepositoryCommit } from "../../GitLab.types";
@@ -133,8 +135,15 @@ export function DetailsMigration({
   const containerImageInfoAlert = (
     <div className="py-2">
       <InfoAlert dismissible={false} timeout={0}>
-        The image for this project is used to create a session launcher and will
-        not update as you make additional commits.
+        This session image will not update as you make additional commits.{" "}
+        <Link
+          to={Links.RENKU_2_MIGRATION_INFO}
+          className={cx("text-info")}
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          Learn more
+        </Link>
       </InfoAlert>
     </div>
   );
@@ -156,8 +165,8 @@ export function DetailsMigration({
           )}
           onClick={onToggleShowDetails}
         >
-          <Check2Circle className={cx("bi", "me-1")} /> What will be migrated{" "}
-          <ChevronFlippedIcon className="ms-1" flipped={showDetails} />
+          <Check2Circle size={20} className={cx("me-1")} /> What will be
+          migrated <ChevronFlippedIcon className="ms-1" flipped={showDetails} />
         </a>
       </div>
       <div className="mb-3">
@@ -241,7 +250,7 @@ export function DetailsNotIncludedInMigration() {
           )}
           onClick={onToggleShowDetails}
         >
-          <FileX className={cx("bi", "me-1")} /> What will NOT be migrated{" "}
+          <FileX size={20} className={cx("me-1")} /> What will NOT be migrated{" "}
           <ChevronFlippedIcon className="ms-1" flipped={showDetails} />
         </a>
       </div>
