@@ -1,4 +1,7 @@
 name: Acceptance tests
+permissions:
+  contents: read
+  pull-requests: read
 
 on:
   pull_request:
@@ -24,9 +27,6 @@ jobs:
   check-deploy:
     name: Analyze deploy string
     runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      pull-requests: read
     outputs:
       pr-contains-string: ${{ steps.deploy-comment.outputs.pr-contains-string }}
       renku: ${{ steps.deploy-comment.outputs.renku}}
@@ -51,7 +51,6 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [check-deploy]
     permissions:
-      contents: read
       pull-requests: write
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
     environment:
@@ -107,9 +106,6 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
-    permissions:
-      contents: read
-      pull-requests: read
     strategy:
       fail-fast: false
       matrix:
@@ -137,9 +133,6 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
-    permissions:
-      contents: read
-      pull-requests: read
     strategy:
       fail-fast: false
       matrix:
@@ -167,8 +160,7 @@ jobs:
     needs: check-deploy
     if: github.event.action == 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
     permissions:
-      contents: read
-      pull-requests: read
+      pull-requests: write
     steps:
       - name: Find deplyoment url
         uses: peter-evans/find-comment@v3
