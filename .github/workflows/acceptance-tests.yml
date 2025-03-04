@@ -1,4 +1,8 @@
 name: Acceptance tests
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
 
 on:
   pull_request:
