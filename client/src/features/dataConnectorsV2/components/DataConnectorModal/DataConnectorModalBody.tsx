@@ -47,6 +47,7 @@ import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
 import DataConnectorModalResult from "./DataConnectorModalResult";
 import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo";
+import textStyles from "../../../ProjectPageV2/utils/TextStyles.module.scss";
 
 interface AddOrEditDataConnectorProps {
   storageSecrets: DataConnectorSecret[];
@@ -71,7 +72,7 @@ export default function DataConnectorModalBody({
   return (
     <>
       {!flatDataConnector.dataConnectorId && (
-        <p>
+        <p className={cx(textStyles.textDescribe)}>
           Add published datasets from data repositories for use in your project.
           Or, connect to cloud storage to read and write custom data.
         </p>
