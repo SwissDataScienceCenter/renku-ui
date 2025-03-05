@@ -331,7 +331,6 @@ export function SessionRowResourceRequests({
   if (!resourceRequests) {
     return null;
   }
-  // const entries = Object.entries(resourceRequests);
   if (Object.entries(resourceRequests).length == 0) {
     return null;
   }
