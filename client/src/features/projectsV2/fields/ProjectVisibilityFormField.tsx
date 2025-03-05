@@ -27,6 +27,7 @@ import { ButtonGroup, Input, Label } from "reactstrap";
 import { isRenkuLegacy } from "../../../utils/helpers/HelperFunctionsV2";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 
+import styles from "./RenkuV1FormFields.module.scss";
 export default function ProjectVisibilityFormField<T extends FieldValues>({
   control,
   formId,
@@ -49,7 +50,10 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 <Input
                   aria-describedby="projectVisibilityHelp"
                   type="radio"
-                  className="btn-check"
+                  className={cx(
+                    isRenkuV1 && styles.RenkuV1btnCheck,
+                    "btn-check"
+                  )}
                   id={`${formId}-project-visibility-public`}
                   value="public"
                   checked={field.value === "public"}
@@ -72,7 +76,10 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 <Input
                   aria-describedby="projectVisibilityHelp"
                   type="radio"
-                  className="btn-check"
+                  className={cx(
+                    isRenkuV1 && styles.RenkuV1btnCheck,
+                    "btn-check"
+                  )}
                   id={`${formId}-project-visibility-private`}
                   value="private"
                   checked={field.value === "private"}

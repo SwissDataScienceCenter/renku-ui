@@ -21,7 +21,7 @@ import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom-v5-compat";
+import { generatePath, Link } from "react-router-dom-v5-compat";
 import {
   Button,
   Form,
@@ -38,12 +38,14 @@ import {
 } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants.ts";
 import { Links } from "../../../../utils/constants/Docs.js";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetMigrationQuery } from "../../../projects/projectMigration.api";
 import {
+  PostRenkuV1ProjectsByV1IdMigrationsApiArg,
   RepositoriesList,
-  usePostProjectMigrationsMutation,
+  useGetRenkuV1ProjectsByV1IdMigrationsQuery,
+  usePostRenkuV1ProjectsByV1IdMigrationsMutation,
 } from "../../../projectsV2/api/projectV2.api";
 import { safeParseJSONStringArray } from "../../../sessionsV2/session.utils";
 import { useGetSessionLauncherData } from "../../hook/useGetSessionLauncherData";
@@ -54,16 +56,15 @@ import {
   MIGRATION_PORT,
   MIGRATION_WORKING_DIRECTORY,
 } from "../../ProjectMigration.constants";
-import { getProjectV2Path } from "../../utils/projectMigration.utils";
 import {
   ProjectMetadata,
   ProjectMigrationForm,
 } from "./ProjectMigration.types";
-import { ProjectMigrationFormInputs } from "./ProjectMigrationForm";
 import {
   DetailsMigration,
   DetailsNotIncludedInMigration,
 } from "./ProjectMigrationDetails";
+import { ProjectMigrationFormInputs } from "./ProjectMigrationForm";
 
 interface ProjectEntityMigrationProps {
   projectId: number;
@@ -82,11 +83,14 @@ export function ProjectEntityMigration({
     isFetching: isFetchingMigrations,
     isLoading: isLoadingMigrations,
     refetch: refetchMigrations,
-  } = useGetMigrationQuery(projectId);
+  } = useGetRenkuV1ProjectsByV1IdMigrationsQuery({ v1Id: projectId });
 
   const linkToProject = useMemo(() => {
     return projectMigration
-      ? getProjectV2Path(projectMigration.namespace, projectMigration.slug)
+      ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: projectMigration.namespace,
+          slug: projectMigration.slug,
+        })
       : "";
   }, [projectMigration]);
 
@@ -185,7 +189,8 @@ function MigrationModal({
         projectMetadata.visibility === "public" ? "public" : "private",
     },
   });
-  const [migrateProject, result] = usePostProjectMigrationsMutation();
+  const [migrateProject, result] =
+    usePostRenkuV1ProjectsByV1IdMigrationsMutation();
   const {
     registryTag,
     isFetchingData,
@@ -231,7 +236,10 @@ function MigrationModal({
 
   const linkToProject = useMemo(() => {
     return result?.data
-      ? getProjectV2Path(result.data.namespace, result.data.slug)
+      ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: result.data.namespace,
+          slug: result.data.slug,
+        })
       : "";
   }, [result.data]);
 
@@ -267,7 +275,7 @@ function MigrationModal({
       migrateProject({
         projectMigrationPost: dataMigration,
         v1Id: parseInt(projectMetadata.id),
-      });
+      } as PostRenkuV1ProjectsByV1IdMigrationsApiArg);
     },
     [
       migrateProject,

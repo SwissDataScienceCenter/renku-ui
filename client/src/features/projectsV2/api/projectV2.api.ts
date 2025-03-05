@@ -14,34 +14,6 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.projectPost,
       }),
     }),
-    postProjectMigrations: build.mutation<
-      PostProjectsApiResponse,
-      PostProjectsMigrationsApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/renku_v1_projects/${queryArg.v1Id}/migrations`,
-        method: "POST",
-        body: {
-          project: queryArg.projectMigrationPost.project,
-          session_launcher: {
-            container_image:
-              queryArg.projectMigrationPost.sessionLauncher.containerImage,
-            default_url:
-              queryArg.projectMigrationPost.sessionLauncher.defaultUrl,
-            name: queryArg.projectMigrationPost.sessionLauncher.name,
-            working_directory:
-              queryArg.projectMigrationPost.sessionLauncher.workingDirectory,
-            mount_directory:
-              queryArg.projectMigrationPost.sessionLauncher.mountDirectory,
-            port: queryArg.projectMigrationPost.sessionLauncher.port,
-            command: queryArg.projectMigrationPost.sessionLauncher.command,
-            args: queryArg.projectMigrationPost.sessionLauncher.args,
-            resource_class_id:
-              queryArg.projectMigrationPost.sessionLauncher.resourceClassId,
-          },
-        },
-      }),
-    }),
     getProjectsByProjectId: build.query<
       GetProjectsByProjectIdApiResponse,
       GetProjectsByProjectIdApiArg
@@ -71,6 +43,24 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getRenkuV1ProjectsByV1IdMigrations: build.query<
+      GetRenkuV1ProjectsByV1IdMigrationsApiResponse,
+      GetRenkuV1ProjectsByV1IdMigrationsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/renku_v1_projects/${queryArg.v1Id}/migrations`,
+      }),
+    }),
+    postRenkuV1ProjectsByV1IdMigrations: build.mutation<
+      PostRenkuV1ProjectsByV1IdMigrationsApiResponse,
+      PostRenkuV1ProjectsByV1IdMigrationsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/renku_v1_projects/${queryArg.v1Id}/migrations`,
+        method: "POST",
+        body: queryArg.projectMigrationPost,
+      }),
+    }),
     getNamespacesByNamespaceProjectsAndSlug: build.query<
       GetNamespacesByNamespaceProjectsAndSlugApiResponse,
       GetNamespacesByNamespaceProjectsAndSlugApiArg
@@ -97,6 +87,14 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/projects/${queryArg.projectId}/copies`,
         method: "POST",
         body: queryArg.projectPost,
+      }),
+    }),
+    getProjectsByProjectIdMigrationInfo: build.query<
+      GetProjectsByProjectIdMigrationInfoApiResponse,
+      GetProjectsByProjectIdMigrationInfoApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/migration_info`,
       }),
     }),
     getProjectsByProjectIdMembers: build.query<
@@ -228,24 +226,6 @@ export type PostProjectsApiResponse =
 export type PostProjectsApiArg = {
   projectPost: ProjectPost;
 };
-export type PostProjectsMigrationsApiArg = {
-  projectMigrationPost: {
-    project: ProjectPost;
-    sessionLauncher: {
-      containerImage: string;
-      defaultUrl?: string;
-      name?: string;
-      command?: string[] | null;
-      args?: string[] | null;
-      port?: number;
-      workingDirectory?: string;
-      mountDirectory?: string;
-      resourceClassId?: number;
-      diskStorage?: number;
-    };
-  };
-  v1Id: number;
-};
 export type GetProjectsByProjectIdApiResponse =
   /** status 200 The project */ Project;
 export type GetProjectsByProjectIdApiArg = {
@@ -264,6 +244,19 @@ export type DeleteProjectsByProjectIdApiResponse =
   /** status 204 The project was removed or did not exist in the first place */ void;
 export type DeleteProjectsByProjectIdApiArg = {
   projectId: Ulid;
+};
+export type GetRenkuV1ProjectsByV1IdMigrationsApiResponse =
+  /** status 200 Project exists in v2 and has been migrated */ Project;
+export type GetRenkuV1ProjectsByV1IdMigrationsApiArg = {
+  /** The ID of the project in Renku v1 */
+  v1Id: number;
+};
+export type PostRenkuV1ProjectsByV1IdMigrationsApiResponse =
+  /** status 201 The project was created */ Project;
+export type PostRenkuV1ProjectsByV1IdMigrationsApiArg = {
+  /** The ID of the project in Renku v1 */
+  v1Id: number;
+  projectMigrationPost: ProjectMigrationPost;
 };
 export type GetNamespacesByNamespaceProjectsAndSlugApiResponse =
   /** status 200 The project */ Project;
@@ -284,6 +277,11 @@ export type PostProjectsByProjectIdCopiesApiResponse =
 export type PostProjectsByProjectIdCopiesApiArg = {
   projectId: Ulid;
   projectPost: ProjectPost;
+};
+export type GetProjectsByProjectIdMigrationInfoApiResponse =
+  /** status 200 Project exists in v2 and is a migrated project from v1 */ ProjectMigrationInfo;
+export type GetProjectsByProjectIdMigrationInfoApiArg = {
+  projectId: Ulid;
 };
 export type GetProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members */ ProjectMemberListResponse;
@@ -439,6 +437,42 @@ export type ProjectPatch = {
   is_template?: IsTemplate;
   secrets_mount_directory?: SecretsMountDirectoryPatch;
 };
+export type SessionName = string;
+export type ContainerImage = string;
+export type DefaultUrl = string;
+export type EnvironmentUid = number;
+export type EnvironmentGid = number;
+export type EnvironmentWorkingDirectory = string;
+export type EnvironmentMountDirectory = string;
+export type EnvironmentPort = number;
+export type EnvironmentCommand = string[];
+export type EnvironmentArgs = string[];
+export type ResourceClassId = number | null;
+export type DiskStorage = number;
+export type MigrationSessionLauncherPost = {
+  name: SessionName;
+  container_image: ContainerImage;
+  default_url?: DefaultUrl & any;
+  uid?: EnvironmentUid & any;
+  gid?: EnvironmentGid & any;
+  working_directory?: EnvironmentWorkingDirectory;
+  mount_directory?: EnvironmentMountDirectory;
+  port?: EnvironmentPort & any;
+  command?: EnvironmentCommand;
+  args?: EnvironmentArgs;
+  resource_class_id?: ResourceClassId;
+  disk_storage?: DiskStorage;
+};
+export type ProjectMigrationPost = {
+  project: ProjectPost;
+  session_launcher?: MigrationSessionLauncherPost;
+};
+export type ProjectMigrationInfo = {
+  project_id: Ulid;
+  /** The id of the project in v1 */
+  v1_id: number;
+  launcher_id?: Ulid;
+};
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
@@ -514,9 +548,12 @@ export const {
   useGetProjectsByProjectIdQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
+  useGetRenkuV1ProjectsByV1IdMigrationsQuery,
+  usePostRenkuV1ProjectsByV1IdMigrationsMutation,
   useGetNamespacesByNamespaceProjectsAndSlugQuery,
   useGetProjectsByProjectIdCopiesQuery,
   usePostProjectsByProjectIdCopiesMutation,
+  useGetProjectsByProjectIdMigrationInfoQuery,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
@@ -530,5 +567,4 @@ export const {
   useGetSessionSecretSlotsBySlotIdQuery,
   usePatchSessionSecretSlotsBySlotIdMutation,
   useDeleteSessionSecretSlotsBySlotIdMutation,
-  usePostProjectMigrationsMutation,
 } = injectedRtkApi;

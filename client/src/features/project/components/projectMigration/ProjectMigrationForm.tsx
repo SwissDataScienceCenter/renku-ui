@@ -26,13 +26,16 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
+import { useLocation } from "react-router-dom";
 import { Input, Label } from "reactstrap";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions.js";
+import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
 import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
-import { PROJECT_V2_PATH } from "../../utils/projectMigration.utils";
 import { ProjectMigrationForm } from "./ProjectMigration.types";
+
+import styles from "../../../projectsV2/fields/RenkuV1FormFields.module.scss";
 
 interface ProjectMigrationFormInputsProps {
   control: Control<ProjectMigrationForm>;
@@ -61,7 +64,9 @@ export function ProjectMigrationFormInputs({
       shouldValidate: true,
     });
   }, [setValue, currentName]);
-  const url = `${PROJECT_V2_PATH}${currentNamespace ?? "<Owner>"}/`;
+  const url = `renkulab.io/v2/projects/${currentNamespace ?? "<Owner>"}/`;
+  const location = useLocation();
+  const isRenkuV1 = isRenkuLegacy(location.pathname);
 
   return (
     <>
@@ -74,7 +79,11 @@ export function ProjectMigrationFormInputs({
           name="name"
           render={({ field }) => (
             <Input
-              className={cx("form-control", errors.name && "is-invalid")}
+              className={cx(
+                "form-control",
+                isRenkuV1 && styles.RenkuV1input,
+                errors.name && "is-invalid"
+              )}
               id="migrateProjectName"
               placeholder="Project name"
               type="text"

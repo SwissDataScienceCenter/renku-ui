@@ -513,17 +513,3 @@ $borderRadius: 1000px;
     transform: scale(1);
   }
 }
-
-.btn-group > .btn-check:checked + .btn {
-  background-color: #{$rk-green} !important;
-  color: white !important;
-  border-color: #{$rk-green} !important;
-}
-
-.input-group
-  > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(
-    .valid-feedback
-  ):not(.invalid-tooltip):not(.invalid-feedback) {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
