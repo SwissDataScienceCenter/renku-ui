@@ -76,9 +76,11 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 function CentralContentContainer(props) {
   const { coreApiVersionedUrlConfig, notifications, socket, user } = props;
 
-  const { data: userInfo } = useGetUserQuery(
-    props.user.logged ? undefined : skipToken
-  );
+  console.log(coreApiVersionedUrlConfig);
+
+  const { data: userInfo } = useGetUserInfoQuery(undefined, {
+    skip: !props.user.logged,
+  });
 
   const appContext = {
     client: props.client,
