@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { BookmarksFill, Send, TerminalFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
+
 import { ExternalLink } from "../../components/ExternalLinks";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import EntityCardSkeleton from "../../components/list/EntityCardSkeleton";
@@ -36,6 +38,7 @@ import puzzleGraphic from "../Graphics/puzzlePieces.svg";
 import searchGraphic from "../Graphics/search.png";
 import SSH_Graphic from "../Graphics/terminal-ssh-renku.gif";
 import TemplateSlider from "../TemplateSlider/TemplateSlider";
+
 import styles from "./WhatIsRenku.module.scss";
 
 interface TryOutSessionBtnProps {
@@ -276,7 +279,7 @@ const DatasetsFeatSection = ({ datasetSlug }: DatasetsFeatSection) => {
     error: kgFetchError,
     isFetching: isKgFetching,
     isLoading: isKgLoading,
-  } = useGetDatasetKgQuery({ id: datasetSlug ?? "" }, { skip: !datasetSlug });
+  } = useGetDatasetKgQuery(datasetSlug ? { id: datasetSlug } : skipToken);
 
   const isLoading = isKgLoading || isKgFetching;
 

@@ -16,17 +16,22 @@
  * limitations under the License.
  */
 
-import { faLink } from "@fortawesome/free-solid-svg-icons";
-import { CaretDownFill, CaretRightFill, Diagram2 } from "react-bootstrap-icons";
+import cx from "classnames";
+import {
+  CaretDownFill,
+  CaretRightFill,
+  Diagram2,
+  Link45deg,
+} from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { Col } from "reactstrap";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
-import { IconLink } from "./ExternalLinks";
+import LinkWithTooltip from "./LinkWithTooltip";
 import { EntityChildrenDot } from "./entities/Children";
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityDuration from "./entities/Duration";
-import { EntityType, WorkflowType } from "./entities/entities.types";
 import { EntityExecutions } from "./entities/Executions";
+import { EntityType, WorkflowType } from "./entities/entities.types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -316,12 +321,9 @@ function TreeElement({
           <EntityDuration duration={duration} />
           {embed && !isComposite ? (
             <span className="ms-2">
-              <IconLink
-                tooltip="Open workflow"
-                className="text-rk-yellow"
-                icon={faLink}
-                to={url}
-              />
+              <LinkWithTooltip tooltip="Open workflow" to={url}>
+                <Link45deg className={cx("bi", "text-rk-yellow")} />
+              </LinkWithTooltip>
             </span>
           ) : null}
         </Col>

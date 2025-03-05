@@ -40,7 +40,7 @@ function NavBarWarnings(props) {
   const VisibleBanner = connect(mapStateToProps)(NavBarWarningsPresent);
   return (
     <VisibleBanner
-      store={props.model.reduxStore}
+      store={props.model?.reduxStore}
       uiShortSha={props.uiShortSha}
     />
   );

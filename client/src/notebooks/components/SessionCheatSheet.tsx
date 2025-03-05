@@ -17,12 +17,12 @@
  */
 
 import { useEffect, useState } from "react";
+import { Col } from "reactstrap";
 
 import "./SessionCheatSheet.css";
 import * as cheatsheetJson from "./cheatsheet.json";
 import { ExternalDocsLink } from "../../components/ExternalLinks";
 import { Docs, RenkuPythonDocs } from "../../utils/constants/Docs";
-import { Col } from "../../utils/ts-wrappers";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 
 interface CommandDescProps {

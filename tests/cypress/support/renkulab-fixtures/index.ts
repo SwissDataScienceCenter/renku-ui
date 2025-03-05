@@ -21,33 +21,47 @@
  */
 import { Admin } from "./admin";
 import { CloudStorage } from "./cloudStorage";
+import { ConnectedServices } from "./connectedServices";
 import { Dashboard } from "./dashboard";
+import { DataConnector } from "./dataConnectors";
 import { DataServices } from "./dataServices";
 import { Datasets } from "./datasets";
 import BaseFixtures from "./fixtures";
 import { Global } from "./global";
 import { KgSearch } from "./kgSearch";
+import { NamespaceV2 } from "./namespaceV2";
 import { NewProject } from "./newProject";
 import { NewSession } from "./newSession";
 import { Projects } from "./projects";
+import { ProjectV2 } from "./projectV2";
+import { SearchV2 } from "./searchV2";
+import { Secrets } from "./secrets";
 import { Sessions } from "./sessions";
+import { Terms } from "./terms";
 import { User } from "./user";
 import { UserPreferences } from "./user-preferences";
-import { Versions } from "./versions";
 import { Workflows } from "./workflows";
 
-const Fixtures = NewProject(
+const V1Fixtures = NewProject(
   NewSession(
     Dashboard(
       Sessions(
         Admin(
-          DataServices(
-            CloudStorage(
-              Datasets(
-                Projects(
-                  User(
-                    UserPreferences(
-                      Versions(Workflows(KgSearch(Global(BaseFixtures))))
+          DataConnector(
+            DataServices(
+              CloudStorage(
+                Datasets(
+                  Projects(
+                    Secrets(
+                      Terms(
+                        User(
+                          ConnectedServices(
+                            UserPreferences(
+                              Workflows(KgSearch(Global(BaseFixtures)))
+                            )
+                          )
+                        )
+                      )
                     )
                   )
                 )
@@ -59,6 +73,8 @@ const Fixtures = NewProject(
     )
   )
 );
+
+const Fixtures = SearchV2(ProjectV2(NamespaceV2(V1Fixtures)));
 
 const fixtures = new Fixtures();
 export default fixtures;

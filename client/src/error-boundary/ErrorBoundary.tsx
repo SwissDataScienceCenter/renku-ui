@@ -19,8 +19,11 @@
 import * as Sentry from "@sentry/react";
 import cx from "classnames";
 import { ReactNode, useCallback } from "react";
-
-import styles from "./ErrorBoundary.module.scss";
+import { ArrowLeft } from "react-bootstrap-icons";
+import { StyleHandler } from "../index";
+import rkOopsImg from "../styles/assets/oops.svg";
+import rkOopsV2Img from "../styles/assets/oopsV2.svg";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
@@ -42,41 +45,61 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
   }, []);
 
   return (
-    <Sentry.ErrorBoundary onError={onError} fallback={ErrorPage}>
+    <Sentry.ErrorBoundary onError={onError} fallback={<ErrorPage />}>
       {children}
     </Sentry.ErrorBoundary>
   );
 }
 
 function ErrorPage() {
+  const isV2 = location.pathname.startsWith("/v2");
+  const logged = useLegacySelector((state) => state.stateModel.user.logged);
   return (
-    <div className={styles.error}>
-      <div className="container-xxl pt-5 renku-container d-flex flex-column h-100">
-        <div className={cx(styles.errorTitle, "align-self-start")}>
-          <h1 className="fw-bold h1">Application Error</h1>
-          <h3>Ooops! It looks like we are having some issues!</h3>
-        </div>
-        <div
-          className={cx(
-            styles.errorMain,
-            "p-5 rounded my-auto d-flex flex-row align-items-baseline"
-          )}
-        >
-          You can try to{" "}
-          <a
-            className="btn btn-rk-green mx-1"
-            href={window.location.href}
-            onClick={() => window.location.reload()}
+    <>
+      <StyleHandler />
+      <div
+        className={cx("d-flex", "flex-column", "align-items-center", "mt-5")}
+      >
+        <div className={cx("p-4")}>
+          <img src={isV2 ? rkOopsV2Img : rkOopsImg} />
+          <h3
+            className={cx(
+              isV2 ? "text-primary" : "text-rk-green",
+              "fw-bold",
+              "mt-3"
+            )}
           >
-            reload the page
-          </a>{" "}
-          or go to the{" "}
-          <a className="btn btn-rk-green mx-1" href="/">
-            Renku home page
-          </a>
-          .
+            It looks like we are having some issues.
+          </h3>
+
+          <p className="mb-0">
+            You can try to{" "}
+            <a
+              className={cx(
+                "btn",
+                isV2 ? "btn-outline-primary" : "btn-outline-rk-green",
+                "m-2"
+              )}
+              href={window.location.href}
+              onClick={() => window.location.reload()}
+            >
+              Reload the page
+            </a>{" "}
+            or{" "}
+            <a
+              className={cx(
+                "btn",
+                isV2 ? "btn-primary" : "btn-rk-green",
+                "m-2"
+              )}
+              href="/"
+            >
+              <ArrowLeft className={cx("me-2", "text-icon")} />
+              {logged ? "Return to the dashboard" : "Return to home page"}
+            </a>
+          </p>
         </div>
       </div>
-    </div>
+    </>
   );
 }

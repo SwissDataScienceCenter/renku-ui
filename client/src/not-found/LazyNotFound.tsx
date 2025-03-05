@@ -16,15 +16,16 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
+
 import PageLoader from "../components/PageLoader";
 
 const NotFound = lazy(() => import("./NotFound"));
 
-export default function LazyNotFound(props: ComponentProps<typeof NotFound>) {
+export default function LazyNotFound() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <NotFound {...props} />
+      <NotFound />
     </Suspense>
   );
 }

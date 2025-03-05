@@ -25,6 +25,8 @@ import ProgressStepsIndicator, {
 } from "../../../components/progress/ProgressSteps";
 import cx from "classnames";
 import { Button } from "reactstrap";
+import { SessionV2 } from "../../sessionsV2/sessionsV2.types";
+import { Loader } from "../../../components/Loader";
 
 interface StartSessionProgressBarProps {
   includeStepInTitle?: boolean;
@@ -40,7 +42,7 @@ export default function StartSessionProgressBar({
   const statusData = getStatusData(session?.status);
   const title = "Starting Session";
   const logButton = (
-    <Button onClick={toggleLogs} className={cx("btn-outline-rk-green", "mt-3")}>
+    <Button className="mt-3" color="primary" onClick={toggleLogs}>
       Open Logs
     </Button>
   );
@@ -55,6 +57,41 @@ export default function StartSessionProgressBar({
         status={statusData}
         moreOptions={logButton}
       />
+    </div>
+  );
+}
+
+interface StartSessionProgressBarV2Props {
+  session?: SessionV2;
+  toggleLogs: () => void;
+}
+export function StartSessionProgressBarV2({
+  session,
+  toggleLogs,
+}: StartSessionProgressBarV2Props) {
+  const statusData = session?.status;
+  const description =
+    statusData?.ready_containers != null &&
+    statusData?.total_containers != null &&
+    statusData?.total_containers > 0
+      ? `${statusData.ready_containers} of ${statusData.total_containers} containers ready`
+      : "Loading containers status";
+
+  return (
+    <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <div data-cy="session-status-starting">
+        <h4 className="fw-bold">Starting Session</h4>
+        <p className="pb-2">Starting the containers for your session</p>
+        <div className={cx("d-flex", "gap-3")}>
+          <Loader inline={true} size={24} />
+          <div>{description}</div>
+        </div>
+      </div>
+      <div className={cx("progress-box", "pt-0")}>
+        <Button className="mt-3" color="outline-primary" onClick={toggleLogs}>
+          Open Logs
+        </Button>
+      </div>
     </div>
   );
 }

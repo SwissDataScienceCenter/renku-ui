@@ -23,31 +23,37 @@
  *  Coordinator for the application.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Redirect } from "react-router";
+import { Redirect, useLocation } from "react-router";
 import { Route, Switch } from "react-router-dom";
+import { CompatRoute } from "react-router-dom-v5-compat";
 import { ToastContainer } from "react-toastify";
 
-import { LoginHelper, LoginRedirect } from "./authentication";
+import { LoginHelper } from "./authentication";
+import { DashboardBanner } from "./components/earlyAccessBanner/EarlyAccessBanner";
 import { Loader } from "./components/Loader";
+import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import LazyShowDataset from "./dataset/LazyShowDataset";
-import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProject";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import LazyDashboard from "./features/dashboard/LazyDashboard";
+import { Favicon } from "./features/favicon/Favicon";
 import LazyInactiveKGProjectsPage from "./features/inactiveKgProjects/LazyInactiveKGProjectsPage";
 import LazySearchPage from "./features/kgSearch/LazySearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
+import LazyRootV2 from "./features/rootV2/LazyRootV2";
+import LazySecrets from "./features/secrets/LazySecrets";
 import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
-import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
+import { useGetUserQuery } from "./features/usersV2/api/users.api";
 import LazyHelp from "./help/LazyHelp";
 import LazyAnonymousHome from "./landing/LazyAnonymousHome";
 import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
 import LazyNotFound from "./not-found/LazyNotFound";
 import LazyNotificationsPage from "./notifications/LazyNotificationsPage";
 import NotificationsManager from "./notifications/NotificationsManager";
-import { Cookie, Privacy } from "./privacy";
+import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
@@ -83,25 +89,8 @@ function CentralContentContainer(props) {
     model: props.model,
     notifications,
     params: props.params,
+    webSocket: socket,
   };
-
-  if (
-    !props.user.logged &&
-    props.location.pathname === Url.get(Url.pages.landing)
-  ) {
-    return (
-      <AppContext.Provider value={appContext}>
-        <LazyAnonymousHome
-          client={props.client}
-          homeCustomized={props.params["HOMEPAGE"]}
-          user={props.user}
-          model={props.model}
-          location={props.location}
-          params={props.params}
-        />
-      </AppContext.Provider>
-    );
-  }
 
   // check anonymous sessions settings
   const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
@@ -113,194 +102,114 @@ function CentralContentContainer(props) {
           <title>Reproducible Data Science | Open Research | Renku</title>
         </Helmet>
         <Switch>
-          <Route
-            exact
-            path="/login"
-            render={(p) => (
-              <ContainerWrap fullSize>
-                <LoginRedirect key="login" {...p} {...props} />
-              </ContainerWrap>
-            )}
-          />
-          <Route
-            exact
-            path={Url.get(Url.pages.landing)}
-            render={() =>
-              props.user.logged ? (
-                <ContainerWrap>
-                  <LazyDashboard />
-                </ContainerWrap>
-              ) : null
-            }
-          />
-          <Route
-            path={Url.get(Url.pages.help)}
-            render={(p) => (
+          <CompatRoute exact path="/">
+            {props.user.logged ? (
               <ContainerWrap>
-                <LazyHelp key="help" {...p} {...props} />
+                <LazyDashboard />
               </ContainerWrap>
+            ) : (
+              <div className="w-100">
+                <LazyAnonymousHome />
+              </div>
             )}
-          />
-          <Route
-            path={Url.get(Url.pages.search)}
-            render={() => (
+          </CompatRoute>
+          <CompatRoute path="/help">
+            <ContainerWrap>
+              <LazyHelp />
+            </ContainerWrap>
+          </CompatRoute>
+          <CompatRoute path="/search">
+            <ContainerWrap>
+              <LazySearchPage />
+            </ContainerWrap>
+          </CompatRoute>
+          <CompatRoute path="/inactive-kg-projects">
+            {props.user.logged ? (
               <ContainerWrap>
-                <LazySearchPage
-                  key="kg-search"
-                  userName={props.user?.data?.name}
-                  isLoggedUser={props.user.logged}
-                  model={props.model}
-                />
+                <LazyInactiveKGProjectsPage />
               </ContainerWrap>
+            ) : (
+              <LazyNotFound />
             )}
-          />
-          <Route
-            path={Url.get(Url.pages.inactiveKgProjects)}
-            render={(p) =>
-              props.user?.logged ? (
-                <ContainerWrap>
-                  <LazyInactiveKGProjectsPage
-                    key="-inactive-kg-projects"
-                    socket={socket}
-                  />
-                </ContainerWrap>
-              ) : (
-                <LazyNotFound {...p} />
-              )
-            }
-          />
-          <Route
-            exact
-            path={[
-              Url.get(Url.pages.projects),
-              Url.get(Url.pages.projects.starred),
-              Url.get(Url.pages.projects.all),
-            ]}
-            render={(p) => (
+          </CompatRoute>
+          {["/projects", "/projects/starred", "/projects/all"].map((path) => (
+            <CompatRoute key={path} exact path={path}>
               <ContainerWrap>
-                <LazyProjectList
-                  key="projects"
-                  user={props.user}
-                  client={props.client}
-                  statusSummary={props.statusSummary}
-                  {...p}
-                />
+                <LazyProjectList />
               </ContainerWrap>
-            )}
-          />
-          <Route
-            exact
-            path={Url.get(Url.pages.project.new)}
-            render={(p) => (
-              <ContainerWrap>
-                <LazyNewProject
-                  key="newProject"
-                  model={props.model}
-                  user={props.user}
-                  client={props.client}
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
-          <Route
-            path="/projects/:subUrl+"
-            render={(p) => (
-              <LazyProjectView
-                key="project/view"
-                client={props.client}
-                params={props.params}
-                model={props.model}
-                user={props.user}
-                blockAnonymous={blockAnonymous}
-                notifications={notifications}
-                socket={socket}
-                {...p}
-              />
-            )}
-          />
+            </CompatRoute>
+          ))}
+          <CompatRoute exact path="/projects/new">
+            <ContainerWrap>
+              <LazyNewProject />
+            </ContainerWrap>
+          </CompatRoute>
+          <Route path="/projects/:subUrl+">
+            <LazyProjectView
+              client={props.client}
+              params={props.params}
+              model={props.model}
+              user={props.user}
+              blockAnonymous={blockAnonymous}
+              notifications={notifications}
+              socket={socket}
+            />
+          </Route>
           <Route exact path={Url.get(Url.pages.sessions)}>
             {!user.logged ? <LazyAnonymousSessionsList /> : <Redirect to="/" />}
           </Route>
-          <Route
-            path="/datasets/:identifier/add"
-            render={(p) => (
-              <LazyDatasetAddToProject
-                key="addDatasetNew"
-                insideProject={false}
-                identifier={p.match.params?.identifier?.replaceAll("-", "")}
-                datasets={p.datasets}
-                model={props.model}
-              />
-            )}
-          />
-          <Route
-            path="/datasets/:identifier"
-            render={(p) => (
-              <LazyShowDataset
-                key="datasetPreview"
-                {...p}
-                insideProject={false}
-                identifier={p.match.params?.identifier?.replaceAll("-", "")}
-                client={props.client}
-                projectsUrl="/projects"
-                selectedDataset={p.match.params.datasetId}
-                datasetCoordinator={
-                  new DatasetCoordinator(
-                    props.client,
-                    props.model.subModel("dataset")
-                  )
-                }
-                logged={props.user.logged}
-                model={props.model}
-              />
-            )}
-          />
-          <Route path="/datasets">
-            <Redirect to="/search?type=dataset" />
+          <Route path="/datasets/:identifier/add">
+            <LazyDatasetAddToProject
+              insideProject={false}
+              model={props.model}
+            />
           </Route>
-          <Route
-            path="/privacy"
-            render={(p) => (
-              <ContainerWrap>
-                <Privacy key="privacy" params={props.params} {...p} />
-              </ContainerWrap>
-            )}
-          />
-          <Route
-            path="/notifications"
-            render={(p) => (
-              <ContainerWrap>
-                <LazyNotificationsPage
-                  key="notifications"
-                  client={props.client}
-                  model={props.model}
-                  notifications={notifications}
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
-          <Route
-            path="/style-guide"
-            render={(p) => (
-              <ContainerWrap>
-                <LazyStyleGuide
-                  key="style-guide"
-                  baseUrl="/style-guide"
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
-          {userInfo?.isAdmin && (
-            <Route path="/admin">
+          <CompatRoute path="/datasets/:identifier">
+            <LazyShowDataset
+              insideProject={false}
+              client={props.client}
+              projectsUrl="/projects"
+              datasetCoordinator={
+                new DatasetCoordinator(
+                  props.client,
+                  props.model.subModel("dataset")
+                )
+              }
+              logged={props.user.logged}
+              model={props.model}
+            />
+          </CompatRoute>
+          <CompatRoute path="/datasets">
+            <Redirect to="/search?type=dataset" />
+          </CompatRoute>
+          <CompatRoute path="/notifications">
+            <ContainerWrap>
+              <LazyNotificationsPage />
+            </ContainerWrap>
+          </CompatRoute>
+          <CompatRoute path="/v2">
+            <LazyRootV2 />
+          </CompatRoute>
+          <CompatRoute path="/style-guide">
+            <ContainerWrap>
+              <LazyStyleGuide />
+            </ContainerWrap>
+          </CompatRoute>
+          {userInfo?.isLoggedIn && userInfo.is_admin && (
+            <CompatRoute path="/admin">
               <ContainerWrap>
                 <LazyAdminPage />
               </ContainerWrap>
-            </Route>
+            </CompatRoute>
           )}
-          <Route path="*" render={(p) => <LazyNotFound {...p} />} />
+          <CompatRoute path="/secrets">
+            <ContainerWrap>
+              <LazySecrets />
+            </ContainerWrap>
+          </CompatRoute>
+          <Route path="/*">
+            <LazyNotFound />
+          </Route>
         </Switch>
       </AppContext.Provider>
     </div>
@@ -308,21 +217,22 @@ function CentralContentContainer(props) {
 }
 
 function App(props) {
+  const location = useLocation();
+
   const [webSocket, setWebSocket] = useState(null);
   const [notifications, setNotifications] = useState(null);
 
   useEffect(() => {
-    const getLocation = () => props.location;
+    const getLocation = () => location;
     const notificationManager = new NotificationsManager(
       props.model,
-      props.client,
-      getLocation
+      props.client
     );
     setNotifications(notificationManager);
 
     // Setup authentication listeners and notifications
     LoginHelper.setupListener();
-    LoginHelper.triggerNotifications(notifications);
+    LoginHelper.triggerNotifications(notificationManager);
 
     // Setup WebSocket channel
     let webSocketUrl = props.client.uiserverUrl + "/ws";
@@ -338,14 +248,15 @@ function App(props) {
         notificationManager
       )
     );
-  }, []); // eslint-disable-line
+    // ! Ignoring the rule of hooks creates issues, we should refactor this hook
+  }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Avoid rendering the application while authenticating the user
   const user = useLegacySelector((state) => state.stateModel.user);
   if (!user?.fetched && user?.fetching) {
     return (
-      <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
-        <h3 className="text-center text-primary">Checking user data</h3>
+      <section className="py-5">
+        <h3 className="text-center">Checking user data</h3>
         <Loader />
       </section>
     );
@@ -357,28 +268,17 @@ function App(props) {
 
   return (
     <Fragment>
-      <Route
-        render={(p) =>
-          user.logged || p.location.pathname !== Url.get(Url.pages.landing) ? (
-            <RenkuNavBar {...p} {...props} notifications={notifications} />
-          ) : null
-        }
-      />
+      <Favicon />
+      <RenkuNavBar {...props} notifications={notifications} />
+      <DashboardBanner user={props.user} />
       <CentralContentContainer
         notifications={notifications}
         socket={webSocket}
+        location={location}
         {...props}
       />
-      <Route
-        render={(propsRoute) => (
-          <FooterNavbar {...propsRoute} params={props.params} />
-        )}
-      />
-      <Route
-        render={(propsRoute) => (
-          <Cookie {...propsRoute} params={props.params} />
-        )}
-      />
+      <FooterNavbar params={props.params} />
+      <Cookie />
       <ToastContainer />
     </Fragment>
   );

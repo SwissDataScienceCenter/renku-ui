@@ -16,11 +16,17 @@
  * limitations under the License.
  */
 
-import { isEqual } from "lodash";
-import { useState, useEffect } from "react";
+import { isEqual } from "lodash-es";
+import { useContext, useEffect, useState } from "react";
+import {
+  useNavigate,
+  useLocation as useRouterLocation,
+} from "react-router-dom-v5-compat";
 
-import { ProjectList as ProjectListPresent } from "./ProjectList.present";
+import AppContext from "../../utils/context/appContext";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { Url, getSearchParams } from "../../utils/helpers/url";
+import { ProjectList as ProjectListPresent } from "./ProjectList.present";
 
 // *** Constants ***
 const PROJECT_NEW_URL = Url.get(Url.pages.project.new);
@@ -334,52 +340,62 @@ function useUserProjectSearch(
  * Buffer component to handle anonymous users redirects.
  * Check ProjectListRedirected for the functional component logic.
  */
-function ProjectList(props) {
-  // Redirect anonymous users when trying to perform an invalid search (manually modified link)
-  if (!props.user.logged) {
-    const section = getSection(props.location);
-    const searchParams = getSearchParams();
-    // Searching in own or starred projects
-    if (section !== SECTION_MAP.all) {
-      const newUrl = Url.get(Url.pages.projects.all, searchParams);
-      props.history.replace(newUrl);
-      return null;
+function ProjectList() {
+  const navigate = useNavigate();
+
+  const { client } = useContext(AppContext);
+
+  const user = useLegacySelector((state) => state.stateModel.user);
+
+  useEffect(() => {
+    // Redirect anonymous users when trying to perform an invalid search (manually modified link)
+    if (!user.logged) {
+      const section = getSection(history.location);
+      const searchParams = getSearchParams();
+      // Searching in own or starred projects
+      if (section !== SECTION_MAP.all) {
+        const newUrl = Url.get(Url.pages.projects.all, searchParams);
+        navigate(newUrl, { replace: true });
+        return;
+      }
+      // filtering per user or group
+      if (searchParams.searchIn !== SEARCH_IN_MAP.projects.value) {
+        const newParams = {
+          ...searchParams,
+          searchIn: SEARCH_IN_MAP.projects.value,
+        };
+        const newUrl = Url.get(Url.pages.projects.all, newParams);
+        navigate(newUrl, { replace: true });
+        return;
+      }
     }
-    // filtering per user or group
-    if (searchParams.searchIn !== SEARCH_IN_MAP.projects.value) {
-      const newParams = {
-        ...searchParams,
-        searchIn: SEARCH_IN_MAP.projects.value,
-      };
-      const newUrl = Url.get(Url.pages.projects.all, newParams);
-      props.history.replace(newUrl);
-      return null;
-    }
-  }
-  return <ProjectListRedirected {...props} />;
+  }, [navigate, user.logged]);
+
+  return <ProjectListRedirected user={user} client={client} />;
 }
 
 /**
  * Show list of projects, allowing advanced search.
  *
- * @param {object} props.location - React location object.
- * @param {object} props.history - React history object.
  * @param {object} props.client - client object.
  * @param {object} props.user - user object.
  */
 function ProjectListRedirected(props) {
+  const location = useRouterLocation();
+  const navigate = useNavigate();
+
   // *** Setup ***
   const [projects, setProjects] = useState(DEFAULT_PROJECTS);
   const [users, setUsers] = useState(DEFAULT_USERS_GROUPS);
   const [targetUser, setTargetUser] = useState(null);
   const [params, setParams] = useState({
     ...getSearchParams(DEFAULT_PARAMS, CONVERSIONS),
-    section: getSection(props.location),
+    section: getSection(location),
   });
 
   // *** Hooks ***
   // Monitor location changes and set params
-  useLocation(props.location, params, setParams, setTargetUser);
+  useLocation(location, params, setParams, setTargetUser);
 
   // Get new projects when params change (ONLY when searching in projects)
   useProjectSearchParams(props.client, params, setParams, setProjects);
@@ -426,7 +442,7 @@ function ProjectListRedirected(props) {
     let addedParams = { ...modifiedParams, ...(newParams || {}) };
     const finalParams = removeDefaultParams(addedParams, true);
     const url = Url.get(target, finalParams);
-    props.history.push(url);
+    navigate(url);
   };
 
   // Get the url for other sections, params included
@@ -462,7 +478,7 @@ function ProjectListRedirected(props) {
   );
 }
 
-export { URL_MAP as urlMap, ProjectList };
+export { ProjectList, URL_MAP as urlMap };
 
 // test only
 const tests = {

@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import { Button, Col, Row } from "../../utils/ts-wrappers";
+import { Button, Col, Row } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 
 function commitsPhrasing(numberOfCommits: number) {
@@ -36,7 +37,7 @@ function CenteredLoader() {
 }
 
 interface CloseModalProps {
-  closeModal: Function; // eslint-disable-line @typescript-eslint/ban-types
+  closeModal: () => void;
 }
 
 interface ModalProps extends CloseModalProps {

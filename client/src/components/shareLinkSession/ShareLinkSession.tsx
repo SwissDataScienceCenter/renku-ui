@@ -15,11 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useHistory, useLocation } from "react-router-dom";
 import { faInfoCircle, faLink } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, useEffect, useState } from "react";
-import { Url } from "../../utils/helpers/url";
+import { useHistory, useLocation } from "react-router-dom";
 import {
+  Button,
   Col,
   Form,
   FormGroup,
@@ -28,13 +29,13 @@ import {
   Label,
   Modal,
   ModalBody,
+  ModalFooter,
   ModalHeader,
   Row,
-  ModalFooter,
-  Button,
-} from "../../utils/ts-wrappers";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ThrottledTooltip } from "../Tooltip";
+  UncontrolledTooltip,
+} from "reactstrap";
+
+import { Url } from "../../utils/helpers/url";
 import { CommandCopy } from "../commandCopy/CommandCopy";
 
 interface ShareLinkSessionProps {
@@ -59,10 +60,9 @@ const ShareLinkSessionIcon = ({
           icon={faLink}
           onClick={toggleModal}
         />
-        <ThrottledTooltip
-          target="openShareLinkModal"
-          tooltip="Share link Session"
-        />
+        <UncontrolledTooltip target="openShareLinkModal">
+          Share link Session
+        </UncontrolledTooltip>
       </span>
       <ShareLinkSessionOpenFileModal
         filters={filters}
@@ -94,7 +94,7 @@ interface EnvVariablesField {
 interface ShareLinkSessionModalProps {
   filters: ProjectFilters;
   showModal: boolean;
-  toggleModal: Function; // eslint-disable-line @typescript-eslint/ban-types
+  toggleModal: () => void;
   notebookFilePath: string;
   environmentVariables: EnvVariablesField[];
 }
@@ -257,7 +257,7 @@ const ShareLinkSessionModal = ({
 interface ShareLinkSessionOpenFileModalProps {
   filters: ProjectFilters;
   showModal: boolean;
-  toggleModal: Function; // eslint-disable-line @typescript-eslint/ban-types
+  toggleModal: () => void;
   filePath: string;
   launchNotebookUrl: string;
 }
@@ -341,4 +341,4 @@ const ShareLinkSessionOpenFileModal = ({
   );
 };
 
-export { ShareLinkSessionModal, ShareLinkSessionIcon };
+export { ShareLinkSessionIcon, ShareLinkSessionModal };

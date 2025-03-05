@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EyeFill, EyeSlashFill, InfoCircleFill } from "react-bootstrap-icons";
@@ -40,6 +41,9 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
+import CloudStorageItem from "../../../project/components/cloudStorage/CloudStorageItem";
+import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
+import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import { StateModelProject } from "../../../project/project.types";
 import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
@@ -47,9 +51,6 @@ import {
   setCloudStorage,
   updateCloudStorageItem,
 } from "../../startSessionOptionsSlice";
-import CloudStorageItem from "../../../project/components/cloudStorage/CloudStorageItem";
-import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
-import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 
 export default function SessionCloudStorageOption() {
   const { data: notebooksVersion, isLoading } = useGetNotebooksVersionQuery();
@@ -111,10 +112,11 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
     error,
     isLoading,
   } = useGetCloudStorageForProjectQuery(
-    {
-      project_id: `${projectId}`,
-    },
-    { skip: !devAccess }
+    devAccess
+      ? {
+          project_id: `${projectId}`,
+        }
+      : skipToken
   );
 
   // Populate session cloud storage from project's settings

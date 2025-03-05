@@ -23,16 +23,17 @@
  *  Automated Project component
  */
 import { useState } from "react";
-import { Link } from "react-router-dom";
-
-import { Col, Row } from "../../../utils/ts-wrappers";
 import {
   Button,
+  Col,
   Fade,
   Modal,
   ModalBody,
   ModalHeader,
-} from "../../../utils/ts-wrappers";
+  Row,
+} from "reactstrap";
+import { Link } from "react-router-dom";
+
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Url } from "../../../utils/helpers/url";
 import { Loader } from "../../../components/Loader";

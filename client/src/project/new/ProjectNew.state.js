@@ -25,11 +25,8 @@
 
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { newProjectSchema } from "../../model/RenkuModels";
-import {
-  sleep,
-  slugFromTitle,
-  verifyTitleCharacters,
-} from "../../utils/helpers/HelperFunctions";
+import { sleep, slugFromTitle } from "../../utils/helpers/HelperFunctions";
+import { verifyTitleCharacters } from "../../utils/helpers/verifyTitleCharacters.utils";
 import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 
 // ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "0945f006-e117-49b7-8966-4c0842146313",
+    "first_name": "User",
+    "last_name": "1",
+    "namespace": "user1",
+    "role": "owner"
+  },
+  {
+    "id": "user2-uuid",
+    "namespace": "user2",
+    "role": "editor"
+  },
+  {
+    "id": "user3-uuid",
+    "first_name": "user3-uuid",
+    "namespace": "user3",
+    "role": "viewer"
+  }
+]

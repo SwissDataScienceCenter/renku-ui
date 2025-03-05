@@ -2,7 +2,7 @@
   background-position: center;
   background-size: cover;
   /* calc 100vh - footer height - header height */
-  height: calc(100vh - 75px - 70px);
+  height: calc(100vh - 60px - 66px);
   background-image: url("../styles/assets/404@0.25x.png");
   color: var(--bs-rk-pink);
   overflow: auto;
@@ -16,26 +16,6 @@
 .not-found-box-text:first-of-type {
   padding: 20px;
   max-width: 700px;
-}
-
-.not-found-box .title {
-  font-weight: bold;
-  font-size: xxx-large;
-}
-
-.not-found-box .subtitle {
-  font-size: xx-large;
-  margin-bottom: 20px;
-}
-
-.not-found-box p {
-  font-size: x-large;
-  line-height: 1.2;
-  word-break: break-all;
-}
-
-.not-found-box ul {
-  font-size: large;
 }
 
 @media (min-width: 1024px) {

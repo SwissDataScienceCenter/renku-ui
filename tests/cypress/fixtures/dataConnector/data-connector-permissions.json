@@ -1,0 +1,5 @@
+{
+  "write": true,
+  "delete": true,
+  "change_membership": true
+}

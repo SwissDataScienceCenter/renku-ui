@@ -16,84 +16,51 @@
  * limitations under the License.
  */
 
-import { Route, Switch } from "react-router";
+import { Route, Routes } from "react-router-dom-v5-compat";
 import { Col, Nav, NavItem, Row } from "reactstrap";
-import { RenkuNavLink } from "../../../components/RenkuNavLink";
+
+import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2";
 import ProjectSettingsCloudStorage from "./ProjectSettingsCloudStorage";
 import { ProjectSettingsGeneral } from "./ProjectSettingsGeneral";
 import ProjectSettingsSessions from "./ProjectSettingsSessions";
 
-type ProjectSettingsGeneralProps = Parameters<typeof ProjectSettingsGeneral>[0];
+type ProjectSettingsProps = Parameters<typeof ProjectSettingsGeneral>[0];
 
-interface ProjectSettingsProps extends ProjectSettingsGeneralProps {
-  settingsUrl: string;
-  settingsSessionsUrl: string;
-  settingsCloudStorageUrl: string;
-}
-
-export default function ProjectSettings({
-  settingsUrl,
-  settingsSessionsUrl,
-  settingsCloudStorageUrl,
-  ...rest
-}: ProjectSettingsProps) {
+export default function ProjectSettings({ ...props }: ProjectSettingsProps) {
   return (
     <Col key="settings">
       <Row>
         <Col key="nav" sm={12} md={2}>
-          <ProjectSettingsNav
-            settingsUrl={settingsUrl}
-            settingsSessionsUrl={settingsSessionsUrl}
-            settingsCloudStorageUrl={settingsCloudStorageUrl}
-          />
+          <ProjectSettingsNav />
         </Col>
         <Col key="content" sm={12} md={10} data-cy="settings-container">
-          <Switch>
-            <Route exact path={settingsUrl}>
-              <ProjectSettingsGeneral
-                settingsUrl={settingsUrl}
-                settingsSessionsUrl={settingsSessionsUrl}
-                settingsCloudStorageUrl={settingsCloudStorageUrl}
-                {...rest}
-              />
-            </Route>
-            <Route exact path={settingsSessionsUrl}>
-              <ProjectSettingsSessions />
-            </Route>
-            <Route exact path={settingsCloudStorageUrl}>
-              <ProjectSettingsCloudStorage />
-            </Route>
-          </Switch>
+          <Routes>
+            <Route path="/" element={<ProjectSettingsGeneral {...props} />} />
+            <Route path="sessions" element={<ProjectSettingsSessions />} />
+            <Route path="storage" element={<ProjectSettingsCloudStorage />} />
+          </Routes>
         </Col>
       </Row>
     </Col>
   );
 }
 
-interface ProjectSettingsNavProps {
-  settingsUrl: string;
-  settingsSessionsUrl: string;
-  settingsCloudStorageUrl: string;
-}
-
-export function ProjectSettingsNav({
-  settingsUrl,
-  settingsSessionsUrl,
-  settingsCloudStorageUrl,
-}: ProjectSettingsNavProps) {
+export function ProjectSettingsNav() {
   return (
     <Nav
       className="flex-column nav-light nav-pills-underline"
       data-cy="settings-navbar"
     >
       <NavItem>
-        <RenkuNavLink to={settingsUrl} title="General" />
+        <RenkuNavLinkV2 end to=".">
+          General
+        </RenkuNavLinkV2>
       </NavItem>
       <NavItem>
-        <RenkuNavLink to={settingsSessionsUrl} title="Sessions" />
+        <RenkuNavLinkV2 to="sessions">Sessions</RenkuNavLinkV2>
       </NavItem>
       <NavItem>
-        <RenkuNavLink to={settingsCloudStorageUrl} title="Cloud Storage" />
+        <RenkuNavLinkV2 to="storage">Cloud Storage</RenkuNavLinkV2>
       </NavItem>
     </Nav>
   );

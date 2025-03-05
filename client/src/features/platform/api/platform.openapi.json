@@ -1,0 +1,161 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Renku Data Services API",
+    "description": "Service that allows creating, updating, deleting, and managing Renku native projects.\nAll errors have the same format as the schema called ErrorResponse.\n",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api/data"
+    },
+    {
+      "url": "/ui-server/api/data"
+    }
+  ],
+  "paths": {
+    "/platform/config": {
+      "get": {
+        "summary": "Get the current configuration of RenkuLab",
+        "responses": {
+          "200": {
+            "description": "The platform configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformConfig"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["platform"]
+      },
+      "patch": {
+        "summary": "Update the configuration of RenkuLab",
+        "description": "Requires admin permissions.\nWill fail if the platform configuration has not been initialized.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformConfigPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated platform configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformConfig"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["platform"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PlatformConfig": {
+        "description": "The configuration of RenkuLab",
+        "type": "object",
+        "properties": {
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
+          },
+          "incident_banner": {
+            "$ref": "#/components/schemas/IncidentBanner"
+          }
+        },
+        "required": ["etag", "incident_banner"],
+        "additionalProperties": false
+      },
+      "PlatformConfigPatch": {
+        "description": "Patch of the configuration of RenkuLab",
+        "type": "object",
+        "properties": {
+          "incident_banner": {
+            "$ref": "#/components/schemas/IncidentBanner"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ETag": {
+        "type": "string",
+        "description": "Entity Tag",
+        "example": "9EE498F9D565D0C41E511377425F32F3"
+      },
+      "IncidentBanner": {
+        "type": "string",
+        "description": "The contents of the incident banner.\nThis value accepts content written using Markdown.\n",
+        "example": "RenkuLab is experiencing issues, some features may be unavailable."
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "example": 1404
+              },
+              "detail": {
+                "type": "string",
+                "example": "A more detailed optional message showing what the problem was"
+              },
+              "message": {
+                "type": "string",
+                "example": "Something went wrong - please try again later"
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "The schema for all 4xx and 5xx responses",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "If-Match": {
+        "in": "header",
+        "name": "If-Match",
+        "description": "If-Match header, for avoiding mid-air collisions",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/ETag"
+        }
+      }
+    }
+  }
+}

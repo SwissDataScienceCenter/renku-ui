@@ -1,47 +1,41 @@
+import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
+import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
+import { CompatRoute } from "react-router-dom-v5-compat";
 
 import "bootstrap";
-import "jquery";
 
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
-import "./styles/index.scss";
+import v1Styles from "./styles/index.scss?inline";
+import v2Styles from "./styles/renku_bootstrap.scss?inline";
 
 import App from "./App";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
+import Router from "./components/router/Router";
+import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { Maintenance } from "./features/maintenance/Maintenance";
-import { StateModel, globalSchema } from "./model";
+import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
-import { Sentry } from "./utils/helpers/sentry";
-import { Url, createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
-import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { validatedAppParams } from "./utils/context/appParams.utils";
+import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
+import { Sentry } from "./utils/helpers/sentry";
+import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
 
 const configFetch = fetch("/config.json");
-const privacyFetch = fetch("/privacy-statement.md");
 
-Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
-  const [configResp, privacyResp] = valuesRead;
+configFetch.then((valuesRead) => {
+  const configResp = valuesRead;
   const configRead = configResp.json();
-  const privacyRead = privacyResp.text();
 
-  Promise.all([configRead, privacyRead]).then((values) => {
+  configRead.then((params_) => {
     const container = document.getElementById("root");
     const root = createRoot(container);
-    const [params_, privacy] = values;
-
-    // map privacy statement to parameters
-    // ? checking DOCTYPE prevents setting content from bad answers on valid 2xx responses
-    if (!privacy || !privacy.length || privacy.startsWith("<!DOCTYPE html>")) {
-      params_["PRIVACY_STATEMENT"] = null;
-    } else {
-      params_["PRIVACY_STATEMENT"] = privacy;
-    }
 
     const params = validatedAppParams(params_);
 
@@ -68,6 +62,9 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     if (maintenance) {
       root.render(
         <Provider store={model.reduxStore}>
+          <Helmet>
+            <style type="text/css">{v1Styles}</style>
+          </Helmet>
           <Maintenance info={maintenance} />
         </Provider>
       );
@@ -109,20 +106,15 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
       <Provider store={model.reduxStore}>
         <Router>
           <AppErrorBoundary>
-            <Route
-              render={(props) => {
-                LoginHelper.handleLoginParams(props.history);
-                return (
-                  <VisibleApp
-                    client={client}
-                    coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
-                    params={params}
-                    model={model}
-                    location={props.location}
-                    statuspageId={statuspageId}
-                  />
-                );
-              }}
+            <LoginHandler />
+            <FeatureFlagHandler />
+            <StyleHandler />
+            <VisibleApp
+              client={client}
+              coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
+              params={params}
+              model={model}
+              statuspageId={statuspageId}
             />
           </AppErrorBoundary>
         </Router>
@@ -130,3 +122,35 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     );
   });
 });
+
+function LoginHandler() {
+  const history = useHistory();
+
+  useEffect(() => {
+    LoginHelper.handleLoginParams(history);
+  }, [history]);
+
+  return null;
+}
+
+function FeatureFlagHandler() {
+  useFeatureFlagSync();
+  return null;
+}
+
+export function StyleHandler() {
+  return (
+    <Switch>
+      <CompatRoute path="/v2">
+        <Helmet>
+          <style type="text/css">{v2Styles}</style>
+        </Helmet>
+      </CompatRoute>
+      <Route path="*">
+        <Helmet>
+          <style type="text/css">{v1Styles}</style>
+        </Helmet>
+      </Route>
+    </Switch>
+  );
+}

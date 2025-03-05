@@ -16,26 +16,8 @@
  * limitations under the License.
  */
 
-import {
-  faArrowRight,
-  faCheck,
-  faExclamationTriangle,
-  faFileCode,
-  faLink,
-  faSortAmountDown,
-  faSortAmountUp,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { useState } from "react";
-import {
-  Bookmarks,
-  Calendar4,
-  Diagram2,
-  Journals,
-  People,
-  XLg,
-} from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
 import {
   Button,
   ButtonDropdown,
@@ -50,13 +32,32 @@ import {
   Label,
   Row,
   Table,
+  UncontrolledTooltip,
 } from "reactstrap";
-import { InfoAlert, WarnAlert } from "../components/Alert";
 import {
-  ExternalDocsLink,
-  ExternalLink,
-  IconLink,
-} from "../components/ExternalLinks";
+  Bookmarks,
+  Calendar4,
+  Diagram2,
+  FileCode,
+  Journals,
+  Link45deg,
+  People,
+  XLg,
+} from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
+import {
+  faArrowRight,
+  faCheck,
+  faExclamationTriangle,
+  faSortAmountDown,
+  faSortAmountUp,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { InfoAlert, WarnAlert } from "../components/Alert";
+
+import { ExternalDocsLink, ExternalLink } from "../components/ExternalLinks";
+import LinkWithTooltip from "../components/LinkWithTooltip";
 import InformativeIcon from "../components/InformativeIcon";
 import { Loader } from "../components/Loader";
 import { TreeBrowser, TreeDetails, TreeElement } from "../components/Tree";
@@ -69,7 +70,7 @@ import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
 import { toShortHumanDuration } from "../utils/helpers/DurationUtils";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
-import { UncontrolledTooltip } from "../utils/ts-wrappers";
+
 import "./Workflows.scss";
 
 /** BROWSER **/
@@ -1007,12 +1008,9 @@ function VisualizerDetailExpanded({
       defaultValue = (
         <span>
           {defaultValue}
-          <IconLink
-            tooltip="Go to file"
-            className="text-rk-yellow"
-            icon={faFileCode}
-            to={fileUrl}
-          />
+          <LinkWithTooltip tooltip="Go to file" to={fileUrl}>
+            <FileCode className={cx("bi", "text-rk-yellow")} />
+          </LinkWithTooltip>
         </span>
       );
     } else {
@@ -1110,12 +1108,9 @@ function VisualizerLocalResource({
     const newName = `${subItem.replace("/", " #")}  @ `;
     const url = targetWorkflow.url;
     const link = (
-      <IconLink
-        tooltip="Open workflow"
-        className="text-rk-yellow"
-        icon={faLink}
-        to={url}
-      />
+      <LinkWithTooltip tooltip="Open workflow" to={url}>
+        <Link45deg className={cx("bi", "text-rk-yellow")} />
+      </LinkWithTooltip>
     );
     return (
       <span key={simpleHash(data.id + data.name)}>

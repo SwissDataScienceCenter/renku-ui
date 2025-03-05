@@ -1,0 +1,12 @@
+{
+  "name": "small",
+  "cpu": 0.1,
+  "memory": 1,
+  "gpu": 0,
+  "max_storage": 4,
+  "default_storage": 1,
+  "id": 2,
+  "default": false,
+  "tolerations": [],
+  "node_affinities": []
+}

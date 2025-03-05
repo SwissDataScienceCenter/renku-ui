@@ -16,20 +16,20 @@
  * limitations under the License.
  */
 
-import { Component } from "react";
-import { Badge, CardBody, Card, CardHeader } from "reactstrap";
-import graphlib from "graphlib";
-import dagreD3 from "dagre-d3";
 import * as d3 from "d3";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
+import * as dagreD3 from "dagre-d3-es";
+import { Component } from "react";
+import { Download } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom-v5-compat";
+import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
-import { formatBytes } from "../utils/helpers/HelperFunctions";
-import FileAndLineageSwitch from "./FileAndLineageComponents";
 import { ExternalIconLink } from "../components/ExternalLinks";
 import { Clipboard } from "../components/clipboard/Clipboard";
+import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
 import { KgStatusWrapper } from "../components/kgStatus/KgStatus";
 import SessionFileButton from "../features/session/components/SessionFileButton";
+import { formatBytes } from "../utils/helpers/HelperFunctions";
+import FileAndLineageSwitch from "./FileAndLineageComponents";
 
 import "./Lineage.css";
 
@@ -147,7 +147,7 @@ class FileLineageGraph extends Component {
   subGraph() {
     const graph = this.props.graph;
     const NODE_COUNT = this.props.graph.length;
-    const subGraph = new graphlib.Graph()
+    const subGraph = new dagreD3.graphlib.Graph()
       .setGraph({ nodesep: 20, ranksep: 80, marginx: 20, marginy: 20 }) // eslint-disable-line
       .setDefaultEdgeLabel(function () {
         return {};
@@ -196,13 +196,13 @@ class FileLineageGraph extends Component {
       svgGroup = svg.select("g");
     }
 
-    const history = this.props.history;
+    const navigate = this.props.navigate;
 
     render(svgGroup, g);
 
     // Set up zoom support
-    const zoom = d3.zoom().on("zoom", function () {
-      svgGroup.attr("transform", d3.event.transform);
+    const zoom = d3.zoom().on("zoom", function (event) {
+      svgGroup.attr("transform", event.transform);
     });
     svg.call(zoom);
 
@@ -221,7 +221,7 @@ class FileLineageGraph extends Component {
         d3.select(this).attr("r", 25).style("text-decoration-line", "unset");
       })
       .on("click", function () {
-        history.push(d3.select(this).attr("data-href"));
+        navigate(d3.select(this).attr("data-href"));
       });
 
     // Center the graph
@@ -263,13 +263,15 @@ class FileLineageGraph extends Component {
 }
 
 function FileLineageWrapped(props) {
+  const navigate = useNavigate();
+
   return (
     <KgStatusWrapper
       maintainer={props.maintainer}
       projectId={props.projectId}
       projectName={props.projectPath}
     >
-      <FileLineage {...props} />
+      <FileLineage {...props} navigate={navigate} />
     </KgStatusWrapper>
   );
 }
@@ -283,7 +285,7 @@ class FileLineage extends Component {
         graph={graph}
         currentNode={currentNode}
         lineagesUrl={this.props.lineagesUrl}
-        history={this.props.history}
+        navigate={this.props.navigate}
       />
     ) : this.props.error ? (
       <p>{this.props.error}</p>
@@ -303,7 +305,7 @@ class FileLineage extends Component {
       filePath !== undefined && currentNode.type !== "Directory" ? (
         <FileAndLineageSwitch
           insideFile={false}
-          history={this.props.history}
+          navigate={this.props.navigate}
           switchToPath={filePath}
         />
       ) : null;
@@ -311,8 +313,8 @@ class FileLineage extends Component {
     let buttonGit = (
       <ExternalIconLink
         tooltip="Open in GitLab"
-        icon={faGitlab}
-        to={externalFileUrl}
+        icon={<BootstrapGitLabIcon className="bi" />}
+        url={externalFileUrl}
       />
     );
 
@@ -329,9 +331,9 @@ class FileLineage extends Component {
       fileInfo && fileInfo.type === "tree" ? null : (
         <ExternalIconLink
           tooltip="Download File"
-          icon={faDownload}
+          icon={<Download className="bi" />}
           // TODO: change this!!!
-          to={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
+          url={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
         />
       );
 
@@ -347,7 +349,7 @@ class FileLineage extends Component {
               </div>
             ) : null}
             <span className="fileBarIconButton">
-              <Clipboard clipboardText={this.props.path} className="d-flex" />
+              <Clipboard clipboardText={this.props.path} />
             </span>
           </div>
 

@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
+
 import PageLoader from "../../components/PageLoader";
 
 const ProjectList = lazy(() =>
@@ -25,12 +26,10 @@ const ProjectList = lazy(() =>
   }))
 );
 
-export default function LazyProjectList(
-  props: ComponentProps<typeof ProjectList>
-) {
+export default function LazyProjectList() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <ProjectList {...props} />
+      <ProjectList />
     </Suspense>
   );
 }

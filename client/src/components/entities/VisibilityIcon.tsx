@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useContext, useRef } from "react";
 import { Globe, Lock, Shield } from "react-bootstrap-icons";
+import { UncontrolledTooltip } from "reactstrap";
+
 import AppContext from "../../utils/context/appContext";
 import { capitalizeFirstLetter } from "../../utils/helpers/HelperFunctions";
-import { ThrottledTooltip } from "../Tooltip";
 
 /**
  *  renku-ui
@@ -56,11 +58,20 @@ const VisibilityIcon = ({ visibility, className }: VisibilityIconProps) => {
     <>
       <div
         ref={ref}
-        className={`card-visibility-icon d-flex gap-2 align-items-center ${className}`}
+        className={cx(
+          "align-items-center",
+          "card-visibility-icon",
+          "d-flex",
+          "gap-2",
+          className
+        )}
+        data-cy="project-visibility"
       >
         {icon[visibility] || ""} {capitalizeFirstLetter(visibility)}
       </div>
-      <ThrottledTooltip target={ref} tooltip={tooltip[visibility]} />
+      <UncontrolledTooltip target={ref}>
+        {tooltip[visibility]}
+      </UncontrolledTooltip>
     </>
   );
 };

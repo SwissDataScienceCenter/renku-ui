@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo } from "react";
+
 import { useGetRecentlyVisitedProjectsQuery } from "../../features/projects/projects.api";
 import { Session } from "../helpers/SessionFunctions";
 
@@ -24,7 +26,6 @@ interface UseGetRecentlyVisitedProjectsArgs {
   projectsCount: number;
   currentSessions: Session[];
   pinnedProjectSlugs: string[];
-  skip?: boolean;
 }
 
 /**
@@ -33,22 +34,30 @@ interface UseGetRecentlyVisitedProjectsArgs {
  *  useGetRecentlyVisitedProjects.ts
  *  hook to fetch recently visited projects and filter out those that have a session to avoid duplication
  */
-function useGetRecentlyVisitedProjects({
-  currentSessions,
-  pinnedProjectSlugs,
-  projectsCount,
-  skip,
-}: UseGetRecentlyVisitedProjectsArgs) {
+function useGetRecentlyVisitedProjects(
+  args: typeof skipToken | UseGetRecentlyVisitedProjectsArgs
+) {
+  const { currentSessions, pinnedProjectSlugs, projectsCount } =
+    args !== skipToken
+      ? args
+      : ({} as Partial<UseGetRecentlyVisitedProjectsArgs>);
   const totalProjectsToRequest =
-    projectsCount + pinnedProjectSlugs.length + currentSessions.length;
+    projectsCount && pinnedProjectSlugs && currentSessions
+      ? projectsCount + pinnedProjectSlugs.length + currentSessions.length
+      : null;
 
   const queryResult = useGetRecentlyVisitedProjectsQuery(
-    totalProjectsToRequest,
-    { skip }
+    totalProjectsToRequest ?? skipToken
   );
 
   const projectsToShow = useMemo(() => {
-    if (queryResult.data == null || queryResult.data.length == 0) {
+    if (
+      !currentSessions ||
+      !pinnedProjectSlugs ||
+      !projectsCount ||
+      !queryResult.data ||
+      queryResult.data.length == 0
+    ) {
       return queryResult.data;
     }
 

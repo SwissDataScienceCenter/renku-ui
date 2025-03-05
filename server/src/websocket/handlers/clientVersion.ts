@@ -22,6 +22,8 @@ import config from "../../config";
 import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
 
+import type { WebSocketHandlerArgs } from "./handlers.types";
+
 function handlerRequestServerVersion(
   data: Record<string, unknown>,
   channel: Channel,
@@ -59,7 +61,9 @@ function handlerRequestServerVersion(
   }
 }
 
-function heartbeatRequestServerVersion(channel: Channel): void {
+function heartbeatRequestServerVersion({
+  channel,
+}: WebSocketHandlerArgs): void {
   if (channel.data.get("requestServerVersion")) {
     const currentSha = process.env.RENKU_UI_SHORT_SHA
       ? process.env.RENKU_UI_SHORT_SHA

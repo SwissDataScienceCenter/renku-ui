@@ -1,5 +1,166 @@
 # Changes
 
+## Changelog file deprecated
+
+The `CHANGELOG.md` file has been deprecated in favor of the
+[GitHub Releases](https://github.com/SwissDataScienceCenter/renku-ui/releases) page.
+
+## [3.28.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.27.0...3.28.0) (2024-06-05)
+
+### Features
+
+- convert font-awesome icons to bootstrap icons ([#3173](https://github.com/SwissDataScienceCenter/renku-ui/pull/3173), [#3161](https://github.com/SwissDataScienceCenter/renku-ui/pull/3161))
+- improve membership maintenance UX ([#3154](https://github.com/SwissDataScienceCenter/renku-ui/pull/3154))
+- small updates to the connected services page ([#3149](https://github.com/SwissDataScienceCenter/renku-ui/pull/3149))
+
+### Fixes
+
+- adjust navigation logic to prepare migration to `react-router@v6` ([#3151](https://github.com/SwissDataScienceCenter/renku-ui/pull/3151))
+- refactor client to fix dynamic imports ([#3140](https://github.com/SwissDataScienceCenter/renku-ui/pull/3140), [#3141](https://github.com/SwissDataScienceCenter/renku-ui/pull/3141))
+- remove old reactstrap wrapper ([#3155](https://github.com/SwissDataScienceCenter/renku-ui/pull/3155))
+- show project members on the project information page ([#3143](https://github.com/SwissDataScienceCenter/renku-ui/pull/3143))
+- deprecate Url.js for Renku 2.0 components ([#3158](https://github.com/SwissDataScienceCenter/renku-ui/pull/3158))
+- fix project page nav in small viewports ([#3168](https://github.com/SwissDataScienceCenter/renku-ui/pull/3168), [#3169](https://github.com/SwissDataScienceCenter/renku-ui/pull/3169))
+- update session buttons in Renku 2.0 ([#3172](https://github.com/SwissDataScienceCenter/renku-ui/pull/3172))
+- update session badges on the project page of Renku 2.0 ([#3174](https://github.com/SwissDataScienceCenter/renku-ui/pull/3174), [#3175](https://github.com/SwissDataScienceCenter/renku-ui/pull/3175))
+- redirect to group page after creation ([#3177](https://github.com/SwissDataScienceCenter/renku-ui/pull/3177))
+- optimize bundle size ([#3181](https://github.com/SwissDataScienceCenter/renku-ui/pull/3181))
+- update dependencies ([#3180](https://github.com/SwissDataScienceCenter/renku-ui/pull/3180), [#3178](https://github.com/SwissDataScienceCenter/renku-ui/pull/3178), [#3160](https://github.com/SwissDataScienceCenter/renku-ui/pull/3160))
+- show a full page 404 when a group or project is not accessible ([#3162](https://github.com/SwissDataScienceCenter/renku-ui/pull/3162), [#3176](https://github.com/SwissDataScienceCenter/renku-ui/pull/3176), [#3153](https://github.com/SwissDataScienceCenter/renku-ui/pull/3153))
+
+## [3.27.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.26.0...3.27.0) (2024-05-24)
+
+### Features
+
+- allow editing of project settings based on access role ([#3119](https://github.com/SwissDataScienceCenter/renku-ui/issues/3119), [#3118](https://github.com/SwissDataScienceCenter/renku-ui/issues/3118))
+- changes to search UI to support new roles and response structure ([#3119](https://github.com/SwissDataScienceCenter/renku-ui/issues/3119), [#3118](https://github.com/SwissDataScienceCenter/renku-ui/issues/3118))
+- support new group member roles ([#3137](https://github.com/SwissDataScienceCenter/renku-ui/issues/3137), [#3146](https://github.com/SwissDataScienceCenter/renku-ui/issues/3146))
+- update project member names ([#3110](https://github.com/SwissDataScienceCenter/renku-ui/issues/3110), [#3118](https://github.com/SwissDataScienceCenter/renku-ui/issues/3118))
+
+### BREAKING CHANGES
+
+- Requires renku-data-services version >= 0.12.0
+
+## [3.26.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.25.0...3.26.0) (2024-05-23)
+
+### Features
+
+- rework Renku 2.0 project page ([#3108](https://github.com/SwissDataScienceCenter/renku-ui/pull/3108), [#3098](https://github.com/SwissDataScienceCenter/renku-ui/pull/3098))
+- handle custom resource pools culling times ([#3113](https://github.com/SwissDataScienceCenter/renku-ui/pull/3113))
+
+### BREAKING CHANGES
+
+- Requires renku-notebooks version >= 1.25.0
+
+## [3.25.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.24.0...3.25.0) (2024-05-17)
+
+### Features
+
+- add support for connected services in Renku 2.0 ([#3122](https://github.com/SwissDataScienceCenter/renku-ui/pull/3122))
+
+### BREAKING CHANGES
+
+- Requires renku-notebooks version >= 1.24.0
+- Requires renku-data-services version >= 0.11.0
+
+## [3.24.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.23.0...3.24.0) (2024-05-15)
+
+### Features
+
+- add support for session secrets ([#3100](https://github.com/SwissDataScienceCenter/renku-ui/pull/3100), [#3101](https://github.com/SwissDataScienceCenter/renku-ui/pull/3101), [#3106](https://github.com/SwissDataScienceCenter/renku-ui/pull/3106), [#3109](https://github.com/SwissDataScienceCenter/renku-ui/pull/3109))
+- use namespace/slug to identify 2.0 projects ([#3096](https://github.com/SwissDataScienceCenter/renku-ui/pull/3096), [#3103](https://github.com/SwissDataScienceCenter/renku-ui/pull/3103))
+- rework renku 2.0 navigation ([#3095](https://github.com/SwissDataScienceCenter/renku-ui/pull/3095), [#3097](https://github.com/SwissDataScienceCenter/renku-ui/pull/3097))
+
+### Fixes
+
+- sort by date on the 2.0 search page ([#3088](https://github.com/SwissDataScienceCenter/renku-ui/pull/3088), [#3091](https://github.com/SwissDataScienceCenter/renku-ui/pull/3091))
+
+### BREAKING CHANGES
+
+- Requires renku-notebooks version >= 1.23.0
+- Requires renku-data-services version >= 0.10.0
+
+## [3.23.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.22.0...3.23.0) (2024-04-08)
+
+### Features
+
+- add "email us" to the session class option ([#3073](https://github.com/SwissDataScienceCenter/renku-ui/pull/3073))
+
+## [3.22.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.21.0...3.22.0) (2024-04-04)
+
+### Features
+
+- initial support for renku v2 namespaces ([#3023](https://github.com/SwissDataScienceCenter/renku-ui/issues/3023), [#3027](https://github.com/SwissDataScienceCenter/renku-ui/pull/3027))
+
+### BREAKING CHANGES
+
+- Requires renku-data services version >= 0.8.2
+
+## [3.21.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.2...3.21.0) (2024-03-26)
+
+### Features
+
+- change the url structure for Renku 2.0 projects ([#3026](https://github.com/SwissDataScienceCenter/renku-ui/pull/3026))
+- add an additional top bar for Renku 2.0 ([#3030](https://github.com/SwissDataScienceCenter/renku-ui/pull/3030))
+- ad-hoc feature flag for Renku 2.0 ([#3051](https://github.com/SwissDataScienceCenter/renku-ui/pull/3051))
+- adapt session storage to repository ([#3057](https://github.com/SwissDataScienceCenter/renku-ui/issues/3057), [#3058](https://github.com/SwissDataScienceCenter/renku-ui/pull/3058))
+- add support for entity tags on Renku 2.0 projects ([#3067](https://github.com/SwissDataScienceCenter/renku-ui/pull/3067))
+- add sessions for Renku 2.0 projects ([#3037](https://github.com/SwissDataScienceCenter/renku-ui/pull/3037))
+- add search for projects and users on Renku 2.0 ([#3032](https://github.com/SwissDataScienceCenter/renku-ui/pull/3032))
+
+### Bug Fixes
+
+- remove the `<ThrottledTooltip>` component ([#3022](https://github.com/SwissDataScienceCenter/renku-ui/pull/3022))
+- start migrating to `react-router@v6` ([#3028](https://github.com/SwissDataScienceCenter/renku-ui/pull/3028))
+- expand the readme to include a contribute section ([#3031](https://github.com/SwissDataScienceCenter/renku-ui/pull/3031))
+- add an action to automate releases ([#3035](https://github.com/SwissDataScienceCenter/renku-ui/pull/3035))
+- update the release action ([#3039](https://github.com/SwissDataScienceCenter/renku-ui/pull/3039))
+- some migration step for `react-router@v6` ([#3041](https://github.com/SwissDataScienceCenter/renku-ui/pull/3041))
+- update `tsconfig.json` ([#3066](https://github.com/SwissDataScienceCenter/renku-ui/pull/3066))
+- update appearance of copy button in file view ([#3078](https://github.com/SwissDataScienceCenter/renku-ui/pull/3078))
+- update footer links with Mastodon ([#3059](https://github.com/SwissDataScienceCenter/renku-ui/issues/3059), [#3081](https://github.com/SwissDataScienceCenter/renku-ui/pull/3081))
+- update `react-pdf` version and fix it ([#3006](https://github.com/SwissDataScienceCenter/renku-ui/issues/3006), [#3083](https://github.com/SwissDataScienceCenter/renku-ui/pull/3083))
+- improve session scheduling error messages ([#3036](https://github.com/SwissDataScienceCenter/renku-ui/issues/3036), [#3082](https://github.com/SwissDataScienceCenter/renku-ui/pull/3082))
+
+### BREAKING CHANGES
+
+- Requires renku-notebooks version >= 1.22.0
+- Requires renku-data services version >= 0.6.0
+- Requires renku >= 0.50.0 (New services: `solr`, `renku-search`)
+
+## [3.20.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.1...3.20.2) (2024-03-21)
+
+### Bug Fixes
+
+- fix Keycloak sync fallback by calling /user endpoint when logged in ([#3080](https://github.com/SwissDataScienceCenter/renku-ui/pull/3080))
+
+## [3.20.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.20.0...3.20.1) (2024-02-08)
+
+### Bug Fixes
+
+- refactor UI routing ([#3009](https://github.com/SwissDataScienceCenter/renku-ui/pull/3009), [#2605](https://github.com/SwissDataScienceCenter/renku-ui/issues/2605))
+- fix landing page parallax background ([#3010](https://github.com/SwissDataScienceCenter/renku-ui/pull/3010))
+- temporarily fix search bar styles ([#3019](https://github.com/SwissDataScienceCenter/renku-ui/pull/3019))
+- update the font part of the style guide ([#3018](https://github.com/SwissDataScienceCenter/renku-ui/pull/3018))
+- handle jsonrpc improper redirects ([#3017](https://github.com/SwissDataScienceCenter/renku-ui/pull/3017), [#2966](https://github.com/SwissDataScienceCenter/renku-ui/issues/2966))
+
+## [3.20.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.19.0...3.20.0) (2024-02-06)
+
+### Features
+
+- initial alpha implementation of renku v1 projects ([#2870](https://github.com/SwissDataScienceCenter/renku-ui/issues/2870), [#2875](https://github.com/SwissDataScienceCenter/renku-ui/issues/2875))
+- remove features section from help ([#2986](https://github.com/SwissDataScienceCenter/renku-ui/issues/2986))
+- show terms of use and privacy policy in the help section of the UI ([#2954](https://github.com/SwissDataScienceCenter/renku-ui/issues/2954), [#2991](https://github.com/SwissDataScienceCenter/renku-ui/issues/2991))
+- improve appearance of templates on new project page ([#2999](https://github.com/SwissDataScienceCenter/renku-ui/issues/2999), [#2387](https://github.com/SwissDataScienceCenter/renku-ui/issues/2387))
+
+### Bug Fixes
+
+- restore logged in/out notifications ([#3014](https://github.com/SwissDataScienceCenter/renku-ui/issues/3014))
+- fix z-index clash in the search page ([#2995](https://github.com/SwissDataScienceCenter/renku-ui/issues/2995), [#2934](https://github.com/SwissDataScienceCenter/renku-ui/issues/2934))
+- hide button to add storage when the feature is not available ([#3001](https://github.com/SwissDataScienceCenter/renku-ui/issues/3001))
+- unify appearance of project settings alerts ([#2990](https://github.com/SwissDataScienceCenter/renku-ui/issues/2990))
+- fix build warnings on Notifications component ([#3005](https://github.com/SwissDataScienceCenter/renku-ui/issues/3005))
+
 ## [3.19.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.18.1...3.19.0) (2024-01-22)
 
 ### Features
@@ -1002,8 +1163,6 @@ Changes compared to 1.0.0-beta5 follow below.
 ### Features
 
 - redesign the header to take less vertical space ([#1420](https://github.com/SwissDataScienceCenter/renku-ui/issues/1420), [#1389](https://github.com/SwissDataScienceCenter/renku-ui/issues/1389))
-
-# Changes
 
 ## [1.0.0-beta4](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta3...1.0.0-beta4) (2021-07-16)
 

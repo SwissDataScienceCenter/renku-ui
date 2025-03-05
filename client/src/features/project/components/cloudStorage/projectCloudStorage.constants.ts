@@ -24,6 +24,8 @@ import {
 } from "./projectCloudStorage.types";
 
 export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
+export const CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE = "<saved secret>";
+export const STORAGES_WITH_ACCESS_MODE = ["polybox", "switchDrive"];
 
 export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
   "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
@@ -31,7 +33,7 @@ export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
 export const CLOUD_STORAGE_OVERRIDE = {
   storage: {
     azureblob: {
-      position: 3,
+      position: 2,
     },
     drive: {
       hide: true,
@@ -58,9 +60,19 @@ export const CLOUD_STORAGE_OVERRIDE = {
       },
     },
     webdav: {
-      description:
-        "WebDAV compatible services, including PolyBox and SwitchDrive",
-      position: 2,
+      name: "WebDAV",
+      description: "WebDAV compatible services",
+      position: 5,
+    },
+    polybox: {
+      name: "PolyBox",
+      description: "Online data storage service exclusively for ETH members",
+      position: 3,
+    },
+    switchDrive: {
+      name: "SwitchDrive",
+      description: "Cloud storage service for the Swiss university community",
+      position: 4,
     },
   } as Record<string, Partial<CloudStorageOverride>>,
 };
@@ -95,6 +107,61 @@ export const CLOUD_OPTIONS_OVERRIDE = {
       help: "Endpoint for S3 API. You should leave this blank if you entered the region already.",
     },
   },
+  polybox: {
+    access: {
+      examples: [
+        {
+          value: "personal",
+          help: "Use Private to connect a folder that only you use",
+          provider: "",
+          friendlyName: "Personal",
+        },
+        {
+          value: "shared",
+          help: "To connect a folder you share with others, both personal & shared folders",
+          provider: "",
+          friendlyName: "Shared",
+        },
+      ],
+    },
+    bearer_token: { friendlyName: "Bearer Token", advanced: true },
+    url: {
+      friendlyName: "URL",
+      help: "",
+      advanced: true,
+    },
+    user: {
+      friendlyName: "Username",
+    },
+    public_link: {
+      friendlyName: "Public link",
+      position: 1,
+    },
+    vendor: {
+      hide: 1,
+    },
+    nextcloud_chunk_size: {
+      hide: 1,
+    },
+  },
+  switchDrive: {
+    bearer_token: { friendlyName: "Bearer Token", advanced: true },
+    url: {
+      friendlyName: "URL",
+      advanced: true,
+    },
+    user: {
+      friendlyName: "Username",
+    },
+    public_link: {
+      friendlyName: "Public link",
+      position: 1,
+    },
+    vendor: { hide: true },
+    nextcloud_chunk_size: {
+      hide: true,
+    },
+  },
   webdav: {
     pass: {
       friendlyName: "Token (or password)",
@@ -107,22 +174,79 @@ export const CLOUD_OPTIONS_OVERRIDE = {
   },
 } as Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>;
 
+export const CLOUD_OPTIONS_PROVIDER_OVERRIDE = {
+  polybox: {
+    personal: {
+      pass: {
+        value: "",
+        friendlyName: "Token (or password)",
+        help: "For secure access to your SwitchDrive WebDAV shares, we recommend using an application token instead of your account password. To create one, open SwitchDrive, go to Settings > Security, and generate a new Application password",
+      },
+    },
+    shared: {
+      pass: {
+        value: "",
+        help: "If there is a password for the folder, enter that in the password field. Otherwise, leave it blank",
+        friendlyName: "Password",
+      },
+    },
+  },
+  switchDrive: {
+    personal: {
+      pass: {
+        value: "",
+        help: "For secure access to your SwitchDrive WebDAV shares, we recommend using an application token instead of your account password. To create one, open SwitchDrive, go to Settings > Security, and generate a new Application password",
+        friendlyName: "Token (or password)",
+      },
+    },
+    shared: {
+      pass: {
+        value: "",
+        help: "If there is a password for the folder, enter that in the password field. Otherwise, leave it blank",
+        friendlyName: "Password",
+      },
+    },
+  },
+} as Record<
+  string,
+  Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>
+>;
+
 export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
   s3: {
     help:
       "For S3, this is usually your remote bucket name as specified in the cloud service you are using. " +
       "You can also mount a sub-folder by appending it to the bucket name with a slash, e.g. `my-bucket/sub-folder`.",
     placeholder: "remote-bucket-name/optional-sub-folder(s)",
+    label: "Source path",
+  },
+  polybox: {
+    help: "Specify a path to a sub folder to connect to. When left blank, the connection will be made to the default (root) folder.",
+    placeholder: "'/' or 'optional-sub-folder(s)/'",
+    label: "Sub path (optional)",
+  },
+  switchDrive: {
+    help: "Specify a path to a sub folder to connect to. When left blank, the connection will be made to the default (root) folder.",
+    placeholder: "'/' or 'optional-sub-folder(s)/'",
+    label: "Sub path (optional)",
   },
   generic: {
     help:
       "You can leave this blank to mount the default root or specify a folder. Depending on the cloud storage " +
       "provider, you should be able to specify stub-folder if you wish.",
     placeholder: "'/' or 'optional-sub-folder(s)/'",
+    label: "Source path",
   },
-} as Record<string, Record<"help" | "placeholder", string>>;
+} as Record<string, Record<"help" | "placeholder" | "label", string>>;
 
-export const CLOUD_STORAGE_SCHEMA_SHORTLIST = ["s3", "webdav", "azureblob"];
+export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
+  "s3",
+  "polybox",
+  "switchDrive",
+  "webdav",
+  "azureblob",
+  "sftp",
+];
 
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {
   s3: ["AWS", "GCS", "Switch"],
@@ -137,6 +261,7 @@ export const EMPTY_CLOUD_STORAGE_STATE: AddCloudStorageState = {
   showAllSchema: false,
   showAllProviders: false,
   showAllOptions: false,
+  saveCredentials: true,
 };
 
 export const EMPTY_CLOUD_STORAGE_DETAILS: CloudStorageDetails = {
@@ -146,5 +271,5 @@ export const EMPTY_CLOUD_STORAGE_DETAILS: CloudStorageDetails = {
   name: undefined,
   sourcePath: undefined,
   mountPoint: undefined,
-  readOnly: undefined,
+  readOnly: true,
 };

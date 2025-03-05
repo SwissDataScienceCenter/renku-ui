@@ -23,7 +23,8 @@
  *  FieldGroup component.
  */
 
-import { FormGroup, FormText, Input, Label } from "../utils/ts-wrappers";
+import { FormGroup, FormText, Input, Label } from "reactstrap";
+
 import { ErrorLabel, InputLabel } from "./formlabels/FormLabels";
 
 interface FieldGroupProps {
@@ -39,6 +40,9 @@ interface FieldGroupProps {
   isRequired?: boolean;
 }
 
+/** @deprecated Avoid using the `<FieldGroup>` component as it creates HTML
+ * code which do not respect `<label>` and accessibility standards.
+ */
 const FieldGroup = ({
   id,
   label,

@@ -16,18 +16,13 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  SubmitFormButton.tsx
- *  Submit Button create new project
- */
 import { MouseEventHandler, useState } from "react";
-import ShareLinkModal from "./ShareLinkModal";
+import { Button, DropdownItem } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
+
+import ShareLinkModal from "./ShareLinkModal";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
-import { Button, DropdownItem } from "../../../utils/ts-wrappers";
 import { NewProjectInputs, NewProjectMeta } from "./newProject.types";
 
 interface SubmitFormButtonProps {

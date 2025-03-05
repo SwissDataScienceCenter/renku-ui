@@ -1,0 +1,37 @@
+[
+  {
+    "id": "ULID-4",
+    "name": "webdav",
+    "namespace": "user1-uuid",
+    "slug": "webdav",
+    "storage": {
+      "storage_type": "webdav",
+      "configuration": {
+        "url": "https://s3-thing.com/",
+        "pass": "<sensitive>",
+        "type": "webdav",
+        "user": "cramakri"
+      },
+      "source_path": "/",
+      "target_path": "external_storage/webdav",
+      "readonly": true,
+      "sensitive_fields": [
+        {
+          "name": "pass",
+          "help": "Password.",
+          "provider": "",
+          "default": "",
+          "default_str": "",
+          "required": false,
+          "sensitive": true,
+          "advanced": false,
+          "exclusive": false
+        }
+      ]
+    },
+    "creation_date": "2023-11-15T09:55:59Z",
+    "created_by": { "id": "user1-uuid" },
+    "visibility": "private",
+    "description": "Data connector 3 description"
+  }
+]

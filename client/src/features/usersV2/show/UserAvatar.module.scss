@@ -1,0 +1,39 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.avatar {
+  --size: 28px;
+  --font-size: 14px;
+
+  height: var(--size);
+  width: var(--size);
+  font-size: var(--font-size);
+
+  &.medium {
+    --size: 43px;
+    --font-size: 20px;
+  }
+
+  &.large {
+    --size: 56px;
+    --font-size: 24px;
+  }
+
+  &.extraLarge {
+    --size: 56px;
+    --font-size: 24px;
+  }
+
+  &.extraLarge {
+    --size: 56px;
+    --font-size: 24px;
+  }
+}
+
+.typeBadge {
+  width: 75px;
+  height: 65px;
+}

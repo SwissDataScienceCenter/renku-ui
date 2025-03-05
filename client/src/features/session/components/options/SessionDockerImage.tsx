@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
+
 import { Loader } from "../../../../components/Loader";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
@@ -47,16 +49,15 @@ export default function SessionDockerImage() {
 
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     useGetConfigQuery(
-      {
-        apiVersion,
-        metadataVersion,
-        projectRepositoryUrl,
-        branch: currentBranch,
-        commit,
-      },
-      {
-        skip: !coreSupportComputed || !currentBranch || !commit,
-      }
+      coreSupportComputed && currentBranch && commit
+        ? {
+            apiVersion,
+            metadataVersion,
+            projectRepositoryUrl,
+            branch: currentBranch,
+            commit,
+          }
+        : skipToken
     );
 
   if (

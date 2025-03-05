@@ -24,16 +24,16 @@
  */
 
 import {
-  Component,
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import { useHistory } from "react-router";
-import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom-v5-compat";
 
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import { Loader } from "../../components/Loader";
 import { newProjectSchema } from "../../model/RenkuModels";
 import AppContext from "../../utils/context/appContext";
@@ -88,18 +88,15 @@ function ForkProject(props) {
     (state) => state.stateModel.user
   );
 
-  const history = useHistory();
-  const location = useLocation();
+  const loginUrl = useLoginUrl();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!logged) {
-      const loginUrl = Url.get(Url.pages.login.link, {
-        pathname: location.pathname,
-      });
-      history.push(loginUrl);
+      window.location.assign(loginUrl);
     }
-    // This only needs to run once
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [logged, loginUrl]);
 
   // Monitor changes to projects list
   useEffect(() => {
@@ -251,7 +248,7 @@ function ForkProject(props) {
 
       if (mounted.current && !visibilityError) {
         // addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, false);
-        history.push(newUrl);
+        navigate(newUrl);
       } else if (mounted.current && visibilityError) {
         setForking(false); // finish forking
         setForkUrl(newUrl); // allow display the button to go to the forked project
@@ -347,27 +344,37 @@ function getDataFromParams(params) {
   return data;
 }
 
-// temporal solution to include coordinator
-class NewProjectWrapper extends Component {
-  constructor(props) {
-    super(props);
-    this.coordinator = new NewProjectCoordinator(
-      this.props.client,
-      this.props.model.subModel("newProject"),
-      this.props.model.subModel("projects")
-    );
-  }
+function NewProjectWrapper(props) {
+  const { client, model } = useContext(AppContext);
 
-  render() {
-    if (!this.props.client || !this.props.model) return <Loader />;
-    return <NewProject {...this.props} coordinator={this.coordinator} />;
-  }
+  const user = useLegacySelector((state) => state.stateModel.user);
+
+  const coordinator = useMemo(
+    () =>
+      new NewProjectCoordinator(
+        client,
+        model.subModel("newProject"),
+        model.subModel("projects")
+      ),
+    [client, model]
+  );
+
+  if (!client || !model) return <Loader />;
+  return (
+    <NewProject
+      {...props}
+      model={model}
+      user={user}
+      client={client}
+      coordinator={coordinator}
+    />
+  );
 }
 
 function NewProject(props) {
   const { model, importingDataset, startImportDataset, coordinator } = props;
   const { params } = useContext(AppContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const user = useLegacySelector((state) => state.stateModel.user);
   const newProject = useLegacySelector((state) => state.stateModel.newProject);
   const [namespace, setNamespace] = useState(null);
@@ -438,14 +445,14 @@ function NewProject(props) {
         setAutomatedData(data);
         if (!importingDataset) {
           const newUrl = Url.get(Url.pages.project.new);
-          history.push(newUrl);
+          navigate(newUrl);
         }
       }
     } catch (e) {
       // This usually happens when the link is wrong and the base64 string is broken
       coordinator.setAutomated(null, e);
     }
-  }, [coordinator, importingDataset, history]);
+  }, [coordinator, importingDataset, navigate]);
 
   const removeAutomated = useCallback(
     (manuallyReset = true) => {
@@ -602,7 +609,7 @@ function NewProject(props) {
 
   const goToProject = () => {
     const slug = coordinator?.getSlugAndReset();
-    history.push(`/projects/${slug}`);
+    navigate(`/projects/${slug}`);
   };
 
   const sendProjectToAddDataset = (projectPath) => {
@@ -629,7 +636,7 @@ function NewProject(props) {
         if (!creation.kgError && !creation.projectError) {
           const slug = `${creation.newNamespace}/${creation.newNameSlug}`;
           if (importingDataset) sendProjectToAddDataset(slug);
-          else history.push(`/projects/${slug}`);
+          else navigate(`/projects/${slug}`);
           resetCreationResult();
         }
       }

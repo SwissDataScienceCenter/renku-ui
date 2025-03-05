@@ -67,9 +67,7 @@ type RtkQueryErrorsContextType = {
  * ```tsx
  * function Session() {
  *   const { getSessions } = useContext(RtkQueryErrorsContext);
- *   const { data: sessions, isError } = useGetSessionsQuery(undefined, {
- *     skip: getSessions?.isError,
- *   });
+ *   const { data: sessions, isError } = useGetSessionsQuery(!!getSessions?.isError ? undefined : skipToken);
  *
  *   return (
  *     <>

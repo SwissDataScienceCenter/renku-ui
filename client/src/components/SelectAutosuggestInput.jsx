@@ -24,10 +24,10 @@
  */
 
 import { useState } from "react";
-import FormLabel from "./form-field/FormLabel";
-import { FormGroup } from "reactstrap";
+import { FormGroup, FormText } from "reactstrap";
 import Autosuggest from "react-autosuggest";
-import { FormText } from "../utils/ts-wrappers";
+
+import FormLabel from "./form-field/FormLabel";
 import { ErrorLabel } from "./formlabels/FormLabels";
 
 function SelectAutosuggestInput({

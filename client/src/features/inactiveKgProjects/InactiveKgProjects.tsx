@@ -18,7 +18,7 @@
 
 import { useCallback, useContext, useEffect } from "react";
 import { Balloon, Briefcase } from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom-v5-compat";
 import { Button, Table } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
@@ -214,18 +214,13 @@ function InactiveProjectsTable({
   );
 }
 
-interface InactiveKGProjectsPageProps {
-  socket: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
-interface ProjectsNotIndexedPageProps extends InactiveKGProjectsPageProps {
+interface ProjectsNotIndexedPageProps {
   projectList: InactiveKgProjects[];
 }
 
-function ProjectsNotIndexedPage({
-  projectList,
-  socket,
-}: ProjectsNotIndexedPageProps) {
+function ProjectsNotIndexedPage({ projectList }: ProjectsNotIndexedPageProps) {
+  const { webSocket: socket } = useContext(AppContext);
+
   const dispatch = useAppDispatch();
 
   const activationStatus = useAppSelector(
@@ -345,7 +340,7 @@ function ProjectsNotIndexedPage({
   );
 }
 
-function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
+function InactiveKGProjectsPage() {
   const user = useLegacySelector((state) => state.stateModel.user);
   const { data, isFetching, isLoading, error } = useGetInactiveProjects(
     user?.data?.id
@@ -382,7 +377,7 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
   if (projectList.length === 0 || projectList.length === totalCompleted)
     return <AllProjectsIndexed />;
 
-  return <ProjectsNotIndexedPage projectList={projectList} socket={socket} />;
+  return <ProjectsNotIndexedPage projectList={projectList} />;
 }
 
 export default InactiveKGProjectsPage;

@@ -17,9 +17,10 @@
  */
 
 import Masonry from "react-masonry-css";
-import { Pagination } from "./Pagination";
-import ListCard from "./list/ListCard";
+
+import Pagination from "./Pagination";
 import ListBar from "./list/ListBar";
+import ListCard from "./list/ListCard";
 
 /**
  * This class receives a list of "items" and displays them either in a grid or in classic list.

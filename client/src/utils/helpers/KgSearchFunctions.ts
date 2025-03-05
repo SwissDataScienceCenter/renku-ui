@@ -24,7 +24,7 @@ import {
 import { ListElementProps } from "../../components/list/list.types";
 import { Url } from "./url";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import { getEntityImageUrl } from "./HelperFunctions";
 import {
   DatasetKg,

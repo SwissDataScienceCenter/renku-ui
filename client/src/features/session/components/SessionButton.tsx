@@ -25,10 +25,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
 import { Link, useHistory } from "react-router-dom";
+import { SingleValue } from "react-select";
 import {
   Button,
   Col,
@@ -40,9 +42,7 @@ import {
   Row,
 } from "reactstrap";
 
-import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
-import { SingleValue } from "react-select";
-import { ErrorAlert, WarnAlert } from "../../../components/Alert";
+import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
@@ -58,9 +58,13 @@ import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
 import { Url } from "../../../utils/helpers/url";
-import { useGetResourcePoolsQuery } from "../../dataServices/dataServices.api";
+import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api";
 import { ResourceClass } from "../../dataServices/dataServices.types";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
+import {
+  ErrorOrNotAvailableResourcePools,
+  FetchingResourcePools,
+} from "../../sessionsV2/components/SessionModals/ResourceClassWarning";
 import {
   useGetSessionsQuery,
   usePatchSessionMutation,
@@ -103,9 +107,7 @@ export default function SessionButton({
     data: sessions,
     isLoading,
     isError,
-  } = useGetSessionsQuery(undefined, {
-    skip: getSessions?.isError,
-  });
+  } = useGetSessionsQuery(!getSessions?.isError ? undefined : skipToken);
 
   const runningSession =
     sessions && runningSessionName && runningSessionName in sessions
@@ -358,12 +360,12 @@ function SessionActions({ className, session }: SessionActionsProps) {
   const defaultAction =
     status === "stopping" || isStopping ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Deleting
       </Button>
     ) : isHibernating ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Pausing
       </Button>
     ) : status === "starting" || status === "running" ? (
@@ -387,7 +389,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
       >
         {isResuming ? (
           <>
-            <Loader className="me-2" inline size={16} />
+            <Loader className="me-1" inline size={16} />
             Resuming
           </>
         ) : (
@@ -735,27 +737,9 @@ function ModifySessionModalContent({
     );
 
   const selector = isLoading ? (
-    <div className="form-label">
-      <Loader className="me-1" inline size={16} />
-      Fetching available resource pools...
-    </div>
+    <FetchingResourcePools />
   ) : !resourcePools || resourcePools.length == 0 || isError ? (
-    <ErrorAlert dismissible={false}>
-      <h3 className={cx("fs-6", "fw-bold")}>
-        Error on loading available session resource pools
-      </h3>
-      <p className="mb-0">
-        Modifying the session is not possible at the moment. You can try to{" "}
-        <a
-          className={cx("btn", "btn-sm", "btn-primary", "mx-1")}
-          href={window.location.href}
-          onClick={() => window.location.reload()}
-        >
-          reload the page
-        </a>
-        .
-      </p>
-    </ErrorAlert>
+    <ErrorOrNotAvailableResourcePools />
   ) : (
     <SessionClassSelector
       resourcePools={resourcePools}
@@ -771,7 +755,7 @@ function ModifySessionModalContent({
           <Col>
             {message}
             <p>
-              <span className="fw-bold me-3">Current resources:</span>
+              <span className={cx("fw-bold", "me-3")}>Current resources:</span>
               <span>
                 <SessionRowResourceRequests
                   resourceRequests={resources.requests}

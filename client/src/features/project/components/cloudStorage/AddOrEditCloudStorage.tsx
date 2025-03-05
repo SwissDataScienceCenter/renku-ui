@@ -34,8 +34,6 @@ import {
 } from "react-bootstrap-icons";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
   Button,
   Input,
   InputGroup,
@@ -45,16 +43,10 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import {
-  CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_TOTAL_STEPS,
-} from "./projectCloudStorage.constants";
-import {
-  AddCloudStorageState,
-  CloudStorageDetails,
-  CloudStorageSchema,
-  CloudStorageSchemaOptions,
-} from "./projectCloudStorage.types";
+import { WarnAlert } from "../../../../components/Alert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
+import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
+import { hasSchemaAccessMode } from "../../../dataConnectorsV2/components/dataConnector.utils.ts";
 import {
   convertFromAdvancedConfig,
   getSchemaOptions,
@@ -64,8 +56,20 @@ import {
   hasProviderShortlist,
   parseCloudStorageConfiguration,
 } from "../../utils/projectCloudStorage.utils";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import { WarnAlert } from "../../../../components/Alert";
+import AddStorageBreadcrumbNavbar from "./AddStorageBreadcrumbNavbar";
+import AddStorageMountSaveCredentialsInfo from "./AddStorageMountSaveCredentialsInfo";
+import {
+  CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
+  CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
+  CLOUD_STORAGE_TOTAL_STEPS,
+  STORAGES_WITH_ACCESS_MODE,
+} from "./projectCloudStorage.constants";
+import {
+  AddCloudStorageState,
+  CloudStorageDetails,
+  CloudStorageSchema,
+  CloudStorageSchemaOptions,
+} from "./projectCloudStorage.types";
 
 import styles from "./CloudStorage.module.scss";
 
@@ -75,6 +79,7 @@ interface AddOrEditCloudStorageProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
+  storageSecrets: CloudStorageSecretGet[];
 }
 
 export default function AddOrEditCloudStorage({
@@ -100,71 +105,19 @@ export default function AddOrEditCloudStorage({
           storage={storage}
           setState={setState}
           setStorage={setStorage}
+          storageSecrets={[]}
+          validationSucceeded={false}
         />
       </>
     );
   return <p>Error - not implemented yet</p>;
 }
 
-// *** Navigation: breadcrumbs and advanced mode selector *** //
-
-interface AddStorageBreadcrumbNavbarProps {
-  setState: (newState: Partial<AddCloudStorageState>) => void;
-  state: AddCloudStorageState;
-}
-
-function AddStorageBreadcrumbNavbar({
-  setState,
-  state,
-}: AddStorageBreadcrumbNavbarProps) {
-  const { step, completedSteps } = state;
-  const items = useMemo(() => {
-    const steps = state.advancedMode
-      ? [0, CLOUD_STORAGE_TOTAL_STEPS]
-      : Array.from(
-          { length: CLOUD_STORAGE_TOTAL_STEPS },
-          (_, index) => index + 1
-        );
-    const items = steps.map((stepNumber) => {
-      const active = stepNumber === step;
-      const disabled = stepNumber > completedSteps + 1;
-      return (
-        <BreadcrumbItem active={active} key={stepNumber}>
-          {active ? (
-            <>{mapStepToName[stepNumber]}</>
-          ) : (
-            <>
-              <Button
-                className={cx(
-                  "p-0",
-                  (active || disabled) && "text-decoration-none"
-                )}
-                color="link"
-                disabled={disabled}
-                onClick={() => {
-                  setState({ step: stepNumber });
-                }}
-              >
-                {mapStepToName[stepNumber]}
-              </Button>
-            </>
-          )}
-        </BreadcrumbItem>
-      );
-    });
-    return items;
-  }, [completedSteps, setState, step, state.advancedMode]);
-
-  return (
-    <Breadcrumb data-cy="cloud-storage-edit-navigation">{items}</Breadcrumb>
-  );
-}
-
 interface AddStorageAdvancedToggleProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
 }
-function AddStorageAdvancedToggle({
+export function AddStorageAdvancedToggle({
   setState,
   state,
 }: AddStorageAdvancedToggleProps) {
@@ -209,12 +162,15 @@ function AddStorageAdvancedToggle({
 }
 
 // *** Add storage: helpers *** //
-interface AddStorageStepProps {
+export interface AddStorageStepProps {
   schema: CloudStorageSchema[];
   setStorage: (newDetails: Partial<CloudStorageDetails>) => void;
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
+  storageSecrets: CloudStorageSecretGet[];
+  isV2?: boolean;
+  validationSucceeded: boolean;
 }
 
 const mapStepToElement: {
@@ -225,18 +181,15 @@ const mapStepToElement: {
   2: AddStorageOptions,
   3: AddStorageMount,
 };
-const mapStepToName: { [key: number]: string } = {
-  0: "Advanced configuration",
-  1: "Storage",
-  2: "Options",
-  3: "Mount",
-};
 
 interface AddStorageAdvancedForm {
   sourcePath: string;
   configuration: string;
 }
-function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
+export function AddStorageAdvanced({
+  storage,
+  setStorage,
+}: AddStorageStepProps) {
   const {
     control,
     formState: { errors },
@@ -282,6 +235,7 @@ function AddStorageAdvanced({ storage, setStorage }: AddStorageStepProps) {
               type="string"
               {...field}
               className="form-control"
+              data-cy="data-connector-source-path"
               onChange={(e) => {
                 field.onChange(e);
                 onSourcePathChange(e.target.value);
@@ -444,19 +398,33 @@ function CheckboxOptionItem({
 interface PasswordOptionItemProps {
   control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   defaultValue: string | undefined;
+  isV2?: boolean;
   onFieldValueChange: (option: string, value: string) => void;
   option: CloudStorageSchemaOptions;
+  storageSecrets: CloudStorageSecretGet[];
 }
 function PasswordOptionItem({
   control,
   defaultValue,
+  isV2,
   onFieldValueChange,
   option,
+  storageSecrets,
 }: PasswordOptionItemProps) {
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = useCallback(() => {
     setShowPassword((showPassword) => !showPassword);
   }, []);
+
+  const optionName = option.name;
+  if (isV2 && storageSecrets.some((s) => s.name === optionName)) {
+    return (
+      <PasswordOptionItemStored
+        defaultValue={CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE}
+        {...{ control, option }}
+      />
+    );
+  }
 
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
@@ -470,9 +438,20 @@ function PasswordOptionItem({
           />
         </div>
         <UncontrolledTooltip placement="top" target={tooltipContainerId}>
-          This field contains sensitive data (E.G. password, access token, ...).
-          RenkuLab does not store passwords, so you will be asked this value
-          again when starting a session.
+          {isV2 ? (
+            <span>
+              This field contains sensitive data (E.G. password, access token,
+              ...), which is specific to the user. You can store this value as a
+              secret, in which case it will be used for any session you start,
+              but the value will not be available to other users.
+            </span>
+          ) : (
+            <span>
+              This field contains sensitive data (E.G. password, access token,
+              ...). RenkuLab does not store passwords, so you will be asked this
+              value again when starting a session.
+            </span>
+          )}
         </UncontrolledTooltip>
       </label>
 
@@ -487,7 +466,12 @@ function PasswordOptionItem({
               id={option.name}
               type={showPassword ? "text" : "password"}
               className={cx("form-control", "rounded-0", "rounded-start")}
-              placeholder={option.convertedDefault?.toString() ?? ""}
+              placeholder={
+                option.convertedDefault &&
+                option.convertedDefault?.toString() !== "[object Object]"
+                  ? option.convertedDefault?.toString()
+                  : ""
+              }
               onChange={(e) => {
                 field.onChange(e);
                 onFieldValueChange(option.name, e.target.value);
@@ -509,10 +493,59 @@ function PasswordOptionItem({
             placement="top"
             target={`show-password-${option.name}`}
           >
-            Hide/show sensistive data
+            Hide/show sensitive data
           </UncontrolledTooltip>
         </Button>
       </InputGroup>
+    </>
+  );
+}
+
+function PasswordOptionItemStored({
+  control,
+  defaultValue,
+  option,
+}: Omit<PasswordOptionItemProps, "onFieldValueChange" | "storageSecrets">) {
+  const tooltipContainerId = `option-is-secret-${option.name}`;
+  return (
+    <>
+      <label htmlFor={option.name}>
+        {option.friendlyName ?? option.name}{" "}
+        <div id={tooltipContainerId} className="d-inline">
+          <KeyFill className={cx("bi", "ms-1")} />
+          <ExclamationTriangleFill
+            className={cx("bi", "ms-1", "text-warning")}
+          />
+        </div>
+        <UncontrolledTooltip placement="top" target={tooltipContainerId}>
+          <span>
+            The value for this field is stored as a secret. Use the credentials
+            dialog to change or clear the value.
+          </span>
+        </UncontrolledTooltip>
+      </label>
+
+      <Controller
+        name={option.name}
+        control={control}
+        defaultValue={defaultValue}
+        render={({ field }) => (
+          <input
+            {...field}
+            id={option.name}
+            readOnly={true}
+            type="text"
+            className={cx("form-control", "rounded-0", "rounded-start")}
+            placeholder={
+              option.convertedDefault &&
+              option.convertedDefault?.toString() !== "[object Object]"
+                ? option.convertedDefault?.toString()
+                : ""
+            }
+            onChange={() => {}}
+          />
+        )}
+      />
     </>
   );
 }
@@ -534,9 +567,16 @@ function InputOptionItem({
   const additionalProps: Record<string, string> = {
     ...(inputType === "dropdown" ? { list: `${option.name}__list` } : {}),
   };
+
+  const inputName =
+    inputType !== "dropdown" &&
+    option.filteredExamples?.length > 0 &&
+    option.filteredExamples[0]?.friendlyName
+      ? option.filteredExamples[0]?.friendlyName
+      : option.friendlyName ?? option.name;
   return (
     <>
-      <label htmlFor={option.name}>{option.friendlyName ?? option.name}</label>
+      <label htmlFor={option.name}>{inputName}</label>
 
       <Controller
         name={option.name}
@@ -551,7 +591,8 @@ function InputOptionItem({
                 type={inputType}
                 className="form-control"
                 placeholder={
-                  option.convertedDefault
+                  option.convertedDefault &&
+                  option.convertedDefault?.toString() !== "[object Object]"
                     ? option.convertedDefault?.toString()
                     : inputType === "dropdown"
                     ? option.filteredExamples[0].value
@@ -588,12 +629,13 @@ function InputOptionItem({
 
 // *** Add storage: page 1 of 3, with storage type and provider *** //
 
-function AddStorageType({
+export function AddStorageType({
   schema,
   state,
   storage,
   setState,
   setStorage,
+  isV2,
 }: AddStorageStepProps) {
   const providerRef: RefObject<HTMLDivElement> = useRef(null);
   const scrollToProvider = () => {
@@ -610,11 +652,13 @@ function AddStorageType({
   const setFinalSchema = (value: string) => {
     setStorage({ schema: value });
     if (state.showAllSchema) setState({ showAllSchema: false });
-    hasProviderShortlist(value) && scrollToProvider();
+    (hasProviderShortlist(value) ||
+      STORAGES_WITH_ACCESS_MODE.includes(value)) &&
+      scrollToProvider();
   };
 
   const schemaItems = availableSchema.map((s, index) => {
-    const topBorder = index === 0 ? "rounded-top-3" : null;
+    const topBorder = index === 0 && !isV2 ? "rounded-top-3" : null;
     const itemActive =
       s.prefix === storage.schema ? styles.listGroupItemActive : null;
     return (
@@ -625,6 +669,7 @@ function AddStorageType({
         value={s.prefix}
         tag="div"
         onClick={() => setFinalSchema(s.prefix)}
+        data-cy={`data-storage-${s.prefix}`}
       >
         <p className="mb-0">
           <b>{s.name}</b>
@@ -657,12 +702,16 @@ function AddStorageType({
 
   const finalSchema = (
     <div className="mt-3" data-cy="cloud-storage-edit-schema">
-      <h5>Storage type</h5>
-      <p>
-        Pick a storage from this list to start our guided procedure. You can
-        switch to the Advanced mode if you prefer to manually configure the
-        storage using an rclone configuration.
-      </p>
+      {!isV2 && (
+        <>
+          <h5>Storage type</h5>
+          <p>
+            Pick a storage from this list to start our guided procedure. You can
+            switch to the Advanced mode if you prefer to manually configure the
+            storage using an rclone configuration.
+          </p>
+        </>
+      )}
       {missingSchema}
       <ListGroup
         className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
@@ -691,7 +740,14 @@ function AddStorageType({
     () => hasProviderShortlist(storage.schema),
     [storage.schema]
   );
-  const providerItems = availableProviders
+  const hasAccessMode = useMemo(() => {
+    const selectedSchema = availableSchema.find(
+      (s) => s.prefix === storage?.schema
+    );
+    return selectedSchema ? hasSchemaAccessMode(selectedSchema) : false;
+  }, [storage.schema, availableSchema]);
+
+  const providerOrAccessItems = availableProviders
     ? availableProviders.map((p, index) => {
         const topBorder = index === 0 ? "rounded-top-3" : null;
         const bottomBorder =
@@ -712,10 +768,11 @@ function AddStorageType({
             key={p.name}
             tag="div"
             value={p.name}
+            data-cy={`data-provider-${p.name}`}
             onClick={() => setFinalProvider(p.name)}
           >
             <p className="mb-0">
-              <b>{p.name}</b>
+              <b>{p.friendlyName ?? p.name}</b>
               <br />
               <small>{p.description}</small>
             </p>
@@ -724,9 +781,9 @@ function AddStorageType({
       })
     : null;
   const finalProviderItems =
-    providerItems && providerHasShortlist
+    providerOrAccessItems && !hasAccessMode && providerHasShortlist
       ? [
-          ...providerItems,
+          ...providerOrAccessItems,
           <ListGroupItem
             action
             className={cx("cursor-pointer", "rounded-bottom-3")}
@@ -739,7 +796,7 @@ function AddStorageType({
             <b>Show {state.showAllProviders ? "less" : "more"}</b>
           </ListGroupItem>,
         ]
-      : providerItems;
+      : providerOrAccessItems;
 
   const missingProvider =
     availableProviders &&
@@ -751,25 +808,39 @@ function AddStorageType({
       </WarnAlert>
     ) : null;
 
-  const finalProviders = providerItems ? (
-    <div className="mt-3" data-cy="cloud-storage-edit-providers">
-      <h5>Provider</h5>
-      <p>
-        We support the following providers for this storage type. If you do not
-        find yours, you can select Others to manually specify the required
-        options, or switch to the Advanced mode to manually configure the
-        storage using an rclone configuration.
-      </p>
-      {missingProvider}
-      <div ref={providerRef}>
-        <ListGroup
-          className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
-        >
-          {finalProviderItems}
-        </ListGroup>
+  const finalProviders =
+    providerOrAccessItems && !hasAccessMode ? (
+      <div className="mt-3" data-cy="cloud-storage-edit-providers">
+        <h5>Provider</h5>
+        <p>
+          We support the following providers for this storage type. If you do
+          not find yours, you can select Others to manually specify the required
+          options, or switch to the Advanced mode to manually configure the
+          storage using an rclone configuration.
+        </p>
+        {missingProvider}
+        <div ref={providerRef}>
+          <ListGroup
+            className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
+          >
+            {finalProviderItems}
+          </ListGroup>
+        </div>
       </div>
-    </div>
-  ) : null;
+    ) : providerOrAccessItems && hasAccessMode ? (
+      <div className="mt-3" data-cy="cloud-storage-edit-providers">
+        <h5>Mode</h5>
+        <p>We support the following modes for this storage type.</p>
+        {missingProvider}
+        <div ref={providerRef}>
+          <ListGroup
+            className={cx("bg-white", "rounded-3", "border", "border-rk-green")}
+          >
+            {finalProviderItems}
+          </ListGroup>
+        </div>
+      </div>
+    ) : null;
 
   return (
     <>
@@ -780,12 +851,14 @@ function AddStorageType({
 }
 
 // *** Add storage: page 2 of 3, with storage options *** //
-function AddStorageOptions({
+export function AddStorageOptions({
+  isV2,
   schema,
   setState,
   setStorage,
   state,
   storage,
+  storageSecrets,
 }: AddStorageStepProps) {
   const options = getSchemaOptions(
     schema,
@@ -804,7 +877,6 @@ function AddStorageOptions({
     const { sourcePath, ...validOptions } = getValues();
     setStorage({ options: validOptions });
   };
-
   const optionItems =
     options &&
     options.map((o) => {
@@ -816,7 +888,7 @@ function AddStorageOptions({
         ? "checkbox"
         : o.convertedType === "number"
         ? "number"
-        : o.filteredExamples?.length
+        : o.filteredExamples?.length >= 1
         ? "dropdown"
         : "text";
 
@@ -841,8 +913,10 @@ function AddStorageOptions({
                   ? (storage.options[o.name] as string)
                   : ""
               }
+              isV2={isV2}
               onFieldValueChange={onFieldValueChange}
               option={o}
+              storageSecrets={storageSecrets}
             />
           ) : (
             <InputOptionItem
@@ -870,7 +944,7 @@ function AddStorageOptions({
         <Input
           className={cx("form-check-input", "rounded-pill", "my-auto", "me-2")}
           checked={state.showAllOptions}
-          id="switch-storage-advanced-mode"
+          id="switch-storage-full-list"
           onChange={() => setState({ showAllOptions: !state.showAllOptions })}
           role="switch"
           type="checkbox"
@@ -897,7 +971,7 @@ function AddStorageOptions({
   const sourcePath = (
     <div className="mb-3">
       <Label className="form-label" for="sourcePath">
-        Source path
+        {sourcePathHelp.label}
       </Label>
 
       <Controller
@@ -910,6 +984,7 @@ function AddStorageOptions({
             type="string"
             {...field}
             className="form-control"
+            data-cy="data-connector-source-path"
             onChange={(e) => {
               field.onChange(e);
               onSourcePathChange(e.target.value);
@@ -922,6 +997,10 @@ function AddStorageOptions({
     </div>
   );
 
+  const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
+    storage.schema ?? ""
+  );
+
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-options">
       <h5>Options</h5>
@@ -929,8 +1008,9 @@ function AddStorageOptions({
         Please fill in all the options required to connect to your storage. Mind
         that the specific fields required depend on your storage configuration.
       </p>
-      {sourcePath}
+      {!hasAccessMode && sourcePath}
       {optionItems}
+      {hasAccessMode && sourcePath}
       {advancedOptions}
     </form>
   );
@@ -938,13 +1018,26 @@ function AddStorageOptions({
 
 // *** Add storage: page 3 of 3, with name and mount path *** //
 
-interface AddStorageMountForm {
+export interface AddStorageMountForm {
   name: string;
   mountPoint: string;
   readOnly: boolean;
+  saveCredentials: boolean;
 }
-type AddStorageMountFormFields = "name" | "mountPoint" | "readOnly";
-function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
+type AddStorageMountFormFields =
+  | "name"
+  | "mountPoint"
+  | "readOnly"
+  | "saveCredentials";
+export function AddStorageMount({
+  isV2,
+  schema,
+  setStorage,
+  setState,
+  storage,
+  state,
+  validationSucceeded,
+}: AddStorageStepProps) {
   const {
     control,
     formState: { errors, touchedFields },
@@ -958,17 +1051,46 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         storage.mountPoint ||
         `external_storage/${storage.schema?.toLowerCase()}`,
       readOnly: storage.readOnly ?? false,
+      saveCredentials: state.saveCredentials,
     },
   });
-  const onFieldValueChange = (
-    field: AddStorageMountFormFields,
-    value: string | boolean
-  ) => {
-    setValue(field, value);
-    if (field === "name" && !touchedFields.mountPoint && !storage.storageId)
-      setValue("mountPoint", `external_storage/${value}`);
-    setStorage({ ...getValues() });
-  };
+  const onFieldValueChange = useCallback(
+    (field: AddStorageMountFormFields, value: string | boolean) => {
+      setValue(field, value);
+      if (field === "name" && !touchedFields.mountPoint && !storage.storageId)
+        setValue("mountPoint", `external_storage/${value}`);
+      if (field === "saveCredentials") {
+        if (isV2) {
+          setState({ saveCredentials: !!value });
+          return;
+        }
+      }
+      setStorage({ ...getValues() });
+    },
+    [
+      getValues,
+      isV2,
+      setState,
+      setStorage,
+      storage.storageId,
+      setValue,
+      touchedFields.mountPoint,
+    ]
+  );
+
+  const options = getSchemaOptions(
+    schema,
+    true,
+    storage.schema,
+    storage.provider
+  );
+  const secretFields =
+    options == null
+      ? []
+      : Object.values(options).filter((o) => o && o.convertedType === "secret");
+  const hasPasswordFieldWithInput = secretFields.some(
+    (o) => storage.options && storage.options[o.name]
+  );
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
@@ -1089,6 +1211,17 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
           this in any case to prevent accidental data modifications.
         </div>
       </div>
+
+      {storage.storageId == null &&
+        isV2 &&
+        hasPasswordFieldWithInput &&
+        validationSucceeded && (
+          <AddStorageMountSaveCredentialsInfo
+            control={control}
+            onFieldValueChange={onFieldValueChange}
+            state={state}
+          />
+        )}
     </form>
   );
 }

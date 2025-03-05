@@ -16,21 +16,16 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
+
 import PageLoader from "../components/PageLoader";
 
-const NotificationsPage = lazy(() =>
-  import("./Notifications.container").then((module) => ({
-    default: module.NotificationsPage,
-  }))
-);
+const NotificationsPage = lazy(() => import("./Notifications.container"));
 
-export default function LazyNotificationsPage(
-  props: ComponentProps<typeof NotificationsPage>
-) {
+export default function LazyNotificationsPage() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <NotificationsPage {...props} />
+      <NotificationsPage />
     </Suspense>
   );
 }

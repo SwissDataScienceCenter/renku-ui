@@ -32,13 +32,14 @@ import AppContext from "../../../utils/context/appContext";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import { usePatchSessionMutation } from "../sessions.api";
-import { Session } from "../sessions.types";
 
 interface SessionHibernatedProps {
-  session: Session;
+  sessionName: string;
 }
 
-export default function SessionHibernated({ session }: SessionHibernatedProps) {
+export default function SessionHibernated({
+  sessionName,
+}: SessionHibernatedProps) {
   const location = useLocation<{ filePath?: string } | undefined>();
   const locationFilePath = location.state?.filePath;
 
@@ -57,9 +58,9 @@ export default function SessionHibernated({ session }: SessionHibernatedProps) {
   const [isResuming, setIsResuming] = useState(false);
 
   const onResumeSession = useCallback(() => {
-    patchSession({ sessionName: session.name, state: "running" });
+    patchSession({ sessionName: sessionName, state: "running" });
     setIsResuming(true);
-  }, [patchSession, session.name]);
+  }, [patchSession, sessionName]);
 
   const { notifications } = useContext(AppContext);
 
@@ -81,7 +82,7 @@ export default function SessionHibernated({ session }: SessionHibernatedProps) {
 
   return (
     <div className={cx("p-2", "p-lg-3", "text-nowrap", "container-lg")}>
-      <p className="mt-2">This session is currently stopped.</p>
+      <p className="mt-2">This session is currently paused.</p>
       <Alert color="primary">
         <p className="mb-0">
           {isResuming ? (
@@ -96,7 +97,6 @@ export default function SessionHibernated({ session }: SessionHibernatedProps) {
               <Button
                 className={cx("btn", "btn-primary", "btn-sm")}
                 onClick={onResumeSession}
-                disabled={isResuming}
               >
                 resume the session
               </Button>{" "}
@@ -130,7 +130,7 @@ function addErrorNotification({
       : "Unknown error";
   notifications.addError(
     NOTIFICATION_TOPICS.SESSION_START,
-    "Unable to stop the current session",
+    "Unable to resume the current session",
     undefined,
     undefined,
     undefined,

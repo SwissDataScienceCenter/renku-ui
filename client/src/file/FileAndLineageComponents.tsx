@@ -17,12 +17,11 @@
  */
 
 import { useRef } from "react";
+import { Diagram2, FileEarmarkFill } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom-v5-compat";
 import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile, faProjectDiagram } from "@fortawesome/free-solid-svg-icons";
 
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
-import { useHistory } from "react-router-dom";
 
 interface FileAndLineageSwitchProps {
   switchToPath: string;
@@ -34,10 +33,10 @@ export default function FileAndLineageSwitch({
 }: FileAndLineageSwitchProps) {
   const fileIconRef = useRef(null);
   const lineageIconRef = useRef(null);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const performSwitch = () => {
-    history.push(switchToPath);
+    navigate(switchToPath);
   };
 
   return (
@@ -48,7 +47,7 @@ export default function FileAndLineageSwitch({
           active={insideFile}
           innerRef={fileIconRef}
         >
-          <FontAwesomeIcon icon={faFile} />
+          <FileEarmarkFill className="bi" />
         </Button>
         <UncontrolledTooltip target={fileIconRef}>
           File content view
@@ -58,7 +57,7 @@ export default function FileAndLineageSwitch({
           onClick={performSwitch}
           active={!insideFile}
         >
-          <FontAwesomeIcon icon={faProjectDiagram} />
+          <Diagram2 className="bi" />
         </Button>
         <UncontrolledTooltip target={lineageIconRef}>
           File lineage view

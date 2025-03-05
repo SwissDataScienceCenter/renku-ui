@@ -133,7 +133,7 @@ describe("Test WebSocket functions", () => {
 
   it("Test retryConnection function", async () => {
     const model = new StateModel(globalSchema);
-    const notifications = new NotificationsManager(model, client, fakeLocation);
+    const notifications = new NotificationsManager(model, client);
     const reconnectModel = model.subModel("webSocket.reconnect");
     expect(reconnectModel.get("attempts")).toBe(0);
     expect(reconnectModel.get("retrying")).toBe(false);
@@ -166,11 +166,7 @@ describe("Test WebSocket server", () => {
 
   it("Test setupWebSocket", async () => {
     const fullModel = new StateModel(globalSchema);
-    const notifications = new NotificationsManager(
-      fullModel,
-      client,
-      fakeLocation
-    );
+    const notifications = new NotificationsManager(fullModel, client);
 
     // the mocked WebSocket server is up and running
     const localModel = fullModel.subModel("webSocket");

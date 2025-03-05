@@ -28,31 +28,43 @@ import {
   configureStore,
 } from "@reduxjs/toolkit";
 
-import adminComputeResourcesApi from "../../features/admin/adminComputeResources.api";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
+import adminSessionsApi from "../../features/admin/adminSessions.api";
+import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
-import { dataServicesApi } from "../../features/dataServices/dataServices.api";
+import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import dataConnectorFormSlice from "../../features/dataConnectorsV2/state/dataConnectors.slice";
+import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
-import { datasetFormSlice } from "../../features/project/dataset";
+import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
+import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
 import projectCloudStorageApi from "../../features/project/components/cloudStorage/projectCloudStorage.api";
+import { datasetFormSlice } from "../../features/project/dataset";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
+import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
+import repositoriesApi from "../../features/repositories/repositories.api";
+import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
+import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import sessionsApi from "../../features/session/sessions.api";
-import { sessionSidecarApi } from "../../features/session/sidecarApi";
+import sessionSidecarApi from "../../features/session/sidecar.api";
 import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
-import keycloakUserApi from "../../features/user/keycloakUser.api";
-import userPreferencesApi from "../../features/user/userPreferences.api";
+import sessionsV2Api from "../../features/sessionsV2/sessionsV2.api";
+import startSessionOptionsV2Slice from "../../features/sessionsV2/startSessionOptionsV2.slice";
+import termsApi from "../../features/terms/terms.api";
+import { usersEmptyApi as usersApi } from "../../features/usersV2/api/users.empty-api";
 import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
+import featureFlagsSlice from "../feature-flags/featureFlags.slice";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -63,29 +75,41 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     ...renkuStateModelReducer,
     // Slices
     [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
+    [dataConnectorFormSlice.name]: dataConnectorFormSlice.reducer,
     [datasetFormSlice.name]: datasetFormSlice.reducer,
     [displaySlice.name]: displaySlice.reducer,
+    [featureFlagsSlice.name]: featureFlagsSlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
+    [searchV2Slice.name]: searchV2Slice.reducer,
     [startSessionSlice.name]: startSessionSlice.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
+    [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
-    [adminComputeResourcesApi.reducerPath]: adminComputeResourcesApi.reducer,
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
-    [dataServicesApi.reducerPath]: dataServicesApi.reducer,
+    [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
+    [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
+    [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
+    [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
-    [keycloakUserApi.reducerPath]: keycloakUserApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
+    [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
+    [projectV2Api.reducerPath]: projectV2Api.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
+    [repositoriesApi.reducerPath]: repositoriesApi.reducer,
+    [searchV2Api.reducerPath]: searchV2Api.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
-    [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
+    [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
+    [statuspageApi.reducerPath]: statuspageApi.reducer,
+    [termsApi.reducerPath]: termsApi.reducer,
+    [usersApi.reducerPath]: usersApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
   };
@@ -98,23 +122,32 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         immutableCheck: false,
         serializableCheck: false,
       })
-        .concat(adminComputeResourcesApi.middleware)
+        .concat(computeResourcesApi.middleware)
         .concat(adminKeycloakApi.middleware)
-        .concat(dataServicesApi.middleware)
+        .concat(adminSessionsApi.middleware)
+        .concat(connectedServicesApi.middleware)
+        .concat(dataConnectorsApi.middleware)
+        // this is causing some problems, and I do not know why
         .concat(datasetsCoreApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
-        .concat(keycloakUserApi.middleware)
         .concat(kgSearchApi.middleware)
+        .concat(platformApi.middleware)
         .concat(projectCloudStorageApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectGitLabApi.middleware)
         .concat(projectKgApi.middleware)
         .concat(projectsApi.middleware)
+        .concat(projectV2Api.middleware)
         .concat(recentUserActivityApi.middleware)
-        .concat(sessionSidecarApi.middleware)
+        .concat(repositoriesApi.middleware)
+        .concat(searchV2Api.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
-        .concat(userPreferencesApi.middleware)
+        .concat(sessionSidecarApi.middleware)
+        .concat(sessionsV2Api.middleware)
+        .concat(statuspageApi.middleware)
+        .concat(termsApi.middleware)
+        .concat(usersApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),
     enhancers,

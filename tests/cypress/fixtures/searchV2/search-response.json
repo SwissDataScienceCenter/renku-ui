@@ -1,0 +1,14 @@
+[
+  {
+    "type": "Project",
+    "id": "0caf4c73-f50d-4514-a041-c9eddb025a36",
+    "name": "2nd-project",
+    "slug": "2nd-Xs9GL",
+    "repositories": ["https://gh/2nd-project"],
+    "visibility": "public",
+    "description": "2nd project desc",
+    "createdBy": { "id": "ee53f3b7-f808-4a81-84f4-8290e874b9a7" },
+    "creationDate": "2024-02-16T10:14:28.430Z",
+    "members": [{ "id": "ee53f3b7-f808-4a81-84f4-8290e874b9a7" }]
+  }
+]

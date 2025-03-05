@@ -1,5 +1,4 @@
 [![Test and CI](https://github.com/SwissDataScienceCenter/renku-ui/actions/workflows/test-and-ci.yml/badge.svg)](https://github.com/SwissDataScienceCenter/renku-ui/actions/workflows/test-and-ci.yml)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org)
 [![Release](https://img.shields.io/github/tag/SwissDataScienceCenter/renku-ui.svg)](https://github.com/SwissDataScienceCenter/renku-ui/releases)
 
 # Renku UI
@@ -8,6 +7,27 @@ The Renku UI is the web-based UI for [Renku](https://github.com/SwissDataScience
 and it requires a RenkuLab deployment. You can check the
 [Administrator's Guide](https://renku.readthedocs.io/en/latest/how-to-guides/admin/deploying-renku.html)
 to get more information.
+
+## Table of Contents
+
+- [Architecture](#architecture)
+- [Development](#development)
+  - [Coding guidelines](#coding-guidelines)
+  - [Code Formatting](#code-formatting)
+  - [Additional tools](#additional-tools)
+  - [Contribute](#contribute)
+- [UI Client](#ui-client)
+  - [Tool Stack](#tool-stack)
+  - [Code structure](#code-structure)
+  - [Code splitting](#code-splitting)
+  - [Testing](#testing)
+  - [Utilities and additional information](#utilities-and-additional-information)
+  - [Navigation map](#navigation-map)
+- [UI Server](#ui-server)
+  - [Tool Stack](#tool-stack-1)
+  - [Code structure](#code-structure-1)
+  - [Testing](#testing-1)
+  - [Utilities and additional information](#utilities-and-additional-information-1)
 
 ## Architecture
 
@@ -56,7 +76,7 @@ since they were introduced later in the project. We are working on refactoring
 the codebase to make it consistent, and guidelines will be enforced for all new
 code.
 
-### Code Formating
+### Code Formatting
 
 We use [Prettier](https://prettier.io) to format the codebase to
 keep the syntax consistent. We enforce that by checking every pull request
@@ -76,6 +96,83 @@ If you use [VS Code](https://code.visualstudio.com), you can also install the
 After installing it, go to the workspace settings, search for
 `editor.defaultFormatter` and set it to `Prettier`, then search for
 `editor.formatOnSave` and turn on "Format on save".
+
+### Commits and Pull Requests
+
+We use [Conventional Commits](https://www.conventionalcommits.org) to format our
+commit messages. This allows us to automatically generate changelogs.
+
+Please stick to the following rules to keep messages as consistent as possible:
+
+- Start the commit message with a type from the following list (taken from the
+  [Angular convention](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#type):
+  - `build`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `style`, `test`.
+- Do _not_ add any scope.
+- Write a concise description of the change starting with a verb in the present
+  tense (imperative mood).
+- Use the body of the commit message to provide more context about the change.
+  This won't be necessary for small changes/fixes or version bumps.
+- Include a footer if you wish to reference issues or include co-authors. This is
+  not required.
+- Mention breaking changes clearly by adding the following:
+  - Exclamation mark after the type.
+  - Description of the breaking change, starting with `BREAKING CHANGE:`, as
+    the last line in the body.
+    If you need a newer version of a component that has not yet been released,
+    mention the version as `[component_name] > [current_version]`. Should the final
+    version number be wrong, we can amend it in the GitHub release notes.
+- Include a reference to the PR number at the end of the description (first line).
+  If you use "squash-merge" on GitHub, this will be added automatically.
+
+Here are a couple of examples:
+
+```
+feat!: add a new feature (#1234)
+
+This is a longer description of the feature that was added.
+
+BREAKING CHANGE: this commit breaks something
+
+fix #123
+```
+
+```
+build: bump the react version to 18.1 (#2345)
+```
+
+We encourage squashing commits when merging a PR and expanding the body to include
+relevant details. This will make the commit history cleaner and easier to
+understand. You can keep separate commits if they are logically separate (please
+rebase the PR before merging), although it's best to have separate PRs in that case.
+
+Please pay extra attention to following the guidelines when squash-merging a PR.
+It's easy to mess up since GitHub pre-compiles the commit message.
+
+### Releases
+
+To tag a release, please manually run the `Prepare Release` GitHub action. This action
+will create a new PR bumping the version number wherever needed in the code.
+
+We _loosely_ follow the recommendations from [Semantic Versioning](https://semver.org)
+when tagging releases. We don't expose APIs so the distinction between `major` and `minor`
+is subtle. Try to follow these rules:
+
+- If the release includes only bug fixes or minor changes (i.e. no `feat`
+  commits), bump the `patch` version.
+- When introducing at least one new feature or significant change to an existing
+  feature, bump the `minor` version.
+- We keep the `major` version for significant changes that overhaul big chunks of the UI,
+  like a re-design, a re-styling, or URL restructuring.
+
+Once the Release PR is merged, you can go to the
+[`Releases` section](https://github.com/SwissDataScienceCenter/renku-ui/releases) and
+click the Draft a new release" button. Manually enter a new tag matching the version
+number created by the GitHub action and fill in the release notes using the "Generate
+release notes" button.
+
+Please give it a quick read to ensure the notes are correct. If you make a bugfix
+release for a previous version, you might need to adjust the target or add/remove
+entries.
 
 ### Additional tools
 
@@ -178,6 +275,10 @@ them when already touching the code for other changes.
 We use [CSS modules](https://github.com/css-modules/css-modules) to apply CSS styles
 locally and avoid leaking styles to the whole web application.
 No additional configuration is needed since Create React App [supports CSS modules out of the box](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet).
+
+#### **Use classnames for complex CSS class names**
+
+When a node has a class name that is either computed dynamically or is comprised of two or more classes, use the [classnames](https://www.npmjs.com/package/classnames) package (idiomatically imported typically as `cx`) to construct the class name string.
 
 ### Code splitting
 
@@ -359,7 +460,6 @@ flowchart LR
       subgraph L1
         A(/)-->DA(/datasets)
         A-->HE(/help)
-        A-->LO(/login)
         A-->LOOUT(/logout)
         A-->PR(/projects)
         A-->SEA(/search)

@@ -9,6 +9,9 @@ export default defineConfig({
     outDir: "build",
     sourcemap: true,
   },
+  server: {
+    allowedHosts: [".dev.renku.ch"],
+  },
   plugins: [react({ include: "/index.html" }), eslintPlugin()],
   resolve: {
     alias: {

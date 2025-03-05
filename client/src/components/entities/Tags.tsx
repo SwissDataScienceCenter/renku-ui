@@ -17,9 +17,9 @@
  */
 
 import { useRef } from "react";
+import { UncontrolledTooltip } from "reactstrap";
 
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { ThrottledTooltip } from "../Tooltip";
 
 /**
  *  renku-ui
@@ -61,10 +61,9 @@ function EntityTags({ hideEmptyTags, multiline, tagList }: EntityTagsProps) {
 
   const tooltip =
     tagList?.length > 0 ? (
-      <ThrottledTooltip
-        target={ref}
-        tooltip={tagList?.map((tag) => `#${tag}`).join(", ")}
-      />
+      <UncontrolledTooltip target={ref}>
+        {tagList?.map((tag) => `#${tag}`).join(", ")}
+      </UncontrolledTooltip>
     ) : null;
   return (
     <>

@@ -26,8 +26,14 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Fragment, useState } from "react";
-import { ChevronDown } from "react-bootstrap-icons";
+import { Fragment, ReactNode, useRef, useState } from "react";
+import {
+  ArrowRight,
+  ChevronDown,
+  Pencil,
+  PlusLg,
+  ThreeDotsVertical,
+} from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -36,11 +42,13 @@ import {
   Col,
   DropdownMenu,
   DropdownToggle,
+  UncontrolledDropdown,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
-import { ThrottledTooltip } from "../Tooltip";
 import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
+import buttonStyles from "./Buttons.module.scss";
 
 type ButtonWithMenuProps = {
   children?:
@@ -80,7 +88,7 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
     <>
       <DropdownToggle
         data-cy="more-menu"
-        className={`${props.className} ${classes}`}
+        className={cx(props.className, classes, "rounded-end-pill")}
         disabled={props.disabled}
       >
         <ChevronDown
@@ -98,7 +106,7 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
   return (
     <ButtonDropdown
       id={props.id}
-      className={`${props.className} btn-with-menu`}
+      className={cx(props.className, "btn-with-menu")}
       size={size}
       isOpen={dropdownOpen}
       toggle={toggleOpen}
@@ -109,6 +117,91 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
       {props.default}
       {options}
     </ButtonDropdown>
+  );
+}
+
+interface ButtonWithMenuV2Props {
+  children?: React.ReactNode;
+  className?: string;
+  color?: string;
+  default: React.ReactNode;
+  direction?: "up" | "down" | "start" | "end";
+  disabled?: boolean;
+  id?: string;
+  preventPropagation?: boolean;
+  size?: string;
+}
+export const ButtonWithMenuV2 = SplitButtonWithMenu;
+
+export function SplitButtonWithMenu({
+  children,
+  className,
+  color,
+  default: defaultButton,
+  direction,
+  disabled,
+  id,
+  preventPropagation,
+  size,
+}: ButtonWithMenuV2Props) {
+  // ! Temporary workaround to quickly implement a design solution -- to be removed ASAP #3250
+  const additionalProps = preventPropagation
+    ? { onClick: (e: React.MouseEvent) => e.stopPropagation() }
+    : {};
+  return (
+    <UncontrolledDropdown
+      {...additionalProps}
+      className={className}
+      color={color ?? "primary"}
+      direction={direction ?? "down"}
+      disabled={disabled}
+      group
+      id={id}
+      size={size ?? "md"}
+    >
+      {defaultButton}
+      <DropdownToggle
+        caret
+        className={cx("border-start-0", "dropdown-toggle-split")}
+        data-bs-toggle="dropdown"
+        color={color ?? "primary"}
+        data-cy="button-with-menu-dropdown"
+        disabled={disabled}
+      />
+      <DropdownMenu end>{children}</DropdownMenu>
+    </UncontrolledDropdown>
+  );
+}
+
+export function SingleButtonWithMenu({
+  children,
+  className,
+  color,
+  direction,
+  disabled,
+  id,
+  size,
+}: Omit<ButtonWithMenuV2Props, "default" | "preventPropagation">) {
+  return (
+    <UncontrolledDropdown
+      className={className}
+      color={color ?? "primary"}
+      direction={direction ?? "down"}
+      disabled={disabled}
+      id={id}
+      size={size ?? "md"}
+    >
+      <DropdownToggle
+        caret={false}
+        data-bs-toggle="dropdown"
+        color={color ?? "primary"}
+        data-cy="button-with-menu-dropdown"
+        disabled={disabled}
+      >
+        <ThreeDotsVertical />
+      </DropdownToggle>
+      <DropdownMenu end>{children}</DropdownMenu>
+    </UncontrolledDropdown>
   );
 }
 
@@ -249,9 +342,9 @@ function InlineSubmitButton({
     </Button>
   ) : null;
 
-  const tooltip = pristine ? (
-    <ThrottledTooltip target={id} tooltip={tooltipPristine} />
-  ) : null;
+  const tooltip = pristine && (
+    <UncontrolledTooltip target={id}>{tooltipPristine}</UncontrolledTooltip>
+  );
 
   return (
     <div id={id}>
@@ -287,11 +380,107 @@ function RoundButtonGroup({ children }: { children: React.ReactNode[] }) {
   return <ButtonGroup className="round-button-group">{children}</ButtonGroup>;
 }
 
+/*
+ * underline Link with icon
+ */
+function UnderlineArrowLink({
+  to,
+  text,
+  tooltip,
+}: {
+  text: string;
+  to: string;
+  tooltip: ReactNode;
+}) {
+  const ref = useRef(null);
+  return (
+    <>
+      <span ref={ref}>
+        <Link to={to}>
+          {text}
+          <ArrowRight className={cx("bi", "ms-1")} />
+        </Link>
+      </span>
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+    </>
+  );
+}
+
+/*
+ * Edit button
+ */
+interface EditButtonLinkProps {
+  "data-cy"?: string;
+  disabled?: boolean;
+  to: string;
+  tooltip: ReactNode;
+}
+function EditButtonLink({
+  "data-cy": dataCy,
+  disabled = false,
+  to,
+  tooltip,
+}: EditButtonLinkProps) {
+  const ref = useRef(null);
+  return (
+    <>
+      <span ref={ref}>
+        {disabled ? (
+          <Button color="outline-primary" disabled size="sm">
+            <Pencil className="bi" />
+          </Button>
+        ) : (
+          <Link
+            className={cx("btn", "btn-sm", "btn-outline-primary")}
+            data-cy={dataCy}
+            to={to}
+          >
+            <Pencil className="bi" />
+          </Link>
+        )}
+      </span>
+      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+    </>
+  );
+}
+
+export function PlusRoundButton({
+  "data-cy": dataCy,
+  handler,
+}: {
+  handler: () => void;
+  "data-cy"?: string;
+}) {
+  return (
+    <>
+      <Button
+        data-cy={dataCy}
+        className={cx(
+          "d-flex",
+          "justify-content-center",
+          "align-items-center",
+          "rounded-circle",
+          "border",
+          "border-rk-green",
+          "bg-white",
+          "p-1",
+          buttonStyles.PlusIconButton
+        )}
+        onClick={handler}
+      >
+        <PlusLg size="16" />
+      </Button>
+    </>
+  );
+}
+
 export {
   ButtonWithMenu,
   CardButton,
+  EditButtonLink,
   GoBackButton,
   InlineSubmitButton,
   RefreshButton,
   RoundButtonGroup,
+  UnderlineArrowLink,
 };

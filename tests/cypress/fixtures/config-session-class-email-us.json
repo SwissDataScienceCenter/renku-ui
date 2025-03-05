@@ -1,0 +1,77 @@
+{
+  "UI_VERSION": "3.10.0-7bae0472",
+  "RENKU_CHART_VERSION": "3.10.0-cypress",
+  "UI_SHORT_SHA": "development",
+  "TELEPRESENCE": "false",
+  "BASE_URL": "http://localhost:3000",
+  "GATEWAY_URL": "http://localhost:3000/api",
+  "UISERVER_URL": "http://localhost:3000/ui-server",
+  "WELCOME_PAGE": "IyMgV2VsY29tZSB0byBSZW5rdSB0aHJvdWdoIHRlbGVwcmVzZW5jZQpTb21lIGRlcGxveW1lbnQtc3BlY2lmaWMgaW5mb3JtYXRpb24gd2lsbCBiZSByZWFkIGZyb20gdGhlIHlvdXIgdmFsdWVzLnlhbWwgZmlsZSBhbmQgYmUgZGlzcGxheWVkIGFzIG1hcmtkb3duIGZpbGUuCg==",
+  "SENTRY_URL": "",
+  "SENTRY_NAMESPACE": "",
+  "ANONYMOUS_SESSIONS": "true",
+  "PRIVACY_BANNER_ENABLED": "false",
+  "TERMS_PAGES_ENABLED": "false",
+  "TEMPLATES": {
+    "custom": true,
+    "repositories": [
+      {
+        "name": "Renku",
+        "ref": "master",
+        "url": "https://github.com/SwissDataScienceCenter/renku-project-template"
+      },
+      {
+        "name": "Telepresence",
+        "ref": "0.2.1",
+        "url": "https://github.com/SwissDataScienceCenter/renku-project-template"
+      }
+    ]
+  },
+  "PREVIEW_THRESHOLD": { "soft": "1048576", "hard": "10485760" },
+  "UPLOAD_THRESHOLD": { "soft": "104857600" },
+  "STATUSPAGE_ID": "abcdef123456",
+  "REAL_STATUSPAGE_ID": "r3j2c84ftq49",
+  "HOMEPAGE": {
+    "custom": {
+      "enabled": false,
+      "main": {
+        "contentMd": "",
+        "backgroundImage": {
+          "url": ""
+        }
+      }
+    },
+    "tutorialLink": "https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html",
+    "showcase": {
+      "enabled": true,
+      "title": "Real-world use cases: Conducted by SDSC and ETH Domain",
+      "description": "The case studies presented here **bridge the gap** from domain to data science and provide experts from both sides with the means to examine, confirm, and extend the datasets and their analysis, without extensive investments of time and infrastructure.",
+      "projects": [
+        {
+          "identifier": "lorenzo.cavazzi.tech/readme-file-dev"
+        },
+        {
+          "overrideDescription": "### Lorem ipsum\n\nDolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "identifier": "e2e/nuevo-projecto"
+        },
+        {
+          "overrideDescription": "### Lorem ipsum\n\nDolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "overrideImageUrl": "../stockimages/dataset2.svg",
+          "identifier": "e2e/testing-datasets",
+          "overrideTitle": "Override Everything"
+        },
+        {
+          "identifier": "e2e/local-test-project",
+          "overrideTitle": "Override Title"
+        }
+      ]
+    }
+  },
+  "USER_PREFERENCES_MAX_PINNED_PROJECTS": 5,
+  "SESSION_CLASS_EMAIL_US": {
+    "enabled": true,
+    "email": {
+      "to": "test@example.org"
+    }
+  }
+}

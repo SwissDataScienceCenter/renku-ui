@@ -23,8 +23,6 @@
  *  Commits code and presentation.
  */
 
-import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { DateTime } from "luxon";
 import {
@@ -35,6 +33,7 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
+import { Folder2Open } from "react-bootstrap-icons";
 
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import { ExternalLink } from "../ExternalLinks";
@@ -178,7 +177,7 @@ function SingleCommit(props) {
               </UncontrolledTooltip>
               <ExternalLink
                 id={idBrowseButton}
-                title={<FontAwesomeIcon icon={faFolderOpen} />}
+                title={<Folder2Open className="bi" />}
                 url={urlBrowse}
                 color="rk-background"
                 className="text-primary last-item-button-group border"

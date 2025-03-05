@@ -16,6 +16,18 @@
  * limitations under the License.
  */
 
+export interface AbstractKgPaginatedResponse {
+  page: number;
+  perPage: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface AbstractKgPaginatedQueryArgs {
+  page?: number;
+  perPage?: number;
+}
+
 export interface Pagination {
   currentPage?: number;
   firstPageLink?: string;
@@ -28,7 +40,7 @@ export interface Pagination {
   totalPages?: number;
 }
 
-export interface PaginatedResponse<T> {
+export interface PaginatedResponse<T, P extends Pagination = Pagination> {
   data: T[];
-  pagination: Pagination;
+  pagination: P;
 }

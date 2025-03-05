@@ -16,17 +16,15 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import PageLoader from "../../components/PageLoader";
 
 const InactiveKGProjectsPage = lazy(() => import("./InactiveKgProjects"));
 
-export default function LazyInactiveKGProjectsPage(
-  props: ComponentProps<typeof InactiveKGProjectsPage>
-) {
+export default function LazyInactiveKGProjectsPage() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <InactiveKGProjectsPage {...props} />
+      <InactiveKGProjectsPage />
     </Suspense>
   );
 }

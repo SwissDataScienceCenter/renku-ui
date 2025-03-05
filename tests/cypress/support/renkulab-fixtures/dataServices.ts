@@ -17,7 +17,20 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { SimpleFixture } from "./fixtures.types";
+import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
+
+interface DataServicesUserFixture extends NameOnlyFixture {
+  response: ExactUser;
+}
+
+interface ExactUser {
+  id: string;
+  username: string;
+  is_admin?: boolean;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+}
 
 /**
  * Fixtures for Data Services
@@ -47,6 +60,28 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("/ui-server/api/data/resource_pools/*/users", {
         fixture,
       });
+      return this;
+    }
+
+    dataServicesUser(args: DataServicesUserFixture) {
+      const { response: response_, name = "getDataServicesUser" } = args;
+      const response = {
+        is_admin: false,
+        ...response_,
+      };
+      cy.intercept("GET", "/api/data/user", {
+        body: response,
+      }).as(name);
+      return this;
+    }
+
+    getResourceClass(args?: SimpleFixture) {
+      const {
+        fixture = "dataServices/resource-class.json",
+        name = "getResourceClass",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept("GET", "/ui-server/api/data/classes/*", response).as(name);
       return this;
     }
   };

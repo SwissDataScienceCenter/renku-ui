@@ -30,6 +30,7 @@ interface NotebookAnnotations {
   branch: string;
   "commit-sha": string;
   gitlabProjectId: string;
+  renkuVersion?: string;
 }
 function getFormattedSessionsAnnotations(sessions: Record<string, Session>) {
   const sessionsFormatted: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -38,6 +39,12 @@ function getFormattedSessionsAnnotations(sessions: Record<string, Session>) {
     const annotations = NotebooksHelper.cleanAnnotations(
       session.annotations
     ) as NotebookAnnotations;
+
+    // Filter out Renku 2.0 sessions
+    if (annotations["renkuVersion"] === "2.0") {
+      continue;
+    }
+
     sessionsFormatted.push({ ...session, annotations });
   }
   return sessionsFormatted;

@@ -16,14 +16,9 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  ProjectIdentifier.tsx
- *  Identifier form group component.
- */
+import { FormGroup, Input } from "reactstrap";
+
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
-import { FormGroup, Input } from "../../../utils/ts-wrappers";
 import {
   InputHintLabel,
   InputLabel,

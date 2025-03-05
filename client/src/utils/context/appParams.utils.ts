@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { clamp } from "lodash";
+import { clamp } from "lodash-es";
 import type { DashboardMessageParams } from "../../features/dashboard/message/DashboardMessage.types";
 import type { HomepageParams } from "../../landing/anonymousHome.types";
 import type { CoreApiVersionedUrlConfig } from "../helpers/url";
@@ -28,6 +28,7 @@ import type {
   AppParamsStrings,
   PreviewThresholdParams,
   PrivacyBannerLayoutParams,
+  SessionClassEmailUsParams,
   TemplatesParams,
   UploadThresholdParams,
 } from "./appParams.types";
@@ -59,7 +60,11 @@ export function validatedAppParams(params: unknown): AppParams {
 
   // Boolean params
   const ANONYMOUS_SESSIONS = validateBoolean(params_, "ANONYMOUS_SESSIONS");
-  const PRIVACY_ENABLED = validateBoolean(params_, "PRIVACY_ENABLED");
+  const PRIVACY_BANNER_ENABLED = validateBoolean(
+    params_,
+    "PRIVACY_BANNER_ENABLED"
+  );
+  const TERMS_PAGES_ENABLED = validateBoolean(params_, "TERMS_PAGES_ENABLED");
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -75,6 +80,7 @@ export function validatedAppParams(params: unknown): AppParams {
   const PRIVACY_BANNER_LAYOUT = validatePrivacyBannerLayout(params_);
   const TEMPLATES = validateTemplates(params_);
   const UPLOAD_THRESHOLD = validateUploadThreshold(params_);
+  const SESSION_CLASS_EMAIL_US = validateSessionClassEmailUs(params_);
 
   return {
     ANONYMOUS_SESSIONS,
@@ -87,12 +93,14 @@ export function validatedAppParams(params: unknown): AppParams {
     MAINTENANCE,
     PREVIEW_THRESHOLD,
     PRIVACY_BANNER_CONTENT,
+    PRIVACY_BANNER_ENABLED,
     PRIVACY_BANNER_LAYOUT,
-    PRIVACY_ENABLED,
+    TERMS_PAGES_ENABLED,
     RENKU_CHART_VERSION,
     SENTRY_NAMESPACE,
     SENTRY_SAMPLE_RATE,
     SENTRY_URL,
+    SESSION_CLASS_EMAIL_US,
     STATUSPAGE_ID,
     TEMPLATES,
     UISERVER_URL,
@@ -296,4 +304,53 @@ function validateUploadThreshold(params: RawAppParams): UploadThresholdParams {
       ? rawParams.soft
       : DEFAULT_APP_PARAMS["PREVIEW_THRESHOLD"].soft;
   return { soft };
+}
+
+function validateSessionClassEmailUs(
+  params: RawAppParams
+): SessionClassEmailUsParams {
+  const value = params["SESSION_CLASS_EMAIL_US"];
+  if (typeof value !== "object" || value == null) {
+    return DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
+  }
+
+  const rawEmailUsParams = value as {
+    [key: string]: unknown;
+  };
+  const rawEmailUsEmailParams =
+    typeof rawEmailUsParams.email === "object" && rawEmailUsParams.email != null
+      ? (rawEmailUsParams.email as {
+          [key: string]: unknown;
+        })
+      : {};
+
+  const enabled = !!rawEmailUsParams.enabled;
+
+  const to =
+    typeof rawEmailUsEmailParams.to === "string"
+      ? rawEmailUsEmailParams.to
+      : "";
+
+  const subject =
+    typeof rawEmailUsEmailParams.subject === "string"
+      ? rawEmailUsEmailParams.subject
+      : "";
+
+  const body =
+    typeof rawEmailUsEmailParams.body === "string"
+      ? rawEmailUsEmailParams.body
+      : "";
+
+  if (enabled && to) {
+    return {
+      enabled,
+      email: {
+        to,
+        subject,
+        body,
+      },
+    };
+  }
+
+  return DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
 }

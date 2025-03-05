@@ -9,7 +9,8 @@
   "SENTRY_URL": "",
   "SENTRY_NAMESPACE": "",
   "ANONYMOUS_SESSIONS": "true",
-  "PRIVACY_ENABLED": "false",
+  "PRIVACY_BANNER_ENABLED": "false",
+  "TERMS_PAGES_ENABLED": "false",
   "TEMPLATES": {
     "custom": true,
     "repositories": [

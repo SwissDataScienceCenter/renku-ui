@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import DOMPurify from "dompurify";
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import styles from "./File.module.scss";
 
 import React, { memo, useState } from "react";
@@ -36,8 +34,11 @@ import {
   ListGroup,
   ListGroupItem,
 } from "reactstrap";
+import { Download } from "react-bootstrap-icons";
 import { Clipboard } from "../components/clipboard/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
+
+import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
 import LazyNotebookPreview from "../components/notebook/LazyNotebookRender";
@@ -113,10 +114,7 @@ class FileCard extends React.Component {
                 <small> {formatBytes(this.props.fileSize)}</small>
               </div>
             ) : null}
-            <Clipboard
-              clipboardText={this.props.filePath}
-              className="icon-link d-flex"
-            />
+            <Clipboard clipboardText={this.props.filePath} />
           </div>
           <div
             className={cx(
@@ -160,7 +158,6 @@ class ShowFile extends React.Component {
       this.props.lineagesPath !== undefined ? (
         <FileAndLineageSwitch
           insideFile={true}
-          history={this.props.history}
           switchToPath={`${this.props.lineagesPath}/${gitLabFilePath}`}
         />
       ) : null;
@@ -168,8 +165,8 @@ class ShowFile extends React.Component {
     const buttonGit = (
       <ExternalIconLink
         tooltip="Open in GitLab"
-        icon={faGitlab}
-        to={`${this.props.externalUrl}/blob/${branch}/${gitLabFilePath}`}
+        icon={<BootstrapGitLabIcon className="bi" />}
+        url={`${this.props.externalUrl}/blob/${branch}/${gitLabFilePath}`}
       />
     );
 
@@ -227,8 +224,8 @@ class ShowFile extends React.Component {
     const buttonDownload = (
       <ExternalIconLink
         tooltip="Download File"
-        icon={faDownload}
-        to={downloadLink}
+        icon={<Download className="bi" />}
+        url={downloadLink}
       />
     );
     const body = (
@@ -267,7 +264,7 @@ class FileNoPreview extends React.Component {
         showLinkIcon={true}
         iconAfter={true}
         url={this.props.url}
-        customIcon={faDownload}
+        customIcon={<Download className="bi" />}
       />
     );
 

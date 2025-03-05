@@ -47,7 +47,6 @@
 }
 
 .alert-icon {
-  margin: 0 29px 0 0;
   display: flex;
   align-self: flex-start;
 
@@ -55,21 +54,6 @@
     width: 59px;
     height: auto;
   }
-}
-
-.fill-green {
-  fill: $rk-green;
-  stroke: $rk-green;
-}
-
-.fill-dark {
-  fill: $rk-dark;
-  stroke: $rk-dark;
-}
-
-.fill-danger {
-  fill: $rk-danger;
-  stroke: $rk-danger;
 }
 
 // ? Reference for CSS filters: https://stackoverflow.com/a/53336754/1303090

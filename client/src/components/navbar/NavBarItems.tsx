@@ -17,17 +17,23 @@
  */
 
 import cx from "classnames";
-import { Person, PlusCircleFill, QuestionCircle } from "react-bootstrap-icons";
+import {
+  PersonCircle,
+  PlusCircleFill,
+  QuestionCircle,
+} from "react-bootstrap-icons";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  NavLink,
   UncontrolledDropdown,
 } from "reactstrap";
 
 import { LoginHelper } from "../../authentication";
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import AdminDropdownItem from "../../landing/AdminDropdownItem";
 import { User } from "../../model/renkuModels.types";
 import NotificationsMenu from "../../notifications/NotificationsMenu";
@@ -38,12 +44,11 @@ import {
   getActiveProjectPathWithNamespace,
   gitLabUrlFromProfileUrl,
 } from "../../utils/helpers/HelperFunctions";
-import { Url } from "../../utils/helpers/url";
 import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
-import { RenkuNavLink } from "../RenkuNavLink";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
 
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import styles from "./NavBarItem.module.scss";
 
 export function RenkuToolbarItemPlus() {
@@ -275,36 +280,46 @@ export function RenkuToolbarNotifications({
 }
 
 interface RenkuToolbarItemUserProps {
+  isV2?: boolean;
   params: AppParams;
 }
 
-export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
-  const location = useLocation();
-
+export function RenkuToolbarItemUser({
+  isV2,
+  params,
+}: RenkuToolbarItemUserProps) {
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
   const gatewayURL = params.GATEWAY_URL;
   const uiserverURL = params.UISERVER_URL;
   const redirect_url = encodeURIComponent(params.BASE_URL);
 
+  const loginUrl = useLoginUrl({ params });
+
   if (!user.fetched) {
     return <Loader inline size={16} />;
   } else if (!user.logged) {
-    const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
-    return <RenkuNavLink className="px-2" to={to} title="Login" />;
+    return (
+      <NavLink className="px-2" data-cy="navbar-login" href={loginUrl.href}>
+        Login
+      </NavLink>
+    );
   }
 
+  const userSecretsUrl = isV2 ? ABSOLUTE_ROUTES.v2.secrets : "/secrets";
+
   return (
-    <UncontrolledDropdown className="nav-item dropdown">
+    <UncontrolledDropdown className={cx("nav-item", "dropdown")}>
       <DropdownToggle
-        className={cx("nav-link", "fs-5", "px-2")}
-        nav
-        caret
+        className={cx("nav-link", "fs-5")}
+        data-cy="navbar-toggle-user-menu"
         id="profile-dropdown"
+        nav
       >
-        <Person className="bi" id="userIcon" />
+        <PersonCircle className="bi" id="userIcon" />
       </DropdownToggle>
       <DropdownMenu
+        aria-labelledby="user-menu"
         className={cx(
           "user-menu",
           "btn-with-menu-options",
@@ -312,25 +327,53 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
         )}
         end
         key="user-bar"
-        aria-labelledby="user-menu"
       >
-        <DropdownItem className="p-0">
-          <ExternalLink
-            url={`${gatewayURL}/auth/user-profile`}
-            title="Account"
-            className="dropdown-item"
-            role="link"
-          />
-        </DropdownItem>
+        <ExternalLink
+          className="dropdown-item"
+          role="link"
+          title="Account"
+          url={`${gatewayURL}/auth/user-profile`}
+        />
+
+        <Link to={userSecretsUrl} className="dropdown-item">
+          User Secrets
+        </Link>
+
         <AdminDropdownItem />
+
+        {isV2 && (
+          <>
+            <Link
+              to={ABSOLUTE_ROUTES.v2.connectedServices}
+              className="dropdown-item"
+            >
+              Integrations
+            </Link>
+            <DropdownItem divider />
+            <Link to={ABSOLUTE_ROUTES.root} className="dropdown-item">
+              Back to <span className="fw-bold">Renku 1.0</span>
+            </Link>
+          </>
+        )}
+
+        {!isV2 && (
+          <>
+            <DropdownItem divider />
+            <Link to={ABSOLUTE_ROUTES.v2.root} className="dropdown-item">
+              <span className="fw-bold">Renku 2.0</span> Early access
+            </Link>
+          </>
+        )}
+
         <DropdownItem divider />
         <a
-          id="logout-link"
           className="dropdown-item"
+          data-cy="navbar-logout"
+          href={`${uiserverURL}/auth/logout?redirect_url=${redirect_url}`}
+          id="logout-link"
           onClick={() => {
             LoginHelper.notifyLogout();
           }}
-          href={`${uiserverURL}/auth/logout?redirect_url=${redirect_url}`}
         >
           Logout
         </a>

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "github.com",
+    "kind": "github",
+    "app_slug": "renkulab-ci-test",
+    "client_id": "MYSPECIALID",
+    "client_secret": "redacted",
+    "display_name": "GitHub.com",
+    "scope": "",
+    "url": "https://github.com",
+    "use_pkce": false
+  },
+  {
+    "id": "gitlab-com",
+    "kind": "gitlab",
+    "app_slug": "gitlab-com",
+    "client_id": "MYOTHERID",
+    "client_secret": "redacted",
+    "display_name": "Gitlab.com",
+    "scope": "",
+    "url": "https://gitlab.com",
+    "use_pkce": false
+  }
+]

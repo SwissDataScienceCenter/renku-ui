@@ -25,7 +25,6 @@ describe("launch sessions", () => {
     fixtures
       .sessionAutosave()
       .sessionServersEmpty()
-      .sessionsVersion()
       .renkuIni()
       .sessionServerOptions()
       .resourcePoolsTest()
@@ -193,6 +192,91 @@ describe("launch sessions", () => {
 
     cy.get("#cloud-storage-example-storage-active").should("be.checked");
   });
+
+  it("new session page - check session class", () => {
+    fixtures.userTest();
+    fixtures.newSessionImages();
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.getDataCy("session-class")
+      .should("be.visible")
+      .contains("public class 2");
+    cy.getDataCy("session-class")
+      .contains("automatically pause after 1 day")
+      .contains("If not resumed within 3 days, the session will be deleted")
+      .should("be.visible");
+    cy.getDataCy("session-class-select").click();
+    cy.getDataCy("session-class-select").contains("special class 1").click();
+    cy.getDataCy("session-class")
+      .contains("automatically pause after 50 minutes")
+      .contains("If not resumed within 1 hour, the session will be deleted")
+      .should("be.visible");
+    cy.getDataCy("session-class-select").click();
+    cy.getDataCy("session-class-select").contains("High-GPU class 1").click();
+    cy.getDataCy("session-class")
+      .contains("automatically pause after 1 day")
+      .contains("If not resumed within 1 week, the session will be deleted")
+      .should("be.visible");
+  });
+
+  it("new session page - select secrets", () => {
+    // Check the output when no secrets are available
+    fixtures.listSecrets({ numberOfSecrets: 0 }).userTest();
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.get(".form-label").contains("User Secrets").should("be.visible");
+    cy.getDataCy("session-secrets")
+      .contains("No secrets defined yet.")
+      .should("be.visible");
+
+    // Select some secrets
+    fixtures.listSecrets({ numberOfSecrets: 5 });
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.getDataCy("session-secrets")
+      .contains("No secrets defined yet.")
+      .should("not.exist");
+    cy.getDataCy("session-secrets-toggle").contains("None").click();
+    cy.getDataCy("session-secrets-checkbox").should("have.length", 5);
+
+    cy.getDataCy("session-secrets-checkbox")
+      .first()
+      .should("not.be.checked")
+      .siblings()
+      .contains("secret_0");
+    cy.getDataCy("session-secrets-checkbox")
+      .first()
+      .click()
+      .should("be.checked");
+    cy.getDataCy("session-secrets-checkbox")
+      .last()
+      .should("not.be.checked")
+      .siblings()
+      .contains("secret_4");
+    cy.getDataCy("session-secrets-checkbox")
+      .last()
+      .click()
+      .should("be.checked");
+    cy.getDataCy("session-secrets-toggle").contains("None").should("not.exist");
+    cy.getDataCy("session-secrets-toggle").contains("secret_0, secret_4");
+  });
+
+  it('new session page - show "email us" link', () => {
+    fixtures.config({ fixture: "config-session-class-email-us.json" });
+    fixtures.userTest();
+    fixtures.newSessionImages();
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.contains("Need more compute resources?").should("be.visible");
+    cy.contains("a", "Email us!")
+      .should("be.visible")
+      .and("have.attr", "href", "mailto:test@example.org");
+  });
+
+  it('new session page - show "email us" link is disabled', () => {
+    fixtures.userTest();
+    fixtures.newSessionImages();
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.contains("Session requirements").should("be.visible");
+    cy.contains("Need more compute resources?").should("not.exist");
+    cy.contains("a", "Email us!").should("not.exist");
+  });
 });
 
 describe("launch sessions, outdated projects", () => {
@@ -202,7 +286,6 @@ describe("launch sessions, outdated projects", () => {
     fixtures
       .sessionAutosave()
       .sessionServersEmpty()
-      .sessionsVersion()
       .renkuIni()
       .sessionServerOptions()
       .resourcePoolsTest()

@@ -39,14 +39,15 @@ import fileSize from "filesize";
 import qs from "query-string";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
+
+import BootstrapGitLabIcon from "../../components/icons/BootstrapGitLabIcon";
 
 import { StatusHelper } from "../../model/Model";
 import { CommitsView } from "../../components/commits/Commits";
 import { Loader } from "../../components/Loader";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { RefreshButton } from "../../components/buttons/Button";
-import { Pagination } from "../../components/Pagination";
+import Pagination from "../../components/Pagination";
 
 class OverviewStats extends Component {
   valueOrEmptyOrLoading(value, fetching, readableSize = true) {
@@ -215,7 +216,7 @@ class OverviewCommits extends Component {
         <ExternalLink
           role="link"
           id="commitLink"
-          title={<FontAwesomeIcon icon={faGitlab} />}
+          title={<BootstrapGitLabIcon className="bi" />}
           url={gitlabCommitsUrl}
           className="text-primary btn p-0 ms-2"
         />
@@ -295,7 +296,7 @@ class OverviewCommitsBody extends Component {
     this.setState({ currentPage: newPage });
     const currentSearch = qs.parse(this.props.location.search);
     const newSearch = qs.stringify({ ...currentSearch, page: newPage });
-    this.props.history.push({
+    this.props.navigate({
       pathname: this.props.location.pathname,
       search: newSearch,
     });

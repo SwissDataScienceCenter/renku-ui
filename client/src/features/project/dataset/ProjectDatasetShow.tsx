@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import React from "react";
 
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -49,8 +50,6 @@ type ProjectDatasetShowProps = {
   datasetCoordinator: unknown;
   datasetId: string;
   graphStatus: boolean;
-  history: unknown;
-  location: unknown;
   model: unknown;
   projectInsideKg: boolean;
 };
@@ -62,10 +61,8 @@ type ProjectDatasetViewProps = {
   externalUrl: string;
   fileContentUrl: string;
   graphStatus: boolean;
-  history: unknown;
   httpProjectUrl: string;
   lineagesUrl: string;
-  location: unknown;
   lockStatus: unknown;
   logged: unknown;
   maintainer: boolean;
@@ -144,7 +141,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     data: kgDataset,
     error: kgFetchError,
     isFetching: isKgFetching,
-  } = useGetDatasetKgQuery({ id: datasetId ?? "" }, { skip: !datasetId });
+  } = useGetDatasetKgQuery(datasetId ? { id: datasetId } : skipToken);
   const currentDataset = mergeCoreAndKgDatasets(coreDataset, kgDataset);
   const datasetSlug = currentDataset?.slug;
   const {
@@ -152,14 +149,15 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     error: filesFetchError,
     isFetching: isFilesFetching,
   } = useGetDatasetFilesQuery(
-    {
-      apiVersion,
-      git_url: props.externalUrl,
-      slug: datasetSlug ?? "",
-      metadataVersion,
-      branch: defaultBranch,
-    },
-    { skip: !datasetSlug }
+    datasetSlug
+      ? {
+          apiVersion,
+          git_url: props.externalUrl,
+          slug: datasetSlug,
+          metadataVersion,
+          branch: defaultBranch,
+        }
+      : skipToken
   );
 
   const loadingDatasets =
@@ -179,13 +177,11 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
       fetchError={kgFetchError}
       fetchedKg={kgDataset != null}
       fileContentUrl={props.fileContentUrl}
-      history={props.history}
       httpProjectUrl={props.httpProjectUrl}
       identifier={datasetId}
       insideProject={true}
       lineagesUrl={props.lineagesUrl}
       loadingDatasets={loadingDatasets}
-      location={props.location}
       lockStatus={props.lockStatus}
       logged={props.logged}
       maintainer={props.maintainer}
@@ -236,10 +232,8 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
       externalUrl={projectMetadata.externalUrl}
       fileContentUrl={fileContentUrl}
       graphStatus={props.graphStatus}
-      history={props.history}
       httpProjectUrl={httpProjectUrl}
       lineagesUrl={lineagesUrl}
-      location={props.location}
       lockStatus={lockStatus}
       logged={user.logged}
       maintainer={maintainer}

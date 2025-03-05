@@ -16,13 +16,8 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  TemplateSource.tsx
- *  Template Source field group component
- */
-import { Button, ButtonGroup, FormGroup } from "../../../utils/ts-wrappers";
+import { Button, ButtonGroup, FormGroup } from "reactstrap";
+
 import { InputLabel } from "../../../components/formlabels/FormLabels";
 import { NewProjectInputs } from "./newProject.types";
 

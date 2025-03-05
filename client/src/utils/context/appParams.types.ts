@@ -31,12 +31,14 @@ export interface AppParams {
   MAINTENANCE: string;
   PREVIEW_THRESHOLD: PreviewThresholdParams;
   PRIVACY_BANNER_CONTENT: string;
+  PRIVACY_BANNER_ENABLED: boolean;
   PRIVACY_BANNER_LAYOUT: PrivacyBannerLayoutParams | null;
-  PRIVACY_ENABLED: boolean;
+  TERMS_PAGES_ENABLED: boolean;
   RENKU_CHART_VERSION: string;
   SENTRY_NAMESPACE: string;
   SENTRY_SAMPLE_RATE: string; // TODO: convert to number type
   SENTRY_URL: string;
+  SESSION_CLASS_EMAIL_US: SessionClassEmailUsParams;
   STATUSPAGE_ID: string;
   TEMPLATES: TemplatesParams;
   UISERVER_URL: string;
@@ -86,4 +88,21 @@ interface TemplatesRepositories {
 
 export interface UploadThresholdParams {
   soft: number;
+}
+
+export type SessionClassEmailUsParams =
+  | SessionClassEmailUsParamsDisabled
+  | SessionClassEmailUsParamsEnabled;
+
+interface SessionClassEmailUsParamsDisabled {
+  enabled: false;
+}
+
+interface SessionClassEmailUsParamsEnabled {
+  enabled: true;
+  email: {
+    to: string;
+    subject: string;
+    body: string;
+  };
 }

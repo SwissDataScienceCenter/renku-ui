@@ -49,8 +49,8 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { useAddUsersToResourcePoolMutation } from "../dataServices/computeResources.api";
 import { ResourcePool } from "../dataServices/dataServices.types";
-import { useAddUsersToResourcePoolMutation } from "./adminComputeResources.api";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
 
@@ -404,12 +404,12 @@ function UserItem({
     >
       {userItem.isFetching ? (
         <span>
-          <Loader className="me-2" inline size={16} />
+          <Loader className="me-1" inline size={16} />
           {userItem.email}
         </span>
       ) : !userItem.found ? (
         <span>
-          <ExclamationCircleFill className={cx("bi", "me-2")} />
+          <ExclamationCircleFill className={cx("bi", "me-1")} />
           {userItem.email}
         </span>
       ) : (

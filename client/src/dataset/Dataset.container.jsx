@@ -17,12 +17,18 @@
  */
 
 import { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom-v5-compat";
 
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import DatasetView from "./Dataset.present";
 
 export default function ShowDataset(props) {
+  const location = useLocation();
+
+  const { identifier: identifier_ } = useParams();
+  const identifier = identifier_?.replaceAll("-", "");
+
   const [dataset, setDataset] = useState(null);
   const [datasetFiles, setDatasetFiles] = useState(null);
 
@@ -55,7 +61,7 @@ export default function ShowDataset(props) {
       const currentDataset = props.datasetCoordinator.get("metadata");
       const datasetId = props.insideProject
         ? findDatasetId(props.datasetId, props.datasets)
-        : props.identifier;
+        : identifier;
       // fetch dataset data when the need data is ready (datasets list when is insideProject)
       if (
         props.insideProject &&
@@ -64,13 +70,12 @@ export default function ShowDataset(props) {
         (!currentDataset || !currentDataset?.fetching)
       )
         fetchDataset(datasetId);
-      else if (!props.insideProject && props.identifier)
-        fetchDataset(datasetId);
+      else if (!props.insideProject && identifier) fetchDataset(datasetId);
       else setDataset(currentDataset);
     }
   }, [
     props.datasetCoordinator,
-    props.identifier,
+    identifier,
     props.datasets,
     props.insideProject,
     props.datasetId,
@@ -122,7 +127,7 @@ export default function ShowDataset(props) {
   useEffect(() => {
     const datasetId = props.insideProject
       ? findDatasetId(props.datasetId, props.datasets)
-      : props.identifier;
+      : identifier;
     const currentIdentifier = currentDataset?.identifier;
     if (
       currentIdentifier === datasetId &&
@@ -154,12 +159,11 @@ export default function ShowDataset(props) {
       fetchError={dataset?.fetchError}
       fetchedKg={dataset?.fetched}
       fileContentUrl={props.fileContentUrl}
-      history={props.history}
-      identifier={props.identifier}
+      identifier={identifier}
       insideProject={props.insideProject}
       lineagesUrl={props.lineagesUrl}
       loadingDatasets={loadingDatasets}
-      location={props.location}
+      location={location}
       lockStatus={props.lockStatus}
       logged={props.logged}
       maintainer={props.maintainer}

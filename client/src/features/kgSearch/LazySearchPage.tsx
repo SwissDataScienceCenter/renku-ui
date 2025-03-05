@@ -16,17 +16,15 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import PageLoader from "../../components/PageLoader";
 
 const SearchPage = lazy(() => import("./KgSearchPage"));
 
-export default function LazySearchPage(
-  props: ComponentProps<typeof SearchPage>
-) {
+export default function LazySearchPage() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <SearchPage {...props} />
+      <SearchPage />
     </Suspense>
   );
 }

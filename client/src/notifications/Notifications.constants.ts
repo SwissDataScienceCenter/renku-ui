@@ -30,6 +30,7 @@ export enum NOTIFICATION_TOPICS {
   SESSION_START = "Session",
   PROJECT_API = "Project data",
   PROJECT_DELETED = "Project deleted",
+  PROJECT_UPDATED = "Project updated",
   PROJECT_FORKED = "Project forked",
   KG_ACTIVATION = "KG Activation",
   USER_PREFERENCES = "User Preferences",

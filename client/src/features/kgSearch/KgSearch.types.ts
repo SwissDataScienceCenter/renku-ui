@@ -22,6 +22,10 @@ import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntit
 import { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import { Visibilities } from "../../components/visibility/Visibility";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
+import {
+  AbstractKgPaginatedResponse,
+  AbstractKgPaginatedQueryArgs,
+} from "../../utils/types/pagination.types";
 
 export interface KgSearchResultLink {
   rel: string;
@@ -52,17 +56,11 @@ export interface KgSearchResult {
   images: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export interface ListResponse<T> {
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
+export interface ListResponse<T> extends AbstractKgPaginatedResponse {
   results: T[];
 }
 
-export interface KgSearchState {
-  page: number;
-  perPage: number;
+export interface KgSearchState extends Required<AbstractKgPaginatedQueryArgs> {
   phrase: string;
   role: UserRoles;
   since: string;

@@ -38,6 +38,7 @@ const Links = {
   GITTER: "https://gitter.im/SwissDataScienceCenter/renku",
   GITHUB: "https://github.com/SwissDataScienceCenter/renku",
   HOMEPAGE: "https://datascience.ch",
+  MASTODON: "https://fosstodon.org/@renku",
   MEDIUM: "https://medium.com/the-renku-blog",
   YOUTUBE: "https://www.youtube.com/channel/UCMF2tBtWU1sKWvtPl_HpI4A",
   SDSC: "https://www.datascience.ch/",
@@ -45,6 +46,7 @@ const Links = {
   EPFL: "https://www.epfl.ch/en/",
   ETHZ: "https://ethz.ch/en.html",
   RENKU_BLOG: "https://blog.renkulab.io",
+  RENKU_2_LEARN_MORE: "https://blog.renkulab.io/early-access",
 };
 
 const GitlabLinks = {

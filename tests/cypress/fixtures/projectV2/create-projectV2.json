@@ -1,0 +1,11 @@
+{
+  "id": "THEPROJECTULID26CHARACTERS",
+  "name": "Renku R Project",
+  "namespace": "owner-kc-id",
+  "slug": "r-project",
+  "created_by": {
+    "id": "owner-KC-id"
+  },
+  "visibility": "public",
+  "secrets_mount_directory": "/secrets"
+}

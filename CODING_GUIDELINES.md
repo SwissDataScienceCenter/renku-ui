@@ -22,6 +22,9 @@ Rules:
 - [R003: Avoid nested `if/else` blocks](#r003-avoid-nested-ifelse-blocks)
 - [R004: Include a default export when appropriate](#r004-include-a-default-export-when-appropriate)
 - [R005: File naming conventions](#r005-file-naming-conventions)
+- [R006: Use existing Bootstrap classes or import from CSS modules](#r006-use-existing-bootstrap-classes-or-import-from-css-modules)
+- [R007: Do not perform async actions in React hooks](#r007-do-not-perform-async-actions-in-react-hooks)
+- [R008: Interactive handlers can only be used on interactive HTML tags](#r008-interactive-handlers-can-only-be-used-on-interactive-html-tags)
 
 ### R001: Use utility functions to create CSS class names
 
@@ -48,6 +51,20 @@ const className = "rounded" + (disabled ? " disabled" : "");
 Constructing CSS class names by hand leads to frequent mistakes, e.g.
 having `undefined` or `null` as one of the CSS classes of an HTML element.
 
+**💭 Tip**
+
+We agreed on using `cx` in every case, except when there is only
+_one_ class name as a string.
+
+```tsx
+const padding = someCondition ? "p-2" : "p-3";
+
+<MyComponent className="p-2" />
+<MyComponent className={cx("p-2", "text-danger")} />
+<MyComponent className={cx(padding)} />
+
+```
+
 ### R002: Avoid `condition ? true : false`
 
 **✅ DO**
@@ -67,7 +84,9 @@ const isActive = conditionA && x > y && conditionC ? true : false;
 The `? true : false` construct is unnecessary and may surprise the reader,
 leading to slower code reading.
 
-Tip: use double boolean negation to ensure the variable is of type `boolean`.
+**💭 Tip**
+
+Use double boolean negation to ensure the variable is of type `boolean`.
 
 ```ts
 const enabled = !!objMaybeUndefined?.field.length;
@@ -213,3 +232,155 @@ Test file names start with a lowercase letter and end with `.test.ts` for unit
 tests or with `.spec.ts` for Cypress tests.
 
 Example: `login.test.ts` or `datasets.spec.ts`
+
+### R006: Use existing Bootstrap classes or import from CSS modules
+
+**✅ DO**
+
+```tsx
+<Card className={cx("m-3", "py-2")} />
+```
+
+```tsx
+import styles from "SpecialCard.module.scss";
+
+<Card className={cx(styles.projectCard)} />;
+```
+
+**❌ DON'T**
+
+```tsx
+import "./SpecialCard.css";
+
+<Card className="my-special-card-class" />;
+```
+
+**💡 Rationale**
+
+We want to avoid an explosion of the number of CSS classes, as well as
+classes polluting the global namespace.
+Since everyone knows Bootstrap, it is a good idea to use it as much as
+possible. Should the need arise for very specific styling, we can always
+create a new class in a local (S)CSS module file and import it.
+
+**💭 Tip**
+
+We want to push for sticking to Bootstrap's utility classes as much as possible.
+This means we should discuss for deviations from a reference design when that
+only minimally impacts the interface.
+
+E.G. If a Figma design reference file shows a distance between components
+of 14.5px and `m-3` is 16px, we should use `m-3` instead.
+
+### R007: Do not perform async actions in React hooks
+
+Do not use `.then()` or `.unwrap()` inside React hooks. Instead, listen to the result of the async action and act on the result.
+
+**✅ DO**
+
+```tsx
+function MyComponent() {
+  const [postRequest, result] = usePostRequest();
+
+  const onClick = useCallback(() => {
+    postRequest();
+  }, [postRequest]);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      // Do something...
+    }
+  }, [result.isSuccess]);
+
+  return (
+    <div>
+      <button onClick={onClick}>Some action</button>
+    </div>
+  );
+}
+```
+
+**❌ DON'T**
+
+```tsx
+function MyComponent() {
+  const [postRequest, result] = usePostRequest();
+
+  const onClick = useCallback(() => {
+    postRequest()
+      .unwrap()
+      .then(() => {
+        // Do something...
+      });
+  }, [postRequest]);
+
+  return (
+    <div>
+      <button onClick={onClick}>Some action</button>
+    </div>
+  );
+}
+```
+
+**💡 Rationale**
+
+Calling code after an async action may happen after a component has re-rendered or has been removed.
+In this case, if the corresponding code tries to access the component, it will cause an error.
+
+### R008: Interactive handlers can only be used on interactive HTML tags
+
+Do not add interactive handlers, e.g. `onClick`, to HTML tags which are not interactive.
+
+**✅ DO**
+
+```tsx
+function MyComponent() {
+  return (
+    <ul>
+      <li>
+        <a href="...">
+          My Content
+        </a>
+      <li>
+    </ul>
+  );
+}
+```
+
+```tsx
+function MyComponent() {
+  const onClick = ...Some action...;
+
+  return (
+    <ul>
+      <li>
+        <button onClick={onClick}>
+          My Content
+        </button>
+      <li>
+    </ul>
+  );
+}
+```
+
+**❌ DON'T**
+
+```tsx
+function MyComponent() {
+  const onClick = ...Some action...;
+
+  return (
+    <ul>
+      <li onClick={onClick}>
+        My Content
+      <li>
+    </ul>
+  );
+}
+```
+
+**💡 Rationale**
+
+Browsers do not expect tags such as `<div>` or `<span>` to be interactive, which means they will
+not get focused with keyboard navigation. Adding interactive handlers to non-interactive tags will
+therefore hinder accessibility to users which do not have access to a mouse or touch screen.

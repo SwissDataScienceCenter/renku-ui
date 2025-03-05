@@ -26,6 +26,7 @@ import {
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
 import { SessionStatus, SessionStatusState } from "../../sessions.types";
 import { getSessionStatusColor } from "../../utils/sessionStatus.utils";
@@ -60,7 +61,7 @@ export default function SessionStatusBadge({
           : "Paused Session"}
       </PopoverHeader>
       <PopoverBody>
-        {message}
+        <PrettySessionErrorMessage message={message} />
         {defaultImage && <div>A fallback image was used.</div>}
         {status === "hibernated" && (
           <SessionHibernationStatusDetails annotations={annotations} />
@@ -91,6 +92,46 @@ export default function SessionStatusBadge({
       {popover}
     </>
   );
+}
+
+interface PrettySessionErrorMessageProps {
+  message: string | null | undefined;
+}
+
+export function PrettySessionErrorMessage({
+  message,
+}: PrettySessionErrorMessageProps) {
+  // eslint-disable-next-line spellcheck/spell-checker
+  if (message?.includes("Insufficient nvidia.com/gpu")) {
+    return (
+      <>
+        <p className="mb-2">
+          Scheduling error: there are not enough GPUs available to start or
+          resume the session.
+        </p>
+        <h3 className="fs-6">Original error message:</h3>
+        <p className="mb-0">{message}</p>
+      </>
+    );
+  }
+
+  if (
+    message?.includes("nodes are available") ||
+    message?.includes("The resource quota has been exceeded.")
+  ) {
+    return (
+      <>
+        <p className="mb-2">
+          Scheduling error: one or more compute resources have been exhausted in
+          the resource pool.
+        </p>
+        <h3 className="fs-6">Original error message:</h3>
+        <p className="mb-0">{message}</p>
+      </>
+    );
+  }
+
+  return <>{message}</>;
 }
 
 function displayedSessionStatus(status: SessionStatusState): string {

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Helmet } from "react-helmet";
 
 import {
@@ -35,21 +36,19 @@ function ProjectPageTitle({
   projectPathWithNamespace,
   projectTitle,
 }: ProjectJsonLdProps) {
-  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
-    skip: !projectPathWithNamespace || !projectId,
-  });
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(
+    projectPathWithNamespace && projectId ? projectId : skipToken
+  );
 
-  const kgProjectQueryParams = {
-    projectPath: projectPathWithNamespace,
-  };
-  const options = { skip: !projectIndexingStatus.data?.activated };
   const { data, isFetching, isLoading } = useProjectJsonLdQuery(
-    kgProjectQueryParams,
-    options
+    projectIndexingStatus.data?.activated
+      ? { projectPath: projectPathWithNamespace }
+      : skipToken
   );
   const { data: kgData } = useProjectMetadataQuery(
-    { ...kgProjectQueryParams, projectId },
-    options
+    projectIndexingStatus.data?.activated
+      ? { projectPath: projectPathWithNamespace, projectId }
+      : skipToken
   );
 
   const projectDesc = kgData?.description;

@@ -30,12 +30,16 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
 import {
   useAddResourcePoolMutation,
   useGetResourcePoolsQuery,
-} from "./adminComputeResources.api";
+} from "../dataServices/computeResources.api";
+import { useGetNotebooksVersionQuery } from "../versions/versions.api";
+import { AddResourcePoolForm } from "./adminComputeResources.types";
 
 export default function AddResourcePoolButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,9 +62,10 @@ interface AddResourcePoolModalProps {
   isOpen: boolean;
   toggle: () => void;
 }
-
 function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
-  const { data: resourcePools } = useGetResourcePoolsQuery();
+  // Fetch existing resource pools and default values
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const notebookVersion = useGetNotebooksVersionQuery();
   const defaultSessionClass = useMemo(
     () =>
       resourcePools
@@ -69,9 +74,19 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
         .find((c) => c.default),
     [resourcePools]
   );
+  const defaultQuota = useMemo(
+    () =>
+      defaultSessionClass
+        ? {
+            cpu: 2 * defaultSessionClass.cpu,
+            memory: 2 * defaultSessionClass.memory,
+            gpu: 2 * defaultSessionClass.gpu,
+          }
+        : { cpu: 1, memory: 1, gpu: 0 },
+    [defaultSessionClass]
+  );
 
-  const [addResourcePool, result] = useAddResourcePoolMutation();
-
+  // Form state
   const {
     control,
     formState: { errors },
@@ -81,11 +96,16 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
     defaultValues: {
       name: "",
       public: false,
-      quotaCpu: 1,
-      quotaMemory: 1,
-      quotaGpu: 0,
+      quotaCpu: defaultQuota.cpu,
+      quotaMemory: defaultQuota.memory,
+      quotaGpu: defaultQuota.gpu,
+      idleThresholdMinutes: undefined,
+      hibernationThresholdMinutes: undefined,
     },
   });
+
+  // Handle invoking API to add resource pools
+  const [addResourcePool, result] = useAddResourcePoolMutation();
   const onSubmit = useCallback(
     (data: AddResourcePoolForm) => {
       const populatedClass = defaultSessionClass
@@ -108,11 +128,30 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           memory: data.quotaMemory,
           gpu: data.quotaGpu,
         },
+        idle_threshold: data.idleThresholdMinutes
+          ? data.idleThresholdMinutes * 60
+          : undefined,
+        hibernation_threshold: data.hibernationThresholdMinutes
+          ? data.hibernationThresholdMinutes * 60
+          : undefined,
       });
     },
     [addResourcePool, defaultSessionClass]
   );
 
+  useEffect(() => {
+    reset({
+      name: "",
+      public: false,
+      quotaCpu: defaultQuota.cpu,
+      quotaMemory: defaultQuota.memory,
+      quotaGpu: defaultQuota.gpu,
+      idleThresholdMinutes: undefined,
+      hibernationThresholdMinutes: undefined,
+    });
+  }, [defaultQuota, reset]);
+
+  // Reset form and close modal on successful submissions
   useEffect(() => {
     if (!result.isSuccess) {
       return;
@@ -143,7 +182,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrNotebooksError error={result.error} />}
 
           <div className="mb-3">
             <Label className="form-label" for="addResourcePoolName">
@@ -164,6 +203,78 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               rules={{ required: true }}
             />
             <div className="invalid-feedback">Please provide a name</div>
+          </div>
+          <div className="mb-3">
+            <Label className="form-label" for="addResourcePoolIdleThreshold">
+              Maximum idle time before hibernating (minutes)
+            </Label>
+            <Controller
+              control={control}
+              name="idleThresholdMinutes"
+              render={({ field }) => (
+                <Input
+                  className={cx(
+                    "form-control",
+                    errors.idleThresholdMinutes && "is-invalid"
+                  )}
+                  id="addResourcePoolIdleThreshold"
+                  min="1"
+                  placeholder="idle threshold"
+                  step="1"
+                  type="number"
+                  {...field}
+                />
+              )}
+              rules={{ min: 1 }}
+            />
+            <div className="invalid-feedback">
+              Please enter a number greater than 0 or leave blank.
+            </div>
+            <ResourcePoolDefaultThreshold
+              duration={
+                notebookVersion.data?.defaultCullingThresholds?.registered.idle
+              }
+              isError={notebookVersion.isError}
+              isLoading={notebookVersion.isLoading}
+            />
+          </div>
+          <div className="mb-3">
+            <Label
+              className="form-label"
+              for="addResourcePoolHibernationThreshold"
+            >
+              Maximum hibernation time before deleting (minutes)
+            </Label>
+            <Controller
+              control={control}
+              name="hibernationThresholdMinutes"
+              render={({ field }) => (
+                <Input
+                  className={cx(
+                    "form-control",
+                    errors.hibernationThresholdMinutes && "is-invalid"
+                  )}
+                  id="addResourcePoolHibernationThreshold"
+                  placeholder="hibernation threshold"
+                  type="number"
+                  min="1"
+                  step="1"
+                  {...field}
+                />
+              )}
+              rules={{ required: false, min: 1 }}
+            />
+            <div className="invalid-feedback">
+              Please enter a number greater than 0 or leave blank.
+            </div>
+            <ResourcePoolDefaultThreshold
+              duration={
+                notebookVersion.data?.defaultCullingThresholds?.registered
+                  .hibernation
+              }
+              isError={notebookVersion.isError}
+              isLoading={notebookVersion.isLoading}
+            />
           </div>
 
           <div>
@@ -236,11 +347,22 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
   );
 }
 
-interface AddResourcePoolForm {
-  name: string;
-  public: boolean;
+interface ResourcePoolDefaultThresholdInterface {
+  duration?: number;
+  isError: boolean;
+  isLoading: boolean;
+}
+export function ResourcePoolDefaultThreshold({
+  duration,
+  isError,
+  isLoading,
+}: ResourcePoolDefaultThresholdInterface) {
+  const text = useMemo(() => {
+    if (isLoading) return "Loading default values...";
+    if (isError) return "Error loading default values.";
+    if (!duration) return "No default threshold available.";
+    return `Default threshold: ${toFullHumanDuration(duration)}`;
+  }, [duration, isError, isLoading]);
 
-  quotaCpu: number;
-  quotaMemory: number;
-  quotaGpu: number;
+  return <Label className="form-text">{text}</Label>;
 }

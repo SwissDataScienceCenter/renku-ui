@@ -17,14 +17,14 @@
  */
 
 import { useEffect, useState } from "react";
-import { useHistory, withRouter } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
 
-import { QuickNavPresent } from "./QuickNav.present";
+import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 import {
   TOTAL_QUERIES,
   useSearchLastQueriesQuery,
 } from "../../features/recentUserActivity/RecentUserActivityApi";
-import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
+import { QuickNavPresent } from "./QuickNav.present";
 
 export const defaultSuggestionQuickBar = {
   title: "",
@@ -72,8 +72,9 @@ export const defaultAnonymousSuggestionQuickBar = {
   ],
 };
 
-const QuickNavContainerWithRouter = ({ user }) => {
-  const history = useHistory();
+export function QuickNavContainer({ user }) {
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const {
     kgSearchState,
@@ -131,8 +132,8 @@ const QuickNavContainerWithRouter = ({ user }) => {
     e.preventDefault();
     setPhrase(currentPhrase);
     refetchLastQueries(e.currentTarget);
-    if (history.location.pathname === "/search") return;
-    history.push("/search");
+    if (location.pathname === "/search") return;
+    navigate("/search");
   };
 
   const onSuggestionsFetchRequested = () => {
@@ -187,7 +188,4 @@ const QuickNavContainerWithRouter = ({ user }) => {
       suggestions={lastQueriesSuggestions}
     />
   );
-};
-
-const QuickNavContainer = withRouter(QuickNavContainerWithRouter);
-export { QuickNavContainer };
+}

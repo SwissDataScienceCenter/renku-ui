@@ -16,13 +16,15 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 
 import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
+import { ProjectStatistics } from "../../../../notebooks/components/session.types";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
+import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import {
@@ -89,6 +91,9 @@ function useAutostartSessionOptions(): void {
   const projectPathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
+  const statistics = useLegacySelector<ProjectStatistics | null | undefined>(
+    (state) => state.stateModel.project.statistics?.data
+  );
   const projectSessions = useProjectSessions({ projectPathWithNamespace });
   const validSessions = useMemo(
     () =>
@@ -115,18 +120,20 @@ function useAutostartSessionOptions(): void {
 
   const { data: branches, isFetching: branchesIsFetching } =
     useGetAllRepositoryBranchesQuery(
-      {
-        projectId: `${gitLabProjectId ?? 0}`,
-      },
-      { skip: !gitLabProjectId }
+      gitLabProjectId
+        ? {
+            projectId: `${gitLabProjectId}`,
+          }
+        : skipToken
     );
   const { data: commits, isFetching: commitsIsFetching } =
     useGetAllRepositoryCommitsQuery(
-      {
-        branch: currentBranch,
-        projectId: `${gitLabProjectId ?? 0}`,
-      },
-      { skip: !gitLabProjectId || !currentBranch }
+      gitLabProjectId && currentBranch
+        ? {
+            branch: currentBranch,
+            projectId: `${gitLabProjectId}`,
+          }
+        : skipToken
     );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
@@ -143,40 +150,37 @@ function useAutostartSessionOptions(): void {
     error: errorProjectConfig,
     isFetching: projectConfigIsFetching,
   } = useGetConfigQuery(
-    {
-      apiVersion,
-      metadataVersion,
-      projectRepositoryUrl,
-      branch: currentBranch,
-      commit,
-    },
-    {
-      skip:
-        !backendAvailable || !coreSupportComputed || !currentBranch || !commit,
-    }
+    backendAvailable && coreSupportComputed && currentBranch && commit
+      ? {
+          apiVersion,
+          metadataVersion,
+          projectRepositoryUrl,
+          branch: currentBranch,
+          commit,
+        }
+      : skipToken
   );
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
     useGetResourcePoolsQuery(
-      {
-        cpuRequest: projectConfig?.config.sessions?.legacyConfig?.cpuRequest,
-        gpuRequest: projectConfig?.config.sessions?.legacyConfig?.gpuRequest,
-        memoryRequest:
-          projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
-        storageRequest: projectConfig?.config.sessions?.storage,
-      },
-      { skip: !projectConfig }
+      projectConfig
+        ? {
+            cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
+            gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
+            memoryRequest:
+              projectConfig.config.sessions?.legacyConfig?.memoryRequest,
+            storageRequest: projectConfig.config.sessions?.storage,
+          }
+        : skipToken
     );
   const { data: notebooksVersion, isFetching: notebooksVersionIsFetching } =
     useGetNotebooksVersionQuery();
   const { data: storageForProject, isFetching: storageIsFetching } =
     useGetCloudStorageForProjectQuery(
-      { project_id: `${gitLabProjectId}` },
-      {
-        skip:
-          !gitLabProjectId ||
-          !notebooksVersion ||
-          !notebooksVersion.cloudStorageEnabled,
-      }
+      gitLabProjectId &&
+        notebooksVersion &&
+        notebooksVersion.cloudStorageEnabled
+        ? { project_id: `${gitLabProjectId}` }
+        : skipToken
     );
 
   const currentSessionClass = useMemo(
@@ -194,7 +198,9 @@ function useAutostartSessionOptions(): void {
   useDefaultSessionClassOption({ resourcePools });
   useDefaultStorageOption({
     currentSessionClass,
+    lfsAutoFetch,
     projectConfig,
+    statistics,
   });
   useDefaultAutoFetchLfsOption({ projectConfig });
   useDefaultCloudStorageOption({ notebooksVersion, storageForProject });

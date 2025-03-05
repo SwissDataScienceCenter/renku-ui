@@ -23,7 +23,6 @@ import { WarnAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import { NewProject } from "../../project/new/ProjectNew.container";
 import AppContext from "../../utils/context/appContext";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import type {
   AddDatasetHandlers,
   AddDatasetStatus,
@@ -57,7 +56,6 @@ function AddDatasetNewProject({
   const [newProject, setNewProject] = useState<TNewProject | null>(null);
   const setCurrentStatus = handlers.setCurrentStatus;
   const { client } = useContext(AppContext);
-  const user = useLegacySelector((state) => state.stateModel.user);
 
   useEffect(() => setCurrentStatus(null), [setCurrentStatus]);
 
@@ -112,11 +110,8 @@ function AddDatasetNewProject({
     ) ? null : (
       <NewProject
         key="newProject"
-        model={model}
         importingDataset={true}
         startImportDataset={startImportDataset}
-        user={user}
-        client={client}
       />
     );
 

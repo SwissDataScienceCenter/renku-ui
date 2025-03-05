@@ -107,6 +107,30 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
       ).as(image.name);
       return this;
     }
+
+    newLauncher(args?: SimpleFixture) {
+      const { fixture = "", name = "newLauncher" } = args ?? {};
+      const response = { fixture, statusCode: 201 };
+      cy.intercept("POST", "/api/data/session_launchers", response).as(name);
+      return this;
+    }
+
+    editLauncher(args?: SimpleFixture) {
+      const { fixture = "", name = "editLauncher" } = args ?? {};
+      const response = { fixture, statusCode: 201 };
+      cy.intercept("PATCH", "/api/data/session_launchers/*", response).as(name);
+      return this;
+    }
+
+    environments(args?: SimpleFixture) {
+      const {
+        fixture = "sessions/environments.json",
+        name = "getEnvironments",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept("GET", `/api/data/environments`, response).as(name);
+      return this;
+    }
   };
 }
 

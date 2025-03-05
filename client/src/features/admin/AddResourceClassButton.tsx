@@ -51,8 +51,8 @@ import {
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { useAddResourceClassMutation } from "../dataServices/computeResources.api";
 import { NodeAffinity, ResourcePool } from "../dataServices/dataServices.types";
-import { useAddResourceClassMutation } from "./adminComputeResources.api";
 
 interface AddResourceClassButtonProps {
   resourcePool: ResourcePool;

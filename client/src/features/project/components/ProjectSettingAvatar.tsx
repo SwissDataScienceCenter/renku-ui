@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useCallback, useEffect, useState } from "react";
 import { Card, CardBody } from "reactstrap";
+
 import {
   RtkErrorAlert,
   extractRkErrorRemoteBranch,
@@ -71,17 +73,13 @@ export function ProjectSettingsAvatar({
 }: ProjectSettingsAvatarProps) {
   const [avatar, setAvatar] = useState<ImageValue>();
   const [succeeded, setSucceeded] = useState<boolean | undefined>(undefined);
-  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
-    skip: !projectFullPath || !projectId,
-  });
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(
+    projectFullPath && projectId ? projectId : skipToken
+  );
   const projectMetadata = useProjectMetadataQuery(
-    { projectPath: projectFullPath, projectId },
-    {
-      skip:
-        !projectFullPath ||
-        !projectId ||
-        !projectIndexingStatus.data?.activated,
-    }
+    projectFullPath && projectId && projectIndexingStatus.data?.activated
+      ? { projectPath: projectFullPath, projectId }
+      : skipToken
   );
 
   const [

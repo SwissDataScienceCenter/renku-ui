@@ -9,7 +9,7 @@ import { DEFAULT_APP_PARAMS } from "../src/utils/context/appParams.constants";
 import { createStore } from "../src/utils/helpers/EnhancedState";
 import { createCoreApiVersionedUrlConfig } from "../src/utils/helpers/url";
 
-import "../src/styles/index.scss";
+import "../src/styles/renku_bootstrap.scss";
 
 // This how the documentation recommends introducing the store into storybook
 // https://storybook.js.org/addons/@dreamworld/addon-redux/

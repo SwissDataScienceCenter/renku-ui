@@ -36,10 +36,21 @@ class APIClient {
    * Fetch session status
    *
    */
-  async getSessionStatus(
-    authHeathers: Record<string, string>
-  ): Promise<Response> {
+  async getSessionStatus(authHeathers: HeadersInit): Promise<Response> {
     const sessionsUrl = `${this.gatewayUrl}/notebooks/servers`;
+    logger.debug(`Fetching session status.`);
+    const options = {
+      headers: new Headers(authHeathers),
+    };
+    return this.clientFetch(sessionsUrl, options, RETURN_TYPES.json);
+  }
+
+  /**
+   * Fetch session status
+   *
+   */
+  async getSessionStatusV2(authHeathers: HeadersInit): Promise<Response> {
+    const sessionsUrl = `${this.gatewayUrl}/data/sessions`;
     logger.debug(`Fetching session status.`);
     const options = {
       headers: new Headers(authHeathers),
@@ -55,7 +66,7 @@ class APIClient {
    */
   async kgActivationStatus(
     projectId: number,
-    authHeaders: Headers
+    authHeaders: HeadersInit
   ): Promise<Response> {
     const headers = new Headers(authHeaders);
     const activationStatusURL = `${this.gatewayUrl}/projects/${projectId}/graph/status`;

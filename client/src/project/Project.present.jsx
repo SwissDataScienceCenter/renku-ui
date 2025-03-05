@@ -27,7 +27,15 @@ import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Component, Fragment, useEffect } from "react";
-import { Link, Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
+import {
+  CompatRoute,
+  Link,
+  Route as NewRoute,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom-v5-compat";
 import {
   Alert,
   Button,
@@ -41,13 +49,13 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { ContainerWrap } from "../App";
 import { ACCESS_LEVELS } from "../api-client";
 import { InfoAlert } from "../components/Alert";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { RenkuNavLink } from "../components/RenkuNavLink";
-import { ThrottledTooltip } from "../components/Tooltip";
 import { RoundButtonGroup } from "../components/buttons/Button";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { SshModal } from "../components/ssh/ssh";
@@ -135,7 +143,7 @@ function ForkCountButton({ forkProjectDisabled, externalUrl, forksCount }) {
       rel="noreferrer noopener"
     >
       {forksCount}
-      <ThrottledTooltip target="project-forks" tooltip="Forks" />
+      <UncontrolledTooltip target="project-forks">Forks</UncontrolledTooltip>
     </Button>
   );
 }
@@ -447,7 +455,6 @@ class ProjectViewHeaderOverview extends Component {
             <div className="d-flex gap-2 gap-md-3 justify-content-end align-items-end flex-wrap">
               <ForkProjectModal
                 client={this.props.client}
-                history={this.props.history}
                 model={this.props.model}
                 notifications={this.props.notifications}
                 title={
@@ -594,7 +601,6 @@ class ProjectFilesNav extends Component {
         hash={this.props.filesTree.hash}
         fileView={this.props.filesTreeView}
         currentUrl={this.props.location.pathname}
-        history={this.props.history}
         limitHeight={true}
       />
     );
@@ -692,39 +698,25 @@ class ProjectViewOverview extends Component {
           </Col>
           <Col key="content" sm={12} md={10} data-cy="project-overview-content">
             <Switch>
-              <Route
-                exact
-                path={this.props.baseUrl}
-                render={() => {
-                  return (
-                    <ProjectViewGeneral
-                      readme={this.props.data.readme}
-                      {...this.props}
-                    />
-                  );
-                }}
-              />
-              <Route
-                exact
-                path={this.props.statsUrl}
-                render={() => (
-                  <ProjectOverviewStats
-                    projectCoordinator={projectCoordinator}
-                    branches={this.props.branches.standard}
-                  />
-                )}
-              />
-              <Route
-                exact
-                path={this.props.overviewCommitsUrl}
-                render={(props) => (
-                  <ProjectOverviewCommits
-                    location={this.props.location}
-                    history={props.history}
-                    projectCoordinator={projectCoordinator}
-                  />
-                )}
-              />
+              <Route exact path={this.props.baseUrl}>
+                <ProjectViewGeneral
+                  readme={this.props.data.readme}
+                  {...this.props}
+                />
+              </Route>
+              <Route exact path={this.props.statsUrl}>
+                <ProjectOverviewStats
+                  projectCoordinator={projectCoordinator}
+                  branches={this.props.branches.standard}
+                />
+              </Route>
+              <Route exact path={this.props.overviewCommitsUrl}>
+                <ProjectOverviewCommits
+                  location={this.props.location}
+                  projectCoordinator={projectCoordinator}
+                  navigate={this.props.navigate}
+                />
+              </Route>
             </Switch>
           </Col>
         </Row>
@@ -753,48 +745,85 @@ class ProjectViewFiles extends Component {
   }
 
   render() {
+    const filesUrl = this.props.filesUrl;
+    const lineageUrl = this.props.lineageUrl
+      .slice(filesUrl.length)
+      .replace(":filePath+", "*");
+    const fileContentUrl =
+      this.props.fileContentUrl.slice(filesUrl.length) + "/*";
+
     return [
       <div key="files" className="variableWidthColLeft me-2 pb-0 pe-0">
         <ProjectFilesNav {...this.props} />
       </div>,
       <div key="content" className="flex-shrink-1 variableWidthColRight">
-        <Switch>
-          <Route
-            path={this.props.lineageUrl}
-            render={(p) => (
-              <ProjectFileLineage
+        <Routes>
+          <NewRoute
+            path={lineageUrl}
+            element={
+              <ProjectFileLineageRoute
                 client={this.props.client}
                 fetchBranches={() =>
                   this.props.projectCoordinator.fetchBranches()
                 }
-                filePath={p.match.params.filePath}
-                history={this.props.history}
-                location={p.location}
                 model={this.props.model}
                 projectId={this.props.metadata?.id ?? undefined}
               />
-            )}
+            }
           />
-          <Route
-            path={this.props.fileContentUrl}
-            render={(p) => (
-              <ProjectFileView
+          <NewRoute
+            path={fileContentUrl}
+            element={
+              <ProjectFileViewRoute
                 client={this.props.client}
                 fetchBranches={() =>
                   this.props.projectCoordinator.fetchBranches()
                 }
-                filePath={p.match.params.filePath}
-                history={this.props.history}
-                location={p.location}
                 model={this.props.model}
                 params={this.props.params}
               />
-            )}
+            }
           />
-        </Switch>
+        </Routes>
       </div>,
     ];
   }
+}
+
+function ProjectFileLineageRoute({ client, fetchBranches, model, projectId }) {
+  const location = useLocation();
+
+  const params = useParams();
+  const filePath = params["*"];
+
+  return (
+    <ProjectFileLineage
+      client={client}
+      fetchBranches={fetchBranches}
+      filePath={filePath}
+      location={location}
+      model={model}
+      projectId={projectId}
+    />
+  );
+}
+
+function ProjectFileViewRoute({ client, fetchBranches, model, params }) {
+  const location = useLocation();
+
+  const routeParams = useParams();
+  const filePath = routeParams["*"];
+
+  return (
+    <ProjectFileView
+      client={client}
+      fetchBranches={fetchBranches}
+      filePath={filePath}
+      location={location}
+      model={model}
+      params={params}
+    />
+  );
 }
 
 class ProjectViewLoading extends Component {
@@ -884,7 +913,6 @@ function ProjectView(props) {
         userLogged={logged}
         projectPathWithNamespace={props.projectPathWithNamespace}
         projectId={props.projectId}
-        location={props.location}
       />
     );
   }
@@ -901,66 +929,54 @@ function ProjectView(props) {
     />,
     <ContainerWrap key="project-content" fullSize={isShowSession}>
       <Switch key="projectHeader">
-        <Route
-          exact
-          path={props.baseUrl}
-          render={() => <ProjectViewHeader {...props} />}
-        />
-        <Route
-          path={props.overviewUrl}
-          render={() => <ProjectViewHeader {...props} />}
-        />
+        <Route exact path={props.baseUrl}>
+          <ProjectViewHeader {...props} />
+        </Route>
+        <Route path={props.overviewUrl}>
+          <ProjectViewHeader {...props} />
+        </Route>
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
         <Route path={props.sessionShowUrl} />
-        <Route
-          path={props.newDatasetUrl}
-          component={() => <ProjectViewHeader {...props} />}
-        />
-        <Route component={() => <ProjectViewHeader {...props} />} />
+        <Route>
+          <ProjectViewHeader {...props} />
+        </Route>
       </Switch>
       <Switch key="projectNav">
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
         <Route path={props.sessionShowUrl} />
-        <Route component={() => <ProjectNav key="nav" {...props} />} />
+        <Route>
+          <ProjectNav key="nav" {...props} />
+        </Route>
       </Switch>
       <Row key="content" className={cx(isShowSession && "m-0")}>
         <Switch>
-          <Route
-            exact
-            path={props.baseUrl}
-            render={() => <ProjectViewOverview key="overview" {...props} />}
-          />
-          <Route
-            path={props.overviewUrl}
-            render={() => <ProjectViewOverview key="overview" {...props} />}
-          />
-          <Route
-            path={props.filesUrl}
-            render={() => <ProjectViewFiles key="files" {...props} />}
-          />
-          <Route
-            path={props.datasetsUrl}
-            render={() => <ProjectDatasetsView key="datasets" {...props} />}
-          />
-          <Route
-            path={[props.workflowUrl, props.workflowsUrl]}
-            render={() => <ProjectViewWorkflows key="workflows" {...props} />}
-          />
-          <Route
-            path={props.settingsUrl}
-            render={() => (
-              <ProjectSettings
-                key="settings"
-                {...props}
-                apiVersion={apiVersion}
-                metadataVersion={metadataVersion}
-              />
-            )}
-          />
+          <Route exact path={props.baseUrl}>
+            <ProjectViewOverview key="overview" {...props} />
+          </Route>
+          <Route path={props.overviewUrl}>
+            <ProjectViewOverview key="overview" {...props} />
+          </Route>
+          <CompatRoute path={props.filesUrl}>
+            <ProjectViewFiles key="files" {...props} />
+          </CompatRoute>
+          <CompatRoute path={props.datasetsUrl}>
+            <ProjectDatasetsView key="datasets" {...props} />
+          </CompatRoute>
+          <Route path={[props.workflowUrl, props.workflowsUrl]}>
+            <ProjectViewWorkflows key="workflows" {...props} />
+          </Route>
+          <CompatRoute path={props.settingsUrl}>
+            <ProjectSettings
+              key="settings"
+              {...props}
+              apiVersion={apiVersion}
+              metadataVersion={metadataVersion}
+            />
+          </CompatRoute>
           <Route path={props.notebookServersUrl}>
             <ProjectSessionsRouter key="sessions" />
           </Route>
