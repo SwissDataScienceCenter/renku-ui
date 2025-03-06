@@ -39,6 +39,7 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
@@ -55,6 +56,7 @@ import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projects
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
+import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
@@ -65,7 +67,7 @@ import {
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
-import { SessionLauncher, SessionV2 } from "../sessionsV2.types";
+import { SessionV2 } from "../sessionsV2.types";
 import { EnvironmentCard } from "./EnvironmentCard";
 
 interface SessionCardContentProps {

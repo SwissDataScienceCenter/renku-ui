@@ -16,49 +16,86 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { Control, Controller, UseFormSetValue } from "react-hook-form";
-import { Button, ButtonGroup } from "reactstrap";
+import { useContext } from "react";
+import { Control, Controller } from "react-hook-form";
+import { ButtonGroup } from "reactstrap";
+import AppContext from "../../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 
-interface EnvironmentKindField {
-  control: Control<SessionLauncherForm, unknown>;
-  setValue: UseFormSetValue<SessionLauncherForm>;
+interface EnvironmentKindFieldProps {
+  control: Control<SessionLauncherForm>;
 }
-export function EnvironmentKindField({
+export default function EnvironmentKindField({
   control,
-  setValue,
-}: EnvironmentKindField) {
+}: EnvironmentKindFieldProps) {
+  const { params } = useContext(AppContext);
+  const imageBuildersEnabled =
+    params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
+
   return (
     <Controller
       control={control}
-      name="environment_kind"
+      name="environmentSelect"
       render={({ field }) => (
         <div className={cx("d-flex", "gap-4")}>
           <ButtonGroup size="sm">
-            <Button
-              active={field.value === "GLOBAL"}
-              data-cy="existing-global-button"
-              onClick={() => setValue("environment_kind", "GLOBAL")}
-              className={cx(
-                field.value === "GLOBAL"
-                  ? ["text-white", "bg-primary"]
-                  : ["text-primary", "bg-white"]
-              )}
+            <input
+              type="radio"
+              className="btn-check"
+              name={field.name}
+              autoComplete="off"
+              checked={field.value === "global"}
+              id="environment-kind-global-radio"
+              onChange={() => field.onChange("global")}
+              onBlur={field.onBlur}
+            />
+            <label
+              className={cx("btn", "btn-outline-primary")}
+              data-cy="environment-kind-global"
+              htmlFor="environment-kind-global-radio"
             >
               Global environment
-            </Button>
-            <Button
-              active={field.value === "CUSTOM"}
-              data-cy="existing-custom-button"
-              onClick={() => setValue("environment_kind", "CUSTOM")}
-              className={cx(
-                field.value === "CUSTOM"
-                  ? ["text-white", "bg-primary"]
-                  : ["text-primary", "bg-white"]
-              )}
+            </label>
+
+            <input
+              type="radio"
+              className="btn-check"
+              name={field.name}
+              autoComplete="off"
+              checked={field.value === "custom + image"}
+              id="environment-kind-custom-radio"
+              onChange={() => field.onChange("custom + image")}
+              onBlur={field.onBlur}
+            />
+            <label
+              className={cx("btn", "btn-outline-primary")}
+              data-cy="environment-kind-custom"
+              htmlFor="environment-kind-custom-radio"
             >
               Custom Environment
-            </Button>
+            </label>
+
+            {imageBuildersEnabled && (
+              <>
+                <input
+                  type="radio"
+                  className="btn-check"
+                  name={field.name}
+                  autoComplete="off"
+                  checked={field.value === "custom + build"}
+                  id="environment-kind-builder-radio"
+                  onChange={() => field.onChange("custom + build")}
+                  onBlur={field.onBlur}
+                />
+                <label
+                  className={cx("btn", "btn-outline-primary")}
+                  htmlFor="environment-kind-builder-radio"
+                >
+                  Create from code
+                </label>
+              </>
+            )}
           </ButtonGroup>
         </div>
       )}

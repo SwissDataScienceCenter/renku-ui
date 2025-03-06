@@ -31,8 +31,8 @@ import {
 import { Loader } from "../../components/Loader";
 import ButtonStyles from "../../components/buttons/Buttons.module.scss";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
-import { SessionEnvironment } from "../sessionsV2/sessionsV2.types";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";

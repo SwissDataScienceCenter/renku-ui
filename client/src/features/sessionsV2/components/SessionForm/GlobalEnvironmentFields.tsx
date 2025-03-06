@@ -15,13 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { Controller } from "react-hook-form";
 import { Input, ListGroup } from "reactstrap";
+
 import { WarnAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
-import { useGetSessionEnvironmentsQuery } from "../../sessionsV2.api";
+import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
 import { SessionEnvironmentItem } from "./SessionEnvironmentItem";
 
@@ -35,8 +37,8 @@ export function GlobalEnvironmentFields({
     data: environments,
     error,
     isLoading,
-  } = useGetSessionEnvironmentsQuery();
-  const watchEnvironmentKind = watch("environment_kind");
+  } = useGetSessionEnvironmentsQuery({});
+  const watchEnvironmentSelect = watch("environmentSelect");
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -65,11 +67,11 @@ export function GlobalEnvironmentFields({
       {environments && environments.length > 0 && (
         <Controller
           control={control}
-          name="environment_id"
+          name="environmentId"
           render={({ field }) => (
             <div>
               <Input
-                className={cx(errors.environment_id && "is-invalid")}
+                className={cx(errors.environmentId && "is-invalid")}
                 id="addSessionLauncherEnvironmentId"
                 type="hidden"
                 {...field}
@@ -92,7 +94,7 @@ export function GlobalEnvironmentFields({
             </div>
           )}
           rules={{
-            required: watchEnvironmentKind === "GLOBAL",
+            required: watchEnvironmentSelect === "global",
           }}
         />
       )}

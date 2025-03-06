@@ -43,12 +43,11 @@ import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import SessionItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
+import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
 import UpdateSessionLauncherModal from "./components/SessionModals/UpdateSessionLauncherModal";
-import {
-  useGetProjectSessionLaunchersQuery,
-  useGetSessionsQuery as useGetSessionsQueryV2,
-} from "./sessionsV2.api";
-import { SessionLauncher, SessionV2 } from "./sessionsV2.types";
+import { SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
@@ -204,42 +203,43 @@ export function SessionV2Actions({
       Edit
     </Button>
   );
-
   return (
-    <PermissionsGuard
-      disabled={null}
-      enabled={
-        <>
-          <ButtonWithMenuV2
-            color="outline-primary"
-            default={defaultAction}
-            preventPropagation
-            size="sm"
-          >
-            <DropdownItem
-              data-cy="session-view-menu-delete"
-              onClick={toggleDelete}
+    <>
+      <PermissionsGuard
+        disabled={null}
+        enabled={
+          <>
+            <ButtonWithMenuV2
+              color="outline-primary"
+              default={defaultAction}
+              preventPropagation
+              size="sm"
             >
-              <Trash className={cx("bi", "me-1")} />
-              Delete
-            </DropdownItem>
-          </ButtonWithMenuV2>{" "}
-          <UpdateSessionLauncherModal
-            isOpen={isUpdateOpen}
-            launcher={launcher}
-            toggle={toggleUpdate}
-          />
-          <DeleteSessionV2Modal
-            isOpen={isDeleteOpen}
-            launcher={launcher}
-            toggle={toggleDelete}
-            sessionsLength={sessionsLength}
-          />
-        </>
-      }
-      requestedPermission="write"
-      userPermissions={permissions}
-    />
+              <DropdownItem
+                data-cy="session-view-menu-delete"
+                onClick={toggleDelete}
+              >
+                <Trash className={cx("bi", "me-1")} />
+                Delete
+              </DropdownItem>
+            </ButtonWithMenuV2>
+            <UpdateSessionLauncherModal
+              isOpen={isUpdateOpen}
+              launcher={launcher}
+              toggle={toggleUpdate}
+            />
+            <DeleteSessionV2Modal
+              isOpen={isDeleteOpen}
+              launcher={launcher}
+              toggle={toggleDelete}
+              sessionsLength={sessionsLength}
+            />
+          </>
+        }
+        requestedPermission="write"
+        userPermissions={permissions}
+      />
+    </>
   );
 }
 

@@ -16,40 +16,21 @@
  * limitations under the License.
  */
 
+import { ReactNode } from "react";
 import { ResourceClass } from "../dataServices/dataServices.types";
 import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
-
-export interface SessionEnvironment {
-  container_image: string;
-  creation_date: string;
-  id: string;
-  name: string;
-  default_url?: string;
-  description?: string;
-  uid?: number;
-  gid?: number;
-  working_directory?: string;
-  mount_directory?: string;
-  port?: number;
-  environment_kind: EnvironmentKind;
-  command?: string[];
-  args?: string[];
-}
-
-export type SessionEnvironmentList = SessionEnvironment[];
-
-export type SessionLauncher = {
-  id: string;
-  project_id: string;
-  name: string;
-  creation_date: string;
-  description?: string;
-  resource_class_id?: number;
-  disk_storage?: number;
-  environment: SessionLauncherEnvironment;
-};
-
-export type EnvironmentKind = "GLOBAL" | "CUSTOM";
+import type {
+  BuildParametersPost,
+  DefaultUrl,
+  EnvironmentGid,
+  EnvironmentId,
+  EnvironmentKind,
+  EnvironmentPort,
+  EnvironmentPost,
+  EnvironmentUid,
+  SessionLauncherEnvironmentParams,
+  SessionLauncherPost,
+} from "./api/sessionLaunchersV2.api";
 
 export type SessionLauncherEnvironment = {
   id?: string;
@@ -67,26 +48,6 @@ export type SessionLauncherEnvironment = {
   args?: string[];
 };
 
-export type SessionLauncherEnvironmentParams =
-  | {
-      id: string;
-    }
-  | {
-      name: string;
-      description?: string;
-      container_image: string;
-      default_url?: string;
-      uid?: number;
-      gid?: number;
-      working_directory?: string;
-      mount_directory?: string;
-      port?: number;
-      environment_kind: EnvironmentKind;
-      command?: string[] | null;
-      args?: string[] | null;
-    };
-
-export type SessionLauncherList = SessionLauncher[];
 export interface GetProjectSessionLauncherParams {
   id: string;
 }
@@ -116,38 +77,51 @@ export interface DeleteSessionLauncherParams {
   launcherId: string;
 }
 
-export interface SessionLauncherForm {
-  name: string;
-  container_image: string;
-  description: string;
-  default_url: string;
-  environment_kind: EnvironmentKind;
-  environment_id: string;
+export interface SessionLauncherForm
+  extends Pick<
+      SessionLauncherPost,
+      "name" | "description" | "disk_storage" | "project_id"
+    >,
+    Pick<
+      EnvironmentPost,
+      "container_image" | "mount_directory" | "working_directory"
+    >,
+    Pick<
+      BuildParametersPost,
+      "builder_variant" | "frontend_variant" | "repository"
+    > {
   resourceClass: ResourceClass;
-  diskStorage: number | undefined;
-  port: number;
-  working_directory: string;
-  uid: number;
-  gid: number;
-  mount_directory: string;
-  command: string;
+
+  // Substitute for Environment Kind and Environment Image Source in forms
+  environmentSelect: "global" | "custom + image" | "custom + build";
+
+  // For "global" environments
+  environmentId: EnvironmentId;
+
+  // For "custom" + "image" environments
+  default_url: DefaultUrl;
+  uid: EnvironmentUid;
+  gid: EnvironmentGid;
+  port: EnvironmentPort;
+
   args: string;
+  command: string;
 }
 
 export interface SessionResources {
-  requests: {
-    cpu: number;
-    gpu: number;
-    memory: number;
-    storage: number;
+  requests?: {
+    cpu?: number;
+    gpu?: number;
+    memory?: number;
+    storage?: number;
   };
 }
 
 export interface SessionStatus {
   message?: string;
   state: "running" | "starting" | "stopping" | "failed" | "hibernated";
-  will_hibernate_at?: string;
-  will_delete_at?: string;
+  will_hibernate_at?: string | null;
+  will_delete_at?: string | null;
   ready_containers: number;
   total_containers: number;
 }
@@ -157,12 +131,12 @@ export interface SessionV2 {
   image: string;
   name: string;
   resources: SessionResources;
-  started: string;
+  started: string | null;
   status: SessionStatus;
   url: string;
   project_id: string;
   launcher_id: string;
-  resource_class_id: string;
+  resource_class_id: number;
 }
 
 export interface SessionCloudStorageV2 {
@@ -200,4 +174,10 @@ export interface SessionImageParams {
 
 export interface DockerImage {
   error?: unknown;
+}
+
+export interface BuilderSelectorOption {
+  label: string;
+  value: string;
+  description?: ReactNode;
 }

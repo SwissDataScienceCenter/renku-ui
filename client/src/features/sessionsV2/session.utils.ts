@@ -18,13 +18,14 @@
 
 import { FaviconStatus } from "../display/display.types";
 import { SessionStatusState } from "../session/sessions.types";
-import { DEFAULT_URL } from "./session.constants";
-import {
-  SessionEnvironmentList,
+import type {
+  EnvironmentList as SessionEnvironmentList,
   SessionLauncher,
   SessionLauncherEnvironmentParams,
-  SessionLauncherForm,
-} from "./sessionsV2.types";
+  SessionLauncherEnvironmentPatchParams,
+} from "./api/sessionLaunchersV2.api";
+import { DEFAULT_URL } from "./session.constants";
+import { SessionLauncherForm } from "./sessionsV2.types";
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
@@ -73,7 +74,7 @@ export function prioritizeSelectedEnvironment(
 /**
  * Formats and validates the environment values for launching a session.
  *
- * @param {SessionLauncherForm} data - The form data used to configure the environment for a session launch.
+ * @param {SessionLauncherForm} data - The form data used to configure the environment for a session launcher.
  *
  * @returns {{ success: boolean; data?: SessionLauncherEnvironmentParams; error?: string }} -
  *  Returns an object with the following structure:
@@ -87,22 +88,37 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
   error?: string;
 } {
   const {
+    args,
+    builder_variant,
+    command,
     container_image,
     default_url,
-    name,
-    port,
-    working_directory,
-    uid,
+    environmentId,
+    environmentSelect,
+    frontend_variant,
     gid,
     mount_directory,
-    environment_id,
-    environment_kind,
-    command,
-    args,
+    name,
+    port,
+    repository,
+    uid,
+    working_directory,
   } = data;
 
-  if (environment_kind === "GLOBAL") {
-    return { success: true, data: { id: environment_id } };
+  if (environmentSelect === "global") {
+    return { success: true, data: { id: environmentId } };
+  }
+
+  if (environmentSelect === "custom + build") {
+    return {
+      success: true,
+      data: {
+        environment_image_source: "build",
+        builder_variant,
+        frontend_variant,
+        repository,
+      },
+    };
   }
 
   const commandFormatted = safeParseJSONStringArray(command);
@@ -114,6 +130,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     success: true,
     data: {
       environment_kind: "CUSTOM",
+      environment_image_source: "image",
       container_image,
       name,
       default_url: default_url.trim() || DEFAULT_URL,
@@ -122,8 +139,51 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
       mount_directory,
       uid,
       gid,
-      command: commandFormatted.data,
-      args: argsFormatted.data,
+      command: commandFormatted.data ?? undefined,
+      args: argsFormatted.data ?? undefined,
+    },
+  };
+}
+
+/**
+ * Formats and validates the environment values for launching a session. (edit mode)
+ *
+ * @param {SessionLauncherEnvironmentPatchParams} data - The form data used to configure the environment for a session launcher.
+ *
+ * @returns {{ success: boolean; data?: SessionLauncherEnvironmentParams; error?: string }} -
+ *  Returns an object with the following structure:
+ *   - `success`: A boolean indicating whether the function executed successfully.
+ *   - `data`: If `success` is true, contains the formatted `SessionLauncherEnvironmentParams` object.
+ *   - `error`: If `success` is false, contains a string describing the error (e.g., "Invalid command or args format").
+ */
+export function getFormattedEnvironmentValuesForEdit(
+  data: SessionLauncherForm
+): {
+  success: boolean;
+  data?: SessionLauncherEnvironmentPatchParams;
+  error?: string;
+} {
+  const { environmentSelect } = data;
+
+  if (
+    environmentSelect === "global" ||
+    environmentSelect === "custom + image"
+  ) {
+    return getFormattedEnvironmentValues(data);
+  }
+
+  const { builder_variant, frontend_variant, repository } = data;
+
+  return {
+    success: true,
+    data: {
+      environment_image_source: "build",
+      environment_kind: "CUSTOM",
+      build_parameters: {
+        builder_variant,
+        frontend_variant,
+        repository,
+      },
     },
   };
 }
@@ -133,12 +193,19 @@ export function getJSONStringArray(value: string[] | undefined) {
   return valueToString === null ? undefined : valueToString;
 }
 
-export function getLauncherDefaultValues(launcher: SessionLauncher) {
+export function getLauncherDefaultValues(
+  launcher: SessionLauncher
+): Partial<SessionLauncherForm> {
   return {
     name: launcher.name,
     description: launcher.description ?? "",
-    environment_kind: launcher.environment?.environment_kind,
-    environment_id:
+    environmentSelect:
+      launcher.environment.environment_kind === "GLOBAL"
+        ? "global"
+        : launcher.environment.environment_image_source === "build"
+        ? "custom + build"
+        : "custom + image",
+    environmentId:
       launcher.environment?.environment_kind === "GLOBAL"
         ? launcher.environment?.id
         : "",
@@ -154,6 +221,18 @@ export function getLauncherDefaultValues(launcher: SessionLauncher) {
     gid: launcher.environment?.gid,
     command: getJSONStringArray(launcher.environment?.command),
     args: getJSONStringArray(launcher.environment?.args),
+    builder_variant:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.builder_variant
+        : "",
+    frontend_variant:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.frontend_variant
+        : "",
+    repository:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.repository
+        : "",
   };
 }
 

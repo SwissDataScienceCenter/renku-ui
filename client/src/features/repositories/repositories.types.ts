@@ -33,10 +33,21 @@ export interface RepositoryPermissions {
   push: boolean;
 }
 
+export interface RepositoryWithProbe {
+  repositoryUrl: string;
+  probe: boolean;
+}
+
 export interface GetRepositoryMetadataParams {
   repositoryUrl: string;
 }
 
 export interface GetRepositoryProbeParams {
   repositoryUrl: string;
+}
+
+export type GetRepositoriesProbesResponse = RepositoryWithProbe[];
+
+export interface GetRepositoriesProbesParams {
+  repositoriesUrls: string[];
 }

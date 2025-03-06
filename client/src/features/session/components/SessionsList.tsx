@@ -316,10 +316,10 @@ function SessionRowProject({ annotations }: SessionRowProjectProps) {
 export interface SessionLauncherResources {
   poolName?: string;
   name?: string;
-  cpu: number;
-  memory: number;
-  gpu: number;
-  storage: number;
+  cpu?: number;
+  memory?: number;
+  gpu?: number;
+  storage?: number;
 }
 interface SessionRowResourceRequestsProps {
   resourceRequests: Session["resources"]["requests"] | SessionLauncherResources;

@@ -26,20 +26,22 @@ import {
   useParams,
 } from "react-router-dom-v5-compat";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
+import { Loader } from "../../components/Loader";
 import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import styles from "../session/components/SessionModals.module.scss";
 import { useWaitForSessionStatusV2 } from "../session/useWaitForSessionStatus.hook";
 import {
-  usePatchSessionMutation,
-  useStopSessionMutation,
-} from "../sessionsV2/sessionsV2.api";
+  usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
+  useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
+} from "./api/sessionsV2.api";
 import { SessionV2 } from "./sessionsV2.types";
-import { Loader } from "../../components/Loader";
+
+import styles from "../session/components/SessionModals.module.scss";
 
 interface PauseOrDeleteSessionModalProps {
   action?: "pause" | "delete";
@@ -107,7 +109,7 @@ function AnonymousDeleteSessionModal({
   const [isStopping, setIsStopping] = useState(false);
 
   const onStopSession = useCallback(async () => {
-    stopSession({ session_id: sessionName });
+    stopSession({ sessionId: sessionName });
     setIsStopping(true);
   }, [sessionName, stopSession]);
 
@@ -226,7 +228,10 @@ function PauseSessionModalContent({
   const [isStopping, setIsStopping] = useState(false);
 
   const onHibernateSession = useCallback(async () => {
-    patchSession({ session_id: sessionName, state: "hibernated" });
+    patchSession({
+      sessionId: sessionName,
+      sessionPatchRequest: { state: "hibernated" },
+    });
     setIsStopping(true);
   }, [patchSession, sessionName]);
 
@@ -335,7 +340,7 @@ function DeleteSessionModalContent({
   const [isStopping, setIsStopping] = useState(false);
 
   const onStopSession = useCallback(async () => {
-    stopSession({ session_id: sessionName });
+    stopSession({ sessionId: sessionName });
     setIsStopping(true);
   }, [sessionName, stopSession]);
 
