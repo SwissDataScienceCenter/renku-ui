@@ -52,7 +52,6 @@ import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-a
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import repositoriesApi from "../../features/repositories/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
-import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import sessionsApi from "../../features/session/sessions.api";
 import sessionSidecarApi from "../../features/session/sidecar.api";
 import startSessionSlice from "../../features/session/startSession.slice";
@@ -80,7 +79,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [displaySlice.name]: displaySlice.reducer,
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
-    [searchV2Slice.name]: searchV2Slice.reducer,
     [startSessionSlice.name]: startSessionSlice.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,

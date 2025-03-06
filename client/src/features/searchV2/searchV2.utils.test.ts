@@ -16,14 +16,8 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_CREATION_DATE_FILTER,
-  DEFAULT_ROLE_FILTER,
-  DEFAULT_SORT_BY,
-  DEFAULT_TYPE_FILTER,
-  DEFAULT_VISIBILITY_FILTER,
-} from "./searchV2.constants";
-import { buildSearchQuery, parseSearchQuery } from "./searchV2.utils";
+import { DEFAULT_SORT_BY } from "./searchV2.constants";
+import { parseSearchQuery } from "./searchV2.utils";
 
 describe("Renku 2.0 search utilities", () => {
   describe("parseSearchQuery()", () => {
@@ -59,49 +53,6 @@ describe("Renku 2.0 search utilities", () => {
       expect(filters.visibility.values).toStrictEqual(["private"]);
 
       expect(sortBy.value).toBe("name-asc");
-    });
-  });
-
-  describe("buildSearchQuery()", () => {
-    it("builds the empty query", () => {
-      const result = buildSearchQuery({
-        dateFilters: {
-          created: DEFAULT_CREATION_DATE_FILTER,
-        },
-        filters: {
-          role: DEFAULT_ROLE_FILTER,
-          type: DEFAULT_TYPE_FILTER,
-          visibility: DEFAULT_VISIBILITY_FILTER,
-        },
-        searchBarQuery: "",
-        sortBy: DEFAULT_SORT_BY,
-      });
-
-      expect(result).toBe("");
-    });
-
-    it("builds a complex query", () => {
-      const result = buildSearchQuery({
-        dateFilters: {
-          created: {
-            key: "created",
-            value: {
-              before: "today-90d",
-            },
-          },
-        },
-        filters: {
-          role: { key: "role", values: ["editor"] },
-          type: { key: "type", values: ["group", "user"] },
-          visibility: { key: "visibility", values: ["private"] },
-        },
-        searchBarQuery: "test",
-        sortBy: { key: "sort", value: "name-desc" },
-      });
-
-      expect(result).toBe(
-        "role:editor type:group,user visibility:private created<today-90d sort:name-desc test"
-      );
     });
   });
 });

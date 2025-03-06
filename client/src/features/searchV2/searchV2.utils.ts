@@ -54,7 +54,6 @@ import type {
   SearchFilter,
   SearchFilters,
   SearchOption,
-  SearchV2State,
   SortBy,
   TypeFilter,
   VisibilityFilter,
@@ -463,31 +462,6 @@ function mergeDateFilterValues(
   }
 
   return merged;
-}
-
-export function buildSearchQuery(
-  state: Pick<
-    SearchV2State,
-    "searchBarQuery" | "sortBy" | "filters" | "dateFilters"
-  >
-): string {
-  const { dateFilters, filters, searchBarQuery, sortBy } = state;
-
-  const optionsAsTerms = [
-    filters.role,
-    filters.type,
-    filters.visibility,
-    dateFilters.created,
-    sortBy,
-  ]
-    .map(asQueryTerm)
-    .filter((term) => term !== "");
-
-  const draftQuery = [...optionsAsTerms, searchBarQuery].join(" ");
-
-  const { canonicalQuery } = parseSearchQuery(draftQuery);
-
-  return canonicalQuery;
 }
 
 export function filtersAsArray(filters: SearchFilters): SearchFilter[] {
