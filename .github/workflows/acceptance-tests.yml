@@ -1,4 +1,7 @@
 name: Acceptance tests
+permissions:
+  contents: read
+  pull-requests: read
 
 on:
   pull_request:
@@ -22,6 +25,7 @@ concurrency:
 
 jobs:
   check-deploy:
+    name: Analyze deploy string
     runs-on: ubuntu-22.04
     outputs:
       pr-contains-string: ${{ steps.deploy-comment.outputs.pr-contains-string }}
@@ -43,9 +47,12 @@ jobs:
           pr_ref: ${{ github.event.number }}
 
   deploy-pr:
-    needs: [check-deploy]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
+    name: Deploy
     runs-on: ubuntu-22.04
+    needs: [check-deploy]
+    permissions:
+      pull-requests: write
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
     environment:
       name: renku-ci-ui-${{ github.event.number }}
       url: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
@@ -94,25 +101,11 @@ jobs:
           amalthea_sessions: "${{ needs.check-deploy.outputs.amalthea-sessions }}"
           extra_values: "${{ needs.check-deploy.outputs.extra-values }}"
 
-  selenium-acceptance-tests:
+  legacy-cypress-acceptance-tests:
+    name: Legacy Cypress tests
+    runs-on: ubuntu-22.04
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: SwissDataScienceCenter/renku-actions/test-renku@v1.14.1
-        with:
-          kubeconfig: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
-          renku-release: renku-ci-ui-${{ github.event.number }}
-          gitlab-token: ${{ secrets.DEV_GITLAB_TOKEN }}
-          s3-results-access-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_ACCESS_KEY }}
-          s3-results-secret-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_SECRET_KEY }}
-          test-timeout-mins: "60"
-
-  cypress-acceptance-tests:
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
-    needs: [check-deploy, deploy-pr]
-    runs-on: ubuntu-22.04
-
     strategy:
       fail-fast: false
       matrix:
@@ -125,7 +118,6 @@ jobs:
           - checkWorkflows
           - rstudioSession
           - dashboardV2
-
     steps:
       - name: Extract Renku repository reference
         run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
@@ -136,10 +128,39 @@ jobs:
           renku-release: renku-ci-ui-${{ github.event.number }}
           test-user-password: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
 
+  cypress-acceptance-tests:
+    name: Cypress tests
+    runs-on: ubuntu-22.04
+    needs: [check-deploy, deploy-pr]
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        tests:
+          - anonymousNavigation
+          - dashboardV2
+          - groupBasics
+          - projectBasics
+          - projectResources
+          - searchEntities
+          - sessionBasics
+    steps:
+      - name: Extract Renku repository reference
+        run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
+      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.14.0
+        with:
+          e2e-target: ${{ matrix.tests }}
+          renku-reference: ${{ env.RENKU_REFERENCE }}
+          renku-release: renku-ci-ui-${{ github.event.number }}
+          test-user-password: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
+
   cleanup:
+    name: Cleanup
+    runs-on: ubuntu-22.04
     needs: check-deploy
     if: github.event.action == 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
-    runs-on: ubuntu-22.04
+    permissions:
+      pull-requests: write
     steps:
       - name: Find deplyoment url
         uses: peter-evans/find-comment@v3
