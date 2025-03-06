@@ -260,16 +260,16 @@ function MigrationModal({
           keywords: tagList,
           repositories: [projectMetadata.httpUrl ?? ""] as RepositoriesList,
         },
-        sessionLauncher: {
-          containerImage,
+        session_launcher: {
+          container_image: containerImage,
           name: `${templateName ?? data.name} ${nowFormatted}`,
-          defaultUrl: projectConfig?.config?.sessions?.defaultUrl ?? "",
+          default_url: projectConfig?.config?.sessions?.defaultUrl ?? "",
           working_directory: MIGRATION_WORKING_DIRECTORY,
           mount_directory: MIGRATION_MOUNT_DIRECTORY,
           port: MIGRATION_PORT,
           command: commandFormatted.data,
           args: argsFormatted.data,
-          resourceClassId: resourceClass?.id,
+          resource_class_id: resourceClass?.id,
         },
       };
       migrateProject({

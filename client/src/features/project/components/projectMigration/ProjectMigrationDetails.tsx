@@ -88,11 +88,11 @@ export function DetailsMigration({
     </div>
   );
   const resourceClassInfo = (
-    <div>
-      <span>- Resource class:</span>{" "}
+    <div className={cx("d-flex", "flex-row", "gap-2")}>
+      <span>- Resource class:</span>
       {resourceClass ? (
         <>
-          {resourceClass?.name} |{" "}
+          <span>{resourceClass?.name} |</span>
           <SessionRowResourceRequests resourceRequests={resourceClassData} />
         </>
       ) : (
