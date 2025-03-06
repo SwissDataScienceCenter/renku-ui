@@ -418,6 +418,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
             <div className={cx("d-flex", "justify-content-end")}>
               <Button
                 color="primary"
+                data-cy="project-update-button"
                 disabled={isUpdating || !isDirty}
                 type="submit"
               >
@@ -440,7 +441,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
 
 function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
   return (
-    <Card id="general">
+    <Card data-cy="project-settings-general" id="general">
       <CardHeader>
         <h4 className="m-0">
           <Sliders className={cx("me-1", "bi")} />

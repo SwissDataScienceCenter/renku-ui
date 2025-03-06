@@ -42,13 +42,23 @@ export default function ProjectPageNav({ project }: { project: Project }) {
     <>
       <Nav tabs>
         <NavItem>
-          <RenkuNavLinkV2 end to={projectUrl} title="Overview">
+          <RenkuNavLinkV2
+            data-cy="project-overview-link"
+            end
+            to={projectUrl}
+            title="Overview"
+          >
             <Eye className={cx("bi", "me-1")} />
             Overview
           </RenkuNavLinkV2>
         </NavItem>
         <NavItem>
-          <RenkuNavLinkV2 end to={projectSettingsUrl} title="Settings">
+          <RenkuNavLinkV2
+            data-cy="project-settings-link"
+            end
+            to={projectSettingsUrl}
+            title="Settings"
+          >
             <Sliders className={cx("bi", "me-1")} />
             Settings
           </RenkuNavLinkV2>

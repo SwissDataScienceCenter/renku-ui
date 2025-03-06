@@ -79,10 +79,11 @@ export default function SessionIframe({
           </p>
         )}
         <iframe
-          ref={ref}
           className={cx("d-block", "w-100")}
+          data-cy="session-iframe"
           height={height}
           id="session-iframe"
+          ref={ref}
           referrerPolicy="origin"
           sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
           src={secureUrl}

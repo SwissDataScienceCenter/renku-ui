@@ -270,7 +270,11 @@ export default function NewSessionLauncherModal({
 
 const ConfirmationCreate = () => {
   return (
-    <SuccessAlert dismissible={false} timeout={0}>
+    <SuccessAlert
+      data-cy="session-launcher-creation-success"
+      dismissible={false}
+      timeout={0}
+    >
       <p className="mb-0">Session launcher was created successfully!</p>
     </SuccessAlert>
   );

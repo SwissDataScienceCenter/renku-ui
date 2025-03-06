@@ -110,6 +110,7 @@ function GroupDeleteConfirmation({
         </Button>
         <Button
           color="danger"
+          data-cy="group-delete-confirm-button"
           disabled={typedName !== group.slug.trim()}
           onClick={onDelete}
         >
@@ -257,6 +258,7 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
               <Button
                 className="ms-auto"
                 color="outline-danger"
+                data-cy="group-delete-button"
                 onClick={toggle}
               >
                 Delete
@@ -271,6 +273,7 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
             enabled={
               <Button
                 color="primary"
+                data-cy="group-update-button"
                 disabled={isUpdating || !isDirty}
                 type="submit"
               >

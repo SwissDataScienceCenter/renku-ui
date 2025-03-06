@@ -40,22 +40,22 @@ import { SessionLauncherForm } from "../../sessionsV2.types";
 
 function FormField<T extends FieldValues>({
   control,
-  name,
-  label,
-  placeholder,
   errors,
   info,
-  type = "text",
+  label,
+  name,
+  placeholder,
   rules,
+  type = "text",
 }: {
   control: Control<T>;
-  name: Path<T>;
-  label: ReactNode;
-  placeholder?: string;
   errors?: FieldErrors<T>;
   info: string;
-  type: InputType;
+  label: ReactNode;
+  name: Path<T>;
+  placeholder?: string;
   rules?: ControllerProps<T>["rules"];
+  type: InputType;
 }) {
   return (
     <>
@@ -74,16 +74,17 @@ function FormField<T extends FieldValues>({
         rules={rules}
         render={({ field }) => (
           <Input
-            id={`addSessionLauncher${name}`}
-            type={type}
-            placeholder={placeholder}
             className={cx(errors?.[name] && "is-invalid")}
+            data-cy={`session-launcher-field-${name}`}
+            id={`addSessionLauncher${name}`}
+            placeholder={placeholder}
+            type={type}
             {...field}
           />
         )}
       />
       {errors?.[name] && (
-        <div className="invalid-feedback d-block">
+        <div className={cx("d-block", "invalid-feedback")}>
           {errors[name]?.message
             ? errors[name]?.message?.toString()
             : `Please provide a valid value for ${name}`}
@@ -128,6 +129,7 @@ function JsonField<T extends FieldValues>({
         render={({ field }) => (
           <textarea
             className={cx("w-100 form-control", errors?.[name] && "is-invalid")}
+            data-cy={`session-launcher-field-${name}`}
             id={`addSessionLauncher${name}`}
             rows={2}
             {...field}

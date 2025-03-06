@@ -253,6 +253,13 @@ export function SessionView({
     ? Object.keys(sessions)[0]
     : "nn";
 
+  const userLauncherResourcePool = useMemo(
+    () =>
+      resourcePools?.find((pool) =>
+        pool.classes.find((c) => c.id == launcher?.resource_class_id)
+      ),
+    [launcher, resourcePools]
+  );
   const userLauncherResourceClass = useMemo(
     () =>
       resourcePools
@@ -265,6 +272,7 @@ export function SessionView({
     !isLoadingLauncherResourceClass && launcherResourceClass ? (
       <SessionRowResourceRequests
         resourceRequests={{
+          poolName: userLauncherResourcePool?.name,
           name: launcherResourceClass.name,
           cpu: launcherResourceClass.cpu,
           memory: launcherResourceClass.memory,

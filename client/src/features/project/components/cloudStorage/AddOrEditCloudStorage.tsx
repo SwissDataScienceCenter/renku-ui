@@ -235,6 +235,7 @@ export function AddStorageAdvanced({
               type="string"
               {...field}
               className="form-control"
+              data-cy="data-connector-source-path"
               onChange={(e) => {
                 field.onChange(e);
                 onSourcePathChange(e.target.value);
@@ -983,6 +984,7 @@ export function AddStorageOptions({
             type="string"
             {...field}
             className="form-control"
+            data-cy="data-connector-source-path"
             onChange={(e) => {
               field.onChange(e);
               onSourcePathChange(e.target.value);
