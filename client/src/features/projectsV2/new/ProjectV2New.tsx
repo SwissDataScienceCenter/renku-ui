@@ -73,10 +73,10 @@ export default function ProjectV2New() {
         unmountOnClose={true}
         toggle={toggleModal}
       >
-        <ModalHeader tag="div" toggle={toggleModal}>
-          <h2>
-            <Folder className="bi" /> Create a new project
-          </h2>
+        <ModalHeader toggle={toggleModal}>
+          <Folder className="bi" /> Create a new project
+        </ModalHeader>
+        <ModalHeader tag="div">
           <p className={cx("fs-6", "fw-normal", "mb-0")}>
             A Renku project groups together data, code, and compute resources
             for you and your collaborators.
