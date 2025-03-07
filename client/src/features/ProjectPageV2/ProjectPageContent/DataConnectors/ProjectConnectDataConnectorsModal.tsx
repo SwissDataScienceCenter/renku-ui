@@ -92,8 +92,11 @@ export default function ProjectConnectDataConnectorsModal({
         toggle={toggle}
         data-cy="project-data-connector-connect-header"
       >
-        <ProjectConnectDataConnectorModalHeader mode={mode} setMode={setMode} />
+        <ProjectConnectDataConnectorModalTitle />
       </ModalHeader>
+      <div className="modal-header">
+        <ProjectConnectDataConnectorModeSwitch mode={mode} setMode={setMode} />
+      </div>
       {mode === "create" ? (
         <ProjectCreateDataConnectorBodyAndFooter
           {...{
@@ -117,13 +120,7 @@ export default function ProjectConnectDataConnectorsModal({
   );
 }
 
-function ProjectConnectDataConnectorModalHeader({
-  mode,
-  setMode,
-}: {
-  mode: ProjectConnectDataConnectorMode;
-  setMode: (mode: ProjectConnectDataConnectorMode) => void;
-}) {
+function ProjectConnectDataConnectorModalTitle() {
   const { flatDataConnector, cloudStorageState } = useAppSelector(
     (state) => state.dataConnectorFormSlice
   );
@@ -136,51 +133,58 @@ function ProjectConnectDataConnectorModalHeader({
       : "";
   return (
     <>
-      <div>
-        <Database className={cx("bi", "me-1")} /> Link or create data connector{" "}
-        {title.trim()}
-      </div>
-      <div className="mt-3">
-        <ButtonGroup>
-          <Input
-            type="radio"
-            className="btn-check"
-            id="project-data-controller-mode-link"
-            value="link"
-            checked={mode === "link"}
-            onChange={() => {
-              setMode("link");
-            }}
-          />
-          <Label
-            data-cy="project-data-controller-mode-link"
-            for="project-data-controller-mode-link"
-            className={cx("btn", "btn-outline-primary")}
-          >
-            <NodePlus className={cx("bi", "me-1")} />
-            Link a data connector
-          </Label>
-          <Input
-            type="radio"
-            className="btn-check"
-            id="project-data-controller-mode-create"
-            value="create"
-            checked={mode === "create"}
-            onChange={() => {
-              setMode("create");
-            }}
-          />
-          <Label
-            data-cy="project-data-controller-mode-create"
-            for="project-data-controller-mode-create"
-            className={cx("btn", "btn-outline-primary")}
-          >
-            <PlusLg className={cx("bi", "me-1")} />
-            Create a data connector
-          </Label>
-        </ButtonGroup>
-      </div>
+      <Database className={cx("bi", "me-1")} /> Link or create data connector{" "}
+      {title.trim()}
     </>
+  );
+}
+
+function ProjectConnectDataConnectorModeSwitch({
+  mode,
+  setMode,
+}: {
+  mode: ProjectConnectDataConnectorMode;
+  setMode: (mode: ProjectConnectDataConnectorMode) => void;
+}) {
+  return (
+    <ButtonGroup>
+      <Input
+        type="radio"
+        className="btn-check"
+        id="project-data-controller-mode-link"
+        value="link"
+        checked={mode === "link"}
+        onChange={() => {
+          setMode("link");
+        }}
+      />
+      <Label
+        data-cy="project-data-controller-mode-link"
+        for="project-data-controller-mode-link"
+        className={cx("btn", "btn-outline-primary", "mb-0")}
+      >
+        <NodePlus className={cx("bi", "me-1")} />
+        Link a data connector
+      </Label>
+      <Input
+        type="radio"
+        className="btn-check"
+        id="project-data-controller-mode-create"
+        value="create"
+        checked={mode === "create"}
+        onChange={() => {
+          setMode("create");
+        }}
+      />
+      <Label
+        data-cy="project-data-controller-mode-create"
+        for="project-data-controller-mode-create"
+        className={cx("btn", "btn-outline-primary", "mb-0")}
+      >
+        <PlusLg className={cx("bi", "me-1")} />
+        Create a data connector
+      </Label>
+    </ButtonGroup>
   );
 }
 

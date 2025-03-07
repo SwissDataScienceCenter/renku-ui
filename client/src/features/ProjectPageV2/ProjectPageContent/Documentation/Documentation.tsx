@@ -208,10 +208,8 @@ function DocumentationModal({
       toggle={safeToggle}
     >
       <ModalHeader toggle={toggle} data-cy="project-documentation-modal-header">
-        <div>
-          <FileEarmarkText className={cx("me-1", "bi")} />
-          Documentation
-        </div>
+        <FileEarmarkText className={cx("me-1", "bi")} />
+        Documentation
       </ModalHeader>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalBody
