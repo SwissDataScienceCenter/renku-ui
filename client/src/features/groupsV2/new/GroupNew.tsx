@@ -70,10 +70,10 @@ export default function GroupNew() {
         unmountOnClose={true}
         toggle={toggleModal}
       >
-        <ModalHeader tag="div" toggle={toggleModal}>
-          <h2>
-            <People className="bi" /> Create a new group
-          </h2>
+        <ModalHeader toggle={toggleModal}>
+          <People className="bi" /> Create a new group
+        </ModalHeader>
+        <ModalHeader tag="div">
           <p className={cx("fs-6", "fw-normal", "mb-0")}>
             Groups let you group together related projects and control who can
             access them.
