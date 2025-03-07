@@ -1,4 +1,3 @@
-
 name: Add Issues to triage
 on:
   issues:
@@ -6,7 +5,7 @@ on:
       - opened
 jobs:
   add_to_project:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Add to triage board
         uses: actions/add-to-project@main
