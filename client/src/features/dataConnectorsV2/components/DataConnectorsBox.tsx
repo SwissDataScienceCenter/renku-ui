@@ -332,7 +332,7 @@ function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
     <PermissionsGuard
       disabled={<p>This group has no visible data connectors.</p>}
       enabled={
-        <p>
+        <p className="text-body-secondary">
           Add published datasets from data repositories, and connect to cloud
           storage to read and write custom data.
         </p>
@@ -348,7 +348,7 @@ function AddEmptyListForUserNamespace({ namespace }: { namespace: string }) {
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
-      <p>
+      <p className="text-body-secondary">
         Add published datasets from data repositories, and connect to cloud
         storage to read and write custom data.
       </p>

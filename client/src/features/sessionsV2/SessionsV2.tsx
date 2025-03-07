@@ -141,7 +141,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       </CardHeader>
       <CardBody>
         {errorAlert}
-        <p>
+        <p className="text-body-secondary">
           {totalSessions > 0
             ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
             : "Define interactive environments in which to do your work and share it  with others."}

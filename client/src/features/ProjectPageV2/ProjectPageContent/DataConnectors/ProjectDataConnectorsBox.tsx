@@ -87,7 +87,7 @@ function ProjectDataConnectorBoxContent({
         />
         <CardBody>
           {data.length === 0 && (
-            <p className="m-0">
+            <p className={cx("m-0", "text-body-secondary")}>
               Add published datasets from data repositories, and connect to
               cloud storage to read and write custom data.
             </p>
