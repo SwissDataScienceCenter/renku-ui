@@ -1,32 +1,13 @@
 ---
-name: "\U0001F41E Bug report"
-about: Create a report to help us improve
-title: ''
-labels: bug, status/triage
-assignees: ''
-
+name: "New issue - for UI maintainers"
+about: Create a new UI issue. This template is for UI maintainers.
+title: ""
+labels: ""
+assignees: ""
 ---
 
 <!--
-Welcome! Thanks for taking time to create an issue. This template will
-guide you through providing information necessary to fix the problem.
+We encourage using the Discussions tab for reporting bugs, suggesting new ideas, or asking questions.
+
+A Maintainer will later create an issue, or update existing ones, based on the outcome of the discussion.
 -->
-
-## Description
-
-<!--
-Describe the bug clearly and concisely. Include screenshots if possible and/or
-copy-paste any relevant error.
--->
-
-## Reproduce
-
-<!--
-Describe step-by-step instructions to reproduce the behavior.
-Consider adding a link to an example and including information on the browser and the OS.
--->
-
-1. Go to "http://renkulab.io/relevant-page"
-2. Click on "..."
-3. Scroll down to "..."
-4. See error "..."
