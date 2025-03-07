@@ -32,7 +32,6 @@ import { Project } from "../../../projectsV2/api/projectV2.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import AddCodeRepositoryModal from "./AddCodeRepositoryModal";
 import { RepositoryItem } from "./CodeRepositoryDisplay";
-import textStyles from "../../../ProjectPageV2/utils/TextStyles.module.scss";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
   const permissions = useProjectPermissions({ projectId: project.id });
@@ -83,7 +82,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
       </CardHeader>
       <CardBody>
         {totalRepositories === 0 ? (
-          <p className={cx("m-0", textStyles.textDescribe)}>
+          <p className={cx("m-0", "text-body-secondary")}>
             Connect code repositories to save and share code.
           </p>
         ) : (

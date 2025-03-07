@@ -47,7 +47,6 @@ import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import DocumentationInput from "./DocumentationInput";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import styles from "./Documentation.module.scss";
-import textStyles from "../../utils/TextStyles.module.scss";
 
 // Taken from src/features/projectsV2/api/projectV2.openapi.json
 const DESCRIPTION_MAX_LENGTH = 5000;
@@ -107,7 +106,7 @@ export default function Documentation({ project }: DocumentationProps) {
             {project.documentation ? (
               <LazyRenkuMarkdown markdownText={project.documentation} />
             ) : (
-              <p className={cx("m-0", textStyles.textDescribe)}>
+              <p className={cx("m-0", "text-body-secondary")}>
                 Describe your project, so others can understand what it does and
                 how to use it.
               </p>

@@ -44,8 +44,6 @@ import {
 import DataConnectorModal from "./DataConnectorModal";
 import DataConnectorBoxListDisplay from "./DataConnectorsBoxListDisplay";
 
-import textStyles from "../../ProjectPageV2/utils/TextStyles.module.scss";
-
 const DEFAULT_PER_PAGE = 12;
 const DEFAULT_PAGE_PARAM = "page";
 
@@ -334,7 +332,7 @@ function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
     <PermissionsGuard
       disabled={<p>This group has no visible data connectors.</p>}
       enabled={
-        <p className={cx(textStyles.textDescribe)}>
+        <p className="text-body-secondary">
           Add published datasets from data repositories, and connect to cloud
           storage to read and write custom data.
         </p>
@@ -350,7 +348,7 @@ function AddEmptyListForUserNamespace({ namespace }: { namespace: string }) {
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
-      <p className={cx(textStyles.textDescribe)}>
+      <p className="text-body-secondary">
         Add published datasets from data repositories, and connect to cloud
         storage to read and write custom data.
       </p>

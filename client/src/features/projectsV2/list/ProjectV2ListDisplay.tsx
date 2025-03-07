@@ -31,7 +31,6 @@ import { useGetUserQuery } from "../../usersV2/api/users.api";
 import { NamespaceKind } from "../api/namespace.api";
 import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
 import ProjectShortHandDisplay from "../show/ProjectShortHandDisplay";
-import textStyles from "../../ProjectPageV2/utils/TextStyles.module.scss";
 
 const DEFAULT_PER_PAGE = 5;
 const DEFAULT_PAGE_PARAM = "page";
@@ -262,7 +261,7 @@ function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
     <PermissionsGuard
       disabled={<p>This group has no visible projects.</p>}
       enabled={
-        <p className={cx(textStyles.textDescribe)}>
+        <p className="text-body-secondary">
           Collaborate on projects with anyone, with data, code, and compute
           together in one place.
         </p>
@@ -278,7 +277,7 @@ function AddEmptyListForUserNamespace({ namespace }: { namespace: string }) {
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
-      <p className={cx(textStyles.textDescribe)}>
+      <p className="text-body-secondary">
         Collaborate on projects with anyone, with data, code, and compute
         together in one place.
       </p>

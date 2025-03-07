@@ -51,7 +51,6 @@ import { SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
-import textStyles from "../ProjectPageV2/utils/TextStyles.module.scss";
 
 export function getShowSessionUrlByProject(
   project: Project,
@@ -142,7 +141,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       </CardHeader>
       <CardBody>
         {errorAlert}
-        <p className={cx(textStyles.textDescribe)}>
+        <p className="text-body-secondary">
           {totalSessions > 0
             ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
             : "Define interactive environments in which to do your work and share it  with others."}

@@ -37,7 +37,6 @@ import {
 import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
 
 import styles from "./DashboardV2Sessions.module.scss";
-import textStyles from "../ProjectPageV2/utils/TextStyles.module.scss";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
@@ -91,7 +90,7 @@ function ErrorState({
 
 function NoSessionsState() {
   return (
-    <p className={cx("mb-0", textStyles.textDescribe)}>
+    <p className={cx("mb-0", "text-body-secondary")}>
       No running sessions. Create or explore projects to launch a session.
     </p>
   );

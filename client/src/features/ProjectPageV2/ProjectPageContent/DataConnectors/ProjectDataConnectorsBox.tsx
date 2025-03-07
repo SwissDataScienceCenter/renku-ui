@@ -43,7 +43,6 @@ import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../../proje
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
-import textStyles from "../../../ProjectPageV2/utils/TextStyles.module.scss";
 
 interface DataConnectorListDisplayProps {
   project: Project;
@@ -88,7 +87,7 @@ function ProjectDataConnectorBoxContent({
         />
         <CardBody>
           {data.length === 0 && (
-            <p className={cx("m-0", textStyles.textDescribe)}>
+            <p className={cx("m-0", "text-body-secondary")}>
               Add published datasets from data repositories, and connect to
               cloud storage to read and write custom data.
             </p>

@@ -67,7 +67,6 @@ import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
 
 import DashboardStyles from "./DashboardV2.module.scss";
-import textStyles from "../ProjectPageV2/utils/TextStyles.module.scss";
 
 export default function DashboardV2() {
   const userLogged = useLegacySelector<boolean>(
@@ -260,7 +259,7 @@ function ProjectList({ data, error, isLoading }: ProjectListProps) {
       <RtkOrNotebooksError error={error} />
     </div>
   ) : !hasProjects ? (
-    <div className={cx(textStyles.textDescribe)}>
+    <div className="text-body-secondary">
       Collaborate on projects with anyone, with data, code, and compute together
       in one place.
     </div>
@@ -492,7 +491,7 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
       <RtkOrNotebooksError error={error} />
     </div>
   ) : !hasGroups ? (
-    <div className={cx(textStyles.textDescribe)}>
+    <div className="text-body-secondary">
       Share and organize projects & data with your team.
     </div>
   ) : null;
