@@ -90,7 +90,7 @@ function ErrorState({
 
 function NoSessionsState() {
   return (
-    <p className="mb-0">
+    <p className={cx("mb-0", "text-body-secondary")}>
       No running sessions. Create or explore projects to launch a session.
     </p>
   );

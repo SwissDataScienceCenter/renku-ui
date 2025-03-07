@@ -71,7 +71,7 @@ export default function DataConnectorModalBody({
   return (
     <>
       {!flatDataConnector.dataConnectorId && (
-        <p>
+        <p className="text-body-secondary">
           Add published datasets from data repositories for use in your project.
           Or, connect to cloud storage to read and write custom data.
         </p>
