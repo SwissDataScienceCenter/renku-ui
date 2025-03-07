@@ -1,0 +1,18 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "../../../styles/bootstrap/_custom_bootstrap_variables.scss";
+
+.RenkuV1btnCheck:checked + label {
+  background-color: #{$rk-green} !important;
+  color: white !important;
+  border-color: #{$rk-green} !important;
+}
+
+.RenkuV1inputGroup {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.RenkuV1input:focus {
+  border: 1px solid var(--bs-rk-green) !important;
+}
