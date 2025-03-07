@@ -430,7 +430,7 @@ export default function WhatIsRenku({
 }: WhatIsRenkuProps) {
   return (
     <div id="rk-anon-home-what-is-renku">
-      <div id={styles.featContainer} className="rk-anon-home-section-content">
+      <div id={styles.featContainer} className="container">
         <ShareFeatSection projectPath={projectPath} />
         <EnvFeatSection projectPath={projectPath} />
         <ComputeFeatSection projectPath={projectPath} />
