@@ -256,6 +256,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
     notifications,
   ]);
 
+  const formId = "project-settings-form";
   return (
     <div>
       {error && <RtkErrorAlert error={error} />}
@@ -267,6 +268,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
 
       <Form
         className={cx("d-flex", "flex-column", "gap-3")}
+        id={formId}
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -317,6 +319,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           }
           enabled={
             <ProjectVisibilityFormField
+              formId={formId}
               name="visibility"
               control={control}
               errors={errors}

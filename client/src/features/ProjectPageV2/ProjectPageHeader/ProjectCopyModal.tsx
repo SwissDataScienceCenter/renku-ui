@@ -106,6 +106,8 @@ export default function ProjectCopyModal({
     },
     [copyProject, project.id]
   );
+
+  const formId = "project-copy-form";
   return (
     <Modal
       data-cy="copy-modal"
@@ -115,7 +117,7 @@ export default function ProjectCopyModal({
       size="lg"
       centered
     >
-      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+      <Form id={formId} noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggle}>
           <span className="fw-normal">Make a copy of </span>
           {project.namespace}/{project.slug}
@@ -148,6 +150,7 @@ export default function ProjectCopyModal({
             watch={watch}
           />
           <ProjectVisibilityFormField
+            formId={formId}
             name="visibility"
             control={control}
             errors={errors}

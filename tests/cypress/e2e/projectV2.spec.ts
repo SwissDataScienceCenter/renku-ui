@@ -23,9 +23,23 @@ describe("Add new v2 project", () => {
   const slug = "new-project";
 
   beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects();
     fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .namespaces()
+      .projects()
+      .listProjectV2Members()
+      .getProjectV2Permissions()
+      .landingUserProjects()
+      .readProjectV2()
       .createProjectV2({
         slug,
         namespace: "user1-uuid",
@@ -36,16 +50,24 @@ describe("Add new v2 project", () => {
   });
 
   it("create a new project", () => {
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.getDataCy("project-settings-link").click();
+    cy.getDataCy("navbar-new-entity").click();
+    cy.getDataCy("navbar-project-new").click();
+
     cy.contains("Create a new project").should("be.visible");
-    cy.getDataCy("project-name-input").clear().type(newProjectTitle);
-    cy.getDataCy("project-slug-toggle").click();
-    cy.getDataCy("project-slug-input").should("have.value", slug);
-    cy.wait("@listNamespaceV2");
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
-      .first()
-      .click();
-    cy.contains("Visibility").click();
-    cy.contains("button", "Create").click();
+    cy.getDataCy("new-project-modal").within(() => {
+      cy.getDataCy("project-name-input").clear().type(newProjectTitle);
+      cy.getDataCy("project-slug-toggle").click();
+      cy.getDataCy("project-slug-input").should("have.value", slug);
+      cy.wait("@listNamespaceV2");
+      cy.findReactSelectOptions("project-namespace-input", "namespace-select")
+        .first()
+        .click();
+      cy.contains("Visibility").click();
+      cy.contains("button", "Create").click();
+    });
 
     cy.wait("@createProjectV2");
     cy.location("pathname").should("eq", `/v2/projects/user1-uuid/${slug}`);

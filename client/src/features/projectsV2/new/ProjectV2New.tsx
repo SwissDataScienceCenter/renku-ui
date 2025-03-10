@@ -168,12 +168,14 @@ function ProjectV2CreationDetails() {
 
   const url = `renkulab.io/v2/projects/${currentNamespace ?? "<Owner>"}/`;
 
+  const formId = "project-creation-form";
+
   return (
     <>
       <ModalBody>
         <Form
           data-cy="project-creation-form"
-          id="project-creation-form"
+          id={formId}
           onSubmit={handleSubmit(onSubmit)}
         >
           <FormGroup className="d-inline" disabled={result.isLoading}>
@@ -209,6 +211,7 @@ function ProjectV2CreationDetails() {
 
               <div className="mb-1">
                 <ProjectVisibilityFormField
+                  formId={formId}
                   name="visibility"
                   control={control}
                   errors={errors}
