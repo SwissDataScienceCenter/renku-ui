@@ -202,7 +202,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
         </Row>
       </Link>
       {/* NOTE: The session actions button is visually placed within the link card, but its DOM tree is kept separate. */}
-      <div className={cx(styles.sessionButton, "position-absolute", "z-1")}>
+      <div className={cx(styles.sessionButton, "position-absolute")}>
         <ActiveSessionButton
           className="my-auto"
           session={session}
