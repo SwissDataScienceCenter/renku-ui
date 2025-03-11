@@ -26,7 +26,7 @@ concurrency:
 jobs:
   check-deploy:
     name: Analyze deploy string
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       pr-contains-string: ${{ steps.deploy-comment.outputs.pr-contains-string }}
       renku: ${{ steps.deploy-comment.outputs.renku}}
@@ -48,7 +48,7 @@ jobs:
 
   deploy-pr:
     name: Deploy
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [check-deploy]
     permissions:
       pull-requests: write
@@ -103,7 +103,7 @@ jobs:
 
   legacy-cypress-acceptance-tests:
     name: Legacy Cypress tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
     strategy:
@@ -130,7 +130,7 @@ jobs:
 
   cypress-acceptance-tests:
     name: Cypress tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
     strategy:
@@ -156,7 +156,7 @@ jobs:
 
   cleanup:
     name: Cleanup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: check-deploy
     if: github.event.action == 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
     permissions:
