@@ -45,8 +45,8 @@ import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/pro
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import DocumentationInput from "./DocumentationInput";
-import styles from "./Documentation.module.scss";
 import { ExternalLink } from "../../../../components/ExternalLinks";
+import styles from "./Documentation.module.scss";
 
 // Taken from src/features/projectsV2/api/projectV2.openapi.json
 const DESCRIPTION_MAX_LENGTH = 5000;
@@ -106,7 +106,7 @@ export default function Documentation({ project }: DocumentationProps) {
             {project.documentation ? (
               <LazyRenkuMarkdown markdownText={project.documentation} />
             ) : (
-              <p className={cx("m-0", "text-muted", "fst-italic")}>
+              <p className={cx("m-0", "text-body-secondary")}>
                 Describe your project, so others can understand what it does and
                 how to use it.
               </p>

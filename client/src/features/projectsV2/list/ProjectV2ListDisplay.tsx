@@ -261,7 +261,7 @@ function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
     <PermissionsGuard
       disabled={<p>This group has no visible projects.</p>}
       enabled={
-        <p>
+        <p className="text-body-secondary">
           Collaborate on projects with anyone, with data, code, and compute
           together in one place.
         </p>
@@ -277,7 +277,7 @@ function AddEmptyListForUserNamespace({ namespace }: { namespace: string }) {
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
-      <p>
+      <p className="text-body-secondary">
         Collaborate on projects with anyone, with data, code, and compute
         together in one place.
       </p>

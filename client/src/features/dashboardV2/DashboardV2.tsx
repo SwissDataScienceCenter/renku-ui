@@ -259,7 +259,7 @@ function ProjectList({ data, error, isLoading }: ProjectListProps) {
       <RtkOrNotebooksError error={error} />
     </div>
   ) : !hasProjects ? (
-    <div>
+    <div className="text-body-secondary">
       Collaborate on projects with anyone, with data, code, and compute together
       in one place.
     </div>
@@ -491,7 +491,9 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
       <RtkOrNotebooksError error={error} />
     </div>
   ) : !hasGroups ? (
-    <div>Share and organize projects & data with your team.</div>
+    <div className="text-body-secondary">
+      Share and organize projects & data with your team.
+    </div>
   ) : null;
 
   const groupFooter = hasGroups ? (
