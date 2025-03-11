@@ -38,12 +38,12 @@ jobs:
       amalthea: ${{ steps.deploy-comment.outputs.amalthea}}
       amalthea-sessions: ${{ steps.deploy-comment.outputs.amalthea-sessions}}
       test-enabled: ${{ steps.deploy-comment.outputs.test-enabled}}
+      test-legacy-enabled: ${{ steps.deploy-comment.outputs.test-legacy-enabled}}
       extra-values: ${{ steps.deploy-comment.outputs.extra-values}}
     steps:
       - id: deploy-comment
         uses: SwissDataScienceCenter/renku-actions/check-pr-description@v1.14.1
         with:
-          string: /deploy
           pr_ref: ${{ github.event.number }}
 
   deploy-pr:
@@ -105,7 +105,7 @@ jobs:
     name: Legacy Cypress tests
     runs-on: ubuntu-24.04
     needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-legacy-enabled == 'true'
     strategy:
       fail-fast: false
       matrix:
