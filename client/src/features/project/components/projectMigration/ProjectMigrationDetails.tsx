@@ -200,7 +200,8 @@ export function DetailsMigration({
               <span className="fw-bold">
                 <BarChartSteps className={cx("bi", "me-1")} /> Workflows:{" "}
               </span>
-              Will continue to be available via the git lfs command line
+              You may continue to use Renku workflows in your session via the
+              CLI.
             </div>
             <div className="py-2">
               <span className="fw-bold">
