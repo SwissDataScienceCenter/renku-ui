@@ -318,7 +318,7 @@ export default function ProjectPageSettingsMembers({
   return (
     <Card id="members">
       <CardHeader>
-        <div className={cx("d-flex", "gap-2")}>
+        <div className={cx("d-flex", "gap-2", "justify-content-between")}>
           <h4 className="m-0">
             <PersonGear className={cx("me-1", "bi")} />
             Project Members
