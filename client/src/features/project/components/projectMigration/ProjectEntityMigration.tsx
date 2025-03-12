@@ -127,7 +127,7 @@ export function ProjectEntityMigration({
             role="button"
             showLinkIcon={true}
             title="Learn more"
-            className={cx("btn", "btn-outline-info")}
+            color="outline-info"
             url={Links.RENKU_2_LEARN_MORE}
           />
         </div>
@@ -146,7 +146,7 @@ export function ProjectEntityMigration({
             role="button"
             showLinkIcon={true}
             title="Learn more"
-            className={cx("btn", "btn-outline-warning")}
+            color="outline-warning"
             url={Links.RENKU_2_MIGRATION_INFO}
           />
         </div>
