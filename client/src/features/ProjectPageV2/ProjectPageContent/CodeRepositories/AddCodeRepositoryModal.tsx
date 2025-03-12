@@ -37,7 +37,10 @@ import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-import { validateCodeRepository } from "./repositories.utils";
+import {
+  validateCodeRepository,
+  validateNoDuplicatesInCodeRepositories,
+} from "./repositories.utils";
 
 interface AddCodeRepositoryForm {
   repositoryUrl: string;
@@ -53,7 +56,12 @@ export default function AddCodeRepositoryModal({
   toggleModal,
   isOpen,
 }: AddCodeRepositoryModalProps) {
-  const { control, handleSubmit, reset } = useForm<AddCodeRepositoryForm>();
+  const { control, handleSubmit, reset, setError } =
+    useForm<AddCodeRepositoryForm>({
+      defaultValues: {
+        repositoryUrl: "",
+      },
+    });
 
   const [updateProject, result] = usePatchProjectsByProjectIdMutation();
   const onSubmit = useCallback(
@@ -62,13 +70,19 @@ export default function AddCodeRepositoryModal({
         ? [...project.repositories]
         : [];
       repositories.push(data.repositoryUrl);
+      const validationResult =
+        validateNoDuplicatesInCodeRepositories(repositories);
+      if (typeof validationResult === "string") {
+        setError("repositoryUrl", { message: validationResult });
+        return;
+      }
       updateProject({
         "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
         projectPatch: { repositories },
       });
     },
-    [project.etag, project.id, project.repositories, updateProject]
+    [project.etag, project.id, project.repositories, setError, updateProject]
   );
 
   useEffect(() => {

@@ -18,16 +18,29 @@
 
 export function validateCodeRepository(repositoryURL: string): true | string {
   const cleaned = repositoryURL.trim();
-  const error = `The repository URL "${cleaned}" is not a valid HTTP or HTTPS URL.`;
   try {
     const parsed = new URL(cleaned);
-    if (parsed.protocol === "http" || parsed.protocol === "https") {
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
       return true;
     }
-  } catch (exception) {
-    if (!(exception instanceof TypeError)) {
-      throw exception;
+  } catch (error) {
+    if (!(error instanceof TypeError)) {
+      throw error;
     }
   }
-  return error;
+  return "The repository URL must be a valid HTTP or HTTPS URL.";
+}
+
+export function validateNoDuplicatesInCodeRepositories(
+  repositories: string[]
+): true | string {
+  const cleaned = repositories.map((repo) => repo.trim());
+  const uniqueRepos = cleaned.reduce(
+    (repos, current) => repos.add(current),
+    new Set<string>()
+  );
+  if (uniqueRepos.size === repositories.length) {
+    return true;
+  }
+  return "This repository is already included in the project.";
 }

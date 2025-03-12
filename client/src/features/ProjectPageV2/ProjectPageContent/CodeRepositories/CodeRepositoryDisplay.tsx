@@ -71,6 +71,10 @@ import repositoriesApi, {
   useGetRepositoryProbeQuery,
 } from "../../../repositories/repositories.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import {
+  validateCodeRepository,
+  validateNoDuplicatesInCodeRepositories,
+} from "./repositories.utils";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -86,9 +90,10 @@ function EditCodeRepositoryModal({
 }: EditCodeRepositoryModalProps) {
   const {
     control,
-    formState: { errors },
+    formState: { isDirty },
     handleSubmit,
     reset,
+    setError,
   } = useForm<EditCodeRepositoryForm>({
     defaultValues: { repositoryUrl },
   });
@@ -102,6 +107,12 @@ function EditCodeRepositoryModal({
       const repositories = project.repositories.map((url) =>
         url === repositoryUrl ? data.repositoryUrl : url
       );
+      const validationResult =
+        validateNoDuplicatesInCodeRepositories(repositories);
+      if (typeof validationResult === "string") {
+        setError("repositoryUrl", { message: validationResult });
+        return;
+      }
       updateProject({
         "If-Match": project.etag ?? "",
         projectId: project.id,
@@ -113,6 +124,7 @@ function EditCodeRepositoryModal({
       project.id,
       project.repositories,
       repositoryUrl,
+      setError,
       updateProject,
     ]
   );
@@ -125,9 +137,10 @@ function EditCodeRepositoryModal({
 
   useEffect(() => {
     if (!isOpen) {
+      reset();
       result.reset();
     }
-  }, [isOpen, result]);
+  }, [isOpen, reset, result]);
 
   useEffect(() => {
     reset({ repositoryUrl });
@@ -150,24 +163,29 @@ function EditCodeRepositoryModal({
                 <Controller
                   control={control}
                   name="repositoryUrl"
-                  render={({ field }) => (
-                    <Input
-                      className={cx(
-                        "form-control",
-                        errors.repositoryUrl && "is-invalid"
-                      )}
-                      id={`project-${project.id}-edit-repository-url`}
-                      data-cy="project-edit-repository-url"
-                      type="text"
-                      placeholder="https://github.com/my-org/my-repository.git"
-                      {...field}
-                    />
+                  render={({
+                    field: { ref, ...rest },
+                    fieldState: { error },
+                  }) => (
+                    <>
+                      <Input
+                        className={cx("form-control", error && "is-invalid")}
+                        data-cy="project-edit-repository-url"
+                        id={`project-${project.id}-edit-repository-url`}
+                        innerRef={ref}
+                        placeholder="https://github.com/my-org/my-repository.git"
+                        type="text"
+                        {...rest}
+                      />
+                      <div className="invalid-feedback">
+                        {error?.message
+                          ? error.message
+                          : "Please provide a valid URL."}
+                      </div>
+                    </>
                   )}
-                  rules={{ required: true }}
+                  rules={{ required: true, validate: validateCodeRepository }}
                 />
-                <div className="invalid-feedback">
-                  Please provide a valid URL.
-                </div>
               </FormGroup>
             </Col>
           </Row>
@@ -180,6 +198,7 @@ function EditCodeRepositoryModal({
           <Button
             color="primary"
             data-cy="edit-code-repository-modal-button"
+            disabled={!isDirty}
             type="submit"
           >
             {result.isLoading ? (
