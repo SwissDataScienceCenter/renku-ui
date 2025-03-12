@@ -30,12 +30,12 @@ import {
   Label,
   Modal,
   ModalBody,
-  ModalHeader,
   ModalFooter,
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import ModalHeader from "../../../../components/modal/ModalHeader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 
 import {
@@ -89,14 +89,12 @@ export default function ProjectConnectDataConnectorsModal({
       toggle={toggle}
     >
       <ModalHeader
+        title={<ProjectConnectDataConnectorModalTitle />}
         toggle={toggle}
         data-cy="project-data-connector-connect-header"
       >
-        <ProjectConnectDataConnectorModalTitle />
-      </ModalHeader>
-      <div className="modal-header">
         <ProjectConnectDataConnectorModeSwitch mode={mode} setMode={setMode} />
-      </div>
+      </ModalHeader>
       {mode === "create" ? (
         <ProjectCreateDataConnectorBodyAndFooter
           {...{

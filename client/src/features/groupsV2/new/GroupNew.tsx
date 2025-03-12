@@ -28,11 +28,11 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
-  ModalHeader,
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ModalHeader from "../../../components/modal/ModalHeader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
@@ -70,10 +70,14 @@ export default function GroupNew() {
         unmountOnClose={true}
         toggle={toggleModal}
       >
-        <ModalHeader toggle={toggleModal}>
-          <People className="bi" /> Create a new group
-        </ModalHeader>
-        <ModalHeader tag="div">
+        <ModalHeader
+          toggle={toggleModal}
+          title={
+            <>
+              <People className="bi" /> Create a new group
+            </>
+          }
+        >
           <p className={cx("fs-6", "fw-normal", "mb-0")}>
             Groups let you group together related projects and control who can
             access them.

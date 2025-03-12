@@ -29,12 +29,12 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
-  ModalHeader,
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
+import ModalHeader from "../../../components/modal/ModalHeader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
@@ -73,10 +73,14 @@ export default function ProjectV2New() {
         unmountOnClose={true}
         toggle={toggleModal}
       >
-        <ModalHeader toggle={toggleModal}>
-          <Folder className="bi" /> Create a new project
-        </ModalHeader>
-        <ModalHeader tag="div">
+        <ModalHeader
+          toggle={toggleModal}
+          title={
+            <>
+              <Folder className="bi" /> Create a new project
+            </>
+          }
+        >
           <p className={cx("fs-6", "fw-normal", "mb-0")}>
             A Renku project groups together data, code, and compute resources
             for you and your collaborators.
