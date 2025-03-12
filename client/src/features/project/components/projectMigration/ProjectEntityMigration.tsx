@@ -37,12 +37,15 @@ import {
   WarnAlert,
 } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
-import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants.ts";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import { Links } from "../../../../utils/constants/Docs.js";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { toHumanDateTime } from "../../../../utils/helpers/DateTimeUtils";
 import {
-  PostRenkuV1ProjectsByV1IdMigrationsApiArg,
+  EnvironmentArgs,
+  EnvironmentCommand,
   RepositoriesList,
   useGetRenkuV1ProjectsByV1IdMigrationsQuery,
   usePostRenkuV1ProjectsByV1IdMigrationsMutation,
@@ -94,7 +97,7 @@ export function ProjectEntityMigration({
       : "";
   }, [projectMigration]);
 
-  const projectMetadata: unknown = useLegacySelector<string>(
+  const projectMetadata = useLegacySelector<ProjectMetadata>(
     (state) => state.stateModel.project.metadata
   );
 
@@ -120,14 +123,13 @@ export function ProjectEntityMigration({
           <Link className={cx("btn", "btn-sm", "btn-info")} to={linkToProject}>
             Go to the 2.0 version of the project
           </Link>
-          <Link
-            to={Links.RENKU_2_LEARN_MORE}
+          <ExternalLink
+            role="button"
+            showLinkIcon={true}
+            title="Learn more"
             className={cx("btn", "btn-outline-info")}
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            Learn more
-          </Link>
+            url={Links.RENKU_2_LEARN_MORE}
+          />
         </div>
       </InfoAlert>
     );
@@ -140,14 +142,13 @@ export function ProjectEntityMigration({
           <Button size="sm" color="warning" onClick={toggle}>
             Migrate this project to Renku 2.0
           </Button>
-          <Link
-            to={Links.RENKU_2_MIGRATION_INFO}
+          <ExternalLink
+            role="button"
+            showLinkIcon={true}
+            title="Learn more"
             className={cx("btn", "btn-outline-warning")}
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            Learn more
-          </Link>
+            url={Links.RENKU_2_MIGRATION_INFO}
+          />
         </div>
       </WarnAlert>
       <MigrationModal
@@ -155,7 +156,7 @@ export function ProjectEntityMigration({
         toggle={toggle}
         description={description?.isLoading ? undefined : description?.value}
         tagList={tagList}
-        projectMetadata={projectMetadata as ProjectMetadata}
+        projectMetadata={projectMetadata}
       />
     </>
   );
@@ -246,7 +247,7 @@ function MigrationModal({
   const onSubmit = useCallback(
     (data: ProjectMigrationForm) => {
       if (!containerImage) return;
-      const nowFormatted = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
+      const nowFormatted = toHumanDateTime({ datetime: DateTime.now() });
       const commandFormatted = safeParseJSONStringArray(MIGRATION_COMMAND);
       const argsFormatted = safeParseJSONStringArray(MIGRATION_ARGS);
 
@@ -267,15 +268,15 @@ function MigrationModal({
           working_directory: MIGRATION_WORKING_DIRECTORY,
           mount_directory: MIGRATION_MOUNT_DIRECTORY,
           port: MIGRATION_PORT,
-          command: commandFormatted.data,
-          args: argsFormatted.data,
+          command: commandFormatted.data as EnvironmentCommand,
+          args: argsFormatted.data as EnvironmentArgs,
           resource_class_id: resourceClass?.id,
         },
       };
       migrateProject({
         projectMigrationPost: dataMigration,
         v1Id: parseInt(projectMetadata.id),
-      } as PostRenkuV1ProjectsByV1IdMigrationsApiArg);
+      });
     },
     [
       migrateProject,
@@ -346,7 +347,8 @@ function MigrationModal({
           )}
           {!containerImage && !isFetchingData && (
             <ErrorAlert dismissible={false}>
-              Container image not available, it is building or not exist
+              Container image not available, it does not exist or is currently
+              building.
             </ErrorAlert>
           )}
           {!isProjectSupported && !isFetchingData && (
