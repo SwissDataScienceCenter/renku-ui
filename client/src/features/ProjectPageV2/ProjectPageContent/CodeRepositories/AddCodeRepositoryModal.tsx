@@ -37,6 +37,7 @@ import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+import { validateCodeRepository } from "./repositories.utils";
 
 interface AddCodeRepositoryForm {
   repositoryUrl: string;
@@ -52,12 +53,7 @@ export default function AddCodeRepositoryModal({
   toggleModal,
   isOpen,
 }: AddCodeRepositoryModalProps) {
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm<AddCodeRepositoryForm>();
+  const { control, handleSubmit, reset } = useForm<AddCodeRepositoryForm>();
 
   const [updateProject, result] = usePatchProjectsByProjectIdMutation();
   const onSubmit = useCallback(
@@ -108,24 +104,29 @@ export default function AddCodeRepositoryModal({
                 <Controller
                   control={control}
                   name="repositoryUrl"
-                  render={({ field }) => (
-                    <Input
-                      className={cx(
-                        "form-control",
-                        errors.repositoryUrl && "is-invalid"
-                      )}
-                      id={`project-${project.id}-add-repository-url`}
-                      data-cy="project-add-repository-url"
-                      type="text"
-                      placeholder="https://github.com/my-org/my-repository.git"
-                      {...field}
-                    />
+                  render={({
+                    field: { ref, ...rest },
+                    fieldState: { error },
+                  }) => (
+                    <>
+                      <Input
+                        className={cx("form-control", error && "is-invalid")}
+                        data-cy="project-add-repository-url"
+                        id={`project-${project.id}-add-repository-url`}
+                        innerRef={ref}
+                        placeholder="https://github.com/my-org/my-repository.git"
+                        type="text"
+                        {...rest}
+                      />
+                      <div className="invalid-feedback">
+                        {error?.message
+                          ? error.message
+                          : "Please provide a valid URL."}
+                      </div>
+                    </>
                   )}
-                  rules={{ required: true }}
+                  rules={{ required: true, validate: validateCodeRepository }}
                 />
-                <div className="invalid-feedback">
-                  Please provide a valid URL.
-                </div>
               </FormGroup>
             </Col>
           </Row>
