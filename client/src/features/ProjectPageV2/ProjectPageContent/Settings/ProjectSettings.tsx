@@ -277,6 +277,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           enabled={
             <ProjectNameFormField
               name="name"
+              formId={formId}
               control={control}
               errors={errors}
             />
@@ -319,8 +320,8 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           }
           enabled={
             <ProjectVisibilityFormField
-              formId={formId}
               name="visibility"
+              formId={formId}
               control={control}
               errors={errors}
             />
@@ -338,6 +339,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           enabled={
             <ProjectDescriptionFormField
               name="description"
+              formId={formId}
               control={control}
               errors={errors}
             />

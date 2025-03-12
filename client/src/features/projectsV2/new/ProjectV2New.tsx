@@ -184,6 +184,7 @@ function ProjectV2CreationDetails() {
               <ProjectNameFormField
                 control={control}
                 errors={errors}
+                formId={formId}
                 name="name"
               />
 
@@ -221,6 +222,7 @@ function ProjectV2CreationDetails() {
               <ProjectDescriptionFormField
                 control={control}
                 errors={errors}
+                formId={formId}
                 name="description"
               />
 

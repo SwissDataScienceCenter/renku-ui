@@ -28,10 +28,11 @@ type SecretsMountDirectoryFieldProps<T extends FieldValues> =
 export default function SecretsMountDirectoryField<T extends FieldValues>({
   control,
   errors,
+  formId,
   name,
 }: SecretsMountDirectoryFieldProps<T>) {
-  const fieldId = `project-${name}`;
-  const fieldHelpId = `${fieldId}-help`;
+  const fieldId = `${formId}-project-${name}`;
+  const fieldHelpId = `${formId}-${fieldId}-help`;
 
   const watch = useWatch({ control, name });
 

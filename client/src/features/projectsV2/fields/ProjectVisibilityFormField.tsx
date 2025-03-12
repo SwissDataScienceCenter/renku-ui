@@ -25,16 +25,11 @@ import { Globe, Lock } from "react-bootstrap-icons";
 import { ButtonGroup, Input, Label } from "reactstrap";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 
-interface ProjectVisibilityFormFieldProps<T extends FieldValues>
-  extends GenericProjectFormFieldProps<T> {
-  formId: string;
-}
-
 export default function ProjectVisibilityFormField<T extends FieldValues>({
   control,
   formId,
   name,
-}: ProjectVisibilityFormFieldProps<T>) {
+}: GenericProjectFormFieldProps<T>) {
   return (
     <div>
       <Label className="form-label" for={`${formId}-project-visibility`}>

@@ -134,7 +134,12 @@ export default function ProjectCopyModal({
               <RtkOrNotebooksError error={copyProjectResult.error} />
             </div>
           )}
-          <ProjectNameFormField control={control} errors={errors} name="name" />
+          <ProjectNameFormField
+            control={control}
+            errors={errors}
+            formId={formId}
+            name="name"
+          />
           <ProjectNamespaceFormField
             control={control}
             entityName="project"
@@ -144,6 +149,7 @@ export default function ProjectCopyModal({
           <ProjectOwnerSlugFormField
             control={control}
             errors={errors}
+            formId={formId}
             getValues={getValues}
             name="slug"
             namespaceName="namespace"
