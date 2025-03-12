@@ -30,9 +30,9 @@ import {
   People,
   PlayCircle,
 } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
 import { Collapse } from "reactstrap";
 import { InfoAlert } from "../../../../components/Alert.jsx";
+import { ExternalLink } from "../../../../components/ExternalLinks.tsx";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Links } from "../../../../utils/constants/Docs.js";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
@@ -136,14 +136,13 @@ export function DetailsMigration({
     <div className="py-2">
       <InfoAlert dismissible={false} timeout={0}>
         This session image will not update as you make additional commits.{" "}
-        <Link
-          to={Links.RENKU_2_MIGRATION_INFO}
+        <ExternalLink
+          role="text"
+          showLinkIcon={true}
+          title="Learn more"
           className={cx("text-info")}
-          rel="noreferrer noopener"
-          target="_blank"
-        >
-          Learn more
-        </Link>
+          url={Links.RENKU_2_MIGRATION_INFO}
+        />
       </InfoAlert>
     </div>
   );

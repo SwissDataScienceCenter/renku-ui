@@ -21,7 +21,7 @@ import {
   ProjectName,
   Slug,
   Visibility,
-} from "../../../projectsV2/api/projectV2.api.ts";
+} from "../../../projectsV2/api/projectV2.api";
 
 export interface ProjectMigrationForm {
   name: ProjectName;

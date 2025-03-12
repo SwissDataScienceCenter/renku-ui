@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api.ts";
+import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api";
 import useDefaultBranchOption from "../../session/hooks/options/useDefaultBranchOption.hook";
 import useDefaultCommitOption from "../../session/hooks/options/useDefaultCommitOption.hook";
 import {
