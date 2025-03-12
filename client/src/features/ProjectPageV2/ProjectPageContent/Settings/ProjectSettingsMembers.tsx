@@ -244,21 +244,19 @@ function ProjectPageSettingsMembersList({
 
   return (
     <>
-      <ListGroup>
-        {members.map((member, idx) => {
-          return (
-            <ProjectPageSettingsMembersListItem
-              index={idx}
-              key={member.id}
-              member={member}
-              members={members}
-              numberOfOwners={numberOfOwners}
-              projectId={projectId}
-              onEdit={onEdit(member)}
-              onRemove={onRemove(member)}
-            />
-          );
-        })}
+      <ListGroup flush>
+        {members.map((member, idx) => (
+          <ProjectPageSettingsMembersListItem
+            index={idx}
+            key={member.id}
+            member={member}
+            members={members}
+            numberOfOwners={numberOfOwners}
+            projectId={projectId}
+            onEdit={onEdit(member)}
+            onRemove={onRemove(member)}
+          />
+        ))}
       </ListGroup>
       <EditProjectMemberModal
         isOpen={isEditMemberModalOpen}
