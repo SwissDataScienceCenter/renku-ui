@@ -440,26 +440,12 @@ export type ProjectPatch = {
 export type SessionName = string;
 export type ContainerImage = string;
 export type DefaultUrl = string;
-export type EnvironmentUid = number;
-export type EnvironmentGid = number;
-export type EnvironmentWorkingDirectory = string;
-export type EnvironmentMountDirectory = string;
-export type EnvironmentPort = number;
-export type EnvironmentCommand = string[];
-export type EnvironmentArgs = string[];
 export type ResourceClassId = number | null;
 export type DiskStorage = number;
 export type MigrationSessionLauncherPost = {
   name: SessionName;
   container_image: ContainerImage;
   default_url?: DefaultUrl & any;
-  uid?: EnvironmentUid & any;
-  gid?: EnvironmentGid & any;
-  working_directory?: EnvironmentWorkingDirectory;
-  mount_directory?: EnvironmentMountDirectory;
-  port?: EnvironmentPort & any;
-  command?: EnvironmentCommand;
-  args?: EnvironmentArgs;
   resource_class_id?: ResourceClassId;
   disk_storage?: DiskStorage;
 };

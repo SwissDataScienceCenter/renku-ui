@@ -1183,51 +1183,6 @@
             ],
             "default": "/lab"
           },
-          "uid": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EnvironmentUid"
-              },
-              {
-                "default": 1000
-              }
-            ],
-            "default": 1000
-          },
-          "gid": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EnvironmentGid"
-              },
-              {
-                "default": 1000
-              }
-            ],
-            "default": 1000
-          },
-          "working_directory": {
-            "$ref": "#/components/schemas/EnvironmentWorkingDirectory"
-          },
-          "mount_directory": {
-            "$ref": "#/components/schemas/EnvironmentMountDirectory"
-          },
-          "port": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EnvironmentPort"
-              },
-              {
-                "default": 8080
-              }
-            ],
-            "default": 8080
-          },
-          "command": {
-            "$ref": "#/components/schemas/EnvironmentCommand"
-          },
-          "args": {
-            "$ref": "#/components/schemas/EnvironmentArgs"
-          },
           "resource_class_id": {
             "$ref": "#/components/schemas/ResourceClassId"
           },
