@@ -44,21 +44,11 @@ import { Links } from "../../../../utils/constants/Docs.js";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { toHumanDateTime } from "../../../../utils/helpers/DateTimeUtils";
 import {
-  EnvironmentArgs,
-  EnvironmentCommand,
   RepositoriesList,
   useGetRenkuV1ProjectsByV1IdMigrationsQuery,
   usePostRenkuV1ProjectsByV1IdMigrationsMutation,
 } from "../../../projectsV2/api/projectV2.api";
-import { safeParseJSONStringArray } from "../../../sessionsV2/session.utils";
 import { useGetSessionLauncherData } from "../../hook/useGetSessionLauncherData";
-import {
-  MIGRATION_ARGS,
-  MIGRATION_COMMAND,
-  MIGRATION_MOUNT_DIRECTORY,
-  MIGRATION_PORT,
-  MIGRATION_WORKING_DIRECTORY,
-} from "../../ProjectMigration.constants";
 import {
   ProjectMetadata,
   ProjectMigrationForm,
@@ -248,9 +238,6 @@ function MigrationModal({
     (data: ProjectMigrationForm) => {
       if (!containerImage) return;
       const nowFormatted = toHumanDateTime({ datetime: DateTime.now() });
-      const commandFormatted = safeParseJSONStringArray(MIGRATION_COMMAND);
-      const argsFormatted = safeParseJSONStringArray(MIGRATION_ARGS);
-
       const dataMigration = {
         project: {
           name: data.name,
@@ -265,11 +252,6 @@ function MigrationModal({
           container_image: containerImage,
           name: `${templateName ?? data.name} ${nowFormatted}`,
           default_url: projectConfig?.config?.sessions?.defaultUrl ?? "",
-          working_directory: MIGRATION_WORKING_DIRECTORY,
-          mount_directory: MIGRATION_MOUNT_DIRECTORY,
-          port: MIGRATION_PORT,
-          command: commandFormatted.data as EnvironmentCommand,
-          args: argsFormatted.data as EnvironmentArgs,
           resource_class_id: resourceClass?.id,
         },
       };
