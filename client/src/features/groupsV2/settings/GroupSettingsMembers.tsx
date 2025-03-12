@@ -164,7 +164,7 @@ function GroupSettingsMembersList({
 
   return (
     <>
-      <ListGroup>
+      <ListGroup flush>
         {members.map((member, idx) => (
           <GroupMemberItem
             key={member.id}
