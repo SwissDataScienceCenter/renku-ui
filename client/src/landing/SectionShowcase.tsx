@@ -205,9 +205,7 @@ export default function SectionShowcase({
 
   return (
     <div id="rk-anon-home-section-showcase" data-cy="section-showcase">
-      <div
-        className={cx("rk-anon-home-section-content", styles.sectionShowcase)}
-      >
+      <div className={cx("container", styles.sectionShowcase)}>
         <Row className="rk-pt-m">
           <Col className={styles.sectionShowcaseHeader} md={10}>
             <h3 className="text-rk-green">{title}</h3>

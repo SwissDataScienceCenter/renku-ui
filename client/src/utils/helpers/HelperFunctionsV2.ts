@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -13,32 +13,14 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
-import cx from "classnames";
-import { BoxArrowInLeft } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
-
-interface BackToV1ButtonProps {
-  outline?: boolean;
-  color?: string;
-}
-export default function BackToV1Button({
-  outline = false,
-  color = "light",
-}: BackToV1ButtonProps) {
+export function isRenkuLegacy(pathname: string | undefined) {
   return (
-    <Link
-      className={cx(
-        "btn",
-        "btn-sm",
-        outline ? `btn-outline-${color}` : `btn-${color}`,
-        "text-decoration-none"
-      )}
-      to="/v1"
-    >
-      <BoxArrowInLeft className="bi" /> Back to <b>Renku 1.0</b>
-    </Link>
+    typeof pathname === "string" &&
+    (pathname.startsWith("/v1") ||
+      pathname.startsWith("/projects") ||
+      pathname.startsWith("/datasets"))
   );
 }
