@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Validates the URL of a code repository. Note that RenkuLab only supports HTTP(S) at the moment.
+ */
 export function validateCodeRepository(repositoryURL: string): true | string {
   const cleaned = repositoryURL.trim();
   try {
@@ -31,6 +34,9 @@ export function validateCodeRepository(repositoryURL: string): true | string {
   return "The repository URL must be a valid HTTP or HTTPS URL.";
 }
 
+/**
+ * Checks that there is no duplicate in the list of repositories in a project.
+ */
 export function validateNoDuplicatesInCodeRepositories(
   repositories: string[]
 ): true | string {
@@ -43,4 +49,21 @@ export function validateNoDuplicatesInCodeRepositories(
     return true;
   }
   return "This repository is already included in the project.";
+}
+
+export function detectSSHRepository(repositoryURL: string): boolean {
+  const cleaned = repositoryURL.trim();
+  try {
+    const parsed = new URL(cleaned);
+    if (parsed.protocol === "ssh:") {
+      return true;
+    }
+  } catch (error) {
+    if (!(error instanceof TypeError)) {
+      throw error;
+    }
+  }
+  // This matches URLs like "git@github.com:SwissDataScienceCenter/renku-ui.git"
+  const gitUrlRegex = /git@(?:.)+:/;
+  return cleaned.match(gitUrlRegex) != null;
 }

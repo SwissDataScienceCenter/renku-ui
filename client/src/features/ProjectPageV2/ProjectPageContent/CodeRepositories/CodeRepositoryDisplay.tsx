@@ -71,6 +71,7 @@ import repositoriesApi, {
   useGetRepositoryProbeQuery,
 } from "../../../repositories/repositories.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import { SshRepositoryUrlWarning } from "./AddCodeRepositoryModal";
 import {
   validateCodeRepository,
   validateNoDuplicatesInCodeRepositories,
@@ -94,6 +95,7 @@ function EditCodeRepositoryModal({
     handleSubmit,
     reset,
     setError,
+    watch,
   } = useForm<EditCodeRepositoryForm>({
     defaultValues: { repositoryUrl },
   });
@@ -146,6 +148,8 @@ function EditCodeRepositoryModal({
     reset({ repositoryUrl });
   }, [repositoryUrl, reset]);
 
+  const watchRepositoryUrl = watch("repositoryUrl");
+
   return (
     <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -155,7 +159,7 @@ function EditCodeRepositoryModal({
           <p>Specify a code repository by its URL.</p>
           <Row>
             <Col>
-              <FormGroup className="field-group">
+              <FormGroup className="field-group" noMargin>
                 <Label for={`project-${project.id}-edit-repository-url`}>
                   Repository URL
                   <span className="required-label">*</span>
@@ -186,6 +190,7 @@ function EditCodeRepositoryModal({
                   )}
                   rules={{ required: true, validate: validateCodeRepository }}
                 />
+                <SshRepositoryUrlWarning repositoryUrl={watchRepositoryUrl} />
               </FormGroup>
             </Col>
           </Row>

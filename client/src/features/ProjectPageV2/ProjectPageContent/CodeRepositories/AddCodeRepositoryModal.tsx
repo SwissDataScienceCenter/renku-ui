@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { CodeSquare, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -38,9 +38,11 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
+  detectSSHRepository,
   validateCodeRepository,
   validateNoDuplicatesInCodeRepositories,
 } from "./repositories.utils";
+import { WarnAlert } from "../../../../components/Alert";
 
 interface AddCodeRepositoryForm {
   repositoryUrl: string;
@@ -56,7 +58,7 @@ export default function AddCodeRepositoryModal({
   toggleModal,
   isOpen,
 }: AddCodeRepositoryModalProps) {
-  const { control, handleSubmit, reset, setError } =
+  const { control, handleSubmit, reset, setError, watch } =
     useForm<AddCodeRepositoryForm>({
       defaultValues: {
         repositoryUrl: "",
@@ -98,6 +100,8 @@ export default function AddCodeRepositoryModal({
     }
   }, [isOpen, reset, result]);
 
+  const watchRepositoryUrl = watch("repositoryUrl");
+
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -110,7 +114,7 @@ export default function AddCodeRepositoryModal({
           <p>Specify a code repository by its URL.</p>
           <Row>
             <Col>
-              <FormGroup className="field-group">
+              <FormGroup className="field-group" noMargin>
                 <Label for={`project-${project.id}-add-repository-url`}>
                   Repository URL
                   <span className="required-label">*</span>
@@ -141,6 +145,7 @@ export default function AddCodeRepositoryModal({
                   )}
                   rules={{ required: true, validate: validateCodeRepository }}
                 />
+                <SshRepositoryUrlWarning repositoryUrl={watchRepositoryUrl} />
               </FormGroup>
             </Col>
           </Row>
@@ -171,5 +176,29 @@ export default function AddCodeRepositoryModal({
         </ModalFooter>
       </Form>
     </Modal>
+  );
+}
+
+interface SshRepositoryUrlWarningProps {
+  repositoryUrl: string;
+}
+
+export function SshRepositoryUrlWarning({
+  repositoryUrl,
+}: SshRepositoryUrlWarningProps) {
+  const isSsh = useMemo(
+    () => detectSSHRepository(repositoryUrl),
+    [repositoryUrl]
+  );
+
+  if (!isSsh) {
+    return null;
+  }
+
+  return (
+    <WarnAlert className={cx("mt-3")} dismissible={false}>
+      It looks like you are trying to use a <code>git+ssh</code> URL. RenkuLab
+      only supports HTTP(S) for repositories at the moment.
+    </WarnAlert>
   );
 }
