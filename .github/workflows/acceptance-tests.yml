@@ -76,19 +76,19 @@ jobs:
       - name: Build and deploy
         uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.14.1
         env:
-          RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
           DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
           KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
+          RANCHER_DEV_API_ENDPOINT: ${{ secrets.RANCHER_DEV_API_ENDPOINT }}
+          RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
+          RENKU_BOT_DEV_PASSWORD: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
           RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
+          RENKU_TESTS_ENABLED: true
           RENKU_VALUES_FILE: ${{ github.workspace }}/values.yaml
           RENKU_VALUES: ${{ secrets.COMBINED_CHARTS_CI_RENKU_VALUES }}
           RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
           RENKUBOT_RANCHER_BEARER_TOKEN: ${{ secrets.RENKUBOT_RANCHER_BEARER_TOKEN }}
-          RANCHER_DEV_API_ENDPOINT: ${{ secrets.RANCHER_DEV_API_ENDPOINT }}
-          RENKU_BOT_DEV_PASSWORD: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
-          RENKU_TESTS_ENABLED: true
           TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
           renku_ui: "@${{ github.head_ref }}"
           renku: "${{ needs.check-deploy.outputs.renku }}"
@@ -147,7 +147,7 @@ jobs:
     steps:
       - name: Extract Renku repository reference
         run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
-      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.14.0
+      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.14.1
         with:
           e2e-target: ${{ matrix.tests }}
           renku-reference: ${{ env.RENKU_REFERENCE }}
