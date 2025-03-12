@@ -24,6 +24,10 @@ export function validateCodeRepository(repositoryURL: string): true | string {
     if (parsed.protocol === "http" || parsed.protocol === "https") {
       return true;
     }
-  } catch {}
+  } catch (exception) {
+    if (!(exception instanceof TypeError)) {
+      throw exception;
+    }
+  }
   return error;
 }
