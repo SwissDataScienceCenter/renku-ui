@@ -27,6 +27,7 @@ export default function ModalHeader({
   children,
   className,
   title,
+  toggle,
   ...props
 }: ModalHeaderProps) {
   return (
@@ -36,12 +37,15 @@ export default function ModalHeader({
         {...props}
       >
         <h1 className={cx("modal-title", "fs-5")}>{title}</h1>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        />
+        {toggle && (
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            onClick={toggle}
+          />
+        )}
       </div>
       {children && <div className={cx("modal-header", "pt-0")}>{children}</div>}
     </>
