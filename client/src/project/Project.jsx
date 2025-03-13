@@ -270,8 +270,6 @@ class View extends Component {
 
   async fetchProject() {
     // fetch the main project data, fetch branches and commits (exception for auto-starting links)
-    // const pathComponents = splitProjectSubRoute(this.props.match.url);
-    // const pathComponents = splitProjectSubRoute(this.props.subUrl);
     const pathComponents = splitProjectSubRoute(this.props.location.pathname);
     const projectData = await this.projectCoordinator.fetchProject(
       this.props.client,
