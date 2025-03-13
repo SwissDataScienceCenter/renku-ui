@@ -191,7 +191,7 @@ function ProjectV2CreationDetails() {
               <div className="mb-1">
                 <ProjectNamespaceFormField
                   control={control}
-                  entityName="project"
+                  entityName={`${formId}-project`}
                   errors={errors}
                   name="namespace"
                 />

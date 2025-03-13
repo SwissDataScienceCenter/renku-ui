@@ -294,7 +294,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
             <ProjectNamespaceFormField
               name="namespace"
               control={control}
-              entityName="project"
+              entityName={`${formId}-project`}
               ensureNamespace={project.namespace}
               errors={errors}
             />

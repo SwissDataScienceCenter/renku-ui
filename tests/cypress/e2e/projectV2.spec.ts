@@ -64,7 +64,10 @@ describe("Add new v2 project", () => {
       cy.getDataCy("project-slug-toggle").click();
       cy.getDataCy("project-slug-input").should("have.value", slug);
       cy.wait("@listNamespaceV2");
-      cy.findReactSelectOptions("project-namespace-input", "namespace-select")
+      cy.findReactSelectOptions(
+        "project-creation-form-project-namespace-input",
+        "namespace-select"
+      )
         .first()
         .click();
       cy.contains("Visibility").click();
@@ -93,7 +96,10 @@ describe("Add new v2 project", () => {
 
     cy.getDataCy("project-slug-input").clear().type(slug);
     cy.wait("@listNamespaceV2");
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
+    cy.findReactSelectOptions(
+      "project-creation-form-project-namespace-input",
+      "namespace-select"
+    )
       .first()
       .click();
     cy.getDataCy("project-visibility-public").click();
@@ -302,12 +308,18 @@ describe("Edit v2 project", () => {
     // Fetch the second page of namespaces
     cy.wait("@listNamespaceV2");
     cy.wait("@readUserV2Namespace");
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select");
+    cy.findReactSelectOptions(
+      "project-settings-form-project-namespace-input",
+      "namespace-select"
+    );
     cy.get("button").contains("Fetch more").click();
     // Need to click away so the dropdown option selection works
     cy.getDataCy("project-settings-form-project-name-input").click();
     cy.wait("@listNamespaceV2");
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
+    cy.findReactSelectOptions(
+      "project-settings-form-project-namespace-input",
+      "namespace-select"
+    )
       // Pick an element from the second page of results
       .contains("test-25-group-v2")
       .click();

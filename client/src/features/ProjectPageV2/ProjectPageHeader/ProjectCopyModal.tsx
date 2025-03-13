@@ -142,7 +142,7 @@ export default function ProjectCopyModal({
           />
           <ProjectNamespaceFormField
             control={control}
-            entityName="project"
+            entityName={`${formId}-project`}
             errors={errors}
             name="namespace"
           />
