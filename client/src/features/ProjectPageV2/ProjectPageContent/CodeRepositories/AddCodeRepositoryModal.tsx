@@ -196,7 +196,7 @@ export function SshRepositoryUrlWarning({
   }
 
   return (
-    <WarnAlert className={cx("mt-3")} dismissible={false}>
+    <WarnAlert className={cx("mt-3", "mb-0")} dismissible={false}>
       It looks like you are trying to use a <code>git+ssh</code> URL. RenkuLab
       only supports HTTP(S) for repositories at the moment.
     </WarnAlert>
