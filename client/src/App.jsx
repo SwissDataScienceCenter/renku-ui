@@ -90,9 +90,6 @@ function CentralContentContainer(props) {
     webSocket: socket,
   };
 
-  // check anonymous sessions settings
-  const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
-
   return (
     <div className="d-flex flex-grow-1">
       <AppContext.Provider value={appContext}>
@@ -142,17 +139,9 @@ function CentralContentContainer(props) {
               <LazyNewProject />
             </ContainerWrap>
           </CompatRoute>
-          <Route path="/projects/:subUrl+">
-            <LazyProjectView
-              client={props.client}
-              params={props.params}
-              model={props.model}
-              user={props.user}
-              blockAnonymous={blockAnonymous}
-              notifications={notifications}
-              socket={socket}
-            />
-          </Route>
+          <CompatRoute path="/projects">
+            <LazyProjectView />
+          </CompatRoute>
           <Route exact path={Url.get(Url.pages.sessions)}>
             {!user.logged ? <LazyAnonymousSessionsList /> : <Redirect to="/" />}
           </Route>
