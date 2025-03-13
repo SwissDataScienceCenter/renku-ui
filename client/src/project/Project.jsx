@@ -167,8 +167,6 @@ function refreshTrigger(thing) {
 
 function mapProjectStateToProps(state, ownProps) {
   const projectCoordinator = ownProps.projectCoordinator;
-  // const pathComponents = splitProjectSubRoute(ownProps.match.url);
-  // const pathComponents = splitProjectSubRoute(ownProps.subUrl);
   const pathComponents = splitProjectSubRoute(ownProps.location.pathname);
   const accessLevel = projectCoordinator.get("metadata.accessLevel");
   const settingsReadOnly = accessLevel < ACCESS_LEVELS.MAINTAINER;
@@ -213,8 +211,6 @@ class View extends Component {
   }
 
   componentDidMount() {
-    // const pathComponents = splitProjectSubRoute(this.props.match.url);
-    // const pathComponents = splitProjectSubRoute(this.props.subUrl);
     const pathComponents = splitProjectSubRoute(this.props.location.pathname);
     if (
       pathComponents.projectPathWithNamespace == null &&
@@ -259,10 +255,6 @@ class View extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // const prevPathComps = splitProjectSubRoute(prevProps.match.url);
-    // const prevPathComps = splitProjectSubRoute(prevProps.subUrl);
-    // const pathComps = splitProjectSubRoute(this.props.match.url);
-    // const pathComps = splitProjectSubRoute(this.props.subUrl);
     const prevPathComps = splitProjectSubRoute(prevProps.location.pathname);
     const pathComps = splitProjectSubRoute(this.props.location.pathname);
     if (
@@ -339,8 +331,6 @@ class View extends Component {
 
   async fetchAll() {
     // Get the project main data
-    // const pathComponents = splitProjectSubRoute(this.props.match.url);
-    // const pathComponents = splitProjectSubRoute(this.props.subUrl);
     const pathComponents = splitProjectSubRoute(this.props.location.pathname);
     let projectData = null;
     if (pathComponents.projectPathWithNamespace)
@@ -394,8 +384,6 @@ class View extends Component {
   }
 
   getSubUrls() {
-    // const match = this.props.match;
-    // const pathComponents = splitProjectSubRoute(this.props.subUrl);
     const pathComponents = splitProjectSubRoute(this.props.location.pathname);
     const baseUrl = pathComponents.baseUrl;
     const filesUrl = `${baseUrl}/files`;
