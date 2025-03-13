@@ -26,12 +26,10 @@
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Component, Fragment, useEffect, useMemo } from "react";
-// import { Route, Switch } from "react-router-dom";
+import { Component, Fragment, useEffect } from "react";
 import {
-  CompatRoute,
   Link,
-  Route as NewRoute,
+  Route,
   Routes,
   useLocation,
   useParams,
@@ -82,9 +80,6 @@ import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
-
-const Route = NewRoute;
-const Switch = Routes;
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -769,7 +764,7 @@ class ProjectViewFiles extends Component {
       </div>,
       <div key="content" className="flex-shrink-1 variableWidthColRight">
         <Routes>
-          <NewRoute
+          <Route
             path={lineageUrl}
             element={
               <ProjectFileLineageRoute
@@ -782,7 +777,7 @@ class ProjectViewFiles extends Component {
               />
             }
           />
-          <NewRoute
+          <Route
             path={fileContentUrl}
             element={
               <ProjectFileViewRoute
@@ -925,14 +920,6 @@ function ProjectView(props) {
     props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
   const isShowSession = cleanSessionUrl === props.sessionShowUrl;
 
-  console.log({
-    settingsUrl: props.settingsUrl,
-    settingsMatch: props.settingsUrl
-      .replace(props.baseUrl, "")
-      .replace(/^[/]/, ""),
-    workflows: props.workflowsUrl,
-  });
-
   const prefixUrl = props.projectsUrl.endsWith("/")
     ? props.projectsUrl
     : `${props.projectsUrl}/`;
@@ -943,8 +930,11 @@ function ProjectView(props) {
   const filesUrl = `${baseUrl}/files/*`;
   const datasetsUrl = `${baseUrl}/datasets/*`;
   const datasetUrl = `${baseUrl}/datasets/:datasetId`;
-
-  console.log({ datasetUrl: props.datasetUrl });
+  const workflowsUrl = `${baseUrl}/workflows/*`;
+  const settingsUrl = `${baseUrl}/settings/*`;
+  const notebookServersUrl = `${baseUrl}/sessions/*`;
+  const launchNotebookUrl = `${baseUrl}/sessions/new`;
+  const sessionShowUrl = `${baseUrl}/sessions/show/:server`;
 
   return [
     <ProjectPageTitle
@@ -955,37 +945,18 @@ function ProjectView(props) {
     />,
     <ContainerWrap key="project-content" fullSize={isShowSession}>
       <Routes key="projectHeader">
-        <Route path={props.editDatasetUrl} element={null} />
-        <Route path={datasetUrl} element={null} />
-        <Route path={props.launchNotebookUrl} element={null} />
-        <Route path={props.sessionShowUrl} element={null} />
+        <Route path={`${datasetUrl}/*`} element={null} />
+        <Route path={launchNotebookUrl} element={null} />
+        <Route path={sessionShowUrl} element={null} />
         <Route path="*" element={<ProjectViewHeader {...props} />} />
       </Routes>
       <Routes key="projectNav">
-        <Route path={props.editDatasetUrl} element={null} />
-        <Route path={datasetUrl} element={null} />
-        <Route path={props.launchNotebookUrl} element={null} />
-        <Route path={props.sessionShowUrl} element={null} />
+        <Route path={`${datasetUrl}/*`} element={null} />
+        <Route path={launchNotebookUrl} element={null} />
+        <Route path={sessionShowUrl} element={null} />
         <Route path="*" element={<ProjectNav key="nav" {...props} />} />
       </Routes>
-
-      {/* <Switch key="projectNav">
-        <Route path={props.editDatasetUrl} />
-        <Route path={props.datasetUrl} />
-        <Route path={props.launchNotebookUrl} />
-        <Route path={props.sessionShowUrl} />
-        <Route>
-          <ProjectNav key="nav" {...props} />
-        </Route>
-      </Switch> */}
       <Row key="content" className={cx(isShowSession && "m-0")}>
-        <div>Content</div>
-        <div>{props.baseUrl}</div>
-        <div>{baseUrl}</div>
-        <div>{overviewUrl}</div>
-        <div>{filesUrl}</div>
-        <div>{datasetsUrl}</div>
-        <div>{datasetUrl}</div>
         <Routes>
           <Route
             path={baseUrl}
@@ -1003,53 +974,32 @@ function ProjectView(props) {
             path={datasetsUrl}
             element={<ProjectDatasetsView key="datasets" {...props} />}
           />
-
           <Route
-            path={`${props.subUrl}/settings`}
+            path={workflowsUrl}
+            element={<ProjectViewWorkflows key="workflows" {...props} />}
+          >
+            <Route path=":workflowId" element={null} />
+          </Route>
+          <Route
+            path={settingsUrl}
             element={
-              // <ProjectSettings
-              //   key="settings"
-              //   {...props}
-              //   apiVersion={apiVersion}
-              //   metadataVersion={metadataVersion}
-              // />
-              <>Hello</>
+              <ProjectSettings
+                key="settings"
+                {...props}
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+              />
             }
+          />
+          <Route
+            path={notebookServersUrl}
+            element={<ProjectSessionsRouter key="sessions" />}
           />
           <Route
             path="*"
             element={<NotFoundInsideProject baseUrl={props.baseUrl} />}
           />
         </Routes>
-        {/* <Switch>
-          <Route exact path={props.baseUrl}>
-            <ProjectViewOverview key="overview" {...props} />
-          </Route>
-          <Route path={props.overviewUrl}>
-            <ProjectViewOverview key="overview" {...props} />
-          </Route>
-          <CompatRoute path={props.filesUrl}>
-            <ProjectViewFiles key="files" {...props} />
-          </CompatRoute>
-          <CompatRoute path={props.datasetsUrl}>
-            <ProjectDatasetsView key="datasets" {...props} />
-          </CompatRoute>
-          <Route path={[props.workflowUrl, props.workflowsUrl]}>
-            <ProjectViewWorkflows key="workflows" {...props} />
-          </Route>
-          <Route path={props.settingsUrl}>
-            <ProjectSettings
-              key="settings"
-              {...props}
-              apiVersion={apiVersion}
-              metadataVersion={metadataVersion}
-            />
-          </Route>
-          <Route path={props.notebookServersUrl}>
-            <ProjectSessionsRouter key="sessions" />
-          </Route>
-          <Route component={NotFoundInsideProject} />
-        </Switch> */}
       </Row>
     </ContainerWrap>,
   ];

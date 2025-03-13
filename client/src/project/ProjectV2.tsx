@@ -3,7 +3,7 @@
  * New implementation of the Project component in TypeScript.
  */
 
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { useLocation, useMatch, useNavigate } from "react-router-dom-v5-compat";
 import AppContext from "../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
@@ -14,10 +14,6 @@ function ProjectView() {
   const location = useLocation();
   const navigate = useNavigate();
   const match = useMatch("/projects/*");
-
-  useEffect(() => {
-    console.log({ match });
-  }, [match]);
 
   const { client, model, notifications, params, webSocket } =
     useContext(AppContext);
