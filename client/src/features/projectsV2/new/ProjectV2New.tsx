@@ -77,7 +77,8 @@ export default function ProjectV2New() {
           toggle={toggleModal}
           title={
             <>
-              <Folder className="bi" /> Create a new project
+              <Folder className="bi" />
+              Create a new project
             </>
           }
         >

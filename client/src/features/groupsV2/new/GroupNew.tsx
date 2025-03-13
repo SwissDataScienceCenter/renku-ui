@@ -74,7 +74,8 @@ export default function GroupNew() {
           toggle={toggleModal}
           title={
             <>
-              <People className="bi" /> Create a new group
+              <People className="bi" />
+              Create a new group
             </>
           }
         >

@@ -17,18 +17,18 @@
  */
 
 import cx from "classnames";
-import { type ModalHeaderProps } from "reactstrap";
+import { type ModalHeaderProps as BaseModalHeaderProps } from "reactstrap";
 
-interface RenkuModalHeaderProps extends Omit<ModalHeaderProps, "title>"> {
+interface ModalHeaderProps extends Omit<BaseModalHeaderProps, "title>"> {
   title: React.ReactNode;
 }
 
-export default function RenkuModalHeader({
+export default function ModalHeader({
   children,
   className,
   title,
   ...props
-}: RenkuModalHeaderProps) {
+}: ModalHeaderProps) {
   return (
     <>
       <div
@@ -41,7 +41,7 @@ export default function RenkuModalHeader({
           className="btn-close"
           data-bs-dismiss="modal"
           aria-label="Close"
-        ></button>
+        />
       </div>
       {children && <div className={cx("modal-header", "pt-0")}>{children}</div>}
     </>
